@@ -1,0 +1,134 @@
+{
+  "schema": "quantum-hub.phase-0-3d-repair-v2.blockout-renders.v1",
+  "generated_at_utc": "2026-08-17T21:27:26.963025+00:00",
+  "blender_version": "5.2.0 LTS",
+  "blender_build_hash": "fbe6228777e7",
+  "source": "source/field-unit-v2-blockouts.blend",
+  "source_sha256": "ca8d17e065feb15c46d26147b2b16f3d758f45876862c0819955eb54dda01e96",
+  "engine": "BLENDER_EEVEE",
+  "samples": 64,
+  "original_artwork": true,
+  "reference_binary_used": false,
+  "renders": [
+    {
+      "option": "A",
+      "view": "front",
+      "camera": "Camera_Blockout_Front",
+      "path": "renders/blockouts/a/front.png",
+      "width": 1400,
+      "height": 1050,
+      "bytes": 797542,
+      "sha256": "b967cbe379c9e5f088b03e139c0bff942f69d947135b7fb7f5aabdfe2a800a56"
+    },
+    {
+      "option": "A",
+      "view": "side",
+      "camera": "Camera_Blockout_Side",
+      "path": "renders/blockouts/a/side.png",
+      "width": 1400,
+      "height": 1050,
+      "bytes": 582095,
+      "sha256": "33d92c03220e72b3059b4408e70894137b8a183b6ffc5b6471ce95a90444bf58"
+    },
+    {
+      "option": "A",
+      "view": "top",
+      "camera": "Camera_Blockout_Top",
+      "path": "renders/blockouts/a/top.png",
+      "width": 1400,
+      "height": 1050,
+      "bytes": 875709,
+      "sha256": "f73f8539d402c34d7be2d7a9cc145edeedc24d5734379cc11dfaea5682d82197"
+    },
+    {
+      "option": "A",
+      "view": "three-quarter",
+      "camera": "Camera_Blockout_Three_Quarter",
+      "path": "renders/blockouts/a/three-quarter.png",
+      "width": 1400,
+      "height": 1050,
+      "bytes": 861726,
+      "sha256": "2435944c284533333f33949bbca9b8432b7b635f85d50a066af29e266ed1510a"
+    },
+    {
+      "option": "B",
+      "view": "front",
+      "camera": "Camera_Blockout_Front",
+      "path": "renders/blockouts/b/front.png",
+      "width": 1400,
+      "height": 1050,
+      "bytes": 826036,
+      "sha256": "842a635f938ef89b8e76e655fcebbf5542877dfa89290d7341d5797b21a929c5"
+    },
+    {
+      "option": "B",
+      "view": "side",
+      "camera": "Camera_Blockout_Side",
+      "path": "renders/blockouts/b/side.png",
+      "width": 1400,
+      "height": 1050,
+      "bytes": 612461,
+      "sha256": "321423d2389a3a2127979a1c3a34bbb35e711d812c9ddebb297d16a7ec0ea16b"
+    },
+    {
+      "option": "B",
+      "view": "top",
+      "camera": "Camera_Blockout_Top",
+      "path": "renders/blockouts/b/top.png",
+      "width": 1400,
+      "height": 1050,
+      "bytes": 899341,
+      "sha256": "c9e549026a30c04e3d88dcd16dea453bc7fe14204646c24381f95c8b0c152d5b"
+    },
+    {
+      "option": "B",
+      "view": "three-quarter",
+      "camera": "Camera_Blockout_Three_Quarter",
+      "path": "renders/blockouts/b/three-quarter.png",
+      "width": 1400,
+      "height": 1050,
+      "bytes": 913343,
+      "sha256": "f41d3885d089287e6148fb07dc45a80742652450c8c4b87ece90d37bfca96b0e"
+    },
+    {
+      "option": "C",
+      "view": "front",
+      "camera": "Camera_Blockout_Front",
+      "path": "renders/blockouts/c/front.png",
+      "width": 1400,
+      "height": 1050,
+      "bytes": 805309,
+      "sha256": "5e9cc7b777ff67d19e4c47738038341d5d2e33c53018653b207704299c9284c2"
+    },
+    {
+      "option": "C",
+      "view": "side",
+      "camera": "Camera_Blockout_Side",
+      "path": "renders/blockouts/c/side.png",
+      "width": 1400,
+      "height": 1050,
+      "bytes": 593064,
+      "sha256": "cbb0c134cfedcc86f34574fcc1285703ef61682f7607e16f0bcb48dda14144f3"
+    },
+    {
+      "option": "C",
+      "view": "top",
+      "camera": "Camera_Blockout_Top",
+      "path": "renders/blockouts/c/top.png",
+      "width": 1400,
+      "height": 1050,
+      "bytes": 903573,
+      "sha256": "cc69282c24c4f866ed949a2f192c29100da43eb6b389e5d159ac874095a1fd03"
+    },
+    {
+      "option": "C",
+      "view": "three-quarter",
+      "camera": "Camera_Blockout_Three_Quarter",
+      "path": "renders/blockouts/c/three-quarter.png",
+      "width": 1400,
+      "height": 1050,
+      "bytes": 879515,
+      "sha256": "8dd1fdf428953432ba5912417ccecbeb46a57c3bc5e8d00d61d638568ad30c05"
+    }
+  ]
+}

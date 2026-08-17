@@ -1,7 +1,7 @@
 # Phase 0 Asset Register
 
 Status: controlled register for committed Phase 0 assets
-Last verified: 2026-08-17
+Last verified: 2026-08-18
 
 ## Classification model
 
@@ -111,6 +111,80 @@ These repository-native text files are not launch assets, but they are registere
 | `artifacts/original/phase-0-3d-repair/work/.gitignore` | 14 | `240a3e0d37d2e86b614063f5347eb02d4f99ca6c254de6b82871ff8d95532a7d` | Work-directory exclusion control; not an asset |
 
 The verified temporary 192-frame sequence and caches were removed after encoding. They remain reproducible from the registered Blender source and scripts; only `work/.gitignore` remains in that directory. No Blender or FFmpeg executable, archive, library, external add-on, model, texture, font, reference-site binary, or third-party capture is included in the package.
+
+## Original Quantum Phase 0.2 3D repair-v2 package
+
+The additive package at `artifacts/original/phase-0-3d-repair-v2/` is classified as **original Quantum creative evidence** with approval state **pending human creative review**. It does not replace or modify the accepted Phase 0 package above. Every record in this section is Class R and is excluded from launch use unless the Field Unit + Spiral Conduction + Portal creative gate is accepted.
+
+The package contains 88 unignored files and 73,083,534 bytes. Its 61 original binary files comprise two editable Blender sources and 59 sanitized PNGs, totalling 72,805,959 bytes. The 47 canonical render PNGs total 52,807,472 bytes; the 12 required review PNGs total 19,559,617 bytes. The remaining 27 records are 11 manifests and 16 repository-native source, contract, guide or exclusion-control files totalling 277,575 bytes. No video, animatic, numbered frame sequence, `.blend1`, cache, executable, archive, font binary, external model, image texture, add-on, reference binary or third-party capture is present.
+
+### Phase 0.2 binary register
+
+These grouped records explicitly account for every original binary in the package. The render row is the union of 12 blockouts, 26 final canonical stills, four final diagnostics and four portal-surface outputs governed by the cited manifests, plus the separately resolved desktop safe-area diagnostic. The review row is governed by the exact 12-record review-bundle manifest. `png-metadata-sanitization.json` independently binds all 59 PNG paths, decoded-pixel-preservation results, byte counts and final SHA-256 values.
+
+| Asset ID | Committed path or governed set | Records | Bytes | Integrity authority | Class | Approval and publication state |
+| --- | --- | ---: | ---: | --- | --- | --- |
+| `Q0-3D-V2-SOURCE-001` | `artifacts/original/phase-0-3d-repair-v2/source/field-unit-v2-blockouts.blend` | 1 | 132,135 | SHA-256 `ca8d17e065feb15c46d26147b2b16f3d758f45876862c0819955eb54dda01e96` | R | Original procedural Blender blockout source; pending human creative review; not a launch asset |
+| `Q0-3D-V2-SOURCE-002` | `artifacts/original/phase-0-3d-repair-v2/source/field-unit-v2-integrated-aperture-chassis.blend` | 1 | 306,735 | SHA-256 `ebb41dd813c36639660f26b5ac444eec39d62e7658019db7a76808899c1fe9e4`; `manifests/blender-source-validation.json` | R | Original final editable Blender source; validator PASS 12/12; pending human creative review; not a launch asset |
+| `Q0-3D-V2-RENDER-001` | `artifacts/original/phase-0-3d-repair-v2/renders/` | 47 PNG | 52,807,472 | `blockout-render-manifest.json`; `final-render-manifest-all.json`; `final-render-manifest-diagnostic.json`; `portal-surface-manifest.json`; explicit safe-area resolution below; all final bytes also bound by `png-metadata-sanitization.json` | R | Original Blender and shared-authority portal stills; pending human creative review; not launch media |
+| `Q0-3D-V2-REVIEW-001` | `artifacts/original/phase-0-3d-repair-v2/review/` | 12 PNG | 19,559,617 | `review-bundle-manifest.json`; `review-originals-manifest.json`; `browser-review-composition-manifest.json`; `png-metadata-sanitization.json` | R | Original review sheets; pending human creative review; not a public-launch surface |
+| `Q0-3D-V2-MEDIA-001` | Package encoded-media set | 0 | 0 | `blender-source-validation.json`; dedicated asset verifier | R | Intentionally still-only; no new media encode or full animatic was created |
+
+The only render outside the four canonical render-output arrays is retained as an explicit safe-area diagnostic and is therefore resolved directly rather than hidden behind a blanket manifest claim.
+
+| Path | Dimensions | Bytes | SHA-256 | Classification and approval |
+| --- | ---: | ---: | --- | --- |
+| `artifacts/original/phase-0-3d-repair-v2/renders/diagnostics/desktop-safe-area.png` | 1920×1200 | 1,414,799 | `a16dea1f9ae72a40cd1b0d2d3f45396db394e69a64270ce3316ae4eb8af1e49d` | Original Quantum safe-area evidence; pending human creative review; not launch media |
+
+### Phase 0.2 manifest register
+
+These are the 11 canonical or supporting machine-readable authorities in the package. Their combined size is 117,569 bytes.
+
+| Manifest or report | Bytes | SHA-256 | Classification and approval |
+| --- | ---: | --- | --- |
+| `artifacts/original/phase-0-3d-repair-v2/manifests/blender-source-validation.json` | 5,017 | `6f11055580dd00bf25d1d1c508a5c9e3d62311638df555351c59ee1299fceda1` | Original Quantum Blender integrity evidence; PASS 12/12; pending human creative review |
+| `artifacts/original/phase-0-3d-repair-v2/manifests/blockout-render-manifest.json` | 4,176 | `a87f8c18594352c2564be5d8dc52b930388459785f9e889cefcf7e3bcbb701f9` | Canonical 12-render blockout inventory; review-only |
+| `artifacts/original/phase-0-3d-repair-v2/manifests/browser-review-composition-manifest.json` | 15,347 | `239f875a3b8dac7621dfbdc9d7a7f226fea191f22a76b6b56174f33f04c8c8a8` | Canonical three-sheet browser-capture lineage; review-only |
+| `artifacts/original/phase-0-3d-repair-v2/manifests/final-render-manifest-all.json` | 13,276 | `a530bd6978b1249e94eec9a75a0816dc6b5c0deabe0f674f8bcbc1e0cc440bff` | Canonical 26-render final-still inventory; pending human creative review |
+| `artifacts/original/phase-0-3d-repair-v2/manifests/final-render-manifest-diagnostic.json` | 2,669 | `31fde5a2a23cae48904324ad8f277656ec775c63f4bfb81907bcc5e782faa9b3` | Canonical four-render diagnostic inventory; review-only |
+| `artifacts/original/phase-0-3d-repair-v2/manifests/png-metadata-sanitization.json` | 34,389 | `74dc0b36c0e0ff339b983eea6a85cff4ffcf3ca86f5031108d2f4f763949a86d` | Canonical 59-PNG metadata and decoded-pixel-preservation evidence; PASS; review-only |
+| `artifacts/original/phase-0-3d-repair-v2/manifests/portal-surface-manifest.json` | 2,043 | `897bc776c62e6f5f76d71cd4f0b8d809a626b9cf3781f43318022957d5df6941` | Canonical four-output shared portal-layout inventory; pending human creative review |
+| `artifacts/original/phase-0-3d-repair-v2/manifests/review-bundle-manifest.json` | 4,140 | `c2414cf2a202f76d517f70b6a4b0800a36227da78fd5407a5d6689703ed7394b` | Canonical exact 12-sheet review bundle; pending human creative review |
+| `artifacts/original/phase-0-3d-repair-v2/manifests/review-composition-manifest.json` | 7,680 | `32ad79ed8a0ae8496e6c1e00bd1bae9f2374fd9970ddf544ede237886172d5e9` | Canonical nine-sheet non-browser composition lineage; review-only |
+| `artifacts/original/phase-0-3d-repair-v2/manifests/review-originals-manifest.json` | 23,198 | `ddc1b9665765adb602348ad3df443fc209d4ceaf640837f3ff9d142d56811684` | Canonical 11-compositor-output inventory; review-only |
+| `artifacts/original/phase-0-3d-repair-v2/manifests/silhouette-decision-manifest.json` | 5,634 | `4b2b20f4e2d6602758f33b779bd8097419bf45dc2ee1227518d0e15b2cd32ecd` | Canonical silhouette decision evidence; pending human creative review |
+
+### Phase 0.2 authoring and package-support records
+
+The following 16 repository-native text and control files total 160,006 bytes. They are not launch assets; they preserve reproducibility, layout authority and package hygiene without any runtime dependency on Blender, Q-HUB or an external source repository.
+
+| Path | Bytes | SHA-256 | Classification and approval |
+| --- | ---: | --- | --- |
+| `artifacts/original/phase-0-3d-repair-v2/README.md` | 9,347 | `f1606e961a3b0a929152c247a0a5b5d6f0bfbf727deb46adee715029290077df` | Original Quantum production record; review-only |
+| `artifacts/original/phase-0-3d-repair-v2/portal-layout.json` | 6,675 | `25666cf071afe7564dc051cbec770ead325cdf19ef1f4926e43d793a2a053bc5` | Shared physical/DOM portal-layout authority; pending human creative review |
+| `artifacts/original/phase-0-3d-repair-v2/source/build_blockouts.py` | 13,001 | `39b8b21b2c565ff275926d795706438cfa14355639365a1a0adf4753f30a73d6` | Original procedural authoring source; review-only |
+| `artifacts/original/phase-0-3d-repair-v2/source/build_final_scene.py` | 35,826 | `c4dc01e724f0d54458e9e290081ed50ef864f71aa0078629eb10e92a2354bc8d` | Original procedural authoring source; review-only |
+| `artifacts/original/phase-0-3d-repair-v2/source/compose_blockout_comparison.py` | 8,818 | `79ec43c4c73cf91e989b21d4d7dc5ace8a5b5b88cc72d77c3d8b1c6bb1570017` | Original review-composition source; review-only |
+| `artifacts/original/phase-0-3d-repair-v2/source/compose_browser_review.py` | 11,024 | `e34d258af89f2f16e62f68e7f2e65a3105b6e9f7663ec1d4befd637db181a9f8` | Original browser-review composition source; review-only |
+| `artifacts/original/phase-0-3d-repair-v2/source/compose_final_review.py` | 23,626 | `226850e1084d3173f69119d22ae4c248ed95e9b235a0637a3ca924b4bf02c09a` | Original review-composition source; review-only |
+| `artifacts/original/phase-0-3d-repair-v2/source/compose_portal_surfaces.py` | 8,363 | `4f7ff16cb0cf0585dd2b51c1522f3300ec04c962c3a2b7eb55b65fc010a121c2` | Original shared-authority portal compositor; review-only |
+| `artifacts/original/phase-0-3d-repair-v2/source/finalize_review_bundle.py` | 8,232 | `499d407bc533bd7b7e546c9ac507fad06b091f39ca547dea7ea49408fdd11488` | Original review-bundle finalizer; review-only |
+| `artifacts/original/phase-0-3d-repair-v2/source/refresh_package_manifests.py` | 3,506 | `6ba2e110d4adddb021bac1696e4e745df6143bbf9268be789ce207a30810cb82` | Original manifest refresh source; review-only |
+| `artifacts/original/phase-0-3d-repair-v2/source/render_blockouts.py` | 3,235 | `8aeaa6024cb10a81ed4a41651c1a317164d3a721bc749b92fe9f7d815b8a6be3` | Original blockout render orchestration; review-only |
+| `artifacts/original/phase-0-3d-repair-v2/source/render_final_stills.py` | 9,994 | `6c5527d12fce68d98a6c6a7f694f90334b013e395a79fc69d9094e9d40fb7b9d` | Original still-render orchestration; review-only |
+| `artifacts/original/phase-0-3d-repair-v2/source/sanitize_png_metadata.py` | 5,295 | `320536a6fa8788c0dd7ae3d8d6872fd3c173e2cffcf0645102f64bd146c80252` | Original metadata sanitizer; review-only |
+| `artifacts/original/phase-0-3d-repair-v2/source/scene_config.py` | 2,241 | `6099d3c7db949e92d5c69de6447e0c060b4fb6e2454e44928f287ce984622da0` | Original scene configuration; review-only |
+| `artifacts/original/phase-0-3d-repair-v2/source/validate_final_scene.py` | 10,809 | `d3a5be6815b18d39a186f54d56a59050d8597f93e5dd655ec2c751f5d7933f00` | Original Blender integrity validator; review-only |
+| `artifacts/original/phase-0-3d-repair-v2/work/.gitignore` | 14 | `240a3e0d37d2e86b614063f5347eb02d4f99ca6c254de6b82871ff8d95532a7d` | Work-directory exclusion control; not an asset |
+
+### Phase 0.2 browser evidence lineage
+
+The non-production evidence tree at `artifacts/evidence/phase-0-3d-repair-v2/` contains 74 files and 9,720,419 bytes: 36 raw browser JPEGs, 36 viewport-exact normalized PNGs, one matrix report and one Markdown audit. The 72 capture binaries total 8,856,651 bytes and are governed member-by-member by the matrix report. They are Class R implementation evidence, not launch assets.
+
+| Evidence authority | Records | Bytes | SHA-256 | Classification and approval |
+| --- | ---: | ---: | --- | --- |
+| `artifacts/evidence/phase-0-3d-repair-v2/browser-matrix-report.json` | 46 cases; 36 capture lineages | 850,178 | `0e0cdf7e578eb24514146ba3826a1ded4191de740b54ce050ada82a676f71905` | Original browser layout, collision, scene-safety and capture-lineage evidence; PASS; review-only |
+| `artifacts/evidence/phase-0-3d-repair-v2/TYPOGRAPHY_COLLISION_QA.md` | 1 | 13,590 | `18cf5aee008e91371b0d5db66b836760b0263c487e5959fa1662a54d9a1ee164` | Original human-readable QA record; review-only |
 
 ## Original Phase 0 implementation evidence
 

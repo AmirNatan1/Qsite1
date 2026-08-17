@@ -8,3 +8,6 @@ __pycache__/
 *.blend1
 artifacts/original/phase-0-3d-repair/work/*
 !artifacts/original/phase-0-3d-repair/work/.gitignore
+/artifacts/original/phase-0-3d-repair.zip
+artifacts/original/phase-0-3d-repair-v2/work/*
+!artifacts/original/phase-0-3d-repair-v2/work/.gitignore

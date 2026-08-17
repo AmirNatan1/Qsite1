@@ -1,0 +1,88 @@
+{
+  "schema": "quantum-hub.phase-0-3d-repair-v2.final-still-renders.v1",
+  "generated_at_utc": "2026-08-17T21:27:27.077922+00:00",
+  "source": "source/field-unit-v2-integrated-aperture-chassis.blend",
+  "source_sha256": "ebb41dd813c36639660f26b5ac444eec39d62e7658019db7a76808899c1fe9e4",
+  "portal_layout_sha256": "25666cf071afe7564dc051cbec770ead325cdf19ef1f4926e43d793a2a053bc5",
+  "blender_version": "5.2.0 LTS",
+  "blender_build_hash": "fbe6228777e7",
+  "engine": "BLENDER_EEVEE",
+  "samples": 48,
+  "render_scale": 1.0,
+  "still_only": true,
+  "full_animatic": false,
+  "camera_study_arc_degrees": 27,
+  "mechanical_response_count": 1,
+  "original_artwork": true,
+  "reference_binary_used": false,
+  "renders": [
+    {
+      "group": "diagnostics",
+      "name": "dormant",
+      "path": "renders/diagnostics/dormant.png",
+      "camera": "Camera_Hero",
+      "state": {
+        "conduction": 0.0,
+        "connector": 0.0,
+        "mechanical": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 1280,
+      "height": 800,
+      "bytes": 664046,
+      "sha256": "3c1ac446fbd5a988478f539746b40f0b479c083e2695de8162700f97eb679ca7"
+    },
+    {
+      "group": "diagnostics",
+      "name": "mid-conduction",
+      "path": "renders/diagnostics/mid-conduction.png",
+      "camera": "Camera_Arc_02",
+      "state": {
+        "conduction": 0.56,
+        "connector": 0.0,
+        "mechanical": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 1280,
+      "height": 800,
+      "bytes": 693396,
+      "sha256": "115916d1e81489e7aeadd114d0ad7c306aba9630cc07cb31556799eabeb2f359"
+    },
+    {
+      "group": "diagnostics",
+      "name": "activation",
+      "path": "renders/diagnostics/activation.png",
+      "camera": "Camera_ActivationClose",
+      "state": {
+        "conduction": 1.0,
+        "connector": 1.0,
+        "mechanical": 1.0,
+        "screen": 1.0,
+        "portal": 0.0
+      },
+      "width": 1280,
+      "height": 800,
+      "bytes": 717376,
+      "sha256": "92de186b7c989873e6913e2d6123b129b530e2d2622c25899b3403667bb99681"
+    },
+    {
+      "group": "diagnostics",
+      "name": "portal-physical-base",
+      "path": "renders/diagnostics/portal-physical-base.png",
+      "camera": "Camera_PortalPhysical",
+      "state": {
+        "conduction": 1.0,
+        "connector": 1.0,
+        "mechanical": 1.0,
+        "screen": 1.0,
+        "portal": 0.0
+      },
+      "width": 1280,
+      "height": 800,
+      "bytes": 856826,
+      "sha256": "ff808fe6ffed36ecd359fe7ced1cfc175fada998ccf4f5d9a81c591ea619a890"
+    }
+  ]
+}

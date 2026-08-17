@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta
+      name="description"
+      content="Non-public Phase 0.2 typography, collision and portal-layout review compositor."
+    />
+    <title>Phase 0.2 · Portal and typography QA</title>
+    <link rel="stylesheet" href="./styles.css?v=phase02-layout-v12" />
+    <script src="./app.js?v=phase02-layout-v12" type="module"></script>
+  </head>
+  <body data-ready="false" data-surface="hero" data-fixture="actual" data-text-zoom="100" data-reduced="false">
+    <a class="skip-link" href="#review-surface">Skip to review surface</a>
+
+    <aside class="qa-toolbar" aria-label="Non-production review controls">
+      <p><strong>Phase 0.2 review</strong><span>Not a public route</span></p>
+      <label>
+        Surface
+        <select id="surface-control">
+          <option value="hero">Hero composition</option>
+          <option value="portal">Portal DOM contract</option>
+        </select>
+      </label>
+      <label>
+        Copy
+        <select id="fixture-control">
+          <option value="actual">Actual copy</option>
+          <option value="long">25% longer fixture</option>
+        </select>
+      </label>
+      <label>
+        Text size
+        <select id="zoom-control">
+          <option value="100">100%</option>
+          <option value="200">200%</option>
+        </select>
+      </label>
+      <label class="checkbox-label">
+        <input id="motion-control" type="checkbox" />
+        Reduced motion
+      </label>
+      <button id="focus-check" type="button">Check focus</button>
+      <output id="qa-status" role="status" aria-live="polite">Loading shared contract…</output>
+    </aside>
+
+    <main id="review-surface" class="review-surface" tabindex="-1">
+      <div class="scene-crop" aria-hidden="true">
+        <img
+          id="scene-image"
+          class="scene-image"
+          src="/artifacts/original/phase-0-3d-repair-v2/renders/hero/desktop-dormant-base.png"
+          alt=""
+          width="1920"
+          height="1200"
+          decoding="sync"
+        />
+        <div class="scene-grade"></div>
+      </div>
+
+      <section id="hero-compositor" class="hero-compositor" aria-labelledby="hero-heading">
+        <header class="hero-nav layout-block" data-collision="hero-nav">
+          <span class="brand">Quantum-Hub</span>
+          <span class="review-boundary">Phase 0.2 composition study</span>
+        </header>
+
+        <div class="hero-copy">
+          <p id="hero-eyebrow" class="eyebrow layout-block" data-collision="hero-eyebrow"></p>
+          <h1 id="hero-heading" class="hero-heading layout-block" data-collision="hero-heading"></h1>
+          <p id="hero-supporting" class="hero-supporting layout-block" data-collision="hero-supporting"></p>
+          <div class="audience-actions layout-block" data-collision="hero-audiences" aria-label="Audience paths">
+            <button id="hero-industry" type="button"></button>
+            <button id="hero-startups" type="button"></button>
+          </div>
+        </div>
+      </section>
+
+      <section id="portal-compositor" class="portal-compositor" aria-labelledby="portal-heading" hidden>
+        <div id="portal-contract-layer" class="portal-contract-layer">
+          <header class="portal-nav layout-block contract-position" data-region="navigation" data-collision="portal-nav">
+            <span id="portal-brand" class="brand"></span>
+            <span class="review-boundary">semantic operating surface</span>
+          </header>
+
+          <p id="portal-signal" class="portal-signal layout-block contract-position" data-region="signalLine" data-collision="portal-signal"></p>
+          <p id="portal-eyebrow" class="eyebrow portal-eyebrow layout-block contract-position" data-region="eyebrow" data-collision="portal-eyebrow"></p>
+          <h1 id="portal-heading" class="portal-heading layout-block contract-position" data-region="heading" data-collision="portal-heading"></h1>
+          <ol id="portal-route" class="portal-route layout-block contract-position" data-region="route" data-collision="portal-route"></ol>
+          <div class="portal-audience layout-block contract-position" data-region="audience" data-collision="portal-audience" aria-label="Audience paths">
+            <button id="portal-industry" type="button"></button>
+            <span class="audience-divider" aria-hidden="true"></span>
+            <button id="portal-startups" type="button"></button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <pre id="phase02-report" hidden aria-hidden="true">{}</pre>
+    <template id="line-template"><span class="heading-line"></span></template>
+  </body>
+</html>

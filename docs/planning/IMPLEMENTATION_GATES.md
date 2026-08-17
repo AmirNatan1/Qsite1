@@ -4,7 +4,7 @@ Status: binding delivery and human-review contract
 Current authorization: Phase 0 only
 Current branch: `planning/phase-0-reconciliation`
 Production branch: `main` (must not change during Phase 0)
-Current evidence state: local 3D creative package complete and automated integrity gate passing; immutable pushed candidate, Cloudflare verification, clean-tree handoff, and human creative review pending
+Current evidence state: keepout-aware Phase 0.2 v12 browser matrix and exact 12-image review bundle complete locally; all 36 normalized sources directly audited at full size; immutable pushed candidate, Cloudflare verification, clean-tree handoff, and human creative review pending
 
 ## Gate principle
 
@@ -20,6 +20,7 @@ The active Phase 0 authorization permits:
 - a non-production premium 2.5D review harness;
 - the authorized per-user portable Blender 5.2.0 LTS and FFmpeg/ffprobe 9.0.1 toolchain for offline Phase 0 production only;
 - an original Blender-authored Field Unit, proving environment, genuine-content animatic, encoded-media comparison, and compact creative-review package;
+- an additive still-only Phase 0.2 Field Unit design, shared portal-layout, responsive typography, and exact-viewport browser-evidence repair;
 - relevant tests, build, commit, push, and Cloudflare branch-preview verification.
 
 It does not permit:
@@ -27,6 +28,7 @@ It does not permit:
 - Phase 1 semantic route implementation;
 - the full homepage or supporting-route architecture;
 - production cinematic integration;
+- a new Phase 0.2 animatic, video, or full-frame sequence;
 - a change, merge, or push to `main`;
 - Cloudflare setting, DNS, domain, project, or production-branch mutation;
 - a separate deployment provider, Sites host, Worker, or direct Wrangler production deployment;
@@ -262,6 +264,26 @@ Branch: `planning/phase-0-reconciliation`
 - [ ] No temporary Blender backup, Python bytecode/cache, rendered work-frame directory, tool binary, or third-party reference binary is staged.
 
 The exact hashes and quantitative results are read from the final manifests. Checked machine-verifiable items describe the settled local candidate; they do not imply an immutable pushed SHA, Cloudflare-preview verification, or human visual acceptance.
+
+### Phase 0.2 Field Unit, portal, and typography repair evidence — 18 August 2026
+
+- [x] The refreshed exact 12-PNG review bundle is present with no extra PNG in `review/`, and every record—including the three replacement browser-derived sheets—matches its governing manifest by dimensions, bytes, and SHA-256. Final authorities: browser-review `239f875a3b8dac7621dfbdc9d7a7f226fea191f22a76b6b56174f33f04c8c8a8`, review-originals `ddc1b9665765adb602348ad3df443fc209d4ceaf640837f3ff9d142d56811684`, review-bundle `c2414cf2a202f76d517f70b6a4b0800a36227da78fd5407a5d6689703ed7394b`, and PNG sanitation `74dc0b36c0e0ff339b983eea6a85cff4ffcf3ca86f5031108d2f4f763949a86d`.
+- [x] The editable integrated-aperture Blender source and generation/validation scripts are present; `blender-source-validation.json` (5,017 bytes; SHA-256 `6f11055580dd00bf25d1d1c508a5c9e3d62311638df555351c59ee1299fceda1`) binds the frozen `.blend` and validator hashes and passes the exact committed validator's 12/12 semantic checks.
+- [x] `portal-layout.json` is the single physical/semantic/overlay copy and coordinate authority; its SHA-256 is `25666cf071afe7564dc051cbec770ead325cdf19ef1f4926e43d793a2a053bc5`.
+- [x] The separate physical, DOM, and overlay sheet proves crossover alignment; every live DOM-owned portal state uses a text-free scene and produces no doubled headline or route copy.
+- [x] The authoritative v12 browser matrix (`0e0cdf7e578eb24514146ba3826a1ded4191de740b54ce050ada82a676f71905`) passes 46/46 exact-viewport and stress cases with 36/36 raw-plus-normalized capture pairs; every normalized source passes direct full-size visual inspection.
+- [x] All 23 hero cases and three reduced-portal cases project Field Unit and spiral-cable source-pixel bounds with zero intersections: 13 visible-scene hero cases retain non-empty in-frame keepouts, while ten zoom/long hero cases and three reduced-portal cases leave text unchanged and prove all 26 displaced keepouts are fully outside the clipped viewport.
+- [x] Each required visual case uses 11 successive in-app full-page JPEGs and saves only its exact-byte modal winner; the acceptance floor is 7/11 with no ties or weak final cases. One initial 6/11 batch was discarded and recaptured at 8/11, recorded as `discardedWeakCaptureAttempts: 1`; no timing-only stability claim is made. All 11 scaled wide winners have declared Lanczos lineage; all 25 scale-1 derivatives declare no resampling.
+- [x] The 320x800 200% hero and portal cases measure against the scrollbar-aware document viewport and have no horizontal scrollbar, hidden overflow, or nested horizontal scroller.
+- [x] Exact 16:10 portal anchors have 0 CSS-pixel maximum delta; non-reference aspect and stress states report anchors not applicable.
+- [x] Forced fallback-font QA, support-only 25%-longer hero fixture, focus, reduced motion, line-count, target-size, collision, responsive divider geometry, glyph/rule-clearance, raster glyph-ink/coverage, text-overflow, and doubled-copy checks all pass.
+- [x] Syne, Newsreader, and Inter are not falsely claimed as delivered; no font binary or remote font dependency is present.
+- [x] Byte-level privacy scans include PNG and `.blend`; no private path, prohibited public taxonomy, Blender backup, Python cache, video, frame sequence, third-party reference binary, oversized file, or unapproved runtime dependency is present.
+- [x] `scripts/verify-phase0-3d-repair-v2-assets.mjs` and `scripts/verify-phase0-3d-repair-v2-layout.mjs` pass against the final review bundle and v12 browser matrix; the capture normalizer also passes independently.
+- [x] The complete `npm run check` chain passes with Astro diagnostics 0/0/0, 13/13 Node tests, and all creative/layout integrity gates; `npm run build` produces one static route and 11 files totaling 9,333,433 bytes with no server runtime.
+- [ ] Human creative review accepts the Field Unit silhouette/materials, proving-ground composition, activation sequence, portal crossover, hero typography, responsive layouts, and reduced-motion stills.
+
+These checks do not authorize Phase 1, production cinematic integration, a production-branch change, or a production deployment.
 
 ### Phase 0 human gates
 

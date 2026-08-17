@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="description" content="Exact CSS-pixel iframe runner for non-public Phase 0.2 typography QA." />
+    <title>Phase 0.2 · Exact viewport runner</title>
+    <link rel="stylesheet" href="./runner.css?v=phase02-layout-v2" />
+    <script src="./runner.js?v=phase02-layout-v2" type="module"></script>
+  </head>
+  <body data-ready="false">
+    <div id="capture-viewport" class="capture-viewport">
+      <iframe id="qa-frame" title="Exact viewport typography QA surface"></iframe>
+    </div>
+    <output id="runner-status" role="status" aria-live="polite">Loading exact viewport…</output>
+    <pre id="phase02-runner-report" hidden aria-hidden="true">{}</pre>
+  </body>
+</html>

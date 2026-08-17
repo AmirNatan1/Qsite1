@@ -1,6 +1,6 @@
 # Quantum-Hub cinematic website: Human Review Package
 
-Status: Phase 0 3D creative repair evidence complete locally; pushed candidate and human creative review pending; prior candidate preserved as historical evidence
+Status: keepout-aware Phase 0.2 v12 matrix and exact 12-image review bundle complete locally; all 36 normalized browser sources directly audited at full size; human review pending; Phase 1 locked
 Plan accepted: 17 August 2026
 Implementation branch: `planning/phase-0-reconciliation`
 Production branch: `main` (protected from Phase 0 work)
@@ -31,6 +31,8 @@ The following companion records are normative:
 - [Toolchain and encoded-media audit](../../artifacts/evidence/phase-0/TOOLCHAIN_AND_MEDIA_AUDIT.md)
 - [Authorized portable 3D-repair toolchain](../../artifacts/evidence/phase-0/TOOLCHAIN_3D_REPAIR.md)
 - [Test and build report](../../artifacts/evidence/phase-0/TEST_AND_BUILD_REPORT.md)
+- [Typography and layout contract](./TYPOGRAPHY_AND_LAYOUT_CONTRACT.md)
+- [Phase 0.2 typography collision evidence](../../artifacts/evidence/phase-0-3d-repair-v2/TYPOGRAPHY_COLLISION_QA.md)
 
 ## Current Phase 0 3D creative repair addendum — 17 August 2026
 
@@ -74,6 +76,30 @@ The settled local evidence currently records:
 | Automated integrity gate | `scripts/verify-phase0-3d-repair.mjs` passes: 40 canonical renders, 11 review images, six real-content encodes, source/manifests, privacy, taxonomy, file-size, and dependency boundaries |
 
 These are local candidate facts, not a claim of human creative acceptance, an immutable pushed SHA, or a Cloudflare preview tied to that SHA. Those delivery facts remain pending until the branch is committed, pushed, and verified. The original browser-native 2.5D harness remains a shippable fallback and historical feasibility control; it is not a substitute for the current requested 3D-quality repair.
+
+## Current Phase 0.2 Field Unit, portal, and typography repair — 18 August 2026
+
+The additive Phase 0.2 repair preserves the accepted Spiral Conduction narrative and the earlier real-content media evidence while replacing the Field Unit design review, portal crossover, and responsive typography proof with a stricter still-only package. It does not create a new animatic, change the public Phase 0 root, add a public route, integrate cinematic production media, or authorize Phase 1.
+
+The original package lives under `artifacts/original/phase-0-3d-repair-v2/`; browser evidence lives under `artifacts/evidence/phase-0-3d-repair-v2/`. Its final manifest-backed state is:
+
+| Evidence | Current result |
+|---|---|
+| Editable Field Unit source | `source/field-unit-v2-integrated-aperture-chassis.blend`; 306,735 bytes; SHA-256 `ebb41dd813c36639660f26b5ac444eec39d62e7658019db7a76808899c1fe9e4` |
+| Blender semantic validation | `blender-source-validation.json`; 5,017 bytes; SHA-256 `6f11055580dd00bf25d1d1c508a5c9e3d62311638df555351c59ee1299fceda1`; schema `quantum-hub.phase-0-3d-repair-v2.blender-source-validation.v1`; exact committed validator rerun passes 12/12 checks |
+| Shared portal authority | `portal-layout.json`; SHA-256 `25666cf071afe7564dc051cbec770ead325cdf19ef1f4926e43d793a2a053bc5`; physical, semantic, and overlay consumers share the same coordinates and copy |
+| Portal live-DOM rule | Every live DOM-owned portal state uses the text-free physical glass base; the text-bearing physical/DOM/overlay comparison remains separate crossover evidence |
+| Exact review bundle | 12/12 required PNGs present with no extra review PNG; `review-bundle-manifest.json` SHA-256 `c2414cf2a202f76d517f70b6a4b0800a36227da78fd5407a5d6689703ed7394b`; `review-originals-manifest.json` SHA-256 `ddc1b9665765adb602348ad3df443fc209d4ceaf640837f3ff9d142d56811684` |
+| Responsive browser matrix | Final matrix generated `2026-08-17T23:12:38.906Z`; SHA-256 `0e0cdf7e578eb24514146ba3826a1ded4191de740b54ce050ada82a676f71905`; 850,178 bytes; 46/46 cases and 36/36 capture lineages pass |
+| Evidence stabilization and normalization | Every visual case uses 11 successive full-page JPEGs and saves the exact-byte modal winner; minimum accepted winner is 7/11 with no ties and zero weak final cases. One 6/11 batch was rejected and replaced by a valid 8/11 recapture (`discardedWeakCaptureAttempts: 1`); timing alone is not claimed to stabilize the compositor. Eleven outer-frame-scaled captures use declared Lanczos restoration; 25 scale-1 captures use no resampling; inner iframe layouts remain exact |
+| Typography, scene safety, and overflow | All 36 normalized sources directly inspected at full size; 26/26 applicable keepout cases pass with zero intersections: 13 visible-scene hero cases, ten displaced zoom/long hero cases, and three displaced reduced-portal cases. All 26 keepouts in the 13 displaced states are outside the viewport; support-only long ratio 148/118 = 1.254; zero overflow, text-offender, divider, glyph-coverage, focus, rule, reduced-motion or doubled-copy failures |
+| Exact portal alignment | Two exact 16:10 DOM anchor cases; maximum delta 0 CSS pixels; all other aspect/stress cases report anchors not applicable |
+| Browser-derived review lineage | `browser-review-composition-manifest.json` SHA-256 `239f875a3b8dac7621dfbdc9d7a7f226fea191f22a76b6b56174f33f04c8c8a8`; desktop sheet `607c70799f82cd8948ba3c458349330b6024a012245385672ec257d83207000a`; mobile sheet `425d759edb48eed7f40c506cbbefbba0fa895f76043e7e1e1308361806d200f6`; zoom/fallback sheet `6ba57fc5fc2078996bf15100285f53455f196fcdfd0544c5287bd91283b83e7f` |
+| PNG sanitation | `png-metadata-sanitization.json` SHA-256 `74dc0b36c0e0ff339b983eea6a85cff4ffcf3ca86f5031108d2f4f763949a86d`; every package PNG is accounted for with decoded pixels preserved and no private marker hit |
+| Automated repository gates | Capture normalizer, layout verifier, and v2 asset/privacy verifier pass against the final matrix and review manifests |
+| Complete check and static build | `npm run check` passes with Astro diagnostics 0 errors/0 warnings/0 hints, 13/13 Node tests, and every creative/layout verifier; `npm run build` produces one static route and 11 output files totaling 9,333,433 bytes, with no server runtime |
+
+No preferred font binary is delivered. No video, frame sequence, Blender backup, Python cache, private path, third-party reference binary, or unapproved application runtime dependency is present in the v2 package. Automated success remains evidence rather than creative acceptance.
 
 Phase 1 remains locked.
 

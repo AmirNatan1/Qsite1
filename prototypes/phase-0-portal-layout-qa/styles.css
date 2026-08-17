@@ -1,0 +1,1074 @@
+:root {
+  color-scheme: dark;
+  --page: #0e1112;
+  --page-raised: #1a2020;
+  --wine: #14090f;
+  --heading: #ffffff;
+  --body: #c2cbcb;
+  --muted: #8a9797;
+  --magenta: #f06ba0;
+  --magenta-deep: #d82b72;
+  --line: rgba(255, 255, 255, 0.18);
+  --surface: rgba(14, 17, 18, 0.88);
+  --display-fallback: "Arial Black", Arial, sans-serif;
+  --editorial-fallback: Georgia, "Times New Roman", serif;
+  --ui-fallback: Arial, Helvetica, sans-serif;
+  --text-zoom: 1;
+  font-family: var(--ui-fallback);
+  background: var(--page);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html {
+  min-width: 0;
+  width: 100%;
+  background: var(--page);
+}
+
+body {
+  min-width: 0;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  color: var(--body);
+  background: var(--page);
+}
+
+body[data-ready="false"] .review-surface {
+  visibility: hidden;
+}
+
+body[data-text-zoom="200"] {
+  --text-zoom: 2;
+}
+
+button,
+select,
+input {
+  font: inherit;
+}
+
+button,
+select {
+  min-height: 44px;
+}
+
+button {
+  color: var(--heading);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+}
+
+button:focus-visible,
+button:focus,
+select:focus-visible,
+input:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--magenta);
+  outline-offset: 4px;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 40;
+  top: 10px;
+  left: 10px;
+  padding: 0.7rem 1rem;
+  color: var(--page);
+  background: var(--heading);
+  transform: translateY(-180%);
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+.qa-toolbar {
+  position: fixed;
+  z-index: 30;
+  right: 12px;
+  bottom: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(132px, 1fr));
+  gap: 10px;
+  width: min(420px, calc(100vw - 24px));
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 18px;
+  background: rgba(14, 17, 18, 0.94);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(10px);
+  font-size: 0.78rem;
+}
+
+body[data-capture-chrome="false"] .qa-toolbar,
+body[data-capture-chrome="false"] .skip-link {
+  display: none;
+}
+
+.qa-toolbar p {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0;
+  color: var(--heading);
+}
+
+.qa-toolbar p span {
+  color: var(--muted);
+}
+
+.qa-toolbar label {
+  display: grid;
+  gap: 4px;
+  color: var(--muted);
+}
+
+.qa-toolbar select {
+  width: 100%;
+  padding: 0 0.7rem;
+  color: var(--heading);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  background: var(--page-raised);
+}
+
+.qa-toolbar .checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 44px;
+  color: var(--body);
+}
+
+.qa-toolbar input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--magenta-deep);
+}
+
+.qa-toolbar button {
+  padding: 0 1rem;
+}
+
+.qa-toolbar output {
+  grid-column: 1 / -1;
+  color: var(--muted);
+}
+
+.review-surface {
+  position: relative;
+  isolation: isolate;
+  min-height: 100svh;
+  background: linear-gradient(145deg, var(--page), var(--page-raised) 58%, var(--wine));
+}
+
+.scene-crop {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.scene-image,
+.scene-grade {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.scene-image {
+  object-fit: cover;
+  object-position: 50% 48%;
+  filter: saturate(0.82) contrast(1.04) brightness(0.7);
+}
+
+.scene-grade {
+  background:
+    linear-gradient(90deg, rgba(8, 11, 12, 0.74) 0%, rgba(8, 11, 12, 0.5) 48%, rgba(8, 11, 12, 0.12) 76%),
+    linear-gradient(180deg, rgba(8, 11, 12, 0.42), transparent 34%, rgba(8, 11, 12, 0.68));
+}
+
+.hero-compositor,
+.portal-compositor {
+  min-height: 100svh;
+}
+
+.hero-compositor {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2rem, 8vh, 6rem);
+  padding: clamp(24px, 5vw, 72px) clamp(20px, 6.25vw, 120px) clamp(32px, 6vw, 84px);
+}
+
+.hero-nav,
+.portal-nav {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2rem;
+  min-width: 0;
+}
+
+.brand {
+  min-width: 0;
+  color: var(--heading);
+  font-family: var(--display-fallback);
+  font-size: calc(clamp(1.15rem, 1.7vw, 1.7rem) * var(--text-zoom));
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  overflow-wrap: anywhere;
+}
+
+.review-boundary {
+  min-width: 0;
+  color: var(--muted);
+  font-size: calc(clamp(0.7rem, 0.9vw, 0.9rem) * var(--text-zoom));
+  letter-spacing: 0.08em;
+  text-align: right;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.hero-copy {
+  display: grid;
+  grid-template-columns: minmax(0, 2.15fr) minmax(250px, 0.85fr);
+  grid-template-areas:
+    "eyebrow eyebrow"
+    "heading supporting"
+    "audiences supporting";
+  align-items: end;
+  gap: clamp(1rem, 3vw, 3rem) clamp(2rem, 5vw, 6rem);
+  width: min(100%, 1680px);
+  margin-top: auto;
+  margin-bottom: clamp(1rem, 5vh, 4.5rem);
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--magenta);
+  font-size: calc(clamp(0.78rem, 1vw, 1rem) * var(--text-zoom));
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+.hero-copy > .eyebrow {
+  grid-area: eyebrow;
+}
+
+.hero-heading,
+.portal-heading {
+  margin: 0;
+  color: var(--heading);
+  font-family: var(--display-fallback);
+  font-weight: 800;
+  letter-spacing: -0.055em;
+  text-wrap: balance;
+}
+
+.hero-heading {
+  grid-area: heading;
+  max-width: 12ch;
+  font-size: calc(clamp(3rem, 7vw, 7.2rem) * var(--text-zoom));
+  line-height: 0.92;
+}
+
+.heading-line {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow-wrap: anywhere;
+}
+
+body[data-text-zoom="200"] .heading-line,
+body[data-fixture="long"] .heading-line {
+  white-space: normal;
+}
+
+.hero-supporting {
+  grid-area: supporting;
+  align-self: end;
+  max-width: 36ch;
+  margin: 0;
+  color: var(--body);
+  font-family: var(--editorial-fallback);
+  font-size: calc(clamp(1.05rem, 1.55vw, 1.45rem) * var(--text-zoom));
+  line-height: 1.48;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.audience-actions {
+  grid-area: audiences;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.audience-actions button,
+.portal-audience button {
+  min-width: min(100%, 210px);
+  min-height: 48px;
+  padding: 0.8rem 1.15rem;
+  font-size: calc(1rem * var(--text-zoom));
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.portal-compositor {
+  position: relative;
+}
+
+.portal-contract-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  min-width: 0;
+  width: 1920px;
+  height: 1200px;
+  transform-origin: 0 0;
+}
+
+.contract-position {
+  position: absolute;
+  min-width: 0;
+}
+
+.portal-nav {
+  align-items: center;
+}
+
+.portal-nav .brand {
+  font-size: 27px;
+}
+
+.portal-nav .review-boundary {
+  font-size: 14px;
+}
+
+.portal-signal,
+.portal-eyebrow {
+  margin: 0;
+}
+
+.portal-signal {
+  color: var(--magenta);
+  font-family: var(--ui-fallback);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  line-height: 28px;
+  text-transform: uppercase;
+}
+
+.portal-eyebrow {
+  font-size: 20px;
+  line-height: 28px;
+}
+
+.portal-heading {
+  font-size: 86px;
+  line-height: 96px;
+  white-space: nowrap;
+}
+
+.portal-route {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 28px;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  color: var(--body);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 32px;
+  list-style: none;
+  text-transform: uppercase;
+}
+
+.portal-route li {
+  min-width: 0;
+}
+
+.portal-route li::before {
+  content: counter(list-item, decimal-leading-zero);
+  display: block;
+  margin-bottom: 5px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.portal-audience {
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  gap: 119px;
+  align-items: center;
+}
+
+.portal-audience button {
+  width: 310px;
+  min-height: 84px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font-family: var(--editorial-fallback);
+  font-size: 28px;
+  line-height: 38px;
+}
+
+.audience-divider {
+  width: 1px;
+  height: 114px;
+  background: var(--line);
+}
+
+body[data-text-zoom="200"] .hero-compositor {
+  gap: 2rem;
+}
+
+body[data-text-zoom="200"] .brand,
+body[data-text-zoom="200"] .review-boundary,
+body[data-text-zoom="200"] .hero-supporting,
+body[data-text-zoom="200"] .audience-actions button,
+body[data-text-zoom="200"] .portal-signal,
+body[data-text-zoom="200"] .portal-eyebrow,
+body[data-text-zoom="200"] .portal-route li,
+body[data-text-zoom="200"] .portal-audience button {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+body[data-text-zoom="200"] .hero-copy {
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "eyebrow"
+    "heading"
+    "supporting"
+    "audiences";
+  align-items: start;
+  margin-top: 1rem;
+}
+
+body[data-text-zoom="200"] .hero-supporting {
+  max-width: 48ch;
+}
+
+body[data-text-zoom="200"] .portal-compositor {
+  display: flex;
+  align-items: flex-start;
+  padding: clamp(32px, 6vw, 96px);
+}
+
+body[data-text-zoom="200"] .portal-contract-layer {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(1.5rem, 4vw, 3rem);
+  width: 100%;
+  height: auto;
+  transform: none !important;
+}
+
+body[data-text-zoom="200"] .portal-contract-layer .contract-position {
+  position: static;
+  width: auto !important;
+  height: auto !important;
+}
+
+body[data-text-zoom="200"] .portal-heading {
+  font-size: calc(clamp(3.2rem, 8vw, 6rem) * var(--text-zoom));
+  line-height: 0.96;
+  white-space: normal;
+}
+
+body[data-text-zoom="200"] .portal-route {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  font-size: calc(1rem * var(--text-zoom));
+}
+
+body[data-text-zoom="200"] .portal-audience {
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+body[data-text-zoom="200"] .portal-audience .audience-divider {
+  width: 100%;
+  height: 1px !important;
+}
+
+body[data-text-zoom="200"] .portal-audience button {
+  width: 100%;
+  min-width: 0;
+}
+
+body[data-text-zoom="200"] .review-surface,
+body[data-text-zoom="200"] .hero-compositor,
+body[data-text-zoom="200"] .portal-compositor {
+  min-height: max(100svh, 1050px);
+}
+
+:where(body[data-portal-projection="responsive"]) .portal-compositor {
+  display: flex;
+  align-items: center;
+  padding: clamp(32px, 7vw, 72px);
+}
+
+:where(body[data-portal-projection="responsive"]) .portal-contract-layer {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(1.2rem, 4vw, 2.5rem);
+  width: 100%;
+  height: auto;
+  transform: none !important;
+}
+
+:where(body[data-portal-projection="responsive"]) .portal-contract-layer .contract-position {
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+:where(body[data-portal-projection="responsive"]) .portal-nav { order: 0; }
+:where(body[data-portal-projection="responsive"]) .portal-signal { order: 1; }
+:where(body[data-portal-projection="responsive"]) .portal-eyebrow { order: 2; }
+:where(body[data-portal-projection="responsive"]) .portal-heading { order: 3; }
+:where(body[data-portal-projection="responsive"]) .portal-route { order: 4; }
+:where(body[data-portal-projection="responsive"]) .portal-audience { order: 5; }
+
+:where(body[data-portal-projection="responsive"]) .portal-signal,
+:where(body[data-portal-projection="responsive"]) .portal-eyebrow {
+  font-size: clamp(0.76rem, 1.8vw, 1rem);
+  line-height: 1.35;
+}
+
+:where(body[data-portal-projection="responsive"]) .portal-heading {
+  font-size: clamp(3.2rem, 9vw, 5.4rem);
+  line-height: 0.95;
+  white-space: normal;
+}
+
+:where(body[data-portal-projection="responsive"]) .portal-route {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  padding-bottom: 8px;
+  font-size: clamp(0.72rem, 1.6vw, 0.95rem);
+  line-height: 1.3;
+}
+
+:where(body[data-portal-projection="responsive"]) .portal-audience {
+  grid-template-columns: 1fr 1px 1fr;
+  gap: clamp(1.2rem, 5vw, 4rem);
+}
+
+:where(body[data-portal-projection="responsive"]) .portal-audience button {
+  width: auto;
+  min-width: 0;
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  line-height: 1.25;
+}
+
+body[data-reduced="true"] *,
+body[data-reduced="true"] *::before,
+body[data-reduced="true"] *::after {
+  scroll-behavior: auto !important;
+  animation: none !important;
+  transition: none !important;
+}
+
+@media (max-width: 1023px) {
+  .hero-compositor {
+    gap: clamp(2rem, 7vh, 5rem);
+  }
+
+  .hero-copy {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "eyebrow"
+      "heading"
+      "supporting"
+      "audiences";
+    align-items: start;
+    margin-top: auto;
+  }
+
+  .hero-heading {
+    max-width: 13ch;
+    font-size: calc(clamp(3rem, 9vw, 5.5rem) * var(--text-zoom));
+  }
+
+  .hero-supporting {
+    max-width: 48ch;
+  }
+
+  .portal-compositor {
+    display: flex;
+    align-items: center;
+    padding: clamp(32px, 7vw, 72px);
+  }
+
+  .portal-contract-layer,
+  body[data-text-zoom="200"] .portal-contract-layer {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(1.2rem, 4vw, 2.5rem);
+    width: 100%;
+    height: auto;
+    transform: none !important;
+  }
+
+  .contract-position {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+  }
+
+  .portal-nav {
+    order: 0;
+  }
+
+  .portal-signal {
+    order: 1;
+    font-size: calc(clamp(0.76rem, 1.8vw, 1rem) * var(--text-zoom));
+    line-height: 1.35;
+  }
+
+  .portal-eyebrow {
+    order: 2;
+    font-size: calc(clamp(0.76rem, 1.8vw, 1rem) * var(--text-zoom));
+    line-height: 1.35;
+  }
+
+  .portal-heading {
+    order: 3;
+    font-size: calc(clamp(3.2rem, 9vw, 5.4rem) * var(--text-zoom));
+    line-height: 0.95;
+    white-space: normal;
+  }
+
+  .portal-route {
+    order: 4;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+    padding-bottom: 8px;
+    font-size: calc(clamp(0.72rem, 1.6vw, 0.95rem) * var(--text-zoom));
+    line-height: 1.3;
+  }
+
+  .portal-audience {
+    order: 5;
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    gap: clamp(1.2rem, 5vw, 4rem);
+  }
+
+  .portal-audience button {
+    width: auto;
+    min-width: 0;
+    font-size: calc(clamp(1.25rem, 3vw, 1.75rem) * var(--text-zoom));
+    line-height: 1.25;
+  }
+}
+
+@media (max-width: 599px) {
+  .qa-toolbar {
+    grid-template-columns: 1fr;
+    max-height: calc(100vh - 24px);
+    overflow: auto;
+  }
+
+  .hero-compositor,
+  .portal-compositor {
+    padding: 24px 20px 32px;
+  }
+
+  .hero-compositor {
+    gap: clamp(1.5rem, 6vh, 3.5rem);
+  }
+
+  .hero-nav,
+  .portal-nav {
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  body[data-text-zoom="200"] .hero-nav,
+  body[data-text-zoom="200"] .portal-nav {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+  }
+
+  body[data-text-zoom="200"] .review-boundary {
+    max-width: none;
+    text-align: left;
+  }
+
+  .review-boundary {
+    max-width: 15ch;
+  }
+
+  .hero-copy {
+    gap: 1.1rem;
+    margin-bottom: 0;
+  }
+
+  .hero-heading {
+    max-width: none;
+    font-size: calc(clamp(2.4rem, 11vw, 3.35rem) * var(--text-zoom));
+    line-height: 0.94;
+  }
+
+  .hero-supporting {
+    font-size: calc(clamp(1rem, 4.8vw, 1.25rem) * var(--text-zoom));
+  }
+
+  .audience-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .audience-actions button {
+    width: 100%;
+  }
+
+  .portal-compositor {
+    align-items: flex-start;
+  }
+
+  .portal-nav {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.35rem;
+    align-items: start;
+  }
+
+  .portal-nav .review-boundary {
+    max-width: none;
+    text-align: left;
+  }
+
+  .portal-contract-layer {
+    gap: 1.15rem;
+  }
+
+  .portal-heading {
+    min-width: 0;
+    font-size: calc(clamp(2.15rem, 10vw, 2.75rem) * var(--text-zoom));
+  }
+
+  .portal-route {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .portal-audience {
+    min-width: 0;
+    width: 100%;
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+  }
+
+  .portal-audience .audience-divider {
+    width: 100%;
+    height: 1px !important;
+  }
+
+  .portal-audience button {
+    width: 100%;
+    max-width: 100%;
+    min-height: 52px;
+    padding-inline: 0;
+  }
+}
+
+@media (orientation: landscape) and (min-width: 600px) and (max-height: 700px) {
+  :where(body[data-portal-projection="responsive"]) .portal-compositor {
+    align-items: center;
+    padding: 16px 32px 22px;
+  }
+
+  :where(body[data-portal-projection="responsive"]) .portal-contract-layer {
+    grid-template-columns: minmax(0, 1.4fr) minmax(240px, 0.7fr);
+    grid-template-areas:
+      "nav nav"
+      "signal route"
+      "eyebrow route"
+      "heading audience";
+    gap: 6px 32px;
+  }
+
+  :where(body[data-portal-projection="responsive"]) .portal-nav { grid-area: nav; }
+  :where(body[data-portal-projection="responsive"]) .portal-signal { grid-area: signal; }
+  :where(body[data-portal-projection="responsive"]) .portal-eyebrow { grid-area: eyebrow; }
+  :where(body[data-portal-projection="responsive"]) .portal-heading { grid-area: heading; }
+  :where(body[data-portal-projection="responsive"]) .portal-route {
+    grid-area: route;
+    grid-template-columns: 1fr 1fr;
+  }
+  :where(body[data-portal-projection="responsive"]) .portal-audience { grid-area: audience; }
+}
+
+@media (orientation: landscape) and (max-height: 450px) {
+  .hero-compositor,
+  .portal-compositor {
+    min-height: 100svh;
+    padding: 16px 32px 22px;
+  }
+
+  .hero-compositor {
+    gap: 12px;
+  }
+
+  .hero-copy {
+    grid-template-columns: minmax(0, 1.5fr) minmax(220px, 0.8fr);
+    grid-template-areas:
+      "eyebrow supporting"
+      "heading supporting"
+      "audiences supporting";
+    gap: 8px 32px;
+    margin: auto 0 0;
+  }
+
+  .hero-heading {
+    max-width: 14ch;
+    font-size: calc(2.6rem * var(--text-zoom));
+  }
+
+  .hero-supporting {
+    font-size: calc(0.92rem * var(--text-zoom));
+    line-height: 1.3;
+  }
+
+  .audience-actions {
+    display: flex;
+  }
+
+  .audience-actions button {
+    min-height: 44px;
+    padding-block: 0.45rem;
+  }
+
+  .portal-compositor {
+    align-items: center;
+  }
+
+  .portal-contract-layer {
+    grid-template-columns: minmax(0, 1.4fr) minmax(240px, 0.7fr);
+    grid-template-areas:
+      "nav nav"
+      "signal route"
+      "eyebrow route"
+      "heading audience";
+    gap: 6px 32px;
+  }
+
+  .portal-nav { grid-area: nav; }
+  .portal-signal { grid-area: signal; }
+  .portal-eyebrow { grid-area: eyebrow; }
+  .portal-heading { grid-area: heading; font-size: calc(2.8rem * var(--text-zoom)); }
+  .portal-route { grid-area: route; grid-template-columns: 1fr 1fr; }
+  .portal-audience { grid-area: audience; }
+
+  body[data-text-zoom="200"] .portal-contract-layer {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: none;
+  }
+
+  body[data-text-zoom="200"] .portal-nav,
+  body[data-text-zoom="200"] .portal-signal,
+  body[data-text-zoom="200"] .portal-eyebrow,
+  body[data-text-zoom="200"] .portal-heading,
+  body[data-text-zoom="200"] .portal-route,
+  body[data-text-zoom="200"] .portal-audience {
+    grid-area: auto;
+  }
+
+  /* The non-public longer portal labels need a content-driven column at the
+     short-landscape breakpoint. Keeping the two audience choices beside a
+     divider inside the narrow route column makes whole words fragment even
+     though the outer geometry remains in bounds. Give that column enough
+     intrinsic width, retain both paths in one readable row and keep their full
+     text size. The
+     iframe document remains the sole scroll root if content ever grows. */
+  body[data-surface="portal"][data-text-zoom="100"][data-hero-scene-layout="short-landscape"] .portal-contract-layer {
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 0.9fr);
+    column-gap: 20px;
+  }
+
+  body[data-surface="portal"][data-text-zoom="100"][data-hero-scene-layout="short-landscape"] .portal-audience {
+    grid-template-columns: minmax(0, 1fr) 1px minmax(0, 1fr);
+    align-self: start;
+    gap: 0.5rem;
+  }
+
+  body[data-surface="portal"][data-text-zoom="100"][data-hero-scene-layout="short-landscape"] .portal-audience .audience-divider {
+    width: 1px;
+    height: 100% !important;
+  }
+
+  body[data-surface="portal"][data-text-zoom="100"][data-hero-scene-layout="short-landscape"] .portal-audience button {
+    width: 100%;
+    min-width: 0;
+    padding-inline: 0;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+}
+
+/* The approved hero copy and frozen scene are geometrically separated. Scene
+   overflow is clipped only inside this decorative crop, never around text. The
+   mode comes from the measured inner iframe rather than outer-window media
+   features, so the evidence runner and a standalone browser resolve identically. */
+body[data-surface="hero"][data-fixture="actual"][data-text-zoom="100"] .hero-compositor {
+  gap: clamp(1rem, 3vh, 2rem);
+}
+
+body[data-surface="hero"][data-fixture="actual"][data-text-zoom="100"] .hero-copy {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "eyebrow"
+    "heading"
+    "supporting"
+    "audiences";
+  align-items: start;
+  gap: clamp(0.5rem, 1.2vh, 0.85rem);
+  width: min(38vw, 560px);
+  margin: 0;
+}
+
+body[data-surface="hero"][data-fixture="actual"][data-text-zoom="100"] .hero-heading {
+  max-width: 100%;
+  font-size: clamp(3rem, 5vw, 5.8rem);
+}
+
+body[data-surface="hero"][data-fixture="actual"][data-text-zoom="100"] .hero-supporting {
+  max-width: 34ch;
+  font-size: clamp(0.92rem, 1.15vw, 1.1rem);
+  line-height: 1.4;
+}
+
+body[data-surface="hero"][data-fixture="actual"][data-text-zoom="100"] .audience-actions {
+  width: 100%;
+}
+
+body[data-surface="hero"][data-fixture="actual"][data-text-zoom="100"] .audience-actions button {
+  flex: 1 1 140px;
+  min-width: 0;
+}
+
+body[data-surface="hero"][data-fixture="actual"][data-text-zoom="100"][data-hero-scene-layout="wide"] .scene-image {
+  object-fit: cover;
+  object-position: 50% 48%;
+  transform: translate(7%, 11%) scale(1.14);
+  transform-origin: 0 0;
+}
+
+body[data-surface="hero"][data-fixture="actual"][data-text-zoom="100"][data-hero-scene-layout="portrait"] .scene-image {
+  object-fit: contain;
+  object-position: 50% 100%;
+  transform: translateY(20%) scale(0.98);
+  transform-origin: 50% 100%;
+}
+
+body[data-surface="hero"][data-fixture="actual"][data-text-zoom="100"][data-hero-scene-layout="portrait"] .hero-compositor {
+  gap: 18px;
+}
+
+body[data-surface="hero"][data-fixture="actual"][data-text-zoom="100"][data-hero-scene-layout="portrait"] .hero-copy {
+  width: 100%;
+  gap: 8px;
+}
+
+body[data-surface="hero"][data-fixture="actual"][data-text-zoom="100"][data-hero-scene-layout="portrait"] .hero-heading {
+  font-size: clamp(2.25rem, 9vw, 3.8rem);
+}
+
+body[data-surface="hero"][data-fixture="actual"][data-text-zoom="100"][data-hero-scene-layout="portrait"] .hero-supporting {
+  max-width: 48ch;
+  font-size: clamp(0.9rem, 3.6vw, 1.08rem);
+  line-height: 1.35;
+}
+
+body[data-surface="hero"][data-fixture="actual"][data-text-zoom="100"][data-hero-scene-layout="portrait"] .audience-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+body[data-surface="hero"][data-fixture="actual"][data-text-zoom="100"][data-hero-scene-layout="short-landscape"] .scene-image {
+  object-fit: cover;
+  object-position: 50% 48%;
+  transform: translate(12%, 17%) scale(1.08);
+  transform-origin: 0 0;
+}
+
+body[data-surface="hero"][data-fixture="actual"][data-text-zoom="100"][data-hero-scene-layout="short-landscape"] .hero-compositor {
+  gap: 8px;
+}
+
+body[data-surface="hero"][data-fixture="actual"][data-text-zoom="100"][data-hero-scene-layout="short-landscape"] .hero-copy {
+  width: min(38vw, 340px);
+  gap: 6px;
+}
+
+body[data-surface="hero"][data-fixture="actual"][data-text-zoom="100"][data-hero-scene-layout="short-landscape"] .hero-heading {
+  font-size: 2.25rem;
+  line-height: 0.92;
+}
+
+body[data-surface="hero"][data-fixture="actual"][data-text-zoom="100"][data-hero-scene-layout="short-landscape"] .hero-supporting {
+  max-width: 38ch;
+  font-size: 0.78rem;
+  line-height: 1.25;
+}
+
+body[data-surface="hero"][data-fixture="actual"][data-text-zoom="100"][data-hero-scene-layout="short-landscape"] .audience-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+/* Enlarged-text and non-public long-copy states are layout stress evidence, not
+   an excuse to shrink text around decorative imagery. Move the complete scene
+   outside its isolated crop so every projected Field Unit/cable keepout is
+   outside the viewport while semantic content reflows naturally. */
+body[data-surface="hero"][data-text-zoom="200"] .scene-image,
+body[data-surface="hero"][data-fixture="long"] .scene-image {
+  transform: translateY(110%);
+  transform-origin: 0 0;
+}
+
+body[data-surface="portal"][data-reduced="true"] .scene-image {
+  transform: translateY(110%);
+  transform-origin: 0 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}

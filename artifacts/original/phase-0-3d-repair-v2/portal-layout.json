@@ -1,0 +1,295 @@
+{
+  "schema": "quantum-hub.phase-0-3d-repair-v2.portal-layout.v1",
+  "status": "authoritative shared source",
+  "scope": "Phase 0.2 non-production physical portal screen, semantic portal DOM and alignment overlay",
+  "coordinateSystem": {
+    "origin": "top-left",
+    "xDirection": "right",
+    "yDirection": "down",
+    "unit": "reference pixel",
+    "referenceViewport": {
+      "width": 1920,
+      "height": 1200,
+      "aspectRatio": "16:10"
+    },
+    "boxEncoding": "x, y, width, height",
+    "baselineEncoding": "x, y where y is the typographic baseline",
+    "lineEncoding": "x1, y1, x2, y2",
+    "projection": {
+      "strategy": "cover",
+      "scaleFormula": "max(targetWidth / 1920, targetHeight / 1200)",
+      "offsetFormula": "((targetWidth - 1920 * scale) / 2, (targetHeight - 1200 * scale) / 2)",
+      "rounding": "retain sub-pixel values; round only raster output"
+    }
+  },
+  "acceptance": {
+    "maximumAnchorDeltaPx": 3,
+    "glyphRuleClearancePx": 12,
+    "anchorMeasurement": "Compare projected physical-screen and semantic-DOM anchor centers in the same raster viewport.",
+    "ruleSafety": "The sole decorative divider must not intersect any glyph bound expanded by 12 reference pixels on every side.",
+    "humanReview": "Anchor and collision checks are necessary but do not replace visual typography review."
+  },
+  "surface": {
+    "composition": "editorial negative space",
+    "visualBoxAroundCopy": false,
+    "decorativeRuleCount": 1,
+    "rulePlacement": "audience region below the H1 only"
+  },
+  "safeMargins": {
+    "left": 120,
+    "right": 120,
+    "top": 72,
+    "bottom": 72,
+    "minimumCompactCssPx": 32,
+    "minimumMobileCssPx": 20
+  },
+  "copy": {
+    "brand": "Quantum-Hub",
+    "signalLine": "test route available",
+    "eyebrow": "industrial innovation · herzliya",
+    "heading": "WHERE DO YOU ENTER?",
+    "headingLinesReference": [
+      "WHERE DO YOU ENTER?"
+    ],
+    "headingLinesCompact": [
+      "WHERE DO YOU",
+      "ENTER?"
+    ],
+    "route": [
+      "Frame",
+      "Source",
+      "Assess",
+      "Test",
+      "Decide"
+    ],
+    "audiences": [
+      "For industry",
+      "For startups"
+    ]
+  },
+  "anchors": {
+    "navBaseline": {
+      "x": 120,
+      "y": 112
+    },
+    "signalLineBaseline": {
+      "x": 120,
+      "y": 234
+    },
+    "eyebrowBaseline": {
+      "x": 120,
+      "y": 302
+    },
+    "h1TopLeft": {
+      "x": 120,
+      "y": 338
+    },
+    "h1Line1Baseline": {
+      "x": 120,
+      "y": 420
+    },
+    "routeBaseline": {
+      "x": 120,
+      "y": 558
+    },
+    "audienceRegionTopLeft": {
+      "x": 120,
+      "y": 660
+    },
+    "audienceDividerTop": {
+      "x": 690,
+      "y": 690
+    },
+    "audienceDividerBottom": {
+      "x": 690,
+      "y": 804
+    },
+    "audienceIndustryBaseline": {
+      "x": 120,
+      "y": 760
+    },
+    "audienceStartupsBaseline": {
+      "x": 810,
+      "y": 760
+    }
+  },
+  "regions": {
+    "navigation": {
+      "x": 120,
+      "y": 72,
+      "width": 1680,
+      "height": 72
+    },
+    "signalLine": {
+      "x": 120,
+      "y": 208,
+      "width": 420,
+      "height": 34
+    },
+    "eyebrow": {
+      "x": 120,
+      "y": 278,
+      "width": 720,
+      "height": 32
+    },
+    "heading": {
+      "x": 120,
+      "y": 338,
+      "width": 1220,
+      "height": 104,
+      "lineCount": 1,
+      "lineBreaks": [
+        "WHERE DO YOU ENTER?"
+      ]
+    },
+    "route": {
+      "x": 120,
+      "y": 522,
+      "width": 980,
+      "height": 54,
+      "itemStarts": [
+        120,
+        300,
+        480,
+        660,
+        840
+      ]
+    },
+    "audience": {
+      "x": 120,
+      "y": 660,
+      "width": 1110,
+      "height": 164,
+      "dividerX": 690,
+      "dividerY1": 690,
+      "dividerY2": 804
+    },
+    "navigationRevealZone": {
+      "x": 1490,
+      "y": 72,
+      "width": 310,
+      "height": 72
+    },
+    "editorialNegativeSpace": {
+      "x": 1260,
+      "y": 184,
+      "width": 540,
+      "height": 720
+    }
+  },
+  "typography": {
+    "display": {
+      "preferred": "Syne",
+      "fallback": "Arial Black, Arial, sans-serif",
+      "referenceSizePx": 86,
+      "referenceLineHeightPx": 96,
+      "weight": 800,
+      "letterSpacingEm": -0.035
+    },
+    "editorial": {
+      "preferred": "Newsreader",
+      "fallback": "Georgia, Times New Roman, serif",
+      "referenceSizePx": 28,
+      "referenceLineHeightPx": 38,
+      "weight": 400
+    },
+    "ui": {
+      "preferred": "Inter",
+      "fallback": "Arial, Helvetica, sans-serif",
+      "referenceSizePx": 20,
+      "referenceLineHeightPx": 28,
+      "weight": 600
+    },
+    "fallbackPolicy": "No font binary is bundled. All collision and line-count gates must pass with the documented fallback stacks."
+  },
+  "glyphBounds": {
+    "brand": {
+      "x": 120,
+      "y": 84,
+      "width": 252,
+      "height": 34
+    },
+    "signalLine": {
+      "x": 120,
+      "y": 212,
+      "width": 310,
+      "height": 28
+    },
+    "eyebrow": {
+      "x": 120,
+      "y": 280,
+      "width": 520,
+      "height": 27
+    },
+    "h1Line1": {
+      "x": 120,
+      "y": 344,
+      "width": 1050,
+      "height": 86
+    },
+    "route": {
+      "x": 120,
+      "y": 534,
+      "width": 858,
+      "height": 32
+    },
+    "audienceIndustry": {
+      "x": 120,
+      "y": 724,
+      "width": 310,
+      "height": 44
+    },
+    "audienceStartups": {
+      "x": 810,
+      "y": 724,
+      "width": 310,
+      "height": 44
+    }
+  },
+  "decorativeRules": [
+    {
+      "id": "audience-divider",
+      "x1": 690,
+      "y1": 690,
+      "x2": 690,
+      "y2": 804,
+      "strokeWidth": 1
+    }
+  ],
+  "responsiveModes": {
+    "referenceAndWide": {
+      "minimumWidthPx": 1024,
+      "headingLineCount": 1,
+      "headingLines": [
+        "WHERE DO YOU ENTER?"
+      ],
+      "audienceLayout": "two-column"
+    },
+    "compact": {
+      "minimumWidthPx": 600,
+      "maximumWidthPx": 1023,
+      "headingLineCount": 2,
+      "headingLines": [
+        "WHERE DO YOU",
+        "ENTER?"
+      ],
+      "audienceLayout": "two-column"
+    },
+    "mobile": {
+      "maximumWidthPx": 599,
+      "headingLineCount": 2,
+      "headingLines": [
+        "WHERE DO YOU",
+        "ENTER?"
+      ],
+      "audienceLayout": "stacked",
+      "dividerOrientation": "horizontal"
+    }
+  },
+  "consumers": {
+    "physicalScreen": "Blender v2 portal/interface construction",
+    "semanticDom": "Phase 0.2 non-public portal layout QA compositor",
+    "alignmentOverlay": "Phase 0.2 physical-screen/DOM comparison",
+    "requirement": "Consumers must read this file directly or a generated representation whose manifest records this file's SHA-256. No hand-copied coordinate fork is authoritative."
+  }
+}

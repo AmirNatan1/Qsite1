@@ -1,0 +1,154 @@
+{
+  "schema": "quantum-hub.phase-0-3d-repair-v2.silhouette-decision.v1",
+  "generated_at_utc": "2026-08-17T21:27:27.127806+00:00",
+  "output": "review/field-unit-v2-silhouette-options.png",
+  "output_sha256": "bf2429c8dbaace6aa69df3e676f162c65f5f5a2969fa5c8c0c6eab789cb767c6",
+  "output_bytes": 2341766,
+  "width": 3400,
+  "height": 3680,
+  "selected_option": "A",
+  "selection_reason": "Option A best satisfies the integrated recessed-aperture requirement while keeping the chassis low, wide, asymmetric, optically dormant and manufacturable.",
+  "criteria": [
+    "uniqueness",
+    "industrial credibility",
+    "premium quality",
+    "distance from appliances",
+    "Q relationship / no literal logo",
+    "animation potential",
+    "portal potential",
+    "responsive readability"
+  ],
+  "criteria_matrix": {
+    "uniqueness": {
+      "A": "Strong \u00b7 asymmetric protected optic",
+      "B": "Medium \u00b7 familiar calibration drum",
+      "C": "Medium \u00b7 distinctive but rail-led"
+    },
+    "industrial credibility": {
+      "A": "Strong \u00b7 service logic + footing",
+      "B": "Medium \u00b7 pressure-vessel association",
+      "C": "Medium \u00b7 ornamental rail risk"
+    },
+    "premium quality": {
+      "A": "Strong \u00b7 coherent tapered monocoque",
+      "B": "Medium \u00b7 console-like silhouette",
+      "C": "Medium \u00b7 unresolved shell split"
+    },
+    "distance from appliances": {
+      "A": "Strongest \u00b7 projector risk manageable",
+      "B": "Weak \u00b7 camera/projector reading",
+      "C": "Medium \u00b7 decorative device reading"
+    },
+    "Q relationship / no literal logo": {
+      "A": "Strong \u00b7 recessed negative-space cue",
+      "B": "Weak \u00b7 lens/disk more literal",
+      "C": "Medium \u00b7 split-shell tension"
+    },
+    "animation potential": {
+      "A": "Strong \u00b7 one protected inner response",
+      "B": "Medium \u00b7 drum invites excess motion",
+      "C": "Medium \u00b7 rails risk ornament"
+    },
+    "portal potential": {
+      "A": "Strong \u00b7 deep optical surface",
+      "B": "Weak \u00b7 protruding circular object",
+      "C": "Medium \u00b7 narrow protected opening"
+    },
+    "responsive readability": {
+      "A": "Strong \u00b7 simple low-wide hierarchy",
+      "B": "Medium \u00b7 disk dominates at small size",
+      "C": "Weak \u00b7 rails collapse visually"
+    }
+  },
+  "options": {
+    "A": {
+      "name": "Recessed Optical Chassis",
+      "rationale": "Recessed optics merge identity, protection, and premium industrial restraint cleanly.",
+      "risk": "Circular precision may overpower the asymmetric chassis if its reveal grows."
+    },
+    "B": {
+      "name": "Calibration Drum",
+      "rationale": "Embedded drum makes calibration legible while preserving grounded horizontal authority.",
+      "risk": "The cylindrical mass may read as a camera or pressure vessel."
+    },
+    "C": {
+      "name": "Split-Shell Instrument",
+      "rationale": "Split shells create integrated aperture tension and distinctive asymmetric recognition.",
+      "risk": "The shell division may feel decorative and weaken manufacturing plausibility."
+    }
+  },
+  "source_renders": [
+    {
+      "option": "A",
+      "view": "front",
+      "source": "renders/blockouts/a/front.png",
+      "sha256": "b967cbe379c9e5f088b03e139c0bff942f69d947135b7fb7f5aabdfe2a800a56"
+    },
+    {
+      "option": "A",
+      "view": "side",
+      "source": "renders/blockouts/a/side.png",
+      "sha256": "33d92c03220e72b3059b4408e70894137b8a183b6ffc5b6471ce95a90444bf58"
+    },
+    {
+      "option": "A",
+      "view": "top",
+      "source": "renders/blockouts/a/top.png",
+      "sha256": "f73f8539d402c34d7be2d7a9cc145edeedc24d5734379cc11dfaea5682d82197"
+    },
+    {
+      "option": "A",
+      "view": "three-quarter",
+      "source": "renders/blockouts/a/three-quarter.png",
+      "sha256": "2435944c284533333f33949bbca9b8432b7b635f85d50a066af29e266ed1510a"
+    },
+    {
+      "option": "B",
+      "view": "front",
+      "source": "renders/blockouts/b/front.png",
+      "sha256": "842a635f938ef89b8e76e655fcebbf5542877dfa89290d7341d5797b21a929c5"
+    },
+    {
+      "option": "B",
+      "view": "side",
+      "source": "renders/blockouts/b/side.png",
+      "sha256": "321423d2389a3a2127979a1c3a34bbb35e711d812c9ddebb297d16a7ec0ea16b"
+    },
+    {
+      "option": "B",
+      "view": "top",
+      "source": "renders/blockouts/b/top.png",
+      "sha256": "c9e549026a30c04e3d88dcd16dea453bc7fe14204646c24381f95c8b0c152d5b"
+    },
+    {
+      "option": "B",
+      "view": "three-quarter",
+      "source": "renders/blockouts/b/three-quarter.png",
+      "sha256": "f41d3885d089287e6148fb07dc45a80742652450c8c4b87ece90d37bfca96b0e"
+    },
+    {
+      "option": "C",
+      "view": "front",
+      "source": "renders/blockouts/c/front.png",
+      "sha256": "5e9cc7b777ff67d19e4c47738038341d5d2e33c53018653b207704299c9284c2"
+    },
+    {
+      "option": "C",
+      "view": "side",
+      "source": "renders/blockouts/c/side.png",
+      "sha256": "cbb0c134cfedcc86f34574fcc1285703ef61682f7607e16f0bcb48dda14144f3"
+    },
+    {
+      "option": "C",
+      "view": "top",
+      "source": "renders/blockouts/c/top.png",
+      "sha256": "cc69282c24c4f866ed949a2f192c29100da43eb6b389e5d159ac874095a1fd03"
+    },
+    {
+      "option": "C",
+      "view": "three-quarter",
+      "source": "renders/blockouts/c/three-quarter.png",
+      "sha256": "8dd1fdf428953432ba5912417ccecbeb46a57c3bc5e8d00d61d638568ad30c05"
+    }
+  ]
+}

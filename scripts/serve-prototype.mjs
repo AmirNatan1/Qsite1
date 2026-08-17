@@ -7,7 +7,9 @@ const prototypeUrl = "/prototypes/phase-0-spiral-field/";
 const allowedRoots = [
   join(repositoryRoot, "prototypes", "phase-0-spiral-field"),
   join(repositoryRoot, "prototypes", "phase-0-3d-media-spike"),
+  join(repositoryRoot, "prototypes", "phase-0-portal-layout-qa"),
   join(repositoryRoot, "artifacts", "original", "phase-0"),
+  join(repositoryRoot, "artifacts", "original", "phase-0-3d-repair-v2"),
   join(repositoryRoot, "artifacts", "original", "phase-0-3d-repair", "media"),
   join(repositoryRoot, "artifacts", "original", "phase-0-3d-repair", "review"),
 ].map((root) => resolve(root));
@@ -36,6 +38,16 @@ const commonHeaders = {
   "x-content-type-options": "nosniff",
   "x-frame-options": "DENY",
 };
+
+function headersForPath(pathname) {
+  if (!pathname.startsWith("/prototypes/phase-0-portal-layout-qa/")) return commonHeaders;
+  return {
+    ...commonHeaders,
+    "content-security-policy":
+      "default-src 'self'; base-uri 'none'; connect-src 'self'; frame-src 'self'; frame-ancestors 'self'; img-src 'self' data:; media-src 'self' blob:; object-src 'none'; script-src 'self'; style-src 'self'",
+    "x-frame-options": "SAMEORIGIN",
+  };
+}
 
 function isWithin(root, candidate) {
   const fromRoot = relative(root, candidate);
@@ -84,11 +96,13 @@ createServer((request, response) => {
     return;
   }
 
+  const pathHeaders = headersForPath(pathname);
+
   const requested = pathname.endsWith("/") ? `${pathname.slice(1)}index.html` : pathname.slice(1);
   const absolute = resolve(repositoryRoot, requested);
   const allowedRoot = allowedRoots.find((root) => isWithin(root, absolute));
   if (!allowedRoot) {
-    response.writeHead(403, { ...commonHeaders, "content-type": "text/plain; charset=utf-8" }).end("Forbidden");
+    response.writeHead(403, { ...pathHeaders, "content-type": "text/plain; charset=utf-8" }).end("Forbidden");
     return;
   }
 
@@ -96,7 +110,7 @@ createServer((request, response) => {
     const realRoot = realpathSync(allowedRoot);
     const realFile = realpathSync(absolute);
     if (!isWithin(realRoot, realFile)) {
-      response.writeHead(403, { ...commonHeaders, "content-type": "text/plain; charset=utf-8" }).end("Forbidden");
+      response.writeHead(403, { ...pathHeaders, "content-type": "text/plain; charset=utf-8" }).end("Forbidden");
       return;
     }
 
@@ -107,7 +121,7 @@ createServer((request, response) => {
     if (range?.invalid) {
       response
         .writeHead(416, {
-          ...commonHeaders,
+          ...pathHeaders,
           "accept-ranges": "bytes",
           "content-range": `bytes */${file.size}`,
           "content-type": "text/plain; charset=utf-8",
@@ -117,7 +131,7 @@ createServer((request, response) => {
     }
 
     const headers = {
-      ...commonHeaders,
+      ...pathHeaders,
       "accept-ranges": "bytes",
       "content-type": mime[extname(realFile).toLowerCase()] ?? "application/octet-stream",
     };
@@ -139,9 +153,10 @@ createServer((request, response) => {
     stream.on("error", () => response.destroy());
     stream.pipe(response);
   } catch {
-    response.writeHead(404, { ...commonHeaders, "content-type": "text/plain; charset=utf-8" }).end("Not found");
+    response.writeHead(404, { ...pathHeaders, "content-type": "text/plain; charset=utf-8" }).end("Not found");
   }
 }).listen(port, "127.0.0.1", () => {
   console.log(`Spiral Conduction prototype: http://127.0.0.1:${port}${prototypeUrl}`);
   console.log(`3D media seek spike: http://127.0.0.1:${port}/prototypes/phase-0-3d-media-spike/`);
+  console.log(`Portal typography QA: http://127.0.0.1:${port}/prototypes/phase-0-portal-layout-qa/`);
 });

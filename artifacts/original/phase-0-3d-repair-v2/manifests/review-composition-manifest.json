@@ -1,0 +1,220 @@
+{
+  "schema": "quantum-hub.phase-0-3d-repair-v2.review-composition.v1",
+  "generated_at_utc": "2026-08-17T21:27:27.110164+00:00",
+  "selected_option": "A \u00b7 Recessed Optical Chassis",
+  "final_blend": {
+    "path": "source/field-unit-v2-integrated-aperture-chassis.blend",
+    "bytes": 306735,
+    "sha256": "ebb41dd813c36639660f26b5ac444eec39d62e7658019db7a76808899c1fe9e4"
+  },
+  "portal_layout": {
+    "path": "portal-layout.json",
+    "sha256": "25666cf071afe7564dc051cbec770ead325cdf19ef1f4926e43d793a2a053bc5"
+  },
+  "render_contract": {
+    "engine": "BLENDER_EEVEE",
+    "samples": 48,
+    "still_only": true,
+    "new_animatic_or_video": false
+  },
+  "creative_boundary": {
+    "original_geometry_materials_lighting_and_composition": true,
+    "reference_binary_used": false,
+    "external_asset_used": false,
+    "external_addon_used": false,
+    "font_binary_bundled": false,
+    "full_animatic_created": false
+  },
+  "records": [
+    {
+      "path": "review/field-unit-v2-recommended-design-sheet.png",
+      "width": 3300,
+      "height": 2350,
+      "bytes": 2831680,
+      "sha256": "0174a03300e782d06470f1af4eb49bc2d3e2981f6349f23154c052a341149a13",
+      "source_paths": [
+        "renders/design/front.png",
+        "renders/design/side.png",
+        "renders/design/rear.png",
+        "renders/design/three-quarter.png",
+        "renders/design/rear-three-quarter.png",
+        "renders/design/top.png"
+      ],
+      "derivation": "Dark V2 review grid composed from canonical Blender stills; no scene pixels repainted"
+    },
+    {
+      "path": "review/field-unit-v2-material-and-cable-sheet.png",
+      "width": 3400,
+      "height": 3000,
+      "bytes": 3303262,
+      "sha256": "82855c746cedaf92cb6641d4c0eb6b9381dd829dff08ef33373824e992179bb2",
+      "source_paths": [
+        "renders/materials/shell.png",
+        "renders/materials/glass.png",
+        "renders/design/low.png",
+        "renders/environment/proving-ground-style-frame.png",
+        "renders/diagnostics/mid-conduction.png",
+        "renders/camera-study/03-conduction-70.png",
+        "renders/activation/02-internal-energy-transfer.png"
+      ],
+      "derivation": "Review grid with three raw stills and six explicitly labelled pixel-preserving construction crops",
+      "derived_crops": [
+        {
+          "source": "renders/environment/proving-ground-style-frame.png",
+          "box": [
+            0,
+            690,
+            1920,
+            1110
+          ],
+          "proves": "dormant graphite sheath"
+        },
+        {
+          "source": "renders/diagnostics/mid-conduction.png",
+          "box": [
+            350,
+            500,
+            840,
+            760
+          ],
+          "proves": "modestly brighter leading front"
+        },
+        {
+          "source": "renders/diagnostics/mid-conduction.png",
+          "box": [
+            0,
+            440,
+            1120,
+            790
+          ],
+          "proves": "continuous warm energized trail"
+        },
+        {
+          "source": "renders/diagnostics/mid-conduction.png",
+          "box": [
+            420,
+            520,
+            930,
+            770
+          ],
+          "proves": "exact active-to-dormant transition"
+        },
+        {
+          "source": "renders/camera-study/03-conduction-70.png",
+          "box": [
+            0,
+            720,
+            1800,
+            1160
+          ],
+          "proves": "cable-to-ground contact and local response"
+        },
+        {
+          "source": "renders/activation/02-internal-energy-transfer.png",
+          "box": [
+            1540,
+            610,
+            1920,
+            1040
+          ],
+          "proves": "protected connector entry"
+        }
+      ]
+    },
+    {
+      "path": "review/proving-ground-v2-style-frame.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1417804,
+      "sha256": "3af63e9700d15ec36f0c1bfcb44b47e4694b4692d07d633738d0042e7c94824f",
+      "source_paths": [
+        "renders/environment/proving-ground-style-frame.png"
+      ],
+      "derivation": "Pixel-equivalent canonical 1920\u00d71200 Blender still"
+    },
+    {
+      "path": "review/camera-path-v2-study.png",
+      "width": 3300,
+      "height": 2350,
+      "bytes": 4099719,
+      "sha256": "212a95626b60b876f55a5e79b2ba30c079860dd70bf663c518440e05f05f316f",
+      "source_paths": [
+        "renders/camera-study/01-arrival.png",
+        "renders/camera-study/02-conduction-35.png",
+        "renders/camera-study/03-conduction-70.png",
+        "renders/camera-study/04-frontal-activation.png"
+      ],
+      "derivation": "Dark V2 review grid composed from canonical Blender stills; no scene pixels repainted"
+    },
+    {
+      "path": "review/activation-v2-contact-sheet.png",
+      "width": 3500,
+      "height": 2400,
+      "bytes": 712329,
+      "sha256": "d464a93d484ef413d30b5b500df13be8a0f1a7cfa972daae4aa22b432fb7921d",
+      "source_paths": [
+        "renders/activation/01-connector-arrival.png",
+        "renders/activation/02-internal-energy-transfer.png",
+        "renders/activation/03-mechanical-movement-begins.png",
+        "renders/activation/04-interface-visible.png",
+        "renders/activation/05-portal-ready.png"
+      ],
+      "derivation": "Canonical five-state still grid with enlarged aperture crops and review-only orientation labels",
+      "mechanical_response_count": 1,
+      "mechanical_response": "deeply recessed interrupted inner optical partial ring begins at frame 3 and rotates from -5\u00b0 to +9\u00b0",
+      "semantic_sequence": [
+        "current arrived \u00b7 unit still off",
+        "localized connector-to-internal response",
+        "sole interrupted inner ring begins",
+        "CHALLENGE DETECTED \u00b7 five-stage route",
+        "TEST ROUTE AVAILABLE"
+      ],
+      "aperture_crop": [
+        400,
+        315,
+        790,
+        705
+      ]
+    },
+    {
+      "path": "review/portal-v2-layout-sheet.png",
+      "width": 3300,
+      "height": 2420,
+      "bytes": 269584,
+      "sha256": "0bdef7b1445b7f54f7d0b49fc1c766abf609a96ee10b2d3f665bc9862c5f3cd0",
+      "source_paths": [
+        "renders/portal/physical-layout.png",
+        "renders/portal/dom-layout.png",
+        "renders/portal/layout-overlay.png",
+        "portal-layout.json"
+      ],
+      "derivation": "Side-by-side physical/semantic surfaces and overlay produced from one JSON coordinate authority",
+      "portal_layout_sha256": "25666cf071afe7564dc051cbec770ead325cdf19ef1f4926e43d793a2a053bc5",
+      "maximum_anchor_delta_px": 0,
+      "decorative_rule_count": 1,
+      "heading": "WHERE DO YOU ENTER?"
+    },
+    {
+      "path": "review/reduced-motion-v2-desktop.png",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 982144,
+      "sha256": "ec9d348e8bcc24bb4bb0f99b1499b16416f9ad590deb303404b02e6cf3ec51b1",
+      "source_paths": [
+        "renders/hero/desktop-dormant-base.png"
+      ],
+      "derivation": "Designed 1600\u00d71000 static dormant poster; no animation or media sequence"
+    },
+    {
+      "path": "review/reduced-motion-v2-mobile.png",
+      "width": 720,
+      "height": 1600,
+      "bytes": 512708,
+      "sha256": "afb118a6bf2c2d04c57d181aae2523656fe53d5efe2c8d19fa60b6e83a9e038d",
+      "source_paths": [
+        "renders/hero/mobile-dormant-base.png"
+      ],
+      "derivation": "Designed 720\u00d71600 static dormant poster from authored portrait camera; no animation or media sequence"
+    }
+  ]
+}

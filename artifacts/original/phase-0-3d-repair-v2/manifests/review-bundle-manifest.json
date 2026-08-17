@@ -1,0 +1,114 @@
+{
+  "schema": "quantum-hub.phase-0-3d-repair-v2.review-bundle.v1",
+  "generated_at_utc": "2026-08-17T23:21:09.743671+00:00",
+  "authorities": {
+    "reviewOriginals": {
+      "path": "manifests/review-originals-manifest.json",
+      "sha256": "ddc1b9665765adb602348ad3df443fc209d4ceaf640837f3ff9d142d56811684"
+    },
+    "silhouetteDecision": {
+      "path": "manifests/silhouette-decision-manifest.json",
+      "sha256": "4b2b20f4e2d6602758f33b779bd8097419bf45dc2ee1227518d0e15b2cd32ecd"
+    }
+  },
+  "records": [
+    {
+      "path": "review/field-unit-v2-silhouette-options.png",
+      "width": 3400,
+      "height": 3680,
+      "bytes": 2341766,
+      "sha256": "bf2429c8dbaace6aa69df3e676f162c65f5f5a2969fa5c8c0c6eab789cb767c6",
+      "sourceManifest": "manifests/silhouette-decision-manifest.json"
+    },
+    {
+      "path": "review/field-unit-v2-recommended-design-sheet.png",
+      "width": 3300,
+      "height": 2350,
+      "bytes": 2831680,
+      "sha256": "0174a03300e782d06470f1af4eb49bc2d3e2981f6349f23154c052a341149a13",
+      "sourceManifest": "manifests/review-originals-manifest.json"
+    },
+    {
+      "path": "review/field-unit-v2-material-and-cable-sheet.png",
+      "width": 3400,
+      "height": 3000,
+      "bytes": 3303262,
+      "sha256": "82855c746cedaf92cb6641d4c0eb6b9381dd829dff08ef33373824e992179bb2",
+      "sourceManifest": "manifests/review-originals-manifest.json"
+    },
+    {
+      "path": "review/proving-ground-v2-style-frame.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1417804,
+      "sha256": "3af63e9700d15ec36f0c1bfcb44b47e4694b4692d07d633738d0042e7c94824f",
+      "sourceManifest": "manifests/review-originals-manifest.json"
+    },
+    {
+      "path": "review/camera-path-v2-study.png",
+      "width": 3300,
+      "height": 2350,
+      "bytes": 4099719,
+      "sha256": "212a95626b60b876f55a5e79b2ba30c079860dd70bf663c518440e05f05f316f",
+      "sourceManifest": "manifests/review-originals-manifest.json"
+    },
+    {
+      "path": "review/activation-v2-contact-sheet.png",
+      "width": 3500,
+      "height": 2400,
+      "bytes": 712329,
+      "sha256": "d464a93d484ef413d30b5b500df13be8a0f1a7cfa972daae4aa22b432fb7921d",
+      "sourceManifest": "manifests/review-originals-manifest.json"
+    },
+    {
+      "path": "review/portal-v2-layout-sheet.png",
+      "width": 3300,
+      "height": 2420,
+      "bytes": 269584,
+      "sha256": "0bdef7b1445b7f54f7d0b49fc1c766abf609a96ee10b2d3f665bc9862c5f3cd0",
+      "sourceManifest": "manifests/review-originals-manifest.json"
+    },
+    {
+      "path": "review/desktop-hero-composition-v2.png",
+      "width": 3060,
+      "height": 3210,
+      "bytes": 1149310,
+      "sha256": "607c70799f82cd8948ba3c458349330b6024a012245385672ec257d83207000a",
+      "sourceManifest": "manifests/review-originals-manifest.json"
+    },
+    {
+      "path": "review/mobile-hero-composition-v2.png",
+      "width": 1500,
+      "height": 2100,
+      "bytes": 603491,
+      "sha256": "425d759edb48eed7f40c506cbbefbba0fa895f76043e7e1e1308361806d200f6",
+      "sourceManifest": "manifests/review-originals-manifest.json"
+    },
+    {
+      "path": "review/text-zoom-and-fallback-v2.png",
+      "width": 3060,
+      "height": 2100,
+      "bytes": 1335820,
+      "sha256": "6ba57fc5fc2078996bf15100285f53455f196fcdfd0544c5287bd91283b83e7f",
+      "sourceManifest": "manifests/review-originals-manifest.json"
+    },
+    {
+      "path": "review/reduced-motion-v2-desktop.png",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 982144,
+      "sha256": "ec9d348e8bcc24bb4bb0f99b1499b16416f9ad590deb303404b02e6cf3ec51b1",
+      "sourceManifest": "manifests/review-originals-manifest.json"
+    },
+    {
+      "path": "review/reduced-motion-v2-mobile.png",
+      "width": 720,
+      "height": 1600,
+      "bytes": 512708,
+      "sha256": "afb118a6bf2c2d04c57d181aae2523656fe53d5efe2c8d19fa60b6e83a9e038d",
+      "sourceManifest": "manifests/review-originals-manifest.json"
+    }
+  ],
+  "required_count": 12,
+  "all_required_present": true
+}

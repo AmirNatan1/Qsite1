@@ -1,0 +1,249 @@
+{
+  "schema": "quantum-hub.phase-0-3d-repair-v2.typography-capture-plan.v1",
+  "baseUrl": "http://127.0.0.1:4173/prototypes/phase-0-portal-layout-qa/",
+  "runnerUrl": "http://127.0.0.1:4173/prototypes/phase-0-portal-layout-qa/runner.html",
+  "contractPath": "artifacts/original/phase-0-3d-repair-v2/portal-layout.json",
+  "fontMode": "forced metric-conscious system fallbacks",
+  "browserApi": {
+    "readyExpression": "await window.phase02Ready",
+    "reportExpression": "await window.runPhase02TypographyCheck()",
+    "reportGlobal": "window.phase02TypographyReport",
+    "runnerReadyExpression": "await window.phase02RunnerReady",
+    "runnerReportGlobal": "window.phase02RunnerReport",
+    "childReportDomSelector": "#phase02-report",
+    "runnerReportDomSelector": "#phase02-runner-report",
+    "runnerReadySelector": "body[data-ready='true']",
+    "runnerPassSelector": "body[data-pass='true']",
+    "runnerChildReportProperty": "report",
+    "captureElementSelector": "#capture-viewport",
+    "runnerViewportQuery": "vw={width}&vh={height}&captureScale={captureScale}",
+    "expectedSchema": "quantum-hub.phase-0-3d-repair-v2.typography-collision-browser-report.v1",
+    "passProperty": "pass"
+  },
+  "viewports": [
+    {
+      "id": "desktop-1440x900",
+      "width": 1440,
+      "height": 900,
+      "captureScale": 0.8333333333333334
+    },
+    {
+      "id": "short-desktop-1366x650",
+      "width": 1366,
+      "height": 650,
+      "captureScale": 0.8784773060029283
+    },
+    {
+      "id": "desktop-1280x800",
+      "width": 1280,
+      "height": 800,
+      "captureScale": 0.9375
+    },
+    {
+      "id": "tablet-landscape-1024x768",
+      "width": 1024,
+      "height": 768,
+      "captureScale": 1
+    },
+    {
+      "id": "tablet-portrait-768x1024",
+      "width": 768,
+      "height": 1024,
+      "captureScale": 1
+    },
+    {
+      "id": "mobile-390x844",
+      "width": 390,
+      "height": 844,
+      "captureScale": 1
+    },
+    {
+      "id": "mobile-360x800",
+      "width": 360,
+      "height": 800,
+      "captureScale": 1
+    },
+    {
+      "id": "narrow-320x800",
+      "width": 320,
+      "height": 800,
+      "captureScale": 1
+    },
+    {
+      "id": "mobile-landscape-844x390",
+      "width": 844,
+      "height": 390,
+      "captureScale": 1
+    }
+  ],
+  "caseTemplates": [
+    {
+      "idPrefix": "hero-actual",
+      "viewportIds": "all",
+      "query": "surface=hero&fixture=actual&zoom=100&motion=no-preference&chrome=0",
+      "captureViewportIds": "all"
+    },
+    {
+      "idPrefix": "portal-actual",
+      "viewportIds": "all",
+      "query": "surface=portal&fixture=actual&zoom=100&motion=no-preference&chrome=0",
+      "captureViewportIds": [
+        "desktop-1440x900",
+        "tablet-landscape-1024x768",
+        "mobile-390x844",
+        "narrow-320x800",
+        "mobile-landscape-844x390"
+      ]
+    },
+    {
+      "idPrefix": "hero-zoom-200",
+      "viewportIds": [
+        "desktop-1440x900",
+        "short-desktop-1366x650",
+        "mobile-390x844",
+        "narrow-320x800",
+        "mobile-landscape-844x390"
+      ],
+      "query": "surface=hero&fixture=actual&zoom=200&motion=no-preference&chrome=0",
+      "captureViewportIds": [
+        "desktop-1440x900",
+        "mobile-390x844",
+        "narrow-320x800",
+        "mobile-landscape-844x390"
+      ]
+    },
+    {
+      "idPrefix": "portal-zoom-200",
+      "viewportIds": [
+        "desktop-1440x900",
+        "short-desktop-1366x650",
+        "mobile-390x844",
+        "narrow-320x800",
+        "mobile-landscape-844x390"
+      ],
+      "query": "surface=portal&fixture=actual&zoom=200&motion=no-preference&chrome=0",
+      "captureViewportIds": [
+        "desktop-1440x900",
+        "mobile-390x844",
+        "narrow-320x800",
+        "mobile-landscape-844x390"
+      ]
+    },
+    {
+      "idPrefix": "hero-long-copy",
+      "viewportIds": [
+        "desktop-1440x900",
+        "short-desktop-1366x650",
+        "mobile-390x844",
+        "narrow-320x800",
+        "mobile-landscape-844x390"
+      ],
+      "query": "surface=hero&fixture=long&zoom=100&motion=no-preference&chrome=0",
+      "captureViewportIds": [
+        "desktop-1440x900",
+        "mobile-390x844",
+        "narrow-320x800",
+        "mobile-landscape-844x390"
+      ]
+    },
+    {
+      "idPrefix": "portal-long-copy",
+      "viewportIds": [
+        "desktop-1440x900",
+        "short-desktop-1366x650",
+        "mobile-390x844",
+        "narrow-320x800",
+        "mobile-landscape-844x390"
+      ],
+      "query": "surface=portal&fixture=long&zoom=100&motion=no-preference&chrome=0",
+      "captureViewportIds": [
+        "desktop-1440x900",
+        "mobile-390x844",
+        "narrow-320x800",
+        "mobile-landscape-844x390"
+      ]
+    },
+    {
+      "idPrefix": "hero-reduced-motion",
+      "viewportIds": [
+        "desktop-1440x900",
+        "mobile-390x844",
+        "narrow-320x800"
+      ],
+      "query": "surface=hero&fixture=actual&zoom=100&motion=reduce&chrome=0",
+      "captureViewportIds": [
+        "desktop-1440x900",
+        "mobile-390x844"
+      ]
+    },
+    {
+      "idPrefix": "portal-reduced-motion",
+      "viewportIds": [
+        "desktop-1440x900",
+        "mobile-390x844",
+        "narrow-320x800"
+      ],
+      "query": "surface=portal&fixture=actual&zoom=100&motion=reduce&chrome=0",
+      "captureViewportIds": [
+        "desktop-1440x900",
+        "mobile-390x844"
+      ]
+    },
+    {
+      "idPrefix": "hero-keyboard-focus",
+      "viewportIds": [
+        "desktop-1440x900"
+      ],
+      "query": "surface=hero&fixture=actual&zoom=100&motion=no-preference&chrome=0",
+      "focusSelector": "#hero-industry",
+      "captureViewportIds": [
+        "desktop-1440x900"
+      ]
+    },
+    {
+      "idPrefix": "portal-keyboard-focus",
+      "viewportIds": [
+        "mobile-390x844"
+      ],
+      "query": "surface=portal&fixture=actual&zoom=100&motion=no-preference&chrome=0",
+      "focusSelector": "#portal-industry",
+      "captureViewportIds": [
+        "mobile-390x844"
+      ]
+    }
+  ],
+  "capture": {
+    "rawDirectory": "artifacts/evidence/phase-0-3d-repair-v2/captures/raw",
+    "normalizedDirectory": "artifacts/evidence/phase-0-3d-repair-v2/captures/normalized",
+    "rawFilenameTemplate": "{idPrefix}--{viewportId}.jpg",
+    "normalizedFilenameTemplate": "{idPrefix}--{viewportId}.png",
+    "fullPage": true,
+    "omitBackground": false,
+    "devicePixelRatioPolicy": "record the actual browser DPR; do not claim or require control",
+    "browserRasterPolicy": "record the actual full-page JPEG dimensions; the in-app browser raster is not assumed to be CSS dimensions multiplied by DPR",
+    "maximumRenderedWidth": 1200,
+    "normalization": "crop the rendered outer-frame bounds from top-left 0,0; for captureScale 1 write a same-size PNG without resampling, and for captureScale below 1 resample the crop to the requested CSS viewport with Lanczos; preserve the raw and normalized SHA-256 values and the complete scale/crop lineage",
+    "normalizationMethod": "top-left-rendered-frame-crop-lanczos-when-scaled",
+    "stabilization": {
+      "method": "exact-byte-modal-winner",
+      "successiveFullPageJpegsPerVisualCase": 11,
+      "winnerSelection": "save only the unique JPEG byte sequence with the highest frequency; a tied mode is invalid",
+      "minimumWinnerVotes": 7,
+      "timingClaim": "none; successive captures may alternate compositor states despite readiness and paint barriers"
+    }
+  },
+  "requiredAssertions": [
+    "report.pass is true",
+    "contract SHA-256 matches the repository source",
+    "no page or route horizontal overflow",
+    "no measured content collisions",
+    "every hero state and every reduced-portal stress state clears source-pixel-derived Field Unit and spiral-cable keepouts by at least 16 CSS pixels; 200 percent, long-copy and reduced-portal states displace the full decorative scene outside the clipped viewport",
+    "expected H1 line-count range passes",
+    "all visible audience buttons are at least 44 by 44 CSS pixels",
+    "programmatic keyboard focus exposes an outline of at least 2 CSS pixels",
+    "the sole audience divider clears every glyph bound by at least 12 reference pixels",
+    "reference-mode portal anchors differ by no more than 3 CSS pixels",
+    "every live DOM-owned portal case uses a text-free scene; exact 16:10 cases retain JSON anchor checks while the separate physical/DOM/overlay sheet proves crossover alignment",
+    "reduced-motion cases contain no video, canvas or cinematic sequence"
+  ]
+}

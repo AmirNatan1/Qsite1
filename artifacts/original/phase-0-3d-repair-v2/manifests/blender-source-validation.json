@@ -1,0 +1,173 @@
+{
+  "schema": "quantum-hub.phase-0-3d-repair-v2.blender-source-validation.v1",
+  "generated_at_utc": "2026-08-17T23:25:12.495188+00:00",
+  "pass": true,
+  "source": {
+    "path": "source/field-unit-v2-integrated-aperture-chassis.blend",
+    "bytes": 306735,
+    "sha256": "ebb41dd813c36639660f26b5ac444eec39d62e7658019db7a76808899c1fe9e4"
+  },
+  "validator": {
+    "path": "source/validate_final_scene.py",
+    "sha256": "d3a5be6815b18d39a186f54d56a59050d8597f93e5dd655ec2c751f5d7933f00"
+  },
+  "blender": {
+    "version": "5.2.0 LTS",
+    "build_hash": "fbe6228777e7",
+    "engine": "BLENDER_EEVEE"
+  },
+  "checks": [
+    {
+      "name": "integrated aperture and low-wide silhouette",
+      "pass": true,
+      "evidence": {
+        "shell": "Chassis_IntegratedMonocoque",
+        "shell_width": 6.319724,
+        "shell_height": 1.240087,
+        "width_height_ratio": 5.096193,
+        "optical_glass_diameter": 0.666,
+        "aperture_to_visible_front_height": 0.537059,
+        "target_aperture_ratio": [
+          0.4,
+          0.55
+        ]
+      }
+    },
+    {
+      "name": "no external torus, bumper, handle, or front plug",
+      "pass": true,
+      "evidence": {
+        "matches": []
+      }
+    },
+    {
+      "name": "one continuous 2.5-turn physical desktop cable",
+      "pass": true,
+      "evidence": {
+        "count": 1,
+        "turns": 2.5,
+        "outer_to_inner": true
+      }
+    },
+    {
+      "name": "one cumulative core and one cable-resident leading front",
+      "pass": true,
+      "evidence": {
+        "fronts": [
+          "Cable_SingleConductionFront"
+        ],
+        "cores": [
+          "Cable_CumulativeConductor"
+        ]
+      }
+    },
+    {
+      "name": "dormant state has zero authored emission and black optical glass",
+      "pass": true,
+      "evidence": {
+        "emission_strengths": {
+          "Cable_WarmMagenta_Core": 0.0,
+          "Cable_SingleFront_Highlight": 0.0,
+          "Connector_Response_Light": 0.0,
+          "InternalTransfer_RestrainedLight": 0.0,
+          "PhysicalScreen_RestrainedWake": 0.0,
+          "PhysicalScreen_ChallengeWake": 0.0,
+          "PhysicalScreen_RouteWake": 0.0,
+          "PhysicalScreen_ReadyWake": 0.0,
+          "InnerOpticalRing_NeutralWake": 0.0
+        },
+        "glass_material": "Aperture_DormantBlack_Glass"
+      }
+    },
+    {
+      "name": "exactly one permitted mechanical response",
+      "pass": true,
+      "evidence": {
+        "count": 1,
+        "objects": [
+          "MechanicalResponse_InnerOpticalPartialRing"
+        ],
+        "response": "recessed interrupted inner optical partial ring"
+      }
+    },
+    {
+      "name": "four still cameras span a 27-degree arc",
+      "pass": true,
+      "evidence": {
+        "cameras": [
+          {
+            "name": "Camera_Arc_01",
+            "degrees": -14.0
+          },
+          {
+            "name": "Camera_Arc_02",
+            "degrees": -5.0
+          },
+          {
+            "name": "Camera_Arc_03",
+            "degrees": 4.0
+          },
+          {
+            "name": "Camera_Arc_04",
+            "degrees": 13.0
+          }
+        ],
+        "span_degrees": 27.0
+      }
+    },
+    {
+      "name": "shared authoritative portal layout is bound by SHA-256",
+      "pass": true,
+      "evidence": {
+        "scene_sha256": "25666cf071afe7564dc051cbec770ead325cdf19ef1f4926e43d793a2a053bc5",
+        "file_sha256": "25666cf071afe7564dc051cbec770ead325cdf19ef1f4926e43d793a2a053bc5",
+        "path": "portal-layout.json"
+      }
+    },
+    {
+      "name": "no external libraries, file images, or external fonts",
+      "pass": true,
+      "evidence": {
+        "libraries": [],
+        "file_images": [],
+        "external_fonts": []
+      }
+    },
+    {
+      "name": "still-only source has no keyframed animatic, VSE sequence, or video output",
+      "pass": true,
+      "evidence": {
+        "action_keyframes": 0,
+        "sequence_count": 0,
+        "render_format": "PNG",
+        "frame_end_not_used_as_deliverable": 250,
+        "full_animatic_created": false
+      }
+    },
+    {
+      "name": "restrained neutral atmosphere is present",
+      "pass": true,
+      "evidence": {
+        "node": "Neutral_ProvingGround_Depth",
+        "density": 0.006000000052154064,
+        "color": [
+          0.10999999940395355,
+          0.12999999523162842,
+          0.12999999523162842,
+          1.0
+        ]
+      }
+    },
+    {
+      "name": "EEVEE still contract",
+      "pass": true,
+      "evidence": {
+        "engine": "BLENDER_EEVEE",
+        "taa_render_samples": 48,
+        "volumetric_samples": 24,
+        "cycles_comparison_claimed": false,
+        "selection_rationale": "smooth/subdivided/beveled principal surfaces showed no review-resolution faceting; a Cycles pass was not materially necessary for this still gate"
+      }
+    }
+  ]
+}
