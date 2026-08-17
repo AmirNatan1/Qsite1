@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta
+      name="description"
+      content="Non-production Phase 0 harness for measuring deterministic seeks through original Blender Field Unit media."
+    />
+    <title>Phase 0 · Real-media seek spike</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#seek-controls">Skip to seek controls</a>
+
+    <main>
+      <header class="intro" aria-labelledby="page-title">
+        <p class="eyebrow">Quantum‑Hub · Phase 0 · non-production evidence</p>
+        <h1 id="page-title">Real-media seek spike</h1>
+        <p class="lede">
+          This local harness compares six original Blender animatic encodes. Each run uses the same bidirectional
+          target order and waits for both the browser’s <code>seeked</code> event and a matching presented video frame.
+        </p>
+        <p class="boundary">
+          Review harness only. It is not an Astro route, public feature, production cinematic integration, or release
+          surface.
+        </p>
+      </header>
+
+      <section class="panel" aria-labelledby="controls-title">
+        <div class="section-heading">
+          <div>
+            <p class="kicker">Measurement input</p>
+            <h2 id="controls-title">Variant and playback</h2>
+          </div>
+          <p id="support-status" class="support-status">Checking browser capabilities…</p>
+        </div>
+
+        <form id="seek-controls" class="controls">
+          <label for="variant">Encoded variant</label>
+          <select id="variant" name="variant"></select>
+          <button id="run-selected" type="submit">Run selected</button>
+          <button id="run-all" type="button" class="secondary">Run all six</button>
+          <button id="cancel-run" type="button" class="quiet" disabled>Cancel</button>
+        </form>
+
+        <p id="run-status" class="run-status" role="status" aria-live="polite">Ready.</p>
+
+        <figure class="video-stage">
+          <video id="media" controls muted playsinline preload="metadata" aria-describedby="media-description">
+            Your browser does not support HTML video.
+          </video>
+          <figcaption id="media-description">
+            Original Field Unit animatic under test. Native controls remain available for human inspection.
+          </figcaption>
+        </figure>
+
+        <dl class="media-facts" aria-label="Loaded media facts">
+          <div>
+            <dt>File</dt>
+            <dd id="fact-file">Not loaded</dd>
+          </div>
+          <div>
+            <dt>Duration</dt>
+            <dd id="fact-duration">—</dd>
+          </div>
+          <div>
+            <dt>Frame size</dt>
+            <dd id="fact-dimensions">—</dd>
+          </div>
+          <div>
+            <dt>Seek order</dt>
+            <dd><code>0 → .25 → .5 → .75 → .99 → .5 → .1</code></dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="panel" aria-labelledby="results-title">
+        <div class="section-heading">
+          <div>
+            <p class="kicker">Run summary</p>
+            <h2 id="results-title">Variant results</h2>
+          </div>
+        </div>
+
+        <div class="table-wrap" tabindex="0" aria-label="Scrollable variant result table">
+          <table>
+            <caption>
+              Seven deterministic seeks per encode. Completion requires both <code>seeked</code> and a matching
+              <code>requestVideoFrameCallback</code> presentation.
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Variant</th>
+                <th scope="col">Codec</th>
+                <th scope="col">GOP</th>
+                <th scope="col">Status</th>
+                <th scope="col">Median</th>
+                <th scope="col">p95</th>
+                <th scope="col">Max error</th>
+                <th scope="col">Dropped Δ</th>
+              </tr>
+            </thead>
+            <tbody id="variant-results"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="report-title">
+        <div class="section-heading">
+          <div>
+            <p class="kicker">Machine-readable evidence</p>
+            <h2 id="report-title">JSON report</h2>
+          </div>
+          <button id="download-report" type="button" class="secondary">Download JSON</button>
+        </div>
+        <p>
+          The same object is exposed as <code>window.phase0SeekReport</code>. Failed or unavailable media remains an
+          explicit result; the harness never substitutes synthetic footage.
+        </p>
+        <pre id="json-report" tabindex="0" aria-label="Phase 0 seek report JSON"></pre>
+      </section>
+    </main>
+
+    <noscript>This evidence harness requires JavaScript to perform and time video seeks.</noscript>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

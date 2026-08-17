@@ -1,0 +1,16 @@
+{
+  "schema": "quantum-hub.phase-0-3d-portal-alignment.v1",
+  "generated_at_utc": "2026-08-17T17:19:56.545014+00:00",
+  "physical_glass_frame": "renders/portal/portal-100.png",
+  "first_semantic_dom_reference": "renders/portal/first-dom-reference.png",
+  "review_overlay": "review/portal-dom-overlay.png",
+  "comparison_scope": "matched aperture, crop, navigation-safe zone, heading anchor, route row and audience choices",
+  "claim": "structural and perceptual alignment; pixel identity is intentionally not claimed",
+  "human_perception_primary": true,
+  "metrics": {
+    "global_ssim_approximation": 0.338255,
+    "normalized_grayscale_mae": 0.058587,
+    "width": 1920,
+    "height": 1200
+  }
+}

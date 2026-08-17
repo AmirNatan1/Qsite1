@@ -1,0 +1,31 @@
+{
+  "schema": "quantum-hub.phase-0-3d-render-manifest.v1",
+  "generated_at_utc": "2026-08-17T17:00:41.858419+00:00",
+  "original_artwork": true,
+  "reference_site_binary_used": false,
+  "blender_version": "5.2.0 LTS",
+  "blender_build_hash": "fbe6228777e7",
+  "blend_source": "source/quantum-field-unit.blend",
+  "blend_source_sha256": "ad982f482e0a5e9da98a60b483c3c69dc00cbc8e24e69c9bf0937053394a51dd",
+  "engine": "BLENDER_EEVEE",
+  "samples": 48,
+  "render_scale": 1.0,
+  "frame_step": 1,
+  "timeline": {
+    "fps": 24,
+    "frame_start": 1,
+    "frame_end": 192
+  },
+  "renders": [
+    {
+      "group": "materials",
+      "path": "renders/materials/material-cable.png",
+      "frame": 106,
+      "camera": "Camera_Material_Cable",
+      "width": 1600,
+      "height": 1200,
+      "bytes": 1568629,
+      "sha256": "4df546b4d252d9e867c815f970b41a1ede30afc43dd528d11403889663b2d032"
+    }
+  ]
+}

@@ -67,4 +67,4 @@ See `BROWSER_QA.md` for required viewports, exact reverse, reduced motion, keybo
 
 ## Encoded-media verification
 
-See `TOOLCHAIN_AND_MEDIA_AUDIT.md` and `encoded-seek-spike-report.json` for the real 640×400 VP9 browser encode, forward/reverse seek order, explicit frame-callback timeouts, absent FFmpeg/ffprobe boundary, and production-readiness caveats.
+See `TOOLCHAIN_AND_MEDIA_AUDIT.md` and `encoded-seek-spike-report.json` for the historical pre-install 640×400 VP9 browser encode, forward/reverse seek order, explicit frame-callback timeouts, and then-absent FFmpeg/ffprobe boundary. Current portable-toolchain and genuine Blender-media evidence is recorded in `TOOLCHAIN_3D_REPAIR.md` and `artifacts/original/phase-0-3d-repair/manifests/`.

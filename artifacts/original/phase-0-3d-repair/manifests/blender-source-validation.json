@@ -1,0 +1,29 @@
+{
+  "schema": "quantum-hub.phase-0-3d-source-validation.v1",
+  "generated_at_utc": "2026-08-17T17:27:00.499164+00:00",
+  "valid": true,
+  "errors": [],
+  "warnings": [],
+  "blender_version": "5.2.0 LTS",
+  "blender_build_hash": "fbe6228777e7",
+  "blend_source": "source/quantum-field-unit.blend",
+  "blend_bytes": 360021,
+  "blend_sha256": "91601d8c0fec51744df4e4cca510556559e7f5c542b9bcc84ca83ae650c16adc",
+  "collection_count": 18,
+  "object_count": 145,
+  "material_count": 31,
+  "external_images": [],
+  "linked_libraries": [],
+  "control_properties": {
+    "conduction": 0.0,
+    "connector_response": 0.0,
+    "mechanical_wake": 0.0,
+    "screen_wake": 0.0,
+    "physical_ui": 0.0,
+    "portal": 0.0
+  },
+  "driver_counts": {
+    "conduction_core": 1,
+    "conduction_front": 2
+  }
+}

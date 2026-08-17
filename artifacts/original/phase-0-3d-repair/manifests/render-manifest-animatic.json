@@ -1,0 +1,1941 @@
+{
+  "schema": "quantum-hub.phase-0-3d-render-manifest.v1",
+  "generated_at_utc": "2026-08-17T17:03:30.135868+00:00",
+  "original_artwork": true,
+  "reference_site_binary_used": false,
+  "blender_version": "5.2.0 LTS",
+  "blender_build_hash": "fbe6228777e7",
+  "blend_source": "source/quantum-field-unit.blend",
+  "blend_source_sha256": "ad982f482e0a5e9da98a60b483c3c69dc00cbc8e24e69c9bf0937053394a51dd",
+  "engine": "BLENDER_EEVEE",
+  "samples": 24,
+  "render_scale": 0.5,
+  "frame_step": 1,
+  "timeline": {
+    "fps": 24,
+    "frame_start": 1,
+    "frame_end": 192
+  },
+  "renders": [
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0001.png",
+      "frame": 1,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 483799,
+      "sha256": "b777f17c159af7276a5965036ff7897db77e04708259214e15904b07ae1fa008"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0002.png",
+      "frame": 2,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 483558,
+      "sha256": "f7ec074d966f2a98b7aeceae51b7c3f9355000a317cfed5eff2937eaf5f018f6"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0003.png",
+      "frame": 3,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 483895,
+      "sha256": "f065373de21648cc48e08f4b5f03b5c9a5383e308ca4c74ca5cb49f813c1f8bf"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0004.png",
+      "frame": 4,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 483578,
+      "sha256": "c96487d8d3774d21beb2699a229e2a57fe55435f07f7d292c31ef6e6a71a8d40"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0005.png",
+      "frame": 5,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 483550,
+      "sha256": "026a628198896d6c1ced24dfe443e28ed4f065b1c41fd0c873c4639f00e64911"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0006.png",
+      "frame": 6,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 483360,
+      "sha256": "87b630bd77b1261104ad168c3a872231403c4ce2b2254198e48fa1590732de94"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0007.png",
+      "frame": 7,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 482782,
+      "sha256": "0f27cefc28801157cfd3db8618f7d998827afde859199c44656baedcb1f78d04"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0008.png",
+      "frame": 8,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 482888,
+      "sha256": "68f5ba963d131ec6bd33bf4cb930dfe15fb62e5a78836f56fd6d19155607ed01"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0009.png",
+      "frame": 9,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 482830,
+      "sha256": "0681d22972ebde55e89d7e5a350bf8407479e528856dd62fd975877367988712"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0010.png",
+      "frame": 10,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 483938,
+      "sha256": "228c19a1c9e20d4c52306f0c8a67ab9dbb41cc70d7eec0824ef45925f55fa140"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0011.png",
+      "frame": 11,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 483794,
+      "sha256": "b99d466d156587510a2fa241c0e30920717d3238cefd079b54b0981efa19ef06"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0012.png",
+      "frame": 12,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 483270,
+      "sha256": "72f31e7e37103da2c5f70b74cbde9d5def6acc20341dc6c2beb3e0439dd260f7"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0013.png",
+      "frame": 13,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 483728,
+      "sha256": "9bd7f83ab95299f84ccb39113b3b20976f0fc99f0013fea70fe3921b5ece3e1d"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0014.png",
+      "frame": 14,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 484035,
+      "sha256": "cc109cc6e3233df58763fe3105e20a61c38a29a18e5040d0f02668497cde258c"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0015.png",
+      "frame": 15,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 483037,
+      "sha256": "4cc71a2f2b1064db64ed285c0b8d76b02c0f0645f6116a123560ee6499d554e2"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0016.png",
+      "frame": 16,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 483108,
+      "sha256": "d248b24b3e8e12a3e62ed682d1f96107ad82f7ff8dc3961e9690520f87fcd580"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0017.png",
+      "frame": 17,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 483895,
+      "sha256": "aea303a7c899e6bf9631f2248f2acb04e97be0baeebbb978ad78fa630affcd28"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0018.png",
+      "frame": 18,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 483114,
+      "sha256": "dd0129765c447d8271d42de214ad720882fcecccfa57fa0f1c2fe11e894fe3da"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0019.png",
+      "frame": 19,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 483590,
+      "sha256": "bb11bf8d0cf6164051406e94613484bff23f49b338bbccbab8e93b148a815ac2"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0020.png",
+      "frame": 20,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 482841,
+      "sha256": "128e1ff1f2c2367fdbb9701f0ff7d9ac425c3dbbe71cdeeb381e8d8808c98809"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0021.png",
+      "frame": 21,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 483517,
+      "sha256": "20ecff9f1bc779e6282a48cb78c303db80e160c0718c64bd637fdac6a61278ac"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0022.png",
+      "frame": 22,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 483070,
+      "sha256": "87c10d8abf5538464cc7e3365202e0b64a2fd97f1912441dc52dd6e3b69c9c0c"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0023.png",
+      "frame": 23,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 484164,
+      "sha256": "177fe61ac678a1abf8d842cad281c19d782feec9535a728209416382005bb479"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0024.png",
+      "frame": 24,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 484135,
+      "sha256": "090ee6b9e45483378764bf928aa600520535971a860141a0388d7a600bcdeaf1"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0025.png",
+      "frame": 25,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 483014,
+      "sha256": "b038c0021f530302a9e0cf770aabdc82f11289fbcd89279ca3b09ceb504dbbb1"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0026.png",
+      "frame": 26,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 483488,
+      "sha256": "3ad3cfc95cfd612e6277934358f0be17688c4f5b0c2179c55590b48125cb2448"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0027.png",
+      "frame": 27,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 483200,
+      "sha256": "edcec4894d0039e38fe5de0b85b4868dc74dab60a9ebe7d7f18a8c52352647e1"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0028.png",
+      "frame": 28,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 483949,
+      "sha256": "83b4b30396c67885fd60c4795071a5b13a48b9180a19dcab411372940c5e99a7"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0029.png",
+      "frame": 29,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 483842,
+      "sha256": "8cd58a9b3c0f06213844c1b9fbdd39cac58ca4cb001f591002e226e3b54a0c17"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0030.png",
+      "frame": 30,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 483946,
+      "sha256": "390ff451314e26dcbb10417ab3fbfe1785293ae121f48ce82c25b553981e5813"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0031.png",
+      "frame": 31,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 485282,
+      "sha256": "4a20a65c64a1658ee7281919b4b87d437d634cca293c59120a074a2e4ba954bb"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0032.png",
+      "frame": 32,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 484004,
+      "sha256": "1a5ba61959b76d2f011c977e0ed94f87af80f7e0757be33368e3c13de4f6e719"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0033.png",
+      "frame": 33,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 484843,
+      "sha256": "13600da11f13c661ee23343ae6e7e120b4c62d237f09020f7b90b8e7ce2b1489"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0034.png",
+      "frame": 34,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 484299,
+      "sha256": "7e42cd10693d1b028f762fa9ef6cefc7a0116eb640dcd92c6c422f2b6d7ea063"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0035.png",
+      "frame": 35,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 483973,
+      "sha256": "880ea6ef2f342a72ff1aec6d1211c7b1d6dd0039f8ea1c19fc5d7d7f2147f397"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0036.png",
+      "frame": 36,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 483163,
+      "sha256": "72cd834f74fe605fae4452ed1f3e81c0271ff129a44277cbf8caccb279ddceec"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0037.png",
+      "frame": 37,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 484860,
+      "sha256": "3fa0c9c763a8de7ecc962b1752e09b60c79b925072323e1e630d05e9953fc993"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0038.png",
+      "frame": 38,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 485774,
+      "sha256": "62787a39a642d4a8a84ffa6678e955bc43bed1338ac9dfc1c7e2efff1f6847c4"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0039.png",
+      "frame": 39,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 485080,
+      "sha256": "8a280db591ea969cd1d1493a394ca84850246e1ab224b1ee60cd7188e3596a92"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0040.png",
+      "frame": 40,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 485552,
+      "sha256": "5d1555ef302f1c2c882f19fad53c2bf3661a84d71484f7a931d4c777b877c345"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0041.png",
+      "frame": 41,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 485670,
+      "sha256": "c2dafaa73421cf5f840ba764c32ca2a553dbe973a429c1079d2b3ee9b5cc3032"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0042.png",
+      "frame": 42,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 486355,
+      "sha256": "a2330e22c2618113df7d10d6c50e6b5285f9ba701c1106fcfc792ea03ef10b62"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0043.png",
+      "frame": 43,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 486664,
+      "sha256": "a8343c7d5eab760c9d6e6fdca6d2b70952d9019e63b03c76403d99596101b403"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0044.png",
+      "frame": 44,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 486659,
+      "sha256": "4226a2a728b4778056cdb73b1cb82559b4cc7594457bd61f2e83c8331dff9019"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0045.png",
+      "frame": 45,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 486969,
+      "sha256": "82c34ea0974b6cecad8a00a34aca706dbf200069c5aaafcf96e1b57cf2146940"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0046.png",
+      "frame": 46,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 486660,
+      "sha256": "062fc1c7914e6df62d13ee9f60cd85085ab1f5bd932e3e82b6871551510a8898"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0047.png",
+      "frame": 47,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 486003,
+      "sha256": "11dec9a92a1b3a1cb221758a716e30b0cb872ca2bd377e658d87b488a64bac59"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0048.png",
+      "frame": 48,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 486083,
+      "sha256": "4c10ff9c5a4068404002d5cb9ded6235c8913d99c2f187dba982a806ef3cbdee"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0049.png",
+      "frame": 49,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 487212,
+      "sha256": "b696f9bea50065d4363da1e83ffad63424c96929b41389d6ae867dc5d7474227"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0050.png",
+      "frame": 50,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 487232,
+      "sha256": "e81f7da3f115cccd45cbbc99e621c20e9c1b3079bbd5a17b37bf9a010e298c4e"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0051.png",
+      "frame": 51,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 486815,
+      "sha256": "61fd5a439862f133e3b6dde5a35949dc838a49599ea0e8c3b1852409b3bcfac5"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0052.png",
+      "frame": 52,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 487091,
+      "sha256": "bae0952ab0e849135d47981b05d7490ee268ec25567c3afcc9f352e6e2a82bce"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0053.png",
+      "frame": 53,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 487199,
+      "sha256": "17b86db66ed53c3175dc123e38d6935d05db3b39bad389d0c05309b90dee45fe"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0054.png",
+      "frame": 54,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 487669,
+      "sha256": "b7f3bd7f36a343dd1875389d1500d431ef97f480d8a13ca165e5f1a6f7ff8292"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0055.png",
+      "frame": 55,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 488183,
+      "sha256": "b1d8f43612688a3b42c13df1fd69507bfa4ed4bde651a987a918b7b8d3740f4f"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0056.png",
+      "frame": 56,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 488567,
+      "sha256": "a1ee6416b2cb90dd4663fc87642ca5af98e455ba59b61f63f738ca190801f432"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0057.png",
+      "frame": 57,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 488953,
+      "sha256": "c3eb012651bc982553429a92015443d70f374355eba82178df4b8f3bfcb36536"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0058.png",
+      "frame": 58,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 489696,
+      "sha256": "fe35d4bec8d68d7a3214a1de82a51524807bed1a19d526feb9ca86c4df9eb3b1"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0059.png",
+      "frame": 59,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 490240,
+      "sha256": "053f6cb9f00b0e4f1c1726c42540f0192fdc5ee48029f0728430bc4b8de4ef7c"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0060.png",
+      "frame": 60,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 490276,
+      "sha256": "1a200363db7f6d06bce2e29625c9c03817f09fc61aa66b7d70fc625df43527cc"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0061.png",
+      "frame": 61,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 490148,
+      "sha256": "55ce4d673dfd24e32b7cc35c62520dcd98a220bd74bce747f4986c8685047d14"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0062.png",
+      "frame": 62,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 491102,
+      "sha256": "19983453059a2dcafc33e41957ee73026131a481b4c672da5cd49d95da0df45c"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0063.png",
+      "frame": 63,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 490733,
+      "sha256": "a43b16c0b3e5f3cba1fb3e1b144277f6493e81db5146db794fed81e5677e74c1"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0064.png",
+      "frame": 64,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 490604,
+      "sha256": "0f3834caf222be62244a3301df09fe71bc443643d036e314fd34f59be7fbcd02"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0065.png",
+      "frame": 65,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 490603,
+      "sha256": "b9ea7f39fd0b840aa03550572fe7a6afdeda7cdefc915bb84b82a5df39a3869c"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0066.png",
+      "frame": 66,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 490954,
+      "sha256": "c4749265a741e7f3e27af06efedbdeb9f0de6c47733d7ff24611c5d1c95d80ad"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0067.png",
+      "frame": 67,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 490900,
+      "sha256": "7073596654d1ac1e452aa52be74c1111eede980bad5c87c70c50bb1b197c2ccf"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0068.png",
+      "frame": 68,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 491284,
+      "sha256": "99d928140d63d03826737633ef0c0c640097af47855e6b8ae90e8f10ba429191"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0069.png",
+      "frame": 69,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 492174,
+      "sha256": "a5d593c9c04c2ea4166180bebefbba0caaf858c8dd4e3bd1d8035dc5cb429c33"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0070.png",
+      "frame": 70,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 491729,
+      "sha256": "4eda03ee9148a3a66f9a505aed98bc712449296bc8740483b0977a71b789730f"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0071.png",
+      "frame": 71,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 491792,
+      "sha256": "96f4429a45c5bbf07a2d3edb3d50e162c9278e4369319795356d6432f07e47c3"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0072.png",
+      "frame": 72,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 491214,
+      "sha256": "62b8c5a8fe1a333bf39dedcba2cdbdbe8302ce6e36ea87988f2d855c0b66702e"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0073.png",
+      "frame": 73,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 491055,
+      "sha256": "406b30ab2b33282a2101b8b9453df8d4119d7e8fd03d66e565be21647c03ae9f"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0074.png",
+      "frame": 74,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 491692,
+      "sha256": "5122320677e7a95a9521897d3ae922b6317635b9ff78f1057184182bbca22f32"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0075.png",
+      "frame": 75,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 491052,
+      "sha256": "572049c5ed1317c9f94d73f0a8a44fcfb4dafbdef71185abbcf1eaa8a61c2332"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0076.png",
+      "frame": 76,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 492201,
+      "sha256": "e9568eb0c51bee3a63e6bf4bf9a172f7ba3c4c4b8b8dc8b5fb68cb6a5d682196"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0077.png",
+      "frame": 77,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 491126,
+      "sha256": "02f7f79b560c842bb7f48e833dc369fcd141035423591414f8249cd73dc39927"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0078.png",
+      "frame": 78,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 492053,
+      "sha256": "d8efbf295394fda1255778c86ccc2a0964ab4e46ce4b6441bb7fcbb3faa5c71a"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0079.png",
+      "frame": 79,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 492239,
+      "sha256": "88537e4b7324e62242b430bcbdce4a96c1dddb4f4f8fd590742d4dc9f900b2d5"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0080.png",
+      "frame": 80,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 492313,
+      "sha256": "541f7338635bd7f77a2b5ff2ee6b2d5d31c3f322fec699d9fc2aa5dc37c179af"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0081.png",
+      "frame": 81,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 491856,
+      "sha256": "933340668f6da9b21e054d6db54ce68f8ad0ee6899d2ef44165f265d270c5b17"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0082.png",
+      "frame": 82,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 492835,
+      "sha256": "c592c5e6328fe7e2a85a0dbfb7d3988a55d4ccea31f298ef39db67b2351d4daf"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0083.png",
+      "frame": 83,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 491766,
+      "sha256": "4dcf6d693feea84798d343534ffeb4a940510881bca9673316aedf5b2f73555c"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0084.png",
+      "frame": 84,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 493461,
+      "sha256": "bd000693c663572f72974ff45c83bf916ba808cc8b011f8331ecb5e7fab81864"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0085.png",
+      "frame": 85,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 492824,
+      "sha256": "8a28c2cf80ef546c80a38bee10f65d4d0d220367f8963c9e0b0d7f5d3a7ac325"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0086.png",
+      "frame": 86,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 493150,
+      "sha256": "aaff3fd92758afbf43d5dd9185aed82104ff29ed1609b9636ef8f9b1c5e2634d"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0087.png",
+      "frame": 87,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 493271,
+      "sha256": "ecbcfcd12ae97818d4aba2d552c03946ae7c0ef1462b54db735d174c0aedd83b"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0088.png",
+      "frame": 88,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 493668,
+      "sha256": "8c46f35ac6d0fd0368e27b3371dbbbff33747596c48c653a09ba4cd848bfc447"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0089.png",
+      "frame": 89,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 493752,
+      "sha256": "083b44901fc5682591772f62e00441fdacd4759e22aed09536eb9f1fd430e400"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0090.png",
+      "frame": 90,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 493058,
+      "sha256": "e2602bed136d55f4497a0d6e20c8fef101c4f6b92dd7bf613aa68c12debb5a4e"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0091.png",
+      "frame": 91,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 493098,
+      "sha256": "e1939009385586401237f1714475d81da79238279f34393bd3baf3ae519a1ed2"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0092.png",
+      "frame": 92,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 494183,
+      "sha256": "15ecb0527d2ea3433c516440383519c24948cd7684ed4912f7c15f21ada7afbf"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0093.png",
+      "frame": 93,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 493665,
+      "sha256": "b962e585c74cebef9042c55fd8b8f9245384e32ebeb1e9d83a94bcd7e2ae9114"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0094.png",
+      "frame": 94,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 493955,
+      "sha256": "fb3383399064d59c00f87b6a271055982e1310cdfcc6e8485c743a9024a8888c"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0095.png",
+      "frame": 95,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 494426,
+      "sha256": "6d90adc1fd62087b7b69a6b9ff8469c46350948f1d147163a9c0c55b70580113"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0096.png",
+      "frame": 96,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 494906,
+      "sha256": "010712c147a4a9d3dff57af9d62150289c6b6e39030cdc81d1fa9dd7447bde27"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0097.png",
+      "frame": 97,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 494635,
+      "sha256": "9b9352ab401f66268c26ff93c1fe45e4af6137b6d118642968acf271462592df"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0098.png",
+      "frame": 98,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 494755,
+      "sha256": "deae324d8a32b3e38d0019951028e954f600c445592489d112bfa4b68735b078"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0099.png",
+      "frame": 99,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 495398,
+      "sha256": "7bbcdcd78bb863b25a7e8e834faaa985e40d8e52194c71a10f62d53e3bbfa14c"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0100.png",
+      "frame": 100,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 495990,
+      "sha256": "de5c445023fdb6b04ac0178a1100750721a2fd0b92a5f9080b0ebd7b78a5330c"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0101.png",
+      "frame": 101,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 495908,
+      "sha256": "e3d6053b3973a92e95c932fc5b620271e0de8d255784b7a3ea9ce20f49c617b2"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0102.png",
+      "frame": 102,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 496732,
+      "sha256": "a004433d22ab30801400b730219c69c001d7d7c54b20a1d3f9749c15a88c8d43"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0103.png",
+      "frame": 103,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 496589,
+      "sha256": "c4be41c35058979c5b68b1f3b7bff43d1013581c230b4e7335f2abf5a9772650"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0104.png",
+      "frame": 104,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 498248,
+      "sha256": "6368e3f5c95d70c6a91f069fb8c5c4d3e37ddb010b439ce97f59f2447de2175c"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0105.png",
+      "frame": 105,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 499336,
+      "sha256": "4a46194f00cdfe14c77f454f531f24f2003d3e0cb293dc11768ae0f32f710b0a"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0106.png",
+      "frame": 106,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 499638,
+      "sha256": "ee5d8db785fe7c3364c768f99ad5848cf9fac8cd74419388d3d78ef306a80040"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0107.png",
+      "frame": 107,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 499004,
+      "sha256": "7b44e7434bbde8432b6173e26f15d23d4b034e8f1bd33f33b4c31772e733dbcc"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0108.png",
+      "frame": 108,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 500031,
+      "sha256": "9f8ef4ef46332aea6cb219ba840004f77b7e290ba4b53e2ce932d4ff07c3be28"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0109.png",
+      "frame": 109,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 500272,
+      "sha256": "c87986b16d631eb005f19e0b4e827dac37ad12986602f01d9302f6f0390d5a7b"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0110.png",
+      "frame": 110,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 500457,
+      "sha256": "98b3e3739afeeffb795b23269bc90885e7bb31f687669fcc0a269e2612cc09f9"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0111.png",
+      "frame": 111,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 500233,
+      "sha256": "a363174b3f2975b29800eb57558d2eb278370d7cffe6b89574afa817f7f4513f"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0112.png",
+      "frame": 112,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 500738,
+      "sha256": "f4b08214150222edd273ca2ea421517e8edb30939521d89e708f9fe4642d17a8"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0113.png",
+      "frame": 113,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 500834,
+      "sha256": "4c81300185f7c19c6edc92b936c02443d99b847ea14ada1cd7e22ee802c2a531"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0114.png",
+      "frame": 114,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 501191,
+      "sha256": "aa3622991284731fa10c78879249dc07657cd1d031b220f04c3718895a87f388"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0115.png",
+      "frame": 115,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 501793,
+      "sha256": "7911d10603d95ca051298361d18cb84b79e408212a2597a9c7078d3b3ce0be62"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0116.png",
+      "frame": 116,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 503104,
+      "sha256": "31c1497001bb3c826a0770fa923337c93ba1110a13eade685d047878abb480e5"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0117.png",
+      "frame": 117,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 503572,
+      "sha256": "62b081ecb91e5b0e481b99fb70bc3a12991d418274f0ae299fc323f6a062849a"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0118.png",
+      "frame": 118,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 504213,
+      "sha256": "cd8179090c0626e14aa1d0a1c5d8ba167e3acb9c54703c795586c9cd7c93e463"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0119.png",
+      "frame": 119,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 505958,
+      "sha256": "9201961e46af1848f025229d6bb84cbc85cf2fa32a2504f7ee0d0043cbc2a6b1"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0120.png",
+      "frame": 120,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 507725,
+      "sha256": "562e211cef53b585acdc7cc50afe49f6b96a6d485fe7e2264b60aaa62f9a6cd2"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0121.png",
+      "frame": 121,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 508126,
+      "sha256": "02c45bb3afcca37de47d5a5d6f8d2d5c6ab049ddd07873f6abc4de2e42ab3871"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0122.png",
+      "frame": 122,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 509863,
+      "sha256": "397e25074357d44577f09627577e40f421c09267f038d181c5d76dce71d754e4"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0123.png",
+      "frame": 123,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 511449,
+      "sha256": "35ab48898e96daf8d9abc647ff2209c699e68643d77f86ec02c5bbb7182bf52d"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0124.png",
+      "frame": 124,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 511561,
+      "sha256": "d04c90051dc37ee70cb340110aef0a1aac7cf7ea2f13dce7aa63a7c009e36219"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0125.png",
+      "frame": 125,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 512069,
+      "sha256": "c78457605d56839734e75244a6c4e4c852fc8747ca7e9e7b7efdadcf030608c7"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0126.png",
+      "frame": 126,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 513958,
+      "sha256": "db30b804597b91c7e4a60c38361a35dcc78133963e5859d5db0eafae2827a362"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0127.png",
+      "frame": 127,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 515086,
+      "sha256": "05785e7d84de3921817050ecae4f9feb6d1de91a5cfc9c5e52fe281ccebdb6fb"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0128.png",
+      "frame": 128,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 517178,
+      "sha256": "0fc9faf2a8c1451761f6e3e00b9338c976dc874164d9ebb5bcb89f1d482dedc8"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0129.png",
+      "frame": 129,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 518418,
+      "sha256": "9387bf1f53ff0ec9e82d9b271dd0e65e53d29649949785da7e141f6bf4d0cc5e"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0130.png",
+      "frame": 130,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 519123,
+      "sha256": "e58ba0e1b16d586b5efbc40a72c1f88f6c9adf9c335eb6bfdf43e10ffe38df84"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0131.png",
+      "frame": 131,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 519648,
+      "sha256": "e0250972ac1daa0625649718b5b798fba7b5d671913ac6ffa8410c4100baea41"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0132.png",
+      "frame": 132,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 520178,
+      "sha256": "5e55d6d4a9b50371283b08ead0c51a7deff6695f6716cd2a0d71152b29148989"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0133.png",
+      "frame": 133,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 518647,
+      "sha256": "7717853f4c1a261ec3d0c71632b88995308ca702297bc56e1888884b14e7f58b"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0134.png",
+      "frame": 134,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 518294,
+      "sha256": "7ecdb90aa81ca40636bb1fcedcc75db64f04e00eabbfb496a0e4acadbdf78ce5"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0135.png",
+      "frame": 135,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 517821,
+      "sha256": "a714deb318defa7f519f085dc3f1a40cbb7360ca9954b9f18694a39b5fd06c0d"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0136.png",
+      "frame": 136,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 518620,
+      "sha256": "bc82dcc2b1cd386bacaa01d156a521155cc0344cd393758bb7b604b187e53a06"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0137.png",
+      "frame": 137,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 518563,
+      "sha256": "3168e34a3d636c6994b2ac94869a5fa2ce4a6292deae5236b183c80c8bcc476e"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0138.png",
+      "frame": 138,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 518400,
+      "sha256": "b12e3c162a6d4685fce0fa37457157ea410bb6dceb3c067de6de721cf7ce0912"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0139.png",
+      "frame": 139,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 518826,
+      "sha256": "c5567e07c7e6088c3a9da8a203dc33f437b27fd06eed3a2b8640cda4d6339200"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0140.png",
+      "frame": 140,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 520610,
+      "sha256": "87154c930e040337048b84e8f8eded849fafe618511ff51fb471aeb01dbfacf3"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0141.png",
+      "frame": 141,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 522195,
+      "sha256": "7872b8bdc58ea09da99376b6379726c37cf6544b8f571f16f6ab743a06be6282"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0142.png",
+      "frame": 142,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 524395,
+      "sha256": "5cff35973871e420b8acf3a115a033b616df41eea201c079800e2abe74b7148b"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0143.png",
+      "frame": 143,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 524563,
+      "sha256": "ea016c5dd0fa0b188ad623786a52350efd91dcab1d97a7f7e0e829cae794919d"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0144.png",
+      "frame": 144,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 525922,
+      "sha256": "c07605f5658d1c0e3b9c5a1025f299f1727a0751d97667ee98b1d908be21f97d"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0145.png",
+      "frame": 145,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 526619,
+      "sha256": "40a02fff16806e9fee8d202234a009ecb73402835147eef8ff89bf97ddf2d2d2"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0146.png",
+      "frame": 146,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 527821,
+      "sha256": "1db749bf244f77920e4c5d02d9f318a91d34c32590c7bed517fefff1bacd4022"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0147.png",
+      "frame": 147,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 527586,
+      "sha256": "d37015bc23b5ed89d7890127832b7ecb5bdcf84659181105807a5666e71ba491"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0148.png",
+      "frame": 148,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 528207,
+      "sha256": "fef5b2e1e50ae18878adbc6fe0c85c5d7c64ae413934f692475aeeb1567b61fb"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0149.png",
+      "frame": 149,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 529929,
+      "sha256": "63b171bd61c31756f8d8096e918ac4d6b9de13f0e209868797007e27f3652632"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0150.png",
+      "frame": 150,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 532183,
+      "sha256": "b951abefaf234a570f7f9ee8b03a786c0181de23bc8541993d4f2e45b2224e87"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0151.png",
+      "frame": 151,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 533982,
+      "sha256": "bfa80cdffa28f2318ae46d02c6157d10b1eb40e39e443d3f23355af4e53c4dab"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0152.png",
+      "frame": 152,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 534549,
+      "sha256": "b1af6452e01ff165e30c60a84c7582bb634b817b8a97292c9b05a1bec9472ca9"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0153.png",
+      "frame": 153,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 536654,
+      "sha256": "69211bd64cb014e03d5b3a93837c8dd90caf7b631328dc653ba54734b04e960c"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0154.png",
+      "frame": 154,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 537102,
+      "sha256": "f021b2c8deb52bf27783e1b1765a05ba2feb69d5aa263158b57edeaac2580164"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0155.png",
+      "frame": 155,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 537508,
+      "sha256": "41e877fe09b9133458042b7d663091a930e7bf8ca66ad8008bc3d90a56ef6d84"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0156.png",
+      "frame": 156,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 538481,
+      "sha256": "8c6cc74cef3aacd109a8cf496a0f4557c1719027fc4aabe10eb6b71ce58421c1"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0157.png",
+      "frame": 157,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 537433,
+      "sha256": "dde6e5322f4cc296b039079efe5467bc472ebe9c7a8da609bb32e779e76f5d33"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0158.png",
+      "frame": 158,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 538356,
+      "sha256": "b1f20862557d9810e74dff77572fd99447809585ae2d977563a6ba15962292bd"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0159.png",
+      "frame": 159,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 538188,
+      "sha256": "9ac39ba61335bcef8ad6150f74d424574f598d469625b2d4ddfe657ebfa8299c"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0160.png",
+      "frame": 160,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 537810,
+      "sha256": "d056f6c9f8a8606350940a88fef76e4fb23d3b93f3b45a02c589b3a1bfda8887"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0161.png",
+      "frame": 161,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 538462,
+      "sha256": "5d118405739847cf3085300a6cea8ecdeac7f9b845b9693df45a65c2bd13e8ef"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0162.png",
+      "frame": 162,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 550285,
+      "sha256": "508c604411cc8683817e1e5b9ab1d3a892c8a27c27e77f36f646f9180ae76e2e"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0163.png",
+      "frame": 163,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 552772,
+      "sha256": "9edd95b96bdee37335a19ad6c9760531639f97636a50f3b89f337f92ed0fb28f"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0164.png",
+      "frame": 164,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 554432,
+      "sha256": "af2220e7c52f2f19f9340205c7824b91b322945d80a8e8d6e33cadc38a68b31e"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0165.png",
+      "frame": 165,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 554515,
+      "sha256": "75d4b1a2a0a418075f41d5978a897da1c5ff48c2c13eec5334386cf0ad38df96"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0166.png",
+      "frame": 166,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 556259,
+      "sha256": "b6881a5653801669a1a9dea9ce6b7c489c64e9fb90a8a953616ef28df7a1b445"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0167.png",
+      "frame": 167,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 556942,
+      "sha256": "62ac3e713d628429727b2077517a759032dcf2d3c9a21e2e53c7f0567090e2d5"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0168.png",
+      "frame": 168,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 557801,
+      "sha256": "9e903724cb4f4aaf64b035ed2f7f933bb67446e2d84a033d83123090aa558ea3"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0169.png",
+      "frame": 169,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 560165,
+      "sha256": "7112b97362c58efec5a784412e944f5c1a12b10eabeb58ead3b6e477c672f3df"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0170.png",
+      "frame": 170,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 563863,
+      "sha256": "fb811d0893faf493eebac49c1b249e384d83acab956ba01ed97263a14387dfe7"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0171.png",
+      "frame": 171,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 565445,
+      "sha256": "e108885a5e724fb67faea321193b724976d930d4eea73d49e0160fada227d12b"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0172.png",
+      "frame": 172,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 572798,
+      "sha256": "b86adf09337cc3a6a48125afe9fcf7e69131ea0af2239ed3ff56ae19cdb4c442"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0173.png",
+      "frame": 173,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 581291,
+      "sha256": "8a96a51036c59313f0c7f28a362cb0e764457700a830271a6331a03bfa24c295"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0174.png",
+      "frame": 174,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 594236,
+      "sha256": "4aee2c2b5d32c1d730742fb632f62682735a811ad3f2ec6ced9f8bf8be6247bc"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0175.png",
+      "frame": 175,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 606855,
+      "sha256": "948f7abdccc4f526fdf0d281e015f7034153dca0002cc0add921dded070ea352"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0176.png",
+      "frame": 176,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 618406,
+      "sha256": "0a8de836fc0d782364c4dccf701a16d0e1ec2ca68a9616747d7f71e767e3dfea"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0177.png",
+      "frame": 177,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 631675,
+      "sha256": "732c0dbc28df10c7532edc07c4df65473c7053b0088f32a1f6e8ead05e8edbc8"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0178.png",
+      "frame": 178,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 640174,
+      "sha256": "404a5fc7a4f894d96716f1f31b7bdd718443e419628ec7054d5152cb933c0838"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0179.png",
+      "frame": 179,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 648361,
+      "sha256": "6cc9f1bb12b21f349dfef6b8143efd3300f4551d7aee55bec1672e646255ba4e"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0180.png",
+      "frame": 180,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 650974,
+      "sha256": "889acaa9dbd2425a4fbf8a77a8cf011e0b1c8ebcbb9bc35789591e36c539d084"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0181.png",
+      "frame": 181,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 403445,
+      "sha256": "0f0fe22a0aef9da4cbd604b13fd0b2d5f12a1c3765f51d83fbdf37de871d8ab4"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0182.png",
+      "frame": 182,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 395016,
+      "sha256": "ab37fb2d0960a973c3e4d1168eb208219b0141910d5ac81f604c82fe127899d6"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0183.png",
+      "frame": 183,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 441797,
+      "sha256": "6192c7953c7deff7c72325edc2de5f958a80a33ec8847ef969b9c018f4761aa5"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0184.png",
+      "frame": 184,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 462131,
+      "sha256": "9aa59829df75794cd3fd526349e77174670f8ec97383a39105ce05d3582b32f6"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0185.png",
+      "frame": 185,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 438245,
+      "sha256": "9f0e123b75ae077fc61b4b228578bcfd1a9a9f44f60ef81b6fd0190164c98658"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0186.png",
+      "frame": 186,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 469503,
+      "sha256": "6efb8a700ac8bb4ec609809c3f2dc2a1ee26b2c89fc6fcfc5ec6e57cd6760628"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0187.png",
+      "frame": 187,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 471497,
+      "sha256": "e93fa9e0f6369f18840a06fcb39c3b2f9ebc5308815815dcf78934c31fd4c626"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0188.png",
+      "frame": 188,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 471990,
+      "sha256": "2042f3612ceabc33e5d5042217f99bc6df83e18975a7e6d1a76df1b95e14ce66"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0189.png",
+      "frame": 189,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 471979,
+      "sha256": "c300be1d191aecdefe617012770d14229626637693b082b06b4eeca8332cde79"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0190.png",
+      "frame": 190,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 472570,
+      "sha256": "e28d126336dedb864f17d040a4d99db6cd13e599b9b461e666fb777090b96b12"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0191.png",
+      "frame": 191,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 472342,
+      "sha256": "e8069658110c9984cdf8d2d0a07e2e24ef7ee0afd643115f270746cdafcd518a"
+    },
+    {
+      "group": "animatic-frame",
+      "path": "work/animatic-frames/frame-0192.png",
+      "frame": 192,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 540,
+      "bytes": 471439,
+      "sha256": "95b17389ce187c915eddb335b339f949f4d17e18595a84a2673c0aec8245332d"
+    }
+  ]
+}

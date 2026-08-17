@@ -3,3 +3,8 @@ dist/
 .astro/
 .DS_Store
 *.log
+__pycache__/
+*.py[cod]
+*.blend1
+artifacts/original/phase-0-3d-repair/work/*
+!artifacts/original/phase-0-3d-repair/work/.gitignore

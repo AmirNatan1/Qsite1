@@ -1,6 +1,6 @@
 # Quantum-Hub cinematic website: Human Review Package
 
-Status: Phase 0 implementation candidate
+Status: Phase 0 3D creative repair evidence complete locally; pushed candidate and human creative review pending; prior candidate preserved as historical evidence
 Plan accepted: 17 August 2026
 Implementation branch: `planning/phase-0-reconciliation`
 Production branch: `main` (protected from Phase 0 work)
@@ -29,7 +29,53 @@ The following companion records are normative:
 - [Q-HUB import ledger](./QHUB_IMPORT_LEDGER.md)
 - [Browser QA evidence](../../artifacts/evidence/phase-0/BROWSER_QA.md)
 - [Toolchain and encoded-media audit](../../artifacts/evidence/phase-0/TOOLCHAIN_AND_MEDIA_AUDIT.md)
+- [Authorized portable 3D-repair toolchain](../../artifacts/evidence/phase-0/TOOLCHAIN_3D_REPAIR.md)
 - [Test and build report](../../artifacts/evidence/phase-0/TEST_AND_BUILD_REPORT.md)
+
+## Current Phase 0 3D creative repair addendum — 17 August 2026
+
+Human review accepted the Proving Field, Spiral Conduction, outside-in cumulative illumination, powered-off initial state, delayed Field Unit activation, interface wake, portal-to-semantic-DOM architecture, authored mobile mode, reduced-motion mode, Dark V2, and one native page scroll root. The creative decision on the prior schematic evidence was `REPAIR`, not a conceptual redirect.
+
+The current repair replaces the diagram-like visual evidence with an original, maintainable Blender-authored environment and Field Unit intended for a premium industrial product film. The production architecture remains:
+
+```text
+original Blender-authored world
+-> pre-rendered cinematic media
+-> small native-scroll TypeScript controller
+-> matched portal frame
+-> semantic Astro DOM
+```
+
+Runtime Three.js, React Three Fiber, GSAP, WebGL ownership, and any Blender/FFmpeg website dependency remain prohibited.
+
+The user authorized a per-user portable offline toolchain. The verified installations are Blender 5.2.0 LTS and FFmpeg/ffprobe 9.0.1 Essentials, with `libx264` and `libvpx-vp9`. Their exact download provenance, archive and executable SHA-256 values, licenses, footprints, signatures, and isolation evidence live in `artifacts/evidence/phase-0/TOOLCHAIN_3D_REPAIR.md`. No tool binary belongs in Git or the deployed site.
+
+The live repair evidence belongs under `artifacts/original/phase-0-3d-repair/`. Exact source, render, review, encode, probe, browser-seek, and portal-alignment results are authoritative only when their final repository files agree with:
+
+- `manifests/blender-source-validation.json`;
+- `manifests/render-manifest-all.json`;
+- `manifests/encode-manifest.json`;
+- `manifests/ffprobe-manifest.json`;
+- `manifests/browser-seek-report.json`;
+- `manifests/portal-alignment-report.json`;
+- `manifests/review-bundle-manifest.json`.
+
+The settled local evidence currently records:
+
+| Evidence | Current manifest-backed result |
+|---|---|
+| Editable source | `source/quantum-field-unit.blend`; 360,021 bytes; SHA-256 `91601d8c0fec51744df4e4cca510556559e7f5c542b9bcc84ca83ae650c16adc`; no external images or linked libraries |
+| Canonical stills | 40/40 required renders at scale `1.0`, produced with Blender Eevee from the validated source |
+| Genuine animatic | 192 frames, 24fps, 8 seconds, 960x540 review resolution, no audio |
+| Encoded comparison | Six real-content variants: VP9 WebM and H.264 MP4 at GOP intervals 1, 6, and 12; 629,513-3,764,295 bytes |
+| Browser seek evidence | All six variants passed deterministic forward/reverse seeks; p95 seek-to-present ranged from 15.63ms to 46.362ms in the recorded environment; zero dropped or corrupted frames were observed |
+| Portal alignment | 1920x1200 source comparison and overlay; SSIM approximation `0.338255`, normalized grayscale MAE `0.058587`; human perception remains the primary acceptance evidence |
+| Compact review set | 14 manifest-recorded artifacts, including 11 review images, the preferred VP9 GOP-6 animatic, DOM-match metrics, and README |
+| Automated integrity gate | `scripts/verify-phase0-3d-repair.mjs` passes: 40 canonical renders, 11 review images, six real-content encodes, source/manifests, privacy, taxonomy, file-size, and dependency boundaries |
+
+These are local candidate facts, not a claim of human creative acceptance, an immutable pushed SHA, or a Cloudflare preview tied to that SHA. Those delivery facts remain pending until the branch is committed, pushed, and verified. The original browser-native 2.5D harness remains a shippable fallback and historical feasibility control; it is not a substitute for the current requested 3D-quality repair.
+
+Phase 1 remains locked.
 
 ## 1. Repository and source audit
 
@@ -219,7 +265,7 @@ The Phase 0 evidence set must contain only original Quantum work:
 - independently authored 360x800 and 390x844 mobile evidence;
 - 1600x1000 and 720x1600 dormant reduced-motion posters;
 - an originality comparison;
-- a toolchain audit and, only when genuinely possible, a real encoded-media seek test.
+- a toolchain audit and a real encoded-media seek test using the genuine Blender animatic.
 
 No reference assets, scraped models, generic laptop, stock science-fiction object, fabricated Quantum photograph, placeholder gray box, or another company's render may appear.
 
@@ -242,7 +288,7 @@ Phase 0 validates the static baseline and browser-native fallback against these 
 - mobile 2.5D fallback at or below approximately 850KB;
 - reduced-motion poster at or below approximately 250KB.
 
-An encoded-seek claim requires a real encode and measured browser playback. If the required encoder is unavailable, the package records the missing tool and makes no performance claim.
+An encoded-seek claim requires the genuine Blender animatic, final VP9 and H.264 variants at GOP intervals 1, 6, and 12, ffprobe evidence, and measured browser playback. The earlier synthetic 640x400 seek spike remains historical feasibility evidence and cannot satisfy the real-content gate.
 
 ## 14. Accessibility and reduced motion
 
@@ -283,7 +329,7 @@ Phase 0 preserves:
 
 These restrictions cover HTML, metadata, filenames, image text, alternative text, JSON, source maps, sample data, and client bundles. The complete matrix is in [PUBLICATION_MATRIX.md](./PUBLICATION_MATRIX.md).
 
-## 17. Implemented Phase 0 evidence
+## 17. Prior Phase 0 candidate evidence — historical
 
 The accepted Phase 0 scope produced:
 
@@ -296,10 +342,16 @@ The accepted Phase 0 scope produced:
 - a reduced-motion path that constructs one dormant picture and zero animated scene SVGs or video elements;
 - visible keyboard focus on both the static baseline and harness;
 - a real original 640×400, 24fps, 123,712-byte VP9 WebM low-resolution desktop animatic with forward/reverse seek measurements;
-- an honest installed-tool audit confirming that no DCC, FFmpeg, ffprobe, or glTF CLI is currently available, while the browser-native premium 2.5D path remains viable;
+- an honest audit at the time of that candidate confirming the production DCC/encoder toolchain was then unavailable, while the browser-native premium 2.5D path remained viable;
 - automated static-output, publication, provenance, artifact-integrity, direct-progress, reduced-motion, and private-path checks.
 
-The real browser encode proves a bounded low-resolution media path only. It does not establish production 3D quality, controlled keyframe cadence, multi-browser behavior, mobile memory, an H.264 deliverable, or external ffprobe verification. Production 3D remains blocked until the separately documented pinned DCC/FFmpeg toolchain or an external producer is approved.
+The real browser encode in the prior candidate proves a bounded low-resolution media path only. It does not establish production 3D quality, controlled keyframe cadence, multi-browser behavior, mobile memory, an H.264 deliverable, or external ffprobe verification.
+
+### Current 3D repair evidence gate
+
+Production tooling is no longer the blocker: the authorized portable Blender and FFmpeg/ffprobe installations are verified and isolated outside the repository. The final original `.blend` source, canonical render manifest, compact review package, six genuine-content encodes, ffprobe records, browser seek measurements, and portal/DOM alignment evidence now exist under `artifacts/original/phase-0-3d-repair/` and agree with their final manifests. Delivery still requires the final repository-size report, normal commit and push, exact Cloudflare-preview SHA verification, a clean working tree, and human visual review.
+
+`scripts/verify-phase0-3d-repair.mjs` is the strict repository gate. It verifies required source, render, review, media, and manifest files; dimensions and SHA-256 values; Blender integrity metadata; privacy and publication boundaries; third-party reference-binary exclusion; the 50 MiB ordinary-Git escalation threshold; and the absence of unapproved runtime dependencies. It passes against the settled local package. Exact hashes and quantitative results remain sourced from the committed manifests, not duplicated as independent claims.
 
 ## 18. Implementation phases and gates
 
@@ -321,7 +373,7 @@ Every future phase uses a dedicated non-production branch, runs its declared tes
 | Risk | Impact | Required control |
 |---|---|---|
 | Reference imitation | High | Originality matrix and separate creative gate |
-| No installed DCC/FFmpeg/ffprobe toolchain | High | Honest audit; real browser VP9 spike; premium 2.5D fallback; pinned later tool request |
+| 3D source or encoded evidence becomes stale, oversized, or unreviewable | High | Portable pinned toolchain; canonical manifests; 50 MiB gate; no LFS without approval; premium 2.5D fallback |
 | Generic Field Unit | High | Three authored concept views and human creative decision |
 | Pre-lit or overly neon opening | High | Zero-magenta dormant-state test and restrained local reflection |
 | Scroll interruption | Critical | One root, deterministic progress, reverse and rapid-direction tests |

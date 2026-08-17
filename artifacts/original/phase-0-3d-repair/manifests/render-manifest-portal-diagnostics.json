@@ -1,0 +1,51 @@
+{
+  "schema": "quantum-hub.phase-0-3d-render-manifest.v1",
+  "generated_at_utc": "2026-08-17T16:40:53.364153+00:00",
+  "original_artwork": true,
+  "reference_site_binary_used": false,
+  "blender_version": "5.2.0 LTS",
+  "blender_build_hash": "fbe6228777e7",
+  "blend_source": "source/quantum-field-unit.blend",
+  "blend_source_sha256": "d32c2ebc7279bbf78cc4ecdec46418a26f8d98955633484e229b8d0cbf777a91",
+  "engine": "BLENDER_EEVEE",
+  "samples": 24,
+  "render_scale": 0.5,
+  "frame_step": 1,
+  "timeline": {
+    "fps": 24,
+    "frame_start": 1,
+    "frame_end": 192
+  },
+  "renders": [
+    {
+      "group": "portal-diagnostics",
+      "path": "renders/diagnostics/diagnostic-interface.png",
+      "frame": 175,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 600,
+      "bytes": 657259,
+      "sha256": "da3a493706df6c635b66ad2c51f02f0ca3e919852e5a2151526c980673c3093e"
+    },
+    {
+      "group": "portal-diagnostics",
+      "path": "renders/diagnostics/diagnostic-portal-end.png",
+      "frame": 186,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 600,
+      "bytes": 516512,
+      "sha256": "2965071a2fa53c67ae6e7e4379a221300902f099aa279ba794d6dee3198c85cd"
+    },
+    {
+      "group": "portal-diagnostics",
+      "path": "renders/diagnostics/diagnostic-dom-match.png",
+      "frame": 192,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 600,
+      "bytes": 518045,
+      "sha256": "f4efc6a8f5fd250fcc37d020f6df0449b3dcd4cb3838594852f9d3923a3d0240"
+    }
+  ]
+}

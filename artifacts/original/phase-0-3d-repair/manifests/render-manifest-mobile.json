@@ -1,0 +1,101 @@
+{
+  "schema": "quantum-hub.phase-0-3d-render-manifest.v1",
+  "generated_at_utc": "2026-08-17T16:45:19.700095+00:00",
+  "original_artwork": true,
+  "reference_site_binary_used": false,
+  "blender_version": "5.2.0 LTS",
+  "blender_build_hash": "fbe6228777e7",
+  "blend_source": "source/quantum-field-unit.blend",
+  "blend_source_sha256": "d32c2ebc7279bbf78cc4ecdec46418a26f8d98955633484e229b8d0cbf777a91",
+  "engine": "BLENDER_EEVEE",
+  "samples": 48,
+  "render_scale": 1.0,
+  "frame_step": 1,
+  "timeline": {
+    "fps": 24,
+    "frame_start": 1,
+    "frame_end": 192
+  },
+  "renders": [
+    {
+      "group": "mobile",
+      "path": "renders/mobile/390x844/mobile-dormant.png",
+      "frame": 1,
+      "camera": "Camera_Mobile",
+      "width": 390,
+      "height": 844,
+      "bytes": 308813,
+      "sha256": "19efae6d0c574af12cddfcc830cae4aad013ecf70c10239fb78ddd81112834c0"
+    },
+    {
+      "group": "mobile",
+      "path": "renders/mobile/390x844/mobile-mid-conduction.png",
+      "frame": 135,
+      "camera": "Camera_Mobile",
+      "width": 390,
+      "height": 844,
+      "bytes": 318738,
+      "sha256": "ac40829d55e90acdf0bc785d0ea70fb9e4d5c951b391de50772051f40aa3b6e3"
+    },
+    {
+      "group": "mobile",
+      "path": "renders/mobile/390x844/mobile-activation.png",
+      "frame": 165,
+      "camera": "Camera_Mobile",
+      "width": 390,
+      "height": 844,
+      "bytes": 346433,
+      "sha256": "a5079cb891af3a60dfa503ac97aa281e1054ec96ddf1c42b4c528e0207cbd327"
+    },
+    {
+      "group": "mobile",
+      "path": "renders/mobile/390x844/mobile-portal.png",
+      "frame": 179,
+      "camera": "Camera_Mobile",
+      "width": 390,
+      "height": 844,
+      "bytes": 368625,
+      "sha256": "5c792eed381fe0d180e884807fb404f53c0d7aee00951c64dcd0bbbf77795a0b"
+    },
+    {
+      "group": "mobile",
+      "path": "renders/mobile/360x800/mobile-dormant.png",
+      "frame": 1,
+      "camera": "Camera_Mobile",
+      "width": 360,
+      "height": 800,
+      "bytes": 271721,
+      "sha256": "529abdea895c1889a1eac53a5c1817e63f9180af6ead4abdca3098fa50699ea2"
+    },
+    {
+      "group": "mobile",
+      "path": "renders/mobile/360x800/mobile-mid-conduction.png",
+      "frame": 135,
+      "camera": "Camera_Mobile",
+      "width": 360,
+      "height": 800,
+      "bytes": 280254,
+      "sha256": "6390dd963a20e597f8f6ae4f52c7344940e2623262eef7eb73db6f54698c8125"
+    },
+    {
+      "group": "mobile",
+      "path": "renders/mobile/360x800/mobile-activation.png",
+      "frame": 165,
+      "camera": "Camera_Mobile",
+      "width": 360,
+      "height": 800,
+      "bytes": 305600,
+      "sha256": "4434aaa33bb3e7e115804f91a7c9d6540234a1ac2ca1dac35748060ca84ef215"
+    },
+    {
+      "group": "mobile",
+      "path": "renders/mobile/360x800/mobile-portal.png",
+      "frame": 179,
+      "camera": "Camera_Mobile",
+      "width": 360,
+      "height": 800,
+      "bytes": 324556,
+      "sha256": "42c9605cba21ba526005ff6587cf23ebe32b5648591b0894be14fad6f74e98e2"
+    }
+  ]
+}

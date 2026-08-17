@@ -1,19 +1,23 @@
 # Phase 0 toolchain and encoded-media audit
 
+Status: **historical pre-authorization baseline; not the current toolchain state**
+
+Current-state authority: [TOOLCHAIN_3D_REPAIR.md](./TOOLCHAIN_3D_REPAIR.md). The findings below accurately record the initial environment before the authorized portable repair installation and are retained as decision history.
+
 Audit date: 2026-08-17
 
 Scope: read-only installed-tool discovery plus one original browser-native encode/seek spike
-System-level installs performed: none
+System-level installs performed during this baseline audit: none
 
-## Installed-tool result
+## Initial installed-tool result
 
 | Capability | Result | Evidence |
 | --- | --- | --- |
 | Blender or equivalent DCC | Not found | No matching command; no Blender executable in audited common locations; no Blender, Cinema 4D, Maya, Houdini, 3ds Max, DaVinci Resolve, or HandBrake entry in the audited uninstall registries |
 | FFmpeg | Not found | No `ffmpeg` command or executable in audited common locations |
 | ffprobe | Not found | No `ffprobe` command |
-| H.264 system encoder | Not established | FFmpeg/equivalent absent; no system encode claim is made |
-| VP9 system encoder | Not established | FFmpeg/equivalent absent; no system encode claim is made |
+| H.264 system encoder | Baseline: not established | Baseline FFmpeg/equivalent absent; no system encode claim was made |
+| VP9 system encoder | Baseline: not established | Baseline FFmpeg/equivalent absent; no system encode claim was made |
 | Browser MediaRecorder | Available in the tested in-app Chromium runtime | Runtime capability test returned `true` |
 | Canvas capture | Available in the tested in-app Chromium runtime | `HTMLCanvasElement.captureStream()` capability test returned `true` |
 | Browser VP9 WebM | Available in the tested runtime | `MediaRecorder.isTypeSupported("video/webm;codecs=vp9")` returned `true` |
@@ -52,7 +56,7 @@ Committed evidence:
 - `encoded-seek-spike-browser.png`
 - reproducible source at `prototypes/phase-0-spiral-field/media-spike.html` and `media-spike.js`
 
-`ffprobe` is unavailable, so codec/container facts are taken from the browser encoder declaration and successful browser playback. A later production-media phase still requires an external probe and controlled encode pipeline.
+At the time of this baseline audit, `ffprobe` was unavailable, so codec/container facts for the browser-native spike were taken from the browser encoder declaration and successful browser playback. The later 3D repair supplied a verified portable ffprobe and controlled encode pipeline; its current evidence is recorded separately in `TOOLCHAIN_3D_REPAIR.md` and `artifacts/original/phase-0-3d-repair/manifests/`.
 
 ## Repository and hosting limits
 
@@ -60,19 +64,21 @@ Committed evidence:
 - Cloudflare Pages currently permits at most 25MiB per static asset and 20,000 files on the Free plan (up to 100,000 files on eligible paid plans): <https://developers.cloudflare.com/pages/platform/limits/>.
 - Phase 0 imported media remain below 4.2MB per file. The real seek spike remains below 125KB. Git LFS is not required for the committed Phase 0 set.
 
-## Missing production toolchain and pinned request
+## Historical missing-toolchain finding and superseded pinned request
 
-A production-quality original 3D Field Unit, rendered animatic, controlled H.264/VP9 encode matrix, and independent ffprobe verification are not feasible in the current installed environment.
+At the time of this baseline audit, a production-quality original 3D Field Unit, rendered animatic, controlled H.264/VP9 encode matrix, and independent ffprobe verification were not feasible in the then-installed environment.
 
-If the human creative gate selects original 3D production, request a separately authorized installation or external-producer contract pinned to:
+The baseline therefore proposed the following versions. This request is retained only as historical decision evidence and must not be used as current installation guidance; the later authorized repair instead verified portable Blender 5.2.0 LTS and FFmpeg/ffprobe 9.0.1 Essentials.
 
 1. **Blender 4.5.12 LTS, Windows x64 portable build** — GNU GPL; use one LTS line for the project. Reserve approximately 400MB for the download and 1.5GB extracted. Verify the publisher checksum before use. Blender documentation recommends one LTS version for a production project and notes two years of LTS fixes: <https://docs.blender.org/manual/en/4.5/advanced/deploying_blender.html>.
 2. **FFmpeg 8.1.2, Windows x64 build with ffprobe, libx264, and libvpx-vp9** — FFmpeg core is LGPL 2.1-or-later, while a build with GPL components such as libx264 is distributed under the applicable GPL terms. Reserve up to 250MB for a compressed build and 1GB extracted; confirm the actual provider artifact and license configuration before installation. The official source release is: <https://ffmpeg.org/download.html>.
 
-The footprint numbers are conservative planning allocations, not observed installs. No download or installation occurred in Phase 0.
+The footprint numbers above were conservative planning allocations, not observed installs. No download or installation occurred during this baseline audit.
 
-## Feasibility classification
+## Historical feasibility classification
 
-- Original production 3D: **unverified and blocked by the absent DCC/FFmpeg toolchain or an external producer**.
-- Production controlled multi-codec encode/ffprobe matrix: **blocked by absent FFmpeg/ffprobe**.
+- Original production 3D at baseline: **unverified and blocked by the then-absent DCC/FFmpeg toolchain or an external producer**.
+- Production controlled multi-codec encode/ffprobe matrix at baseline: **blocked by the then-absent FFmpeg/ffprobe**.
 - Premium browser-native 2.5D: **feasible and shippable in principle without a system-level installation**, subject to the human creative gate and later cross-browser, mobile-memory, lifecycle, accessibility, and performance validation.
+
+Current Phase 0 classification: the portable production toolchain, original Blender source, 40 canonical renders, six H.264/VP9 encodes, independent ffprobe records, and deterministic browser seek evidence are verified. The creative package remains pending human review and is not accepted launch media.

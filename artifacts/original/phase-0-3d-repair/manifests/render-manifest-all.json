@@ -1,0 +1,421 @@
+{
+  "schema": "quantum-hub.phase-0-3d-render-manifest.v1",
+  "generated_at_utc": "2026-08-17T17:12:39.970370+00:00",
+  "original_artwork": true,
+  "reference_site_binary_used": false,
+  "blender_version": "5.2.0 LTS",
+  "blender_build_hash": "fbe6228777e7",
+  "blend_source": "source/quantum-field-unit.blend",
+  "blend_source_sha256": "91601d8c0fec51744df4e4cca510556559e7f5c542b9bcc84ca83ae650c16adc",
+  "engine": "BLENDER_EEVEE",
+  "samples": 48,
+  "render_scale": 1.0,
+  "frame_step": 1,
+  "timeline": {
+    "fps": 24,
+    "frame_start": 1,
+    "frame_end": 192
+  },
+  "renders": [
+    {
+      "group": "design",
+      "path": "renders/design/field-unit-front.png",
+      "frame": 1,
+      "camera": "Camera_Studio_Front",
+      "width": 2048,
+      "height": 1536,
+      "bytes": 2496945,
+      "sha256": "aa2d9f76e3b6f69f691daa55b8b997a4082740aabb29d3b0dbc0bad51c238f8e"
+    },
+    {
+      "group": "design",
+      "path": "renders/design/field-unit-rear.png",
+      "frame": 1,
+      "camera": "Camera_Studio_Rear",
+      "width": 2048,
+      "height": 1536,
+      "bytes": 2122625,
+      "sha256": "3390c12c2d45c8dab0d44fe444700d0b7140d8a8a3b970e5a7378cdbe0ef404e"
+    },
+    {
+      "group": "design",
+      "path": "renders/design/field-unit-left.png",
+      "frame": 1,
+      "camera": "Camera_Studio_Left",
+      "width": 2048,
+      "height": 1536,
+      "bytes": 2408174,
+      "sha256": "765be2389387b387532f809ead415404fe9b25f6f7ab1651fdb6af98ff3f6eb1"
+    },
+    {
+      "group": "design",
+      "path": "renders/design/field-unit-right.png",
+      "frame": 1,
+      "camera": "Camera_Studio_Right",
+      "width": 2048,
+      "height": 1536,
+      "bytes": 2592933,
+      "sha256": "22f408dc34563df3067b339595c3fbdff644245b42be335fe3911dbe638a4614"
+    },
+    {
+      "group": "design",
+      "path": "renders/design/field-unit-three-quarter-front.png",
+      "frame": 1,
+      "camera": "Camera_Studio_ThreeQuarterFront",
+      "width": 2048,
+      "height": 1536,
+      "bytes": 2093438,
+      "sha256": "f07503a6eba66bf6f9fc9e1949e007b3ccc212b05cf70d5b89c5c32c011440ce"
+    },
+    {
+      "group": "design",
+      "path": "renders/design/field-unit-three-quarter-rear.png",
+      "frame": 1,
+      "camera": "Camera_Studio_ThreeQuarterRear",
+      "width": 2048,
+      "height": 1536,
+      "bytes": 2016326,
+      "sha256": "ae14498631ffc776cdf7f948cad1361bd36eca82c21b62d194deb5577cf0cabe"
+    },
+    {
+      "group": "materials",
+      "path": "renders/materials/material-coated-metal.png",
+      "frame": 1,
+      "camera": "Camera_Material_Shell",
+      "width": 1600,
+      "height": 1200,
+      "bytes": 2479162,
+      "sha256": "797fd2013532fab88c72f3eb9fbf02b0f5992020ab5db91941e6778d9390161f"
+    },
+    {
+      "group": "materials",
+      "path": "renders/materials/material-smoked-glass.png",
+      "frame": 1,
+      "camera": "Camera_Material_Glass",
+      "width": 1600,
+      "height": 1200,
+      "bytes": 2455142,
+      "sha256": "e70cc90efe30893cb1d2a016e1eeb7cfbf4206585f03f0dc6cb6cf978a0d0d6f"
+    },
+    {
+      "group": "materials",
+      "path": "renders/materials/material-cable.png",
+      "frame": 106,
+      "camera": "Camera_Material_Cable",
+      "width": 1600,
+      "height": 1200,
+      "bytes": 1547618,
+      "sha256": "c767e0fd2ef13a59b8ef33ecc3b67ec5873d6f8ed0ad9f548b36a5e2a073ca0f"
+    },
+    {
+      "group": "materials",
+      "path": "renders/materials/material-connector.png",
+      "frame": 1,
+      "camera": "Camera_Material_Connector",
+      "width": 1600,
+      "height": 1200,
+      "bytes": 1954015,
+      "sha256": "03595443d82ff6c76dfe7295810779cd1e14cb078f4fce01624002d722ca4f43"
+    },
+    {
+      "group": "materials",
+      "path": "renders/materials/material-base-contact.png",
+      "frame": 1,
+      "camera": "Camera_Material_Base",
+      "width": 1600,
+      "height": 1200,
+      "bytes": 2218058,
+      "sha256": "61631870ef4d07455875f9248c3b4625641d421d9c5aed94b7592329c33045d0"
+    },
+    {
+      "group": "materials",
+      "path": "renders/materials/material-precision-detail.png",
+      "frame": 1,
+      "camera": "Camera_Material_Detail",
+      "width": 1600,
+      "height": 1200,
+      "bytes": 2320365,
+      "sha256": "ea08a6650c6e389f7c04aed991a4fadeb190b9dc0007322e97082f14592c7789"
+    },
+    {
+      "group": "desktop",
+      "path": "renders/desktop/dormant-master.png",
+      "frame": 1,
+      "camera": "Camera_Desktop",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1999948,
+      "sha256": "fddd6e50a81bae7a122f0a6332a69b38bcfacc7e26f94bf97a1c0d3dd51b8aa4"
+    },
+    {
+      "group": "conduction",
+      "path": "renders/conduction/conduction-10.png",
+      "frame": 20,
+      "camera": "Camera_Desktop_EarlyConduction",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1953071,
+      "sha256": "9d2633cb6c011e4dda33b97484626d7ec71e5d01938d54f200b793ce0e672ef2"
+    },
+    {
+      "group": "conduction",
+      "path": "renders/conduction/conduction-25.png",
+      "frame": 49,
+      "camera": "Camera_Desktop",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 2014663,
+      "sha256": "e2a418d6e7601e823da5d84ec2d20306a6e21dd5a102c8dfa4c4cb76f1d76df2"
+    },
+    {
+      "group": "conduction",
+      "path": "renders/conduction/conduction-40.png",
+      "frame": 77,
+      "camera": "Camera_Desktop",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 2030913,
+      "sha256": "3c4b62a6a0c0ec44d1c234e814d116759f987d3c45618ff29f01733508f2c5e4"
+    },
+    {
+      "group": "conduction",
+      "path": "renders/conduction/conduction-55.png",
+      "frame": 106,
+      "camera": "Camera_Desktop",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 2059748,
+      "sha256": "edeba4826a803bb2e969979f6cd5c9c5908a1dea09e70134dfbb74f0d96b0009"
+    },
+    {
+      "group": "conduction",
+      "path": "renders/conduction/conduction-70.png",
+      "frame": 135,
+      "camera": "Camera_Desktop",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 2131306,
+      "sha256": "b450a707efdaf049a201c749d92c2a5778bf7c6e9355434594dc495e7c37b11d"
+    },
+    {
+      "group": "conduction",
+      "path": "renders/conduction/conduction-78.png",
+      "frame": 150,
+      "camera": "Camera_Desktop",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 2204916,
+      "sha256": "8b58f8277e76d75aefab29c24323d36ffac1f99aec9b55e7631f19d91cda1815"
+    },
+    {
+      "group": "activation",
+      "path": "renders/activation/activation-01-connector-arrival.png",
+      "frame": 154,
+      "camera": "Camera_Desktop",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 2231674,
+      "sha256": "59605b6dd9a4e82e0588bd7c9d57a88be66efa494c6a48e71b0b1d333d08cc35"
+    },
+    {
+      "group": "activation",
+      "path": "renders/activation/activation-02-internal-response.png",
+      "frame": 160,
+      "camera": "Camera_Desktop",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 2242013,
+      "sha256": "7af4ffbffae48573babc15b89c3875767ec465a60f4e6b063786bb6b851cbfa1"
+    },
+    {
+      "group": "activation",
+      "path": "renders/activation/activation-03-mechanical-wake.png",
+      "frame": 166,
+      "camera": "Camera_Desktop",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 2288332,
+      "sha256": "d375d27958a6c5a829f4e5f6d296bd2a5dec63485104537705da6ff9235dcb7b"
+    },
+    {
+      "group": "activation",
+      "path": "renders/activation/activation-04-interface-visible.png",
+      "frame": 175,
+      "camera": "Camera_Desktop",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 2465733,
+      "sha256": "e66b72f2223c476b32d62c38ff74961455eefd12681ee34b37f7a74f91f5f98b"
+    },
+    {
+      "group": "activation",
+      "path": "renders/activation/activation-05-portal-ready.png",
+      "frame": 179,
+      "camera": "Camera_Desktop",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 2613333,
+      "sha256": "e6b1be14201dae269a630fa0d3ed4f79cd12e1884d87b69d676382c8e280ca51"
+    },
+    {
+      "group": "portal",
+      "path": "renders/portal/portal-00.png",
+      "frame": 171,
+      "camera": "Camera_Desktop",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 2315868,
+      "sha256": "44bf348f52b628d0a9e7f15f84753ffb23d9ce42fe34894dc07b0cde1e11c3b5"
+    },
+    {
+      "group": "portal",
+      "path": "renders/portal/portal-25.png",
+      "frame": 175,
+      "camera": "Camera_Desktop",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 2465733,
+      "sha256": "51c257839fff249c1afb350e876f32312e3d44fb2fb6d65f5f6bc22f5cc88d20"
+    },
+    {
+      "group": "portal",
+      "path": "renders/portal/portal-50.png",
+      "frame": 179,
+      "camera": "Camera_Desktop",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 2613333,
+      "sha256": "2b67425d5a4e009aebaa61b4e5ec4f0ff66ad00cc866b4bbb639adb23ca47530"
+    },
+    {
+      "group": "portal",
+      "path": "renders/portal/portal-75.png",
+      "frame": 182,
+      "camera": "Camera_Desktop",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1591018,
+      "sha256": "eafd6b6dbd6e20700681c4eb30d11dcfce51d10a794ef1330f206592c8d1f42a"
+    },
+    {
+      "group": "portal",
+      "path": "renders/portal/portal-100.png",
+      "frame": 186,
+      "camera": "Camera_Desktop",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1965462,
+      "sha256": "87f9b456a93ff0bcd3a4cdb7ae58bc65a360a270ae6c5e29d0c5d4371e5295fe"
+    },
+    {
+      "group": "portal",
+      "path": "renders/portal/first-dom-reference.png",
+      "frame": 192,
+      "camera": "Camera_Desktop",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1969129,
+      "sha256": "a2fc3818cf1b36ce0492ea93ace231e67f1bc84f2b2448e6d424cd7c08971b85"
+    },
+    {
+      "group": "mobile",
+      "path": "renders/mobile/390x844/mobile-dormant.png",
+      "frame": 1,
+      "camera": "Camera_Mobile",
+      "width": 390,
+      "height": 844,
+      "bytes": 308612,
+      "sha256": "48b787f073842f10b9c07048cccc24950d91fba2ac98370696dc000dba823d91"
+    },
+    {
+      "group": "mobile",
+      "path": "renders/mobile/390x844/mobile-mid-conduction.png",
+      "frame": 135,
+      "camera": "Camera_Mobile_Conduction",
+      "width": 390,
+      "height": 844,
+      "bytes": 302752,
+      "sha256": "d388a4488b87a0ebb33329d8cd2789a39a71b864143f7d92f13c7fb7d585ebe4"
+    },
+    {
+      "group": "mobile",
+      "path": "renders/mobile/390x844/mobile-activation.png",
+      "frame": 165,
+      "camera": "Camera_Mobile",
+      "width": 390,
+      "height": 844,
+      "bytes": 346097,
+      "sha256": "f0d1d4b8aaf5b184b9a416807a46fdf422e548dc8ea135f08e8762523a958a0e"
+    },
+    {
+      "group": "mobile",
+      "path": "renders/mobile/390x844/mobile-portal.png",
+      "frame": 179,
+      "camera": "Camera_Mobile_PortalEntry",
+      "width": 390,
+      "height": 844,
+      "bytes": 321106,
+      "sha256": "95e042e3a95380d8fd106a00200cdc2d13c26cc304faa40904997eef84793a3b"
+    },
+    {
+      "group": "mobile",
+      "path": "renders/mobile/360x800/mobile-dormant.png",
+      "frame": 1,
+      "camera": "Camera_Mobile",
+      "width": 360,
+      "height": 800,
+      "bytes": 271618,
+      "sha256": "1739a26f62a8b1723aeab2ff77ac3cf30212496e7b4c0f37ff0594002feafdde"
+    },
+    {
+      "group": "mobile",
+      "path": "renders/mobile/360x800/mobile-mid-conduction.png",
+      "frame": 135,
+      "camera": "Camera_Mobile_Conduction",
+      "width": 360,
+      "height": 800,
+      "bytes": 266719,
+      "sha256": "cad7ed7391b621b19a99e04ba7eb4598aaa33b637d35cf7e7fae51941df74175"
+    },
+    {
+      "group": "mobile",
+      "path": "renders/mobile/360x800/mobile-activation.png",
+      "frame": 165,
+      "camera": "Camera_Mobile",
+      "width": 360,
+      "height": 800,
+      "bytes": 305310,
+      "sha256": "4bfae431d840f107e4804781850c523f9fbfaec18fb2b27a925e744e30963143"
+    },
+    {
+      "group": "mobile",
+      "path": "renders/mobile/360x800/mobile-portal.png",
+      "frame": 179,
+      "camera": "Camera_Mobile_PortalEntry",
+      "width": 360,
+      "height": 800,
+      "bytes": 282993,
+      "sha256": "65f06b528ec11048dacccb1e30c6f4263ce481938178914512e8619413262e4b"
+    },
+    {
+      "group": "reduced",
+      "path": "renders/reduced/reduced-motion-desktop.png",
+      "frame": 1,
+      "camera": "Camera_Desktop",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 1402626,
+      "sha256": "f064e1625af4faa01ff1aa32be037bb3a9c3f4ae801bd97eca20bd3ea8515fa6"
+    },
+    {
+      "group": "reduced",
+      "path": "renders/reduced/reduced-motion-mobile.png",
+      "frame": 1,
+      "camera": "Camera_Mobile",
+      "width": 720,
+      "height": 1600,
+      "bytes": 1041363,
+      "sha256": "a38174b37d6053dc8d5e84e5782ae525df10b8e8ed9d37ff4def5d7868d2de74"
+    }
+  ]
+}

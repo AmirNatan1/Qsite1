@@ -1,0 +1,111 @@
+{
+  "schema": "quantum-hub.phase-0-3d-review-bundle.v1",
+  "generated_at_utc": "2026-08-17T17:19:56.872690+00:00",
+  "classification": "original Quantum creative evidence",
+  "approval_state": "pending human creative review",
+  "artifacts": [
+    {
+      "path": "review/phase-0-3d-creative-review-contact-sheet.png",
+      "sha256": "14b6bccb85cccf7e9ea2baf81cba2ce640e0dff144c5834514309bfb9a8a5860",
+      "bytes": 4085031,
+      "width": 3300,
+      "height": 2500
+    },
+    {
+      "path": "review/field-unit-design-sheet.png",
+      "sha256": "9c871357212078aeb38cce3693af1689e4c81389688a88916fdd23c26b2ecde7",
+      "bytes": 2767509,
+      "width": 3300,
+      "height": 2450
+    },
+    {
+      "path": "review/field-unit-material-sheet.png",
+      "sha256": "69cd4ff050751fd8ead466cf609b02b419cf073787100dd0a80cf4e0ea144997",
+      "bytes": 4481553,
+      "width": 3000,
+      "height": 2200,
+      "derived_crop": {
+        "source": "renders/conduction/conduction-70.png",
+        "crop_xyxy": [
+          1370,
+          1060,
+          1915,
+          1195
+        ],
+        "purpose": "tight review macro of the canonical cable sheath, recessed core/front and ground contact",
+        "raw_dedicated_study_preserved": "renders/materials/material-cable.png"
+      }
+    },
+    {
+      "path": "review/dormant-master.png",
+      "sha256": "ce09f276ed6ac140f3c6626221b53912321bca25cbc60ed54adc34f4aea924d8",
+      "bytes": 1473056,
+      "width": 1920,
+      "height": 1200
+    },
+    {
+      "path": "review/conduction-master-contact-sheet.png",
+      "sha256": "17da4f40ca2349cb946e349dbb714bd09312d357fc60325603dab9e6b94a519b",
+      "bytes": 3753573,
+      "width": 3200,
+      "height": 2200
+    },
+    {
+      "path": "review/activation-contact-sheet.png",
+      "sha256": "1c75d8b55cc52d08e18ecd986cb2cc49dd86ff13193d09499903fe98b9f7b6ee",
+      "bytes": 3865454,
+      "width": 3200,
+      "height": 2200
+    },
+    {
+      "path": "review/portal-contact-sheet.png",
+      "sha256": "bf23e030d1afebb4ee05be5eb6433abdcd5b7ac9f77bd5788cade361d5bf1800",
+      "bytes": 2591033,
+      "width": 3200,
+      "height": 2200
+    },
+    {
+      "path": "review/mobile-contact-sheet.png",
+      "sha256": "b818188ba0b690f76b02a8fbe18a518ca1cf5ed0ae8beccc8c231a1c3fbad1d0",
+      "bytes": 2747814,
+      "width": 2600,
+      "height": 2500
+    },
+    {
+      "path": "review/reduced-motion-desktop.png",
+      "sha256": "704200468064572054e5a2655529c48d5c38e0cafce41792b155e545a87cfe02",
+      "bytes": 1036979,
+      "width": 1600,
+      "height": 1000
+    },
+    {
+      "path": "review/reduced-motion-mobile.png",
+      "sha256": "391c15a01d5fff04aeb6e7ab35e70b54aa82194455982a790ff05b87cb6b3ac7",
+      "bytes": 789010,
+      "width": 720,
+      "height": 1600
+    },
+    {
+      "path": "review/portal-dom-overlay.png",
+      "sha256": "87c42245a4c9b36385ecb92bfd0c2a2fdeef223c2af80e93f167df32cfb109a4",
+      "bytes": 1331852,
+      "width": 2800,
+      "height": 1900
+    },
+    {
+      "path": "review/dom-match-metrics.json",
+      "sha256": "e44edeec81b57f3775f551249f3ec93046c71a1c3ad3f1c6617e571aba5f6dc4",
+      "bytes": 715
+    },
+    {
+      "path": "review/field-unit-animatic.webm",
+      "sha256": "7663cace966ff7b320777bd8f93fcc7b766ad9d36319fb15b7376e7488b2cd06",
+      "bytes": 880506
+    },
+    {
+      "path": "review/README.md",
+      "sha256": "787f7e951c0488c8c8e9fbf2e200b714de225337e364b56afe5a0abb51c20b4b",
+      "bytes": 3466
+    }
+  ]
+}

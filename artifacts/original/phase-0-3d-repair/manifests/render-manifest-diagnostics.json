@@ -1,0 +1,71 @@
+{
+  "schema": "quantum-hub.phase-0-3d-render-manifest.v1",
+  "generated_at_utc": "2026-08-17T16:31:35.527398+00:00",
+  "original_artwork": true,
+  "reference_site_binary_used": false,
+  "blender_version": "5.2.0 LTS",
+  "blender_build_hash": "fbe6228777e7",
+  "blend_source": "source/quantum-field-unit.blend",
+  "blend_source_sha256": "24c8a576ceea5a3a28607d9fe60849b5849b31355a1e94654e6c504ec98f74c6",
+  "engine": "BLENDER_EEVEE",
+  "samples": 24,
+  "render_scale": 0.5,
+  "frame_step": 1,
+  "timeline": {
+    "fps": 24,
+    "frame_start": 1,
+    "frame_end": 192
+  },
+  "renders": [
+    {
+      "group": "diagnostics",
+      "path": "renders/diagnostics/diagnostic-dormant.png",
+      "frame": 1,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 600,
+      "bytes": 533086,
+      "sha256": "3d206fcc7db49fd5196faec1764749d004365aee2d7f5bb3a4f9ccd4a452380e"
+    },
+    {
+      "group": "diagnostics",
+      "path": "renders/diagnostics/diagnostic-mid-conduction.png",
+      "frame": 106,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 600,
+      "bytes": 547501,
+      "sha256": "7a6b39bc4212a501d1d0e1b6b4c3d1a4d10313280283908f5ce0b2b85ca978c5"
+    },
+    {
+      "group": "diagnostics",
+      "path": "renders/diagnostics/diagnostic-interface.png",
+      "frame": 175,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 600,
+      "bytes": 656208,
+      "sha256": "359b4fe9a28a62c41aafba0d7ab27118a0f0c8fd16343087ebc50dba32997628"
+    },
+    {
+      "group": "diagnostics",
+      "path": "renders/diagnostics/diagnostic-portal-end.png",
+      "frame": 186,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 600,
+      "bytes": 751607,
+      "sha256": "c64e89a85d4043f307613d3f1e22af11b74b17a55cb3f8b8319d0c1d61dfcf83"
+    },
+    {
+      "group": "diagnostics",
+      "path": "renders/diagnostics/diagnostic-dom-match.png",
+      "frame": 192,
+      "camera": "Camera_Desktop",
+      "width": 960,
+      "height": 600,
+      "bytes": 260483,
+      "sha256": "f6561b6f61b43e5682ef5e0f84781310782dcb30bebe21f251901bfa1f62c057"
+    }
+  ]
+}

@@ -4,6 +4,7 @@ Status: binding delivery and human-review contract
 Current authorization: Phase 0 only
 Current branch: `planning/phase-0-reconciliation`
 Production branch: `main` (must not change during Phase 0)
+Current evidence state: local 3D creative package complete and automated integrity gate passing; immutable pushed candidate, Cloudflare verification, clean-tree handoff, and human creative review pending
 
 ## Gate principle
 
@@ -17,6 +18,8 @@ The active Phase 0 authorization permits:
 - planning, provenance, and publication records;
 - original Spiral Conduction and Field Unit feasibility evidence;
 - a non-production premium 2.5D review harness;
+- the authorized per-user portable Blender 5.2.0 LTS and FFmpeg/ffprobe 9.0.1 toolchain for offline Phase 0 production only;
+- an original Blender-authored Field Unit, proving environment, genuine-content animatic, encoded-media comparison, and compact creative-review package;
 - relevant tests, build, commit, push, and Cloudflare branch-preview verification.
 
 It does not permit:
@@ -28,7 +31,8 @@ It does not permit:
 - Cloudflare setting, DNS, domain, project, or production-branch mutation;
 - a separate deployment provider, Sites host, Worker, or direct Wrangler production deployment;
 - Q-HUB mutation or runtime dependency;
-- installation of system-level DCC or media tools.
+- system-wide installation, PATH mutation, unapproved add-ons, commercial plugins, texture packs, asset-store dependencies, or redistribution of production-tool binaries;
+- Blender, FFmpeg, ffprobe, WebGL, Three.js, React Three Fiber, or GSAP as a website runtime dependency.
 
 ## Repository and branch discipline
 
@@ -112,6 +116,43 @@ preview deployed SHA when available:
 unresolved blockers:
 ```
 
+The final Phase 0 3D repair handoff additionally reports:
+
+```text
+previous Phase 0 candidate:
+full pushed repair SHA:
+Cloudflare check ID:
+Cloudflare preview URL:
+preview deployed SHA:
+GET /:
+GET /package.json:
+GET /src/pages/index.astro:
+Blender source:
+Blender version:
+Blender provenance:
+Blender source SHA-256:
+FFmpeg version:
+FFmpeg provenance:
+FFmpeg SHA-256:
+encoders verified:
+Field Unit design evidence:
+material evidence:
+dormant master:
+conduction evidence:
+activation evidence:
+portal evidence:
+desktop animatic:
+mobile evidence:
+reduced-motion evidence:
+DOM match evidence:
+real-content VP9 seek result:
+real-content H.264 seek result:
+review ZIP:
+ZIP bytes:
+ZIP SHA-256:
+repository-size evidence:
+```
+
 Reporting rules:
 
 - SHAs are full 40-character values.
@@ -176,12 +217,16 @@ Branch: `planning/phase-0-reconciliation`
 
 ### Toolchain and performance evidence
 
-- [ ] Blender/equivalent, FFmpeg, ffprobe, H.264, VP9, MediaRecorder, Canvas capture, glTF tools, image tools, Git LFS, and repository-size limits are honestly audited.
-- [ ] No system-level tool was installed during Phase 0.
-- [ ] If a real encoder was available, the low-resolution seek test records the actual tool, codec, input/output properties, and measurements.
-- [ ] If no encoder was available, no encode or seek-performance result is claimed.
-- [ ] The missing pinned tool/version/license/install footprint is documented.
-- [ ] The shippability of browser-native premium 2.5D without the missing tool is stated.
+- [x] Blender 5.2.0 LTS and FFmpeg/ffprobe 9.0.1 Essentials are pinned, provenance-verified, and installed as per-user portable offline tools outside Git.
+- [x] Archive/executable SHA-256 values, licenses, footprints, provider chain, `libx264`, `libvpx-vp9`, and isolation from the website runtime are recorded in `artifacts/evidence/phase-0/TOOLCHAIN_3D_REPAIR.md`.
+- [x] `source/quantum-field-unit.blend` passes the final source-validation manifest with no external images or linked libraries and with the required parametric conduction controls.
+- [x] The final `.blend`, review images, media, and manifests remain individually below 50 MiB; if any reaches that boundary, stop before staging and report the LFS decision requirement.
+- [x] VP9 WebM and H.264 MP4 are encoded from the genuine Blender animatic at GOP intervals 1, 6, and 12.
+- [x] `encode-manifest.json` and `ffprobe-manifest.json` match each media file's final SHA-256, bytes, codec, dimensions, frame rate, duration, and GOP contract.
+- [x] `browser-seek-report.json` records real browser seek-to-present, visible quality, dropped/late frames, and portal integrity for all six variants.
+- [x] The historical synthetic 640x400 VP9 spike is not reported as the real-content result.
+- [x] `portal-alignment-report.json` and the overlay compare the final physical interface, final media frame, and first semantic DOM frame.
+- [x] The premium browser-native 2.5D fallback remains shippable without production-tool runtime dependencies.
 - [ ] Required viewport tests show zero horizontal overflow.
 - [ ] Reduced motion creates no cinematic video or frame sequence.
 - [ ] Repository size remains within the documented policy.
@@ -189,7 +234,7 @@ Branch: `planning/phase-0-reconciliation`
 ### Code, build, and publication evidence
 
 - [ ] `npm ci` succeeds.
-- [ ] `npm run check` succeeds.
+- [x] `npm run check` succeeds, including `scripts/verify-phase0-3d-repair.mjs` against the settled final package.
 - [ ] `npm run build` succeeds.
 - [ ] `dist/index.html` exists and is a working semantic root.
 - [ ] Build output contains no Worker entrypoint or unexpected server runtime.
@@ -199,6 +244,24 @@ Branch: `planning/phase-0-reconciliation`
 - [ ] The final candidate is committed and pushed normally.
 - [ ] Any Cloudflare branch preview is matched to the exact pushed SHA.
 - [ ] The working tree is clean.
+
+### Phase 0 3D creative repair evidence — 17 August 2026
+
+- [x] Field Unit design sheet contains front, rear, left/right, three-quarter front, and three-quarter rear evidence at a minimum 2048px long edge.
+- [x] Material sheet covers coated metal, smoked glass, cable, connector, base/contact, and precision detail.
+- [ ] Dormant master is 1920x1200 or higher, with no decorative magenta environment light.
+- [ ] Conduction masters cover 10%, 25%, 40%, 55%, 70%, and 78% with one cumulative outside-in front.
+- [ ] Activation evidence covers connector arrival, internal transfer, one restrained mechanical wake, interface visibility, and portal readiness.
+- [x] Portal evidence covers 0%, 25%, 50%, 75%, 100%, first DOM reference, overlay, and documented alignment metrics; perceptual acceptance remains human.
+- [ ] The representative 192-frame, 24fps camera animatic demonstrates dormancy, conduction, changing angle, arrival, power-on, interface wake, and portal without audio.
+- [ ] Mobile evidence independently covers dormant, mid-conduction, activation, and portal at 390x844 and 360x800.
+- [ ] Reduced-motion desktop and mobile images show the repaired dormant physical scene without simulated motion.
+- [x] `phase-0-3d-creative-review-contact-sheet.png` presents nine clearly labelled review beats.
+- [x] `review-bundle-manifest.json` matches every compact review artifact's final bytes, dimensions where applicable, and SHA-256.
+- [x] Root and review READMEs identify exact production versions, source hash, render engine/settings, timeline, provenance/licenses, original-artwork statement, and reference-binary exclusion.
+- [ ] No temporary Blender backup, Python bytecode/cache, rendered work-frame directory, tool binary, or third-party reference binary is staged.
+
+The exact hashes and quantitative results are read from the final manifests. Checked machine-verifiable items describe the settled local candidate; they do not imply an immutable pushed SHA, Cloudflare-preview verification, or human visual acceptance.
 
 ### Phase 0 human gates
 

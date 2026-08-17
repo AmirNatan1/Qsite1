@@ -50,6 +50,68 @@ All rows were authored as repository-native SVG. They contain no third-party ref
 | `Q0-CREATIVE-009` | `artifacts/original/phase-0/reduced-motion-poster-desktop.svg` | 1600×1000 | 3,457 | `7473a7a8613aa12d54b5609391466360933842bcecd48f975ce981bdea08c53f` | R | Original static dormant poster; accessibility review pending |
 | `Q0-CREATIVE-010` | `artifacts/original/phase-0/reduced-motion-poster-mobile.svg` | 720×1600 | 3,503 | `11566823499cab4fbf641cf54fd68aef5eb2549b0f19bd1f866d7fdc500383ac` | R | Original static dormant poster; accessibility review pending |
 
+## Original Quantum Phase 0 3D repair package
+
+The package at `artifacts/original/phase-0-3d-repair/` is classified as **original Quantum creative evidence** with approval state **pending human creative review**. Every item in this section is Class R: it may remain on the non-production review branch, but it is not an accepted launch asset and cannot enter production without the Field Unit + Spiral Conduction + Portal creative ACCEPT.
+
+The grouped records below account for all 64 unignored original binary files in the package: one Blender source, 45 rendered PNGs, six encoded media variants, and 12 binary review derivatives. Their combined physical size is 113,509,958 bytes. The review bundle also contains one JSON record and one Markdown guide, bringing the five governed sets to 113,514,139 bytes. Exact member paths, dimensions, byte counts and SHA-256 values are governed by the named canonical manifests or, for the five diagnostic renders, by the explicit resolution table immediately below.
+
+| Asset ID | Committed path or governed set | Records | Bytes | Integrity authority | Class | Approval and publication state |
+| --- | --- | ---: | ---: | --- | --- | --- |
+| `Q0-3D-SOURCE-001` | `artifacts/original/phase-0-3d-repair/source/quantum-field-unit.blend` | 1 | 360,021 | SHA-256 `91601d8c0fec51744df4e4cca510556559e7f5c542b9bcc84ca83ae650c16adc`; `manifests/blender-source-validation.json` | R | Original procedural Blender source; pending human creative review; not a launch asset |
+| `Q0-3D-RENDER-001` | `artifacts/original/phase-0-3d-repair/renders/` canonical set excluding `diagnostics/` | 40 PNG | 70,710,190 | `manifests/render-manifest-all.json` | R | Original Blender renders; pending human creative review; not launch media |
+| `Q0-3D-RENDER-002` | `artifacts/original/phase-0-3d-repair/renders/diagnostics/` | 5 PNG | 2,763,157 | Explicit final-file table below | R | Original diagnostic evidence; review-only and not launch media |
+| `Q0-3D-MEDIA-001` | `artifacts/original/phase-0-3d-repair/media/` | 6 videos | 9,873,220 | `manifests/encode-manifest.json` and `manifests/ffprobe-manifest.json` | R | Original 960×540 Blender animatic encodes; pending human creative review; not launch media |
+| `Q0-3D-REVIEW-001` | `artifacts/original/phase-0-3d-repair/review/` | 14 records: 11 PNG, 1 WebM, 1 JSON, 1 Markdown | 29,807,551 | `manifests/review-bundle-manifest.json` | R | Compact original review bundle; pending human creative review; not a public-launch surface |
+
+### Final diagnostic-render resolution
+
+The diagnostic files were generated across successive repair passes, so no superseded stage manifest is treated as a blanket final authority. These five rows are the final physical-file record. The cited matching manifest is the stage record whose member SHA-256 agrees with the current file.
+
+| Path | Bytes | SHA-256 | Matching stage manifest |
+| --- | ---: | --- | --- |
+| `artifacts/original/phase-0-3d-repair/renders/diagnostics/diagnostic-dormant.png` | 533,086 | `3d206fcc7db49fd5196faec1764749d004365aee2d7f5bb3a4f9ccd4a452380e` | `render-manifest-diagnostics.json` |
+| `artifacts/original/phase-0-3d-repair/renders/diagnostics/diagnostic-mid-conduction.png` | 547,501 | `7a6b39bc4212a501d1d0e1b6b4c3d1a4d10313280283908f5ce0b2b85ca978c5` | `render-manifest-diagnostics.json` |
+| `artifacts/original/phase-0-3d-repair/renders/diagnostics/diagnostic-interface.png` | 648,013 | `4b5d15a7ebe2d073f8fc570d848e797ea78fe2ca3c0352c00b96fd70c62e6522` | `render-manifest-qa-repair.json` |
+| `artifacts/original/phase-0-3d-repair/renders/diagnostics/diagnostic-portal-end.png` | 516,512 | `2965071a2fa53c67ae6e7e4379a221300902f099aa279ba794d6dee3198c85cd` | `render-manifest-portal-diagnostics.json` |
+| `artifacts/original/phase-0-3d-repair/renders/diagnostics/diagnostic-dom-match.png` | 518,045 | `f4efc6a8f5fd250fcc37d020f6df0449b3dcd4cb3838594852f9d3923a3d0240` | `render-manifest-portal-diagnostics.json` |
+
+### 3D repair manifest register
+
+Every committed manifest and machine-readable report in the package is registered here. Stage-specific render manifests remain provenance evidence; `render-manifest-all.json`, `encode-manifest.json`, `review-bundle-manifest.json`, and `blender-source-validation.json` are the canonical authorities for their final governed sets.
+
+| Manifest or report | Bytes | SHA-256 | Classification and approval |
+| --- | ---: | --- | --- |
+| `artifacts/original/phase-0-3d-repair/manifests/blender-source-validation.json` | 819 | `905adcc72a8e035698f60a14f86bd4374071c373dba76c4d81a10fd5c4bc5e78` | Original Quantum production evidence; pending human creative review |
+| `artifacts/original/phase-0-3d-repair/manifests/browser-seek-report.json` | 27,491 | `e9ec93b2204a5da20ea865e3a6373d58c68427429211fb897aa10b6f2bcdbada` | Original Quantum performance evidence; pending human creative review |
+| `artifacts/original/phase-0-3d-repair/manifests/encode-manifest.json` | 16,785 | `f4e24e7636ea8f1938d25e8cd63e8ef143ab928a2807811bd407bbdd107c69a2` | Original Quantum media evidence; pending human creative review |
+| `artifacts/original/phase-0-3d-repair/manifests/ffprobe-manifest.json` | 12,651 | `e9ec288b11c2d56ce78847a9baa53d5de1fccef36e2771a664897162a5a0ffb4` | Original Quantum stream evidence; pending human creative review |
+| `artifacts/original/phase-0-3d-repair/manifests/portal-alignment-report.json` | 715 | `e44edeec81b57f3775f551249f3ec93046c71a1c3ad3f1c6617e571aba5f6dc4` | Original Quantum alignment evidence; pending human creative review |
+| `artifacts/original/phase-0-3d-repair/manifests/render-manifest-all.json` | 13,175 | `fc66e3b87262ee983e9ea5cf7549a06a1eb9b1ee95b508ca28ef24fcd1f9d10a` | Canonical original Quantum render inventory; pending human creative review |
+| `artifacts/original/phase-0-3d-repair/manifests/render-manifest-animatic.json` | 60,024 | `4977d04f5c00547c07feaf85bb92ff2adeb09b285f1c083f1166fc61e0c53715` | Reproducibility record for removed working frames; review-only |
+| `artifacts/original/phase-0-3d-repair/manifests/render-manifest-cable-study.json` | 928 | `d3b0f8605d184776adf40e37c410161fb6275ad82d2be1ef0d140d40317ad843` | Original Quantum stage evidence; review-only |
+| `artifacts/original/phase-0-3d-repair/manifests/render-manifest-diagnostics.json` | 2,194 | `705c7d3398c2cee4a12ee418ec3d70038e05ec45f77837b96d1301fca2f7cb20` | Original Quantum stage evidence; superseded members resolved above |
+| `artifacts/original/phase-0-3d-repair/manifests/render-manifest-mobile.json` | 3,082 | `01b6c2f88f3a1eb5adac97033bb87c5908e264ba9c246da8db8890a941cd541b` | Original Quantum mobile stage evidence; review-only |
+| `artifacts/original/phase-0-3d-repair/manifests/render-manifest-portal-diagnostics.json` | 1,582 | `51ced4cbbfcc33e151e041f10f15e7fe1f61f96e7ba6f8f7f09043b14c37200c` | Original Quantum portal stage evidence; review-only |
+| `artifacts/original/phase-0-3d-repair/manifests/render-manifest-qa-repair.json` | 5,332 | `e45ce8bef3054a453fd3fac9410e23ff96fff3aa1ca643861c9e637253d02444` | Original Quantum QA-repair evidence; review-only |
+| `artifacts/original/phase-0-3d-repair/manifests/review-bundle-manifest.json` | 3,588 | `6701af57f10d805b0493d20fdb21a3b162c86453af69c8add5fad6589632ec89` | Canonical original Quantum review inventory; pending human creative review |
+
+### 3D authoring and package-support records
+
+These repository-native text files are not launch assets, but they are registered so the package can be reproduced and audited without relying on uncommitted machinery.
+
+| Path | Bytes | SHA-256 | Classification and approval |
+| --- | ---: | --- | --- |
+| `artifacts/original/phase-0-3d-repair/README.md` | 7,944 | `c88a1dcbdc413ad74bfab2f0a7d2ee0946c449c69f8bb8c17b81f76891aef61e` | Original Quantum production record; review-only |
+| `artifacts/original/phase-0-3d-repair/source/build_scene.py` | 49,266 | `f2a7e051b618f0fb58dc24003076d5121c656bc253fdb0bd2acd66cd1dd71aa3` | Original procedural authoring source; review-only |
+| `artifacts/original/phase-0-3d-repair/source/compose_review.py` | 19,664 | `21f8f9b7e97acdd18bbf8f3bfc4b1452de6a425bfee8273881d6ba8ad88429b1` | Original review-composition source; review-only |
+| `artifacts/original/phase-0-3d-repair/source/render_deliverables.py` | 14,612 | `32517be392e4cb9bb5777403f9fb68e2cc542ac88b1534ff44102f51c8781e82` | Original render-orchestration source; review-only |
+| `artifacts/original/phase-0-3d-repair/source/scene_config.py` | 5,308 | `13bfab63ab181d92d50f1262cf17ed188ca36fa11d605f18ba62850165ba1642` | Original scene configuration; review-only |
+| `artifacts/original/phase-0-3d-repair/source/validate_scene.py` | 4,958 | `299fbbe6071889beb856fe1b0b3c86288476064cf75c3c31b8e388ed0fd5f0e9` | Original scene-validation source; review-only |
+| `artifacts/original/phase-0-3d-repair/work/.gitignore` | 14 | `240a3e0d37d2e86b614063f5347eb02d4f99ca6c254de6b82871ff8d95532a7d` | Work-directory exclusion control; not an asset |
+
+The verified temporary 192-frame sequence and caches were removed after encoding. They remain reproducible from the registered Blender source and scripts; only `work/.gitignore` remains in that directory. No Blender or FFmpeg executable, archive, library, external add-on, model, texture, font, reference-site binary, or third-party capture is included in the package.
+
 ## Original Phase 0 implementation evidence
 
 The raster dimensions below are the browser-capture dimensions; viewport targets remain encoded in filenames and are separately documented in `artifacts/evidence/phase-0/BROWSER_QA.md`.
