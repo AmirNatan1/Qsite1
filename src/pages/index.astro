@@ -1,0 +1,61 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const title = "Quantum‑Hub — Phase 0 feasibility";
+const description =
+  "A non-production Phase 0 feasibility baseline for the Quantum‑Hub cinematic website.";
+---
+
+<BaseLayout {title} {description}>
+  <a class="skip-link" href="#phase-0-status">Skip to Phase 0 status</a>
+
+  <header class="site-header" aria-label="Phase 0 preview header">
+    <img
+      class="brand-mark"
+      src="/brand/quantum-full-logo-white.svg"
+      alt="Quantum‑Hub"
+      width="222"
+      height="72"
+    />
+    <span class="phase-label">Phase 0 feasibility preview</span>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow">industrial innovation · herzliya</p>
+        <h1 id="hero-title">Prove it where it has to work.</h1>
+        <p class="supporting-copy">
+          Quantum brings industry and technology together to define real needs,
+          test solutions and turn evidence into decisions.
+        </p>
+        <p class="audience-labels" aria-label="Planned public journeys">
+          <span>For industry</span>
+          <span>For startups</span>
+        </p>
+      </div>
+
+      <div class="dormant-study" aria-hidden="true">
+        <div class="terrain-ring terrain-ring--outer"></div>
+        <div class="terrain-ring terrain-ring--inner"></div>
+        <div class="unit-shell">
+          <div class="unit-aperture"></div>
+          <div class="unit-foot"></div>
+        </div>
+        <div class="dormant-wire dormant-wire--one"></div>
+        <div class="dormant-wire dormant-wire--two"></div>
+        <div class="dormant-wire dormant-wire--three"></div>
+      </div>
+    </section>
+
+    <section id="phase-0-status" class="status-panel" aria-labelledby="status-title">
+      <p class="eyebrow">bounded implementation</p>
+      <h2 id="status-title">Repository and creative feasibility only.</h2>
+      <p>
+        This branch establishes the static build contract and the original Spiral
+        Conduction review package. It is not the launch website and contains no
+        production cinematic media.
+      </p>
+    </section>
+  </main>
+</BaseLayout>

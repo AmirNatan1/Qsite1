@@ -1,0 +1,95 @@
+{
+  "generatedAt": "2026-08-17T14:22:52.184Z",
+  "source": {
+    "width": 640,
+    "height": 400,
+    "fps": 24,
+    "authoredDurationMs": 3000
+  },
+  "media": {
+    "mimeType": "video/webm;codecs=vp9",
+    "bytes": 123712,
+    "durationSeconds": 2.967
+  },
+  "support": {
+    "mediaRecorder": true,
+    "canvasCaptureStream": true,
+    "requestVideoFrameCallback": true,
+    "vp9WebM": true,
+    "vp8WebM": true,
+    "h264MP4": true
+  },
+  "seekOrder": [
+    0,
+    0.25,
+    0.5,
+    0.75,
+    0.99,
+    0.5,
+    0.1
+  ],
+  "samples": [
+    {
+      "fraction": 0,
+      "targetSeconds": 0,
+      "seekedMs": 0.1,
+      "frameCallbackObserved": false,
+      "displayedMs": null
+    },
+    {
+      "fraction": 0.25,
+      "targetSeconds": 0.742,
+      "seekedMs": 23.6,
+      "frameCallbackObserved": true,
+      "displayedMs": 33.5
+    },
+    {
+      "fraction": 0.5,
+      "targetSeconds": 1.484,
+      "seekedMs": 36.6,
+      "frameCallbackObserved": false,
+      "displayedMs": null
+    },
+    {
+      "fraction": 0.75,
+      "targetSeconds": 2.225,
+      "seekedMs": 49.1,
+      "frameCallbackObserved": false,
+      "displayedMs": null
+    },
+    {
+      "fraction": 0.99,
+      "targetSeconds": 2.937,
+      "seekedMs": 52,
+      "frameCallbackObserved": false,
+      "displayedMs": null
+    },
+    {
+      "fraction": 0.5,
+      "targetSeconds": 1.484,
+      "seekedMs": 38.3,
+      "frameCallbackObserved": true,
+      "displayedMs": 50.5
+    },
+    {
+      "fraction": 0.1,
+      "targetSeconds": 0.297,
+      "seekedMs": 9.1,
+      "frameCallbackObserved": false,
+      "displayedMs": null
+    }
+  ],
+  "summary": {
+    "maxSeekedMs": 52,
+    "observedFrameCallbacks": 2,
+    "maxObservedDisplayedMs": 50.5,
+    "frameCallbackTimeoutMs": 500
+  },
+  "browser": {
+    "runtime": "Codex in-app Chromium browser",
+    "version": "not exposed"
+  },
+  "scope": "Phase 0 browser-native feasibility only; not production cinematic media.",
+  "ffprobe": "Unavailable; container/codec facts are reported by MediaRecorder and browser playback only.",
+  "interpretation": "Seeked-event latency was observed for all samples. Video-frame callbacks were observed for 2/7 paused seeks; missing callbacks hit the explicit 500 ms timeout and are reported as null, not as display latency."
+}

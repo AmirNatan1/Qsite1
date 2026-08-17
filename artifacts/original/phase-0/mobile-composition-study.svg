@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1600" viewBox="0 0 1440 1600" role="img" aria-labelledby="title desc">
+  <title id="title">Independent mobile Spiral Conduction composition</title>
+  <desc id="desc">Two authored vertical studies show a dormant 360 by 800 composition and a mid-conduction 390 by 844 composition with a larger Field Unit and 2.25-turn spiral.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0e1112"/><stop offset=".6" stop-color="#1a2020"/><stop offset="1" stop-color="#14090f"/></linearGradient>
+    <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#242b2c"/><stop offset="1" stop-color="#090c0d"/></linearGradient>
+    <linearGradient id="current"><stop stop-color="#d82b72"/><stop offset=".65" stop-color="#f06ba0"/><stop offset="1" stop-color="#ffd2e3"/></linearGradient>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <style>.label{font:700 16px Arial,sans-serif;letter-spacing:2px;fill:#8a9797}.heading{font:900 37px Arial,sans-serif;fill:#fff}.copy{font:19px Georgia,serif;fill:#c2cbcb}.wire{fill:none;stroke:#374142;stroke-width:11;stroke-linecap:round}.lit{fill:none;stroke:url(#current);stroke-width:5;stroke-linecap:round;filter:url(#glow)}.terrain{fill:url(#ground)}.grid{fill:none;stroke:#cbd6d6;stroke-opacity:.07}</style>
+    <g id="mobile-unit">
+      <ellipse cx="0" cy="94" rx="172" ry="44" fill="#000" opacity=".58"/>
+      <path d="M-176 44Q-168 16-136 9H118Q148 16 166 42L185 70Q190 84 172 92H-158Q-183 84-180 70Z" fill="#171c1d" stroke="#fff" stroke-opacity=".12" stroke-width="2"/>
+      <path d="M-136 18Q-124-79-45-118Q40-159 115-104Q154-73 157 8L133 56H-127Z" fill="#2a3334" stroke="#fff" stroke-opacity=".14" stroke-width="2"/>
+      <circle cx="-149" cy="6" r="19" fill="#242c2d" stroke="#fff" stroke-opacity=".16"/><circle cx="-149" cy="6" r="8" fill="#050708"/>
+      <circle cx="18" cy="-26" r="80" fill="#050708"/><path d="M46 44A71 71 0 1 1 75 12M56 29L101 73" fill="none" stroke="#354041" stroke-width="25" stroke-linecap="round"/>
+    </g>
+  </defs>
+  <rect width="1440" height="1600" fill="#090c0d"/>
+  <g transform="translate(40 40)">
+    <rect width="640" height="1520" rx="36" fill="url(#bg)" stroke="#fff" stroke-opacity=".12"/>
+    <text x="32" y="56" class="label">360×800 · DORMANT</text>
+    <text x="32" y="108" class="heading">Larger unit.</text><text x="32" y="146" class="heading">Clear spiral.</text>
+    <text x="32" y="184" class="copy">No desktop crop. No magenta at arrival.</text>
+    <path class="terrain" d="M0 400Q290 340 640 410V1520H0Z"/><path class="grid" d="M0 680Q300 590 640 650M0 1050Q280 930 640 1010M0 1360Q310 1240 640 1320"/>
+    <path class="wire" d="M320 1510C66 1400 40 1070 222 890C398 716 638 820 624 1040C612 1232 420 1310 278 1188C150 1078 206 870 360 840C496 814 600 960 532 1082C470 1190 302 1162 266 1042C236 940 354 866 438 928C506 980 474 1094 390 1096C326 1098 304 1024 344 986L296 974"/>
+    <use href="#mobile-unit" transform="translate(362 976)"/>
+    <rect x="30" y="230" width="580" height="270" rx="18" fill="none" stroke="#fff" stroke-opacity=".12" stroke-dasharray="7 8"/>
+    <text x="48" y="264" class="label">HERO SAFE AREA</text>
+  </g>
+  <g transform="translate(760 40)">
+    <rect width="640" height="1520" rx="36" fill="url(#bg)" stroke="#f06ba0" stroke-opacity=".3"/>
+    <text x="32" y="56" class="label">390×844 · MID-CONDUCTION</text>
+    <text x="32" y="108" class="heading">Shorter movement.</text><text x="32" y="146" class="heading">Same narrative.</text>
+    <text x="32" y="184" class="copy">Cumulative current; Field Unit remains off.</text>
+    <g transform="translate(4 -16) scale(1.015)">
+      <path class="terrain" d="M0 400Q290 340 640 410V1520H0Z"/><path class="grid" d="M0 680Q300 590 640 650M0 1050Q280 930 640 1010M0 1360Q310 1240 640 1320"/>
+      <path class="wire" d="M320 1510C66 1400 40 1070 222 890C398 716 638 820 624 1040C612 1232 420 1310 278 1188C150 1078 206 870 360 840C496 814 600 960 532 1082C470 1190 302 1162 266 1042C236 940 354 866 438 928C506 980 474 1094 390 1096C326 1098 304 1024 344 986L296 974"/>
+      <path class="lit" stroke-dasharray="2700 10000" d="M320 1510C66 1400 40 1070 222 890C398 716 638 820 624 1040C612 1232 420 1310 278 1188C150 1078 206 870 360 840C496 814 600 960 532 1082C470 1190 302 1162 266 1042C236 940 354 866 438 928C506 980 474 1094 390 1096C326 1098 304 1024 344 986L296 974"/>
+      <use href="#mobile-unit" transform="translate(362 976)"/>
+    </g>
+    <g transform="translate(32 1328)"><rect width="576" height="136" rx="18" fill="#fff" fill-opacity=".04" stroke="#fff" stroke-opacity=".1"/><text x="24" y="42" class="label">MOBILE CONTRACT</text><text x="24" y="78" class="copy">2.25 turns · bottom-edge terminus · minor parallax</text><text x="24" y="110" class="copy">No broad orbit · no long frame preload</text></g>
+  </g>
+</svg>

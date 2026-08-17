@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2700" height="1800" viewBox="0 0 2700 1800" role="img" aria-labelledby="title desc">
+  <title id="title">Spiral Conduction progress contact sheet</title>
+  <desc id="desc">Nine original visual states show the dormant opening, cumulative outer-to-inner conduction, changing camera angle, delayed Field Unit power-on, interface wake, and final semantic portal.</desc>
+  <defs>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0e1112"/><stop offset=".64" stop-color="#1a2020"/><stop offset="1" stop-color="#14090f"/></linearGradient>
+    <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#242b2c"/><stop offset="1" stop-color="#0a0d0e"/></linearGradient>
+    <linearGradient id="current"><stop stop-color="#d82b72"/><stop offset=".65" stop-color="#f06ba0"/><stop offset="1" stop-color="#ffd2e3"/></linearGradient>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <path id="wire" d="M880 390C824 134 560 46 340 140C118 234 86 496 264 600C432 698 666 568 678 376C688 202 522 118 382 204C256 282 282 454 408 502C522 544 638 432 594 328C554 234 420 242 382 338C354 410 438 462 500 414L448 382"/>
+    <g id="unit-off">
+      <ellipse cx="0" cy="72" rx="116" ry="29" fill="#000" opacity=".58"/>
+      <path d="M-120 31Q-114 10-92 6H79Q100 10 113 29L126 48Q130 59 117 64H-108Q-125 59-123 48Z" fill="#171c1d" stroke="#fff" stroke-opacity=".12"/>
+      <path d="M-92 13Q-84-55-30-82Q28-110 81-72Q108-51 110 6L93 39H-87Z" fill="#2a3334" stroke="#fff" stroke-opacity=".14"/>
+      <circle cx="-101" cy="4" r="13" fill="#242c2d" stroke="#fff" stroke-opacity=".16"/><circle cx="-101" cy="4" r="5" fill="#050708"/>
+      <circle cx="13" cy="-18" r="53" fill="#050708"/><path d="M31 29A47 47 0 1 1 50 8M37 19L67 48" fill="none" stroke="#354041" stroke-width="17" stroke-linecap="round"/>
+    </g>
+    <g id="unit-on">
+      <use href="#unit-off"/>
+      <circle cx="-101" cy="4" r="5" fill="#f06ba0" filter="url(#glow)"/>
+      <path d="M-95 4C-67 2-54-15-34-26" fill="none" stroke="#f06ba0" stroke-opacity=".66" stroke-width="3" filter="url(#glow)"/>
+      <path d="M25 25A42 42 0 1 1 43 5M31 16L57 41" fill="none" stroke="#f06ba0" stroke-opacity=".74" stroke-width="4" stroke-linecap="round" filter="url(#glow)"/>
+    </g>
+    <style>
+      .frame{fill:url(#panel);stroke:#fff;stroke-opacity:.11;stroke-width:2}.terrain{fill:url(#ground)}.grid{fill:none;stroke:#cbd6d6;stroke-opacity:.07;stroke-width:1.5}.dormant{fill:none;stroke:#374142;stroke-width:9;stroke-linecap:round}.litHalo{fill:none;stroke:#d82b72;stroke-opacity:.22;stroke-width:22;stroke-linecap:round;filter:url(#glow)}.lit{fill:none;stroke:url(#current);stroke-width:4;stroke-linecap:round;filter:url(#glow)}.label{font:700 16px Arial,sans-serif;letter-spacing:2px;fill:#8a9797}.state{font:700 22px Arial,sans-serif;fill:#fff}.note{font:17px Georgia,serif;fill:#c2cbcb}.axis{fill:none;stroke:#8a9797;stroke-opacity:.3;stroke-dasharray:5 6}
+    </style>
+  </defs>
+  <rect width="2700" height="1800" fill="#090c0d"/>
+
+  <g transform="translate(0 0)">
+    <rect class="frame" width="900" height="600"/>
+    <path class="terrain" d="M0 235Q420 175 900 235V600H0Z"/><path class="grid" d="M0 360Q450 292 900 350M0 510Q430 422 900 488"/>
+    <use href="#wire" class="dormant"/><use href="#unit-off" transform="translate(448 382)"/>
+    <text class="label" x="38" y="48">0%</text><text class="state" x="38" y="82">Dormant arrival</text><text class="note" x="38" y="112">No magenta. Device and interface off.</text>
+  </g>
+  <g transform="translate(900 0)">
+    <rect class="frame" width="900" height="600"/>
+    <g transform="rotate(-2 450 350)"><path class="terrain" d="M0 235Q420 175 900 235V600H0Z"/><path class="grid" d="M0 360Q450 292 900 350M0 510Q430 422 900 488"/><use href="#wire" class="dormant"/><use href="#wire" class="litHalo" stroke-dasharray="280 10000"/><use href="#wire" class="lit" stroke-dasharray="280 10000"/><use href="#unit-off" transform="translate(448 382)"/></g>
+    <text class="label" x="38" y="48">12%</text><text class="state" x="38" y="82">Outer entry</text><text class="note" x="38" y="112">One restrained front enters at the perimeter.</text>
+  </g>
+  <g transform="translate(1800 0)">
+    <rect class="frame" width="900" height="600"/>
+    <g transform="rotate(-3 450 350) translate(8 -3)"><path class="terrain" d="M0 235Q420 175 900 235V600H0Z"/><path class="grid" d="M0 360Q450 292 900 350M0 510Q430 422 900 488"/><use href="#wire" class="dormant"/><use href="#wire" class="litHalo" stroke-dasharray="960 10000"/><use href="#wire" class="lit" stroke-dasharray="960 10000"/><use href="#unit-off" transform="translate(448 382)"/></g>
+    <text class="label" x="38" y="48">25%</text><text class="state" x="38" y="82">Conduction established</text><text class="note" x="38" y="112">Illuminated sheath remains lit behind the front.</text>
+  </g>
+  <g transform="translate(0 600)">
+    <rect class="frame" width="900" height="600"/>
+    <g transform="rotate(-2 450 350) translate(15 -8) scale(1.015)"><path class="terrain" d="M0 235Q420 175 900 235V600H0Z"/><path class="grid" d="M0 360Q450 292 900 350M0 510Q430 422 900 488"/><use href="#wire" class="dormant"/><use href="#wire" class="litHalo" stroke-dasharray="1720 10000"/><use href="#wire" class="lit" stroke-dasharray="1720 10000"/><use href="#unit-off" transform="translate(448 382)"/></g>
+    <text class="label" x="38" y="48">40%</text><text class="state" x="38" y="82">Changing angle</text><text class="note" x="38" y="112">Camera and current advance as one event.</text>
+  </g>
+  <g transform="translate(900 600)">
+    <rect class="frame" width="900" height="600"/>
+    <g transform="rotate(-1 450 350) translate(20 -11) scale(1.025)"><path class="terrain" d="M0 235Q420 175 900 235V600H0Z"/><path class="grid" d="M0 360Q450 292 900 350M0 510Q430 422 900 488"/><use href="#wire" class="dormant"/><use href="#wire" class="litHalo" stroke-dasharray="2520 10000"/><use href="#wire" class="lit" stroke-dasharray="2520 10000"/><use href="#unit-off" transform="translate(448 382)"/></g>
+    <text class="label" x="38" y="48">55%</text><text class="state" x="38" y="82">Mid-conduction</text><text class="note" x="38" y="112">Dormant inner turns remain physically readable.</text>
+  </g>
+  <g transform="translate(1800 600)">
+    <rect class="frame" width="900" height="600"/>
+    <g transform="translate(18 -13) scale(1.04)"><path class="terrain" d="M0 235Q420 175 900 235V600H0Z"/><path class="grid" d="M0 360Q450 292 900 350M0 510Q430 422 900 488"/><use href="#wire" class="dormant"/><use href="#wire" class="litHalo" stroke-dasharray="3440 10000"/><use href="#wire" class="lit" stroke-dasharray="3440 10000"/><use href="#unit-off" transform="translate(448 382)"/></g>
+    <text class="label" x="38" y="48">70%</text><text class="state" x="38" y="82">Near-frontal alignment</text><text class="note" x="38" y="112">Major camera movement is essentially complete.</text>
+  </g>
+  <g transform="translate(0 1200)">
+    <rect class="frame" width="900" height="600"/>
+    <g transform="translate(18 -13) scale(1.04)"><path class="terrain" d="M0 235Q420 175 900 235V600H0Z"/><path class="grid" d="M0 360Q450 292 900 350M0 510Q430 422 900 488"/><use href="#wire" class="dormant"/><use href="#wire" class="litHalo"/><use href="#wire" class="lit"/><use href="#unit-on" transform="translate(448 382)"/></g>
+    <text class="label" x="38" y="48">82%</text><text class="state" x="38" y="82">Connector response</text><text class="note" x="38" y="112">Current arrives; the Field Unit powers on once.</text>
+  </g>
+  <g transform="translate(900 1200)">
+    <rect class="frame" width="900" height="600"/>
+    <g transform="translate(18 -13) scale(1.04)"><path class="terrain" d="M0 235Q420 175 900 235V600H0Z"/><use href="#wire" class="dormant"/><use href="#wire" class="litHalo"/><use href="#wire" class="lit"/><use href="#unit-on" transform="translate(448 382)"/></g>
+    <path d="M574 132A156 156 0 1 1 640 306L706 374" fill="none" stroke="#f06ba0" stroke-opacity=".3" stroke-width="16" stroke-linecap="round" filter="url(#glow)"/>
+    <text class="label" x="38" y="48">92%</text><text class="state" x="38" y="82">Interface and portal</text><text class="note" x="38" y="112">Q aperture overlaps the native surface.</text>
+  </g>
+  <g transform="translate(1800 1200)">
+    <rect class="frame" width="900" height="600" fill="#141919"/>
+    <path d="M0 0H900V600H0Z" fill="url(#panel)"/><path d="M0 0H900V600H0Z" fill="none" stroke="#fff" stroke-opacity=".11" stroke-width="2"/>
+    <path d="M600 0V600M300 0V600M0 200H900M0 400H900" stroke="#fff" stroke-opacity=".045"/>
+    <text class="label" x="38" y="48">100%</text><text class="state" x="38" y="82">Semantic ownership</text><text class="note" x="38" y="112">No blank bridge. No extra gesture.</text>
+    <text x="70" y="300" fill="#8a9797" font-family="Arial,sans-serif" font-size="15" font-weight="700" letter-spacing="2">QUANTUM OPERATING SURFACE</text>
+    <text x="70" y="370" fill="#fff" font-family="Arial Black,Arial,sans-serif" font-size="54" letter-spacing="-3">Evidence becomes</text><text x="70" y="426" fill="#fff" font-family="Arial Black,Arial,sans-serif" font-size="54" letter-spacing="-3">the interface.</text>
+    <text x="70" y="506" fill="#c2cbcb" font-family="Arial,sans-serif" font-size="16">Frame · Source · Assess · Test · Decide</text>
+  </g>
+</svg>

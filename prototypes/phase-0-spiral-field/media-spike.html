@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Phase 0 encoded-media seek spike</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: Inter, "Segoe UI", Arial, sans-serif;
+        background: #0e1112;
+        color: #c2cbcb;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        min-width: 320px;
+        background: linear-gradient(145deg, #0e1112, #1a2020 62%, #14090f);
+      }
+
+      main {
+        width: min(72rem, calc(100% - 2rem));
+        margin: 0 auto;
+        padding: 4rem 0;
+      }
+
+      h1 {
+        max-width: 14ch;
+        margin: 0;
+        color: #fff;
+        font-family: "Arial Black", "Arial Narrow", Arial, sans-serif;
+        font-size: clamp(2.4rem, 7vw, 5.5rem);
+        letter-spacing: -0.05em;
+        line-height: 0.98;
+      }
+
+      p { max-width: 52rem; }
+
+      .panel {
+        margin-top: 2rem;
+        padding: 1rem;
+        border: 1px solid rgba(255,255,255,.09);
+        border-radius: 1rem;
+        background: rgba(255,255,255,.04);
+      }
+
+      canvas,
+      video {
+        display: block;
+        width: min(100%, 640px);
+        height: auto;
+        margin-top: 1rem;
+        border: 1px solid rgba(255,255,255,.1);
+        background: #0e1112;
+      }
+
+      button {
+        min-height: 2.75rem;
+        padding: .7rem 1rem;
+        border: 1px solid rgba(255,255,255,.17);
+        border-radius: 999px;
+        color: #fff;
+        background: rgba(255,255,255,.04);
+        font: 750 .9rem/1 Inter, "Segoe UI", Arial, sans-serif;
+        cursor: pointer;
+      }
+
+      button:focus-visible { outline: 3px solid #f06ba0; outline-offset: 4px; }
+      button:disabled { cursor: progress; opacity: .55; }
+      code, pre { font-family: Consolas, "Courier New", monospace; }
+      pre { overflow-wrap: anywhere; white-space: pre-wrap; }
+      .muted { color: #8a9797; }
+      #encoded-data { display: none; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="muted">Phase 0 · local review evidence · non-production</p>
+      <h1>Real browser encode and seek spike.</h1>
+      <p>
+        This isolated test records an original 640 × 400 canvas at 24fps, then seeks the resulting media in
+        forward and reverse order. It does not claim production-codec readiness.
+      </p>
+
+      <section class="panel" aria-labelledby="support-title">
+        <h2 id="support-title">Runtime support</h2>
+        <pre id="support-output">Checking browser capabilities…</pre>
+        <button id="encode-button" type="button">Create real seek sample</button>
+        <p id="state" role="status">Idle</p>
+        <canvas id="source" width="640" height="400" aria-label="Original deterministic Spiral Conduction encode source"></canvas>
+        <video id="playback" controls muted playsinline aria-label="Recorded Phase 0 seek sample"></video>
+        <pre id="results">No seek measurement yet.</pre>
+        <textarea id="encoded-data" aria-hidden="true" tabindex="-1"></textarea>
+      </section>
+    </main>
+    <script src="./media-spike.js" defer></script>
+  </body>
+</html>

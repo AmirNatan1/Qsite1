@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="1600" viewBox="0 0 720 1600" role="img" aria-labelledby="title desc">
+  <title id="title">Dormant proving ground mobile reduced-motion poster</title>
+  <desc id="desc">An independently composed vertical proving ground with an unlit 2.25-turn graphite spiral cable and a powered-off original Quantum Field Unit.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0e1112"/><stop offset=".58" stop-color="#1a2020"/><stop offset="1" stop-color="#14090f"/></linearGradient>
+    <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#242b2c"/><stop offset="1" stop-color="#090c0d"/></linearGradient>
+    <linearGradient id="shell" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#465152"/><stop offset=".42" stop-color="#22292a"/><stop offset="1" stop-color="#0e1213"/></linearGradient>
+    <filter id="soft"><feGaussianBlur stdDeviation="9"/></filter>
+    <pattern id="grain" width="38" height="38" patternUnits="userSpaceOnUse"><path d="M0 38L38 0" stroke="#fff" stroke-opacity=".026"/></pattern>
+  </defs>
+  <rect width="720" height="1600" fill="url(#bg)"/>
+  <path d="M0 430Q320 360 720 440V1600H0Z" fill="url(#ground)"/>
+  <path d="M0 430Q320 360 720 440V1600H0Z" fill="url(#grain)"/>
+  <path d="M0 730Q280 650 720 710M0 1080Q300 980 720 1050M0 1400Q320 1270 720 1360" fill="none" stroke="#cbd6d6" stroke-opacity=".07" stroke-width="2"/>
+  <path d="M360 1590C80 1480 48 1120 240 930C426 746 704 848 688 1090C674 1300 456 1392 300 1255C158 1130 218 900 388 866C540 836 656 1000 580 1134C510 1254 326 1222 286 1090C252 976 382 894 474 962C550 1018 514 1148 420 1150C350 1152 324 1070 370 1028L318 1015" fill="none" stroke="#000" stroke-opacity=".65" stroke-width="19" stroke-linecap="round" transform="translate(0 9)"/>
+  <path d="M360 1590C80 1480 48 1120 240 930C426 746 704 848 688 1090C674 1300 456 1392 300 1255C158 1130 218 900 388 866C540 836 656 1000 580 1134C510 1254 326 1222 286 1090C252 976 382 894 474 962C550 1018 514 1148 420 1150C350 1152 324 1070 370 1028L318 1015" fill="none" stroke="#343d3e" stroke-width="13" stroke-linecap="round"/>
+  <path d="M360 1590C80 1480 48 1120 240 930C426 746 704 848 688 1090C674 1300 456 1392 300 1255C158 1130 218 900 388 866C540 836 656 1000 580 1134C510 1254 326 1222 286 1090C252 976 382 894 474 962C550 1018 514 1148 420 1150C350 1152 324 1070 370 1028L318 1015" fill="none" stroke="#fff" stroke-opacity=".08" stroke-width="2" stroke-linecap="round"/>
+  <g transform="translate(390 1015)">
+    <ellipse cx="0" cy="118" rx="220" ry="56" fill="#000" opacity=".58" filter="url(#soft)"/>
+    <path d="M-220 54Q-210 19-170 11H147Q185 19 208 52L231 87Q238 105 215 114H-198Q-229 105-225 87Z" fill="#161b1c" stroke="#fff" stroke-opacity=".11" stroke-width="3"/>
+    <path d="M-170 23Q-155-98-57-146Q50-197 144-129Q193-91 196 10L166 69H-159Z" fill="url(#shell)" stroke="#fff" stroke-opacity=".14" stroke-width="3"/>
+    <circle cx="-186" cy="8" r="24" fill="#252d2e" stroke="#fff" stroke-opacity=".16" stroke-width="2"/><circle cx="-186" cy="8" r="10" fill="#070909"/>
+    <circle cx="23" cy="-32" r="99" fill="#07090a" stroke="#fff" stroke-opacity=".09" stroke-width="4"/><circle cx="23" cy="-32" r="76" fill="#030506"/>
+    <path d="M57 53A88 88 0 1 1 93 14" fill="none" stroke="#313a3b" stroke-width="32" stroke-linecap="round"/><path d="M70 34L124 87" fill="none" stroke="#313a3b" stroke-width="30" stroke-linecap="round"/>
+  </g>
+</svg>

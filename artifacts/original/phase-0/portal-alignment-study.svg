@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1200" viewBox="0 0 1920 1200" role="img" aria-labelledby="title desc">
+  <title id="title">Field Unit portal alignment study</title>
+  <desc id="desc">A three-stage vector alignment study maps the final cinematic Q interface through an aperture-bound overlay to the first native semantic operating-surface frame.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0e1112"/><stop offset=".58" stop-color="#1a2020"/><stop offset="1" stop-color="#14090f"/></linearGradient>
+    <radialGradient id="screen"><stop stop-color="#273132"/><stop offset=".62" stop-color="#111718"/><stop offset="1" stop-color="#050708"/></radialGradient>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <style>.head{font:700 15px Arial,sans-serif;letter-spacing:2px;fill:#8a9797}.title{font:900 34px Arial,sans-serif;fill:#fff}.copy{font:18px Georgia,serif;fill:#c2cbcb}.guide{fill:none;stroke:#f06ba0;stroke-opacity:.6;stroke-width:2;stroke-dasharray:8 7}.axis{stroke:#fff;stroke-opacity:.16;stroke-width:1}.stage{fill:#fff;fill-opacity:.035;stroke:#fff;stroke-opacity:.12}.q{fill:none;stroke:#f06ba0;stroke-opacity:.75;stroke-width:18;stroke-linecap:round;filter:url(#glow)}</style>
+  </defs>
+  <rect width="1920" height="1200" fill="url(#bg)"/>
+  <text x="70" y="74" class="head">PHASE 0 · PORTAL ALIGNMENT</text>
+  <text x="70" y="126" class="title">One aperture, three ownership states</text>
+  <text x="70" y="164" class="copy">Final cinematic frame → matched overlap → first semantic DOM frame</text>
+
+  <g transform="translate(60 220)">
+    <rect class="stage" width="560" height="760" rx="24"/>
+    <text x="30" y="48" class="head">01 · CINEMATIC FRAME</text>
+    <rect x="50" y="95" width="460" height="540" rx="180" fill="#171d1e" stroke="#fff" stroke-opacity=".11"/>
+    <circle cx="280" cy="350" r="178" fill="url(#screen)"/>
+    <path class="q" d="M334 498A170 170 0 1 1 425 414M359 463L462 564"/>
+    <text x="192" y="310" class="head" fill="#fff">TEST ROUTE</text>
+    <text x="192" y="346" class="copy">challenge detected</text>
+    <text x="192" y="382" class="copy">context received</text>
+    <text x="192" y="418" font-family="Arial,sans-serif" font-size="17" fill="#f6a8c6">route available</text>
+    <path class="guide" d="M102 172H458V528H102Z"/>
+    <text x="30" y="700" class="copy">Interface-safe region is fully inside the Q yoke.</text>
+    <text x="30" y="730" class="copy">Foreground shell edge remains outside the content crop.</text>
+  </g>
+
+  <g transform="translate(680 220)">
+    <rect class="stage" width="560" height="760" rx="24"/>
+    <text x="30" y="48" class="head">02 · OWNERSHIP OVERLAP</text>
+    <rect x="50" y="95" width="460" height="540" rx="180" fill="url(#screen)" stroke="#fff" stroke-opacity=".11"/>
+    <path d="M50 365H510M280 95V635" class="axis"/>
+    <circle cx="280" cy="350" r="178" class="guide"/>
+    <path class="q" d="M334 498A170 170 0 1 1 425 414M359 463L462 564"/>
+    <rect x="102" y="172" width="356" height="356" fill="#fff" fill-opacity=".025" class="guide"/>
+    <line x1="102" y1="245" x2="458" y2="245" class="guide"/>
+    <text x="122" y="225" class="head">NAVIGATION REVEAL ZONE</text>
+    <text x="122" y="324" font-family="Arial Black,Arial,sans-serif" font-size="30" fill="#fff">Evidence becomes</text>
+    <text x="122" y="360" font-family="Arial Black,Arial,sans-serif" font-size="30" fill="#fff">the interface.</text>
+    <text x="30" y="700" class="copy">Media and DOM share centre, crop, heading baseline,</text>
+    <text x="30" y="730" class="copy">and foreground edge before semantic ownership changes.</text>
+  </g>
+
+  <g transform="translate(1300 220)">
+    <rect class="stage" width="560" height="760" rx="24"/>
+    <text x="30" y="48" class="head">03 · NATIVE DOM FRAME</text>
+    <rect x="50" y="95" width="460" height="540" rx="16" fill="#141a1a" stroke="#fff" stroke-opacity=".11"/>
+    <path d="M50 230H510M203 95V635M356 95V635M50 365H510M50 500H510" class="axis"/>
+    <text x="82" y="145" class="head">QUANTUM OPERATING SURFACE</text>
+    <text x="82" y="300" font-family="Arial Black,Arial,sans-serif" font-size="46" fill="#fff" letter-spacing="-2">Evidence becomes</text>
+    <text x="82" y="352" font-family="Arial Black,Arial,sans-serif" font-size="46" fill="#fff" letter-spacing="-2">the interface.</text>
+    <path d="M82 405H478" stroke="#fff" stroke-opacity=".15"/>
+    <text x="82" y="448" font-family="Arial,sans-serif" font-size="15" fill="#c2cbcb">Frame · Source · Assess · Test · Decide</text>
+    <rect x="102" y="172" width="356" height="356" class="guide"/>
+    <text x="30" y="700" class="copy">The matched surface remains real HTML with one</text>
+    <text x="30" y="730" class="copy">document scroll root and no URL mutation.</text>
+  </g>
+  <text x="70" y="1128" class="head">ALIGNMENT CONTRACT</text>
+  <text x="70" y="1164" class="copy">Identical aperture bounds · crop · interface-safe region · heading baseline · navigation zone · foreground edge</text>
+</svg>

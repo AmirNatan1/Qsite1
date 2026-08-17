@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1200" viewBox="0 0 1920 1200" role="img" aria-labelledby="title desc">
+  <title id="title">Proving-ground style frame</title>
+  <desc id="desc">Final-intent dormant landscape composition showing neutral industrial terrain, an unlit physical spiral cable, an original powered-off Field Unit, and safe regions for typography and navigation.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0e1112"/><stop offset=".57" stop-color="#1a2020"/><stop offset="1" stop-color="#111516"/></linearGradient>
+    <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#252c2d"/><stop offset=".55" stop-color="#161b1c"/><stop offset="1" stop-color="#090c0d"/></linearGradient>
+    <linearGradient id="shell" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#4b5657"/><stop offset=".38" stop-color="#252d2e"/><stop offset="1" stop-color="#0f1314"/></linearGradient>
+    <linearGradient id="plinth" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#303839"/><stop offset="1" stop-color="#0a0d0e"/></linearGradient>
+    <pattern id="micro" width="46" height="46" patternUnits="userSpaceOnUse"><path d="M0 46L46 0" stroke="#fff" stroke-opacity=".027"/></pattern>
+    <filter id="soft"><feGaussianBlur stdDeviation="11"/></filter>
+  </defs>
+  <rect width="1920" height="1200" fill="url(#sky)"/>
+  <path d="M0 386Q398 298 822 354T1540 318Q1720 295 1920 326V1200H0Z" fill="url(#ground)"/>
+  <path d="M0 386Q398 298 822 354T1540 318Q1720 295 1920 326V1200H0Z" fill="url(#micro)"/>
+  <path d="M0 508Q420 430 820 482T1540 430Q1740 410 1920 440M0 780Q480 678 950 746T1920 662M0 1020Q480 898 940 988T1920 878" fill="none" stroke="#cbd6d6" stroke-opacity=".075" stroke-width="2"/>
+  <path d="M1920 650C1830 296 1450 170 1120 305C790 440 750 830 1010 1010C1260 1180 1640 1005 1672 702C1700 428 1438 282 1220 404C1020 516 1048 780 1240 868C1410 944 1580 790 1530 630C1486 488 1288 474 1210 604C1150 706 1260 806 1360 756L1265 688" fill="none" stroke="#000" stroke-opacity=".65" stroke-width="19" stroke-linecap="round" transform="translate(0 9)"/>
+  <path d="M1920 650C1830 296 1450 170 1120 305C790 440 750 830 1010 1010C1260 1180 1640 1005 1672 702C1700 428 1438 282 1220 404C1020 516 1048 780 1240 868C1410 944 1580 790 1530 630C1486 488 1288 474 1210 604C1150 706 1260 806 1360 756L1265 688" fill="none" stroke="#343d3e" stroke-width="13" stroke-linecap="round"/>
+  <path d="M1920 650C1830 296 1450 170 1120 305C790 440 750 830 1010 1010C1260 1180 1640 1005 1672 702C1700 428 1438 282 1220 404C1020 516 1048 780 1240 868C1410 944 1580 790 1530 630C1486 488 1288 474 1210 604C1150 706 1260 806 1360 756L1265 688" fill="none" stroke="#fff" stroke-opacity=".08" stroke-width="2" stroke-linecap="round"/>
+  <g transform="translate(1450 700) rotate(-3)">
+    <ellipse cx="0" cy="146" rx="265" ry="66" fill="#000" opacity=".6" filter="url(#soft)"/>
+    <path d="M-265 68Q-252 25-206 15H178Q222 24 250 64L278 105Q286 127 260 139H-239Q-276 128-270 105Z" fill="url(#plinth)" stroke="#fff" stroke-opacity=".12" stroke-width="3"/>
+    <path d="M-205 29Q-188-120-69-178Q60-240 175-157Q235-110 238 13L203 84H-193Z" fill="url(#shell)" stroke="#fff" stroke-opacity=".15" stroke-width="3"/>
+    <path d="M-185 46Q-162-90-49-147Q58-202 157-130Q207-94 217 10" fill="none" stroke="#d8e1e1" stroke-opacity=".14" stroke-width="4"/>
+    <circle cx="-225" cy="9" r="28" fill="#252d2e" stroke="#fff" stroke-opacity=".18" stroke-width="3"/><circle cx="-225" cy="9" r="12" fill="#070909"/>
+    <circle cx="28" cy="-39" r="121" fill="#07090a" stroke="#fff" stroke-opacity=".1" stroke-width="5"/><circle cx="28" cy="-39" r="94" fill="#030506" stroke="#fff" stroke-opacity=".06" stroke-width="3"/>
+    <path d="M70 65A108 108 0 1 1 113 17" fill="none" stroke="#313a3b" stroke-width="38" stroke-linecap="round"/><path d="M86 42L151 105" fill="none" stroke="#313a3b" stroke-width="36" stroke-linecap="round"/>
+  </g>
+  <g fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="1.5" stroke-dasharray="8 10">
+    <rect x="64" y="64" width="720" height="566" rx="20"/>
+    <rect x="64" y="64" width="1792" height="72" rx="20"/>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="14" fill="#8a9797" letter-spacing="2">
+    <text x="86" y="106">NAVIGATION SAFE REGION</text>
+    <text x="86" y="174">TYPOGRAPHY SAFE REGION</text>
+    <text x="1854" y="1160" text-anchor="end">1920×1200 · DORMANT FINAL-INTENT STYLE FRAME</text>
+  </g>
+</svg>

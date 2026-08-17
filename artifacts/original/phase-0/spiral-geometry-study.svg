@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1000" viewBox="0 0 1800 1000" role="img" aria-labelledby="title desc">
+  <title id="title">Spiral Conduction geometry study</title>
+  <desc id="desc">Top-down comparison of 2.25, 2.5, and 2.75-turn Archimedean spirals, with 2.5 turns recommended.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0e1112"/><stop offset=".58" stop-color="#1a2020"/><stop offset="1" stop-color="#14090f"/></linearGradient>
+    <linearGradient id="unit" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#394344"/><stop offset=".45" stop-color="#202728"/><stop offset="1" stop-color="#101415"/></linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#fff" stroke-opacity=".035"/></pattern>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5 0 10Z" fill="#8a9797"/></marker>
+    <filter id="glow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="1800" height="1000" fill="url(#bg)"/>
+  <rect width="1800" height="1000" fill="url(#grid)"/>
+  <text x="80" y="76" fill="#8a9797" font-family="Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="3">PHASE 0 · SPIRAL CONDUCTION</text>
+  <text x="80" y="132" fill="#fff" font-family="Arial Black, Arial, sans-serif" font-size="48" letter-spacing="-2">Geometry study</text>
+  <text x="80" y="174" fill="#c2cbcb" font-family="Georgia, serif" font-size="22">One continuous cable · outer terminus to physical Field Unit connector</text>
+
+  <g font-family="Arial, sans-serif">
+    <rect x="60" y="220" width="520" height="560" rx="28" fill="#fff" fill-opacity=".035" stroke="#fff" stroke-opacity=".11"/>
+    <text x="96" y="270" fill="#fff" font-size="26" font-weight="700">2.25 turns</text>
+    <text x="96" y="302" fill="#8a9797" font-size="16">Fastest conduction · broadest spacing</text>
+    <path d="M480.8 273.1 L495.8 311.2 L503.1 351.1 L502.4 391.1 L493.9 429.8 L478.3 465.6 L456.2 497.3 L428.7 523.7 L396.9 543.9 L362.3 557.4 L326.1 563.7 L289.9 562.8 L255.1 555.0 L222.9 540.7 L194.5 520.6 L170.9 495.6 L152.9 467.0 L141.1 435.8 L135.7 403.4 L136.7 371.0 L144.0 339.9 L157.0 311.3 L175.1 286.2 L197.4 265.5 L223.0 249.7 L250.7 239.5 L279.4 235.0 L307.9 236.2 L335.2 242.9 L360.2 254.6 L382.1 270.7 L400.0 290.4 L413.4 312.9 L422.0 337.1 L425.6 362.1 L424.3 386.8 L418.2 410.3 L407.8 431.8 L393.7 450.3 L376.5 465.4 L357.1 476.6 L336.4 483.6 L315.1 486.3 L294.2 484.7 L274.5 479.2 L256.7 470.1 L241.4 458.0 L229.2 443.5 L220.2 427.2 L214.9 409.9 L213.1 392.4 L214.8 375.3 L219.7 359.4 L227.5 345.2 L237.6 333.2 L249.6 323.7 L262.8 317.1 L276.6 313.3 L290.4 312.5 L303.6 314.3 L315.8 318.7 L326.4 325.1 L335.1 333.3 L341.7 342.6 L346.1 352.7 L348.2 363.1 L348.2 373.1 L346.2 382.5 L342.4 390.9 L337.3 397.9 L331.1 403.3 L324.3 407.1 L317.3 409.3" transform="translate(2 15)" fill="none" stroke="#586263" stroke-width="9" stroke-linecap="round"/>
+    <g transform="translate(318 424)"><rect x="-45" y="-30" width="90" height="60" rx="20" fill="url(#unit)" stroke="#fff" stroke-opacity=".18"/><circle r="18" fill="#070909"/><path d="M7 15A17 17 0 1 1 14 5M10 10L24 24" fill="none" stroke="#798687" stroke-width="5" stroke-linecap="round"/></g>
+    <path d="M105 685H535" stroke="#8a9797" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <text x="105" y="719" fill="#8a9797" font-size="14">proposed camera axis</text>
+
+    <rect x="640" y="220" width="520" height="560" rx="28" fill="#fff" fill-opacity=".055" stroke="#f06ba0" stroke-opacity=".52" stroke-width="2"/>
+    <rect x="925" y="238" width="200" height="32" rx="16" fill="#d82b72" fill-opacity=".16" stroke="#f06ba0" stroke-opacity=".45"/>
+    <text x="1025" y="260" text-anchor="middle" fill="#f9b6d0" font-size="14" font-weight="700" letter-spacing="1.5">RECOMMENDED</text>
+    <text x="676" y="270" fill="#fff" font-size="26" font-weight="700">2.5 turns</text>
+    <text x="676" y="302" fill="#c2cbcb" font-size="16">Balanced travel, spacing and device dominance</text>
+    <path d="M1080.8 273.1 L1096.1 311.1 L1103.5 351.0 L1103.1 391.2 L1094.9 430.0 L1079.4 466.1 L1057.4 498.2 L1029.8 525.0 L997.9 545.6 L963.0 559.5 L926.5 566.1 L889.8 565.5 L854.3 557.8 L821.5 543.5 L792.4 523.3 L768.2 498.1 L749.5 469.0 L737.1 437.2 L731.3 404.0 L732.1 370.8 L739.2 338.7 L752.3 309.1 L770.8 283.0 L793.7 261.3 L820.0 244.7 L848.6 233.8 L878.5 228.7 L908.3 229.6 L936.9 236.3 L963.3 248.2 L986.5 264.8 L1005.6 285.4 L1020.2 308.9 L1029.6 334.5 L1033.9 361.0 L1032.8 387.3 L1026.7 412.5 L1015.9 435.7 L1001.1 455.9 L982.9 472.5 L962.1 485.0 L939.7 493.0 L916.6 496.4 L893.7 495.2 L871.8 489.6 L852.0 480.1 L834.7 467.0 L820.6 451.1 L810.1 433.1 L803.6 413.9 L801.0 394.1 L802.3 374.6 L807.4 356.2 L815.8 339.6 L827.1 325.2 L840.6 313.7 L855.8 305.3 L872.0 300.2 L888.4 298.4 L904.4 299.9 L919.4 304.5 L932.8 311.7 L944.2 321.1 L953.2 332.4 L959.6 344.8 L963.2 357.8 L964.2 370.9 L962.5 383.4 L958.5 395.0 L952.5 405.2 L944.8 413.6 L935.9 420.1 L926.3 424.4 L916.4 426.6 L906.7 426.7 L897.5 424.9 L889.4 421.5 L882.4 416.6 L876.9 410.7 L873.0 404.2 L870.7 397.3" transform="translate(2 15)" fill="none" stroke="#606b6c" stroke-width="9" stroke-linecap="round"/>
+    <path d="M1080.8 273.1 L1096.1 311.1 L1103.5 351.0 L1103.1 391.2 L1094.9 430.0 L1079.4 466.1 L1057.4 498.2 L1029.8 525.0 L997.9 545.6 L963.0 559.5 L926.5 566.1 L889.8 565.5 L854.3 557.8 L821.5 543.5 L792.4 523.3 L768.2 498.1 L749.5 469.0 L737.1 437.2 L731.3 404.0 L732.1 370.8 L739.2 338.7 L752.3 309.1 L770.8 283.0 L793.7 261.3 L820.0 244.7 L848.6 233.8 L878.5 228.7 L908.3 229.6 L936.9 236.3 L963.3 248.2 L986.5 264.8 L1005.6 285.4 L1020.2 308.9 L1029.6 334.5 L1033.9 361.0 L1032.8 387.3 L1026.7 412.5 L1015.9 435.7 L1001.1 455.9 L982.9 472.5 L962.1 485.0 L939.7 493.0 L916.6 496.4 L893.7 495.2 L871.8 489.6 L852.0 480.1 L834.7 467.0 L820.6 451.1" transform="translate(2 15)" fill="none" stroke="#f06ba0" stroke-width="3.5" stroke-linecap="round" filter="url(#glow)"/>
+    <g transform="translate(872 412)"><rect x="-45" y="-30" width="90" height="60" rx="20" fill="url(#unit)" stroke="#fff" stroke-opacity=".18"/><circle r="18" fill="#070909"/><path d="M7 15A17 17 0 1 1 14 5M10 10L24 24" fill="none" stroke="#798687" stroke-width="5" stroke-linecap="round"/></g>
+    <circle cx="1083" cy="288" r="7" fill="#343c3d" stroke="#fff" stroke-opacity=".2"/>
+    <text x="1083" y="330" fill="#8a9797" font-size="13" text-anchor="middle">outer terminus</text>
+    <path d="M685 685H1115" stroke="#8a9797" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <text x="685" y="719" fill="#8a9797" font-size="14">camera settles before connector arrival</text>
+
+    <rect x="1220" y="220" width="520" height="560" rx="28" fill="#fff" fill-opacity=".035" stroke="#fff" stroke-opacity=".11"/>
+    <text x="1256" y="270" fill="#fff" font-size="26" font-weight="700">2.75 turns</text>
+    <text x="1256" y="302" fill="#8a9797" font-size="16">Longest beat · tighter inner spacing</text>
+    <path d="M1680.8 273.1 L1696.3 311.1 L1703.9 351.0 L1703.7 391.2 L1695.7 430.2 L1680.3 466.6 L1658.3 498.9 L1630.8 526.0 L1598.8 547.0 L1563.6 561.2 L1526.8 568.1 L1489.7 567.7 L1453.7 560.2 L1420.4 545.9 L1390.7 525.5 L1365.9 500.1 L1346.8 470.6 L1333.9 438.3 L1327.7 404.5 L1328.3 370.5 L1335.3 337.7 L1348.6 307.3 L1367.3 280.3 L1390.6 257.8 L1417.5 240.6 L1447.0 229.0 L1477.7 223.6 L1508.6 224.2 L1538.3 230.8 L1565.8 243.0 L1590.1 260.0 L1610.2 281.3 L1625.7 305.7 L1635.9 332.3 L1640.6 360.0 L1639.8 387.7 L1633.7 414.3 L1622.6 438.9 L1607.2 460.5 L1588.1 478.3 L1566.2 491.9 L1542.4 500.8 L1517.8 504.7 L1493.2 503.8 L1469.7 498.2 L1448.1 488.2 L1429.2 474.4 L1413.6 457.4 L1401.9 438.0 L1394.3 417.1 L1391.1 395.5 L1392.2 374.1 L1397.3 353.6 L1406.2 335.0 L1418.4 318.8 L1433.3 305.5 L1450.1 295.6 L1468.2 289.4 L1486.8 286.9 L1505.1 288.1 L1522.4 292.8 L1538.1 300.7 L1551.6 311.2 L1562.6 324.0 L1570.6 338.3 L1575.5 353.5 L1577.2 369.0 L1575.9 384.2 L1571.7 398.4 L1564.9 411.2 L1556.0 422.0 L1545.4 430.7 L1533.6 436.8 L1521.2 440.4 L1508.7 441.4 L1496.7 439.9 L1485.6 436.2 L1475.8 430.5 L1467.6 423.2 L1461.3 414.7 L1457.0 405.5 L1454.7 395.9 L1454.5 386.5 L1456.1 377.6 L1459.3 369.6 L1463.9 362.7 L1469.6 357.2 L1476.0 353.2 L1482.7 350.7" transform="translate(2 15)" fill="none" stroke="#586263" stroke-width="9" stroke-linecap="round"/>
+    <g transform="translate(1484 365)"><rect x="-45" y="-30" width="90" height="60" rx="20" fill="url(#unit)" stroke="#fff" stroke-opacity=".18"/><circle r="18" fill="#070909"/><path d="M7 15A17 17 0 1 1 14 5M10 10L24 24" fill="none" stroke="#798687" stroke-width="5" stroke-linecap="round"/></g>
+    <path d="M1265 685H1695" stroke="#8a9797" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <text x="1265" y="719" fill="#8a9797" font-size="14">device loses dominance at short heights</text>
+  </g>
+
+  <line x1="80" y1="838" x2="1720" y2="838" stroke="#fff" stroke-opacity=".1"/>
+  <text x="80" y="890" fill="#fff" font-family="Arial, sans-serif" font-size="18" font-weight="700">SELECTED: 2.5 TURNS</text>
+  <text x="80" y="926" fill="#c2cbcb" font-family="Georgia, serif" font-size="20">Consistent spacing · clear arrival read · sufficient conduction travel · credible connector landing</text>
+  <text x="1720" y="926" text-anchor="end" fill="#8a9797" font-family="Arial, sans-serif" font-size="14">Editable vector source · no third-party assets</text>
+</svg>
