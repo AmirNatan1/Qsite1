@@ -1,9 +1,10 @@
 {
   "schema": "quantum-hub.phase-0-4-crt-television.repository-impact.v1",
-  "generated_at": "2026-08-18T19:34:00+03:00",
+  "generated_at": "2026-08-18T20:08:49+03:00",
   "measurement": {
     "accepted_parent": "5ba1d0fac427d7584db5d0d202e18f1ac8c3f8ae",
-    "head_at_measurement": "5ba1d0fac427d7584db5d0d202e18f1ac8c3f8ae",
+    "head_at_measurement": "8c2c7e73eafb64f1c11b74a48873ed2f082d7014",
+    "upstream_at_measurement": "8c2c7e73eafb64f1c11b74a48873ed2f082d7014",
     "branch": "redirect/phase-0-4-crt-television",
     "origin_fetch_url": "https://github.com/AmirNatan1/Qsite1.git",
     "origin_push_url": "https://github.com/AmirNatan1/Qsite1.git",
@@ -20,16 +21,16 @@
   },
   "projected_candidate_tree": {
     "file_count": 1097,
-    "total_blob_bytes": 520588971,
+    "total_blob_bytes": 520588802,
     "delta_file_count": 394,
-    "delta_blob_bytes": 182831395,
-    "filesystem_materialized_bytes": 520731232,
+    "delta_blob_bytes": 182831226,
+    "filesystem_materialized_bytes": 520731063,
     "line_ending_materialization_delta_bytes": 142261
   },
   "change_summary": {
     "added": {
       "file_count": 394,
-      "total_bytes": 182816807
+      "total_bytes": 182816638
     },
     "modified": {
       "file_count": 4,
@@ -60,7 +61,7 @@
     "browser_and_provenance_evidence": {
       "path": "artifacts/evidence/phase-0-4-crt-television/",
       "file_count": 260,
-      "total_bytes": 21924024,
+      "total_bytes": 21923821,
       "canonical_matrix_path": "artifacts/evidence/phase-0-4-crt-television/browser-matrix-report.json",
       "canonical_matrix_bytes": 1149989,
       "canonical_matrix_sha256": "5411220869170f0290423d2f235aba2dc659aa1820e6eb2a3680bbe179d073d7"
@@ -76,7 +77,7 @@
       },
       "repository_scripts": {
         "file_count": 5,
-        "total_bytes": 342899
+        "total_bytes": 342933
       }
     }
   },
@@ -101,29 +102,20 @@
   },
   "working_tree_snapshot": {
     "clean": false,
-    "state": "pre-commit candidate; intended Phase 0.4 changes remain modified or untracked",
-    "modified_tracked_file_count": 4,
-    "untracked_file_count": 394,
+    "state": "post-push reconciliation candidate; the verifier buffer-limit repair and its two provenance records remain modified",
+    "modified_tracked_file_count": 3,
+    "untracked_file_count": 0,
     "staged_file_count": 0,
     "unexpected_file_count": 0,
     "status_roots": [
-      "artifacts/evidence/phase-0-4-crt-television/",
-      "artifacts/original/phase-0-4-crt-television/",
+      "artifacts/evidence/phase-0-4-crt-television/repository-impact-report.json",
       "docs/planning/ASSET_REGISTER.md",
-      "docs/planning/CRT_PORTAL_AND_TYPOGRAPHY_CONTRACT.md",
-      "docs/planning/PHASE_0_4_CRT_TELEVISION_REDIRECT.md",
-      "package.json",
-      "prototypes/phase-0-4-crt-portal-qa/",
-      "scripts/capture-phase04-browser-matrix.mjs",
-      "scripts/finalize-phase04-browser-evidence.mjs",
-      "scripts/normalize-phase04-captures.py",
-      "scripts/serve-prototype.mjs",
-      "scripts/verify-phase0-4-crt-assets.mjs",
-      "scripts/verify-phase0-4-crt-layout.mjs",
-      "tests/phase0.test.mjs"
+      "scripts/verify-phase0-4-crt-assets.mjs"
     ]
   },
   "delivery_state": {
+    "last_pushed_sha": "8c2c7e73eafb64f1c11b74a48873ed2f082d7014",
+    "last_pushed_upstream": "origin/redirect/phase-0-4-crt-television",
     "candidate_committed": false,
     "candidate_pushed": false,
     "pushed_sha": null,
@@ -133,5 +125,5 @@
     "production_branch_touched": false,
     "cloudflare_settings_modified": false
   },
-  "status": "PASS_PRECOMMIT"
+  "status": "PASS_POST_PUSH_RECONCILIATION_PENDING_COMMIT"
 }

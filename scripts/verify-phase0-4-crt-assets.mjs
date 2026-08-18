@@ -327,6 +327,7 @@ function gitBuffer(args, options = {}) {
   return execFileSync("git", args, {
     cwd: repositoryRoot,
     stdio: ["ignore", "pipe", options.quiet ? "ignore" : "pipe"],
+    maxBuffer: 128 * 1024 * 1024,
   });
 }
 
