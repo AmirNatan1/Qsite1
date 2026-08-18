@@ -1,0 +1,1566 @@
+{
+  "schema": "quantum-hub.phase-0-3d-repair-v3.local-browser-case.v1",
+  "authority": "repository-native-playwright",
+  "capturedAt": "2026-08-18T10:20:45.869Z",
+  "plan": {
+    "path": "prototypes/phase-0-portal-layout-qa/capture-plan-v3.json",
+    "sha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+    "bytes": 11458
+  },
+  "harness": {
+    "schema": "quantum-hub.phase-0-3d-repair-v3.harness-authority.v1",
+    "cacheToken": "phase03-layout-v11",
+    "sha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+    "files": [
+      {
+        "path": "prototypes/phase-0-portal-layout-qa/index.html",
+        "bytes": 4873,
+        "sha256": "5a23cfa639cbff0a94e45756cc3604b95b08dfdbf7788c2f22a4236bec7c8ffa"
+      },
+      {
+        "path": "prototypes/phase-0-portal-layout-qa/styles.css",
+        "bytes": 28849,
+        "sha256": "11a7b3846ebd908bec0203b3cd209362eb7ce931ff723554bacb732493f4846c"
+      },
+      {
+        "path": "prototypes/phase-0-portal-layout-qa/app.js",
+        "bytes": 47475,
+        "sha256": "a4215d4ca493d14ca32d3191f0aad8b98c9a30e1bc4b4197ca423962c6d93dfa"
+      },
+      {
+        "path": "prototypes/phase-0-portal-layout-qa/runner.html",
+        "bytes": 961,
+        "sha256": "371c1a26ad98639ab37e854eb8a99bb7d1667eb4deb0c200a923c054fb4e1b80"
+      },
+      {
+        "path": "prototypes/phase-0-portal-layout-qa/runner.css",
+        "bytes": 820,
+        "sha256": "9d72946b2074c1c0729bd12665134ef128287d9b9d3d1d31f7e527fe1edacf04"
+      },
+      {
+        "path": "prototypes/phase-0-portal-layout-qa/runner.js",
+        "bytes": 6191,
+        "sha256": "e9d9d3031c150b973b37531a8d893dc0bf1dff61f50fbfb15a0a153a19beb2a6"
+      }
+    ]
+  },
+  "browser": {
+    "engine": "Chromium",
+    "product": "chrome",
+    "version": "151.0.7922.34",
+    "executableResolution": "playwright-managed-executable",
+    "automationPackage": "playwright",
+    "localAuthority": true
+  },
+  "id": "hero-keyboard-focus--desktop-1440x900",
+  "viewportId": "desktop-1440x900",
+  "query": "surface=hero&fixture=actual&zoom=100&motion=no-preference&chrome=0",
+  "focusSelector": "#hero-industry",
+  "captureRequired": true,
+  "forcedDiagnosticCapture": false,
+  "runnerDomReportSha256": "7ebd4cdb101d0af857f94a8c8c18f7af08833d157e0ac90783d86214f0512e57",
+  "runner": {
+    "schema": "quantum-hub.phase-0-3d-repair-v3.exact-viewport-runner-report.v1",
+    "requestedViewport": {
+      "width": 1440,
+      "height": 900,
+      "unit": "CSS pixel"
+    },
+    "iframeViewport": {
+      "width": 1440,
+      "height": 900,
+      "devicePixelRatio": 1
+    },
+    "viewportMatch": true,
+    "devicePixelRatioPolicy": "record actual browser DPR; do not claim control",
+    "captureScale": 0.8333333333333334,
+    "captureScalePolicy": "evidence-only outer transform; iframe layout remains at the exact requested CSS viewport",
+    "maximumRenderedWidth": 1200,
+    "captureRenderedBounds": {
+      "left": 0,
+      "top": 0,
+      "width": 1200,
+      "height": 750,
+      "rasterWidth": 1200,
+      "rasterHeight": 750
+    },
+    "captureBoundsMatch": true,
+    "focusSelector": "#hero-industry",
+    "focusState": {
+      "requested": true,
+      "requestedSelector": "#hero-industry",
+      "activeReviewControlId": "hero-industry",
+      "pass": true
+    },
+    "pass": true
+  },
+  "report": {
+    "schema": "quantum-hub.phase-0-3d-repair-v3.typography-collision-browser-report.v1",
+    "harness": "phase-0-portal-layout-qa",
+    "contract": {
+      "path": "artifacts/original/phase-0-3d-repair-v2/portal-layout.json",
+      "schema": "quantum-hub.phase-0-3d-repair-v2.portal-layout.v1",
+      "sha256": "25666cf071afe7564dc051cbec770ead325cdf19ef1f4926e43d793a2a053bc5"
+    },
+    "state": {
+      "surface": "hero",
+      "fixture": "actual",
+      "textZoom": 100,
+      "reduced": false,
+      "captureChrome": false
+    },
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "layoutWidth": 1440,
+      "layoutHeight": 900,
+      "documentScrollWidth": 1440,
+      "inlineScrollbarWidth": 0,
+      "devicePixelRatio": 1,
+      "orientation": "landscape"
+    },
+    "fonts": {
+      "mode": "forced metric-conscious fallback",
+      "headingComputedFamily": "\"Arial Black\", Arial, sans-serif",
+      "displayFallback": "Arial Black, Arial, sans-serif",
+      "editorialFallback": "Georgia, Times New Roman, serif",
+      "uiFallback": "Arial, Helvetica, sans-serif"
+    },
+    "copy": {
+      "heading": "Prove it where it has to work.",
+      "renderedLineCount": 3,
+      "expectedLineCount": {
+        "minimum": 3,
+        "maximum": 3
+      },
+      "lineCountPass": true,
+      "longFixtureRatio": 1.254,
+      "longFixturePass": true,
+      "wordFragmentationOffenders": 0,
+      "humanLineBreakReport": [
+        {
+          "headingId": "hero-heading",
+          "tagName": "H1",
+          "ariaLabel": "Prove it where it has to work.",
+          "renderedLines": [
+            {
+              "line": 1,
+              "topPx": 146.234,
+              "text": "Prove it"
+            },
+            {
+              "line": 2,
+              "topPx": 212.469,
+              "text": "where it has"
+            },
+            {
+              "line": 3,
+              "topPx": 278.703,
+              "text": "to work."
+            }
+          ],
+          "computedStyles": [
+            {
+              "node": "hero-heading",
+              "wordBreak": "normal",
+              "overflowWrap": "normal",
+              "hyphens": "none"
+            },
+            {
+              "node": "hero-heading .heading-line",
+              "wordBreak": "normal",
+              "overflowWrap": "normal",
+              "hyphens": "none"
+            },
+            {
+              "node": "hero-heading .heading-line",
+              "wordBreak": "normal",
+              "overflowWrap": "normal",
+              "hyphens": "none"
+            },
+            {
+              "node": "hero-heading .heading-line",
+              "wordBreak": "normal",
+              "overflowWrap": "normal",
+              "hyphens": "none"
+            }
+          ]
+        }
+      ]
+    },
+    "layout": {
+      "collisions": [],
+      "collisionPass": true,
+      "pageHorizontalOverflow": false,
+      "routeHorizontalOverflow": false,
+      "horizontalBounds": [
+        {
+          "id": "hero-nav",
+          "leftPx": 90,
+          "rightPx": 1350,
+          "pass": true
+        },
+        {
+          "id": "hero-eyebrow",
+          "leftPx": 90,
+          "rightPx": 637.188,
+          "pass": true
+        },
+        {
+          "id": "hero-heading",
+          "leftPx": 90,
+          "rightPx": 637.188,
+          "pass": true
+        },
+        {
+          "id": "hero-supporting",
+          "leftPx": 90,
+          "rightPx": 435.563,
+          "pass": true
+        },
+        {
+          "id": "hero-audiences",
+          "leftPx": 90,
+          "rightPx": 637.188,
+          "pass": true
+        }
+      ],
+      "horizontalBoundsPass": true,
+      "textOverflow": {
+        "blocks": [
+          {
+            "id": "hero-nav:brand:0",
+            "clientWidthPx": 170,
+            "scrollWidthPx": 170,
+            "blockBounds": {
+              "leftPx": 90,
+              "rightPx": 260.141
+            },
+            "glyphRectangles": [
+              {
+                "leftPx": 90,
+                "rightPx": 260.141,
+                "topPx": 72,
+                "bottomPx": 107,
+                "viewportPass": true
+              }
+            ],
+            "scrollOverflow": false,
+            "glyphOverflow": false,
+            "pass": true
+          },
+          {
+            "id": "hero-nav:review-boundary:1",
+            "clientWidthPx": 237,
+            "scrollWidthPx": 237,
+            "blockBounds": {
+              "leftPx": 1113.156,
+              "rightPx": 1350
+            },
+            "glyphRectangles": [
+              {
+                "leftPx": 1113.156,
+                "rightPx": 1350,
+                "topPx": 87,
+                "bottomPx": 102,
+                "viewportPass": true
+              }
+            ],
+            "scrollOverflow": false,
+            "glyphOverflow": false,
+            "pass": true
+          },
+          {
+            "id": "hero-eyebrow",
+            "clientWidthPx": 547,
+            "scrollWidthPx": 547,
+            "blockBounds": {
+              "leftPx": 90,
+              "rightPx": 637.188
+            },
+            "glyphRectangles": [
+              {
+                "leftPx": 90,
+                "rightPx": 412.578,
+                "topPx": 135,
+                "bottomPx": 151,
+                "viewportPass": true
+              }
+            ],
+            "scrollOverflow": false,
+            "glyphOverflow": false,
+            "pass": true
+          },
+          {
+            "id": "hero-heading",
+            "clientWidthPx": 547,
+            "scrollWidthPx": 547,
+            "blockBounds": {
+              "leftPx": 90,
+              "rightPx": 637.188
+            },
+            "glyphRectangles": [
+              {
+                "leftPx": 90,
+                "rightPx": 359.094,
+                "topPx": 146.234,
+                "bottomPx": 247.234,
+                "viewportPass": true
+              },
+              {
+                "leftPx": 90,
+                "rightPx": 532.844,
+                "topPx": 212.469,
+                "bottomPx": 313.469,
+                "viewportPass": true
+              },
+              {
+                "leftPx": 90,
+                "rightPx": 383.422,
+                "topPx": 278.703,
+                "bottomPx": 379.703,
+                "viewportPass": true
+              }
+            ],
+            "scrollOverflow": false,
+            "glyphOverflow": false,
+            "pass": true
+          },
+          {
+            "id": "hero-supporting",
+            "clientWidthPx": 346,
+            "scrollWidthPx": 346,
+            "blockBounds": {
+              "leftPx": 90,
+              "rightPx": 435.563
+            },
+            "glyphRectangles": [
+              {
+                "leftPx": 90,
+                "rightPx": 391.031,
+                "topPx": 375.734,
+                "bottomPx": 394.734,
+                "viewportPass": true
+              },
+              {
+                "leftPx": 90,
+                "rightPx": 435.188,
+                "topPx": 398.922,
+                "bottomPx": 417.922,
+                "viewportPass": true
+              },
+              {
+                "leftPx": 90,
+                "rightPx": 299.203,
+                "topPx": 422.109,
+                "bottomPx": 441.109,
+                "viewportPass": true
+              }
+            ],
+            "scrollOverflow": false,
+            "glyphOverflow": false,
+            "pass": true
+          },
+          {
+            "id": "hero-industry",
+            "clientWidthPx": 266,
+            "scrollWidthPx": 266,
+            "blockBounds": {
+              "leftPx": 90,
+              "rightPx": 357.594
+            },
+            "glyphRectangles": [
+              {
+                "leftPx": 109.391,
+                "rightPx": 193.859,
+                "topPx": 469.094,
+                "bottomPx": 486.094,
+                "viewportPass": true
+              }
+            ],
+            "scrollOverflow": false,
+            "glyphOverflow": false,
+            "pass": true
+          },
+          {
+            "id": "hero-startups",
+            "clientWidthPx": 266,
+            "scrollWidthPx": 266,
+            "blockBounds": {
+              "leftPx": 369.594,
+              "rightPx": 637.188
+            },
+            "glyphRectangles": [
+              {
+                "leftPx": 388.984,
+                "rightPx": 474.344,
+                "topPx": 469.094,
+                "bottomPx": 486.094,
+                "viewportPass": true
+              }
+            ],
+            "scrollOverflow": false,
+            "glyphOverflow": false,
+            "pass": true
+          }
+        ],
+        "offenders": [],
+        "pass": true
+      },
+      "textOverflowPass": true,
+      "wordIntegrity": {
+        "headingsChecked": 1,
+        "wordFragmentationOffenders": 0,
+        "wordFragmentationDetails": [],
+        "cssOffenders": [],
+        "humanLineBreakReport": [
+          {
+            "headingId": "hero-heading",
+            "tagName": "H1",
+            "ariaLabel": "Prove it where it has to work.",
+            "renderedLines": [
+              {
+                "line": 1,
+                "topPx": 146.234,
+                "text": "Prove it"
+              },
+              {
+                "line": 2,
+                "topPx": 212.469,
+                "text": "where it has"
+              },
+              {
+                "line": 3,
+                "topPx": 278.703,
+                "text": "to work."
+              }
+            ],
+            "computedStyles": [
+              {
+                "node": "hero-heading",
+                "wordBreak": "normal",
+                "overflowWrap": "normal",
+                "hyphens": "none"
+              },
+              {
+                "node": "hero-heading .heading-line",
+                "wordBreak": "normal",
+                "overflowWrap": "normal",
+                "hyphens": "none"
+              },
+              {
+                "node": "hero-heading .heading-line",
+                "wordBreak": "normal",
+                "overflowWrap": "normal",
+                "hyphens": "none"
+              },
+              {
+                "node": "hero-heading .heading-line",
+                "wordBreak": "normal",
+                "overflowWrap": "normal",
+                "hyphens": "none"
+              }
+            ]
+          }
+        ],
+        "pass": true
+      },
+      "wordIntegrityPass": true,
+      "buttons": [
+        {
+          "id": "hero-industry",
+          "widthPx": 267.594,
+          "heightPx": 48,
+          "pass": true
+        },
+        {
+          "id": "hero-startups",
+          "widthPx": 267.594,
+          "heightPx": 48,
+          "pass": true
+        }
+      ],
+      "buttonPass": true,
+      "anchors": {
+        "applicable": false,
+        "reason": "non-16:10 or stress state uses responsive DOM flow"
+      },
+      "projection": {
+        "mode": "responsive-dom-flow",
+        "contractStrategy": "cover",
+        "exactReferenceAspect": false
+      },
+      "ruleSafety": [
+        {
+          "rule": "audience-divider",
+          "glyph": "brand",
+          "intersectsExpandedGlyphBounds": false
+        },
+        {
+          "rule": "audience-divider",
+          "glyph": "signalLine",
+          "intersectsExpandedGlyphBounds": false
+        },
+        {
+          "rule": "audience-divider",
+          "glyph": "eyebrow",
+          "intersectsExpandedGlyphBounds": false
+        },
+        {
+          "rule": "audience-divider",
+          "glyph": "h1Line1",
+          "intersectsExpandedGlyphBounds": false
+        },
+        {
+          "rule": "audience-divider",
+          "glyph": "route",
+          "intersectsExpandedGlyphBounds": false
+        },
+        {
+          "rule": "audience-divider",
+          "glyph": "audienceIndustry",
+          "intersectsExpandedGlyphBounds": false
+        },
+        {
+          "rule": "audience-divider",
+          "glyph": "audienceStartups",
+          "intersectsExpandedGlyphBounds": false
+        }
+      ],
+      "ruleSafetyPass": true,
+      "divider": {
+        "applicable": false,
+        "pass": true
+      },
+      "dividerPass": true,
+      "sceneSafety": {
+        "applicable": true,
+        "mode": "wide",
+        "baseLayoutMode": "wide",
+        "geometryStrategy": "frozen scene scaled and translated toward the right while semantic copy reflows in the quiet-left field",
+        "sourceScene": "/artifacts/original/phase-0-3d-repair-v3/renders/hero/desktop-dormant-base.png",
+        "semanticFeatureNames": {
+          "field-unit": "Aperture Station",
+          "spiral-cable": "physical spiral cable"
+        },
+        "calibration": "Blender 5.2 evaluated-geometry authority: padded Station bounds and every source-authored cable centerline segment rectangle projected through live object-fit and CSS transform",
+        "keepoutAuthority": {
+          "path": "artifacts/original/phase-0-3d-repair-v3/manifests/scene-source-keepouts.json",
+          "schema": "quantum-hub.phase-0-3d-repair-v3.scene-source-keepouts.v1",
+          "sha256": "3ac16456b5a4a9e5a57755206f135684eca12fcfb7b1aafe30fb3cf86e862b8a",
+          "recordId": "desktop-dormant",
+          "generator": {
+            "path": "source/emit_scene_keepouts.py",
+            "sha256": "78efaaa20c53bb908433e599b3824cca977895381c736d55d95a6dabaae3620a"
+          }
+        },
+        "clearancePx": 16,
+        "sourceSize": {
+          "width": 1920,
+          "height": 1200
+        },
+        "objectFit": "cover",
+        "objectPosition": "50% 48%",
+        "allowedRegion": {
+          "leftPx": 0,
+          "topPx": 0,
+          "rightPx": 995.375,
+          "bottomPx": 900
+        },
+        "keepouts": [
+          {
+            "id": "field-unit",
+            "semanticName": "Aperture Station",
+            "geometry": "Blender-projected padded station bounding box",
+            "sourceBounds": {
+              "left": 1065,
+              "top": 486,
+              "right": 1711,
+              "bottom": 1071
+            },
+            "projected": {
+              "leftPx": 1011.375,
+              "topPx": 514.53,
+              "rightPx": 1563.705,
+              "bottomPx": 1014.705
+            },
+            "visible": {
+              "leftPx": 1011.375,
+              "topPx": 514.53,
+              "rightPx": 1440,
+              "bottomPx": 900
+            },
+            "outsideViewport": false
+          },
+          {
+            "id": "spiral-cable",
+            "semanticName": "physical spiral cable",
+            "geometry": "Blender-projected cable centerline segment rectangles; union box is reporting-only",
+            "sourceBounds": {
+              "left": 0,
+              "top": 679,
+              "right": 1920,
+              "bottom": 1200
+            },
+            "authoredTurns": 2.5,
+            "visibilityEvidence": {
+              "method": "ordered authored spiral centerline projected through the exact camera/aspect; contiguous in-viewport angular intervals summed before the three-point below-grade tangent; visual occlusion audited separately",
+              "viewport": {
+                "width": 1920,
+                "height": 1200
+              },
+              "spiral_point_count": 480,
+              "visible_point_count": 277,
+              "visible_progress_intervals": [
+                {
+                  "start_progress": 0.277662,
+                  "end_progress": 0.496868,
+                  "turns": 0.548017
+                },
+                {
+                  "start_progress": 0.524008,
+                  "end_progress": 0.532359,
+                  "turns": 0.020877
+                },
+                {
+                  "start_progress": 0.655532,
+                  "end_progress": 1,
+                  "turns": 0.861169
+                }
+              ],
+              "visible_turns_approx": 1.430063,
+              "visible_angular_span_degrees": 514.823,
+              "gate_scope": "informational-desktop-cinematic-crop",
+              "pass_threshold_turns": null,
+              "pass": true
+            },
+            "sourceSegmentCount": 33,
+            "segments": [
+              {
+                "id": "spiral-cable-segment-01",
+                "sourceBounds": {
+                  "left": 0,
+                  "top": 783,
+                  "right": 0,
+                  "bottom": 1002
+                },
+                "projected": {
+                  "leftPx": 100.8,
+                  "topPx": 768.465,
+                  "rightPx": 100.8,
+                  "bottomPx": 955.71
+                },
+                "visible": {
+                  "leftPx": 100.8,
+                  "topPx": 768.465,
+                  "rightPx": 100.8,
+                  "bottomPx": 900
+                },
+                "outsideViewport": false
+              },
+              {
+                "id": "spiral-cable-segment-02",
+                "sourceBounds": {
+                  "left": 0,
+                  "top": 978,
+                  "right": 0,
+                  "bottom": 1200
+                },
+                "projected": {
+                  "leftPx": 100.8,
+                  "topPx": 935.19,
+                  "rightPx": 100.8,
+                  "bottomPx": 1125
+                },
+                "visible": {
+                  "leftPx": 100.8,
+                  "topPx": 935.19,
+                  "rightPx": 100.8,
+                  "bottomPx": 900
+                },
+                "outsideViewport": true
+              },
+              {
+                "id": "spiral-cable-segment-03",
+                "sourceBounds": {
+                  "left": 0,
+                  "top": 1200,
+                  "right": 359,
+                  "bottom": 1200
+                },
+                "projected": {
+                  "leftPx": 100.8,
+                  "topPx": 1125,
+                  "rightPx": 407.745,
+                  "bottomPx": 1125
+                },
+                "visible": {
+                  "leftPx": 100.8,
+                  "topPx": 1125,
+                  "rightPx": 407.745,
+                  "bottomPx": 900
+                },
+                "outsideViewport": true
+              },
+              {
+                "id": "spiral-cable-segment-04",
+                "sourceBounds": {
+                  "left": 335,
+                  "top": 1200,
+                  "right": 1920,
+                  "bottom": 1200
+                },
+                "projected": {
+                  "leftPx": 387.225,
+                  "topPx": 1125,
+                  "rightPx": 1742.4,
+                  "bottomPx": 1125
+                },
+                "visible": {
+                  "leftPx": 387.225,
+                  "topPx": 1125,
+                  "rightPx": 1440,
+                  "bottomPx": 900
+                },
+                "outsideViewport": true
+              },
+              {
+                "id": "spiral-cable-segment-05",
+                "sourceBounds": {
+                  "left": 1920,
+                  "top": 1200,
+                  "right": 1920,
+                  "bottom": 1200
+                },
+                "projected": {
+                  "leftPx": 1742.4,
+                  "topPx": 1125,
+                  "rightPx": 1742.4,
+                  "bottomPx": 1125
+                },
+                "visible": {
+                  "leftPx": 1742.4,
+                  "topPx": 1125,
+                  "rightPx": 1440,
+                  "bottomPx": 900
+                },
+                "outsideViewport": true
+              },
+              {
+                "id": "spiral-cable-segment-06",
+                "sourceBounds": {
+                  "left": 1920,
+                  "top": 1072,
+                  "right": 1920,
+                  "bottom": 1200
+                },
+                "projected": {
+                  "leftPx": 1742.4,
+                  "topPx": 1015.56,
+                  "rightPx": 1742.4,
+                  "bottomPx": 1125
+                },
+                "visible": {
+                  "leftPx": 1742.4,
+                  "topPx": 1015.56,
+                  "rightPx": 1440,
+                  "bottomPx": 900
+                },
+                "outsideViewport": true
+              },
+              {
+                "id": "spiral-cable-segment-07",
+                "sourceBounds": {
+                  "left": 1920,
+                  "top": 867,
+                  "right": 1920,
+                  "bottom": 1096
+                },
+                "projected": {
+                  "leftPx": 1742.4,
+                  "topPx": 840.285,
+                  "rightPx": 1742.4,
+                  "bottomPx": 1036.08
+                },
+                "visible": {
+                  "leftPx": 1742.4,
+                  "topPx": 840.285,
+                  "rightPx": 1440,
+                  "bottomPx": 900
+                },
+                "outsideViewport": true
+              },
+              {
+                "id": "spiral-cable-segment-08",
+                "sourceBounds": {
+                  "left": 1920,
+                  "top": 752,
+                  "right": 1920,
+                  "bottom": 891
+                },
+                "projected": {
+                  "leftPx": 1742.4,
+                  "topPx": 741.96,
+                  "rightPx": 1742.4,
+                  "bottomPx": 860.805
+                },
+                "visible": {
+                  "leftPx": 1742.4,
+                  "topPx": 741.96,
+                  "rightPx": 1440,
+                  "bottomPx": 860.805
+                },
+                "outsideViewport": true
+              },
+              {
+                "id": "spiral-cable-segment-09",
+                "sourceBounds": {
+                  "left": 1814,
+                  "top": 693,
+                  "right": 1920,
+                  "bottom": 776
+                },
+                "projected": {
+                  "leftPx": 1651.77,
+                  "topPx": 691.515,
+                  "rightPx": 1742.4,
+                  "bottomPx": 762.48
+                },
+                "visible": {
+                  "leftPx": 1651.77,
+                  "topPx": 691.515,
+                  "rightPx": 1440,
+                  "bottomPx": 762.48
+                },
+                "outsideViewport": true
+              },
+              {
+                "id": "spiral-cable-segment-10",
+                "sourceBounds": {
+                  "left": 1306,
+                  "top": 679,
+                  "right": 1838,
+                  "bottom": 717
+                },
+                "projected": {
+                  "leftPx": 1217.43,
+                  "topPx": 679.545,
+                  "rightPx": 1672.29,
+                  "bottomPx": 712.035
+                },
+                "visible": {
+                  "leftPx": 1217.43,
+                  "topPx": 679.545,
+                  "rightPx": 1440,
+                  "bottomPx": 712.035
+                },
+                "outsideViewport": false
+              },
+              {
+                "id": "spiral-cable-segment-11",
+                "sourceBounds": {
+                  "left": 846,
+                  "top": 679,
+                  "right": 1330,
+                  "bottom": 718
+                },
+                "projected": {
+                  "leftPx": 824.13,
+                  "topPx": 679.545,
+                  "rightPx": 1237.95,
+                  "bottomPx": 712.89
+                },
+                "visible": {
+                  "leftPx": 824.13,
+                  "topPx": 679.545,
+                  "rightPx": 1237.95,
+                  "bottomPx": 712.89
+                },
+                "outsideViewport": false
+              },
+              {
+                "id": "spiral-cable-segment-12",
+                "sourceBounds": {
+                  "left": 449,
+                  "top": 694,
+                  "right": 870,
+                  "bottom": 768
+                },
+                "projected": {
+                  "leftPx": 484.695,
+                  "topPx": 692.37,
+                  "rightPx": 844.65,
+                  "bottomPx": 755.64
+                },
+                "visible": {
+                  "leftPx": 484.695,
+                  "topPx": 692.37,
+                  "rightPx": 844.65,
+                  "bottomPx": 755.64
+                },
+                "outsideViewport": false
+              },
+              {
+                "id": "spiral-cable-segment-13",
+                "sourceBounds": {
+                  "left": 165,
+                  "top": 744,
+                  "right": 473,
+                  "bottom": 859
+                },
+                "projected": {
+                  "leftPx": 241.875,
+                  "topPx": 735.12,
+                  "rightPx": 505.215,
+                  "bottomPx": 833.445
+                },
+                "visible": {
+                  "leftPx": 241.875,
+                  "topPx": 735.12,
+                  "rightPx": 505.215,
+                  "bottomPx": 833.445
+                },
+                "outsideViewport": false
+              },
+              {
+                "id": "spiral-cable-segment-14",
+                "sourceBounds": {
+                  "left": 89,
+                  "top": 835,
+                  "right": 189,
+                  "bottom": 990
+                },
+                "projected": {
+                  "leftPx": 176.895,
+                  "topPx": 812.925,
+                  "rightPx": 262.395,
+                  "bottomPx": 945.45
+                },
+                "visible": {
+                  "leftPx": 176.895,
+                  "topPx": 812.925,
+                  "rightPx": 262.395,
+                  "bottomPx": 900
+                },
+                "outsideViewport": false
+              },
+              {
+                "id": "spiral-cable-segment-15",
+                "sourceBounds": {
+                  "left": 102,
+                  "top": 966,
+                  "right": 434,
+                  "bottom": 1128
+                },
+                "projected": {
+                  "leftPx": 188.01,
+                  "topPx": 924.93,
+                  "rightPx": 471.87,
+                  "bottomPx": 1063.44
+                },
+                "visible": {
+                  "leftPx": 188.01,
+                  "topPx": 924.93,
+                  "rightPx": 471.87,
+                  "bottomPx": 900
+                },
+                "outsideViewport": true
+              },
+              {
+                "id": "spiral-cable-segment-16",
+                "sourceBounds": {
+                  "left": 410,
+                  "top": 1104,
+                  "right": 1135,
+                  "bottom": 1200
+                },
+                "projected": {
+                  "leftPx": 451.35,
+                  "topPx": 1042.92,
+                  "rightPx": 1071.225,
+                  "bottomPx": 1125
+                },
+                "visible": {
+                  "leftPx": 451.35,
+                  "topPx": 1042.92,
+                  "rightPx": 1071.225,
+                  "bottomPx": 900
+                },
+                "outsideViewport": true
+              },
+              {
+                "id": "spiral-cable-segment-17",
+                "sourceBounds": {
+                  "left": 1111,
+                  "top": 1169,
+                  "right": 1906,
+                  "bottom": 1200
+                },
+                "projected": {
+                  "leftPx": 1050.705,
+                  "topPx": 1098.495,
+                  "rightPx": 1730.43,
+                  "bottomPx": 1125
+                },
+                "visible": {
+                  "leftPx": 1050.705,
+                  "topPx": 1098.495,
+                  "rightPx": 1440,
+                  "bottomPx": 900
+                },
+                "outsideViewport": true
+              },
+              {
+                "id": "spiral-cable-segment-18",
+                "sourceBounds": {
+                  "left": 1882,
+                  "top": 1060,
+                  "right": 1920,
+                  "bottom": 1193
+                },
+                "projected": {
+                  "leftPx": 1709.91,
+                  "topPx": 1005.3,
+                  "rightPx": 1742.4,
+                  "bottomPx": 1119.015
+                },
+                "visible": {
+                  "leftPx": 1709.91,
+                  "topPx": 1005.3,
+                  "rightPx": 1440,
+                  "bottomPx": 900
+                },
+                "outsideViewport": true
+              },
+              {
+                "id": "spiral-cable-segment-19",
+                "sourceBounds": {
+                  "left": 1920,
+                  "top": 943,
+                  "right": 1920,
+                  "bottom": 1084
+                },
+                "projected": {
+                  "leftPx": 1742.4,
+                  "topPx": 905.265,
+                  "rightPx": 1742.4,
+                  "bottomPx": 1025.82
+                },
+                "visible": {
+                  "leftPx": 1742.4,
+                  "topPx": 905.265,
+                  "rightPx": 1440,
+                  "bottomPx": 900
+                },
+                "outsideViewport": true
+              },
+              {
+                "id": "spiral-cable-segment-20",
+                "sourceBounds": {
+                  "left": 1920,
+                  "top": 844,
+                  "right": 1920,
+                  "bottom": 967
+                },
+                "projected": {
+                  "leftPx": 1742.4,
+                  "topPx": 820.62,
+                  "rightPx": 1742.4,
+                  "bottomPx": 925.785
+                },
+                "visible": {
+                  "leftPx": 1742.4,
+                  "topPx": 820.62,
+                  "rightPx": 1440,
+                  "bottomPx": 900
+                },
+                "outsideViewport": true
+              },
+              {
+                "id": "spiral-cable-segment-21",
+                "sourceBounds": {
+                  "left": 1878,
+                  "top": 786,
+                  "right": 1920,
+                  "bottom": 868
+                },
+                "projected": {
+                  "leftPx": 1706.49,
+                  "topPx": 771.03,
+                  "rightPx": 1742.4,
+                  "bottomPx": 841.14
+                },
+                "visible": {
+                  "leftPx": 1706.49,
+                  "topPx": 771.03,
+                  "rightPx": 1440,
+                  "bottomPx": 841.14
+                },
+                "outsideViewport": true
+              },
+              {
+                "id": "spiral-cable-segment-22",
+                "sourceBounds": {
+                  "left": 1558,
+                  "top": 759,
+                  "right": 1902,
+                  "bottom": 810
+                },
+                "projected": {
+                  "leftPx": 1432.89,
+                  "topPx": 747.945,
+                  "rightPx": 1727.01,
+                  "bottomPx": 791.55
+                },
+                "visible": {
+                  "leftPx": 1432.89,
+                  "topPx": 747.945,
+                  "rightPx": 1440,
+                  "bottomPx": 791.55
+                },
+                "outsideViewport": false
+              },
+              {
+                "id": "spiral-cable-segment-23",
+                "sourceBounds": {
+                  "left": 1261,
+                  "top": 755,
+                  "right": 1582,
+                  "bottom": 783
+                },
+                "projected": {
+                  "leftPx": 1178.955,
+                  "topPx": 744.525,
+                  "rightPx": 1453.41,
+                  "bottomPx": 768.465
+                },
+                "visible": {
+                  "leftPx": 1178.955,
+                  "topPx": 744.525,
+                  "rightPx": 1440,
+                  "bottomPx": 768.465
+                },
+                "outsideViewport": false
+              },
+              {
+                "id": "spiral-cable-segment-24",
+                "sourceBounds": {
+                  "left": 1017,
+                  "top": 757,
+                  "right": 1285,
+                  "bottom": 801
+                },
+                "projected": {
+                  "leftPx": 970.335,
+                  "topPx": 746.235,
+                  "rightPx": 1199.475,
+                  "bottomPx": 783.855
+                },
+                "visible": {
+                  "leftPx": 970.335,
+                  "topPx": 746.235,
+                  "rightPx": 1199.475,
+                  "bottomPx": 783.855
+                },
+                "outsideViewport": false
+              },
+              {
+                "id": "spiral-cable-segment-25",
+                "sourceBounds": {
+                  "left": 858,
+                  "top": 777,
+                  "right": 1041,
+                  "bottom": 838
+                },
+                "projected": {
+                  "leftPx": 834.39,
+                  "topPx": 763.335,
+                  "rightPx": 990.855,
+                  "bottomPx": 815.49
+                },
+                "visible": {
+                  "leftPx": 834.39,
+                  "topPx": 763.335,
+                  "rightPx": 990.855,
+                  "bottomPx": 815.49
+                },
+                "outsideViewport": false
+              },
+              {
+                "id": "spiral-cable-segment-26",
+                "sourceBounds": {
+                  "left": 815,
+                  "top": 814,
+                  "right": 882,
+                  "bottom": 886
+                },
+                "projected": {
+                  "leftPx": 797.625,
+                  "topPx": 794.97,
+                  "rightPx": 854.91,
+                  "bottomPx": 856.53
+                },
+                "visible": {
+                  "leftPx": 797.625,
+                  "topPx": 794.97,
+                  "rightPx": 854.91,
+                  "bottomPx": 856.53
+                },
+                "outsideViewport": false
+              },
+              {
+                "id": "spiral-cable-segment-27",
+                "sourceBounds": {
+                  "left": 817,
+                  "top": 862,
+                  "right": 935,
+                  "bottom": 937
+                },
+                "projected": {
+                  "leftPx": 799.335,
+                  "topPx": 836.01,
+                  "rightPx": 900.225,
+                  "bottomPx": 900.135
+                },
+                "visible": {
+                  "leftPx": 799.335,
+                  "topPx": 836.01,
+                  "rightPx": 900.225,
+                  "bottomPx": 900
+                },
+                "outsideViewport": false
+              },
+              {
+                "id": "spiral-cable-segment-28",
+                "sourceBounds": {
+                  "left": 911,
+                  "top": 913,
+                  "right": 1135,
+                  "bottom": 970
+                },
+                "projected": {
+                  "leftPx": 879.705,
+                  "topPx": 879.615,
+                  "rightPx": 1071.225,
+                  "bottomPx": 928.35
+                },
+                "visible": {
+                  "leftPx": 879.705,
+                  "topPx": 879.615,
+                  "rightPx": 1071.225,
+                  "bottomPx": 900
+                },
+                "outsideViewport": false
+              },
+              {
+                "id": "spiral-cable-segment-29",
+                "sourceBounds": {
+                  "left": 1111,
+                  "top": 946,
+                  "right": 1362,
+                  "bottom": 977
+                },
+                "projected": {
+                  "leftPx": 1050.705,
+                  "topPx": 907.83,
+                  "rightPx": 1265.31,
+                  "bottomPx": 934.335
+                },
+                "visible": {
+                  "leftPx": 1050.705,
+                  "topPx": 907.83,
+                  "rightPx": 1265.31,
+                  "bottomPx": 900
+                },
+                "outsideViewport": true
+              },
+              {
+                "id": "spiral-cable-segment-30",
+                "sourceBounds": {
+                  "left": 1338,
+                  "top": 933,
+                  "right": 1531,
+                  "bottom": 976
+                },
+                "projected": {
+                  "leftPx": 1244.79,
+                  "topPx": 896.715,
+                  "rightPx": 1409.805,
+                  "bottomPx": 933.48
+                },
+                "visible": {
+                  "leftPx": 1244.79,
+                  "topPx": 896.715,
+                  "rightPx": 1409.805,
+                  "bottomPx": 900
+                },
+                "outsideViewport": false
+              },
+              {
+                "id": "spiral-cable-segment-31",
+                "sourceBounds": {
+                  "left": 1507,
+                  "top": 904,
+                  "right": 1600,
+                  "bottom": 957
+                },
+                "projected": {
+                  "leftPx": 1389.285,
+                  "topPx": 871.92,
+                  "rightPx": 1468.8,
+                  "bottomPx": 917.235
+                },
+                "visible": {
+                  "leftPx": 1389.285,
+                  "topPx": 871.92,
+                  "rightPx": 1440,
+                  "bottomPx": 900
+                },
+                "outsideViewport": false
+              },
+              {
+                "id": "spiral-cable-segment-32",
+                "sourceBounds": {
+                  "left": 1560,
+                  "top": 877,
+                  "right": 1602,
+                  "bottom": 928
+                },
+                "projected": {
+                  "leftPx": 1434.6,
+                  "topPx": 848.835,
+                  "rightPx": 1470.51,
+                  "bottomPx": 892.44
+                },
+                "visible": {
+                  "leftPx": 1434.6,
+                  "topPx": 848.835,
+                  "rightPx": 1440,
+                  "bottomPx": 892.44
+                },
+                "outsideViewport": false
+              },
+              {
+                "id": "spiral-cable-segment-33",
+                "sourceBounds": {
+                  "left": 1555,
+                  "top": 889,
+                  "right": 1590,
+                  "bottom": 944
+                },
+                "projected": {
+                  "leftPx": 1430.325,
+                  "topPx": 859.095,
+                  "rightPx": 1460.25,
+                  "bottomPx": 906.12
+                },
+                "visible": {
+                  "leftPx": 1430.325,
+                  "topPx": 859.095,
+                  "rightPx": 1440,
+                  "bottomPx": 900
+                },
+                "outsideViewport": false
+              }
+            ],
+            "unionProjection": {
+              "projected": {
+                "leftPx": 100.8,
+                "topPx": 679.545,
+                "rightPx": 1742.4,
+                "bottomPx": 1125
+              },
+              "visible": {
+                "leftPx": 100.8,
+                "topPx": 679.545,
+                "rightPx": 1440,
+                "bottomPx": 900
+              },
+              "outsideViewport": false
+            },
+            "outsideViewport": false
+          }
+        ],
+        "blocks": [
+          {
+            "id": "hero-eyebrow",
+            "leftPx": 90,
+            "topPx": 134,
+            "rightPx": 637.188,
+            "bottomPx": 153.438,
+            "withinAllowedRegion": true,
+            "intersectingKeepouts": [],
+            "pass": true
+          },
+          {
+            "id": "hero-heading",
+            "leftPx": 90,
+            "topPx": 164.234,
+            "rightPx": 637.188,
+            "bottomPx": 362.938,
+            "withinAllowedRegion": true,
+            "intersectingKeepouts": [],
+            "pass": true
+          },
+          {
+            "id": "hero-supporting",
+            "leftPx": 90,
+            "topPx": 373.734,
+            "rightPx": 435.563,
+            "bottomPx": 443.297,
+            "withinAllowedRegion": true,
+            "intersectingKeepouts": [],
+            "pass": true
+          },
+          {
+            "id": "hero-audiences",
+            "leftPx": 90,
+            "topPx": 454.094,
+            "rightPx": 637.188,
+            "bottomPx": 502.094,
+            "withinAllowedRegion": true,
+            "intersectingKeepouts": [],
+            "pass": true
+          }
+        ],
+        "sceneComputedTransform": "matrix(1.14, 0, 0, 1.14, 100.8, 99)",
+        "pass": true
+      },
+      "reducedMotionComposition": {
+        "applicable": false,
+        "pass": true
+      }
+    },
+    "accessibility": {
+      "focus": {
+        "results": [
+          {
+            "id": "hero-industry",
+            "outlineStyle": "solid",
+            "outlineWidthPx": 3,
+            "outlineColor": "rgb(240, 107, 160)",
+            "pass": true
+          },
+          {
+            "id": "hero-startups",
+            "outlineStyle": "solid",
+            "outlineWidthPx": 3,
+            "outlineColor": "rgb(240, 107, 160)",
+            "pass": true
+          }
+        ],
+        "pass": true
+      },
+      "reducedMotionRequested": false,
+      "hasAnimatedMedia": false,
+      "reducedMotionPass": true,
+      "semanticHeading": true,
+      "sceneDecorative": true
+    },
+    "assets": {
+      "scene": "/artifacts/original/phase-0-3d-repair-v3/renders/hero/desktop-dormant-base.png",
+      "sceneClassification": "hero scene",
+      "doubledCopyPass": true,
+      "sceneReady": true,
+      "sceneNaturalWidth": 1920,
+      "sceneNaturalHeight": 1200
+    },
+    "pass": true
+  },
+  "responsiveRepair": {
+    "applicable": false,
+    "pass": true
+  },
+  "capture": {
+    "raw": {
+      "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-keyboard-focus--desktop-1440x900.jpg",
+      "bytes": 114540,
+      "sha256": "3493dc06a44f92e8d32787a67c6ed107e8f17dcf541e1b99e01470d64002a4ee",
+      "format": "JPEG"
+    },
+    "modal": {
+      "pass": true,
+      "method": "exact-byte-modal-winner",
+      "successiveFullPageJpegs": 11,
+      "minimumWinnerVotes": 7,
+      "round": 1,
+      "winner": {
+        "sha256": "3493dc06a44f92e8d32787a67c6ed107e8f17dcf541e1b99e01470d64002a4ee",
+        "votes": 10,
+        "bytes": 114540
+      },
+      "uniqueByteSequences": 2,
+      "histogram": [
+        {
+          "sha256": "3493dc06a44f92e8d32787a67c6ed107e8f17dcf541e1b99e01470d64002a4ee",
+          "votes": 10,
+          "bytes": 114540
+        },
+        {
+          "sha256": "043f4e400702435c58fcb3ce0bfc40273a754ca735b6a100ba556053bd243c85",
+          "votes": 1,
+          "bytes": 113675
+        }
+      ],
+      "samples": [
+        {
+          "shot": 1,
+          "sha256": "043f4e400702435c58fcb3ce0bfc40273a754ca735b6a100ba556053bd243c85",
+          "bytes": 113675
+        },
+        {
+          "shot": 2,
+          "sha256": "3493dc06a44f92e8d32787a67c6ed107e8f17dcf541e1b99e01470d64002a4ee",
+          "bytes": 114540
+        },
+        {
+          "shot": 3,
+          "sha256": "3493dc06a44f92e8d32787a67c6ed107e8f17dcf541e1b99e01470d64002a4ee",
+          "bytes": 114540
+        },
+        {
+          "shot": 4,
+          "sha256": "3493dc06a44f92e8d32787a67c6ed107e8f17dcf541e1b99e01470d64002a4ee",
+          "bytes": 114540
+        },
+        {
+          "shot": 5,
+          "sha256": "3493dc06a44f92e8d32787a67c6ed107e8f17dcf541e1b99e01470d64002a4ee",
+          "bytes": 114540
+        },
+        {
+          "shot": 6,
+          "sha256": "3493dc06a44f92e8d32787a67c6ed107e8f17dcf541e1b99e01470d64002a4ee",
+          "bytes": 114540
+        },
+        {
+          "shot": 7,
+          "sha256": "3493dc06a44f92e8d32787a67c6ed107e8f17dcf541e1b99e01470d64002a4ee",
+          "bytes": 114540
+        },
+        {
+          "shot": 8,
+          "sha256": "3493dc06a44f92e8d32787a67c6ed107e8f17dcf541e1b99e01470d64002a4ee",
+          "bytes": 114540
+        },
+        {
+          "shot": 9,
+          "sha256": "3493dc06a44f92e8d32787a67c6ed107e8f17dcf541e1b99e01470d64002a4ee",
+          "bytes": 114540
+        },
+        {
+          "shot": 10,
+          "sha256": "3493dc06a44f92e8d32787a67c6ed107e8f17dcf541e1b99e01470d64002a4ee",
+          "bytes": 114540
+        },
+        {
+          "shot": 11,
+          "sha256": "3493dc06a44f92e8d32787a67c6ed107e8f17dcf541e1b99e01470d64002a4ee",
+          "bytes": 114540
+        }
+      ],
+      "discardedAttempts": [],
+      "timingClaim": "none; readiness and paint barriers do not prove a stable raster"
+    }
+  }
+}

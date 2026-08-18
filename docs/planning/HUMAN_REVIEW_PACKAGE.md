@@ -1,6 +1,6 @@
 # Quantum-Hub cinematic website: Human Review Package
 
-Status: keepout-aware Phase 0.2 v12 matrix and exact 12-image review bundle complete locally; all 36 normalized browser sources directly audited at full size; human review pending; Phase 1 locked
+Status: Phase 0.2 package remains frozen; authoritative Phase 0.3 matrix, exact 13-image review bundle, validation, sanitation, inventory, tests, and static build complete locally; immutable pushed SHA, Cloudflare preview verification, clean-tree handoff, and human review pending; Phase 1 locked
 Plan accepted: 17 August 2026
 Implementation branch: `planning/phase-0-reconciliation`
 Production branch: `main` (protected from Phase 0 work)
@@ -33,6 +33,7 @@ The following companion records are normative:
 - [Test and build report](../../artifacts/evidence/phase-0/TEST_AND_BUILD_REPORT.md)
 - [Typography and layout contract](./TYPOGRAPHY_AND_LAYOUT_CONTRACT.md)
 - [Phase 0.2 typography collision evidence](../../artifacts/evidence/phase-0-3d-repair-v2/TYPOGRAPHY_COLLISION_QA.md)
+- [Phase 0.3 typography collision evidence](../../artifacts/evidence/phase-0-3d-repair-v3/TYPOGRAPHY_COLLISION_QA.md)
 
 ## Current Phase 0 3D creative repair addendum — 17 August 2026
 
@@ -100,6 +101,34 @@ The original package lives under `artifacts/original/phase-0-3d-repair-v2/`; bro
 | Complete check and static build | `npm run check` passes with Astro diagnostics 0 errors/0 warnings/0 hints, 13/13 Node tests, and every creative/layout verifier; `npm run build` produces one static route and 11 output files totaling 9,333,433 bytes, with no server runtime |
 
 No preferred font binary is delivered. No video, frame sequence, Blender backup, Python cache, private path, third-party reference binary, or unapproved application runtime dependency is present in the v2 package. Automated success remains evidence rather than creative acceptance.
+
+Phase 1 remains locked.
+
+## Current Phase 0.3 Aperture Station portal and typography repair — 18 August 2026
+
+Phase 0.3 preserves the accepted portal-coordinate authority, the static architecture, and the frozen Phase 0.2 evidence history. It repairs only the non-public responsive portal/hero compositor and evidence contract: whole-word display typography, reduced-motion quiet composition, authored portrait cable visibility, source-derived Aperture Station/cable keepouts, neutral-versus-requested focus state, and repository-native resumable capture.
+
+The current browser authority is `artifacts/evidence/phase-0-3d-repair-v3/browser-matrix-report.json`, generated `2026-08-18T10:20:47.772Z`, 1,785,125 bytes, SHA-256 `8272764a01ac18b4aed7b8b0ebffdca812a5f235e51d6c2c2ea6ae744c6ac4fc`. It binds plan SHA-256 `26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5`, harness cache `phase03-layout-v11`, harness SHA-256 `c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65`, and the unchanged portal-layout authority SHA-256 `25666cf071afe7564dc051cbec770ead325cdf19ef1f4926e43d793a2a053bc5`.
+
+| Evidence | Current result |
+|---|---|
+| Exact browser matrix | 46/46 runner and child reports pass; 36/36 planned visual cases have raw-plus-normalized hash lineage |
+| Direct visual audit | All 36 normalized sources opened at full target size; no scale/crop race, clipping, fragmented word, focus residue, opaque copy panel, scene collision, rule collision, or horizontal truncation found |
+| Whole-word and overflow gate | 46/46 populated human line-break reports; zero word-fragmentation, page/route overflow, text-offender, collision, undersized-control, rule-clearance, or divider failures |
+| Aperture Station/cable safety | 26/26 applicable Blender-derived keepout cases pass with zero semantic-copy intersections; independently authored mobile cable records 2.171694 visible turns against the 2.15 minimum |
+| Reduced motion | Six cases pass with no animated media and zero floating rounded-panel offenders; hero stills retain the dormant Station/cable while portal stress states use the permitted directional quiet composition |
+| Focus | Forty-four neutral states have no active review control; the two explicit focus captures bind the requested first audience control and retain the visible 3px warm-magenta outline |
+| Portal alignment | Two exact-reference cases retain a 0 CSS-pixel maximum anchor delta; responsive/stress modes correctly report reference anchors not applicable |
+| Raster evidence | Eleven full-page JPEG attempts per visual case; unique exact-byte modal winner, observed minimum 10/11, zero weak/tied/discarded rounds; 11 declared Lanczos restorations and 25 scale-1 no-resample derivatives |
+| Recovery provenance | The harness-sensitive runner preserves superseded checkpoints, raw images, reports, and matrix under deterministic `recovery/` paths; preserved records cannot satisfy current resume or matrix completion |
+| Font boundary | Forced metric-conscious system fallbacks recorded honestly; no preferred font binary or remote font dependency |
+| Exact review bundle | All 13 required PNGs are present with no missing review image; `review-bundle-manifest.json` SHA-256 `8a73fc5eae08a405f8a96cc2d93dc3fd30b888d77da2fa5d4feec377260fe3fe`; `review-originals-manifest.json` SHA-256 `1783a3e2218bf93150807b10ca27db9edd217520832880f076b1d04d89cb493b` |
+| Browser-derived review lineage | Four final sheets—portal typography, desktop hero, mobile hero, and text zoom/fallback—are bound by `browser-review-composition-manifest.json` SHA-256 `f5a7f5908aee8b65969fcbaf3d5143dd8d52a0b7be3ca2f26565a6153279e074` to the sealed normalized captures |
+| Blender semantic validation | `blender-source-validation.json`; 6,193 bytes; SHA-256 `9f1f3ddc4ac0c4b8b9e10c749b805decbfa3be76cadda2fccdce2c2e5174bb91`; exact final validator rerun passes 13/13 checks |
+| Sanitation and inventory | PNG sanitation SHA-256 `bba8b813f18d4a332067982696a68bd44c57bc0a9664ee15f175fe7b14c866bb`, 83/83 records; package inventory SHA-256 `ec8fc58217b80be850be9fe98a94a549ea8cf5d83eea00883fb6a66654d46104` |
+| Complete check and static build | `npm run check` passes with Astro diagnostics 0 errors/0 warnings/0 hints, 13/13 Node tests, and all creative/layout/integrity verifiers; `npm run build` produces one static page and 11 files totaling 9,333,433 bytes, with no server runtime |
+
+The additive v3 layout and asset verifiers, capture normalizer, complete check chain, and static build pass against these final authorities. The exact 13-image Phase 0.3 creative-review bundle is complete locally. Automated success is evidence, not human typography or creative acceptance, and does not supply an immutable pushed SHA or verified Cloudflare preview.
 
 Phase 1 remains locked.
 

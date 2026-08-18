@@ -186,6 +186,77 @@ The non-production evidence tree at `artifacts/evidence/phase-0-3d-repair-v2/` c
 | `artifacts/evidence/phase-0-3d-repair-v2/browser-matrix-report.json` | 46 cases; 36 capture lineages | 850,178 | `0e0cdf7e578eb24514146ba3826a1ded4191de740b54ce050ada82a676f71905` | Original browser layout, collision, scene-safety and capture-lineage evidence; PASS; review-only |
 | `artifacts/evidence/phase-0-3d-repair-v2/TYPOGRAPHY_COLLISION_QA.md` | 1 | 13,590 | `18cf5aee008e91371b0d5db66b836760b0263c487e5959fa1662a54d9a1ee164` | Original human-readable QA record; review-only |
 
+## Original Quantum Phase 0.3 Aperture Station package
+
+The additive package at `artifacts/original/phase-0-3d-repair-v3/` is **original Quantum creative evidence** with approval state **pending human creative review**. It does not overwrite the Phase 0 or Phase 0.2 packages. Every record is Class R and remains excluded from launch use unless the `APERTURE STATION ART DIRECTION` and `PORTAL TYPOGRAPHY REPAIR` human gates are accepted.
+
+The package contains 118 files and 104,517,134 bytes. Its 85 original binary files comprise two editable Blender sources and 83 sanitized PNGs, totalling 104,035,955 bytes. The PNG set contains 68 original still renders, the exact 13-sheet final review bundle, and two explicitly superseded silhouette-iteration sheets retained as decision provenance. The remaining 33 repository-native records comprise 16 manifests, 15 deterministic Python sources, one README and one shared portal-layout contract. No video, animatic, numbered frame sequence, `.blend1`, cache, executable, archive, font binary, external model, image texture, add-on, reference binary or third-party capture is present.
+
+`manifests/package-inventory.json` is the package-wide authority. It self-excludes its own hash and binds the other 117 intended files and 104,456,458 bytes; adding the 60,676-byte inventory itself gives the complete 118-file total above. Every inventory record includes its repository-relative and package-relative path, byte count, SHA-256, classification, approval state and `intendedCommit: true`.
+
+### Phase 0.3 binary register
+
+These grouped records account for every original binary in the package. Final review membership is the exact 13-name set in `review-bundle-manifest.json`; the two earlier silhouette sheets are governed separately and are not members of that final bundle. `png-metadata-sanitization.json` independently binds all 83 PNGs and records decoded-pixel preservation.
+
+| Asset ID | Committed path or governed set | Records | Bytes | Integrity authority | Class | Approval and publication state |
+| --- | --- | ---: | ---: | --- | --- | --- |
+| `Q0-3D-V3-SOURCE-001` | `artifacts/original/phase-0-3d-repair-v3/source/quantum-aperture-station-v3-blockouts.blend` | 1 | 121,240 | SHA-256 `dc3cd4e1eba70150b73013d00727fb072213a4017df4efbc80bb8ebea81d1932`; `blockout-render-manifest.json` | R | Original editable Blender blockout source; superseded design-decision evidence; not a launch asset |
+| `Q0-3D-V3-SOURCE-002` | `artifacts/original/phase-0-3d-repair-v3/source/quantum-aperture-station-v3.blend` | 1 | 310,905 | SHA-256 `5dde7731b366a1fd19f8f3cc93d338754b9536c6141b2819f4c123bc1a2af676`; `blender-source-validation.json` | R | Original final editable Blender source; validator PASS 13/13; pending human creative review; not a launch asset |
+| `Q0-3D-V3-RENDER-001` | `artifacts/original/phase-0-3d-repair-v3/renders/` | 68 PNG | 64,461,417 | `blockout-render-manifest.json`; `final-render-manifest-all.json`; `final-render-manifest-diagnostic.json`; `final-render-manifest-mobile.json`; `portal-surface-manifest.json`; `scene-source-keepouts.json`; `png-metadata-sanitization.json` | R | Original Blender and shared-authority portal stills; pending human creative review; not launch media |
+| `Q0-3D-V3-REVIEW-001` | `artifacts/original/phase-0-3d-repair-v3/review/` exact final top-level set | 13 PNG | 28,211,065 | `review-bundle-manifest.json`; `review-originals-manifest.json`; `review-composition-manifest.json`; `browser-review-composition-manifest.json`; `png-metadata-sanitization.json` | R | Exact final human-review package; pending human creative review; not a public-launch surface |
+| `Q0-3D-V3-REVIEW-002` | `artifacts/original/phase-0-3d-repair-v3/review/iterations/` | 2 PNG | 10,931,328 | `silhouette-iteration-1-decision-manifest.json`; `manifests/iterations/silhouette-iteration-2-decision-manifest.json`; `png-metadata-sanitization.json` | R | Superseded silhouette-gate evidence retained for decision provenance; never a launch asset |
+| `Q0-3D-V3-MEDIA-001` | Package encoded-media set | 0 | 0 | `blender-source-validation.json`; dedicated Phase 0.3 asset verifier | R | Intentionally still-only; no video variant or full animatic was created |
+
+The final 13-sheet bundle is: `aperture-station-silhouette-options.png`, `aperture-station-recommended-design-sheet.png`, `aperture-station-material-sheet.png`, `cable-conductor-v3-sheet.png`, `proving-ground-v3-style-frame.png`, `camera-path-v3-study.png`, `activation-v3-contact-sheet.png`, `portal-typography-v3-sheet.png`, `desktop-hero-composition-v3.png`, `mobile-hero-composition-v3.png`, `text-zoom-and-fallback-v3.png`, `reduced-motion-v3-desktop.png`, and `reduced-motion-v3-mobile.png`.
+
+### Phase 0.3 manifest register
+
+These 16 machine-readable authorities total 276,638 bytes. Stage and silhouette manifests remain provenance evidence; the package inventory, final render authorities, Blender validation, PNG sanitation, browser-review lineage and review-bundle manifest govern the settled package.
+
+| Manifest or report | Bytes | SHA-256 | Classification and approval |
+| --- | ---: | --- | --- |
+| `artifacts/original/phase-0-3d-repair-v3/manifests/blender-source-validation.json` | 6,193 | `9f1f3ddc4ac0c4b8b9e10c749b805decbfa3be76cadda2fccdce2c2e5174bb91` | Original Quantum Blender integrity evidence; PASS 13/13; pending human creative review |
+| `artifacts/original/phase-0-3d-repair-v3/manifests/blockout-render-manifest.json` | 3,798 | `2c9e25333da4fd32537fda43daf33ca41ad26ca69e6eca34bb39a7b89fb9ae3a` | Original blockout render inventory; superseded design-decision evidence |
+| `artifacts/original/phase-0-3d-repair-v3/manifests/browser-review-composition-manifest.json` | 22,299 | `f5a7f5908aee8b65969fcbaf3d5143dd8d52a0b7be3ca2f26565a6153279e074` | Canonical four-sheet browser-capture lineage; review-only |
+| `artifacts/original/phase-0-3d-repair-v3/manifests/final-render-manifest-all.json` | 15,533 | `ed09b1722a5354d29b0d29c99a485ac4bfd7dea0718127ff9712803a94ece26e` | Canonical final-still inventory; pending human creative review |
+| `artifacts/original/phase-0-3d-repair-v3/manifests/final-render-manifest-diagnostic.json` | 6,116 | `b28d58f92966e33c1ce79d9614f5b1e4db29dd88bf8e17fcfaa1ae28f81a855c` | Canonical diagnostic-still inventory; review-only |
+| `artifacts/original/phase-0-3d-repair-v3/manifests/final-render-manifest-mobile.json` | 2,617 | `9aaddf823f75dad7c1ecc2feb3a193b9819db37499193617d137fe417364b0e5` | Canonical independently authored mobile-render inventory; pending human creative review |
+| `artifacts/original/phase-0-3d-repair-v3/manifests/iterations/silhouette-iteration-2-decision-manifest.json` | 7,070 | `0d35f76f6b3e452dac6eb846af905a7b453c8a73d3b4f867927e7e235a14b1cf` | Superseded iteration-2 silhouette decision evidence; review-only |
+| `artifacts/original/phase-0-3d-repair-v3/manifests/package-inventory.json` | 60,676 | `ec8fc58217b80be850be9fe98a94a549ea8cf5d83eea00883fb6a66654d46104` | Canonical package-wide 117-record self-excluded inventory; review-only |
+| `artifacts/original/phase-0-3d-repair-v3/manifests/png-metadata-sanitization.json` | 48,564 | `bba8b813f18d4a332067982696a68bd44c57bc0a9664ee15f175fe7b14c866bb` | Canonical 83-PNG sanitation and decoded-pixel-preservation evidence; PASS; review-only |
+| `artifacts/original/phase-0-3d-repair-v3/manifests/portal-surface-manifest.json` | 2,267 | `40369605cb2cd4e5792ae39b9f76598251f629a52321360d46e44bc3ccf9eb4b` | Canonical shared physical/DOM portal-surface inventory; pending human creative review |
+| `artifacts/original/phase-0-3d-repair-v3/manifests/review-bundle-manifest.json` | 4,437 | `8a73fc5eae08a405f8a96cc2d93dc3fd30b888d77da2fa5d4feec377260fe3fe` | Canonical exact 13-sheet review bundle; pending human creative review |
+| `artifacts/original/phase-0-3d-repair-v3/manifests/review-composition-manifest.json` | 6,667 | `d82140ebcb3615f7891623e885c11e1befb4af6eebff76dfc585b886540b2ca0` | Canonical eight-sheet static composition lineage; review-only |
+| `artifacts/original/phase-0-3d-repair-v3/manifests/review-originals-manifest.json` | 30,306 | `1783a3e2218bf93150807b10ca27db9edd217520832880f076b1d04d89cb493b` | Canonical 12-compositor-output inventory; review-only |
+| `artifacts/original/phase-0-3d-repair-v3/manifests/scene-source-keepouts.json` | 44,663 | `3ac16456b5a4a9e5a57755206f135684eca12fcfb7b1aafe30fb3cf86e862b8a` | Canonical camera, scene-safety and spiral-visibility authority; PASS; review-only |
+| `artifacts/original/phase-0-3d-repair-v3/manifests/silhouette-decision-manifest.json` | 8,521 | `dfdc9eae1a13da3bb3af78f95c6cdcfb987f1c1bc0192ec3a2c2f65ddb845a80` | Canonical accepted-for-refinement silhouette decision evidence; creative gate still pending |
+| `artifacts/original/phase-0-3d-repair-v3/manifests/silhouette-iteration-1-decision-manifest.json` | 6,911 | `b0cefba5f79daaaf73c30870e2341361029e9681364069f5ddfa13ab404606f2` | Superseded iteration-1 silhouette decision evidence; review-only |
+
+### Phase 0.3 authoring, geometry and integrity notes
+
+The package-wide inventory governs the 15 deterministic Python sources (193,394 bytes), `README.md` (4,472 bytes; SHA-256 `dc1026d1fa2c5243fa07fc08d6ac0e2ba36170f1e17b3a5cc6b2f5d914ed49cc`) and `portal-layout.json` (6,675 bytes; SHA-256 `25666cf071afe7564dc051cbec770ead325cdf19ef1f4926e43d793a2a053bc5`). These are reproducibility and review records, not launch assets or runtime dependencies.
+
+The final geometry authorities agree on a five-checkpoint 28-degree camera arc. Desktop uses an authored approximately 2.5-turn spiral. The independent portrait composition uses one physical 2.25-turn cable and exposes approximately 2.171694 turns (781.810 degrees), exceeding the registered 2.15-turn visibility threshold. The conductor terminates below the foundation without a visible plug or disconnected cap.
+
+The largest package file is the 5,538,004-byte superseded iteration-1 silhouette sheet; no package member approaches the 100 MiB GitHub per-file boundary. The package has no Git LFS pointer or LFS dependency.
+
+### Phase 0.3 browser evidence lineage
+
+The non-production evidence tree at `artifacts/evidence/phase-0-3d-repair-v3/` contains 241 files and 25,595,166 bytes. It is Class R implementation and accessibility evidence, not launch media. The canonical matrix governs 46 passing cases and 36 raw/normalized capture lineages. Recovery and targeted records preserve the bounded reconciliation history; they are explicitly non-authoritative and must not be substituted for the canonical captures.
+
+| Evidence authority or governed set | Records | Bytes | SHA-256 or authority | Classification and approval |
+| --- | ---: | ---: | --- | --- |
+| `artifacts/evidence/phase-0-3d-repair-v3/browser-matrix-report.json` | 46 cases; 36 capture lineages | 1,785,125 | `8272764a01ac18b4aed7b8b0ebffdca812a5f235e51d6c2c2ea6ae744c6ac4fc` | Canonical layout, collision, focus, reduced-motion, scene-safety and capture-lineage evidence; PASS; review-only |
+| `artifacts/evidence/phase-0-3d-repair-v3/captures/` | 72: 36 raw JPEG + 36 normalized PNG | 12,837,839 | Member hashes and dimensions in `browser-matrix-report.json` | Canonical original browser captures; review-only |
+| `artifacts/evidence/phase-0-3d-repair-v3/reports/` | 46 JSON | 1,680,887 | Case authorities consolidated by `browser-matrix-report.json` | Canonical machine-readable browser reports; review-only |
+| `artifacts/evidence/phase-0-3d-repair-v3/capture-checkpoint.json` | 1 | 43,112 | `2e29544c25477fc05a81ce2ef87a3baaa5030fbfbb6ac2b8b235c81654f6f090` | Canonical capture-state checkpoint; review-only |
+| `artifacts/evidence/phase-0-3d-repair-v3/TYPOGRAPHY_COLLISION_QA.md` | 1 | 13,279 | `852394748d895117ebc622df6da6b819ffdfb8b1c5c6ba081532c74327d3027b` | Human-readable final visual-audit record; review-only |
+| `artifacts/evidence/phase-0-3d-repair-v3/README.md` | 1 | 5,233 | `6f285e4eac59cff7815c5e3ca5289ab17a6f580a728e65246180527502639ac7` | Evidence-scope, authority and recovery-lineage guide; review-only |
+| `artifacts/evidence/phase-0-3d-repair-v3/recovery/` | 106 | 8,465,353 | Directory inventory at candidate commit | Retained stale-state reconciliation evidence; non-authoritative; review-only |
+| `artifacts/evidence/phase-0-3d-repair-v3/targeted/` | 13 | 764,338 | Directory inventory at candidate commit | Bounded pre-seal repair evidence; non-authoritative; review-only |
+
+The final 36 normalized captures were inspected at full size. Actual, keyboard-focus, long-copy, reduced-motion and 200% text-zoom states preserve whole words, visible focus only where requested, zero horizontal overflow and zero measured semantic-copy/Aperture Station/cable intersections. Desktop retains a quiet left copy field with the Aperture Station lower-right; the independently authored mobile composition keeps the station and spiral legible without cropping the desktop scene.
+
 ## Original Phase 0 implementation evidence
 
 The raster dimensions below are the browser-capture dimensions; viewport targets remain encoded in filenames and are separately documented in `artifacts/evidence/phase-0/BROWSER_QA.md`.

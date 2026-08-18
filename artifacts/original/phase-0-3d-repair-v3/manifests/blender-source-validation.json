@@ -1,0 +1,200 @@
+{
+  "schema": "quantum-hub.phase-0-3d-repair-v3.blender-source-validation.v1",
+  "generated_at_utc": "2026-08-18T10:35:38.932746+00:00",
+  "pass": true,
+  "source": {
+    "path": "source/quantum-aperture-station-v3.blend",
+    "bytes": 310905,
+    "sha256": "5dde7731b366a1fd19f8f3cc93d338754b9536c6141b2819f4c123bc1a2af676"
+  },
+  "validator": {
+    "path": "source/validate_final_scene.py",
+    "sha256": "d496050179a128000983cdc9637dc291d73469da66b016dd1bd31c4efc01abf6"
+  },
+  "blender": {
+    "version": "5.2.0 LTS",
+    "build_hash": "fbe6228777e7",
+    "engine": "BLENDER_EEVEE"
+  },
+  "checks": [
+    {
+      "name": "selected inclined-blade station preserves integrated aperture and installation anatomy",
+      "pass": true,
+      "evidence": {
+        "selected_option": "A / Inclined Optical Blade",
+        "blade": "Station_AsymmetricOpticalBlade",
+        "service_spine": "Station_LoadBearingServiceSpine",
+        "foundation": "Station_BelowGradeIntegratedFoundation",
+        "structural_interruptor": "Station_LowerRightStructuralInterruptor",
+        "blade_height_m": 1.230896,
+        "optical_glass_width_m": 0.6696,
+        "aperture_to_blade_height": 0.543994,
+        "nominal_station_dimensions_m": {
+          "width": 1.86,
+          "height": 1.24,
+          "depth": 0.72
+        }
+      }
+    },
+    {
+      "name": "no external torus, bumper, handle, or front plug",
+      "pass": true,
+      "evidence": {
+        "matches": []
+      }
+    },
+    {
+      "name": "one continuous 2.5-turn physical desktop cable",
+      "pass": true,
+      "evidence": {
+        "count": 1,
+        "turns": 2.5,
+        "outer_to_inner": true
+      }
+    },
+    {
+      "name": "independent 2.25-turn portrait cable is exclusive by render composition",
+      "pass": true,
+      "evidence": {
+        "object": "MobileCable_PhysicalGraphiteSheath",
+        "turns": 2.25,
+        "outer_to_inner": true,
+        "mobile_objects_hidden_by_default": true,
+        "desktop_objects_visible_by_default": true,
+        "render_controller": "source/render_final_stills.py selects one family by camera"
+      }
+    },
+    {
+      "name": "one cumulative core and one cable-resident leading front",
+      "pass": true,
+      "evidence": {
+        "fronts": [
+          "Cable_SingleConductionFront"
+        ],
+        "cores": [
+          "Cable_CumulativeConductor"
+        ]
+      }
+    },
+    {
+      "name": "dormant state has zero authored emission and black optical glass",
+      "pass": true,
+      "evidence": {
+        "emission_strengths": {
+          "Cable_WarmMagenta_RecessedCore": 0.0,
+          "Cable_SingleFront_ModestHighlight": 0.0,
+          "Foundation_LocalArrival": 0.0,
+          "InternalTransfer_RestrainedLight": 0.0,
+          "PhysicalScreen_RestrainedWake": 0.0,
+          "PhysicalScreen_ChallengeWake": 0.0,
+          "PhysicalScreen_RouteWake": 0.0,
+          "PhysicalScreen_ReadyWake": 0.0
+        },
+        "glass_material": "Aperture_DormantBlack_Glass"
+      }
+    },
+    {
+      "name": "exactly one linked five-blade internal iris mechanism",
+      "pass": true,
+      "evidence": {
+        "blade_count": 5,
+        "objects": [
+          "MechanicalResponse_InternalIrisBlade_01",
+          "MechanicalResponse_InternalIrisBlade_02",
+          "MechanicalResponse_InternalIrisBlade_03",
+          "MechanicalResponse_InternalIrisBlade_04",
+          "MechanicalResponse_InternalIrisBlade_05"
+        ],
+        "mechanism_ids": [
+          "internal-iris"
+        ],
+        "scene_mechanism_count": 1,
+        "response": "one linked five-blade internal iris",
+        "dormant_iris_emission_strength": 0.05999999865889549
+      }
+    },
+    {
+      "name": "five still cameras span a 28-degree arc",
+      "pass": true,
+      "evidence": {
+        "cameras": [
+          {
+            "name": "Camera_Arc_01",
+            "degrees": -14.0
+          },
+          {
+            "name": "Camera_Arc_02",
+            "degrees": -7.0
+          },
+          {
+            "name": "Camera_Arc_03",
+            "degrees": 0.0
+          },
+          {
+            "name": "Camera_Arc_04",
+            "degrees": 7.0
+          },
+          {
+            "name": "Camera_Arc_05",
+            "degrees": 14.0
+          }
+        ],
+        "span_degrees": 28.0
+      }
+    },
+    {
+      "name": "shared authoritative portal layout is bound by SHA-256",
+      "pass": true,
+      "evidence": {
+        "scene_sha256": "25666cf071afe7564dc051cbec770ead325cdf19ef1f4926e43d793a2a053bc5",
+        "file_sha256": "25666cf071afe7564dc051cbec770ead325cdf19ef1f4926e43d793a2a053bc5",
+        "path": "portal-layout.json"
+      }
+    },
+    {
+      "name": "no external libraries, file images, or external fonts",
+      "pass": true,
+      "evidence": {
+        "libraries": [],
+        "file_images": [],
+        "external_fonts": []
+      }
+    },
+    {
+      "name": "still-only source has no keyframed animatic, VSE sequence, or video output",
+      "pass": true,
+      "evidence": {
+        "action_keyframes": 0,
+        "sequence_count": 0,
+        "render_format": "PNG",
+        "frame_end_not_used_as_deliverable": 250,
+        "full_animatic_created": false
+      }
+    },
+    {
+      "name": "restrained neutral atmosphere is present",
+      "pass": true,
+      "evidence": {
+        "node": "Neutral_ProvingGround_Depth",
+        "density": 0.006000000052154064,
+        "color": [
+          0.10999999940395355,
+          0.12999999523162842,
+          0.12999999523162842,
+          1.0
+        ]
+      }
+    },
+    {
+      "name": "EEVEE still contract",
+      "pass": true,
+      "evidence": {
+        "engine": "BLENDER_EEVEE",
+        "taa_render_samples": 64,
+        "volumetric_samples": 64,
+        "cycles_comparison_claimed": false,
+        "selection_rationale": "smooth/subdivided/beveled principal surfaces showed no review-resolution faceting; a Cycles pass was not materially necessary for this still gate"
+      }
+    }
+  ]
+}

@@ -93,7 +93,7 @@ test("every registered committed asset matches its registered SHA-256", async ()
     assert.equal(await sha256(relativePath), expectedHash, `${relativePath} register mismatch`);
     verified += 1;
   }
-  assert.equal(verified, 95, "unexpected registered-asset count");
+  assert.equal(verified, 117, "unexpected registered-asset count");
 });
 
 test("Spiral Conduction harness is direct-progress, reverse-safe, and single-scroll-root", async () => {

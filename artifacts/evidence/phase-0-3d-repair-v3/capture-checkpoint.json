@@ -1,0 +1,907 @@
+{
+  "schema": "quantum-hub.phase-0-3d-repair-v3.capture-checkpoint.v2",
+  "authority": "repository-native-playwright",
+  "createdAt": "2026-08-18T10:18:20.354Z",
+  "updatedAt": "2026-08-18T10:20:47.799Z",
+  "status": "complete-local-authority-awaiting-normalization",
+  "plan": {
+    "path": "prototypes/phase-0-portal-layout-qa/capture-plan-v3.json",
+    "sha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+    "bytes": 11458
+  },
+  "harness": {
+    "schema": "quantum-hub.phase-0-3d-repair-v3.harness-authority.v1",
+    "cacheToken": "phase03-layout-v11",
+    "sha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+    "files": [
+      {
+        "path": "prototypes/phase-0-portal-layout-qa/index.html",
+        "bytes": 4873,
+        "sha256": "5a23cfa639cbff0a94e45756cc3604b95b08dfdbf7788c2f22a4236bec7c8ffa"
+      },
+      {
+        "path": "prototypes/phase-0-portal-layout-qa/styles.css",
+        "bytes": 28849,
+        "sha256": "11a7b3846ebd908bec0203b3cd209362eb7ce931ff723554bacb732493f4846c"
+      },
+      {
+        "path": "prototypes/phase-0-portal-layout-qa/app.js",
+        "bytes": 47475,
+        "sha256": "a4215d4ca493d14ca32d3191f0aad8b98c9a30e1bc4b4197ca423962c6d93dfa"
+      },
+      {
+        "path": "prototypes/phase-0-portal-layout-qa/runner.html",
+        "bytes": 961,
+        "sha256": "371c1a26ad98639ab37e854eb8a99bb7d1667eb4deb0c200a923c054fb4e1b80"
+      },
+      {
+        "path": "prototypes/phase-0-portal-layout-qa/runner.css",
+        "bytes": 820,
+        "sha256": "9d72946b2074c1c0729bd12665134ef128287d9b9d3d1d31f7e527fe1edacf04"
+      },
+      {
+        "path": "prototypes/phase-0-portal-layout-qa/runner.js",
+        "bytes": 6191,
+        "sha256": "e9d9d3031c150b973b37531a8d893dc0bf1dff61f50fbfb15a0a153a19beb2a6"
+      }
+    ]
+  },
+  "migration": {
+    "sourceSha256": "535009fc4c465854b53eaafc19e0d7cc49145171d300a0a3f29fa2a1796e5a5a",
+    "preservedCheckpoint": "artifacts/evidence/phase-0-3d-repair-v3/recovery/stale-harness-checkpoint-535009fc4c465854.json",
+    "recoveryReport": "artifacts/evidence/phase-0-3d-repair-v3/recovery/stale-harness-checkpoint-535009fc4c465854.recovery-report.json",
+    "recoveredRawCount": 36,
+    "recoveredReportCount": 46,
+    "recoveredMatrix": {
+      "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/matrices/stale-harness-checkpoint-535009fc4c465854/browser-matrix-report.json",
+      "bytes": 1775752,
+      "sha256": "4228dbacfaafad596c99bba5f5834d9768b9aa009e2398d521dc72cec4b25784",
+      "byteIdentical": true
+    },
+    "authorityPolicy": "prior local evidence is preserved but cannot satisfy resume after a harness authority change"
+  },
+  "cases": {
+    "hero-actual--desktop-1440x900": {
+      "id": "hero-actual--desktop-1440x900",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:18:23.561Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-actual--desktop-1440x900.json",
+        "bytes": 48050,
+        "sha256": "3277a201fd7dd1cc7503b36f0eb667ca40b9b81fc7820e37cbc355906ce234df"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-actual--desktop-1440x900.jpg",
+        "bytes": 112621,
+        "sha256": "5b7a50a32673de5a53fbf441c9432e751a2455b0a64c7598a849ef39b552239c",
+        "format": "JPEG"
+      }
+    },
+    "hero-actual--short-desktop-1366x650": {
+      "id": "hero-actual--short-desktop-1366x650",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:18:24.911Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-actual--short-desktop-1366x650.json",
+        "bytes": 48106,
+        "sha256": "eca2bbde4cec8e0bcfe30ec01a71123e54b0f2abc69f7c918f523da269dc48f0"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-actual--short-desktop-1366x650.jpg",
+        "bytes": 96325,
+        "sha256": "4497d267dd001d38470ab6df62782b1c06e5673300253772b4eac32b1055d22e",
+        "format": "JPEG"
+      }
+    },
+    "hero-actual--desktop-1280x800": {
+      "id": "hero-actual--desktop-1280x800",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:18:26.585Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-actual--desktop-1280x800.json",
+        "bytes": 47691,
+        "sha256": "ce98557a52bb12c98285d3315dff734704ee45e635e3a7d9c0199a71a4f7a022"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-actual--desktop-1280x800.jpg",
+        "bytes": 109982,
+        "sha256": "b8dd6c045f5d43569c675b76191c472228ac629f48dc16333252fb5216038a8b",
+        "format": "JPEG"
+      }
+    },
+    "hero-actual--tablet-landscape-1024x768": {
+      "id": "hero-actual--tablet-landscape-1024x768",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:18:27.840Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-actual--tablet-landscape-1024x768.json",
+        "bytes": 47969,
+        "sha256": "7cc97536937b032aec86e90d6ad79b86fb31f55fe3265e297d09b1579f662fd9"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-actual--tablet-landscape-1024x768.jpg",
+        "bytes": 102450,
+        "sha256": "0120e2e29833b4334aea7feee1d6f210e6e1b2a72d4470bd1d09af18fed70029",
+        "format": "JPEG"
+      }
+    },
+    "hero-actual--tablet-portrait-768x1024": {
+      "id": "hero-actual--tablet-portrait-768x1024",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:18:29.376Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-actual--tablet-portrait-768x1024.json",
+        "bytes": 48327,
+        "sha256": "0ff7bf2b3770bb8c83cf7c5bc96ad5122d6632b9062afe7ee34a4d3e2645db12"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-actual--tablet-portrait-768x1024.jpg",
+        "bytes": 113004,
+        "sha256": "16d0ec28a64863ebf06d7ce6ce704211fb6614e62dd0c5a2f2f9a3f340bda7d9",
+        "format": "JPEG"
+      }
+    },
+    "hero-actual--mobile-390x844": {
+      "id": "hero-actual--mobile-390x844",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:18:30.696Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-actual--mobile-390x844.json",
+        "bytes": 48852,
+        "sha256": "1729ef2b959ebed23369dd5d0ec5d80a005653668097486a1f76d8cdccd64e11"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-actual--mobile-390x844.jpg",
+        "bytes": 76519,
+        "sha256": "972849c984e130eaed3cee366f0353010277d4062b8bc46f64f0a23334be1c94",
+        "format": "JPEG"
+      }
+    },
+    "hero-actual--mobile-360x800": {
+      "id": "hero-actual--mobile-360x800",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:18:32.032Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-actual--mobile-360x800.json",
+        "bytes": 48541,
+        "sha256": "472daec1bf53a08e70670dc0d792377c3fbd75b78fb43aa9cc5d1337f18a11b9"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-actual--mobile-360x800.jpg",
+        "bytes": 71871,
+        "sha256": "debebfa2b8516338e3f544c0c77391cf699c32f73e87c44d4772e83fa3bdeab3",
+        "format": "JPEG"
+      }
+    },
+    "hero-actual--narrow-320x800": {
+      "id": "hero-actual--narrow-320x800",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:18:33.416Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-actual--narrow-320x800.json",
+        "bytes": 48820,
+        "sha256": "92ecd7d8b8417088b96dadd07d956a41214d19efd1d8b6c8021ecfcaefd865c3"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-actual--narrow-320x800.jpg",
+        "bytes": 68861,
+        "sha256": "bce6afd46af3618a3a4c1312da9a2df181f7e7d56c687cb74777ae02eaa76525",
+        "format": "JPEG"
+      }
+    },
+    "hero-actual--mobile-landscape-844x390": {
+      "id": "hero-actual--mobile-landscape-844x390",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:18:58.656Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-actual--mobile-landscape-844x390.json",
+        "bytes": 47900,
+        "sha256": "c070d26e4b6841d680018f2e5b47008c598fcbb234e0b8973356d5a3fbb567d0"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-actual--mobile-landscape-844x390.jpg",
+        "bytes": 73809,
+        "sha256": "564c420ccb6f9625276c4b8db41387f3403b512fc5264cabe1152286e64d5cc4",
+        "format": "JPEG"
+      }
+    },
+    "portal-actual--desktop-1440x900": {
+      "id": "portal-actual--desktop-1440x900",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:19:00.122Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-actual--desktop-1440x900.json",
+        "bytes": 22522,
+        "sha256": "47407f0da87864626326f6ff7ac6fa50ad07b08826ba4a1c10fb6b037f318ac4"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-actual--desktop-1440x900.jpg",
+        "bytes": 80120,
+        "sha256": "3dfd1e6e9e3dde5b7be413a906bb964bbef5f1d6286d197f077f21dca4082b6f",
+        "format": "JPEG"
+      }
+    },
+    "portal-actual--short-desktop-1366x650": {
+      "id": "portal-actual--short-desktop-1366x650",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:19:00.653Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-actual--short-desktop-1366x650.json",
+        "bytes": 19368,
+        "sha256": "4f244269dce66eb7ba01adab79caad6ef968d5d1a5f087cc4abd6f16b65b4e74"
+      },
+      "raw": null
+    },
+    "portal-actual--desktop-1280x800": {
+      "id": "portal-actual--desktop-1280x800",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:19:01.132Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-actual--desktop-1280x800.json",
+        "bytes": 19743,
+        "sha256": "a45751697a427f3461e9d2cf5642e74fe7c9e805e4741b93db68775771ca2597"
+      },
+      "raw": null
+    },
+    "portal-actual--tablet-landscape-1024x768": {
+      "id": "portal-actual--tablet-landscape-1024x768",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:19:02.286Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-actual--tablet-landscape-1024x768.json",
+        "bytes": 21619,
+        "sha256": "966ae3c7a9a45b3a4614b240c8d5477e910df289055ddeae5a1d7e03d17d1504"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-actual--tablet-landscape-1024x768.jpg",
+        "bytes": 94374,
+        "sha256": "7c015d1b4bebd8d4489bb3c8dec5300900db2d3aa4a9e9a698b4f0cb40610ddd",
+        "format": "JPEG"
+      }
+    },
+    "portal-actual--tablet-portrait-768x1024": {
+      "id": "portal-actual--tablet-portrait-768x1024",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:19:02.838Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-actual--tablet-portrait-768x1024.json",
+        "bytes": 18915,
+        "sha256": "f7e5ece7f3e3a08433d7f6896fcd4c781a17bc79174db2ef79fe323c1f63fd07"
+      },
+      "raw": null
+    },
+    "portal-actual--mobile-390x844": {
+      "id": "portal-actual--mobile-390x844",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:19:03.995Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-actual--mobile-390x844.json",
+        "bytes": 21404,
+        "sha256": "ec3b1ec40780ebb833e082127d5af487b5ebc4b8e87c75bcbd0f8c830f6ef21a"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-actual--mobile-390x844.jpg",
+        "bytes": 66646,
+        "sha256": "9353db7d648b519ad0cabb257f68b7769cf15861168c7960f648dae8d9aca408",
+        "format": "JPEG"
+      }
+    },
+    "portal-actual--mobile-360x800": {
+      "id": "portal-actual--mobile-360x800",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:19:04.481Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-actual--mobile-360x800.json",
+        "bytes": 18736,
+        "sha256": "8b8fd8b666ea5ca73f296d5d68a66a528e8fa7a1427bf8019f8fbb03959011ca"
+      },
+      "raw": null
+    },
+    "portal-actual--narrow-320x800": {
+      "id": "portal-actual--narrow-320x800",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:19:21.355Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-actual--narrow-320x800.json",
+        "bytes": 21386,
+        "sha256": "54299cd8d0154f24451e0725d10cb5e94a05e881c8d9f6b15bd42cadcbf8367c"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-actual--narrow-320x800.jpg",
+        "bytes": 59216,
+        "sha256": "a8c99426e8708913d937d90b00c518957d84b82f849b744f084faf8adf9fc7c5",
+        "format": "JPEG"
+      }
+    },
+    "portal-actual--mobile-landscape-844x390": {
+      "id": "portal-actual--mobile-landscape-844x390",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:19:22.794Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-actual--mobile-landscape-844x390.json",
+        "bytes": 21423,
+        "sha256": "2a6ae3156f514868d2a07120d4e2b33c402e40ef2224a7890563c3b346b7f519"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-actual--mobile-landscape-844x390.jpg",
+        "bytes": 71731,
+        "sha256": "8d0b01b88eff308f657d291083f37991e6df7f378a0f714e560ed3f325bee237",
+        "format": "JPEG"
+      }
+    },
+    "hero-zoom-200--desktop-1440x900": {
+      "id": "hero-zoom-200--desktop-1440x900",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:19:24.706Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-zoom-200--desktop-1440x900.json",
+        "bytes": 47876,
+        "sha256": "cd5cf3ca344a521b63979caa1a357537c073adb21f2ac8415a55bf5b4e4eadfd"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-zoom-200--desktop-1440x900.jpg",
+        "bytes": 154918,
+        "sha256": "81c238d0f6ffcfb9fb67ec46cc0ff883c9f86a9956797bb41cfeb67c1feefc52",
+        "format": "JPEG"
+      }
+    },
+    "hero-zoom-200--short-desktop-1366x650": {
+      "id": "hero-zoom-200--short-desktop-1366x650",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:19:25.251Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-zoom-200--short-desktop-1366x650.json",
+        "bytes": 45341,
+        "sha256": "1e4fb3d9ccfce4a52594c0e418961452cb1397cd663cad0bc190752f4c88d6d2"
+      },
+      "raw": null
+    },
+    "hero-zoom-200--mobile-390x844": {
+      "id": "hero-zoom-200--mobile-390x844",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:19:26.519Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-zoom-200--mobile-390x844.json",
+        "bytes": 50260,
+        "sha256": "ab2998feb51188ec7a175022c7635216dba94bbd996b1c3a620ba2904c4825f9"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-zoom-200--mobile-390x844.jpg",
+        "bytes": 101990,
+        "sha256": "aa16d661815b78158af3a9dcbe1f89e525e66e9153e52e7abda8624ac90527cd",
+        "format": "JPEG"
+      }
+    },
+    "hero-zoom-200--narrow-320x800": {
+      "id": "hero-zoom-200--narrow-320x800",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:19:27.919Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-zoom-200--narrow-320x800.json",
+        "bytes": 51293,
+        "sha256": "0c4e1ef59b1a6bd6d30046ee831ae611259c4e994d39ed0a8c25cdf5ee35813e"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-zoom-200--narrow-320x800.jpg",
+        "bytes": 77895,
+        "sha256": "7d794e38aef72af7099ab770a6ca955d5b6fe51e7c32aa3b9736c574a50221c8",
+        "format": "JPEG"
+      }
+    },
+    "hero-zoom-200--mobile-landscape-844x390": {
+      "id": "hero-zoom-200--mobile-landscape-844x390",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:19:29.276Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-zoom-200--mobile-landscape-844x390.json",
+        "bytes": 47455,
+        "sha256": "9817fc2c88691b9e1c3f2beadee05bc6be0b7b182fa5257257a1e67c0e23b633"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-zoom-200--mobile-landscape-844x390.jpg",
+        "bytes": 79095,
+        "sha256": "99bed439548f430c97fb8020ac724c48a8f04eb5cf108bc88a5d5687c81e9378",
+        "format": "JPEG"
+      }
+    },
+    "portal-zoom-200--desktop-1440x900": {
+      "id": "portal-zoom-200--desktop-1440x900",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:19:30.876Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-zoom-200--desktop-1440x900.json",
+        "bytes": 22103,
+        "sha256": "b49f21ca36a0473dbe284f55023a9ebd7b07719bb94b1e63ef499c8cd0401c85"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-zoom-200--desktop-1440x900.jpg",
+        "bytes": 98301,
+        "sha256": "12cff1c4b1348bcdc17fb0022f91e01ba5ab2bbc1f1fe8e1d55145603d8c23d4",
+        "format": "JPEG"
+      }
+    },
+    "portal-zoom-200--short-desktop-1366x650": {
+      "id": "portal-zoom-200--short-desktop-1366x650",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:19:51.158Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-zoom-200--short-desktop-1366x650.json",
+        "bytes": 19298,
+        "sha256": "96da5d46cb7a21668ce79abf18ca71fefbb4d0971bcba6276b17cf40eb29835a"
+      },
+      "raw": null
+    },
+    "portal-zoom-200--mobile-390x844": {
+      "id": "portal-zoom-200--mobile-390x844",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:19:52.405Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-zoom-200--mobile-390x844.json",
+        "bytes": 22013,
+        "sha256": "01a5e09c665c0df6d19b226cc9c3134b6db7af4d9070abc220a328877249c5e7"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-zoom-200--mobile-390x844.jpg",
+        "bytes": 84580,
+        "sha256": "e0e4c04baa185230f6f1b16d4bf7d2ba7272dbdaa8729da8044ea713ca7f579c",
+        "format": "JPEG"
+      }
+    },
+    "portal-zoom-200--narrow-320x800": {
+      "id": "portal-zoom-200--narrow-320x800",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:19:53.610Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-zoom-200--narrow-320x800.json",
+        "bytes": 22424,
+        "sha256": "4345cd9b55ecc9e32ea9367117bd6f39b5d05657a94c89493e74779ba14c101d"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-zoom-200--narrow-320x800.jpg",
+        "bytes": 76158,
+        "sha256": "f21c3935caecfa1625263bac88545f0effcec777e541a10022f253512dcd507c",
+        "format": "JPEG"
+      }
+    },
+    "portal-zoom-200--mobile-landscape-844x390": {
+      "id": "portal-zoom-200--mobile-landscape-844x390",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:19:54.803Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-zoom-200--mobile-landscape-844x390.json",
+        "bytes": 21839,
+        "sha256": "24ce9c25ec0cb31507c4b2efcd8595e8e47d84fbe4cc9fdb34e8abc313b0998d"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-zoom-200--mobile-landscape-844x390.jpg",
+        "bytes": 70080,
+        "sha256": "487d5aa5e1f35b86b693ea09f7ab9de78af687c1ac24bd84d5ac11a8202f8f43",
+        "format": "JPEG"
+      }
+    },
+    "hero-long-copy--desktop-1440x900": {
+      "id": "hero-long-copy--desktop-1440x900",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:19:56.306Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-long-copy--desktop-1440x900.json",
+        "bytes": 48159,
+        "sha256": "df5185f2c7f1cc98428d040d3830b8ffd0ec1b0423013ea4501ccfb5f34c8b0e"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-long-copy--desktop-1440x900.jpg",
+        "bytes": 118726,
+        "sha256": "8234b8be32851ac357950dd84ebc68f0f3778b6517298385a7038905b9163c8c",
+        "format": "JPEG"
+      }
+    },
+    "hero-long-copy--short-desktop-1366x650": {
+      "id": "hero-long-copy--short-desktop-1366x650",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:19:56.861Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-long-copy--short-desktop-1366x650.json",
+        "bytes": 45857,
+        "sha256": "fd626dcb580cb0b1025790ec89d0b8721282c1717dba4575b7471ddb16fc4982"
+      },
+      "raw": null
+    },
+    "hero-long-copy--mobile-390x844": {
+      "id": "hero-long-copy--mobile-390x844",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:19:58.140Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-long-copy--mobile-390x844.json",
+        "bytes": 48913,
+        "sha256": "fbd7bac249727b60f15770cf7974827e327d497a432a004560fb878cd999f3eb"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-long-copy--mobile-390x844.jpg",
+        "bytes": 84915,
+        "sha256": "f5d8b90894b2df2bbda1795d49223cb3261dcfa18b25609114dba8294f685685",
+        "format": "JPEG"
+      }
+    },
+    "hero-long-copy--narrow-320x800": {
+      "id": "hero-long-copy--narrow-320x800",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:19:59.406Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-long-copy--narrow-320x800.json",
+        "bytes": 48475,
+        "sha256": "a4b27b1503f6b9b4c7c27ea1a00834215c3f64631f61092f418a49bf685eb0d2"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-long-copy--narrow-320x800.jpg",
+        "bytes": 71820,
+        "sha256": "58d1dcd289ccf79975fac63eb053391f4a6bbf96bdb42f605fde7417953529b5",
+        "format": "JPEG"
+      }
+    },
+    "hero-long-copy--mobile-landscape-844x390": {
+      "id": "hero-long-copy--mobile-landscape-844x390",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:20:15.326Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-long-copy--mobile-landscape-844x390.json",
+        "bytes": 48122,
+        "sha256": "c7a1806d86e6897a4fcff1d667aba5d4634ddb5dd70eb39df9a8af3713f9f24a"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-long-copy--mobile-landscape-844x390.jpg",
+        "bytes": 76402,
+        "sha256": "815987d14fcef97b7be6404d8b8e5b6a531b8836e2dcc40538a7ec3c204047c4",
+        "format": "JPEG"
+      }
+    },
+    "portal-long-copy--desktop-1440x900": {
+      "id": "portal-long-copy--desktop-1440x900",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:20:17.269Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-long-copy--desktop-1440x900.json",
+        "bytes": 21724,
+        "sha256": "70fc4b095132c98bbbeb6a1ac326d1733779606739d9526385e4cffc630b4a6e"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-long-copy--desktop-1440x900.jpg",
+        "bytes": 112978,
+        "sha256": "37f45d442bd750bb6d6e30348f8c17ec68823471d8f3caa0e2c8cd7fd8bf8cd5",
+        "format": "JPEG"
+      }
+    },
+    "portal-long-copy--short-desktop-1366x650": {
+      "id": "portal-long-copy--short-desktop-1366x650",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:20:18.003Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-long-copy--short-desktop-1366x650.json",
+        "bytes": 20816,
+        "sha256": "86fc7b0930caa5cdc237d78794c40bdb2c9bc0b2e18af68a587f962864588fb9"
+      },
+      "raw": null
+    },
+    "portal-long-copy--mobile-390x844": {
+      "id": "portal-long-copy--mobile-390x844",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:20:19.417Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-long-copy--mobile-390x844.json",
+        "bytes": 22301,
+        "sha256": "3bec2c3caf27ba90c3633b27b0537e2de90d5564d9fb080ca84e7ddaaed94f0e"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-long-copy--mobile-390x844.jpg",
+        "bytes": 85893,
+        "sha256": "97f5cdc4afc170dcbb303556a8185457d821f07781cf6302f1d4a71d47ea05b5",
+        "format": "JPEG"
+      }
+    },
+    "portal-long-copy--narrow-320x800": {
+      "id": "portal-long-copy--narrow-320x800",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:20:20.735Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-long-copy--narrow-320x800.json",
+        "bytes": 23121,
+        "sha256": "6152769e8cf5e32e8ec077e016b288ea487437181aa6ee8d961e43f7cdfacc99"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-long-copy--narrow-320x800.jpg",
+        "bytes": 78327,
+        "sha256": "cb339d2d6ae3195388500c2b91b141af8c01c327f36f352cf62bd51ac0afb4c8",
+        "format": "JPEG"
+      }
+    },
+    "portal-long-copy--mobile-landscape-844x390": {
+      "id": "portal-long-copy--mobile-landscape-844x390",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:20:22.050Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-long-copy--mobile-landscape-844x390.json",
+        "bytes": 22754,
+        "sha256": "6b9b15d56e4f4b09cd92a661e224da552e07eb395d670affc6da2135f0262091"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-long-copy--mobile-landscape-844x390.jpg",
+        "bytes": 97252,
+        "sha256": "b7f740c5b09e587bccfc84a08208281793215c294edf2525e0dbb15eb1c72629",
+        "format": "JPEG"
+      }
+    },
+    "hero-reduced-motion--desktop-1440x900": {
+      "id": "hero-reduced-motion--desktop-1440x900",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:20:23.784Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-reduced-motion--desktop-1440x900.json",
+        "bytes": 48237,
+        "sha256": "6f766981f8c13c727a7d0b141091ca861dfc52123b2469f42060d06369f4b763"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-reduced-motion--desktop-1440x900.jpg",
+        "bytes": 102711,
+        "sha256": "4d7cc166c57cf8bfaf5b930fc8f60431211b0f07abe37af65f4ef30b587bc950",
+        "format": "JPEG"
+      }
+    },
+    "hero-reduced-motion--mobile-390x844": {
+      "id": "hero-reduced-motion--mobile-390x844",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:20:25.103Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-reduced-motion--mobile-390x844.json",
+        "bytes": 49008,
+        "sha256": "eae0caef3812f525b922477626ccde8cb68de0a7c87fe600b4b4e2ad15ac8318"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-reduced-motion--mobile-390x844.jpg",
+        "bytes": 72068,
+        "sha256": "99866bb7a44926986292c8c9eb1fa5aeaa1ec717b305a51c12dc932299e35b44",
+        "format": "JPEG"
+      }
+    },
+    "hero-reduced-motion--narrow-320x800": {
+      "id": "hero-reduced-motion--narrow-320x800",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:20:40.436Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-reduced-motion--narrow-320x800.json",
+        "bytes": 46320,
+        "sha256": "131286579a71568f88ec8ea15046e851f75542e5a78f4ea9dd7e9fb2a00ae55d"
+      },
+      "raw": null
+    },
+    "portal-reduced-motion--desktop-1440x900": {
+      "id": "portal-reduced-motion--desktop-1440x900",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:20:42.155Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-reduced-motion--desktop-1440x900.json",
+        "bytes": 50060,
+        "sha256": "189e8eab9c05199bc51a983c02b9d1539ca64a5ac70facdefd1da3d540828408"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-reduced-motion--desktop-1440x900.jpg",
+        "bytes": 93298,
+        "sha256": "a26264f379cd37b24540a19137f45278613539997d5d13ffd7963d62763f57a7",
+        "format": "JPEG"
+      }
+    },
+    "portal-reduced-motion--mobile-390x844": {
+      "id": "portal-reduced-motion--mobile-390x844",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:20:43.434Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-reduced-motion--mobile-390x844.json",
+        "bytes": 50745,
+        "sha256": "c228c24b80d633c31c6cd409f320dff9fbf01e70be8660d091a186ada3321197"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-reduced-motion--mobile-390x844.jpg",
+        "bytes": 68566,
+        "sha256": "6b97878065816f4d7cad00a0866dab4413d21d154943cf809b4a4dd06b5494be",
+        "format": "JPEG"
+      }
+    },
+    "portal-reduced-motion--narrow-320x800": {
+      "id": "portal-reduced-motion--narrow-320x800",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:20:44.165Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-reduced-motion--narrow-320x800.json",
+        "bytes": 47415,
+        "sha256": "8a7c0fa4849fce06978ab7b4e2bde3aa9166ac3fe2ad4340ffb42540b65a4f79"
+      },
+      "raw": null
+    },
+    "hero-keyboard-focus--desktop-1440x900": {
+      "id": "hero-keyboard-focus--desktop-1440x900",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:20:45.869Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-keyboard-focus--desktop-1440x900.json",
+        "bytes": 48112,
+        "sha256": "45e9f2226d052b66eb57787f1ab09fc60982bad86cab1bcf86888ef784d49d6a"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-keyboard-focus--desktop-1440x900.jpg",
+        "bytes": 114540,
+        "sha256": "3493dc06a44f92e8d32787a67c6ed107e8f17dcf541e1b99e01470d64002a4ee",
+        "format": "JPEG"
+      }
+    },
+    "portal-keyboard-focus--mobile-390x844": {
+      "id": "portal-keyboard-focus--mobile-390x844",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "planSha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+      "harnessSha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+      "completedAt": "2026-08-18T10:20:47.192Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-keyboard-focus--mobile-390x844.json",
+        "bytes": 21474,
+        "sha256": "80b61924c9adb9fbf9ebfea557f170bd647c6eba742c3856d9e466ad5b557c44"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-keyboard-focus--mobile-390x844.jpg",
+        "bytes": 70494,
+        "sha256": "30d9b7f7446ada7a008fddab1800ef0883d692ada5c3a6cd6dca9f91206d6f2c",
+        "format": "JPEG"
+      }
+    }
+  },
+  "targetedCases": {},
+  "completedAuthorityCases": 46,
+  "expectedAuthorityCases": 46,
+  "matrix": {
+    "path": "artifacts/evidence/phase-0-3d-repair-v3/browser-matrix-report.json",
+    "bytes": 1799583,
+    "sha256": "2aaa1e15d178995d7fcca3d6c63b38573783bf1603ac2cb670433ddaa513b9e5",
+    "cases": 46,
+    "captures": 36
+  },
+  "browser": {
+    "engine": "Chromium",
+    "product": "chrome",
+    "version": "151.0.7922.34",
+    "executableResolution": "playwright-managed-executable",
+    "automationPackage": "playwright",
+    "localAuthority": true
+  }
+}

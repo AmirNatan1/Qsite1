@@ -1,0 +1,546 @@
+{
+  "schema": "quantum-hub.phase-0-3d-repair-v3.final-still-renders.v1",
+  "generated_at_utc": "2026-08-18T10:29:17.331717+00:00",
+  "source": "source/quantum-aperture-station-v3.blend",
+  "source_sha256": "5dde7731b366a1fd19f8f3cc93d338754b9536c6141b2819f4c123bc1a2af676",
+  "portal_layout_sha256": "25666cf071afe7564dc051cbec770ead325cdf19ef1f4926e43d793a2a053bc5",
+  "blender_version": "5.2.0 LTS",
+  "blender_build_hash": "fbe6228777e7",
+  "engine": "BLENDER_EEVEE",
+  "sampling": "64 EEVEE temporal AA samples and 64 volumetric samples; selected still gate",
+  "render_scale": 1.0,
+  "still_only": true,
+  "full_animatic": false,
+  "camera_study_arc_degrees": 28,
+  "camera_checkpoint_count": 5,
+  "mechanical_response_count": 1,
+  "mechanical_response": "internal iris only",
+  "original_artwork": true,
+  "reference_binary_used": false,
+  "renders": [
+    {
+      "group": "design",
+      "name": "front",
+      "path": "renders/design/front.png",
+      "camera": "Camera_DesignFront",
+      "state": {
+        "conduction": 0.0,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 2048,
+      "height": 1536,
+      "bytes": 2122170,
+      "sha256": "746f3395b5f43963430cb0f9b2d538a61dffe168fee7114a83bfe6048f31a552"
+    },
+    {
+      "group": "design",
+      "name": "side",
+      "path": "renders/design/side.png",
+      "camera": "Camera_DesignSide",
+      "state": {
+        "conduction": 0.0,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 2048,
+      "height": 1536,
+      "bytes": 2037590,
+      "sha256": "09ef7e5bafeafbdeeab9bbefb383b9ab4b3eda21a98c4d1fd61a24d47caa2a61"
+    },
+    {
+      "group": "design",
+      "name": "top",
+      "path": "renders/design/top.png",
+      "camera": "Camera_DesignTop",
+      "state": {
+        "conduction": 0.0,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 2048,
+      "height": 1536,
+      "bytes": 2115123,
+      "sha256": "ec03a3536afda56414d297ef21b14e82a3de59a34aa959d526d6a35b8478d43a"
+    },
+    {
+      "group": "design",
+      "name": "three-quarter",
+      "path": "renders/design/three-quarter.png",
+      "camera": "Camera_DesignThreeQuarter",
+      "state": {
+        "conduction": 0.0,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 2048,
+      "height": 1536,
+      "bytes": 2078544,
+      "sha256": "36685f60665dcd57905efe80557ac5eba300f633da20545df42b679b7f199bf7"
+    },
+    {
+      "group": "design",
+      "name": "rear",
+      "path": "renders/design/rear.png",
+      "camera": "Camera_DesignRear",
+      "state": {
+        "conduction": 0.0,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 2048,
+      "height": 1536,
+      "bytes": 2080090,
+      "sha256": "87fa7297c78698a21c4f3e2bfa159a9dc04ef04baaefd83feab390f7c9b66f97"
+    },
+    {
+      "group": "design",
+      "name": "low",
+      "path": "renders/design/low.png",
+      "camera": "Camera_DesignLow",
+      "state": {
+        "conduction": 0.0,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 2048,
+      "height": 1536,
+      "bytes": 2083292,
+      "sha256": "9e775f14968a7650e43818de82571b150474dd9164534c822189984bc4d06fad"
+    },
+    {
+      "group": "design",
+      "name": "rear-three-quarter",
+      "path": "renders/design/rear-three-quarter.png",
+      "camera": "Camera_DesignRearThreeQuarter",
+      "state": {
+        "conduction": 0.0,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 2048,
+      "height": 1536,
+      "bytes": 2313239,
+      "sha256": "fcc0579cdbb01b74c33013dec0e574fbef9596049aaa593257af12f7db831739"
+    },
+    {
+      "group": "materials",
+      "name": "shell",
+      "path": "renders/materials/shell.png",
+      "camera": "Camera_MaterialShell",
+      "state": {
+        "conduction": 0.0,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 1800,
+      "height": 1200,
+      "bytes": 1538654,
+      "sha256": "51f7ef1cb5ac7b28e481c226b74485fcf88bee8039662ffeb790bd16c549b0af"
+    },
+    {
+      "group": "materials",
+      "name": "glass",
+      "path": "renders/materials/glass.png",
+      "camera": "Camera_MaterialGlass",
+      "state": {
+        "conduction": 0.0,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 1800,
+      "height": 1200,
+      "bytes": 1275175,
+      "sha256": "42144ea4484bd6a62fd2d2a43552a696f232bc379124a2f7a063e7302d214dd0"
+    },
+    {
+      "group": "materials",
+      "name": "foundation",
+      "path": "renders/materials/foundation.png",
+      "camera": "Camera_MaterialFoundation",
+      "state": {
+        "conduction": 1.0,
+        "foundation": 1.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 1800,
+      "height": 1200,
+      "bytes": 1462119,
+      "sha256": "6c455315cc838afbf1939bb870eef8f17bf2e6ddb081097625df87f4a7f3236d"
+    },
+    {
+      "group": "materials",
+      "name": "cable",
+      "path": "renders/materials/cable.png",
+      "camera": "Camera_MaterialCable",
+      "state": {
+        "conduction": 0.58,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 1800,
+      "height": 1200,
+      "bytes": 1306892,
+      "sha256": "88e68237d66c683e1e184ad6c68c954e598a2a83f62116b032a108a88d70f640"
+    },
+    {
+      "group": "environment",
+      "name": "proving-ground-style-frame",
+      "path": "renders/environment/proving-ground-style-frame.png",
+      "camera": "Camera_DesktopHero",
+      "state": {
+        "conduction": 0.0,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1503730,
+      "sha256": "70a1710339d8c7c36bb9c82500bbf755cec3a5882e455d7fc886af952e9b0b63"
+    },
+    {
+      "group": "camera-study",
+      "name": "01-arrival",
+      "path": "renders/camera-study/01-arrival.png",
+      "camera": "Camera_Arc_01",
+      "state": {
+        "conduction": 0.0,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1446125,
+      "sha256": "d18f449623fc59923bba4207afb39c475414c273590c241ae98a979eceb16dca"
+    },
+    {
+      "group": "camera-study",
+      "name": "02-conduction-25",
+      "path": "renders/camera-study/02-conduction-25.png",
+      "camera": "Camera_Arc_02",
+      "state": {
+        "conduction": 0.25,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1455018,
+      "sha256": "ab32f34cde5023d78c3e67e8c5f5989458e6d003836851a1e951ce960f72227f"
+    },
+    {
+      "group": "camera-study",
+      "name": "03-conduction-55",
+      "path": "renders/camera-study/03-conduction-55.png",
+      "camera": "Camera_Arc_03",
+      "state": {
+        "conduction": 0.55,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1477578,
+      "sha256": "dca5caf19750a4de0b39b8723f3646d60708fa2d930a219b764167d7abd1e01c"
+    },
+    {
+      "group": "camera-study",
+      "name": "04-conduction-80",
+      "path": "renders/camera-study/04-conduction-80.png",
+      "camera": "Camera_Arc_04",
+      "state": {
+        "conduction": 0.8,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1494054,
+      "sha256": "ce7ed48f0ce65fde9045d835f655c792225f03259ea5d52ef3a76f3f359e77eb"
+    },
+    {
+      "group": "camera-study",
+      "name": "05-frontal-activation",
+      "path": "renders/camera-study/05-frontal-activation.png",
+      "camera": "Camera_Arc_05",
+      "state": {
+        "conduction": 1.0,
+        "foundation": 1.0,
+        "internal": 1.0,
+        "iris": 1.0,
+        "screen": 1.0,
+        "portal": 0.0
+      },
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1535547,
+      "sha256": "e88c5f0f857a45b4666fc8ce58a979a1e474ce0e8c513c980c720c95dd303791"
+    },
+    {
+      "group": "activation",
+      "name": "01-dormant",
+      "path": "renders/activation/01-dormant.png",
+      "camera": "Camera_ActivationClose",
+      "state": {
+        "conduction": 0.0,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1610221,
+      "sha256": "d90dd2be39c3830460a51a440fa88acb0138931d17199fc9ae4eae523610d610"
+    },
+    {
+      "group": "activation",
+      "name": "02-current-reaches-foundation",
+      "path": "renders/activation/02-current-reaches-foundation.png",
+      "camera": "Camera_ActivationClose",
+      "state": {
+        "conduction": 1.0,
+        "foundation": 1.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1697826,
+      "sha256": "4f0e0cbb13f416ae2eee684c6adb612d8839ffd80b8a63f56cdc377b64d9d5cb"
+    },
+    {
+      "group": "activation",
+      "name": "03-internal-transfer",
+      "path": "renders/activation/03-internal-transfer.png",
+      "camera": "Camera_ActivationClose",
+      "state": {
+        "conduction": 1.0,
+        "foundation": 1.0,
+        "internal": 1.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1801725,
+      "sha256": "f5db29c07185092083decd474c96963db578ddcb388d2b71fe18db192dc11663"
+    },
+    {
+      "group": "activation",
+      "name": "04-internal-iris-begins",
+      "path": "renders/activation/04-internal-iris-begins.png",
+      "camera": "Camera_ActivationClose",
+      "state": {
+        "conduction": 1.0,
+        "foundation": 1.0,
+        "internal": 1.0,
+        "iris": 0.45,
+        "screen": 0.18,
+        "portal": 0.0
+      },
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1804447,
+      "sha256": "8bb28590982292fe0d3e4b315a5fe7c63904848fddab92135c2e759c922a3a10"
+    },
+    {
+      "group": "activation",
+      "name": "05-portal-ready",
+      "path": "renders/activation/05-portal-ready.png",
+      "camera": "Camera_ActivationClose",
+      "state": {
+        "conduction": 1.0,
+        "foundation": 1.0,
+        "internal": 1.0,
+        "iris": 1.0,
+        "screen": 1.0,
+        "portal": 0.0
+      },
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1811644,
+      "sha256": "296916247ea21d7fe14f7e71c64b6fa9461f36824ccc52c055618b3c55de4400"
+    },
+    {
+      "group": "portal",
+      "name": "station-aperture-glass-close",
+      "path": "renders/portal/station-aperture-glass-close.png",
+      "camera": "Camera_PortalPhysical",
+      "state": {
+        "conduction": 1.0,
+        "foundation": 1.0,
+        "internal": 1.0,
+        "iris": 1.0,
+        "screen": 1.0,
+        "portal": 0.0
+      },
+      "width": 1920,
+      "height": 1200,
+      "bytes": 2354180,
+      "sha256": "62556f1adc17fc7636bd3676d7969b5dcba6a8f18d8b38d7fcd7e49be493dbce"
+    },
+    {
+      "group": "hero",
+      "name": "desktop-dormant-base",
+      "path": "renders/hero/desktop-dormant-base.png",
+      "camera": "Camera_DesktopHero",
+      "state": {
+        "conduction": 0.0,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1503730,
+      "sha256": "70a1710339d8c7c36bb9c82500bbf755cec3a5882e455d7fc886af952e9b0b63"
+    },
+    {
+      "group": "hero",
+      "name": "desktop-mid-base",
+      "path": "renders/hero/desktop-mid-base.png",
+      "camera": "Camera_DesktopHero",
+      "state": {
+        "conduction": 0.56,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1525616,
+      "sha256": "2691f96df200349203cf6e60a6711a0d374e0055cb946b69cf2bf79db3fc7e71"
+    },
+    {
+      "group": "hero",
+      "name": "mobile-dormant-base",
+      "path": "renders/hero/mobile-dormant-base.png",
+      "camera": "Camera_MobileHero",
+      "state": {
+        "conduction": 0.0,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 720,
+      "height": 1600,
+      "bytes": 756110,
+      "sha256": "fc21b85a1e56818ff8cd58ad6fdcf96368103d3219426bff2805c43c951fc7ed"
+    },
+    {
+      "group": "hero",
+      "name": "mobile-mid-base",
+      "path": "renders/hero/mobile-mid-base.png",
+      "camera": "Camera_MobileHero",
+      "state": {
+        "conduction": 0.56,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 720,
+      "height": 1600,
+      "bytes": 755118,
+      "sha256": "ccc7b417bc07be446e3f7a40c19a45db3df4475629d912b0a08f6a3b23d1b648"
+    },
+    {
+      "group": "hero",
+      "name": "reduced-desktop-base",
+      "path": "renders/hero/reduced-desktop-base.png",
+      "camera": "Camera_DesktopHero",
+      "state": {
+        "conduction": 0.0,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 1600,
+      "height": 1000,
+      "bytes": 1057156,
+      "sha256": "2ad8d9212e6e48acf1dae8113d40c7c0c8c1dda55867e0cbc3903c371e8f0466"
+    },
+    {
+      "group": "hero",
+      "name": "reduced-mobile-base",
+      "path": "renders/hero/reduced-mobile-base.png",
+      "camera": "Camera_MobileHero",
+      "state": {
+        "conduction": 0.0,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 720,
+      "height": 1600,
+      "bytes": 756110,
+      "sha256": "fc21b85a1e56818ff8cd58ad6fdcf96368103d3219426bff2805c43c951fc7ed"
+    }
+  ],
+  "taa_render_samples": 64,
+  "volumetric_samples": 64
+}

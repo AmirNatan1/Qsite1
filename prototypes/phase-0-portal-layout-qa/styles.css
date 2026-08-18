@@ -165,6 +165,7 @@ body[data-capture-chrome="false"] .skip-link {
 .qa-toolbar output {
   grid-column: 1 / -1;
   color: var(--muted);
+  overflow-wrap: anywhere;
 }
 
 .review-surface {
@@ -230,7 +231,9 @@ body[data-capture-chrome="false"] .skip-link {
   font-size: calc(clamp(1.15rem, 1.7vw, 1.7rem) * var(--text-zoom));
   font-weight: 800;
   letter-spacing: -0.045em;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
 }
 
 .review-boundary {
@@ -240,7 +243,9 @@ body[data-capture-chrome="false"] .skip-link {
   letter-spacing: 0.08em;
   text-align: right;
   text-transform: uppercase;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
 }
 
 .hero-copy {
@@ -293,7 +298,9 @@ body[data-capture-chrome="false"] .skip-link {
   width: fit-content;
   max-width: 100%;
   white-space: nowrap;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
 }
 
 body[data-text-zoom="200"] .heading-line,
@@ -311,7 +318,9 @@ body[data-fixture="long"] .heading-line {
   font-size: calc(clamp(1.05rem, 1.55vw, 1.45rem) * var(--text-zoom));
   line-height: 1.48;
   min-width: 0;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
 }
 
 .audience-actions {
@@ -329,7 +338,9 @@ body[data-fixture="long"] .heading-line {
   padding: 0.8rem 1.15rem;
   font-size: calc(1rem * var(--text-zoom));
   text-align: left;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
 }
 
 .portal-compositor {
@@ -454,7 +465,18 @@ body[data-text-zoom="200"] .portal-eyebrow,
 body[data-text-zoom="200"] .portal-route li,
 body[data-text-zoom="200"] .portal-audience button {
   min-width: 0;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+}
+
+/* Phase 0.3 whole-word authority. Display headings may reflow only at normal
+   word boundaries; accessibility zoom never licenses a split inside a word. */
+.review-surface :is(h1, h2),
+.review-surface :is(h1, h2) .heading-line {
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+  hyphens: none !important;
 }
 
 body[data-text-zoom="200"] .hero-copy {
@@ -593,6 +615,20 @@ body[data-reduced="true"] *::after {
   scroll-behavior: auto !important;
   animation: none !important;
   transition: none !important;
+}
+
+/* Reduced motion is an editorial quiet field, not a floating glass card. The
+   only copy support is a directional full-frame scrim over the dormant scene. */
+body[data-reduced="true"][data-reduced-composition="directional-scrim-quiet-field"] .scene-grade {
+  background:
+    linear-gradient(90deg, rgba(8, 11, 12, 0.94) 0%, rgba(8, 11, 12, 0.82) 44%, rgba(8, 11, 12, 0.36) 72%, rgba(8, 11, 12, 0.12) 100%),
+    linear-gradient(180deg, rgba(8, 11, 12, 0.36), transparent 38%, rgba(8, 11, 12, 0.72));
+}
+
+body[data-reduced="true"] :is(.review-surface, .hero-compositor, .portal-compositor, .portal-contract-layer, .hero-copy) {
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 @media (max-width: 1023px) {
@@ -777,8 +813,31 @@ body[data-reduced="true"] *::after {
     font-size: calc(clamp(2.15rem, 10vw, 2.75rem) * var(--text-zoom));
   }
 
+  /* At 200% text zoom the mobile base size stays exactly doubled, while the
+     compositor gives the longest display word the full narrow viewport. This
+     is a responsive typography rule, not scene-preservation shrinkage: the
+     2.15rem mobile base remains the same size used by the normal mobile
+     contract and WHERE must fit as one token at 320 CSS px. */
+  body[data-text-zoom="200"] .portal-compositor {
+    padding-inline: 12px;
+  }
+
+  body[data-text-zoom="200"] .portal-heading {
+    font-size: calc(2.15rem * var(--text-zoom));
+    letter-spacing: -0.065em;
+  }
+
   .portal-route {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  /* Five 200%-zoom route labels cannot share narrow fractional columns
+     without forcing their whole words outside the document. Reflow the
+     carrier into one content-driven document column; the iframe document
+     remains the only scroll root and the label size is unchanged. */
+  body[data-text-zoom="200"] .portal-route {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.75rem;
   }
 
   .portal-audience {
@@ -826,6 +885,46 @@ body[data-reduced="true"] *::after {
     grid-template-columns: 1fr 1fr;
   }
   :where(body[data-portal-projection="responsive"]) .portal-audience { grid-area: audience; }
+
+  /* The non-public long-label fixture needs the full measured audience column
+     at this short-wide breakpoint. Removing only the control's decorative
+     inline inset gives the longest whole-word line its available 147px; type,
+     grid geometry, native document flow and the 44px target remain unchanged. */
+  body[data-surface="portal"][data-fixture="long"][data-text-zoom="100"][data-portal-projection="responsive"]
+    .portal-audience button {
+    min-width: 0;
+    padding-inline: 0;
+  }
+
+  /* In a short wide CSS viewport, the 200% state must not inherit the normal
+     two-column composition or the large desktop fluid-type maximum. It uses
+     the same native document root, a one-column content flow and exactly 200%
+     of a 3.2–4.1rem responsive base. No browser-zoom detection, word splitting,
+     clipping, nested scrolling or scene-driven type reduction is involved. */
+  body[data-text-zoom="200"][data-portal-projection="responsive"] .portal-compositor {
+    align-items: flex-start;
+    padding: 16px 32px 22px;
+  }
+
+  body[data-text-zoom="200"][data-portal-projection="responsive"] .portal-contract-layer {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: none;
+    gap: clamp(1.15rem, 3vh, 2rem);
+    width: 100%;
+  }
+
+  body[data-text-zoom="200"][data-portal-projection="responsive"]
+    :is(.portal-nav, .portal-signal, .portal-eyebrow, .portal-heading, .portal-route, .portal-audience) {
+    grid-area: auto;
+  }
+
+  body[data-text-zoom="200"][data-portal-projection="responsive"] .portal-heading {
+    font-size: calc(clamp(3.2rem, 5vw, 4.1rem) * var(--text-zoom));
+  }
+
+  body[data-text-zoom="200"][data-portal-projection="responsive"] .portal-route {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 @media (orientation: landscape) and (max-height: 450px) {

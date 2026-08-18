@@ -1,0 +1,1229 @@
+{
+  "schema": "quantum-hub.phase-0-3d-repair-v3.browser-control-recovery.v1",
+  "createdAt": "2026-08-18T10:18:20.349Z",
+  "migrationKind": "stale-repository-native-harness-authority",
+  "reason": "repository-native checkpoint preserved because the pixel/report-producing harness authority changed",
+  "source": {
+    "path": "artifacts/evidence/phase-0-3d-repair-v3/capture-checkpoint.json",
+    "schema": "quantum-hub.phase-0-3d-repair-v3.capture-checkpoint.v2",
+    "status": "complete-local-authority-awaiting-normalization",
+    "bytes": 42286,
+    "sha256": "535009fc4c465854b53eaafc19e0d7cc49145171d300a0a3f29fa2a1796e5a5a"
+  },
+  "preservedCopy": {
+    "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/stale-harness-checkpoint-535009fc4c465854.json",
+    "bytes": 42286,
+    "sha256": "535009fc4c465854b53eaafc19e0d7cc49145171d300a0a3f29fa2a1796e5a5a",
+    "byteIdentical": true
+  },
+  "recoveredRawFiles": [
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-actual--desktop-1280x800.jpg",
+        "bytes": 112003,
+        "sha256": "4831077e55ec9ff667e289e7f582cd00547f396b47fb62c5d9c8e749c039d482"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/hero-actual--desktop-1280x800.jpg",
+        "bytes": 112003,
+        "sha256": "4831077e55ec9ff667e289e7f582cd00547f396b47fb62c5d9c8e749c039d482",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-actual--desktop-1440x900.jpg",
+        "bytes": 114516,
+        "sha256": "94ff74409d5575861a7bbbe3104217b7b57caaaa35e22632d7b7455dff0baf33"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/hero-actual--desktop-1440x900.jpg",
+        "bytes": 114516,
+        "sha256": "94ff74409d5575861a7bbbe3104217b7b57caaaa35e22632d7b7455dff0baf33",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-actual--mobile-360x800.jpg",
+        "bytes": 73470,
+        "sha256": "af654e863e1a1cc9ee0095fb973a286e6d170c8ba0cd1c14efeedc832ac8b22c"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/hero-actual--mobile-360x800.jpg",
+        "bytes": 73470,
+        "sha256": "af654e863e1a1cc9ee0095fb973a286e6d170c8ba0cd1c14efeedc832ac8b22c",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-actual--mobile-390x844.jpg",
+        "bytes": 78061,
+        "sha256": "2b4f19a6677efab91b8a8b1ae68ddb99a835980b9e24008835ddae55490061eb"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/hero-actual--mobile-390x844.jpg",
+        "bytes": 78061,
+        "sha256": "2b4f19a6677efab91b8a8b1ae68ddb99a835980b9e24008835ddae55490061eb",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-actual--mobile-landscape-844x390.jpg",
+        "bytes": 75217,
+        "sha256": "a73024dd1bc8dddf96bcedd374ba27bf0d00713f7688cfd216905d2822e2da3e"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/hero-actual--mobile-landscape-844x390.jpg",
+        "bytes": 75217,
+        "sha256": "a73024dd1bc8dddf96bcedd374ba27bf0d00713f7688cfd216905d2822e2da3e",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-actual--narrow-320x800.jpg",
+        "bytes": 70418,
+        "sha256": "9ede5547f25b414f109116ab74084293c073796e8f1796be84f1d9337d29055b"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/hero-actual--narrow-320x800.jpg",
+        "bytes": 70418,
+        "sha256": "9ede5547f25b414f109116ab74084293c073796e8f1796be84f1d9337d29055b",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-actual--short-desktop-1366x650.jpg",
+        "bytes": 97814,
+        "sha256": "09dc037ae310bf58ba3e06f7aafc4dc437deff510f2a555552deb5be6740f1ed"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/hero-actual--short-desktop-1366x650.jpg",
+        "bytes": 97814,
+        "sha256": "09dc037ae310bf58ba3e06f7aafc4dc437deff510f2a555552deb5be6740f1ed",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-actual--tablet-landscape-1024x768.jpg",
+        "bytes": 104643,
+        "sha256": "6b2c47a1df2a3abbad46536087cc584e56fc4dd31d36c8447ccf065afcb6f4d2"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/hero-actual--tablet-landscape-1024x768.jpg",
+        "bytes": 104643,
+        "sha256": "6b2c47a1df2a3abbad46536087cc584e56fc4dd31d36c8447ccf065afcb6f4d2",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-actual--tablet-portrait-768x1024.jpg",
+        "bytes": 115551,
+        "sha256": "b639bfc1dcdebc331485ebcc8ad876bb4bf69f2da25d8aca82e5cd9a32ce0056"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/hero-actual--tablet-portrait-768x1024.jpg",
+        "bytes": 115551,
+        "sha256": "b639bfc1dcdebc331485ebcc8ad876bb4bf69f2da25d8aca82e5cd9a32ce0056",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-keyboard-focus--desktop-1440x900.jpg",
+        "bytes": 114540,
+        "sha256": "3493dc06a44f92e8d32787a67c6ed107e8f17dcf541e1b99e01470d64002a4ee"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/hero-keyboard-focus--desktop-1440x900.jpg",
+        "bytes": 114540,
+        "sha256": "3493dc06a44f92e8d32787a67c6ed107e8f17dcf541e1b99e01470d64002a4ee",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-long-copy--desktop-1440x900.jpg",
+        "bytes": 120401,
+        "sha256": "057559c8231fa2d53106fa023fa5e0f4eea0e91ec29be1525efb93ed8cbb90c4"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/hero-long-copy--desktop-1440x900.jpg",
+        "bytes": 120401,
+        "sha256": "057559c8231fa2d53106fa023fa5e0f4eea0e91ec29be1525efb93ed8cbb90c4",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-long-copy--mobile-390x844.jpg",
+        "bytes": 87668,
+        "sha256": "bef808ac1a98c86fdf2aff9449a311e5af17ff2657b3fa9b513e93379091e0e5"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/hero-long-copy--mobile-390x844.jpg",
+        "bytes": 87668,
+        "sha256": "bef808ac1a98c86fdf2aff9449a311e5af17ff2657b3fa9b513e93379091e0e5",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-long-copy--mobile-landscape-844x390.jpg",
+        "bytes": 78521,
+        "sha256": "3eff030017606d6726fcfcc5ba9ee0e02109682d386473a8123cb8c002bcdf60"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/hero-long-copy--mobile-landscape-844x390.jpg",
+        "bytes": 78521,
+        "sha256": "3eff030017606d6726fcfcc5ba9ee0e02109682d386473a8123cb8c002bcdf60",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-long-copy--narrow-320x800.jpg",
+        "bytes": 74269,
+        "sha256": "ab2698533471988af12ad06c6e090aa2831c811be7cfe9813c2d1e9403d42b5c"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/hero-long-copy--narrow-320x800.jpg",
+        "bytes": 74269,
+        "sha256": "ab2698533471988af12ad06c6e090aa2831c811be7cfe9813c2d1e9403d42b5c",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-reduced-motion--desktop-1440x900.jpg",
+        "bytes": 104690,
+        "sha256": "3ff88045c4917f77f55f58eca40397acc42af0ba0d06e204259e75d7892b2a6f"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/hero-reduced-motion--desktop-1440x900.jpg",
+        "bytes": 104690,
+        "sha256": "3ff88045c4917f77f55f58eca40397acc42af0ba0d06e204259e75d7892b2a6f",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-reduced-motion--mobile-390x844.jpg",
+        "bytes": 73644,
+        "sha256": "59c2faf8a77ad6a2fd7ceb1b15f92d1b6c25018d7cc4a5e8e40d962e3d1fd280"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/hero-reduced-motion--mobile-390x844.jpg",
+        "bytes": 73644,
+        "sha256": "59c2faf8a77ad6a2fd7ceb1b15f92d1b6c25018d7cc4a5e8e40d962e3d1fd280",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-zoom-200--desktop-1440x900.jpg",
+        "bytes": 154918,
+        "sha256": "81c238d0f6ffcfb9fb67ec46cc0ff883c9f86a9956797bb41cfeb67c1feefc52"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/hero-zoom-200--desktop-1440x900.jpg",
+        "bytes": 154918,
+        "sha256": "81c238d0f6ffcfb9fb67ec46cc0ff883c9f86a9956797bb41cfeb67c1feefc52",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-zoom-200--mobile-390x844.jpg",
+        "bytes": 101990,
+        "sha256": "aa16d661815b78158af3a9dcbe1f89e525e66e9153e52e7abda8624ac90527cd"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/hero-zoom-200--mobile-390x844.jpg",
+        "bytes": 101990,
+        "sha256": "aa16d661815b78158af3a9dcbe1f89e525e66e9153e52e7abda8624ac90527cd",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-zoom-200--mobile-landscape-844x390.jpg",
+        "bytes": 79095,
+        "sha256": "99bed439548f430c97fb8020ac724c48a8f04eb5cf108bc88a5d5687c81e9378"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/hero-zoom-200--mobile-landscape-844x390.jpg",
+        "bytes": 79095,
+        "sha256": "99bed439548f430c97fb8020ac724c48a8f04eb5cf108bc88a5d5687c81e9378",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-zoom-200--narrow-320x800.jpg",
+        "bytes": 77895,
+        "sha256": "7d794e38aef72af7099ab770a6ca955d5b6fe51e7c32aa3b9736c574a50221c8"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/hero-zoom-200--narrow-320x800.jpg",
+        "bytes": 77895,
+        "sha256": "7d794e38aef72af7099ab770a6ca955d5b6fe51e7c32aa3b9736c574a50221c8",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-actual--desktop-1440x900.jpg",
+        "bytes": 81558,
+        "sha256": "8593d0467b40047be052d353ce1cfd0675fce65ce55e155b87b03e7cfe765513"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/portal-actual--desktop-1440x900.jpg",
+        "bytes": 81558,
+        "sha256": "8593d0467b40047be052d353ce1cfd0675fce65ce55e155b87b03e7cfe765513",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-actual--mobile-390x844.jpg",
+        "bytes": 69602,
+        "sha256": "e31609a966046c5e9f198e66178fbb1f8b6bb0bd0310be67346a592836131344"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/portal-actual--mobile-390x844.jpg",
+        "bytes": 69602,
+        "sha256": "e31609a966046c5e9f198e66178fbb1f8b6bb0bd0310be67346a592836131344",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-actual--mobile-landscape-844x390.jpg",
+        "bytes": 73092,
+        "sha256": "956472203e9e0cc0d3dda7d32c69bfea8c7d3c2d8d888355494eba3d46767bd4"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/portal-actual--mobile-landscape-844x390.jpg",
+        "bytes": 73092,
+        "sha256": "956472203e9e0cc0d3dda7d32c69bfea8c7d3c2d8d888355494eba3d46767bd4",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-actual--narrow-320x800.jpg",
+        "bytes": 61282,
+        "sha256": "1b4ed8bb691662ee27c0b7c79a33b80270eee3f5a8fb0c9949e6443e10eb7245"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/portal-actual--narrow-320x800.jpg",
+        "bytes": 61282,
+        "sha256": "1b4ed8bb691662ee27c0b7c79a33b80270eee3f5a8fb0c9949e6443e10eb7245",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-actual--tablet-landscape-1024x768.jpg",
+        "bytes": 97306,
+        "sha256": "c80d5e63ca6b6b62fb74fab47b5233e6abe2ee30dd7a8788dd4373c5509f7235"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/portal-actual--tablet-landscape-1024x768.jpg",
+        "bytes": 97306,
+        "sha256": "c80d5e63ca6b6b62fb74fab47b5233e6abe2ee30dd7a8788dd4373c5509f7235",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-keyboard-focus--mobile-390x844.jpg",
+        "bytes": 70494,
+        "sha256": "30d9b7f7446ada7a008fddab1800ef0883d692ada5c3a6cd6dca9f91206d6f2c"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/portal-keyboard-focus--mobile-390x844.jpg",
+        "bytes": 70494,
+        "sha256": "30d9b7f7446ada7a008fddab1800ef0883d692ada5c3a6cd6dca9f91206d6f2c",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-long-copy--desktop-1440x900.jpg",
+        "bytes": 115863,
+        "sha256": "5063e825c5e707a29fe3d868ed6166202e4049d18cde7b7b9c02a6a3a85d16c2"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/portal-long-copy--desktop-1440x900.jpg",
+        "bytes": 115863,
+        "sha256": "5063e825c5e707a29fe3d868ed6166202e4049d18cde7b7b9c02a6a3a85d16c2",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-long-copy--mobile-390x844.jpg",
+        "bytes": 88546,
+        "sha256": "aaf95902e7029c785b9d093069b3c0eecf8ee1712a505a2532ff3bf3d261051e"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/portal-long-copy--mobile-390x844.jpg",
+        "bytes": 88546,
+        "sha256": "aaf95902e7029c785b9d093069b3c0eecf8ee1712a505a2532ff3bf3d261051e",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-long-copy--mobile-landscape-844x390.jpg",
+        "bytes": 98963,
+        "sha256": "39a0b574ca5a79985603b37f5e4b212a9d4e0c6d4209d1a53442d8b079e4e9d7"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/portal-long-copy--mobile-landscape-844x390.jpg",
+        "bytes": 98963,
+        "sha256": "39a0b574ca5a79985603b37f5e4b212a9d4e0c6d4209d1a53442d8b079e4e9d7",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-long-copy--narrow-320x800.jpg",
+        "bytes": 80779,
+        "sha256": "2471623da27a7fafe025a64d4607398112a1fcaefdceee0280d0bee867c1c793"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/portal-long-copy--narrow-320x800.jpg",
+        "bytes": 80779,
+        "sha256": "2471623da27a7fafe025a64d4607398112a1fcaefdceee0280d0bee867c1c793",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-reduced-motion--desktop-1440x900.jpg",
+        "bytes": 96224,
+        "sha256": "65ba358498a3f86d301bccf0218c2926fe3e5590ad3000b7590ed51cc3fb21af"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/portal-reduced-motion--desktop-1440x900.jpg",
+        "bytes": 96224,
+        "sha256": "65ba358498a3f86d301bccf0218c2926fe3e5590ad3000b7590ed51cc3fb21af",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-reduced-motion--mobile-390x844.jpg",
+        "bytes": 71573,
+        "sha256": "ccdabb6b38f51131ece861920fa6681d2099f82ea2207622b12a521fe6a0f528"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/portal-reduced-motion--mobile-390x844.jpg",
+        "bytes": 71573,
+        "sha256": "ccdabb6b38f51131ece861920fa6681d2099f82ea2207622b12a521fe6a0f528",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-zoom-200--desktop-1440x900.jpg",
+        "bytes": 98301,
+        "sha256": "12cff1c4b1348bcdc17fb0022f91e01ba5ab2bbc1f1fe8e1d55145603d8c23d4"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/portal-zoom-200--desktop-1440x900.jpg",
+        "bytes": 98301,
+        "sha256": "12cff1c4b1348bcdc17fb0022f91e01ba5ab2bbc1f1fe8e1d55145603d8c23d4",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-zoom-200--mobile-390x844.jpg",
+        "bytes": 84580,
+        "sha256": "e0e4c04baa185230f6f1b16d4bf7d2ba7272dbdaa8729da8044ea713ca7f579c"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/portal-zoom-200--mobile-390x844.jpg",
+        "bytes": 84580,
+        "sha256": "e0e4c04baa185230f6f1b16d4bf7d2ba7272dbdaa8729da8044ea713ca7f579c",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-zoom-200--mobile-landscape-844x390.jpg",
+        "bytes": 70080,
+        "sha256": "487d5aa5e1f35b86b693ea09f7ab9de78af687c1ac24bd84d5ac11a8202f8f43"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/portal-zoom-200--mobile-landscape-844x390.jpg",
+        "bytes": 70080,
+        "sha256": "487d5aa5e1f35b86b693ea09f7ab9de78af687c1ac24bd84d5ac11a8202f8f43",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-zoom-200--narrow-320x800.jpg",
+        "bytes": 76158,
+        "sha256": "f21c3935caecfa1625263bac88545f0effcec777e541a10022f253512dcd507c"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/stale-harness-checkpoint-535009fc4c465854/portal-zoom-200--narrow-320x800.jpg",
+        "bytes": 76158,
+        "sha256": "f21c3935caecfa1625263bac88545f0effcec777e541a10022f253512dcd507c",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-repository-native-output"
+    }
+  ],
+  "recoveredCaseReports": [
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-actual--desktop-1280x800.json",
+        "bytes": 46174,
+        "sha256": "5d9d133259d7e2731ddd3f32f2ed00ed22911c85ed382aa929437e6056e0e998"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/hero-actual--desktop-1280x800.json",
+        "bytes": 46174,
+        "sha256": "5d9d133259d7e2731ddd3f32f2ed00ed22911c85ed382aa929437e6056e0e998",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-actual--desktop-1440x900.json",
+        "bytes": 46533,
+        "sha256": "58bebd6020511fa5d607a8f5ac1e4d1ef53c3190065ee3f373c88fddfc1dd4c4"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/hero-actual--desktop-1440x900.json",
+        "bytes": 46533,
+        "sha256": "58bebd6020511fa5d607a8f5ac1e4d1ef53c3190065ee3f373c88fddfc1dd4c4",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-actual--mobile-360x800.json",
+        "bytes": 47024,
+        "sha256": "eeca1614d97d4cb3b25f4081c62f48e7bc0d98986ed58afe8f3785ae0677e01e"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/hero-actual--mobile-360x800.json",
+        "bytes": 47024,
+        "sha256": "eeca1614d97d4cb3b25f4081c62f48e7bc0d98986ed58afe8f3785ae0677e01e",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-actual--mobile-390x844.json",
+        "bytes": 47335,
+        "sha256": "2714f323c1291d107339511642de91b44a64ec5b45e5122d55501a0072b88148"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/hero-actual--mobile-390x844.json",
+        "bytes": 47335,
+        "sha256": "2714f323c1291d107339511642de91b44a64ec5b45e5122d55501a0072b88148",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-actual--mobile-landscape-844x390.json",
+        "bytes": 46383,
+        "sha256": "5eea15626dcaaf6f5cceceb2c2b9514eae510fc95e19fb67138d5cae64cf0888"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/hero-actual--mobile-landscape-844x390.json",
+        "bytes": 46383,
+        "sha256": "5eea15626dcaaf6f5cceceb2c2b9514eae510fc95e19fb67138d5cae64cf0888",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-actual--narrow-320x800.json",
+        "bytes": 47303,
+        "sha256": "d395ff531f4928019518dd4493354f80596eef8d9f4fbd79aa50cbb7748781e7"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/hero-actual--narrow-320x800.json",
+        "bytes": 47303,
+        "sha256": "d395ff531f4928019518dd4493354f80596eef8d9f4fbd79aa50cbb7748781e7",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-actual--short-desktop-1366x650.json",
+        "bytes": 46745,
+        "sha256": "92d7f52ac4eed578613b8aadbcfee9ae7fa85c98bab1d84e26fd62e7c1ed5fa1"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/hero-actual--short-desktop-1366x650.json",
+        "bytes": 46745,
+        "sha256": "92d7f52ac4eed578613b8aadbcfee9ae7fa85c98bab1d84e26fd62e7c1ed5fa1",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-actual--tablet-landscape-1024x768.json",
+        "bytes": 46452,
+        "sha256": "e6cf3fb7e41ea9018ee0a323f78e50d3b16e260da4e29638e98d2bb43314a0f8"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/hero-actual--tablet-landscape-1024x768.json",
+        "bytes": 46452,
+        "sha256": "e6cf3fb7e41ea9018ee0a323f78e50d3b16e260da4e29638e98d2bb43314a0f8",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-actual--tablet-portrait-768x1024.json",
+        "bytes": 46810,
+        "sha256": "c1a7540f6171a72433387ce1c0b8bb2989ebdd8690bcbf6cd450e809bd6dd306"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/hero-actual--tablet-portrait-768x1024.json",
+        "bytes": 46810,
+        "sha256": "c1a7540f6171a72433387ce1c0b8bb2989ebdd8690bcbf6cd450e809bd6dd306",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-keyboard-focus--desktop-1440x900.json",
+        "bytes": 46416,
+        "sha256": "276aeb08849aa008ae65dfa41d90bcd0d500ca45c375f87c95f17e08796970f6"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/hero-keyboard-focus--desktop-1440x900.json",
+        "bytes": 46416,
+        "sha256": "276aeb08849aa008ae65dfa41d90bcd0d500ca45c375f87c95f17e08796970f6",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-long-copy--desktop-1440x900.json",
+        "bytes": 46642,
+        "sha256": "1169beec12fb863ddfa53e8a1f488858ee92428a63bd6e981a2a70200eb1aff7"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/hero-long-copy--desktop-1440x900.json",
+        "bytes": 46642,
+        "sha256": "1169beec12fb863ddfa53e8a1f488858ee92428a63bd6e981a2a70200eb1aff7",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-long-copy--mobile-390x844.json",
+        "bytes": 47396,
+        "sha256": "78e80a8c01e22df377348d3cf68c4195a7076c988451a3c6ad8cd78724a96c45"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/hero-long-copy--mobile-390x844.json",
+        "bytes": 47396,
+        "sha256": "78e80a8c01e22df377348d3cf68c4195a7076c988451a3c6ad8cd78724a96c45",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-long-copy--mobile-landscape-844x390.json",
+        "bytes": 46605,
+        "sha256": "7f87101d6ff95b836280d7506dd73c2d3564338e2f3dcdb3f8cbefbb785fac97"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/hero-long-copy--mobile-landscape-844x390.json",
+        "bytes": 46605,
+        "sha256": "7f87101d6ff95b836280d7506dd73c2d3564338e2f3dcdb3f8cbefbb785fac97",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-long-copy--narrow-320x800.json",
+        "bytes": 46958,
+        "sha256": "59abacd7b213f75065515f967fa872eed385668b1df639112e4633eae6c7ac42"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/hero-long-copy--narrow-320x800.json",
+        "bytes": 46958,
+        "sha256": "59abacd7b213f75065515f967fa872eed385668b1df639112e4633eae6c7ac42",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-long-copy--short-desktop-1366x650.json",
+        "bytes": 44340,
+        "sha256": "c13bd2e0c46f67f83299d2d0a2158987b84fcc9a9e08a4bce922ab156dfe822a"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/hero-long-copy--short-desktop-1366x650.json",
+        "bytes": 44340,
+        "sha256": "c13bd2e0c46f67f83299d2d0a2158987b84fcc9a9e08a4bce922ab156dfe822a",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-reduced-motion--desktop-1440x900.json",
+        "bytes": 46720,
+        "sha256": "115c1363723c81f8e0031309447ed806442d209985c3820c107848caae39b0f8"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/hero-reduced-motion--desktop-1440x900.json",
+        "bytes": 46720,
+        "sha256": "115c1363723c81f8e0031309447ed806442d209985c3820c107848caae39b0f8",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-reduced-motion--mobile-390x844.json",
+        "bytes": 47491,
+        "sha256": "52e4ca0e3b8436f4d2c12c862ce23ab2a44d9dcdc2533b4a18503061f6210430"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/hero-reduced-motion--mobile-390x844.json",
+        "bytes": 47491,
+        "sha256": "52e4ca0e3b8436f4d2c12c862ce23ab2a44d9dcdc2533b4a18503061f6210430",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-reduced-motion--narrow-320x800.json",
+        "bytes": 44803,
+        "sha256": "7e2e52a0dbd157738eb241e7e33465f9f63df0079ca6308091c6359d7d9897ce"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/hero-reduced-motion--narrow-320x800.json",
+        "bytes": 44803,
+        "sha256": "7e2e52a0dbd157738eb241e7e33465f9f63df0079ca6308091c6359d7d9897ce",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-zoom-200--desktop-1440x900.json",
+        "bytes": 46359,
+        "sha256": "ef4ff6ffb0ec8318715746937a93fd82dc7f1e96f642f649d128419ed5c79aeb"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/hero-zoom-200--desktop-1440x900.json",
+        "bytes": 46359,
+        "sha256": "ef4ff6ffb0ec8318715746937a93fd82dc7f1e96f642f649d128419ed5c79aeb",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-zoom-200--mobile-390x844.json",
+        "bytes": 48743,
+        "sha256": "f3045e3a85ad6996791fed3b90fc8a9e41bc2314209540719356c75f8e603d0f"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/hero-zoom-200--mobile-390x844.json",
+        "bytes": 48743,
+        "sha256": "f3045e3a85ad6996791fed3b90fc8a9e41bc2314209540719356c75f8e603d0f",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-zoom-200--mobile-landscape-844x390.json",
+        "bytes": 45938,
+        "sha256": "69e6d62c34679c7a8620973b3f1805eced109e4d106eaf39b014de1874fe49f3"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/hero-zoom-200--mobile-landscape-844x390.json",
+        "bytes": 45938,
+        "sha256": "69e6d62c34679c7a8620973b3f1805eced109e4d106eaf39b014de1874fe49f3",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-zoom-200--narrow-320x800.json",
+        "bytes": 49776,
+        "sha256": "2c7d4e5c7bab9aab9db29aaff4a0edb458e8a21a3e54eeb95adc08003322861b"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/hero-zoom-200--narrow-320x800.json",
+        "bytes": 49776,
+        "sha256": "2c7d4e5c7bab9aab9db29aaff4a0edb458e8a21a3e54eeb95adc08003322861b",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/hero-zoom-200--short-desktop-1366x650.json",
+        "bytes": 43824,
+        "sha256": "fb6f63240f6fa7428e6bd2c67333d1c47d1172e70a5c0c13a4c03d5634817b71"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/hero-zoom-200--short-desktop-1366x650.json",
+        "bytes": 43824,
+        "sha256": "fb6f63240f6fa7428e6bd2c67333d1c47d1172e70a5c0c13a4c03d5634817b71",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-actual--desktop-1280x800.json",
+        "bytes": 18226,
+        "sha256": "154bed308ca08857d8a642921362a16b83ce0547b49f81e9739f76934e16f673"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/portal-actual--desktop-1280x800.json",
+        "bytes": 18226,
+        "sha256": "154bed308ca08857d8a642921362a16b83ce0547b49f81e9739f76934e16f673",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-actual--desktop-1440x900.json",
+        "bytes": 21005,
+        "sha256": "3248be2fb3eefacb9bd9058d513b1c89f3f1399c96562361a67634e5f318a519"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/portal-actual--desktop-1440x900.json",
+        "bytes": 21005,
+        "sha256": "3248be2fb3eefacb9bd9058d513b1c89f3f1399c96562361a67634e5f318a519",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-actual--mobile-360x800.json",
+        "bytes": 17219,
+        "sha256": "884b58cd280afe84f9b3bce85f24d2ee267ae954d4c3bb43924a6a976f18ee7c"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/portal-actual--mobile-360x800.json",
+        "bytes": 17219,
+        "sha256": "884b58cd280afe84f9b3bce85f24d2ee267ae954d4c3bb43924a6a976f18ee7c",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-actual--mobile-390x844.json",
+        "bytes": 19887,
+        "sha256": "9706f99f17a8bb2dca57693b4997934f5fcfce565312792008181db9501bf5b1"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/portal-actual--mobile-390x844.json",
+        "bytes": 19887,
+        "sha256": "9706f99f17a8bb2dca57693b4997934f5fcfce565312792008181db9501bf5b1",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-actual--mobile-landscape-844x390.json",
+        "bytes": 19906,
+        "sha256": "a64528f6c8af2195204d48c28d756cceabfaca3a25bdb3bc16db3a4534616c48"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/portal-actual--mobile-landscape-844x390.json",
+        "bytes": 19906,
+        "sha256": "a64528f6c8af2195204d48c28d756cceabfaca3a25bdb3bc16db3a4534616c48",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-actual--narrow-320x800.json",
+        "bytes": 19869,
+        "sha256": "b2fa1922483e7dd4b6ae3eb8768415e2f695796b7d5b48ee14a1634a1d705d27"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/portal-actual--narrow-320x800.json",
+        "bytes": 19869,
+        "sha256": "b2fa1922483e7dd4b6ae3eb8768415e2f695796b7d5b48ee14a1634a1d705d27",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-actual--short-desktop-1366x650.json",
+        "bytes": 17851,
+        "sha256": "dd2f3a4653c980c747cb0587b26aade97302f93461ffc59bbee8dd8b919b39f2"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/portal-actual--short-desktop-1366x650.json",
+        "bytes": 17851,
+        "sha256": "dd2f3a4653c980c747cb0587b26aade97302f93461ffc59bbee8dd8b919b39f2",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-actual--tablet-landscape-1024x768.json",
+        "bytes": 20102,
+        "sha256": "60a4048de63afc17419f1a45dfbe2c5a1f38c2d8b2f8ea99dfb02fabb6cc20a3"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/portal-actual--tablet-landscape-1024x768.json",
+        "bytes": 20102,
+        "sha256": "60a4048de63afc17419f1a45dfbe2c5a1f38c2d8b2f8ea99dfb02fabb6cc20a3",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-actual--tablet-portrait-768x1024.json",
+        "bytes": 17398,
+        "sha256": "156d34a1e42e6b9a008234c35d4674ec7d9bbdabb84a8991fd97d3e4b9e2ed56"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/portal-actual--tablet-portrait-768x1024.json",
+        "bytes": 17398,
+        "sha256": "156d34a1e42e6b9a008234c35d4674ec7d9bbdabb84a8991fd97d3e4b9e2ed56",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-keyboard-focus--mobile-390x844.json",
+        "bytes": 19931,
+        "sha256": "240a785992ea243d64342871b4f92ef909c9b95504e7d32450c7d614aeb0cced"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/portal-keyboard-focus--mobile-390x844.json",
+        "bytes": 19931,
+        "sha256": "240a785992ea243d64342871b4f92ef909c9b95504e7d32450c7d614aeb0cced",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-long-copy--desktop-1440x900.json",
+        "bytes": 20205,
+        "sha256": "404f1b4382480e048783a6cec28c516141426acd78959eb1f5e1ced055a847dc"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/portal-long-copy--desktop-1440x900.json",
+        "bytes": 20205,
+        "sha256": "404f1b4382480e048783a6cec28c516141426acd78959eb1f5e1ced055a847dc",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-long-copy--mobile-390x844.json",
+        "bytes": 20784,
+        "sha256": "27bcc855aa83fd8d216f2f73e7690752e28daf8baae1d29d9b828e4a499720ce"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/portal-long-copy--mobile-390x844.json",
+        "bytes": 20784,
+        "sha256": "27bcc855aa83fd8d216f2f73e7690752e28daf8baae1d29d9b828e4a499720ce",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-long-copy--mobile-landscape-844x390.json",
+        "bytes": 21237,
+        "sha256": "edba111cc8520304408ee35262927f1a921e68c4d51e1db37b8be77cae667522"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/portal-long-copy--mobile-landscape-844x390.json",
+        "bytes": 21237,
+        "sha256": "edba111cc8520304408ee35262927f1a921e68c4d51e1db37b8be77cae667522",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-long-copy--narrow-320x800.json",
+        "bytes": 21604,
+        "sha256": "d31acbc184785e9b722fb57b69521ed8f1fb5859657be52bac7000fd01e3f6b7"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/portal-long-copy--narrow-320x800.json",
+        "bytes": 21604,
+        "sha256": "d31acbc184785e9b722fb57b69521ed8f1fb5859657be52bac7000fd01e3f6b7",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-long-copy--short-desktop-1366x650.json",
+        "bytes": 19299,
+        "sha256": "1077b79eaa6ff50b33cc08a15030b4eef4ba51cfe81a6e58a54e28666cd8c904"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/portal-long-copy--short-desktop-1366x650.json",
+        "bytes": 19299,
+        "sha256": "1077b79eaa6ff50b33cc08a15030b4eef4ba51cfe81a6e58a54e28666cd8c904",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-reduced-motion--desktop-1440x900.json",
+        "bytes": 48543,
+        "sha256": "336e4450d1d28fdbd894cfdb89823f8da983a43e28d0c4f4a8fd1b0235d195ed"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/portal-reduced-motion--desktop-1440x900.json",
+        "bytes": 48543,
+        "sha256": "336e4450d1d28fdbd894cfdb89823f8da983a43e28d0c4f4a8fd1b0235d195ed",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-reduced-motion--mobile-390x844.json",
+        "bytes": 49228,
+        "sha256": "bd0df43ccdc41535bacb77fc0dbd615f86bad0dfd2155855691967e866bea6eb"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/portal-reduced-motion--mobile-390x844.json",
+        "bytes": 49228,
+        "sha256": "bd0df43ccdc41535bacb77fc0dbd615f86bad0dfd2155855691967e866bea6eb",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-reduced-motion--narrow-320x800.json",
+        "bytes": 45898,
+        "sha256": "a5938bf71398cee3e976a7096955ae1471a2edc7b33da475e477738884a56d76"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/portal-reduced-motion--narrow-320x800.json",
+        "bytes": 45898,
+        "sha256": "a5938bf71398cee3e976a7096955ae1471a2edc7b33da475e477738884a56d76",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-zoom-200--desktop-1440x900.json",
+        "bytes": 20586,
+        "sha256": "cdd01b482bf24decc5a82368535cb2e60cae305e7782a982ac8d348b13bef671"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/portal-zoom-200--desktop-1440x900.json",
+        "bytes": 20586,
+        "sha256": "cdd01b482bf24decc5a82368535cb2e60cae305e7782a982ac8d348b13bef671",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-zoom-200--mobile-390x844.json",
+        "bytes": 20496,
+        "sha256": "7e50f3b5663dbddd76106b0cf6d179af1e5ead6472fd6976c6cf3de5ba3e3639"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/portal-zoom-200--mobile-390x844.json",
+        "bytes": 20496,
+        "sha256": "7e50f3b5663dbddd76106b0cf6d179af1e5ead6472fd6976c6cf3de5ba3e3639",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-zoom-200--mobile-landscape-844x390.json",
+        "bytes": 20322,
+        "sha256": "c48021158734b6cc5460480eed8433d8c8c287688af9d5f92a76505b1ffc8e11"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/portal-zoom-200--mobile-landscape-844x390.json",
+        "bytes": 20322,
+        "sha256": "c48021158734b6cc5460480eed8433d8c8c287688af9d5f92a76505b1ffc8e11",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-zoom-200--narrow-320x800.json",
+        "bytes": 20907,
+        "sha256": "0d08365291233a438ba46065ef737fcc8330c7ddb4935b47e96f913e96910786"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/portal-zoom-200--narrow-320x800.json",
+        "bytes": 20907,
+        "sha256": "0d08365291233a438ba46065ef737fcc8330c7ddb4935b47e96f913e96910786",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/reports/portal-zoom-200--short-desktop-1366x650.json",
+        "bytes": 17781,
+        "sha256": "6c276d1ff6238c976a4bb2473967cfb9a08e20707649fd9c5eace280ef5a3662"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/reports/stale-harness-checkpoint-535009fc4c465854/portal-zoom-200--short-desktop-1366x650.json",
+        "bytes": 17781,
+        "sha256": "6c276d1ff6238c976a4bb2473967cfb9a08e20707649fd9c5eace280ef5a3662",
+        "byteIdentical": true
+      },
+      "authority": "preserved-stale-harness-report"
+    }
+  ],
+  "recoveredMatrix": {
+    "source": {
+      "path": "artifacts/evidence/phase-0-3d-repair-v3/browser-matrix-report.json",
+      "bytes": 1775752,
+      "sha256": "4228dbacfaafad596c99bba5f5834d9768b9aa009e2398d521dc72cec4b25784"
+    },
+    "preservedCopy": {
+      "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/matrices/stale-harness-checkpoint-535009fc4c465854/browser-matrix-report.json",
+      "bytes": 1775752,
+      "sha256": "4228dbacfaafad596c99bba5f5834d9768b9aa009e2398d521dc72cec4b25784",
+      "byteIdentical": true
+    },
+    "retiredFromCanonicalPath": true
+  },
+  "recoveredRawPolicy": "each stale repository-native JPEG is copied byte-for-byte into the deterministic recovery/raw subtree but cannot be promoted or skipped after a harness authority change; every planned authority case must be recaptured and checkpointed against the replacement exact harness authority",
+  "destinationAuthority": "repository-native-playwright",
+  "plan": {
+    "path": "prototypes/phase-0-portal-layout-qa/capture-plan-v3.json",
+    "sha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+    "bytes": 11458
+  },
+  "harness": {
+    "schema": "quantum-hub.phase-0-3d-repair-v3.harness-authority.v1",
+    "cacheToken": "phase03-layout-v11",
+    "sha256": "c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65",
+    "files": [
+      {
+        "path": "prototypes/phase-0-portal-layout-qa/index.html",
+        "bytes": 4873,
+        "sha256": "5a23cfa639cbff0a94e45756cc3604b95b08dfdbf7788c2f22a4236bec7c8ffa"
+      },
+      {
+        "path": "prototypes/phase-0-portal-layout-qa/styles.css",
+        "bytes": 28849,
+        "sha256": "11a7b3846ebd908bec0203b3cd209362eb7ce931ff723554bacb732493f4846c"
+      },
+      {
+        "path": "prototypes/phase-0-portal-layout-qa/app.js",
+        "bytes": 47475,
+        "sha256": "a4215d4ca493d14ca32d3191f0aad8b98c9a30e1bc4b4197ca423962c6d93dfa"
+      },
+      {
+        "path": "prototypes/phase-0-portal-layout-qa/runner.html",
+        "bytes": 961,
+        "sha256": "371c1a26ad98639ab37e854eb8a99bb7d1667eb4deb0c200a923c054fb4e1b80"
+      },
+      {
+        "path": "prototypes/phase-0-portal-layout-qa/runner.css",
+        "bytes": 820,
+        "sha256": "9d72946b2074c1c0729bd12665134ef128287d9b9d3d1d31f7e527fe1edacf04"
+      },
+      {
+        "path": "prototypes/phase-0-portal-layout-qa/runner.js",
+        "bytes": 6191,
+        "sha256": "e9d9d3031c150b973b37531a8d893dc0bf1dff61f50fbfb15a0a153a19beb2a6"
+      }
+    ]
+  }
+}

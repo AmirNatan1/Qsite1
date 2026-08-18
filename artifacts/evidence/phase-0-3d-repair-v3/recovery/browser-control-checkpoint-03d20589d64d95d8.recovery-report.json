@@ -1,0 +1,293 @@
+{
+  "schema": "quantum-hub.phase-0-3d-repair-v3.browser-control-recovery.v1",
+  "createdAt": "2026-08-18T09:54:21.886Z",
+  "reason": "browser-control checkpoint preserved before repository-native Playwright authority migration",
+  "source": {
+    "path": "artifacts/evidence/phase-0-3d-repair-v3/capture-checkpoint.json",
+    "schema": "quantum-hub.phase-0-3d-repair-v3.capture-checkpoint.v1",
+    "status": "recovered-browser-control-partial-pending-local-authority",
+    "bytes": 888478,
+    "sha256": "03d20589d64d95d8a0ba5dbeb04a21d3a9bca56ff15ba02012e3b4428b3d04d3"
+  },
+  "preservedCopy": {
+    "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/browser-control-checkpoint-03d20589d64d95d8.json",
+    "bytes": 888478,
+    "sha256": "03d20589d64d95d8a0ba5dbeb04a21d3a9bca56ff15ba02012e3b4428b3d04d3",
+    "byteIdentical": true
+  },
+  "recoveredRawFiles": [
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-actual--desktop-1280x800.jpg",
+        "bytes": 45594,
+        "sha256": "7fe8cc781d87a11dd964d2c7deb32f4a67b691cd59f709d84ee833ab3e06cf78"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/browser-control-checkpoint-03d20589d64d95d8/hero-actual--desktop-1280x800.jpg",
+        "bytes": 45594,
+        "sha256": "7fe8cc781d87a11dd964d2c7deb32f4a67b691cd59f709d84ee833ab3e06cf78",
+        "byteIdentical": true
+      },
+      "authority": "preserved-untrusted-browser-control-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-actual--desktop-1440x900.jpg",
+        "bytes": 47458,
+        "sha256": "e3ed4c8ef2a21297b84983fee7c84b7c5db90cfe530e5f3e39d19336b0c86faa"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/browser-control-checkpoint-03d20589d64d95d8/hero-actual--desktop-1440x900.jpg",
+        "bytes": 47458,
+        "sha256": "e3ed4c8ef2a21297b84983fee7c84b7c5db90cfe530e5f3e39d19336b0c86faa",
+        "byteIdentical": true
+      },
+      "authority": "preserved-untrusted-browser-control-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-actual--mobile-360x800.jpg",
+        "bytes": 35549,
+        "sha256": "a0008da4555b2e24a70c6128a6331d37076ad2f77977a5b5075bcc699db04627"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/browser-control-checkpoint-03d20589d64d95d8/hero-actual--mobile-360x800.jpg",
+        "bytes": 35549,
+        "sha256": "a0008da4555b2e24a70c6128a6331d37076ad2f77977a5b5075bcc699db04627",
+        "byteIdentical": true
+      },
+      "authority": "preserved-untrusted-browser-control-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-actual--mobile-390x844.jpg",
+        "bytes": 36697,
+        "sha256": "987d6ba77bd5ea12ddd1a9a8a02241f474e1a23567da666ff9c94d4e8b6dfb51"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/browser-control-checkpoint-03d20589d64d95d8/hero-actual--mobile-390x844.jpg",
+        "bytes": 36697,
+        "sha256": "987d6ba77bd5ea12ddd1a9a8a02241f474e1a23567da666ff9c94d4e8b6dfb51",
+        "byteIdentical": true
+      },
+      "authority": "preserved-untrusted-browser-control-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-actual--mobile-landscape-844x390.jpg",
+        "bytes": 73552,
+        "sha256": "4bd47ae289fef932bb6d311b5ab75cbe38fc3f9b5ec08d83b090c010593f4d8a"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/browser-control-checkpoint-03d20589d64d95d8/hero-actual--mobile-landscape-844x390.jpg",
+        "bytes": 73552,
+        "sha256": "4bd47ae289fef932bb6d311b5ab75cbe38fc3f9b5ec08d83b090c010593f4d8a",
+        "byteIdentical": true
+      },
+      "authority": "preserved-untrusted-browser-control-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-actual--narrow-320x800.jpg",
+        "bytes": 34776,
+        "sha256": "3b9d7cd8189a043a21a27933279817f0a7f54b18b9e9bf5adb721951da36b45c"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/browser-control-checkpoint-03d20589d64d95d8/hero-actual--narrow-320x800.jpg",
+        "bytes": 34776,
+        "sha256": "3b9d7cd8189a043a21a27933279817f0a7f54b18b9e9bf5adb721951da36b45c",
+        "byteIdentical": true
+      },
+      "authority": "preserved-untrusted-browser-control-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-actual--short-desktop-1366x650.jpg",
+        "bytes": 41974,
+        "sha256": "ed68731136e86c2f77966030bdd01246cbfe499df67af864964f7bf826067541"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/browser-control-checkpoint-03d20589d64d95d8/hero-actual--short-desktop-1366x650.jpg",
+        "bytes": 41974,
+        "sha256": "ed68731136e86c2f77966030bdd01246cbfe499df67af864964f7bf826067541",
+        "byteIdentical": true
+      },
+      "authority": "preserved-untrusted-browser-control-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-actual--tablet-landscape-1024x768.jpg",
+        "bytes": 43345,
+        "sha256": "4e919503244d4527c8805c66eadba1960016e8283b6f0044c92ffe89a1196c3c"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/browser-control-checkpoint-03d20589d64d95d8/hero-actual--tablet-landscape-1024x768.jpg",
+        "bytes": 43345,
+        "sha256": "4e919503244d4527c8805c66eadba1960016e8283b6f0044c92ffe89a1196c3c",
+        "byteIdentical": true
+      },
+      "authority": "preserved-untrusted-browser-control-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-actual--tablet-portrait-768x1024.jpg",
+        "bytes": 48236,
+        "sha256": "ab7efa083779d8bde268e1c057b6db1775db2eead7c0c34ddd00d12b406760fb"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/browser-control-checkpoint-03d20589d64d95d8/hero-actual--tablet-portrait-768x1024.jpg",
+        "bytes": 48236,
+        "sha256": "ab7efa083779d8bde268e1c057b6db1775db2eead7c0c34ddd00d12b406760fb",
+        "byteIdentical": true
+      },
+      "authority": "preserved-untrusted-browser-control-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-zoom-200--desktop-1440x900.jpg",
+        "bytes": 69064,
+        "sha256": "6b5d489436e992d544a284a558a0928ebbc9cfe186535e160a27d2566cff9097"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/browser-control-checkpoint-03d20589d64d95d8/hero-zoom-200--desktop-1440x900.jpg",
+        "bytes": 69064,
+        "sha256": "6b5d489436e992d544a284a558a0928ebbc9cfe186535e160a27d2566cff9097",
+        "byteIdentical": true
+      },
+      "authority": "preserved-untrusted-browser-control-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-zoom-200--mobile-390x844.jpg",
+        "bytes": 47402,
+        "sha256": "73433c41ed10b245c8d48c75d3d0a1ef838bd9f8d7fa27240e7c7e49ab0fd677"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/browser-control-checkpoint-03d20589d64d95d8/hero-zoom-200--mobile-390x844.jpg",
+        "bytes": 47402,
+        "sha256": "73433c41ed10b245c8d48c75d3d0a1ef838bd9f8d7fa27240e7c7e49ab0fd677",
+        "byteIdentical": true
+      },
+      "authority": "preserved-untrusted-browser-control-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-zoom-200--mobile-landscape-844x390.jpg",
+        "bytes": 38135,
+        "sha256": "53869d79bc9d3f6d6d94c032379bfc9cc8eb3f36e46bf5949483cdfd02bc6373"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/browser-control-checkpoint-03d20589d64d95d8/hero-zoom-200--mobile-landscape-844x390.jpg",
+        "bytes": 38135,
+        "sha256": "53869d79bc9d3f6d6d94c032379bfc9cc8eb3f36e46bf5949483cdfd02bc6373",
+        "byteIdentical": true
+      },
+      "authority": "preserved-untrusted-browser-control-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/hero-zoom-200--narrow-320x800.jpg",
+        "bytes": 38992,
+        "sha256": "63e0245ace250e24f4dfd86d836888f1b4f2c0df3609b6c247842fa4c7e14f23"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/browser-control-checkpoint-03d20589d64d95d8/hero-zoom-200--narrow-320x800.jpg",
+        "bytes": 38992,
+        "sha256": "63e0245ace250e24f4dfd86d836888f1b4f2c0df3609b6c247842fa4c7e14f23",
+        "byteIdentical": true
+      },
+      "authority": "preserved-untrusted-browser-control-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-actual--desktop-1440x900.jpg",
+        "bytes": 45131,
+        "sha256": "47af415475938958b25eda1e3145065528d544a2e45f0a3096ea8350a4fc3445"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/browser-control-checkpoint-03d20589d64d95d8/portal-actual--desktop-1440x900.jpg",
+        "bytes": 45131,
+        "sha256": "47af415475938958b25eda1e3145065528d544a2e45f0a3096ea8350a4fc3445",
+        "byteIdentical": true
+      },
+      "authority": "preserved-untrusted-browser-control-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-actual--mobile-390x844.jpg",
+        "bytes": 33506,
+        "sha256": "5ba864ef6a443ca725156692ccb35b23ee0cbec84d129a14c5449fba1712727c"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/browser-control-checkpoint-03d20589d64d95d8/portal-actual--mobile-390x844.jpg",
+        "bytes": 33506,
+        "sha256": "5ba864ef6a443ca725156692ccb35b23ee0cbec84d129a14c5449fba1712727c",
+        "byteIdentical": true
+      },
+      "authority": "preserved-untrusted-browser-control-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-actual--mobile-landscape-844x390.jpg",
+        "bytes": 35726,
+        "sha256": "4adf45d8815f96e309f20a0095b7b45912ad32dcf2db3d4c0d0f3ddb6cfdcebc"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/browser-control-checkpoint-03d20589d64d95d8/portal-actual--mobile-landscape-844x390.jpg",
+        "bytes": 35726,
+        "sha256": "4adf45d8815f96e309f20a0095b7b45912ad32dcf2db3d4c0d0f3ddb6cfdcebc",
+        "byteIdentical": true
+      },
+      "authority": "preserved-untrusted-browser-control-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-actual--narrow-320x800.jpg",
+        "bytes": 30770,
+        "sha256": "bc9e53581a89b1d94237145d2adc1f95da277fbcb9c98a26387d359c3bc2d6af"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/browser-control-checkpoint-03d20589d64d95d8/portal-actual--narrow-320x800.jpg",
+        "bytes": 30770,
+        "sha256": "bc9e53581a89b1d94237145d2adc1f95da277fbcb9c98a26387d359c3bc2d6af",
+        "byteIdentical": true
+      },
+      "authority": "preserved-untrusted-browser-control-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-actual--tablet-landscape-1024x768.jpg",
+        "bytes": 42916,
+        "sha256": "f5267e431f6ebcc667c995f46b31a3f0ccbe62443e29a0cc4f64be8e676447a0"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/browser-control-checkpoint-03d20589d64d95d8/portal-actual--tablet-landscape-1024x768.jpg",
+        "bytes": 42916,
+        "sha256": "f5267e431f6ebcc667c995f46b31a3f0ccbe62443e29a0cc4f64be8e676447a0",
+        "byteIdentical": true
+      },
+      "authority": "preserved-untrusted-browser-control-output"
+    },
+    {
+      "source": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw/portal-zoom-200--desktop-1440x900.jpg",
+        "bytes": 45213,
+        "sha256": "b7196f7d0436af84af425f7a5fb8911d56e8d87f45bad81233126c077c278e2f"
+      },
+      "preservedCopy": {
+        "path": "artifacts/evidence/phase-0-3d-repair-v3/recovery/raw/browser-control-checkpoint-03d20589d64d95d8/portal-zoom-200--desktop-1440x900.jpg",
+        "bytes": 45213,
+        "sha256": "b7196f7d0436af84af425f7a5fb8911d56e8d87f45bad81233126c077c278e2f",
+        "byteIdentical": true
+      },
+      "authority": "preserved-untrusted-browser-control-output"
+    }
+  ],
+  "recoveredRawPolicy": "each browser-control JPEG is copied byte-for-byte into the deterministic recovery/raw subtree but is not promoted or skipped; every planned authority case must be recaptured and checkpointed by the repository-native runner",
+  "destinationAuthority": "repository-native-playwright",
+  "plan": {
+    "path": "prototypes/phase-0-portal-layout-qa/capture-plan-v3.json",
+    "sha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+    "bytes": 11458
+  }
+}

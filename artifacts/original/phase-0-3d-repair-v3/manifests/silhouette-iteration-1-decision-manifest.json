@@ -1,0 +1,184 @@
+{
+  "schema": "quantum-hub.phase-0-3d-repair-v3.silhouette-decision.v1",
+  "generated_at": "2026-08-18T06:42:51.536054+00:00",
+  "creative_boundary": "original procedural geometry; no reference image or third-party binary consumed",
+  "status": "rejected before refinement; all three families require silhouette repair",
+  "recommended_option": null,
+  "recommendation_reason": "No option clears the non-appliance gate: exposed circular discs, front cable plugs, and plinth language remain.",
+  "anti_pattern_gate": {
+    "appliance": "fail",
+    "monitor": "fail for A",
+    "camera": "fail risk for C",
+    "speaker": "pass",
+    "portal_prop": "fail risk for B",
+    "monument": "fail risk for C",
+    "complete_ring_or_literal_q": "fail: exposed circular bezel dominates every family"
+  },
+  "options": {
+    "A": {
+      "name": "Inclined optical blade",
+      "dimensions_m": {
+        "width": 1.86,
+        "height": 1.24,
+        "depth": 0.72
+      },
+      "cable_entry": "Recessed lower foundation channel, front-right service edge",
+      "portal_approach": "Controlled frontal approach into the protected elliptical recess",
+      "rationale_15_words": "Inclined blade frames protected optics while asymmetric foundations communicate calibrated industrial purpose at architectural scale.",
+      "strongest_risk": "Could become a display slab unless depth, service spine, and ground interface remain unmistakably physical.",
+      "scores": {
+        "uniqueness": 3,
+        "industrial_credibility": 3,
+        "non_appliance_distance": 1,
+        "q_negative_space": 3,
+        "activation_potential": 4,
+        "portal_potential": 4,
+        "orbit_readability": 4,
+        "responsive_readability": 3
+      }
+    },
+    "B": {
+      "name": "Twin-mass calibration station",
+      "dimensions_m": {
+        "width": 1.92,
+        "height": 1.12,
+        "depth": 0.82
+      },
+      "cable_entry": "Protected foundation trench entering beneath the smaller calibration mass",
+      "portal_approach": "Shallow diagonal approach through the optical void between unequal masses",
+      "rationale_15_words": "Unequal twin masses create robust calibration tension, grounding optical exchange within believable serviceable field infrastructure.",
+      "strongest_risk": "May resemble specialized surveying equipment or a paired industrial camera at medium distance.",
+      "scores": {
+        "uniqueness": 3,
+        "industrial_credibility": 4,
+        "non_appliance_distance": 2,
+        "q_negative_space": 3,
+        "activation_potential": 4,
+        "portal_potential": 4,
+        "orbit_readability": 4,
+        "responsive_readability": 3
+      }
+    },
+    "C": {
+      "name": "Cantilevered optical station",
+      "dimensions_m": {
+        "width": 1.78,
+        "height": 1.18,
+        "depth": 0.78
+      },
+      "cable_entry": "Flush rear foundation raceway turning into the sheltered optical bay",
+      "portal_approach": "Off-axis sweep beneath the cantilever before frontal optical alignment",
+      "rationale_15_words": "Cantilevered shell shelters recessed optics, creates dramatic approach, and preserves low anchored silhouette across viewports.",
+      "strongest_risk": "May drift toward a sculptural monument or generic exhibition portal if over-refined.",
+      "scores": {
+        "uniqueness": 4,
+        "industrial_credibility": 3,
+        "non_appliance_distance": 2,
+        "q_negative_space": 3,
+        "activation_potential": 3,
+        "portal_potential": 4,
+        "orbit_readability": 4,
+        "responsive_readability": 3
+      }
+    }
+  },
+  "views": [
+    "front",
+    "side",
+    "top",
+    "three-quarter"
+  ],
+  "sheet": {
+    "path": "review/iterations/iteration-1-aperture-station-silhouette-options.png",
+    "width": 4096,
+    "height": 3700,
+    "bytes": 5538004,
+    "sha256": "d1a62b7429589fdda4a149f124f87f114884fb8bb1b0451d36b1dba808dd02bb"
+  },
+  "source_renders": [
+    {
+      "option": "A",
+      "view": "front",
+      "path": "renders/blockouts-iteration-1/option-a-front.png",
+      "bytes": 621173,
+      "sha256": "ce37024079160999ee169f20849985324297dc05a6e4c33e07bb0b91a9c4a1c0"
+    },
+    {
+      "option": "A",
+      "view": "side",
+      "path": "renders/blockouts-iteration-1/option-a-side.png",
+      "bytes": 430937,
+      "sha256": "b6379240196a1093fca32d68f26a3a14e00f868d2e761c8d058b850c123b592b"
+    },
+    {
+      "option": "A",
+      "view": "top",
+      "path": "renders/blockouts-iteration-1/option-a-top.png",
+      "bytes": 591825,
+      "sha256": "f6a676d676dd170b18a262686dbe0feb2f4098c21a10ca4a2fd83aae78240e36"
+    },
+    {
+      "option": "A",
+      "view": "three-quarter",
+      "path": "renders/blockouts-iteration-1/option-a-three-quarter.png",
+      "bytes": 618274,
+      "sha256": "f094fef388b5c482452f8b1039ef0ebdb4fd85121bc8b9e8393a726f40a83487"
+    },
+    {
+      "option": "B",
+      "view": "front",
+      "path": "renders/blockouts-iteration-1/option-b-front.png",
+      "bytes": 606604,
+      "sha256": "f8ec66ccdf416ce666c1f969b97f8cf62469800cfc14b82042dd465873594616"
+    },
+    {
+      "option": "B",
+      "view": "side",
+      "path": "renders/blockouts-iteration-1/option-b-side.png",
+      "bytes": 422032,
+      "sha256": "cefd28e44c07169162415167f87c2370db73b8f6085207cda3d87b3a177fbf7e"
+    },
+    {
+      "option": "B",
+      "view": "top",
+      "path": "renders/blockouts-iteration-1/option-b-top.png",
+      "bytes": 614082,
+      "sha256": "4ffb69c3efa2e5a7dd2e324053b0dbcbcb1fb79cdfb5bc33a62b60c9d62d0c7e"
+    },
+    {
+      "option": "B",
+      "view": "three-quarter",
+      "path": "renders/blockouts-iteration-1/option-b-three-quarter.png",
+      "bytes": 608133,
+      "sha256": "5075915cdc198bc2a6ee5e4a58a7f3f425dc95e3131fc0da6a29caac9324f660"
+    },
+    {
+      "option": "C",
+      "view": "front",
+      "path": "renders/blockouts-iteration-1/option-c-front.png",
+      "bytes": 611489,
+      "sha256": "acaac03dd1deddc97cc780c3ddf6451c56bdc8d846fd8b7ad0144973b17a5190"
+    },
+    {
+      "option": "C",
+      "view": "side",
+      "path": "renders/blockouts-iteration-1/option-c-side.png",
+      "bytes": 437573,
+      "sha256": "9c74e84e67bdf1e677ffcbfe82527737095f9a226181a3b771eaf0d77a4bdb13"
+    },
+    {
+      "option": "C",
+      "view": "top",
+      "path": "renders/blockouts-iteration-1/option-c-top.png",
+      "bytes": 591438,
+      "sha256": "54f6961feed485b1248ffd9dc6906a1d8214e2fc897f42df10f59ea4719b6590"
+    },
+    {
+      "option": "C",
+      "view": "three-quarter",
+      "path": "renders/blockouts-iteration-1/option-c-three-quarter.png",
+      "bytes": 610728,
+      "sha256": "5018ae284db569abc200aa6bf98bdb5b9a480a6292ac6b19c5aa4af1da1addae"
+    }
+  ]
+}

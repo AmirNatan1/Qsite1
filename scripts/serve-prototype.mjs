@@ -10,6 +10,7 @@ const allowedRoots = [
   join(repositoryRoot, "prototypes", "phase-0-portal-layout-qa"),
   join(repositoryRoot, "artifacts", "original", "phase-0"),
   join(repositoryRoot, "artifacts", "original", "phase-0-3d-repair-v2"),
+  join(repositoryRoot, "artifacts", "original", "phase-0-3d-repair-v3"),
   join(repositoryRoot, "artifacts", "original", "phase-0-3d-repair", "media"),
   join(repositoryRoot, "artifacts", "original", "phase-0-3d-repair", "review"),
 ].map((root) => resolve(root));

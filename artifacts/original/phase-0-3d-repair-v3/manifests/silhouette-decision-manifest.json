@@ -1,0 +1,233 @@
+{
+  "schema": "quantum-hub.phase-0-3d-repair-v3.silhouette-decision.v1",
+  "generated_at": "2026-08-18T07:05:11.996668+00:00",
+  "creative_boundary": "original procedural geometry; no reference image or third-party binary consumed",
+  "status": "iteration-3 pre-refinement recommendation; requires independent and human creative acceptance",
+  "recommended_option": "A",
+  "recommendation_reason": "Option A best balances a non-rectangular blade, offset protected recess, load-bearing service spine, controlled portal approach, and narrow-crop readability.",
+  "anti_pattern_gate": {
+    "appliance": "candidate pass; no rounded cabinet family remains",
+    "monitor": "candidate pass; A uses a non-rectangular load-bearing blade and deep offset negative space",
+    "camera": "candidate pass; no lens, barrel, disc, controls, or exposed plug",
+    "speaker": "pass",
+    "portal_prop": "candidate pass; B remains the strongest freestanding-portal risk for human review",
+    "monument": "candidate pass; C remains the strongest monument risk for human review",
+    "complete_ring_or_literal_q": "candidate pass: apertures are structural, incomplete, offset, and have no applied rim",
+    "presentation_plinth_or_base_rail": "pass: foundations are entirely below grade"
+  },
+  "options": {
+    "A": {
+      "name": "Inclined optical blade",
+      "dimensions_m": {
+        "width": 1.86,
+        "height": 1.24,
+        "depth": 0.72
+      },
+      "cable_entry": "Below-grade rear service raceway disappearing beneath the integrated foundation",
+      "portal_approach": "Controlled frontal approach into the protected elliptical recess",
+      "rationale_15_words": "Inclined blade frames protected optics while asymmetric foundations communicate calibrated industrial purpose at architectural scale.",
+      "strongest_risk": "Could become a display slab unless depth, service spine, and ground interface remain unmistakably physical.",
+      "scores": {
+        "uniqueness": 4,
+        "industrial_credibility": 4,
+        "non_appliance_distance": 4,
+        "q_negative_space": 4,
+        "activation_potential": 4,
+        "portal_potential": 4,
+        "orbit_readability": 4,
+        "responsive_readability": 3
+      }
+    },
+    "B": {
+      "name": "Twin-mass calibration station",
+      "dimensions_m": {
+        "width": 1.92,
+        "height": 1.12,
+        "depth": 0.82
+      },
+      "cable_entry": "Below-grade side trench entering beneath the smaller calibration mass",
+      "portal_approach": "Shallow diagonal approach through the optical void between unequal masses",
+      "rationale_15_words": "Unequal twin masses create robust calibration tension, grounding optical exchange within believable serviceable field infrastructure.",
+      "strongest_risk": "May resemble specialized surveying equipment or a paired industrial camera at medium distance.",
+      "scores": {
+        "uniqueness": 4,
+        "industrial_credibility": 4,
+        "non_appliance_distance": 4,
+        "q_negative_space": 4,
+        "activation_potential": 4,
+        "portal_potential": 4,
+        "orbit_readability": 4,
+        "responsive_readability": 3
+      }
+    },
+    "C": {
+      "name": "Cantilevered optical station",
+      "dimensions_m": {
+        "width": 1.78,
+        "height": 1.18,
+        "depth": 0.78
+      },
+      "cable_entry": "Below-grade rear foundation raceway turning into the sheltered optical bay",
+      "portal_approach": "Off-axis sweep beneath the cantilever before frontal optical alignment",
+      "rationale_15_words": "Cantilevered shell shelters recessed optics, creates dramatic approach, and preserves low anchored silhouette across viewports.",
+      "strongest_risk": "May drift toward a sculptural monument or generic exhibition portal if over-refined.",
+      "scores": {
+        "uniqueness": 5,
+        "industrial_credibility": 4,
+        "non_appliance_distance": 4,
+        "q_negative_space": 4,
+        "activation_potential": 3,
+        "portal_potential": 4,
+        "orbit_readability": 4,
+        "responsive_readability": 3
+      }
+    }
+  },
+  "views": [
+    "front",
+    "side",
+    "top",
+    "three-quarter"
+  ],
+  "sheet": {
+    "path": "review/aperture-station-silhouette-options.png",
+    "width": 4096,
+    "height": 3700,
+    "bytes": 5425822,
+    "sha256": "ba5f1c7ebc700e937e965bd15c866c0329656da1d757b521b28a07b85ea43ee5"
+  },
+  "source_renders": [
+    {
+      "option": "A",
+      "view": "front",
+      "path": "renders/blockouts/option-a-front.png",
+      "bytes": 522467,
+      "sha256": "3fc0d897605f0a7a7506db19c790382a15b5fbde7233bff2a9fa65df1892e241"
+    },
+    {
+      "option": "A",
+      "view": "side",
+      "path": "renders/blockouts/option-a-side.png",
+      "bytes": 352854,
+      "sha256": "74ead20c466f0afa39e57fc1ac760bf0761479bf1cb8512c9d747a6367152c36"
+    },
+    {
+      "option": "A",
+      "view": "top",
+      "path": "renders/blockouts/option-a-top.png",
+      "bytes": 518336,
+      "sha256": "6e765f7dda996cdaa61fac4089ffab3f0d94282601abd303d679b73ec981dead"
+    },
+    {
+      "option": "A",
+      "view": "three-quarter",
+      "path": "renders/blockouts/option-a-three-quarter.png",
+      "bytes": 502116,
+      "sha256": "42551f6c5dd629dcee7c3238cd94589ca7370cdd9cc257c35333237035b775c6"
+    },
+    {
+      "option": "B",
+      "view": "front",
+      "path": "renders/blockouts/option-b-front.png",
+      "bytes": 514668,
+      "sha256": "1e7593493dd9b4bd3ab5e5494d6601ffcee93e170bfd488732e2818ece440ac2"
+    },
+    {
+      "option": "B",
+      "view": "side",
+      "path": "renders/blockouts/option-b-side.png",
+      "bytes": 342379,
+      "sha256": "5cac2142988ff7216f6412dd5f23b56f761c056394cf3d78fca304532b710abc"
+    },
+    {
+      "option": "B",
+      "view": "top",
+      "path": "renders/blockouts/option-b-top.png",
+      "bytes": 516468,
+      "sha256": "8beb09b0002b160746140247e3e404a7bc2cdd4c48351f45bf43f3a60d08d38a"
+    },
+    {
+      "option": "B",
+      "view": "three-quarter",
+      "path": "renders/blockouts/option-b-three-quarter.png",
+      "bytes": 505257,
+      "sha256": "e9dc97b8139f6c6fdccf81e2bc0606f0b172474876f96604b17425f6483d85e5"
+    },
+    {
+      "option": "C",
+      "view": "front",
+      "path": "renders/blockouts/option-c-front.png",
+      "bytes": 525372,
+      "sha256": "f52084774acb4a098f861f6f4431348cd2a2af85eb63f73eefa53b4c9026d06a"
+    },
+    {
+      "option": "C",
+      "view": "side",
+      "path": "renders/blockouts/option-c-side.png",
+      "bytes": 355786,
+      "sha256": "5336b470bad817f24318ef80cabc00c49308fe8d83d42c6d2a909b75c932dc14"
+    },
+    {
+      "option": "C",
+      "view": "top",
+      "path": "renders/blockouts/option-c-top.png",
+      "bytes": 496316,
+      "sha256": "873634b93bd58313c2ca1464dbeec427b2e28f86833e3ca0185c2e1fefa0ca80"
+    },
+    {
+      "option": "C",
+      "view": "three-quarter",
+      "path": "renders/blockouts/option-c-three-quarter.png",
+      "bytes": 505452,
+      "sha256": "dd8b04a6ccf449e4a7f0eb624a55d1f9e9b6f561f016420baeea8d863e6a79d2"
+    }
+  ],
+  "mobile_crop_proofs": [
+    {
+      "option": "A",
+      "source_path": "renders/blockouts/option-a-three-quarter.png",
+      "source_crop_box_after_panel_fit": [
+        294,
+        0,
+        606,
+        675
+      ],
+      "proof_dimensions": [
+        152,
+        330
+      ],
+      "derivation": "central portrait crop of the three-quarter blockout; review proof only, not browser output"
+    },
+    {
+      "option": "B",
+      "source_path": "renders/blockouts/option-b-three-quarter.png",
+      "source_crop_box_after_panel_fit": [
+        294,
+        0,
+        606,
+        675
+      ],
+      "proof_dimensions": [
+        152,
+        330
+      ],
+      "derivation": "central portrait crop of the three-quarter blockout; review proof only, not browser output"
+    },
+    {
+      "option": "C",
+      "source_path": "renders/blockouts/option-c-three-quarter.png",
+      "source_crop_box_after_panel_fit": [
+        294,
+        0,
+        606,
+        675
+      ],
+      "proof_dimensions": [
+        152,
+        330
+      ],
+      "derivation": "central portrait crop of the three-quarter blockout; review proof only, not browser output"
+    }
+  ],
+  "generated_at_utc": "2026-08-18T10:29:17.454019+00:00"
+}

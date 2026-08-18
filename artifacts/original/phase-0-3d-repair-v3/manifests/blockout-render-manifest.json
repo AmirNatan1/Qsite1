@@ -1,0 +1,127 @@
+{
+  "schema": "quantum-hub.phase-0-3d-repair-v3.blockout-renders.v1",
+  "generated_at": "2026-08-18T07:04:36.951363+00:00",
+  "source": {
+    "path": "source/quantum-aperture-station-v3-blockouts.blend",
+    "bytes": 121240,
+    "sha256": "dc3cd4e1eba70150b73013d00727fb072213a4017df4efbc80bb8ebea81d1932"
+  },
+  "engine": "BLENDER_EEVEE",
+  "resolution": {
+    "width": 1024,
+    "height": 768
+  },
+  "external_assets": false,
+  "dormant_emission": 0.0,
+  "records": [
+    {
+      "option": "A",
+      "view": "front",
+      "path": "renders/blockouts/option-a-front.png",
+      "width": 1024,
+      "height": 768,
+      "bytes": 522467,
+      "sha256": "3fc0d897605f0a7a7506db19c790382a15b5fbde7233bff2a9fa65df1892e241"
+    },
+    {
+      "option": "A",
+      "view": "side",
+      "path": "renders/blockouts/option-a-side.png",
+      "width": 1024,
+      "height": 768,
+      "bytes": 352854,
+      "sha256": "74ead20c466f0afa39e57fc1ac760bf0761479bf1cb8512c9d747a6367152c36"
+    },
+    {
+      "option": "A",
+      "view": "top",
+      "path": "renders/blockouts/option-a-top.png",
+      "width": 1024,
+      "height": 768,
+      "bytes": 518336,
+      "sha256": "6e765f7dda996cdaa61fac4089ffab3f0d94282601abd303d679b73ec981dead"
+    },
+    {
+      "option": "A",
+      "view": "three-quarter",
+      "path": "renders/blockouts/option-a-three-quarter.png",
+      "width": 1024,
+      "height": 768,
+      "bytes": 502116,
+      "sha256": "42551f6c5dd629dcee7c3238cd94589ca7370cdd9cc257c35333237035b775c6"
+    },
+    {
+      "option": "B",
+      "view": "front",
+      "path": "renders/blockouts/option-b-front.png",
+      "width": 1024,
+      "height": 768,
+      "bytes": 514668,
+      "sha256": "1e7593493dd9b4bd3ab5e5494d6601ffcee93e170bfd488732e2818ece440ac2"
+    },
+    {
+      "option": "B",
+      "view": "side",
+      "path": "renders/blockouts/option-b-side.png",
+      "width": 1024,
+      "height": 768,
+      "bytes": 342379,
+      "sha256": "5cac2142988ff7216f6412dd5f23b56f761c056394cf3d78fca304532b710abc"
+    },
+    {
+      "option": "B",
+      "view": "top",
+      "path": "renders/blockouts/option-b-top.png",
+      "width": 1024,
+      "height": 768,
+      "bytes": 516468,
+      "sha256": "8beb09b0002b160746140247e3e404a7bc2cdd4c48351f45bf43f3a60d08d38a"
+    },
+    {
+      "option": "B",
+      "view": "three-quarter",
+      "path": "renders/blockouts/option-b-three-quarter.png",
+      "width": 1024,
+      "height": 768,
+      "bytes": 505257,
+      "sha256": "e9dc97b8139f6c6fdccf81e2bc0606f0b172474876f96604b17425f6483d85e5"
+    },
+    {
+      "option": "C",
+      "view": "front",
+      "path": "renders/blockouts/option-c-front.png",
+      "width": 1024,
+      "height": 768,
+      "bytes": 525372,
+      "sha256": "f52084774acb4a098f861f6f4431348cd2a2af85eb63f73eefa53b4c9026d06a"
+    },
+    {
+      "option": "C",
+      "view": "side",
+      "path": "renders/blockouts/option-c-side.png",
+      "width": 1024,
+      "height": 768,
+      "bytes": 355786,
+      "sha256": "5336b470bad817f24318ef80cabc00c49308fe8d83d42c6d2a909b75c932dc14"
+    },
+    {
+      "option": "C",
+      "view": "top",
+      "path": "renders/blockouts/option-c-top.png",
+      "width": 1024,
+      "height": 768,
+      "bytes": 496316,
+      "sha256": "873634b93bd58313c2ca1464dbeec427b2e28f86833e3ca0185c2e1fefa0ca80"
+    },
+    {
+      "option": "C",
+      "view": "three-quarter",
+      "path": "renders/blockouts/option-c-three-quarter.png",
+      "width": 1024,
+      "height": 768,
+      "bytes": 505452,
+      "sha256": "dd8b04a6ccf449e4a7f0eb624a55d1f9e9b6f561f016420baeea8d863e6a79d2"
+    }
+  ],
+  "generated_at_utc": "2026-08-18T10:29:17.216910+00:00"
+}

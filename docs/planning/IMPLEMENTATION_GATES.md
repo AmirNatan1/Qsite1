@@ -4,7 +4,7 @@ Status: binding delivery and human-review contract
 Current authorization: Phase 0 only
 Current branch: `planning/phase-0-reconciliation`
 Production branch: `main` (must not change during Phase 0)
-Current evidence state: keepout-aware Phase 0.2 v12 browser matrix and exact 12-image review bundle complete locally; all 36 normalized sources directly audited at full size; immutable pushed candidate, Cloudflare verification, clean-tree handoff, and human creative review pending
+Current evidence state: Phase 0.2 package remains frozen; authoritative Phase 0.3 matrix, exact 13-PNG review bundle, validation, sanitation, inventory, complete checks, and static build pass locally; immutable pushed candidate, Cloudflare verification, clean-tree handoff, and human creative review pending
 
 ## Gate principle
 
@@ -21,6 +21,7 @@ The active Phase 0 authorization permits:
 - the authorized per-user portable Blender 5.2.0 LTS and FFmpeg/ffprobe 9.0.1 toolchain for offline Phase 0 production only;
 - an original Blender-authored Field Unit, proving environment, genuine-content animatic, encoded-media comparison, and compact creative-review package;
 - an additive still-only Phase 0.2 Field Unit design, shared portal-layout, responsive typography, and exact-viewport browser-evidence repair;
+- an additive still-only Phase 0.3 Aperture Station, whole-word portal typography, reduced-motion composition, and repository-native browser-evidence repair;
 - relevant tests, build, commit, push, and Cloudflare branch-preview verification.
 
 It does not permit:
@@ -282,6 +283,27 @@ The exact hashes and quantitative results are read from the final manifests. Che
 - [x] `scripts/verify-phase0-3d-repair-v2-assets.mjs` and `scripts/verify-phase0-3d-repair-v2-layout.mjs` pass against the final review bundle and v12 browser matrix; the capture normalizer also passes independently.
 - [x] The complete `npm run check` chain passes with Astro diagnostics 0/0/0, 13/13 Node tests, and all creative/layout integrity gates; `npm run build` produces one static route and 11 files totaling 9,333,433 bytes with no server runtime.
 - [ ] Human creative review accepts the Field Unit silhouette/materials, proving-ground composition, activation sequence, portal crossover, hero typography, responsive layouts, and reduced-motion stills.
+
+These checks do not authorize Phase 1, production cinematic integration, a production-branch change, or a production deployment.
+
+### Phase 0.3 Aperture Station portal and typography evidence — 18 August 2026
+
+- [x] The preserved portal-layout authority remains byte-identical at SHA-256 `25666cf071afe7564dc051cbec770ead325cdf19ef1f4926e43d793a2a053bc5`; Phase 0.3 does not rewrite its copy, coordinates, anchor tolerance, carrier stages, audience paths, or 12px glyph/rule clearance.
+- [x] The provenance-released v3 scene ledger and Blender-derived keepout authority are bound by exact path, dimensions, bytes, and SHA-256. Mobile and reduced-mobile use the independently authored 2.25-turn cable and record 2.171694 visible turns against the 2.15 minimum.
+- [x] The authoritative matrix (`8272764a01ac18b4aed7b8b0ebffdca812a5f235e51d6c2c2ea6ae744c6ac4fc`; 1,785,125 bytes; generated `2026-08-18T10:20:47.772Z`) passes 46/46 runner and child reports with 36/36 raw-plus-normalized visual lineages.
+- [x] All 36 normalized captures were opened and audited at full target size. No unresolved scale/crop race, clipped or fragmented word, neutral-focus residue, opaque rounded copy panel, Aperture Station/cable collision, rule collision, horizontal truncation, or partial-layer defect remains.
+- [x] Every case has a populated human line-break report and zero word-fragmentation offenders. Page/route horizontal overflow, text-offender, collision, target-size, rule-clearance, divider, semantic, scene-readiness, doubled-copy, and fallback-font gates all pass.
+- [x] All 26 applicable source-derived Aperture Station/cable scene-safety cases record zero semantic-copy intersections. Hero actual/reduced/focus compositions retain the intended visible scene; zoom/long and reduced-portal stress states displace decoration without shrinking semantic text.
+- [x] Six reduced-motion cases instantiate no animated media and report zero large floating rounded-panel offenders. Reduced hero evidence retains the dormant Station/cable; reduced portal evidence uses the permitted directional full-frame scrim.
+- [x] Focus measurement restores or clears temporary audit focus. Forty-four neutral cases bind no active review control; explicit hero and portal focus cases bind the requested first audience control and preserve a visible 3px warm-magenta outline.
+- [x] The repository-native capture runner binds plan SHA-256 `26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5` and six-file harness SHA-256 `c306bd2b33cbc116c60e6171ebf6f1e47a29892d7d8ef57697292d379e178d65` (`phase03-layout-v11`). A harness change invalidates resume only after byte-preserving the old checkpoint, raw images, reports, and matrix in `recovery/`.
+- [x] Every visual case used 11 successive full-page JPEGs and a unique exact-byte modal winner; observed minimum 10/11, zero weak cases, zero ties, zero discarded rounds, and no timing-only stability claim. Eleven normalized captures declare Lanczos restoration and 25 declare no resampling.
+- [x] `scripts/verify-phase0-3d-repair-v3-layout.mjs` and `python scripts/normalize-phase03-captures.py --check` pass against the current matrix and its exact harness/capture authority.
+- [x] The exact 13-PNG v3 review bundle is complete. The four browser-derived sheets match the sealed normalized captures through `browser-review-composition-manifest.json` SHA-256 `f5a7f5908aee8b65969fcbaf3d5143dd8d52a0b7be3ca2f26565a6153279e074`; `review-originals-manifest.json` SHA-256 is `1783a3e2218bf93150807b10ca27db9edd217520832880f076b1d04d89cb493b`; `review-bundle-manifest.json` SHA-256 is `8a73fc5eae08a405f8a96cc2d93dc3fd30b888d77da2fa5d4feec377260fe3fe`.
+- [x] The final `blender-source-validation.json` is 6,193 bytes, SHA-256 `9f1f3ddc4ac0c4b8b9e10c749b805decbfa3be76cadda2fccdce2c2e5174bb91`, and the exact final Blender validator rerun passes 13/13 checks.
+- [x] PNG sanitation SHA-256 `bba8b813f18d4a332067982696a68bd44c57bc0a9664ee15f175fe7b14c866bb` accounts for 83/83 PNGs; package inventory SHA-256 is `ec8fc58217b80be850be9fe98a94a549ea8cf5d83eea00883fb6a66654d46104`.
+- [x] Final `npm run check` passes with Astro diagnostics 0/0/0, 13/13 Node tests, and all creative/layout/integrity verifiers; `npm run build` produces one static page and 11 files totaling 9,333,433 bytes with no server runtime.
+- [ ] Human creative review accepts the Aperture Station, cable, portal typography, responsive hero layouts, and reduced-motion compositions.
 
 These checks do not authorize Phase 1, production cinematic integration, a production-branch change, or a production deployment.
 

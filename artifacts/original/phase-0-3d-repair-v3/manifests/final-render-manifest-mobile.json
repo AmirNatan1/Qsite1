@@ -1,0 +1,81 @@
+{
+  "schema": "quantum-hub.phase-0-3d-repair-v3.final-still-renders.v1",
+  "generated_at_utc": "2026-08-18T10:29:17.370994+00:00",
+  "source": "source/quantum-aperture-station-v3.blend",
+  "source_sha256": "5dde7731b366a1fd19f8f3cc93d338754b9536c6141b2819f4c123bc1a2af676",
+  "portal_layout_sha256": "25666cf071afe7564dc051cbec770ead325cdf19ef1f4926e43d793a2a053bc5",
+  "blender_version": "5.2.0 LTS",
+  "blender_build_hash": "fbe6228777e7",
+  "engine": "BLENDER_EEVEE",
+  "sampling": "64 EEVEE temporal AA samples and 64 volumetric samples; selected still gate",
+  "taa_render_samples": 64,
+  "volumetric_samples": 64,
+  "render_scale": 1.0,
+  "still_only": true,
+  "full_animatic": false,
+  "camera_study_arc_degrees": 28,
+  "camera_checkpoint_count": 5,
+  "mechanical_response_count": 1,
+  "mechanical_response": "internal iris only",
+  "original_artwork": true,
+  "reference_binary_used": false,
+  "renders": [
+    {
+      "group": "hero",
+      "name": "mobile-dormant-base",
+      "path": "renders/hero/mobile-dormant-base.png",
+      "camera": "Camera_MobileHero",
+      "state": {
+        "conduction": 0.0,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "cable_composition": "portrait-authored-2.25-turn",
+      "width": 720,
+      "height": 1600,
+      "bytes": 756110,
+      "sha256": "fc21b85a1e56818ff8cd58ad6fdcf96368103d3219426bff2805c43c951fc7ed"
+    },
+    {
+      "group": "hero",
+      "name": "mobile-mid-base",
+      "path": "renders/hero/mobile-mid-base.png",
+      "camera": "Camera_MobileHero",
+      "state": {
+        "conduction": 0.56,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "cable_composition": "portrait-authored-2.25-turn",
+      "width": 720,
+      "height": 1600,
+      "bytes": 755118,
+      "sha256": "ccc7b417bc07be446e3f7a40c19a45db3df4475629d912b0a08f6a3b23d1b648"
+    },
+    {
+      "group": "hero",
+      "name": "reduced-mobile-base",
+      "path": "renders/hero/reduced-mobile-base.png",
+      "camera": "Camera_MobileHero",
+      "state": {
+        "conduction": 0.0,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "cable_composition": "portrait-authored-2.25-turn",
+      "width": 720,
+      "height": 1600,
+      "bytes": 756110,
+      "sha256": "fc21b85a1e56818ff8cd58ad6fdcf96368103d3219426bff2805c43c951fc7ed"
+    }
+  ]
+}

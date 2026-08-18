@@ -1,0 +1,575 @@
+{
+  "schema": "quantum-hub.phase-0-3d-repair-v3.browser-review-composition.v1",
+  "generated_at_utc": "2026-08-18T10:26:00.633359+00:00",
+  "browser_matrix": {
+    "path": "artifacts/evidence/phase-0-3d-repair-v3/browser-matrix-report.json",
+    "schema": "quantum-hub.phase-0-3d-repair-v3.typography-collision-matrix.v1",
+    "sha256": "8272764a01ac18b4aed7b8b0ebffdca812a5f235e51d6c2c2ea6ae744c6ac4fc",
+    "bytes": 1785125,
+    "cases_total": 46,
+    "cases_passed": 46,
+    "normalized_capture_count": 36,
+    "font_mode": "forced metric-conscious system fallbacks"
+  },
+  "pixel_policy": {
+    "compositor_capture_scale": 1.0,
+    "compositor_resampled": false,
+    "repainted": false,
+    "labels_overlap_capture_pixels": false,
+    "source_normalization": "per-source capture normalization is copied verbatim from the browser matrix; wide evidence may use the matrix-declared Lanczos restoration"
+  },
+  "records": [
+    {
+      "path": "review/portal-typography-v3-sheet.png",
+      "repositoryPath": "artifacts/original/phase-0-3d-repair-v3/review/portal-typography-v3-sheet.png",
+      "width": 3300,
+      "height": 2500,
+      "bytes": 1109267,
+      "sha256": "ff91c67b70b0d6535e0be881f5de117e07a2cdd383449002d8589bd9cf5072cb",
+      "purpose": "Five exact responsive portal viewports proving whole-word semantic typography",
+      "derivation": "normalized browser rasters pasted 1:1 with no additional compositor resampling or repainting; each source records its matrix normalization lineage",
+      "sources": [
+        {
+          "captureId": "portal-actual--desktop-1440x900",
+          "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/normalized/portal-actual--desktop-1440x900.png",
+          "sha256": "b5a8bf1b27f175dace9fce2091d55b5386eb73c7c6c118a5f4205b98a6f361d7",
+          "bytes": 279261,
+          "width": 1440,
+          "height": 900,
+          "normalization": {
+            "method": "top-left-crop-lanczos-resample",
+            "origin": {
+              "x": 0,
+              "y": 0
+            },
+            "sourceCrop": {
+              "width": 1200,
+              "height": 750
+            },
+            "captureScale": 0.8333333333333334,
+            "resampled": true,
+            "resampleFilter": "Lanczos",
+            "sourceRawSha256": "3dfd1e6e9e3dde5b7be413a906bb964bbef5f1d6286d197f077f21dca4082b6f"
+          },
+          "matrixPass": true
+        },
+        {
+          "captureId": "portal-actual--tablet-landscape-1024x768",
+          "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/normalized/portal-actual--tablet-landscape-1024x768.png",
+          "sha256": "50452d6e09c00d2ece169d5469cc6f8516b1cae41f2a1c7f460acf12375a963b",
+          "bytes": 235965,
+          "width": 1024,
+          "height": 768,
+          "normalization": {
+            "method": "top-left-crop-no-resample",
+            "origin": {
+              "x": 0,
+              "y": 0
+            },
+            "sourceCrop": {
+              "width": 1024,
+              "height": 768
+            },
+            "captureScale": 1.0,
+            "resampled": false,
+            "resampleFilter": null,
+            "sourceRawSha256": "7c015d1b4bebd8d4489bb3c8dec5300900db2d3aa4a9e9a698b4f0cb40610ddd"
+          },
+          "matrixPass": true
+        },
+        {
+          "captureId": "portal-actual--mobile-390x844",
+          "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/normalized/portal-actual--mobile-390x844.png",
+          "sha256": "e4df3693730252747295b2df40df68daab9b477ff6a9f359c282da6554f8dc4d",
+          "bytes": 170151,
+          "width": 390,
+          "height": 844,
+          "normalization": {
+            "method": "top-left-crop-no-resample",
+            "origin": {
+              "x": 0,
+              "y": 0
+            },
+            "sourceCrop": {
+              "width": 390,
+              "height": 844
+            },
+            "captureScale": 1.0,
+            "resampled": false,
+            "resampleFilter": null,
+            "sourceRawSha256": "9353db7d648b519ad0cabb257f68b7769cf15861168c7960f648dae8d9aca408"
+          },
+          "matrixPass": true
+        },
+        {
+          "captureId": "portal-actual--narrow-320x800",
+          "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/normalized/portal-actual--narrow-320x800.png",
+          "sha256": "260799bc9a557d7e98f6be86bd2b005ed2f0b73660eb6556ddebf6d672335405",
+          "bytes": 145954,
+          "width": 320,
+          "height": 800,
+          "normalization": {
+            "method": "top-left-crop-no-resample",
+            "origin": {
+              "x": 0,
+              "y": 0
+            },
+            "sourceCrop": {
+              "width": 320,
+              "height": 800
+            },
+            "captureScale": 1.0,
+            "resampled": false,
+            "resampleFilter": null,
+            "sourceRawSha256": "a8c99426e8708913d937d90b00c518957d84b82f849b744f084faf8adf9fc7c5"
+          },
+          "matrixPass": true
+        },
+        {
+          "captureId": "portal-actual--mobile-landscape-844x390",
+          "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/normalized/portal-actual--mobile-landscape-844x390.png",
+          "sha256": "91bc88013fdd6baed22c3470372ff02454729be05ac6688d98cb4bbfd185a922",
+          "bytes": 181930,
+          "width": 844,
+          "height": 390,
+          "normalization": {
+            "method": "top-left-crop-no-resample",
+            "origin": {
+              "x": 0,
+              "y": 0
+            },
+            "sourceCrop": {
+              "width": 844,
+              "height": 390
+            },
+            "captureScale": 1.0,
+            "resampled": false,
+            "resampleFilter": null,
+            "sourceRawSha256": "8d0b01b88eff308f657d291083f37991e6df7f378a0f714e560ed3f325bee237"
+          },
+          "matrixPass": true
+        }
+      ]
+    },
+    {
+      "path": "review/desktop-hero-composition-v3.png",
+      "repositoryPath": "artifacts/original/phase-0-3d-repair-v3/review/desktop-hero-composition-v3.png",
+      "width": 3060,
+      "height": 3210,
+      "bytes": 1905461,
+      "sha256": "57b6e673ad8208472715c9b4dcb425330d06b9ffc18b95436e7a9d35d62e057c",
+      "purpose": "Five exact desktop and tablet hero viewports composed from normalized browser captures",
+      "derivation": "normalized browser rasters pasted 1:1 with no additional compositor resampling or repainting; each source records its matrix normalization lineage",
+      "sources": [
+        {
+          "captureId": "hero-actual--desktop-1440x900",
+          "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/normalized/hero-actual--desktop-1440x900.png",
+          "sha256": "7f516e771feaeaf4a7b2cb54670ffbc09d905fc25a0076ec278ae77f16459fae",
+          "bytes": 449502,
+          "width": 1440,
+          "height": 900,
+          "normalization": {
+            "method": "top-left-crop-lanczos-resample",
+            "origin": {
+              "x": 0,
+              "y": 0
+            },
+            "sourceCrop": {
+              "width": 1200,
+              "height": 750
+            },
+            "captureScale": 0.8333333333333334,
+            "resampled": true,
+            "resampleFilter": "Lanczos",
+            "sourceRawSha256": "5b7a50a32673de5a53fbf441c9432e751a2455b0a64c7598a849ef39b552239c"
+          },
+          "matrixPass": true
+        },
+        {
+          "captureId": "hero-actual--short-desktop-1366x650",
+          "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/normalized/hero-actual--short-desktop-1366x650.png",
+          "sha256": "3023ee2f1686ceac92b72a2c1b52a4f9476233fb48d3ec951259b32db8158b6a",
+          "bytes": 364346,
+          "width": 1366,
+          "height": 650,
+          "normalization": {
+            "method": "top-left-crop-lanczos-resample",
+            "origin": {
+              "x": 0,
+              "y": 0
+            },
+            "sourceCrop": {
+              "width": 1200,
+              "height": 571
+            },
+            "captureScale": 0.8784773060029283,
+            "resampled": true,
+            "resampleFilter": "Lanczos",
+            "sourceRawSha256": "4497d267dd001d38470ab6df62782b1c06e5673300253772b4eac32b1055d22e"
+          },
+          "matrixPass": true
+        },
+        {
+          "captureId": "hero-actual--desktop-1280x800",
+          "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/normalized/hero-actual--desktop-1280x800.png",
+          "sha256": "2842b295ffdc9a9539346a4881d5fb1546cac41467ddbe6d0ceea5a5465a0c75",
+          "bytes": 387695,
+          "width": 1280,
+          "height": 800,
+          "normalization": {
+            "method": "top-left-crop-lanczos-resample",
+            "origin": {
+              "x": 0,
+              "y": 0
+            },
+            "sourceCrop": {
+              "width": 1200,
+              "height": 750
+            },
+            "captureScale": 0.9375,
+            "resampled": true,
+            "resampleFilter": "Lanczos",
+            "sourceRawSha256": "b8dd6c045f5d43569c675b76191c472228ac629f48dc16333252fb5216038a8b"
+          },
+          "matrixPass": true
+        },
+        {
+          "captureId": "hero-actual--tablet-landscape-1024x768",
+          "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/normalized/hero-actual--tablet-landscape-1024x768.png",
+          "sha256": "203dd5af313ba2e43931d81da8c2f42a52b41ea7f0ed156929a7c1c84df79544",
+          "bytes": 300660,
+          "width": 1024,
+          "height": 768,
+          "normalization": {
+            "method": "top-left-crop-no-resample",
+            "origin": {
+              "x": 0,
+              "y": 0
+            },
+            "sourceCrop": {
+              "width": 1024,
+              "height": 768
+            },
+            "captureScale": 1.0,
+            "resampled": false,
+            "resampleFilter": null,
+            "sourceRawSha256": "0120e2e29833b4334aea7feee1d6f210e6e1b2a72d4470bd1d09af18fed70029"
+          },
+          "matrixPass": true
+        },
+        {
+          "captureId": "hero-actual--tablet-portrait-768x1024",
+          "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/normalized/hero-actual--tablet-portrait-768x1024.png",
+          "sha256": "936bd98c6ec2afb60019f56b1a2a321046d7565fd08f1719a80db4e9a114c17c",
+          "bytes": 305228,
+          "width": 768,
+          "height": 1024,
+          "normalization": {
+            "method": "top-left-crop-no-resample",
+            "origin": {
+              "x": 0,
+              "y": 0
+            },
+            "sourceCrop": {
+              "width": 768,
+              "height": 1024
+            },
+            "captureScale": 1.0,
+            "resampled": false,
+            "resampleFilter": null,
+            "sourceRawSha256": "16d0ec28a64863ebf06d7ce6ce704211fb6614e62dd0c5a2f2f9a3f340bda7d9"
+          },
+          "matrixPass": true
+        }
+      ]
+    },
+    {
+      "path": "review/mobile-hero-composition-v3.png",
+      "repositoryPath": "artifacts/original/phase-0-3d-repair-v3/review/mobile-hero-composition-v3.png",
+      "width": 1500,
+      "height": 2100,
+      "bytes": 797326,
+      "sha256": "c8f26b8a5ede573d8baef12344a2a02a00f96390723f9384f7de3c8a3f2baa62",
+      "purpose": "Four exact mobile hero viewports composed from normalized browser captures",
+      "derivation": "normalized browser rasters pasted 1:1 with no additional compositor resampling or repainting; each source records its matrix normalization lineage",
+      "sources": [
+        {
+          "captureId": "hero-actual--mobile-390x844",
+          "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/normalized/hero-actual--mobile-390x844.png",
+          "sha256": "8519587e794a05d397237a17987da97ac092eb5651bb4d8a190bad5815dffbde",
+          "bytes": 199527,
+          "width": 390,
+          "height": 844,
+          "normalization": {
+            "method": "top-left-crop-no-resample",
+            "origin": {
+              "x": 0,
+              "y": 0
+            },
+            "sourceCrop": {
+              "width": 390,
+              "height": 844
+            },
+            "captureScale": 1.0,
+            "resampled": false,
+            "resampleFilter": null,
+            "sourceRawSha256": "972849c984e130eaed3cee366f0353010277d4062b8bc46f64f0a23334be1c94"
+          },
+          "matrixPass": true
+        },
+        {
+          "captureId": "hero-actual--mobile-360x800",
+          "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/normalized/hero-actual--mobile-360x800.png",
+          "sha256": "39fb245f03e02559521d747812f6f850aac52c768d9aa6651e159dfca8226772",
+          "bytes": 184965,
+          "width": 360,
+          "height": 800,
+          "normalization": {
+            "method": "top-left-crop-no-resample",
+            "origin": {
+              "x": 0,
+              "y": 0
+            },
+            "sourceCrop": {
+              "width": 360,
+              "height": 800
+            },
+            "captureScale": 1.0,
+            "resampled": false,
+            "resampleFilter": null,
+            "sourceRawSha256": "debebfa2b8516338e3f544c0c77391cf699c32f73e87c44d4772e83fa3bdeab3"
+          },
+          "matrixPass": true
+        },
+        {
+          "captureId": "hero-actual--narrow-320x800",
+          "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/normalized/hero-actual--narrow-320x800.png",
+          "sha256": "757f646c4c81244e67361cc00935ffef6fc33d9b5b6cd7a4bd119fba251f37d9",
+          "bytes": 174396,
+          "width": 320,
+          "height": 800,
+          "normalization": {
+            "method": "top-left-crop-no-resample",
+            "origin": {
+              "x": 0,
+              "y": 0
+            },
+            "sourceCrop": {
+              "width": 320,
+              "height": 800
+            },
+            "captureScale": 1.0,
+            "resampled": false,
+            "resampleFilter": null,
+            "sourceRawSha256": "bce6afd46af3618a3a4c1312da9a2df181f7e7d56c687cb74777ae02eaa76525"
+          },
+          "matrixPass": true
+        },
+        {
+          "captureId": "hero-actual--mobile-landscape-844x390",
+          "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/normalized/hero-actual--mobile-landscape-844x390.png",
+          "sha256": "a9a990d71bd0c86422e8ea9f775038af74e1dd3c5b48c63f3af024a655da0acc",
+          "bytes": 193139,
+          "width": 844,
+          "height": 390,
+          "normalization": {
+            "method": "top-left-crop-no-resample",
+            "origin": {
+              "x": 0,
+              "y": 0
+            },
+            "sourceCrop": {
+              "width": 844,
+              "height": 390
+            },
+            "captureScale": 1.0,
+            "resampled": false,
+            "resampleFilter": null,
+            "sourceRawSha256": "564c420ccb6f9625276c4b8db41387f3403b512fc5264cabe1152286e64d5cc4"
+          },
+          "matrixPass": true
+        }
+      ]
+    },
+    {
+      "path": "review/text-zoom-and-fallback-v3.png",
+      "repositoryPath": "artifacts/original/phase-0-3d-repair-v3/review/text-zoom-and-fallback-v3.png",
+      "width": 3300,
+      "height": 2500,
+      "bytes": 2061448,
+      "sha256": "094e54f31d9fbfeefb4206a236847b0bc8a5ae127714996242b66a0d95cfa9f7",
+      "purpose": "Representative 200-percent text evidence under forced metric-conscious system fallbacks",
+      "derivation": "normalized browser rasters pasted 1:1 with no additional compositor resampling or repainting; each source records its matrix normalization lineage",
+      "sources": [
+        {
+          "captureId": "hero-zoom-200--desktop-1440x900",
+          "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/normalized/hero-zoom-200--desktop-1440x900.png",
+          "sha256": "9b2714bb80b134527076b177339ad11ab7cccf61053528f0ea149fa2c2114038",
+          "bytes": 662084,
+          "width": 1440,
+          "height": 900,
+          "normalization": {
+            "method": "top-left-crop-lanczos-resample",
+            "origin": {
+              "x": 0,
+              "y": 0
+            },
+            "sourceCrop": {
+              "width": 1200,
+              "height": 750
+            },
+            "captureScale": 0.8333333333333334,
+            "resampled": true,
+            "resampleFilter": "Lanczos",
+            "sourceRawSha256": "81c238d0f6ffcfb9fb67ec46cc0ff883c9f86a9956797bb41cfeb67c1feefc52"
+          },
+          "matrixPass": true
+        },
+        {
+          "captureId": "portal-zoom-200--desktop-1440x900",
+          "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/normalized/portal-zoom-200--desktop-1440x900.png",
+          "sha256": "cdb21fa8cbce4d3798dae993bcc57d9481a14031e714c04be7cdce48fd23ad21",
+          "bytes": 323131,
+          "width": 1440,
+          "height": 900,
+          "normalization": {
+            "method": "top-left-crop-lanczos-resample",
+            "origin": {
+              "x": 0,
+              "y": 0
+            },
+            "sourceCrop": {
+              "width": 1200,
+              "height": 750
+            },
+            "captureScale": 0.8333333333333334,
+            "resampled": true,
+            "resampleFilter": "Lanczos",
+            "sourceRawSha256": "12cff1c4b1348bcdc17fb0022f91e01ba5ab2bbc1f1fe8e1d55145603d8c23d4"
+          },
+          "matrixPass": true
+        },
+        {
+          "captureId": "hero-zoom-200--mobile-390x844",
+          "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/normalized/hero-zoom-200--mobile-390x844.png",
+          "sha256": "c280c2988d626f3dcb834f8d02d26c65d8eb9935c2fb6c925471dd3a13550b9f",
+          "bytes": 260390,
+          "width": 390,
+          "height": 844,
+          "normalization": {
+            "method": "top-left-crop-no-resample",
+            "origin": {
+              "x": 0,
+              "y": 0
+            },
+            "sourceCrop": {
+              "width": 390,
+              "height": 844
+            },
+            "captureScale": 1.0,
+            "resampled": false,
+            "resampleFilter": null,
+            "sourceRawSha256": "aa16d661815b78158af3a9dcbe1f89e525e66e9153e52e7abda8624ac90527cd"
+          },
+          "matrixPass": true
+        },
+        {
+          "captureId": "portal-zoom-200--mobile-390x844",
+          "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/normalized/portal-zoom-200--mobile-390x844.png",
+          "sha256": "c195fb98fe9bcb70baa0ea79be51456f1d11032c049de7c7262169533329679f",
+          "bytes": 208362,
+          "width": 390,
+          "height": 844,
+          "normalization": {
+            "method": "top-left-crop-no-resample",
+            "origin": {
+              "x": 0,
+              "y": 0
+            },
+            "sourceCrop": {
+              "width": 390,
+              "height": 844
+            },
+            "captureScale": 1.0,
+            "resampled": false,
+            "resampleFilter": null,
+            "sourceRawSha256": "e0e4c04baa185230f6f1b16d4bf7d2ba7272dbdaa8729da8044ea713ca7f579c"
+          },
+          "matrixPass": true
+        },
+        {
+          "captureId": "hero-zoom-200--narrow-320x800",
+          "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/normalized/hero-zoom-200--narrow-320x800.png",
+          "sha256": "d4d357dceaa720510b5e37604abf017465c5ff01c9cb58149c626e57b169a527",
+          "bytes": 189986,
+          "width": 320,
+          "height": 800,
+          "normalization": {
+            "method": "top-left-crop-no-resample",
+            "origin": {
+              "x": 0,
+              "y": 0
+            },
+            "sourceCrop": {
+              "width": 320,
+              "height": 800
+            },
+            "captureScale": 1.0,
+            "resampled": false,
+            "resampleFilter": null,
+            "sourceRawSha256": "7d794e38aef72af7099ab770a6ca955d5b6fe51e7c32aa3b9736c574a50221c8"
+          },
+          "matrixPass": true
+        },
+        {
+          "captureId": "portal-zoom-200--narrow-320x800",
+          "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/normalized/portal-zoom-200--narrow-320x800.png",
+          "sha256": "314bad7f833f8cc18b6d9e33be98427d35d74b9edf929087d47040bd25119950",
+          "bytes": 182937,
+          "width": 320,
+          "height": 800,
+          "normalization": {
+            "method": "top-left-crop-no-resample",
+            "origin": {
+              "x": 0,
+              "y": 0
+            },
+            "sourceCrop": {
+              "width": 320,
+              "height": 800
+            },
+            "captureScale": 1.0,
+            "resampled": false,
+            "resampleFilter": null,
+            "sourceRawSha256": "f21c3935caecfa1625263bac88545f0effcec777e541a10022f253512dcd507c"
+          },
+          "matrixPass": true
+        },
+        {
+          "captureId": "portal-zoom-200--mobile-landscape-844x390",
+          "path": "artifacts/evidence/phase-0-3d-repair-v3/captures/normalized/portal-zoom-200--mobile-landscape-844x390.png",
+          "sha256": "ed079f91603b8d085b5d2bfda8f8da46f5f011d5d6bdb5ea07672d8a70c32b2f",
+          "bytes": 171565,
+          "width": 844,
+          "height": 390,
+          "normalization": {
+            "method": "top-left-crop-no-resample",
+            "origin": {
+              "x": 0,
+              "y": 0
+            },
+            "sourceCrop": {
+              "width": 844,
+              "height": 390
+            },
+            "captureScale": 1.0,
+            "resampled": false,
+            "resampleFilter": null,
+            "sourceRawSha256": "487d5aa5e1f35b86b693ea09f7ab9de78af687c1ac24bd84d5ac11a8202f8f43"
+          },
+          "matrixPass": true
+        }
+      ]
+    }
+  ]
+}

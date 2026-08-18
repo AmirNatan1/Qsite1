@@ -1,0 +1,171 @@
+{
+  "schema": "quantum-hub.phase-0-3d-repair-v3.review-composition.v1",
+  "generated_at_utc": "2026-08-18T10:29:17.420340+00:00",
+  "selected_option": "A \u00b7 Inclined Optical Blade Quantum Aperture Station",
+  "final_blend": {
+    "path": "source/quantum-aperture-station-v3.blend",
+    "bytes": 310905,
+    "sha256": "5dde7731b366a1fd19f8f3cc93d338754b9536c6141b2819f4c123bc1a2af676"
+  },
+  "portal_layout": {
+    "path": "portal-layout.json",
+    "sha256": "25666cf071afe7564dc051cbec770ead325cdf19ef1f4926e43d793a2a053bc5"
+  },
+  "render_contract": {
+    "engine": "BLENDER_EEVEE",
+    "samples": 64,
+    "still_only": true,
+    "new_animatic_or_video": false
+  },
+  "creative_boundary": {
+    "original_geometry_materials_lighting_and_composition": true,
+    "reference_binary_used": false,
+    "external_asset_used": false,
+    "external_addon_used": false,
+    "font_binary_bundled": false,
+    "full_animatic_created": false
+  },
+  "pending_browser_derived_review_outputs": [
+    "portal-typography-v3-sheet.png",
+    "desktop-hero-composition-v3.png",
+    "mobile-hero-composition-v3.png",
+    "text-zoom-and-fallback-v3.png"
+  ],
+  "records": [
+    {
+      "path": "review/aperture-station-recommended-design-sheet.png",
+      "width": 3300,
+      "height": 2350,
+      "bytes": 3277262,
+      "sha256": "c17c077e943d50371174e55b71e35d324f4fe5f34b6344818facc3d0ef4cc77e",
+      "source_paths": [
+        "renders/design/front.png",
+        "renders/design/side.png",
+        "renders/design/rear.png",
+        "renders/design/three-quarter.png",
+        "renders/design/rear-three-quarter.png",
+        "renders/design/top.png"
+      ],
+      "derivation": "Dark V2 review grid composed from canonical Blender stills; no scene pixels repainted"
+    },
+    {
+      "path": "review/aperture-station-material-sheet.png",
+      "width": 3300,
+      "height": 2350,
+      "bytes": 3421107,
+      "sha256": "69beec4fe86540c6913f45c91838b42870c41931db642de6cd518d8edfbaacd6",
+      "source_paths": [
+        "renders/materials/shell.png",
+        "renders/materials/glass.png",
+        "renders/materials/foundation.png",
+        "renders/design/three-quarter.png",
+        "renders/design/rear-three-quarter.png",
+        "renders/activation/04-internal-iris-begins.png"
+      ],
+      "derivation": "Dark V2 review grid composed from canonical Blender stills; no scene pixels repainted"
+    },
+    {
+      "path": "review/cable-conductor-v3-sheet.png",
+      "width": 3400,
+      "height": 2450,
+      "bytes": 3134982,
+      "sha256": "c4d8500121ecfbfbe442f834734f18879f434bf15246288a102578a7ddf909fa",
+      "source_paths": [
+        "renders/materials/cable.png",
+        "renders/camera-study/01-arrival.png",
+        "renders/camera-study/02-conduction-25.png",
+        "renders/camera-study/03-conduction-55.png",
+        "renders/camera-study/04-conduction-80.png",
+        "renders/activation/02-current-reaches-foundation.png"
+      ],
+      "derivation": "Six canonical Blender stills prove the physical graphite sheath, recessed core, cumulative front, dark-ahead state, and foundation entry",
+      "conductor_cross_section": "graphite shoulders above a narrow recessed internal channel",
+      "front_count": 1,
+      "sequence": [
+        "dormant",
+        "25%",
+        "55%",
+        "80%",
+        "foundation arrival"
+      ]
+    },
+    {
+      "path": "review/proving-ground-v3-style-frame.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1503730,
+      "sha256": "70a1710339d8c7c36bb9c82500bbf755cec3a5882e455d7fc886af952e9b0b63",
+      "source_paths": [
+        "renders/environment/proving-ground-style-frame.png"
+      ],
+      "derivation": "Pixel-equivalent canonical 1920\u00d71200 Blender still"
+    },
+    {
+      "path": "review/camera-path-v3-study.png",
+      "width": 3300,
+      "height": 2350,
+      "bytes": 2289819,
+      "sha256": "b278c46b2caa0532909170b2c629bb5698d35e26f811404dadb2613ca1aa1c62",
+      "source_paths": [
+        "renders/camera-study/01-arrival.png",
+        "renders/camera-study/02-conduction-25.png",
+        "renders/camera-study/03-conduction-55.png",
+        "renders/camera-study/04-conduction-80.png",
+        "renders/camera-study/05-frontal-activation.png"
+      ],
+      "derivation": "Dark V2 review grid composed from canonical Blender stills; no scene pixels repainted"
+    },
+    {
+      "path": "review/activation-v3-contact-sheet.png",
+      "width": 3500,
+      "height": 2400,
+      "bytes": 1580291,
+      "sha256": "68fc9ee8e812b0021746e79ad1d19229079c4d3b86e10c696d3a7609807b335e",
+      "source_paths": [
+        "renders/activation/01-dormant.png",
+        "renders/activation/02-current-reaches-foundation.png",
+        "renders/activation/03-internal-transfer.png",
+        "renders/activation/04-internal-iris-begins.png",
+        "renders/activation/05-portal-ready.png"
+      ],
+      "derivation": "Canonical five-state still grid with enlarged aperture crops and review-only orientation labels",
+      "mechanical_response_count": 1,
+      "mechanical_response": "one linked five-blade internal iris; dormant through state 3, begins in state 4, open for portal readiness in state 5",
+      "semantic_sequence": [
+        "aperture black \u00b7 zero emission",
+        "local connector response \u00b7 aperture black",
+        "restrained internal datum \u00b7 iris dormant",
+        "five matte blades begin \u00b7 faint interface",
+        "sparse interface \u00b7 TEST ROUTE AVAILABLE"
+      ],
+      "aperture_crop": [
+        390,
+        285,
+        890,
+        735
+      ]
+    },
+    {
+      "path": "review/reduced-motion-v3-desktop.png",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 993156,
+      "sha256": "26e934ad36ecb768d55ff1a8dbd80064230980fa44885e0f1e5241913b156401",
+      "source_paths": [
+        "renders/hero/reduced-desktop-base.png"
+      ],
+      "derivation": "Designed 1600\u00d71000 static dormant poster with directional quiet-field scrim; no animation or media sequence"
+    },
+    {
+      "path": "review/reduced-motion-v3-mobile.png",
+      "width": 720,
+      "height": 1600,
+      "bytes": 711394,
+      "sha256": "512490d5d56565609e16a5a60a35f9694a8ad5363d20fccbe9676356d5fd3b9b",
+      "source_paths": [
+        "renders/hero/reduced-mobile-base.png"
+      ],
+      "derivation": "Designed 720\u00d71600 static dormant poster from authored portrait camera with directional quiet-field scrim; no animation or media sequence"
+    }
+  ]
+}

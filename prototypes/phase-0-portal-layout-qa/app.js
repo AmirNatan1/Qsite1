@@ -1,8 +1,19 @@
 const CONTRACT_URL = "/artifacts/original/phase-0-3d-repair-v2/portal-layout.json";
-const SCENES = Object.freeze({
+const KEEP_OUT_URL = "/artifacts/original/phase-0-3d-repair-v3/manifests/scene-source-keepouts.json";
+// Frozen v2 source declarations remain as historical verifier metadata only;
+// the live Phase 0.3 compositor uses SCENES below.
+const PHASE02_FROZEN_SOURCES = Object.freeze({
   heroDesktop: "/artifacts/original/phase-0-3d-repair-v2/renders/hero/desktop-dormant-base.png",
   heroMobile: "/artifacts/original/phase-0-3d-repair-v2/renders/hero/mobile-dormant-base.png",
   portalResponsive: "/artifacts/original/phase-0-3d-repair-v2/renders/portal/physical-glass-base.png",
+  keepoutCalibration: "source-pixel feature bounds projected through the live object-fit and CSS transform",
+});
+const SCENES = Object.freeze({
+  heroDesktop: "/artifacts/original/phase-0-3d-repair-v3/renders/hero/desktop-dormant-base.png",
+  heroMobile: "/artifacts/original/phase-0-3d-repair-v3/renders/hero/mobile-dormant-base.png",
+  reducedDesktop: "/artifacts/original/phase-0-3d-repair-v3/renders/hero/reduced-desktop-base.png",
+  reducedMobile: "/artifacts/original/phase-0-3d-repair-v3/renders/hero/reduced-mobile-base.png",
+  portalResponsive: "/artifacts/original/phase-0-3d-repair-v3/renders/portal/physical-glass-base.png",
 });
 
 const HERO_ACTUAL = Object.freeze({
@@ -43,7 +54,8 @@ const elements = {
   motionControl: document.querySelector("#motion-control"),
   focusCheck: document.querySelector("#focus-check"),
   status: document.querySelector("#qa-status"),
-  reportNode: document.querySelector("#phase02-report"),
+  reportNode: document.querySelector("#phase03-report"),
+  legacyReportNode: document.querySelector("#phase02-report"),
   scene: document.querySelector("#scene-image"),
   hero: document.querySelector("#hero-compositor"),
   heroEyebrow: document.querySelector("#hero-eyebrow"),
@@ -77,6 +89,8 @@ const state = {
 
 let contract;
 let contractHash;
+let keepoutAuthority;
+let keepoutAuthorityHash;
 let auditSequence = 0;
 
 function renderLines(target, lines) {
@@ -137,13 +151,16 @@ function sceneForState() {
   if (state.surface === "portal" && !state.reduced) {
     return SCENES.portalResponsive;
   }
+  if (state.reduced) {
+    return authoredMobileSceneMode() ? SCENES.reducedMobile : SCENES.reducedDesktop;
+  }
   return authoredMobileSceneMode() ? SCENES.heroMobile : SCENES.heroDesktop;
 }
 
 function waitForScene() {
   if (elements.scene.complete && elements.scene.naturalWidth > 0) return Promise.resolve();
   return new Promise((resolve, reject) => {
-    const timeout = window.setTimeout(() => reject(new Error("Phase 0.2 scene image timed out")), 30_000);
+    const timeout = window.setTimeout(() => reject(new Error("Phase 0.3 scene image timed out")), 30_000);
     elements.scene.addEventListener(
       "load",
       () => {
@@ -156,7 +173,7 @@ function waitForScene() {
       "error",
       () => {
         window.clearTimeout(timeout);
-        reject(new Error(`Phase 0.2 scene image failed to load: ${elements.scene.src}`));
+        reject(new Error(`Phase 0.3 scene image failed to load: ${elements.scene.src}`));
       },
       { once: true },
     );
@@ -195,6 +212,7 @@ function renderState() {
   elements.body.dataset.fixture = state.fixture;
   elements.body.dataset.textZoom = String(state.textZoom);
   elements.body.dataset.reduced = String(state.reduced);
+  elements.body.dataset.reducedComposition = state.reduced ? "directional-scrim-quiet-field" : "not-applicable";
   elements.body.dataset.captureChrome = String(state.captureChrome);
   elements.body.dataset.portalProjection = referenceProjectionMode() ? "reference" : "responsive";
   elements.body.dataset.heroSceneLayout = heroSceneLayoutMode();
@@ -377,7 +395,12 @@ function contractAnchorReport() {
 
 function focusReport() {
   const focusables = [...document.querySelectorAll("#review-surface button")].filter(visible);
-  const previous = document.activeElement;
+  const previous =
+    document.activeElement instanceof HTMLElement &&
+    document.activeElement !== document.body &&
+    document.activeElement !== document.documentElement
+      ? document.activeElement
+      : null;
   const results = focusables.map((node) => {
     node.focus({ preventScroll: true });
     const style = getComputedStyle(node);
@@ -390,8 +413,8 @@ function focusReport() {
       pass: style.outlineStyle !== "none" && Number.isFinite(width) && width >= 2,
     };
   });
-  if (previous instanceof HTMLElement) previous.focus({ preventScroll: true });
-  else elements.reviewSurface?.focus({ preventScroll: true });
+  if (previous?.isConnected) previous.focus({ preventScroll: true });
+  else if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
   return { results, pass: results.length >= 2 && results.every((item) => item.pass) };
 }
 
@@ -519,12 +542,134 @@ function textOverflowReport() {
   };
 }
 
+function wordIntegrityReport() {
+  const headings = [...document.querySelectorAll("#review-surface h1, #review-surface h2")].filter(visible);
+  const wordFragmentationDetails = [];
+  const cssOffenders = [];
+  const humanLineBreakReport = [];
+
+  for (const heading of headings) {
+    const styleTargets = [heading, ...heading.querySelectorAll(".heading-line")];
+    const computedStyles = styleTargets.map((node) => {
+      const style = getComputedStyle(node);
+      return {
+        node: node === heading ? heading.id : `${heading.id} .heading-line`,
+        wordBreak: style.wordBreak,
+        overflowWrap: style.overflowWrap,
+        hyphens: style.hyphens || style.getPropertyValue("hyphens"),
+      };
+    });
+    for (const item of computedStyles) {
+      if (item.wordBreak !== "normal" || item.overflowWrap !== "normal" || item.hyphens !== "none") {
+        cssOffenders.push({ headingId: heading.id, ...item });
+      }
+    }
+
+    const tokens = [];
+    const walker = document.createTreeWalker(heading, NodeFilter.SHOW_TEXT);
+    while (walker.nextNode()) {
+      const text = walker.currentNode.nodeValue ?? "";
+      for (const match of text.matchAll(/\S+/gu)) {
+        const range = document.createRange();
+        range.setStart(walker.currentNode, match.index);
+        range.setEnd(walker.currentNode, match.index + match[0].length);
+        const rectangles = [...range.getClientRects()]
+          .filter((rect) => rect.width > 0 && rect.height > 0)
+          .map((rect) => ({
+            leftPx: Number(rect.left.toFixed(3)),
+            rightPx: Number(rect.right.toFixed(3)),
+            topPx: Number(rect.top.toFixed(3)),
+            bottomPx: Number(rect.bottom.toFixed(3)),
+          }));
+        if (rectangles.length === 0) continue;
+        const lineTops = [];
+        for (const rectangle of rectangles) {
+          if (!lineTops.some((top) => Math.abs(top - rectangle.topPx) <= 2)) lineTops.push(rectangle.topPx);
+        }
+        if (rectangles.length > 1 && lineTops.length > 1) {
+          wordFragmentationDetails.push({
+            headingId: heading.id,
+            word: match[0],
+            rectangles,
+          });
+        }
+        tokens.push({ word: match[0], rectangle: rectangles[0] });
+      }
+    }
+
+    tokens.sort((a, b) => a.rectangle.topPx - b.rectangle.topPx || a.rectangle.leftPx - b.rectangle.leftPx);
+    const lines = [];
+    for (const token of tokens) {
+      let line = lines.find((candidate) => Math.abs(candidate.topPx - token.rectangle.topPx) <= 2);
+      if (!line) {
+        line = { topPx: token.rectangle.topPx, words: [] };
+        lines.push(line);
+      }
+      line.words.push({ text: token.word, leftPx: token.rectangle.leftPx });
+    }
+    lines.sort((a, b) => a.topPx - b.topPx);
+    humanLineBreakReport.push({
+      headingId: heading.id,
+      tagName: heading.tagName,
+      ariaLabel: heading.getAttribute("aria-label") ?? heading.textContent.trim(),
+      renderedLines: lines.map((line, index) => ({
+        line: index + 1,
+        topPx: Number(line.topPx.toFixed(3)),
+        text: line.words.sort((a, b) => a.leftPx - b.leftPx).map((word) => word.text).join(" "),
+      })),
+      computedStyles,
+    });
+  }
+
+  return {
+    headingsChecked: headings.length,
+    wordFragmentationOffenders: wordFragmentationDetails.length,
+    wordFragmentationDetails,
+    cssOffenders,
+    humanLineBreakReport,
+    pass: headings.length > 0 && wordFragmentationDetails.length === 0 && cssOffenders.length === 0,
+  };
+}
+
+function reducedMotionCompositionReport() {
+  if (!state.reduced) return { applicable: false, pass: true };
+  const viewport = layoutViewportSize();
+  const viewportArea = Math.max(1, viewport.width * viewport.height);
+  const panelCandidates = [...document.querySelectorAll("#review-surface, #review-surface *")].filter(
+    (node) => node instanceof HTMLElement && visible(node),
+  );
+  const floatingRoundedPanelOffenders = panelCandidates.flatMap((node) => {
+    const style = getComputedStyle(node);
+    const rect = node.getBoundingClientRect();
+    const radius = Math.max(...style.borderRadius.split(/[\s/]+/).map((value) => Number.parseFloat(value) || 0));
+    const hasSurfaceEffect =
+      !["", "none"].includes(style.backdropFilter) ||
+      style.boxShadow !== "none" ||
+      style.backgroundImage !== "none" ||
+      !["rgba(0, 0, 0, 0)", "transparent"].includes(style.backgroundColor);
+    return radius >= 24 && hasSurfaceEffect && rect.width * rect.height >= viewportArea * 0.2
+      ? [{ id: node.id || node.className, radiusPx: radius, widthPx: rect.width, heightPx: rect.height }]
+      : [];
+  });
+  const gradeStyle = getComputedStyle(document.querySelector(".scene-grade"));
+  const directionalScrim =
+    elements.body.dataset.reducedComposition === "directional-scrim-quiet-field" &&
+    gradeStyle.backgroundImage.includes("linear-gradient");
+  return {
+    applicable: true,
+    strategy: "directional-scrim-quiet-field",
+    directionalScrim,
+    floatingRoundedPanelOffenders,
+    pass: directionalScrim && floatingRoundedPanelOffenders.length === 0,
+  };
+}
+
 function sceneSafetyReport() {
   const portalReduced = state.surface === "portal" && state.reduced;
   if (state.surface !== "hero" && !portalReduced) {
     return {
       applicable: false,
-      reason: "source-derived Field Unit/cable keepouts apply to every hero state and reduced-portal stress state",
+      reason: "source-derived Aperture Station/cable keepouts apply to every hero state and reduced-portal stress state",
     };
   }
   const viewport = layoutViewportSize();
@@ -532,17 +677,44 @@ function sceneSafetyReport() {
   const stressDisplaced = portalReduced || state.textZoom === 200 || state.fixture === "long";
   const mode = portalReduced ? "portal-reduced-displaced" : stressDisplaced ? "stress-displaced" : baseLayoutMode;
   const mobileScene = baseLayoutMode === "portrait";
-  const source = mobileScene ? SCENES.heroMobile : SCENES.heroDesktop;
-  const sourceSize = mobileScene ? { width: 720, height: 1600 } : { width: 1920, height: 1200 };
-  const sourceFeatures = mobileScene
-    ? {
-        fieldUnit: { left: 0, top: 475, right: 720, bottom: 930 },
-        spiralCable: { left: 0, top: 880, right: 720, bottom: 1370 },
-      }
-    : {
-        fieldUnit: { left: 830, top: 575, right: 1700, bottom: 895 },
-        spiralCable: { left: 20, top: 650, right: 1910, bottom: 1160 },
-      };
+  const recordId = state.reduced
+    ? mobileScene
+      ? "reduced-mobile"
+      : "reduced-desktop"
+    : mobileScene
+      ? "mobile-dormant"
+      : "desktop-dormant";
+  const sourceRecord = keepoutAuthority?.records?.find((record) => record.id === recordId);
+  if (!sourceRecord) {
+    return {
+      applicable: true,
+      mode,
+      baseLayoutMode,
+      calibration: "missing frozen Aperture Station/cable source-pixel authority",
+      recordId,
+      pass: false,
+    };
+  }
+  const source = `/artifacts/original/phase-0-3d-repair-v3/${sourceRecord.source.path}`;
+  const sourceSize = { width: sourceRecord.source.width, height: sourceRecord.source.height };
+  const stationBounds = {
+    left: sourceRecord.station.bbox.x,
+    top: sourceRecord.station.bbox.y,
+    right: sourceRecord.station.bbox.x + sourceRecord.station.bbox.w,
+    bottom: sourceRecord.station.bbox.y + sourceRecord.station.bbox.h,
+  };
+  const cableSourceSegments = sourceRecord.cable.segment_rectangles.map((bounds, index) => ({
+    id: `spiral-cable-segment-${String(index + 1).padStart(2, "0")}`,
+    sourceBounds: {
+      left: bounds.x,
+      top: bounds.y,
+      right: bounds.x + bounds.w,
+      bottom: bounds.y + bounds.h,
+    },
+  }));
+  // Stable machine IDs retained for the accepted v2 evidence schema; Phase
+  // 0.3 human-facing copy names the selected subject Aperture Station.
+  const legacyKeepoutIds = { fieldUnit: "field-unit", spiralCable: "spiral-cable" };
   const sceneCrop = document.querySelector(".scene-crop");
   const cropRect = sceneCrop.getBoundingClientRect();
   const imageStyle = getComputedStyle(elements.scene);
@@ -604,10 +776,46 @@ function sceneSafetyReport() {
         projected.topPx >= viewport.height,
     };
   };
-  const keepouts = [
-    { id: "field-unit", sourceBounds: sourceFeatures.fieldUnit, ...projectFeature(sourceFeatures.fieldUnit) },
-    { id: "spiral-cable", sourceBounds: sourceFeatures.spiralCable, ...projectFeature(sourceFeatures.spiralCable) },
-  ];
+  const stationKeepout = {
+    id: legacyKeepoutIds.fieldUnit,
+    semanticName: "Aperture Station",
+    geometry: "Blender-projected padded station bounding box",
+    sourceBounds: stationBounds,
+    ...projectFeature(stationBounds),
+  };
+  const cableSegments = cableSourceSegments.map((segment) => ({
+    ...segment,
+    ...projectFeature(segment.sourceBounds),
+  }));
+  const cableUnionSource = sourceRecord.cable.union_bbox;
+  const cableUnionBounds = {
+    left: cableUnionSource.x,
+    top: cableUnionSource.y,
+    right: cableUnionSource.x + cableUnionSource.w,
+    bottom: cableUnionSource.y + cableUnionSource.h,
+  };
+  const cableKeepout = {
+    id: legacyKeepoutIds.spiralCable,
+    semanticName: "physical spiral cable",
+    geometry: "Blender-projected cable centerline segment rectangles; union box is reporting-only",
+    sourceBounds: cableUnionBounds,
+    authoredTurns: sourceRecord.cable.authored_turns,
+    visibilityEvidence: sourceRecord.cable.visibility_evidence ?? null,
+    sourceSegmentCount: cableSegments.length,
+    segments: cableSegments,
+    unionProjection: projectFeature(cableUnionBounds),
+    outsideViewport: cableSegments.every((segment) => segment.outsideViewport),
+  };
+  const keepouts = [stationKeepout, cableKeepout];
+  const nonDegenerateCableSegments = cableSegments.filter(
+    (segment) =>
+      segment.sourceBounds.right > segment.sourceBounds.left &&
+      segment.sourceBounds.bottom > segment.sourceBounds.top,
+  );
+  const visibleCableSegments = nonDegenerateCableSegments.filter(
+    (segment) =>
+      segment.visible.rightPx > segment.visible.leftPx && segment.visible.bottomPx > segment.visible.topPx,
+  );
   const clearancePx = 16;
   const documentHeight = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight, viewport.height);
   const allowedRegion = {
@@ -616,13 +824,19 @@ function sceneSafetyReport() {
     rightPx:
       stressDisplaced || baseLayoutMode === "portrait"
         ? viewport.width
-        : Number(Math.max(0, keepouts[0].projected.leftPx - clearancePx).toFixed(3)),
+        : Number(Math.max(0, stationKeepout.projected.leftPx - clearancePx).toFixed(3)),
     bottomPx:
       stressDisplaced
         ? documentHeight
         : baseLayoutMode === "portrait"
         ? Number(
-            Math.max(0, Math.min(keepouts[0].projected.topPx, keepouts[1].projected.topPx) - clearancePx).toFixed(3),
+            Math.max(
+              0,
+              Math.min(
+                stationKeepout.projected.topPx,
+                ...nonDegenerateCableSegments.map((segment) => segment.projected.topPx),
+              ) - clearancePx,
+            ).toFixed(3),
           )
         : viewport.height,
   };
@@ -641,16 +855,18 @@ function sceneSafetyReport() {
         ["hero-audiences", document.querySelector("#hero-compositor .audience-actions")],
       ];
   const tolerance = 1;
+  const intersectsProjected = (rect, projected) =>
+    rect.right > projected.leftPx - clearancePx &&
+    rect.left < projected.rightPx + clearancePx &&
+    rect.bottom > projected.topPx - clearancePx &&
+    rect.top < projected.bottomPx + clearancePx;
   const blocks = nodes.map(([id, node]) => {
     const rect = node.getBoundingClientRect();
-    const intersections = keepouts
-      .filter(({ projected }) =>
-        rect.right > projected.leftPx - clearancePx &&
-        rect.left < projected.rightPx + clearancePx &&
-        rect.bottom > projected.topPx - clearancePx &&
-        rect.top < projected.bottomPx + clearancePx,
-      )
-      .map(({ id }) => id);
+    const intersections = [];
+    if (intersectsProjected(rect, stationKeepout.projected)) intersections.push(stationKeepout.id);
+    if (nonDegenerateCableSegments.some((segment) => intersectsProjected(rect, segment.projected))) {
+      intersections.push(cableKeepout.id);
+    }
     const withinAllowedRegion =
       rect.left >= allowedRegion.leftPx - tolerance &&
       rect.top >= allowedRegion.topPx - tolerance &&
@@ -680,7 +896,16 @@ function sceneSafetyReport() {
         ? "authored mobile scene translated below a compact semantic copy flow"
         : "frozen scene scaled and translated toward the right while semantic copy reflows in the quiet-left field",
     sourceScene: source,
-    calibration: "source-pixel feature bounds projected through the live object-fit and CSS transform",
+    semanticFeatureNames: { "field-unit": "Aperture Station", "spiral-cable": "physical spiral cable" },
+    calibration:
+      "Blender 5.2 evaluated-geometry authority: padded Station bounds and every source-authored cable centerline segment rectangle projected through live object-fit and CSS transform",
+    keepoutAuthority: {
+      path: "artifacts/original/phase-0-3d-repair-v3/manifests/scene-source-keepouts.json",
+      schema: keepoutAuthority.schema,
+      sha256: keepoutAuthorityHash,
+      recordId,
+      generator: keepoutAuthority.generator,
+    },
     clearancePx,
     sourceSize,
     objectFit: imageStyle.objectFit,
@@ -690,12 +915,17 @@ function sceneSafetyReport() {
     blocks,
     sceneComputedTransform: getComputedStyle(elements.scene).transform,
     pass:
-      keepouts.every(({ projected }) => projected.rightPx > projected.leftPx && projected.bottomPx > projected.topPx) &&
+      new URL(elements.scene.currentSrc || elements.scene.src).pathname === source &&
+      stationKeepout.projected.rightPx > stationKeepout.projected.leftPx &&
+      stationKeepout.projected.bottomPx > stationKeepout.projected.topPx &&
+      cableSegments.length === sourceRecord.cable.segment_rectangles.length &&
+      cableSegments.length >= 33 &&
+      nonDegenerateCableSegments.length > 0 &&
       (stressDisplaced
-        ? keepouts.every(({ outsideViewport }) => outsideViewport)
-        : keepouts.every(
-            ({ visible }) => visible.rightPx > visible.leftPx && visible.bottomPx > visible.topPx,
-          )) &&
+        ? stationKeepout.outsideViewport && cableKeepout.outsideViewport
+        : stationKeepout.visible.rightPx > stationKeepout.visible.leftPx &&
+          stationKeepout.visible.bottomPx > stationKeepout.visible.topPx &&
+          visibleCableSegments.length > 0) &&
       blocks.length === (portalReduced ? 5 : 4) &&
       blocks.every((block) => block.pass),
   };
@@ -725,8 +955,10 @@ async function runAudit() {
   const focus = focusReport();
   const horizontalBounds = horizontalBoundsReport();
   const textOverflow = textOverflowReport();
+  const wordIntegrity = wordIntegrityReport();
   const sceneSafety = sceneSafetyReport();
   const divider = dividerGeometryReport();
+  const reducedMotionComposition = reducedMotionCompositionReport();
   const route = document.querySelector("#portal-route");
   const routeOverflow = state.surface === "portal" && visible(route) ? route.scrollWidth > route.clientWidth + 1 : false;
   const fixtureLongRatio = Number(fixtureRatio().toFixed(3));
@@ -750,14 +982,14 @@ async function runAudit() {
           ? "dormant reduced-motion scene"
           : "text-free physical glass base for responsive DOM flow";
   const allowedPortalScene = state.reduced
-    ? mobileMode()
-      ? SCENES.heroMobile
-      : SCENES.heroDesktop
+    ? authoredMobileSceneMode()
+      ? SCENES.reducedMobile
+      : SCENES.reducedDesktop
     : SCENES.portalResponsive;
   const doubledCopyPass = state.surface !== "portal" || scenePath === allowedPortalScene;
 
   const report = {
-    schema: "quantum-hub.phase-0-3d-repair-v2.typography-collision-browser-report.v1",
+    schema: "quantum-hub.phase-0-3d-repair-v3.typography-collision-browser-report.v1",
     harness: "phase-0-portal-layout-qa",
     contract: {
       path: "artifacts/original/phase-0-3d-repair-v2/portal-layout.json",
@@ -789,6 +1021,8 @@ async function runAudit() {
       lineCountPass: lineCount >= expectedLines.minimum && lineCount <= expectedLines.maximum,
       longFixtureRatio: fixtureLongRatio,
       longFixturePass: state.fixture !== "long" || fixtureLongRatio >= 1.25,
+      wordFragmentationOffenders: wordIntegrity.wordFragmentationOffenders,
+      humanLineBreakReport: wordIntegrity.humanLineBreakReport,
     },
     layout: {
       collisions,
@@ -799,6 +1033,8 @@ async function runAudit() {
       horizontalBoundsPass: horizontalBounds.every((item) => item.pass),
       textOverflow,
       textOverflowPass: textOverflow.pass,
+      wordIntegrity,
+      wordIntegrityPass: wordIntegrity.pass,
       buttons,
       buttonPass: buttons.length >= 2 && buttons.every((item) => item.pass),
       anchors,
@@ -812,6 +1048,7 @@ async function runAudit() {
       divider,
       dividerPass: divider.pass,
       sceneSafety,
+      reducedMotionComposition,
     },
     accessibility: {
       focus,
@@ -839,9 +1076,11 @@ async function runAudit() {
     !report.layout.routeHorizontalOverflow &&
     report.layout.horizontalBoundsPass &&
     report.layout.textOverflowPass &&
+    report.layout.wordIntegrityPass &&
     report.layout.buttonPass &&
     report.layout.ruleSafetyPass &&
     report.layout.dividerPass &&
+    report.layout.reducedMotionComposition.pass &&
     (report.layout.sceneSafety.applicable === false || report.layout.sceneSafety.pass) &&
     report.assets.doubledCopyPass &&
     (report.layout.anchors.applicable === false || report.layout.anchors.pass) &&
@@ -851,8 +1090,10 @@ async function runAudit() {
     report.accessibility.sceneDecorative &&
     report.assets.sceneReady;
 
+  window.phase03TypographyReport = report;
   window.phase02TypographyReport = report;
   elements.reportNode.textContent = JSON.stringify(report);
+  elements.legacyReportNode.textContent = JSON.stringify(report);
   elements.body.dataset.qaPass = String(report.pass);
   elements.status.textContent = report.pass
     ? `PASS · ${window.innerWidth}×${window.innerHeight} · ${state.surface} · ${state.fixture}`
@@ -860,13 +1101,25 @@ async function runAudit() {
   return report;
 }
 
-async function loadContract() {
-  const response = await fetch(CONTRACT_URL, { cache: "no-store" });
-  if (!response.ok) throw new Error(`Shared portal contract failed to load (${response.status})`);
-  const source = await response.text();
-  contract = JSON.parse(source);
+async function sha256Text(source) {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(source));
-  contractHash = [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+async function loadAuthorities() {
+  const [contractResponse, keepoutResponse] = await Promise.all([
+    fetch(CONTRACT_URL, { cache: "no-store" }),
+    fetch(KEEP_OUT_URL, { cache: "no-store" }),
+  ]);
+  if (!contractResponse.ok) throw new Error(`Shared portal contract failed to load (${contractResponse.status})`);
+  if (!keepoutResponse.ok) throw new Error(`Frozen scene keepout authority failed to load (${keepoutResponse.status})`);
+  const [contractSource, keepoutSource] = await Promise.all([contractResponse.text(), keepoutResponse.text()]);
+  contract = JSON.parse(contractSource);
+  keepoutAuthority = JSON.parse(keepoutSource);
+  [contractHash, keepoutAuthorityHash] = await Promise.all([
+    sha256Text(contractSource),
+    sha256Text(keepoutSource),
+  ]);
   renderState();
   await waitForScene();
   elements.body.dataset.ready = "true";
@@ -891,14 +1144,17 @@ elements.focusCheck.addEventListener("click", async () => {
 });
 
 window.addEventListener("resize", () => {
-  if (!contract) return;
+  if (!contract || !keepoutAuthority) return;
   renderState();
   void runAudit();
 });
 
+window.runPhase03TypographyCheck = runAudit;
 window.runPhase02TypographyCheck = runAudit;
-window.phase02Ready = loadContract().catch((error) => {
+const readiness = loadAuthorities().catch((error) => {
   elements.body.dataset.ready = "error";
   elements.status.textContent = error.message;
   throw error;
 });
+window.phase03Ready = readiness;
+window.phase02Ready = readiness;

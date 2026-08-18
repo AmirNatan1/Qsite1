@@ -1,0 +1,204 @@
+{
+  "schema": "quantum-hub.phase-0-3d-repair-v3.final-still-renders.v1",
+  "generated_at_utc": "2026-08-18T10:29:17.360506+00:00",
+  "source": "source/quantum-aperture-station-v3.blend",
+  "source_sha256": "5dde7731b366a1fd19f8f3cc93d338754b9536c6141b2819f4c123bc1a2af676",
+  "portal_layout_sha256": "25666cf071afe7564dc051cbec770ead325cdf19ef1f4926e43d793a2a053bc5",
+  "blender_version": "5.2.0 LTS",
+  "blender_build_hash": "fbe6228777e7",
+  "engine": "BLENDER_EEVEE",
+  "sampling": "64 EEVEE temporal AA samples and 64 volumetric samples; selected still gate",
+  "render_scale": 1.0,
+  "still_only": true,
+  "full_animatic": false,
+  "camera_study_arc_degrees": 28,
+  "camera_checkpoint_count": 5,
+  "mechanical_response_count": 1,
+  "mechanical_response": "internal iris only",
+  "original_artwork": true,
+  "reference_binary_used": false,
+  "renders": [
+    {
+      "group": "diagnostics",
+      "name": "dormant",
+      "path": "renders/diagnostics/dormant.png",
+      "camera": "Camera_Hero",
+      "state": {
+        "conduction": 0.0,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 1280,
+      "height": 800,
+      "bytes": 681299,
+      "sha256": "f769007d47b18556707dd1e0159ebfd1eb6d54d1ed1862b7328108d30577f275"
+    },
+    {
+      "group": "diagnostics",
+      "name": "mid-conduction",
+      "path": "renders/diagnostics/mid-conduction.png",
+      "camera": "Camera_Arc_03",
+      "state": {
+        "conduction": 0.56,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 1280,
+      "height": 800,
+      "bytes": 681666,
+      "sha256": "c67481779c838934f540d8b54cf11d6acf65cd686e82374f750b57aba8a38932"
+    },
+    {
+      "group": "diagnostics",
+      "name": "activation",
+      "path": "renders/diagnostics/activation.png",
+      "camera": "Camera_ActivationClose",
+      "state": {
+        "conduction": 1.0,
+        "foundation": 1.0,
+        "internal": 1.0,
+        "iris": 1.0,
+        "screen": 1.0,
+        "portal": 0.0
+      },
+      "width": 1280,
+      "height": 800,
+      "bytes": 853342,
+      "sha256": "85ec8ac0ebfa915060e350506305cfd25bab2d614dc34862e345ae06a6b76dd7"
+    },
+    {
+      "group": "diagnostics",
+      "name": "arrival-mobile",
+      "path": "renders/diagnostics/arrival-mobile.png",
+      "camera": "Camera_MobileHero",
+      "state": {
+        "conduction": 0.0,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 720,
+      "height": 1600,
+      "bytes": 768109,
+      "sha256": "390bc2b3db63bb55e4eafbacea3752c0a4e26bbb370909a768b05d5f9fff6959"
+    },
+    {
+      "group": "diagnostics",
+      "name": "cable-macro",
+      "path": "renders/diagnostics/cable-macro.png",
+      "camera": "Camera_MaterialCable",
+      "state": {
+        "conduction": 0.56,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 1280,
+      "height": 800,
+      "bytes": 626268,
+      "sha256": "35c04658449000a233d9fca0af85caa2f568040605994cbab7f2d9dda41f20b7"
+    },
+    {
+      "group": "diagnostics",
+      "name": "activation-thumb-01-dormant",
+      "path": "renders/diagnostics/activation-thumb-01-dormant.png",
+      "camera": "Camera_ActivationClose",
+      "state": {
+        "conduction": 0.0,
+        "foundation": 0.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 960,
+      "height": 600,
+      "bytes": 443240,
+      "sha256": "cc601e36a77485b8e8d14cef877dcf6ed459c19d01c1816c5c1a271aef2da29c"
+    },
+    {
+      "group": "diagnostics",
+      "name": "activation-thumb-02-foundation",
+      "path": "renders/diagnostics/activation-thumb-02-foundation.png",
+      "camera": "Camera_ActivationClose",
+      "state": {
+        "conduction": 1.0,
+        "foundation": 1.0,
+        "internal": 0.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 960,
+      "height": 600,
+      "bytes": 470708,
+      "sha256": "99c6ebd4493baa72ce50f342ba5655b9ccc52b146721d07a47e12d1d946a0ab1"
+    },
+    {
+      "group": "diagnostics",
+      "name": "activation-thumb-03-internal",
+      "path": "renders/diagnostics/activation-thumb-03-internal.png",
+      "camera": "Camera_ActivationClose",
+      "state": {
+        "conduction": 1.0,
+        "foundation": 1.0,
+        "internal": 1.0,
+        "iris": 0.0,
+        "screen": 0.0,
+        "portal": 0.0
+      },
+      "width": 960,
+      "height": 600,
+      "bytes": 496168,
+      "sha256": "1219aede85d7a489e8704407c1a0350bbb88d7351740d53051aafaca13fe6389"
+    },
+    {
+      "group": "diagnostics",
+      "name": "activation-thumb-04-iris",
+      "path": "renders/diagnostics/activation-thumb-04-iris.png",
+      "camera": "Camera_ActivationClose",
+      "state": {
+        "conduction": 1.0,
+        "foundation": 1.0,
+        "internal": 1.0,
+        "iris": 0.45,
+        "screen": 0.18,
+        "portal": 0.0
+      },
+      "width": 960,
+      "height": 600,
+      "bytes": 496896,
+      "sha256": "38bc63ace10602b96bc65159a18b04f59106b7746c1618d62bde71e2d61efe6d"
+    },
+    {
+      "group": "diagnostics",
+      "name": "activation-thumb-05-ready",
+      "path": "renders/diagnostics/activation-thumb-05-ready.png",
+      "camera": "Camera_ActivationClose",
+      "state": {
+        "conduction": 1.0,
+        "foundation": 1.0,
+        "internal": 1.0,
+        "iris": 1.0,
+        "screen": 1.0,
+        "portal": 0.0
+      },
+      "width": 960,
+      "height": 600,
+      "bytes": 499799,
+      "sha256": "aab1866b99d12e7bf6c96f733d150de93b847012b03c871d31ddee646ce9a05e"
+    }
+  ],
+  "taa_render_samples": 64,
+  "volumetric_samples": 64
+}

@@ -1,0 +1,2172 @@
+{
+  "schema": "quantum-hub.phase-0-3d-repair-v3.scene-source-keepouts.v1",
+  "generated_at_utc": "2026-08-18T08:57:50.526099+00:00",
+  "method": "Blender 5.2 evaluated geometry projection; station convex hull plus cable centerline segment rectangles",
+  "source_blend": {
+    "path": "source/quantum-aperture-station-v3.blend",
+    "bytes": 310905,
+    "sha256": "5dde7731b366a1fd19f8f3cc93d338754b9536c6141b2819f4c123bc1a2af676"
+  },
+  "generator": {
+    "path": "source/emit_scene_keepouts.py",
+    "sha256": "78efaaa20c53bb908433e599b3824cca977895381c736d55d95a6dabaae3620a"
+  },
+  "dormant_state": {
+    "conduction": 0,
+    "foundation": 0,
+    "internal": 0,
+    "iris": 0,
+    "screen": 0,
+    "portal": 0
+  },
+  "records": [
+    {
+      "id": "desktop-dormant",
+      "source": {
+        "path": "renders/hero/desktop-dormant-base.png",
+        "width": 1920,
+        "height": 1200,
+        "bytes": 1503730,
+        "sha256": "70a1710339d8c7c36bb9c82500bbf755cec3a5882e455d7fc886af952e9b0b63"
+      },
+      "camera": "Camera_DesktopHero",
+      "coordinate_system": "top-left origin; x right; y down; source pixels",
+      "station": {
+        "objects": [
+          "Aperture_OpticallyBlackDormantGlass",
+          "Foundation_FlushCurrentArrivalSeam",
+          "GroundAnchor_RecessedSlot_1",
+          "GroundAnchor_RecessedSlot_2",
+          "InstalledFoundation_PerimeterSeam",
+          "InternalTransfer_RecessedServicePath",
+          "MechanicalResponse_InternalIrisBlade_01",
+          "MechanicalResponse_InternalIrisBlade_02",
+          "MechanicalResponse_InternalIrisBlade_03",
+          "MechanicalResponse_InternalIrisBlade_04",
+          "MechanicalResponse_InternalIrisBlade_05",
+          "PhysicalScreen_Carrier",
+          "PhysicalScreen_ChallengeDetected",
+          "PhysicalScreen_OperatingRoute",
+          "PhysicalScreen_RouteDatum_1",
+          "PhysicalScreen_RouteDatum_2",
+          "PhysicalScreen_RouteDatum_3",
+          "PhysicalScreen_RouteDatum_4",
+          "PhysicalScreen_RouteDatum_5",
+          "PhysicalScreen_TestRouteAvailable",
+          "Station_AsymmetricOpticalBlade",
+          "Station_BelowGradeIntegratedFoundation",
+          "Station_LoadBearingServiceSpine",
+          "Station_LowerRightStructuralInterruptor"
+        ],
+        "padding_px": 9,
+        "bbox": {
+          "x": 1065,
+          "y": 486,
+          "w": 646,
+          "h": 585
+        },
+        "convex_hull_polygon": [
+          [
+            1074,
+            963
+          ],
+          [
+            1074,
+            893
+          ],
+          [
+            1074,
+            892
+          ],
+          [
+            1140,
+            563
+          ],
+          [
+            1141,
+            560
+          ],
+          [
+            1142,
+            558
+          ],
+          [
+            1143,
+            556
+          ],
+          [
+            1144,
+            553
+          ],
+          [
+            1145,
+            552
+          ],
+          [
+            1146,
+            551
+          ],
+          [
+            1150,
+            546
+          ],
+          [
+            1197,
+            509
+          ],
+          [
+            1198,
+            508
+          ],
+          [
+            1203,
+            506
+          ],
+          [
+            1206,
+            505
+          ],
+          [
+            1209,
+            504
+          ],
+          [
+            1212,
+            503
+          ],
+          [
+            1215,
+            503
+          ],
+          [
+            1288,
+            495
+          ],
+          [
+            1291,
+            495
+          ],
+          [
+            1294,
+            495
+          ],
+          [
+            1418,
+            517
+          ],
+          [
+            1620,
+            585
+          ],
+          [
+            1622,
+            586
+          ],
+          [
+            1623,
+            586
+          ],
+          [
+            1625,
+            588
+          ],
+          [
+            1626,
+            590
+          ],
+          [
+            1628,
+            592
+          ],
+          [
+            1659,
+            662
+          ],
+          [
+            1660,
+            664
+          ],
+          [
+            1661,
+            666
+          ],
+          [
+            1662,
+            669
+          ],
+          [
+            1662,
+            672
+          ],
+          [
+            1663,
+            673
+          ],
+          [
+            1663,
+            675
+          ],
+          [
+            1702,
+            932
+          ],
+          [
+            1702,
+            933
+          ],
+          [
+            1700,
+            1007
+          ],
+          [
+            1700,
+            1009
+          ],
+          [
+            1700,
+            1010
+          ],
+          [
+            1699,
+            1011
+          ],
+          [
+            1699,
+            1012
+          ],
+          [
+            1698,
+            1013
+          ],
+          [
+            1697,
+            1013
+          ],
+          [
+            1696,
+            1014
+          ],
+          [
+            1585,
+            1061
+          ],
+          [
+            1584,
+            1062
+          ],
+          [
+            1583,
+            1062
+          ],
+          [
+            1582,
+            1062
+          ],
+          [
+            1580,
+            1062
+          ],
+          [
+            1081,
+            971
+          ],
+          [
+            1080,
+            971
+          ],
+          [
+            1078,
+            970
+          ],
+          [
+            1077,
+            970
+          ],
+          [
+            1077,
+            969
+          ],
+          [
+            1076,
+            969
+          ],
+          [
+            1076,
+            968
+          ],
+          [
+            1075,
+            968
+          ],
+          [
+            1075,
+            967
+          ],
+          [
+            1074,
+            966
+          ],
+          [
+            1074,
+            965
+          ],
+          [
+            1074,
+            965
+          ]
+        ]
+      },
+      "cable": {
+        "object": "Cable_PhysicalGraphiteSheath",
+        "authored_turns": 2.5,
+        "composition": "desktop",
+        "padding_px": 12,
+        "centerline_point_count": 483,
+        "segment_rectangles": [
+          {
+            "x": 0,
+            "y": 783,
+            "w": 0,
+            "h": 219
+          },
+          {
+            "x": 0,
+            "y": 978,
+            "w": 0,
+            "h": 222
+          },
+          {
+            "x": 0,
+            "y": 1200,
+            "w": 359,
+            "h": 0
+          },
+          {
+            "x": 335,
+            "y": 1200,
+            "w": 1585,
+            "h": 0
+          },
+          {
+            "x": 1920,
+            "y": 1200,
+            "w": 0,
+            "h": 0
+          },
+          {
+            "x": 1920,
+            "y": 1072,
+            "w": 0,
+            "h": 128
+          },
+          {
+            "x": 1920,
+            "y": 867,
+            "w": 0,
+            "h": 229
+          },
+          {
+            "x": 1920,
+            "y": 752,
+            "w": 0,
+            "h": 139
+          },
+          {
+            "x": 1814,
+            "y": 693,
+            "w": 106,
+            "h": 83
+          },
+          {
+            "x": 1306,
+            "y": 679,
+            "w": 532,
+            "h": 38
+          },
+          {
+            "x": 846,
+            "y": 679,
+            "w": 484,
+            "h": 39
+          },
+          {
+            "x": 449,
+            "y": 694,
+            "w": 421,
+            "h": 74
+          },
+          {
+            "x": 165,
+            "y": 744,
+            "w": 308,
+            "h": 115
+          },
+          {
+            "x": 89,
+            "y": 835,
+            "w": 100,
+            "h": 155
+          },
+          {
+            "x": 102,
+            "y": 966,
+            "w": 332,
+            "h": 162
+          },
+          {
+            "x": 410,
+            "y": 1104,
+            "w": 725,
+            "h": 96
+          },
+          {
+            "x": 1111,
+            "y": 1169,
+            "w": 795,
+            "h": 31
+          },
+          {
+            "x": 1882,
+            "y": 1060,
+            "w": 38,
+            "h": 133
+          },
+          {
+            "x": 1920,
+            "y": 943,
+            "w": 0,
+            "h": 141
+          },
+          {
+            "x": 1920,
+            "y": 844,
+            "w": 0,
+            "h": 123
+          },
+          {
+            "x": 1878,
+            "y": 786,
+            "w": 42,
+            "h": 82
+          },
+          {
+            "x": 1558,
+            "y": 759,
+            "w": 344,
+            "h": 51
+          },
+          {
+            "x": 1261,
+            "y": 755,
+            "w": 321,
+            "h": 28
+          },
+          {
+            "x": 1017,
+            "y": 757,
+            "w": 268,
+            "h": 44
+          },
+          {
+            "x": 858,
+            "y": 777,
+            "w": 183,
+            "h": 61
+          },
+          {
+            "x": 815,
+            "y": 814,
+            "w": 67,
+            "h": 72
+          },
+          {
+            "x": 817,
+            "y": 862,
+            "w": 118,
+            "h": 75
+          },
+          {
+            "x": 911,
+            "y": 913,
+            "w": 224,
+            "h": 57
+          },
+          {
+            "x": 1111,
+            "y": 946,
+            "w": 251,
+            "h": 31
+          },
+          {
+            "x": 1338,
+            "y": 933,
+            "w": 193,
+            "h": 43
+          },
+          {
+            "x": 1507,
+            "y": 904,
+            "w": 93,
+            "h": 53
+          },
+          {
+            "x": 1560,
+            "y": 877,
+            "w": 42,
+            "h": 51
+          },
+          {
+            "x": 1555,
+            "y": 889,
+            "w": 35,
+            "h": 55
+          }
+        ],
+        "union_bbox": {
+          "x": 0,
+          "y": 679,
+          "w": 1920,
+          "h": 521
+        },
+        "visibility_evidence": {
+          "method": "ordered authored spiral centerline projected through the exact camera/aspect; contiguous in-viewport angular intervals summed before the three-point below-grade tangent; visual occlusion audited separately",
+          "viewport": {
+            "width": 1920,
+            "height": 1200
+          },
+          "spiral_point_count": 480,
+          "visible_point_count": 277,
+          "visible_progress_intervals": [
+            {
+              "start_progress": 0.277662,
+              "end_progress": 0.496868,
+              "turns": 0.548017
+            },
+            {
+              "start_progress": 0.524008,
+              "end_progress": 0.532359,
+              "turns": 0.020877
+            },
+            {
+              "start_progress": 0.655532,
+              "end_progress": 1.0,
+              "turns": 0.861169
+            }
+          ],
+          "visible_turns_approx": 1.430063,
+          "visible_angular_span_degrees": 514.823,
+          "gate_scope": "informational-desktop-cinematic-crop",
+          "pass_threshold_turns": null,
+          "pass": true
+        }
+      }
+    },
+    {
+      "id": "mobile-dormant",
+      "source": {
+        "path": "renders/hero/mobile-dormant-base.png",
+        "width": 720,
+        "height": 1600,
+        "bytes": 756110,
+        "sha256": "fc21b85a1e56818ff8cd58ad6fdcf96368103d3219426bff2805c43c951fc7ed"
+      },
+      "camera": "Camera_MobileHero",
+      "coordinate_system": "top-left origin; x right; y down; source pixels",
+      "station": {
+        "objects": [
+          "Aperture_OpticallyBlackDormantGlass",
+          "Foundation_FlushCurrentArrivalSeam",
+          "GroundAnchor_RecessedSlot_1",
+          "InstalledFoundation_PerimeterSeam",
+          "InternalTransfer_RecessedServicePath",
+          "MechanicalResponse_InternalIrisBlade_01",
+          "MechanicalResponse_InternalIrisBlade_02",
+          "MechanicalResponse_InternalIrisBlade_03",
+          "MechanicalResponse_InternalIrisBlade_04",
+          "MechanicalResponse_InternalIrisBlade_05",
+          "PhysicalScreen_Carrier",
+          "PhysicalScreen_ChallengeDetected",
+          "PhysicalScreen_OperatingRoute",
+          "PhysicalScreen_RouteDatum_1",
+          "PhysicalScreen_RouteDatum_2",
+          "PhysicalScreen_RouteDatum_3",
+          "PhysicalScreen_RouteDatum_4",
+          "PhysicalScreen_RouteDatum_5",
+          "PhysicalScreen_TestRouteAvailable",
+          "Station_AsymmetricOpticalBlade",
+          "Station_BelowGradeIntegratedFoundation",
+          "Station_LoadBearingServiceSpine",
+          "Station_LowerRightStructuralInterruptor"
+        ],
+        "padding_px": 5,
+        "bbox": {
+          "x": 131,
+          "y": 587,
+          "w": 584,
+          "h": 528
+        },
+        "convex_hull_polygon": [
+          [
+            136,
+            972
+          ],
+          [
+            136,
+            971
+          ],
+          [
+            196,
+            665
+          ],
+          [
+            197,
+            662
+          ],
+          [
+            198,
+            660
+          ],
+          [
+            198,
+            658
+          ],
+          [
+            199,
+            656
+          ],
+          [
+            200,
+            655
+          ],
+          [
+            201,
+            654
+          ],
+          [
+            203,
+            652
+          ],
+          [
+            204,
+            651
+          ],
+          [
+            206,
+            648
+          ],
+          [
+            207,
+            647
+          ],
+          [
+            254,
+            613
+          ],
+          [
+            256,
+            612
+          ],
+          [
+            259,
+            611
+          ],
+          [
+            262,
+            609
+          ],
+          [
+            312,
+            594
+          ],
+          [
+            315,
+            593
+          ],
+          [
+            318,
+            593
+          ],
+          [
+            321,
+            592
+          ],
+          [
+            324,
+            592
+          ],
+          [
+            326,
+            592
+          ],
+          [
+            452,
+            613
+          ],
+          [
+            631,
+            669
+          ],
+          [
+            633,
+            669
+          ],
+          [
+            635,
+            671
+          ],
+          [
+            637,
+            673
+          ],
+          [
+            638,
+            675
+          ],
+          [
+            668,
+            737
+          ],
+          [
+            669,
+            740
+          ],
+          [
+            670,
+            745
+          ],
+          [
+            671,
+            747
+          ],
+          [
+            710,
+            973
+          ],
+          [
+            710,
+            975
+          ],
+          [
+            708,
+            1039
+          ],
+          [
+            708,
+            1040
+          ],
+          [
+            707,
+            1041
+          ],
+          [
+            707,
+            1042
+          ],
+          [
+            707,
+            1043
+          ],
+          [
+            650,
+            1107
+          ],
+          [
+            649,
+            1108
+          ],
+          [
+            649,
+            1108
+          ],
+          [
+            648,
+            1109
+          ],
+          [
+            647,
+            1110
+          ],
+          [
+            645,
+            1110
+          ],
+          [
+            645,
+            1110
+          ],
+          [
+            643,
+            1110
+          ],
+          [
+            143,
+            1043
+          ],
+          [
+            142,
+            1043
+          ],
+          [
+            141,
+            1042
+          ],
+          [
+            140,
+            1042
+          ],
+          [
+            140,
+            1041
+          ],
+          [
+            139,
+            1041
+          ],
+          [
+            139,
+            1041
+          ],
+          [
+            138,
+            1040
+          ],
+          [
+            138,
+            1039
+          ],
+          [
+            137,
+            1038
+          ],
+          [
+            137,
+            1036
+          ],
+          [
+            137,
+            1036
+          ]
+        ]
+      },
+      "cable": {
+        "object": "MobileCable_PhysicalGraphiteSheath",
+        "authored_turns": 2.25,
+        "composition": "portrait-authored",
+        "padding_px": 6,
+        "centerline_point_count": 435,
+        "segment_rectangles": [
+          {
+            "x": 413,
+            "y": 1031,
+            "w": 163,
+            "h": 25
+          },
+          {
+            "x": 564,
+            "y": 1002,
+            "w": 120,
+            "h": 41
+          },
+          {
+            "x": 672,
+            "y": 964,
+            "w": 48,
+            "h": 50
+          },
+          {
+            "x": 706,
+            "y": 926,
+            "w": 14,
+            "h": 50
+          },
+          {
+            "x": 645,
+            "y": 895,
+            "w": 73,
+            "h": 43
+          },
+          {
+            "x": 551,
+            "y": 876,
+            "w": 106,
+            "h": 31
+          },
+          {
+            "x": 441,
+            "y": 868,
+            "w": 122,
+            "h": 20
+          },
+          {
+            "x": 329,
+            "y": 867,
+            "w": 124,
+            "h": 16
+          },
+          {
+            "x": 231,
+            "y": 871,
+            "w": 110,
+            "h": 26
+          },
+          {
+            "x": 159,
+            "y": 885,
+            "w": 84,
+            "h": 35
+          },
+          {
+            "x": 127,
+            "y": 908,
+            "w": 44,
+            "h": 42
+          },
+          {
+            "x": 126,
+            "y": 938,
+            "w": 30,
+            "h": 45
+          },
+          {
+            "x": 144,
+            "y": 971,
+            "w": 80,
+            "h": 40
+          },
+          {
+            "x": 212,
+            "y": 999,
+            "w": 120,
+            "h": 30
+          },
+          {
+            "x": 320,
+            "y": 1017,
+            "w": 136,
+            "h": 15
+          },
+          {
+            "x": 444,
+            "y": 1005,
+            "w": 123,
+            "h": 26
+          },
+          {
+            "x": 555,
+            "y": 980,
+            "w": 85,
+            "h": 37
+          },
+          {
+            "x": 628,
+            "y": 950,
+            "w": 37,
+            "h": 42
+          },
+          {
+            "x": 633,
+            "y": 921,
+            "w": 32,
+            "h": 41
+          },
+          {
+            "x": 577,
+            "y": 899,
+            "w": 68,
+            "h": 34
+          },
+          {
+            "x": 498,
+            "y": 885,
+            "w": 91,
+            "h": 26
+          },
+          {
+            "x": 410,
+            "y": 881,
+            "w": 100,
+            "h": 16
+          },
+          {
+            "x": 323,
+            "y": 882,
+            "w": 99,
+            "h": 17
+          },
+          {
+            "x": 252,
+            "y": 887,
+            "w": 83,
+            "h": 25
+          },
+          {
+            "x": 206,
+            "y": 900,
+            "w": 58,
+            "h": 32
+          },
+          {
+            "x": 193,
+            "y": 920,
+            "w": 25,
+            "h": 36
+          },
+          {
+            "x": 194,
+            "y": 944,
+            "w": 38,
+            "h": 36
+          },
+          {
+            "x": 220,
+            "y": 968,
+            "w": 74,
+            "h": 31
+          },
+          {
+            "x": 282,
+            "y": 987,
+            "w": 97,
+            "h": 22
+          },
+          {
+            "x": 367,
+            "y": 995,
+            "w": 101,
+            "h": 15
+          },
+          {
+            "x": 456,
+            "y": 982,
+            "w": 86,
+            "h": 25
+          },
+          {
+            "x": 530,
+            "y": 963,
+            "w": 57,
+            "h": 31
+          },
+          {
+            "x": 575,
+            "y": 959,
+            "w": 23,
+            "h": 16
+          },
+          {
+            "x": 583,
+            "y": 963,
+            "w": 26,
+            "h": 54
+          }
+        ],
+        "union_bbox": {
+          "x": 126,
+          "y": 867,
+          "w": 594,
+          "h": 189
+        },
+        "visibility_evidence": {
+          "method": "ordered authored spiral centerline projected through the exact camera/aspect; contiguous in-viewport angular intervals summed before the three-point below-grade tangent; visual occlusion audited separately",
+          "viewport": {
+            "width": 720,
+            "height": 1600
+          },
+          "spiral_point_count": 432,
+          "visible_point_count": 418,
+          "visible_progress_intervals": [
+            {
+              "start_progress": 0.0,
+              "end_progress": 0.081206,
+              "turns": 0.182715
+            },
+            {
+              "start_progress": 0.116009,
+              "end_progress": 1.0,
+              "turns": 1.988979
+            }
+          ],
+          "visible_turns_approx": 2.171694,
+          "visible_angular_span_degrees": 781.81,
+          "gate_scope": "mobile-visible-turn-gate",
+          "pass_threshold_turns": 2.15,
+          "pass": true
+        }
+      }
+    },
+    {
+      "id": "reduced-desktop",
+      "source": {
+        "path": "renders/hero/reduced-desktop-base.png",
+        "width": 1600,
+        "height": 1000,
+        "bytes": 1057156,
+        "sha256": "2ad8d9212e6e48acf1dae8113d40c7c0c8c1dda55867e0cbc3903c371e8f0466"
+      },
+      "camera": "Camera_DesktopHero",
+      "coordinate_system": "top-left origin; x right; y down; source pixels",
+      "station": {
+        "objects": [
+          "Aperture_OpticallyBlackDormantGlass",
+          "Foundation_FlushCurrentArrivalSeam",
+          "GroundAnchor_RecessedSlot_1",
+          "GroundAnchor_RecessedSlot_2",
+          "InstalledFoundation_PerimeterSeam",
+          "InternalTransfer_RecessedServicePath",
+          "MechanicalResponse_InternalIrisBlade_01",
+          "MechanicalResponse_InternalIrisBlade_02",
+          "MechanicalResponse_InternalIrisBlade_03",
+          "MechanicalResponse_InternalIrisBlade_04",
+          "MechanicalResponse_InternalIrisBlade_05",
+          "PhysicalScreen_Carrier",
+          "PhysicalScreen_ChallengeDetected",
+          "PhysicalScreen_OperatingRoute",
+          "PhysicalScreen_RouteDatum_1",
+          "PhysicalScreen_RouteDatum_2",
+          "PhysicalScreen_RouteDatum_3",
+          "PhysicalScreen_RouteDatum_4",
+          "PhysicalScreen_RouteDatum_5",
+          "PhysicalScreen_TestRouteAvailable",
+          "Station_AsymmetricOpticalBlade",
+          "Station_BelowGradeIntegratedFoundation",
+          "Station_LoadBearingServiceSpine",
+          "Station_LowerRightStructuralInterruptor"
+        ],
+        "padding_px": 7,
+        "bbox": {
+          "x": 888,
+          "y": 405,
+          "w": 538,
+          "h": 487
+        },
+        "convex_hull_polygon": [
+          [
+            895,
+            803
+          ],
+          [
+            895,
+            744
+          ],
+          [
+            895,
+            743
+          ],
+          [
+            950,
+            469
+          ],
+          [
+            951,
+            467
+          ],
+          [
+            951,
+            465
+          ],
+          [
+            952,
+            463
+          ],
+          [
+            953,
+            461
+          ],
+          [
+            954,
+            460
+          ],
+          [
+            955,
+            459
+          ],
+          [
+            959,
+            455
+          ],
+          [
+            998,
+            424
+          ],
+          [
+            998,
+            424
+          ],
+          [
+            1003,
+            421
+          ],
+          [
+            1005,
+            420
+          ],
+          [
+            1007,
+            420
+          ],
+          [
+            1010,
+            419
+          ],
+          [
+            1012,
+            419
+          ],
+          [
+            1073,
+            412
+          ],
+          [
+            1075,
+            412
+          ],
+          [
+            1078,
+            412
+          ],
+          [
+            1182,
+            431
+          ],
+          [
+            1350,
+            487
+          ],
+          [
+            1352,
+            488
+          ],
+          [
+            1352,
+            489
+          ],
+          [
+            1354,
+            490
+          ],
+          [
+            1355,
+            491
+          ],
+          [
+            1357,
+            494
+          ],
+          [
+            1383,
+            552
+          ],
+          [
+            1383,
+            553
+          ],
+          [
+            1384,
+            555
+          ],
+          [
+            1385,
+            557
+          ],
+          [
+            1385,
+            560
+          ],
+          [
+            1386,
+            561
+          ],
+          [
+            1386,
+            562
+          ],
+          [
+            1419,
+            776
+          ],
+          [
+            1419,
+            778
+          ],
+          [
+            1417,
+            839
+          ],
+          [
+            1417,
+            841
+          ],
+          [
+            1416,
+            842
+          ],
+          [
+            1416,
+            842
+          ],
+          [
+            1416,
+            843
+          ],
+          [
+            1415,
+            844
+          ],
+          [
+            1414,
+            844
+          ],
+          [
+            1413,
+            845
+          ],
+          [
+            1321,
+            884
+          ],
+          [
+            1320,
+            885
+          ],
+          [
+            1319,
+            885
+          ],
+          [
+            1318,
+            885
+          ],
+          [
+            1317,
+            885
+          ],
+          [
+            900,
+            809
+          ],
+          [
+            900,
+            809
+          ],
+          [
+            899,
+            809
+          ],
+          [
+            898,
+            808
+          ],
+          [
+            897,
+            808
+          ],
+          [
+            897,
+            807
+          ],
+          [
+            896,
+            807
+          ],
+          [
+            896,
+            807
+          ],
+          [
+            896,
+            806
+          ],
+          [
+            895,
+            805
+          ],
+          [
+            895,
+            804
+          ],
+          [
+            895,
+            804
+          ]
+        ]
+      },
+      "cable": {
+        "object": "Cable_PhysicalGraphiteSheath",
+        "authored_turns": 2.5,
+        "composition": "desktop",
+        "padding_px": 10,
+        "centerline_point_count": 483,
+        "segment_rectangles": [
+          {
+            "x": 0,
+            "y": 653,
+            "w": 0,
+            "h": 182
+          },
+          {
+            "x": 0,
+            "y": 815,
+            "w": 0,
+            "h": 185
+          },
+          {
+            "x": 0,
+            "y": 1000,
+            "w": 299,
+            "h": 0
+          },
+          {
+            "x": 279,
+            "y": 1000,
+            "w": 1321,
+            "h": 0
+          },
+          {
+            "x": 1600,
+            "y": 1000,
+            "w": 0,
+            "h": 0
+          },
+          {
+            "x": 1600,
+            "y": 893,
+            "w": 0,
+            "h": 107
+          },
+          {
+            "x": 1600,
+            "y": 723,
+            "w": 0,
+            "h": 190
+          },
+          {
+            "x": 1600,
+            "y": 627,
+            "w": 0,
+            "h": 116
+          },
+          {
+            "x": 1511,
+            "y": 577,
+            "w": 89,
+            "h": 70
+          },
+          {
+            "x": 1089,
+            "y": 566,
+            "w": 442,
+            "h": 31
+          },
+          {
+            "x": 705,
+            "y": 566,
+            "w": 404,
+            "h": 32
+          },
+          {
+            "x": 374,
+            "y": 578,
+            "w": 351,
+            "h": 62
+          },
+          {
+            "x": 137,
+            "y": 620,
+            "w": 257,
+            "h": 96
+          },
+          {
+            "x": 74,
+            "y": 696,
+            "w": 83,
+            "h": 129
+          },
+          {
+            "x": 85,
+            "y": 805,
+            "w": 277,
+            "h": 135
+          },
+          {
+            "x": 342,
+            "y": 920,
+            "w": 604,
+            "h": 80
+          },
+          {
+            "x": 926,
+            "y": 974,
+            "w": 662,
+            "h": 26
+          },
+          {
+            "x": 1568,
+            "y": 884,
+            "w": 32,
+            "h": 110
+          },
+          {
+            "x": 1600,
+            "y": 785,
+            "w": 0,
+            "h": 119
+          },
+          {
+            "x": 1600,
+            "y": 704,
+            "w": 0,
+            "h": 101
+          },
+          {
+            "x": 1565,
+            "y": 655,
+            "w": 35,
+            "h": 69
+          },
+          {
+            "x": 1299,
+            "y": 633,
+            "w": 286,
+            "h": 42
+          },
+          {
+            "x": 1051,
+            "y": 629,
+            "w": 268,
+            "h": 24
+          },
+          {
+            "x": 847,
+            "y": 631,
+            "w": 224,
+            "h": 36
+          },
+          {
+            "x": 715,
+            "y": 647,
+            "w": 152,
+            "h": 51
+          },
+          {
+            "x": 679,
+            "y": 678,
+            "w": 56,
+            "h": 60
+          },
+          {
+            "x": 681,
+            "y": 718,
+            "w": 98,
+            "h": 63
+          },
+          {
+            "x": 759,
+            "y": 761,
+            "w": 187,
+            "h": 48
+          },
+          {
+            "x": 926,
+            "y": 789,
+            "w": 209,
+            "h": 25
+          },
+          {
+            "x": 1115,
+            "y": 778,
+            "w": 160,
+            "h": 35
+          },
+          {
+            "x": 1255,
+            "y": 753,
+            "w": 78,
+            "h": 45
+          },
+          {
+            "x": 1300,
+            "y": 731,
+            "w": 35,
+            "h": 42
+          },
+          {
+            "x": 1296,
+            "y": 741,
+            "w": 29,
+            "h": 46
+          }
+        ],
+        "union_bbox": {
+          "x": 0,
+          "y": 566,
+          "w": 1600,
+          "h": 434
+        },
+        "visibility_evidence": {
+          "method": "ordered authored spiral centerline projected through the exact camera/aspect; contiguous in-viewport angular intervals summed before the three-point below-grade tangent; visual occlusion audited separately",
+          "viewport": {
+            "width": 1600,
+            "height": 1000
+          },
+          "spiral_point_count": 480,
+          "visible_point_count": 277,
+          "visible_progress_intervals": [
+            {
+              "start_progress": 0.277662,
+              "end_progress": 0.496868,
+              "turns": 0.548017
+            },
+            {
+              "start_progress": 0.524008,
+              "end_progress": 0.532359,
+              "turns": 0.020877
+            },
+            {
+              "start_progress": 0.655532,
+              "end_progress": 1.0,
+              "turns": 0.861169
+            }
+          ],
+          "visible_turns_approx": 1.430063,
+          "visible_angular_span_degrees": 514.823,
+          "gate_scope": "informational-desktop-cinematic-crop",
+          "pass_threshold_turns": null,
+          "pass": true
+        }
+      }
+    },
+    {
+      "id": "reduced-mobile",
+      "source": {
+        "path": "renders/hero/reduced-mobile-base.png",
+        "width": 720,
+        "height": 1600,
+        "bytes": 756110,
+        "sha256": "fc21b85a1e56818ff8cd58ad6fdcf96368103d3219426bff2805c43c951fc7ed"
+      },
+      "camera": "Camera_MobileHero",
+      "coordinate_system": "top-left origin; x right; y down; source pixels",
+      "station": {
+        "objects": [
+          "Aperture_OpticallyBlackDormantGlass",
+          "Foundation_FlushCurrentArrivalSeam",
+          "GroundAnchor_RecessedSlot_1",
+          "InstalledFoundation_PerimeterSeam",
+          "InternalTransfer_RecessedServicePath",
+          "MechanicalResponse_InternalIrisBlade_01",
+          "MechanicalResponse_InternalIrisBlade_02",
+          "MechanicalResponse_InternalIrisBlade_03",
+          "MechanicalResponse_InternalIrisBlade_04",
+          "MechanicalResponse_InternalIrisBlade_05",
+          "PhysicalScreen_Carrier",
+          "PhysicalScreen_ChallengeDetected",
+          "PhysicalScreen_OperatingRoute",
+          "PhysicalScreen_RouteDatum_1",
+          "PhysicalScreen_RouteDatum_2",
+          "PhysicalScreen_RouteDatum_3",
+          "PhysicalScreen_RouteDatum_4",
+          "PhysicalScreen_RouteDatum_5",
+          "PhysicalScreen_TestRouteAvailable",
+          "Station_AsymmetricOpticalBlade",
+          "Station_BelowGradeIntegratedFoundation",
+          "Station_LoadBearingServiceSpine",
+          "Station_LowerRightStructuralInterruptor"
+        ],
+        "padding_px": 5,
+        "bbox": {
+          "x": 131,
+          "y": 587,
+          "w": 584,
+          "h": 528
+        },
+        "convex_hull_polygon": [
+          [
+            136,
+            972
+          ],
+          [
+            136,
+            971
+          ],
+          [
+            196,
+            665
+          ],
+          [
+            197,
+            662
+          ],
+          [
+            198,
+            660
+          ],
+          [
+            198,
+            658
+          ],
+          [
+            199,
+            656
+          ],
+          [
+            200,
+            655
+          ],
+          [
+            201,
+            654
+          ],
+          [
+            203,
+            652
+          ],
+          [
+            204,
+            651
+          ],
+          [
+            206,
+            648
+          ],
+          [
+            207,
+            647
+          ],
+          [
+            254,
+            613
+          ],
+          [
+            256,
+            612
+          ],
+          [
+            259,
+            611
+          ],
+          [
+            262,
+            609
+          ],
+          [
+            312,
+            594
+          ],
+          [
+            315,
+            593
+          ],
+          [
+            318,
+            593
+          ],
+          [
+            321,
+            592
+          ],
+          [
+            324,
+            592
+          ],
+          [
+            326,
+            592
+          ],
+          [
+            452,
+            613
+          ],
+          [
+            631,
+            669
+          ],
+          [
+            633,
+            669
+          ],
+          [
+            635,
+            671
+          ],
+          [
+            637,
+            673
+          ],
+          [
+            638,
+            675
+          ],
+          [
+            668,
+            737
+          ],
+          [
+            669,
+            740
+          ],
+          [
+            670,
+            745
+          ],
+          [
+            671,
+            747
+          ],
+          [
+            710,
+            973
+          ],
+          [
+            710,
+            975
+          ],
+          [
+            708,
+            1039
+          ],
+          [
+            708,
+            1040
+          ],
+          [
+            707,
+            1041
+          ],
+          [
+            707,
+            1042
+          ],
+          [
+            707,
+            1043
+          ],
+          [
+            650,
+            1107
+          ],
+          [
+            649,
+            1108
+          ],
+          [
+            649,
+            1108
+          ],
+          [
+            648,
+            1109
+          ],
+          [
+            647,
+            1110
+          ],
+          [
+            645,
+            1110
+          ],
+          [
+            645,
+            1110
+          ],
+          [
+            643,
+            1110
+          ],
+          [
+            143,
+            1043
+          ],
+          [
+            142,
+            1043
+          ],
+          [
+            141,
+            1042
+          ],
+          [
+            140,
+            1042
+          ],
+          [
+            140,
+            1041
+          ],
+          [
+            139,
+            1041
+          ],
+          [
+            139,
+            1041
+          ],
+          [
+            138,
+            1040
+          ],
+          [
+            138,
+            1039
+          ],
+          [
+            137,
+            1038
+          ],
+          [
+            137,
+            1036
+          ],
+          [
+            137,
+            1036
+          ]
+        ]
+      },
+      "cable": {
+        "object": "MobileCable_PhysicalGraphiteSheath",
+        "authored_turns": 2.25,
+        "composition": "portrait-authored",
+        "padding_px": 6,
+        "centerline_point_count": 435,
+        "segment_rectangles": [
+          {
+            "x": 413,
+            "y": 1031,
+            "w": 163,
+            "h": 25
+          },
+          {
+            "x": 564,
+            "y": 1002,
+            "w": 120,
+            "h": 41
+          },
+          {
+            "x": 672,
+            "y": 964,
+            "w": 48,
+            "h": 50
+          },
+          {
+            "x": 706,
+            "y": 926,
+            "w": 14,
+            "h": 50
+          },
+          {
+            "x": 645,
+            "y": 895,
+            "w": 73,
+            "h": 43
+          },
+          {
+            "x": 551,
+            "y": 876,
+            "w": 106,
+            "h": 31
+          },
+          {
+            "x": 441,
+            "y": 868,
+            "w": 122,
+            "h": 20
+          },
+          {
+            "x": 329,
+            "y": 867,
+            "w": 124,
+            "h": 16
+          },
+          {
+            "x": 231,
+            "y": 871,
+            "w": 110,
+            "h": 26
+          },
+          {
+            "x": 159,
+            "y": 885,
+            "w": 84,
+            "h": 35
+          },
+          {
+            "x": 127,
+            "y": 908,
+            "w": 44,
+            "h": 42
+          },
+          {
+            "x": 126,
+            "y": 938,
+            "w": 30,
+            "h": 45
+          },
+          {
+            "x": 144,
+            "y": 971,
+            "w": 80,
+            "h": 40
+          },
+          {
+            "x": 212,
+            "y": 999,
+            "w": 120,
+            "h": 30
+          },
+          {
+            "x": 320,
+            "y": 1017,
+            "w": 136,
+            "h": 15
+          },
+          {
+            "x": 444,
+            "y": 1005,
+            "w": 123,
+            "h": 26
+          },
+          {
+            "x": 555,
+            "y": 980,
+            "w": 85,
+            "h": 37
+          },
+          {
+            "x": 628,
+            "y": 950,
+            "w": 37,
+            "h": 42
+          },
+          {
+            "x": 633,
+            "y": 921,
+            "w": 32,
+            "h": 41
+          },
+          {
+            "x": 577,
+            "y": 899,
+            "w": 68,
+            "h": 34
+          },
+          {
+            "x": 498,
+            "y": 885,
+            "w": 91,
+            "h": 26
+          },
+          {
+            "x": 410,
+            "y": 881,
+            "w": 100,
+            "h": 16
+          },
+          {
+            "x": 323,
+            "y": 882,
+            "w": 99,
+            "h": 17
+          },
+          {
+            "x": 252,
+            "y": 887,
+            "w": 83,
+            "h": 25
+          },
+          {
+            "x": 206,
+            "y": 900,
+            "w": 58,
+            "h": 32
+          },
+          {
+            "x": 193,
+            "y": 920,
+            "w": 25,
+            "h": 36
+          },
+          {
+            "x": 194,
+            "y": 944,
+            "w": 38,
+            "h": 36
+          },
+          {
+            "x": 220,
+            "y": 968,
+            "w": 74,
+            "h": 31
+          },
+          {
+            "x": 282,
+            "y": 987,
+            "w": 97,
+            "h": 22
+          },
+          {
+            "x": 367,
+            "y": 995,
+            "w": 101,
+            "h": 15
+          },
+          {
+            "x": 456,
+            "y": 982,
+            "w": 86,
+            "h": 25
+          },
+          {
+            "x": 530,
+            "y": 963,
+            "w": 57,
+            "h": 31
+          },
+          {
+            "x": 575,
+            "y": 959,
+            "w": 23,
+            "h": 16
+          },
+          {
+            "x": 583,
+            "y": 963,
+            "w": 26,
+            "h": 54
+          }
+        ],
+        "union_bbox": {
+          "x": 126,
+          "y": 867,
+          "w": 594,
+          "h": 189
+        },
+        "visibility_evidence": {
+          "method": "ordered authored spiral centerline projected through the exact camera/aspect; contiguous in-viewport angular intervals summed before the three-point below-grade tangent; visual occlusion audited separately",
+          "viewport": {
+            "width": 720,
+            "height": 1600
+          },
+          "spiral_point_count": 432,
+          "visible_point_count": 418,
+          "visible_progress_intervals": [
+            {
+              "start_progress": 0.0,
+              "end_progress": 0.081206,
+              "turns": 0.182715
+            },
+            {
+              "start_progress": 0.116009,
+              "end_progress": 1.0,
+              "turns": 1.988979
+            }
+          ],
+          "visible_turns_approx": 2.171694,
+          "visible_angular_span_degrees": 781.81,
+          "gate_scope": "mobile-visible-turn-gate",
+          "pass_threshold_turns": 2.15,
+          "pass": true
+        }
+      }
+    }
+  ]
+}

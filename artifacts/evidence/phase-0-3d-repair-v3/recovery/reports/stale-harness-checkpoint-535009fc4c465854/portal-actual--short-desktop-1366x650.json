@@ -1,0 +1,630 @@
+{
+  "schema": "quantum-hub.phase-0-3d-repair-v3.local-browser-case.v1",
+  "authority": "repository-native-playwright",
+  "capturedAt": "2026-08-18T09:58:13.282Z",
+  "plan": {
+    "path": "prototypes/phase-0-portal-layout-qa/capture-plan-v3.json",
+    "sha256": "26cf9fc7088d3102b1214c6f8c0c5f1864d02d3d04c52a047b2b17b8ca7db2d5",
+    "bytes": 11458
+  },
+  "browser": {
+    "engine": "Chromium",
+    "product": "chrome",
+    "version": "151.0.7922.34",
+    "executableResolution": "playwright-managed-executable",
+    "automationPackage": "playwright",
+    "localAuthority": true
+  },
+  "id": "portal-actual--short-desktop-1366x650",
+  "viewportId": "short-desktop-1366x650",
+  "query": "surface=portal&fixture=actual&zoom=100&motion=no-preference&chrome=0",
+  "focusSelector": null,
+  "captureRequired": false,
+  "forcedDiagnosticCapture": false,
+  "runnerDomReportSha256": "880f21114ca784c03951978d97994a9f2e272d864f7cf28bf6c4ae335b1e5312",
+  "runner": {
+    "schema": "quantum-hub.phase-0-3d-repair-v3.exact-viewport-runner-report.v1",
+    "requestedViewport": {
+      "width": 1366,
+      "height": 650,
+      "unit": "CSS pixel"
+    },
+    "iframeViewport": {
+      "width": 1366,
+      "height": 650,
+      "devicePixelRatio": 1
+    },
+    "viewportMatch": true,
+    "devicePixelRatioPolicy": "record actual browser DPR; do not claim control",
+    "captureScale": 0.8784773060029283,
+    "captureScalePolicy": "evidence-only outer transform; iframe layout remains at the exact requested CSS viewport",
+    "maximumRenderedWidth": 1200,
+    "captureRenderedBounds": {
+      "left": 0,
+      "top": 0,
+      "width": 1200,
+      "height": 571.01,
+      "rasterWidth": 1200,
+      "rasterHeight": 571
+    },
+    "captureBoundsMatch": true,
+    "focusSelector": null,
+    "pass": true
+  },
+  "report": {
+    "schema": "quantum-hub.phase-0-3d-repair-v3.typography-collision-browser-report.v1",
+    "harness": "phase-0-portal-layout-qa",
+    "contract": {
+      "path": "artifacts/original/phase-0-3d-repair-v2/portal-layout.json",
+      "schema": "quantum-hub.phase-0-3d-repair-v2.portal-layout.v1",
+      "sha256": "25666cf071afe7564dc051cbec770ead325cdf19ef1f4926e43d793a2a053bc5"
+    },
+    "state": {
+      "surface": "portal",
+      "fixture": "actual",
+      "textZoom": 100,
+      "reduced": false,
+      "captureChrome": false
+    },
+    "viewport": {
+      "width": 1366,
+      "height": 650,
+      "layoutWidth": 1366,
+      "layoutHeight": 650,
+      "documentScrollWidth": 1366,
+      "inlineScrollbarWidth": 0,
+      "devicePixelRatio": 1,
+      "orientation": "landscape"
+    },
+    "fonts": {
+      "mode": "forced metric-conscious fallback",
+      "headingComputedFamily": "\"Arial Black\", Arial, sans-serif",
+      "displayFallback": "Arial Black, Arial, sans-serif",
+      "editorialFallback": "Georgia, Times New Roman, serif",
+      "uiFallback": "Arial, Helvetica, sans-serif"
+    },
+    "copy": {
+      "heading": "WHERE DO YOU ENTER?",
+      "renderedLineCount": 2,
+      "expectedLineCount": {
+        "minimum": 2,
+        "maximum": 2
+      },
+      "lineCountPass": true,
+      "longFixtureRatio": 1.87,
+      "longFixturePass": true,
+      "wordFragmentationOffenders": 0,
+      "humanLineBreakReport": [
+        {
+          "headingId": "portal-heading",
+          "tagName": "H1",
+          "ariaLabel": "WHERE DO YOU ENTER?",
+          "renderedLines": [
+            {
+              "line": 1,
+              "topPx": 321.438,
+              "text": "WHERE DO YOU"
+            },
+            {
+              "line": 2,
+              "topPx": 403.516,
+              "text": "ENTER?"
+            }
+          ],
+          "computedStyles": [
+            {
+              "node": "portal-heading",
+              "wordBreak": "normal",
+              "overflowWrap": "normal",
+              "hyphens": "none"
+            },
+            {
+              "node": "portal-heading .heading-line",
+              "wordBreak": "normal",
+              "overflowWrap": "normal",
+              "hyphens": "none"
+            },
+            {
+              "node": "portal-heading .heading-line",
+              "wordBreak": "normal",
+              "overflowWrap": "normal",
+              "hyphens": "none"
+            }
+          ]
+        }
+      ]
+    },
+    "layout": {
+      "collisions": [],
+      "collisionPass": true,
+      "pageHorizontalOverflow": false,
+      "routeHorizontalOverflow": false,
+      "horizontalBounds": [
+        {
+          "id": "portal-nav",
+          "leftPx": 32,
+          "rightPx": 1333.984,
+          "pass": true
+        },
+        {
+          "id": "portal-signal",
+          "leftPx": 32,
+          "rightPx": 878.656,
+          "pass": true
+        },
+        {
+          "id": "portal-eyebrow",
+          "leftPx": 32,
+          "rightPx": 878.656,
+          "pass": true
+        },
+        {
+          "id": "portal-heading",
+          "leftPx": 32,
+          "rightPx": 878.656,
+          "pass": true
+        },
+        {
+          "id": "portal-route",
+          "leftPx": 910.656,
+          "rightPx": 1333.984,
+          "pass": true
+        },
+        {
+          "id": "portal-audience",
+          "leftPx": 910.656,
+          "rightPx": 1333.984,
+          "pass": true
+        }
+      ],
+      "horizontalBoundsPass": true,
+      "textOverflow": {
+        "blocks": [
+          {
+            "id": "portal-brand",
+            "clientWidthPx": 188,
+            "scrollWidthPx": 188,
+            "blockBounds": {
+              "leftPx": 32,
+              "rightPx": 219.656
+            },
+            "glyphRectangles": [
+              {
+                "leftPx": 32,
+                "rightPx": 219.656,
+                "topPx": 138.406,
+                "bottomPx": 176.406,
+                "viewportPass": true
+              }
+            ],
+            "scrollOverflow": false,
+            "glyphOverflow": false,
+            "pass": true
+          },
+          {
+            "id": "portal-nav:review-boundary:1",
+            "clientWidthPx": 257,
+            "scrollWidthPx": 257,
+            "blockBounds": {
+              "leftPx": 1077.203,
+              "rightPx": 1333.984
+            },
+            "glyphRectangles": [
+              {
+                "leftPx": 1077.203,
+                "rightPx": 1333.984,
+                "topPx": 149.406,
+                "bottomPx": 165.406,
+                "viewportPass": true
+              }
+            ],
+            "scrollOverflow": false,
+            "glyphOverflow": false,
+            "pass": true
+          },
+          {
+            "id": "portal-signal",
+            "clientWidthPx": 847,
+            "scrollWidthPx": 847,
+            "blockBounds": {
+              "leftPx": 32,
+              "rightPx": 878.656
+            },
+            "glyphRectangles": [
+              {
+                "leftPx": 32,
+                "rightPx": 267.969,
+                "topPx": 184.406,
+                "bottomPx": 201.406,
+                "viewportPass": true
+              }
+            ],
+            "scrollOverflow": false,
+            "glyphOverflow": false,
+            "pass": true
+          },
+          {
+            "id": "portal-eyebrow",
+            "clientWidthPx": 847,
+            "scrollWidthPx": 847,
+            "blockBounds": {
+              "leftPx": 32,
+              "rightPx": 878.656
+            },
+            "glyphRectangles": [
+              {
+                "leftPx": 32,
+                "rightPx": 390.422,
+                "topPx": 263.922,
+                "bottomPx": 280.922,
+                "viewportPass": true
+              }
+            ],
+            "scrollOverflow": false,
+            "glyphOverflow": false,
+            "pass": true
+          },
+          {
+            "id": "portal-heading",
+            "clientWidthPx": 847,
+            "scrollWidthPx": 847,
+            "blockBounds": {
+              "leftPx": 32,
+              "rightPx": 878.656
+            },
+            "glyphRectangles": [
+              {
+                "leftPx": 32,
+                "rightPx": 728.109,
+                "topPx": 321.438,
+                "bottomPx": 443.438,
+                "viewportPass": true
+              },
+              {
+                "leftPx": 32,
+                "rightPx": 382.641,
+                "topPx": 403.516,
+                "bottomPx": 525.516,
+                "viewportPass": true
+              }
+            ],
+            "scrollOverflow": false,
+            "glyphOverflow": false,
+            "pass": true
+          },
+          {
+            "id": "portal-route:5",
+            "clientWidthPx": 206,
+            "scrollWidthPx": 206,
+            "blockBounds": {
+              "leftPx": 910.656,
+              "rightPx": 1116.313
+            },
+            "glyphRectangles": [
+              {
+                "leftPx": 910.656,
+                "rightPx": 970.781,
+                "topPx": 204,
+                "bottomPx": 221,
+                "viewportPass": true
+              }
+            ],
+            "scrollOverflow": false,
+            "glyphOverflow": false,
+            "pass": true
+          },
+          {
+            "id": "portal-route:6",
+            "clientWidthPx": 206,
+            "scrollWidthPx": 206,
+            "blockBounds": {
+              "leftPx": 1128.313,
+              "rightPx": 1333.984
+            },
+            "glyphRectangles": [
+              {
+                "leftPx": 1128.313,
+                "rightPx": 1200.641,
+                "topPx": 204,
+                "bottomPx": 221,
+                "viewportPass": true
+              }
+            ],
+            "scrollOverflow": false,
+            "glyphOverflow": false,
+            "pass": true
+          },
+          {
+            "id": "portal-route:7",
+            "clientWidthPx": 206,
+            "scrollWidthPx": 206,
+            "blockBounds": {
+              "leftPx": 910.656,
+              "rightPx": 1116.313
+            },
+            "glyphRectangles": [
+              {
+                "leftPx": 910.656,
+                "rightPx": 979.625,
+                "topPx": 256.344,
+                "bottomPx": 273.344,
+                "viewportPass": true
+              }
+            ],
+            "scrollOverflow": false,
+            "glyphOverflow": false,
+            "pass": true
+          },
+          {
+            "id": "portal-route:8",
+            "clientWidthPx": 206,
+            "scrollWidthPx": 206,
+            "blockBounds": {
+              "leftPx": 1128.313,
+              "rightPx": 1333.984
+            },
+            "glyphRectangles": [
+              {
+                "leftPx": 1128.313,
+                "rightPx": 1172.031,
+                "topPx": 256.344,
+                "bottomPx": 273.344,
+                "viewportPass": true
+              }
+            ],
+            "scrollOverflow": false,
+            "glyphOverflow": false,
+            "pass": true
+          },
+          {
+            "id": "portal-route:9",
+            "clientWidthPx": 206,
+            "scrollWidthPx": 206,
+            "blockBounds": {
+              "leftPx": 910.656,
+              "rightPx": 1116.313
+            },
+            "glyphRectangles": [
+              {
+                "leftPx": 910.656,
+                "rightPx": 975.391,
+                "topPx": 308.688,
+                "bottomPx": 325.688,
+                "viewportPass": true
+              }
+            ],
+            "scrollOverflow": false,
+            "glyphOverflow": false,
+            "pass": true
+          },
+          {
+            "id": "portal-industry",
+            "clientWidthPx": 147,
+            "scrollWidthPx": 147,
+            "blockBounds": {
+              "leftPx": 910.656,
+              "rightPx": 1057.813
+            },
+            "glyphRectangles": [
+              {
+                "leftPx": 929.047,
+                "rightPx": 972.391,
+                "topPx": 389.516,
+                "bottomPx": 421.516,
+                "viewportPass": true
+              },
+              {
+                "leftPx": 929.047,
+                "rightPx": 1033,
+                "topPx": 424.516,
+                "bottomPx": 456.516,
+                "viewportPass": true
+              }
+            ],
+            "scrollOverflow": false,
+            "glyphOverflow": false,
+            "pass": true
+          },
+          {
+            "id": "portal-startups",
+            "clientWidthPx": 147,
+            "scrollWidthPx": 147,
+            "blockBounds": {
+              "leftPx": 1186.813,
+              "rightPx": 1333.984
+            },
+            "glyphRectangles": [
+              {
+                "leftPx": 1205.203,
+                "rightPx": 1248.547,
+                "topPx": 389.516,
+                "bottomPx": 421.516,
+                "viewportPass": true
+              },
+              {
+                "leftPx": 1205.203,
+                "rightPx": 1306.422,
+                "topPx": 424.516,
+                "bottomPx": 456.516,
+                "viewportPass": true
+              }
+            ],
+            "scrollOverflow": false,
+            "glyphOverflow": false,
+            "pass": true
+          }
+        ],
+        "offenders": [],
+        "pass": true
+      },
+      "textOverflowPass": true,
+      "wordIntegrity": {
+        "headingsChecked": 1,
+        "wordFragmentationOffenders": 0,
+        "wordFragmentationDetails": [],
+        "cssOffenders": [],
+        "humanLineBreakReport": [
+          {
+            "headingId": "portal-heading",
+            "tagName": "H1",
+            "ariaLabel": "WHERE DO YOU ENTER?",
+            "renderedLines": [
+              {
+                "line": 1,
+                "topPx": 321.438,
+                "text": "WHERE DO YOU"
+              },
+              {
+                "line": 2,
+                "topPx": 403.516,
+                "text": "ENTER?"
+              }
+            ],
+            "computedStyles": [
+              {
+                "node": "portal-heading",
+                "wordBreak": "normal",
+                "overflowWrap": "normal",
+                "hyphens": "none"
+              },
+              {
+                "node": "portal-heading .heading-line",
+                "wordBreak": "normal",
+                "overflowWrap": "normal",
+                "hyphens": "none"
+              },
+              {
+                "node": "portal-heading .heading-line",
+                "wordBreak": "normal",
+                "overflowWrap": "normal",
+                "hyphens": "none"
+              }
+            ]
+          }
+        ],
+        "pass": true
+      },
+      "wordIntegrityPass": true,
+      "buttons": [
+        {
+          "id": "portal-industry",
+          "widthPx": 147.156,
+          "heightPx": 95.594,
+          "pass": true
+        },
+        {
+          "id": "portal-startups",
+          "widthPx": 147.172,
+          "heightPx": 95.594,
+          "pass": true
+        }
+      ],
+      "buttonPass": true,
+      "anchors": {
+        "applicable": false,
+        "reason": "non-16:10 or stress state uses responsive DOM flow"
+      },
+      "projection": {
+        "mode": "responsive-dom-flow",
+        "contractStrategy": "cover",
+        "exactReferenceAspect": false
+      },
+      "ruleSafety": [
+        {
+          "rule": "audience-divider",
+          "glyph": "brand",
+          "intersectsExpandedGlyphBounds": false
+        },
+        {
+          "rule": "audience-divider",
+          "glyph": "signalLine",
+          "intersectsExpandedGlyphBounds": false
+        },
+        {
+          "rule": "audience-divider",
+          "glyph": "eyebrow",
+          "intersectsExpandedGlyphBounds": false
+        },
+        {
+          "rule": "audience-divider",
+          "glyph": "h1Line1",
+          "intersectsExpandedGlyphBounds": false
+        },
+        {
+          "rule": "audience-divider",
+          "glyph": "route",
+          "intersectsExpandedGlyphBounds": false
+        },
+        {
+          "rule": "audience-divider",
+          "glyph": "audienceIndustry",
+          "intersectsExpandedGlyphBounds": false
+        },
+        {
+          "rule": "audience-divider",
+          "glyph": "audienceStartups",
+          "intersectsExpandedGlyphBounds": false
+        }
+      ],
+      "ruleSafetyPass": true,
+      "divider": {
+        "applicable": true,
+        "orientation": "vertical",
+        "widthPx": 1,
+        "heightPx": 114,
+        "thicknessPx": 1,
+        "lengthPx": 114,
+        "pass": true
+      },
+      "dividerPass": true,
+      "sceneSafety": {
+        "applicable": false,
+        "reason": "source-derived Aperture Station/cable keepouts apply to every hero state and reduced-portal stress state"
+      },
+      "reducedMotionComposition": {
+        "applicable": false,
+        "pass": true
+      }
+    },
+    "accessibility": {
+      "focus": {
+        "results": [
+          {
+            "id": "portal-industry",
+            "outlineStyle": "solid",
+            "outlineWidthPx": 3,
+            "outlineColor": "rgb(240, 107, 160)",
+            "pass": true
+          },
+          {
+            "id": "portal-startups",
+            "outlineStyle": "solid",
+            "outlineWidthPx": 3,
+            "outlineColor": "rgb(240, 107, 160)",
+            "pass": true
+          }
+        ],
+        "pass": true
+      },
+      "reducedMotionRequested": false,
+      "hasAnimatedMedia": false,
+      "reducedMotionPass": true,
+      "semanticHeading": true,
+      "sceneDecorative": true
+    },
+    "assets": {
+      "scene": "/artifacts/original/phase-0-3d-repair-v3/renders/portal/physical-glass-base.png",
+      "sceneClassification": "text-free physical glass base for responsive DOM flow",
+      "doubledCopyPass": true,
+      "sceneReady": true,
+      "sceneNaturalWidth": 1920,
+      "sceneNaturalHeight": 1200
+    },
+    "pass": true
+  },
+  "responsiveRepair": {
+    "applicable": false,
+    "pass": true
+  },
+  "capture": null
+}

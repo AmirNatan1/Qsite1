@@ -1,0 +1,214 @@
+{
+  "schema": "quantum-hub.phase-0-3d-repair-v3.typography-capture-plan.v1",
+  "baseUrl": "http://127.0.0.1:4173/prototypes/phase-0-portal-layout-qa/",
+  "runnerUrl": "http://127.0.0.1:4173/prototypes/phase-0-portal-layout-qa/runner.html",
+  "contractPath": "artifacts/original/phase-0-3d-repair-v2/portal-layout.json",
+  "contractPolicy": "preserve the accepted v2 physical-screen, semantic-DOM and overlay coordinate authority unchanged",
+  "fontMode": "forced metric-conscious system fallbacks",
+  "sceneFreeze": {
+    "status": "frozen",
+    "matrixStatus": "ready-for-capture",
+    "frozenAuthority": "creative FINAL STABLE and provenance MOBILE GATE PASS; no further scene-pixel changes planned",
+    "mobileCableGate": {
+      "authoredTurns": 2.25,
+      "visibleTurnsApprox": 2.171694,
+      "visibleAngularSpanDegrees": 781.81,
+      "minimumVisibleTurns": 2.15,
+      "pass": true
+    },
+    "sources": [
+      {
+        "path": "artifacts/original/phase-0-3d-repair-v3/renders/hero/desktop-dormant-base.png",
+        "role": "desktop and landscape dormant hero source",
+        "width": 1920,
+        "height": 1200,
+        "bytes": 1503730,
+        "sha256": "70a1710339d8c7c36bb9c82500bbf755cec3a5882e455d7fc886af952e9b0b63"
+      },
+      {
+        "path": "artifacts/original/phase-0-3d-repair-v3/renders/hero/mobile-dormant-base.png",
+        "role": "authored portrait dormant hero source",
+        "width": 720,
+        "height": 1600,
+        "bytes": 756110,
+        "sha256": "fc21b85a1e56818ff8cd58ad6fdcf96368103d3219426bff2805c43c951fc7ed"
+      },
+      {
+        "path": "artifacts/original/phase-0-3d-repair-v3/renders/hero/reduced-desktop-base.png",
+        "role": "reduced-motion desktop hero source with dormant Station and cable visible",
+        "width": 1600,
+        "height": 1000,
+        "bytes": 1057156,
+        "sha256": "2ad8d9212e6e48acf1dae8113d40c7c0c8c1dda55867e0cbc3903c371e8f0466"
+      },
+      {
+        "path": "artifacts/original/phase-0-3d-repair-v3/renders/hero/reduced-mobile-base.png",
+        "role": "reduced-motion authored-mobile hero source with dormant Station and cable visible",
+        "width": 720,
+        "height": 1600,
+        "bytes": 756110,
+        "sha256": "fc21b85a1e56818ff8cd58ad6fdcf96368103d3219426bff2805c43c951fc7ed"
+      },
+      {
+        "path": "artifacts/original/phase-0-3d-repair-v3/renders/portal/physical-glass-base.png",
+        "role": "text-free live semantic portal background",
+        "width": 1920,
+        "height": 1200,
+        "bytes": 26036,
+        "sha256": "4b8a2ea4bf7d583217bd22c8a70f3e96e9cc8a70c03a9a0fba135af927f79960"
+      },
+      {
+        "path": "artifacts/original/phase-0-3d-repair-v3/renders/portal/physical-layout.png",
+        "role": "text-bearing crossover comparison only; never placed behind live DOM copy",
+        "width": 1920,
+        "height": 1200,
+        "bytes": 61832,
+        "sha256": "ff1f9e99ff18402ae54aec4e6968250ca2b7605824371d594bac73a130ded1f0"
+      },
+      {
+        "path": "artifacts/original/phase-0-3d-repair-v3/renders/portal/station-aperture-glass-close.png",
+        "role": "activated Station aperture physical crossover source",
+        "width": 1920,
+        "height": 1200,
+        "bytes": 2354180,
+        "sha256": "62556f1adc17fc7636bd3676d7969b5dcba6a8f18d8b38d7fcd7e49be493dbce"
+      }
+    ],
+    "keepoutAuthority": {
+      "path": "artifacts/original/phase-0-3d-repair-v3/manifests/scene-source-keepouts.json",
+      "schema": "quantum-hub.phase-0-3d-repair-v3.scene-source-keepouts.v1",
+      "bytes": 44663,
+      "sha256": "3ac16456b5a4a9e5a57755206f135684eca12fcfb7b1aafe30fb3cf86e862b8a",
+      "method": "Blender 5.2 evaluated geometry projection; padded Station bounds and exact cable centerline segment rectangles per source; mobile visible-turn gate included"
+    }
+  },
+  "browserApi": {
+    "readyExpression": "await window.phase03Ready",
+    "reportExpression": "await window.runPhase03TypographyCheck()",
+    "reportGlobal": "window.phase03TypographyReport",
+    "runnerReadyExpression": "await window.phase03RunnerReady",
+    "runnerReportGlobal": "window.phase03RunnerReport",
+    "childReportDomSelector": "#phase03-report",
+    "runnerReportDomSelector": "#phase03-runner-report",
+    "runnerReadySelector": "body[data-ready='true']",
+    "runnerPassSelector": "body[data-pass='true']",
+    "runnerChildReportProperty": "report",
+    "captureElementSelector": "#capture-viewport",
+    "runnerViewportQuery": "vw={width}&vh={height}&captureScale={captureScale}",
+    "expectedSchema": "quantum-hub.phase-0-3d-repair-v3.typography-collision-browser-report.v1",
+    "expectedRunnerSchema": "quantum-hub.phase-0-3d-repair-v3.exact-viewport-runner-report.v1",
+    "passProperty": "pass"
+  },
+  "viewports": [
+    { "id": "desktop-1440x900", "width": 1440, "height": 900, "captureScale": 0.8333333333333334 },
+    { "id": "short-desktop-1366x650", "width": 1366, "height": 650, "captureScale": 0.8784773060029283 },
+    { "id": "desktop-1280x800", "width": 1280, "height": 800, "captureScale": 0.9375 },
+    { "id": "tablet-landscape-1024x768", "width": 1024, "height": 768, "captureScale": 1 },
+    { "id": "tablet-portrait-768x1024", "width": 768, "height": 1024, "captureScale": 1 },
+    { "id": "mobile-390x844", "width": 390, "height": 844, "captureScale": 1 },
+    { "id": "mobile-360x800", "width": 360, "height": 800, "captureScale": 1 },
+    { "id": "narrow-320x800", "width": 320, "height": 800, "captureScale": 1 },
+    { "id": "mobile-landscape-844x390", "width": 844, "height": 390, "captureScale": 1 }
+  ],
+  "caseTemplates": [
+    {
+      "idPrefix": "hero-actual",
+      "viewportIds": "all",
+      "query": "surface=hero&fixture=actual&zoom=100&motion=no-preference&chrome=0",
+      "captureViewportIds": "all"
+    },
+    {
+      "idPrefix": "portal-actual",
+      "viewportIds": "all",
+      "query": "surface=portal&fixture=actual&zoom=100&motion=no-preference&chrome=0",
+      "captureViewportIds": ["desktop-1440x900", "tablet-landscape-1024x768", "mobile-390x844", "narrow-320x800", "mobile-landscape-844x390"]
+    },
+    {
+      "idPrefix": "hero-zoom-200",
+      "viewportIds": ["desktop-1440x900", "short-desktop-1366x650", "mobile-390x844", "narrow-320x800", "mobile-landscape-844x390"],
+      "query": "surface=hero&fixture=actual&zoom=200&motion=no-preference&chrome=0",
+      "captureViewportIds": ["desktop-1440x900", "mobile-390x844", "narrow-320x800", "mobile-landscape-844x390"]
+    },
+    {
+      "idPrefix": "portal-zoom-200",
+      "viewportIds": ["desktop-1440x900", "short-desktop-1366x650", "mobile-390x844", "narrow-320x800", "mobile-landscape-844x390"],
+      "query": "surface=portal&fixture=actual&zoom=200&motion=no-preference&chrome=0",
+      "captureViewportIds": ["desktop-1440x900", "mobile-390x844", "narrow-320x800", "mobile-landscape-844x390"]
+    },
+    {
+      "idPrefix": "hero-long-copy",
+      "viewportIds": ["desktop-1440x900", "short-desktop-1366x650", "mobile-390x844", "narrow-320x800", "mobile-landscape-844x390"],
+      "query": "surface=hero&fixture=long&zoom=100&motion=no-preference&chrome=0",
+      "captureViewportIds": ["desktop-1440x900", "mobile-390x844", "narrow-320x800", "mobile-landscape-844x390"]
+    },
+    {
+      "idPrefix": "portal-long-copy",
+      "viewportIds": ["desktop-1440x900", "short-desktop-1366x650", "mobile-390x844", "narrow-320x800", "mobile-landscape-844x390"],
+      "query": "surface=portal&fixture=long&zoom=100&motion=no-preference&chrome=0",
+      "captureViewportIds": ["desktop-1440x900", "mobile-390x844", "narrow-320x800", "mobile-landscape-844x390"]
+    },
+    {
+      "idPrefix": "hero-reduced-motion",
+      "viewportIds": ["desktop-1440x900", "mobile-390x844", "narrow-320x800"],
+      "query": "surface=hero&fixture=actual&zoom=100&motion=reduce&chrome=0",
+      "captureViewportIds": ["desktop-1440x900", "mobile-390x844"]
+    },
+    {
+      "idPrefix": "portal-reduced-motion",
+      "viewportIds": ["desktop-1440x900", "mobile-390x844", "narrow-320x800"],
+      "query": "surface=portal&fixture=actual&zoom=100&motion=reduce&chrome=0",
+      "captureViewportIds": ["desktop-1440x900", "mobile-390x844"]
+    },
+    {
+      "idPrefix": "hero-keyboard-focus",
+      "viewportIds": ["desktop-1440x900"],
+      "query": "surface=hero&fixture=actual&zoom=100&motion=no-preference&chrome=0",
+      "focusSelector": "#hero-industry",
+      "captureViewportIds": ["desktop-1440x900"]
+    },
+    {
+      "idPrefix": "portal-keyboard-focus",
+      "viewportIds": ["mobile-390x844"],
+      "query": "surface=portal&fixture=actual&zoom=100&motion=no-preference&chrome=0",
+      "focusSelector": "#portal-industry",
+      "captureViewportIds": ["mobile-390x844"]
+    }
+  ],
+  "capture": {
+    "rawDirectory": "artifacts/evidence/phase-0-3d-repair-v3/captures/raw",
+    "normalizedDirectory": "artifacts/evidence/phase-0-3d-repair-v3/captures/normalized",
+    "rawFilenameTemplate": "{idPrefix}--{viewportId}.jpg",
+    "normalizedFilenameTemplate": "{idPrefix}--{viewportId}.png",
+    "fullPage": true,
+    "omitBackground": false,
+    "devicePixelRatioPolicy": "record the actual browser DPR; do not claim or require control",
+    "browserRasterPolicy": "record actual full-page JPEG dimensions; do not infer a CSS-by-DPR relationship",
+    "maximumRenderedWidth": 1200,
+    "normalizationMethod": "top-left-rendered-frame-crop-lanczos-when-scaled",
+    "stabilization": {
+      "method": "exact-byte-modal-winner",
+      "successiveFullPageJpegsPerVisualCase": 11,
+      "winnerSelection": "save only the unique JPEG byte sequence with the highest frequency; a tied mode is invalid",
+      "minimumWinnerVotes": 7,
+      "timingClaim": "none; readiness and paint barriers do not prove a stable raster"
+    }
+  },
+  "requiredAssertions": [
+    "report.pass is true",
+    "the accepted v2 portal-layout JSON SHA-256 matches the repository source and its geometry is unchanged",
+    "wordFragmentationOffenders is exactly 0 for every visible H1 and H2",
+    "every visible H1 and H2 computes word-break normal, overflow-wrap normal and hyphens none",
+    "humanLineBreakReport names every rendered H1/H2 line for direct review",
+    "no page or route horizontal overflow and no measured content collision",
+    "all visible audience buttons are at least 44 by 44 CSS pixels",
+    "the sole audience divider clears every glyph bound by at least 12 reference pixels and keeps valid responsive geometry",
+    "programmatic keyboard focus exposes an outline of at least 2 CSS pixels",
+    "fallback-font, 200 percent text, longer-copy, focus and reduced-motion cases all pass",
+    "reduced-motion uses a directional full-frame scrim and reports zero large floating rounded panel offenders",
+    "reduced-motion hero desktop and authored-mobile evidence keeps the frozen v3 Aperture Station opposite the copy with its physical cable visible and zero source-projected keepout intersections",
+    "mobile and reduced-mobile sources use the independently authored 2.25-turn cable and bind passing visibility evidence of 2.171694 turns against the 2.15 minimum",
+    "no text-bearing container clips overflow or creates a nested horizontal scroller",
+    "no video, canvas, cinematic sequence, bundled font or remote font dependency is present",
+    "final capture remains forbidden until sceneFreeze.status is frozen and exact v3 paths, dimensions and SHA-256 values are recorded"
+  ]
+}

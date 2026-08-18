@@ -1,0 +1,122 @@
+{
+  "schema": "quantum-hub.phase-0-3d-repair-v3.review-bundle.v1",
+  "generated_at_utc": "2026-08-18T10:35:47.587049+00:00",
+  "authorities": {
+    "reviewOriginals": {
+      "path": "manifests/review-originals-manifest.json",
+      "sha256": "1783a3e2218bf93150807b10ca27db9edd217520832880f076b1d04d89cb493b"
+    },
+    "silhouetteDecision": {
+      "path": "manifests/silhouette-decision-manifest.json",
+      "sha256": "dfdc9eae1a13da3bb3af78f95c6cdcfb987f1c1bc0192ec3a2c2f65ddb845a80"
+    }
+  },
+  "records": [
+    {
+      "path": "review/aperture-station-silhouette-options.png",
+      "width": 4096,
+      "height": 3700,
+      "bytes": 5425822,
+      "sha256": "ba5f1c7ebc700e937e965bd15c866c0329656da1d757b521b28a07b85ea43ee5",
+      "sourceManifest": "manifests/silhouette-decision-manifest.json"
+    },
+    {
+      "path": "review/aperture-station-recommended-design-sheet.png",
+      "width": 3300,
+      "height": 2350,
+      "bytes": 3277262,
+      "sha256": "c17c077e943d50371174e55b71e35d324f4fe5f34b6344818facc3d0ef4cc77e",
+      "sourceManifest": "manifests/review-originals-manifest.json"
+    },
+    {
+      "path": "review/aperture-station-material-sheet.png",
+      "width": 3300,
+      "height": 2350,
+      "bytes": 3421107,
+      "sha256": "69beec4fe86540c6913f45c91838b42870c41931db642de6cd518d8edfbaacd6",
+      "sourceManifest": "manifests/review-originals-manifest.json"
+    },
+    {
+      "path": "review/cable-conductor-v3-sheet.png",
+      "width": 3400,
+      "height": 2450,
+      "bytes": 3134982,
+      "sha256": "c4d8500121ecfbfbe442f834734f18879f434bf15246288a102578a7ddf909fa",
+      "sourceManifest": "manifests/review-originals-manifest.json"
+    },
+    {
+      "path": "review/proving-ground-v3-style-frame.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1503730,
+      "sha256": "70a1710339d8c7c36bb9c82500bbf755cec3a5882e455d7fc886af952e9b0b63",
+      "sourceManifest": "manifests/review-originals-manifest.json"
+    },
+    {
+      "path": "review/camera-path-v3-study.png",
+      "width": 3300,
+      "height": 2350,
+      "bytes": 2289819,
+      "sha256": "b278c46b2caa0532909170b2c629bb5698d35e26f811404dadb2613ca1aa1c62",
+      "sourceManifest": "manifests/review-originals-manifest.json"
+    },
+    {
+      "path": "review/activation-v3-contact-sheet.png",
+      "width": 3500,
+      "height": 2400,
+      "bytes": 1580291,
+      "sha256": "68fc9ee8e812b0021746e79ad1d19229079c4d3b86e10c696d3a7609807b335e",
+      "sourceManifest": "manifests/review-originals-manifest.json"
+    },
+    {
+      "path": "review/portal-typography-v3-sheet.png",
+      "width": 3300,
+      "height": 2500,
+      "bytes": 1109267,
+      "sha256": "ff91c67b70b0d6535e0be881f5de117e07a2cdd383449002d8589bd9cf5072cb",
+      "sourceManifest": "manifests/review-originals-manifest.json"
+    },
+    {
+      "path": "review/desktop-hero-composition-v3.png",
+      "width": 3060,
+      "height": 3210,
+      "bytes": 1905461,
+      "sha256": "57b6e673ad8208472715c9b4dcb425330d06b9ffc18b95436e7a9d35d62e057c",
+      "sourceManifest": "manifests/review-originals-manifest.json"
+    },
+    {
+      "path": "review/mobile-hero-composition-v3.png",
+      "width": 1500,
+      "height": 2100,
+      "bytes": 797326,
+      "sha256": "c8f26b8a5ede573d8baef12344a2a02a00f96390723f9384f7de3c8a3f2baa62",
+      "sourceManifest": "manifests/review-originals-manifest.json"
+    },
+    {
+      "path": "review/text-zoom-and-fallback-v3.png",
+      "width": 3300,
+      "height": 2500,
+      "bytes": 2061448,
+      "sha256": "094e54f31d9fbfeefb4206a236847b0bc8a5ae127714996242b66a0d95cfa9f7",
+      "sourceManifest": "manifests/review-originals-manifest.json"
+    },
+    {
+      "path": "review/reduced-motion-v3-desktop.png",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 993156,
+      "sha256": "26e934ad36ecb768d55ff1a8dbd80064230980fa44885e0f1e5241913b156401",
+      "sourceManifest": "manifests/review-originals-manifest.json"
+    },
+    {
+      "path": "review/reduced-motion-v3-mobile.png",
+      "width": 720,
+      "height": 1600,
+      "bytes": 711394,
+      "sha256": "512490d5d56565609e16a5a60a35f9694a8ad5363d20fccbe9676356d5fd3b9b",
+      "sourceManifest": "manifests/review-originals-manifest.json"
+    }
+  ],
+  "required_count": 13,
+  "all_required_present": true
+}

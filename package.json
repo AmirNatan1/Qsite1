@@ -8,9 +8,10 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "check": "astro check && node --test tests/*.test.mjs && node scripts/verify-creative-assets.mjs && node scripts/verify-phase0-3d-repair.mjs && node scripts/verify-phase0-3d-repair-v2-assets.mjs && node scripts/verify-phase0-3d-repair-v2-layout.mjs",
+    "check": "astro check && node --test tests/*.test.mjs && node scripts/verify-creative-assets.mjs && node scripts/verify-phase0-3d-repair.mjs && node scripts/verify-phase0-3d-repair-v2-assets.mjs && node scripts/verify-phase0-3d-repair-v2-layout.mjs && node scripts/verify-phase0-3d-repair-v3-layout.mjs && node scripts/verify-phase0-3d-repair-v3-assets.mjs",
     "test": "node --test tests/*.test.mjs",
     "build": "astro build && node scripts/verify-build.mjs",
+    "capture:phase03": "node scripts/capture-phase03-browser-matrix.mjs",
     "preview": "astro preview",
     "prototype": "node scripts/serve-prototype.mjs"
   },
