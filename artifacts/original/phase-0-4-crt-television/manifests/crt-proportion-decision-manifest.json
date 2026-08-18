@@ -1,0 +1,272 @@
+{
+  "schema": "quantum-hub.phase-0-4-crt-television.proportion-decision.v1",
+  "script_version": "phase-0.4-crt-proportion-gate-v1",
+  "gate": "low-cost CRT proportion selection before selected high-detail modelling",
+  "status": "provisional proportion-gate recommendation only; selected high-detail modelling is held for independent provenance and creative approval",
+  "high_detail_refinement_started": false,
+  "provisional_selection": "A",
+  "selection_reason": "A most directly preserves the requested familiar 1990s domestic CRT character while its deep tube body, restrained asymmetry, and legible rear connection support the planned orbit.",
+  "selection_criteria": [
+    "recognition",
+    "beauty",
+    "physical_weight",
+    "proving_ground_fit",
+    "camera_orbit",
+    "close_entry"
+  ],
+  "options": {
+    "A": {
+      "slug": "rounded-1990s-domestic-crt",
+      "name": "Rounded 1990s domestic CRT",
+      "dimensions_m": {
+        "width": 0.84,
+        "height": 0.69,
+        "depth": 0.76
+      },
+      "screen_class_inches": 29,
+      "screen_visible_m": {
+        "width": 0.59,
+        "height": 0.4425,
+        "aspect": "4:3"
+      },
+      "corner_radius_m": 0.105,
+      "rear_width_ratio": 0.53,
+      "rear_height_ratio": 0.69,
+      "screen_center_z_m": 0.425,
+      "screen_bulge_m": 0.048,
+      "front_band_height_m": 0.125,
+      "cable_connection": "rear-lower right strain relief; custom power/signal cable drops directly to terrain",
+      "strongest_quality": "Immediate recognition, generous curved glass, and soft deep-shell character closest to the requested era.",
+      "strongest_risk": "Its familiar domestic softness could feel generic unless the final materials and rear silhouette are exceptionally resolved.",
+      "scores": {
+        "recognition": 5,
+        "beauty": 4,
+        "physical_weight": 4,
+        "proving_ground_fit": 4,
+        "camera_orbit": 5,
+        "close_entry": 5
+      }
+    },
+    "B": {
+      "slug": "heavy-late-1980s-box-crt",
+      "name": "Heavier late-1980s box CRT",
+      "dimensions_m": {
+        "width": 0.9,
+        "height": 0.74,
+        "depth": 0.82
+      },
+      "screen_class_inches": 28,
+      "screen_visible_m": {
+        "width": 0.569,
+        "height": 0.42675,
+        "aspect": "4:3"
+      },
+      "corner_radius_m": 0.062,
+      "rear_width_ratio": 0.62,
+      "rear_height_ratio": 0.72,
+      "screen_center_z_m": 0.455,
+      "screen_bulge_m": 0.042,
+      "front_band_height_m": 0.155,
+      "cable_connection": "recessed rear-lower left service bay with broad moulded strain relief",
+      "strongest_quality": "Most convincing mass and era-specific heft, with a rear volume that reads strongly from distance.",
+      "strongest_risk": "The heavier bezel can suppress the screen and drift toward institutional equipment rather than cinematic domestic mystery.",
+      "scores": {
+        "recognition": 5,
+        "beauty": 3,
+        "physical_weight": 5,
+        "proving_ground_fit": 5,
+        "camera_orbit": 4,
+        "close_entry": 3
+      }
+    },
+    "C": {
+      "slug": "large-premium-floor-set-crt",
+      "name": "Large premium floor-set CRT",
+      "dimensions_m": {
+        "width": 0.95,
+        "height": 0.77,
+        "depth": 0.78
+      },
+      "screen_class_inches": 32,
+      "screen_visible_m": {
+        "width": 0.65,
+        "height": 0.4875,
+        "aspect": "4:3"
+      },
+      "corner_radius_m": 0.09,
+      "rear_width_ratio": 0.6,
+      "rear_height_ratio": 0.7,
+      "screen_center_z_m": 0.475,
+      "screen_bulge_m": 0.055,
+      "front_band_height_m": 0.145,
+      "cable_connection": "protected side-rear lower channel feeding a compact integrated strain relief",
+      "strongest_quality": "Largest portal destination and strongest premium front composition, with excellent final-approach screen presence.",
+      "strongest_risk": "The wider integrated lower band could imply a modern media console unless final detailing remains firmly period-authentic.",
+      "scores": {
+        "recognition": 5,
+        "beauty": 5,
+        "physical_weight": 5,
+        "proving_ground_fit": 4,
+        "camera_orbit": 4,
+        "close_entry": 5
+      }
+    }
+  },
+  "creative_boundary": {
+    "object_category": "three original generic old box CRT television variants",
+    "modelled_from_scratch": true,
+    "procedural_materials_only": true,
+    "third_party_model_count": 0,
+    "external_texture_count": 0,
+    "reference_image_datablock_count": 0,
+    "packed_file_count": 0,
+    "private_reference": "user-supplied CRT television photograph",
+    "private_reference_purpose": "broad era and proportion reference only",
+    "private_reference_repository_status": "intentionally uncommitted",
+    "manufacturer_branding": false,
+    "screen_aspect": "4:3",
+    "dormant_emission": 0.0
+  },
+  "required_gate_approvals": [
+    "independent provenance review",
+    "creative lead review"
+  ],
+  "sheet": {
+    "package_relative_path": "crt-television-proportion-options.png",
+    "width": 4300,
+    "height": 3560,
+    "bytes": 4912129,
+    "sha256": "4e33468ac0073f8d73fe5ad3290e9a2b3e06ad6b2c8ab810c83033ec7083a250",
+    "classification": "Phase 0.4 CRT proportion gate comparison",
+    "approval_state": "awaiting creative gate",
+    "intendedCommit": true
+  },
+  "source_renders": [
+    {
+      "option": "A",
+      "view": "front",
+      "package_relative_path": "renders/proportion-options/option-a/option-a-front.png",
+      "bytes": 316755,
+      "sha256": "06ee84380f80d63f8b357bec7bc242cdce3accee1f9b1032017848319837c8c8"
+    },
+    {
+      "option": "A",
+      "view": "side",
+      "package_relative_path": "renders/proportion-options/option-a/option-a-side.png",
+      "bytes": 289011,
+      "sha256": "bf40ba8bb1f5dbb1a7fcc8514565e70fe3262a05018fa382be75be28fe873bef"
+    },
+    {
+      "option": "A",
+      "view": "rear",
+      "package_relative_path": "renders/proportion-options/option-a/option-a-rear.png",
+      "bytes": 310888,
+      "sha256": "401eb6bcc9bb76c418491896c669f17f855fc4db5d1d0dacd40903d206dd587b"
+    },
+    {
+      "option": "A",
+      "view": "top",
+      "package_relative_path": "renders/proportion-options/option-a/option-a-top.png",
+      "bytes": 333770,
+      "sha256": "a3edcaff61291492b0d2a8eb38159e6b92833f59c65263d283af95f8e23d276f"
+    },
+    {
+      "option": "A",
+      "view": "three-quarter-front",
+      "package_relative_path": "renders/proportion-options/option-a/option-a-three-quarter-front.png",
+      "bytes": 333466,
+      "sha256": "d8eb505b77bffdc24c0bc45fc961f8ec31506957d22231ad8c442d0ccb97f449"
+    },
+    {
+      "option": "A",
+      "view": "three-quarter-rear",
+      "package_relative_path": "renders/proportion-options/option-a/option-a-three-quarter-rear.png",
+      "bytes": 325197,
+      "sha256": "83d4ba43c4a9d155e32bc37b09189e90acabd517cf61fa6147bbcce39932e679"
+    },
+    {
+      "option": "B",
+      "view": "front",
+      "package_relative_path": "renders/proportion-options/option-b/option-b-front.png",
+      "bytes": 318333,
+      "sha256": "629129971747a14331c055e0887023388a04e016f4da64084687cf18b927e27e"
+    },
+    {
+      "option": "B",
+      "view": "side",
+      "package_relative_path": "renders/proportion-options/option-b/option-b-side.png",
+      "bytes": 290779,
+      "sha256": "8bb7cbbccf57909d581a082de0e25c777e6c951814825c8195f70eb641f91814"
+    },
+    {
+      "option": "B",
+      "view": "rear",
+      "package_relative_path": "renders/proportion-options/option-b/option-b-rear.png",
+      "bytes": 311693,
+      "sha256": "84d66e60b4b265426297a2a9b72c5d8b71d900baef1e17add31f21293fbc5feb"
+    },
+    {
+      "option": "B",
+      "view": "top",
+      "package_relative_path": "renders/proportion-options/option-b/option-b-top.png",
+      "bytes": 331463,
+      "sha256": "48c84b28c1a13801b1d4a790be13629bf2562859b3f27f565c8be051b225d727"
+    },
+    {
+      "option": "B",
+      "view": "three-quarter-front",
+      "package_relative_path": "renders/proportion-options/option-b/option-b-three-quarter-front.png",
+      "bytes": 331895,
+      "sha256": "dddfd2d1150e8d7068f2f64b1f954d6c2e7acd296740f513be93e67cd32887e8"
+    },
+    {
+      "option": "B",
+      "view": "three-quarter-rear",
+      "package_relative_path": "renders/proportion-options/option-b/option-b-three-quarter-rear.png",
+      "bytes": 330024,
+      "sha256": "5375ced65bef28c0f596941d1b8afbe553991db8000a07b895ac8d928acdeeaf"
+    },
+    {
+      "option": "C",
+      "view": "front",
+      "package_relative_path": "renders/proportion-options/option-c/option-c-front.png",
+      "bytes": 327926,
+      "sha256": "2c136d8114eb48aa692bd0eee883cb40c2a56ac8e9f2ddcb4128e2c1d88b45dd"
+    },
+    {
+      "option": "C",
+      "view": "side",
+      "package_relative_path": "renders/proportion-options/option-c/option-c-side.png",
+      "bytes": 296367,
+      "sha256": "c8c589f89d93ab46e12850ea6fd7ea56c3218ef9e14815bd0b4c10eee23e2f65"
+    },
+    {
+      "option": "C",
+      "view": "rear",
+      "package_relative_path": "renders/proportion-options/option-c/option-c-rear.png",
+      "bytes": 323657,
+      "sha256": "eafc505ec037886290b29e712e7828704d0f661a8d0af24e5c7eccdee36cc279"
+    },
+    {
+      "option": "C",
+      "view": "top",
+      "package_relative_path": "renders/proportion-options/option-c/option-c-top.png",
+      "bytes": 337150,
+      "sha256": "330ba833974111c19121d0d663ffb233e5a01f0067426931f116ade6abe22c12"
+    },
+    {
+      "option": "C",
+      "view": "three-quarter-front",
+      "package_relative_path": "renders/proportion-options/option-c/option-c-three-quarter-front.png",
+      "bytes": 340114,
+      "sha256": "5015eaab0e151da0333187bcaeee41e0f44f7005021a9587f833537e5c286996"
+    },
+    {
+      "option": "C",
+      "view": "three-quarter-rear",
+      "package_relative_path": "renders/proportion-options/option-c/option-c-three-quarter-rear.png",
+      "bytes": 330247,
+      "sha256": "db1244b17b152f8eac5063012109d37a2063826834647dd75dba86d4615c03ea"
+    }
+  ]
+}

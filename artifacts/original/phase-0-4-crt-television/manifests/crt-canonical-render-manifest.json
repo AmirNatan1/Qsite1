@@ -1,0 +1,2410 @@
+{
+  "schema": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+  "status": "PASS",
+  "source": {
+    "package_relative_path": "source/quantum-signal-television-v1.blend",
+    "bytes": 1049052,
+    "sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d"
+  },
+  "generator": {
+    "package_relative_path": "source/render_crt_canonical_stills.py",
+    "bytes": 16466,
+    "sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef"
+  },
+  "configuration_authority": [
+    {
+      "package_relative_path": "source/crt_canonical_config.py",
+      "bytes": 8705,
+      "sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497"
+    },
+    {
+      "package_relative_path": "source/crt_refined_config.py",
+      "bytes": 6227,
+      "sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2"
+    }
+  ],
+  "layout_authority": {
+    "package_relative_path": "crt-portal-layout.json",
+    "bytes": 16248,
+    "sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc",
+    "schema": "quantum-hub.phase-0-4-crt-television.crt-portal-layout.v1",
+    "consumed_directly": true
+  },
+  "render_settings": {
+    "engine": "BLENDER_EEVEE",
+    "samples": 128,
+    "denoising": false,
+    "denoising_note": "not applicable; no denoiser used by the Eevee still pipeline",
+    "color_management": "AgX / Medium High Contrast",
+    "image_format": "PNG RGB 8-bit",
+    "engine_decision": "A controlled Eevee 128-sample canonical pipeline is retained for the still gate: the scene uses dense procedural geometry, no bitmap displacement, and its dark ABS, smoked-glass and contact-shadow evidence showed no material review improvement that justified a non-deterministic noisy CPU Cycles pass. Cycles remains authorized for future production integration after the still art direction is accepted."
+  },
+  "camera_path": {
+    "measurements": [
+      {
+        "camera": "Camera_Path_Arrival",
+        "azimuth_degrees": -57.198598,
+        "arc_from_arrival_degrees": 0
+      },
+      {
+        "camera": "Camera_Path_30",
+        "azimuth_degrees": -65.565002,
+        "arc_from_arrival_degrees": 8.366403
+      },
+      {
+        "camera": "Camera_Path_60",
+        "azimuth_degrees": -73.952624,
+        "arc_from_arrival_degrees": 16.754026
+      },
+      {
+        "camera": "Camera_Path_NearFrontal",
+        "azimuth_degrees": -83.510124,
+        "arc_from_arrival_degrees": 26.311526
+      },
+      {
+        "camera": "Camera_Power_Front",
+        "azimuth_degrees": -84.981235,
+        "arc_from_arrival_degrees": 27.782636
+      },
+      {
+        "camera": "Camera_Portal_03_CloseApproach",
+        "azimuth_degrees": -85.309316,
+        "arc_from_arrival_degrees": 28.110717
+      }
+    ],
+    "arrival_to_near_frontal_power_arc_degrees": 27.782636,
+    "arrival_to_portal_close_arc_degrees": 28.110717,
+    "authorized_range_degrees": {
+      "minimum": 20,
+      "maximum": 30
+    },
+    "status": "PASS"
+  },
+  "mobile_authority": {
+    "authored_separately": true,
+    "spiral_turns": 2.25,
+    "collection": "MOBILE_2_25_TURN_SPIRAL_CABLE",
+    "source_ids": [
+      "source-mobile-dormant",
+      "source-reduced-mobile-dormant"
+    ]
+  },
+  "power_on_authority": {
+    "count": 7,
+    "exact_ids": [
+      "power-01-completely-dormant",
+      "power-02-current-reaches-connection",
+      "power-03-power-indicator-response",
+      "power-04-crt-electrical-wake",
+      "power-05-raster-phosphor-appears",
+      "power-06-quantum-interface-stabilizes",
+      "power-07-portal-ready"
+    ],
+    "records": [
+      {
+        "id": "power-01-completely-dormant",
+        "order": 27,
+        "group": "power-on",
+        "camera": "Camera_Path_Arrival",
+        "camera_azimuth_degrees": -57.198598,
+        "conduction_progress": 0,
+        "indicator": false,
+        "phosphor": "off",
+        "interface": false,
+        "cable": "desktop",
+        "classification": "Phase 0.4 still-based creative evidence",
+        "approval_state": "candidate for direct human Phase 0.4 review",
+        "render_settings": {
+          "engine": "BLENDER_EEVEE",
+          "samples": 128,
+          "denoising": false,
+          "color_management": "AgX / Medium High Contrast",
+          "resolution": [
+            1920,
+            1200
+          ]
+        },
+        "lineage": {
+          "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+          "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+          "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+          "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+          "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+          "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+        },
+        "package_relative_path": "renders/refined/power-on/power-01-completely-dormant.png",
+        "width": 1920,
+        "height": 1200,
+        "bytes": 1266764,
+        "sha256": "0381200448c99d592a7d616a664badbeefa3a364f3e0f3a01801df77842bb928"
+      },
+      {
+        "id": "power-02-current-reaches-connection",
+        "order": 28,
+        "group": "power-on",
+        "camera": "Camera_Rear_Arrival",
+        "camera_azimuth_degrees": 53.841815,
+        "conduction_progress": 0.985,
+        "indicator": false,
+        "phosphor": "off",
+        "interface": false,
+        "cable": "desktop",
+        "classification": "Phase 0.4 still-based creative evidence",
+        "approval_state": "candidate for direct human Phase 0.4 review",
+        "render_settings": {
+          "engine": "BLENDER_EEVEE",
+          "samples": 128,
+          "denoising": false,
+          "color_management": "AgX / Medium High Contrast",
+          "resolution": [
+            1920,
+            1200
+          ]
+        },
+        "lineage": {
+          "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+          "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+          "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+          "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+          "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+          "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+        },
+        "package_relative_path": "renders/refined/power-on/power-02-current-reaches-connection.png",
+        "width": 1920,
+        "height": 1200,
+        "bytes": 1190792,
+        "sha256": "fad7166fcceab7042cacecce0544ecec7d57b3361b850925d89c32619212c769"
+      },
+      {
+        "id": "power-03-power-indicator-response",
+        "order": 29,
+        "group": "power-on",
+        "camera": "Camera_Power_Front",
+        "camera_azimuth_degrees": -84.981235,
+        "conduction_progress": 1,
+        "indicator": true,
+        "phosphor": "off",
+        "interface": false,
+        "cable": "desktop",
+        "classification": "Phase 0.4 still-based creative evidence",
+        "approval_state": "candidate for direct human Phase 0.4 review",
+        "render_settings": {
+          "engine": "BLENDER_EEVEE",
+          "samples": 128,
+          "denoising": false,
+          "color_management": "AgX / Medium High Contrast",
+          "resolution": [
+            1920,
+            1200
+          ]
+        },
+        "lineage": {
+          "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+          "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+          "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+          "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+          "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+          "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+        },
+        "package_relative_path": "renders/refined/power-on/power-03-power-indicator-response.png",
+        "width": 1920,
+        "height": 1200,
+        "bytes": 1534833,
+        "sha256": "6767e545a05480e25d1ab3dba44e1790e82774147e123ef2757174f40cded562"
+      },
+      {
+        "id": "power-04-crt-electrical-wake",
+        "order": 30,
+        "group": "power-on",
+        "camera": "Camera_Power_Front",
+        "camera_azimuth_degrees": -84.981235,
+        "conduction_progress": 1,
+        "indicator": true,
+        "phosphor": "wake-line",
+        "interface": false,
+        "cable": "desktop",
+        "classification": "Phase 0.4 still-based creative evidence",
+        "approval_state": "candidate for direct human Phase 0.4 review",
+        "render_settings": {
+          "engine": "BLENDER_EEVEE",
+          "samples": 128,
+          "denoising": false,
+          "color_management": "AgX / Medium High Contrast",
+          "resolution": [
+            1920,
+            1200
+          ]
+        },
+        "lineage": {
+          "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+          "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+          "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+          "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+          "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+          "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+        },
+        "package_relative_path": "renders/refined/power-on/power-04-crt-electrical-wake.png",
+        "width": 1920,
+        "height": 1200,
+        "bytes": 1456445,
+        "sha256": "acff665096c436b523a2c62c28eaa57545bbf38a1851eb1b6043f3f325a52468"
+      },
+      {
+        "id": "power-05-raster-phosphor-appears",
+        "order": 31,
+        "group": "power-on",
+        "camera": "Camera_Raster_Close",
+        "camera_azimuth_degrees": -85.959328,
+        "conduction_progress": 1,
+        "indicator": true,
+        "phosphor": "raster",
+        "interface": false,
+        "cable": "desktop",
+        "classification": "Phase 0.4 still-based creative evidence",
+        "approval_state": "candidate for direct human Phase 0.4 review",
+        "render_settings": {
+          "engine": "BLENDER_EEVEE",
+          "samples": 128,
+          "denoising": false,
+          "color_management": "AgX / Medium High Contrast",
+          "resolution": [
+            1920,
+            1200
+          ]
+        },
+        "lineage": {
+          "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+          "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+          "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+          "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+          "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+          "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+        },
+        "package_relative_path": "renders/refined/power-on/power-05-raster-phosphor-appears.png",
+        "width": 1920,
+        "height": 1200,
+        "bytes": 1646983,
+        "sha256": "3e39afcad7470dc6dfc78129ccaeb5696e60a47ccbfcbfa6e8b66fe6ff4166cd"
+      },
+      {
+        "id": "power-06-quantum-interface-stabilizes",
+        "order": 32,
+        "group": "power-on",
+        "camera": "Camera_Raster_Close",
+        "camera_azimuth_degrees": -85.959328,
+        "conduction_progress": 1,
+        "indicator": true,
+        "phosphor": "interface",
+        "interface": true,
+        "cable": "desktop",
+        "classification": "Phase 0.4 still-based creative evidence",
+        "approval_state": "candidate for direct human Phase 0.4 review",
+        "render_settings": {
+          "engine": "BLENDER_EEVEE",
+          "samples": 128,
+          "denoising": false,
+          "color_management": "AgX / Medium High Contrast",
+          "resolution": [
+            1920,
+            1200
+          ]
+        },
+        "lineage": {
+          "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+          "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+          "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+          "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+          "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+          "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+        },
+        "package_relative_path": "renders/refined/power-on/power-06-quantum-interface-stabilizes.png",
+        "width": 1920,
+        "height": 1200,
+        "bytes": 1688049,
+        "sha256": "30942c1b54ffbff9bd485db96e4f37227f35d7313a73e9f1365a69c24d9ca351"
+      },
+      {
+        "id": "power-07-portal-ready",
+        "order": 33,
+        "group": "power-on",
+        "camera": "Camera_Portal_03_CloseApproach",
+        "camera_azimuth_degrees": -85.309316,
+        "conduction_progress": 1,
+        "indicator": true,
+        "phosphor": "interface",
+        "interface": true,
+        "cable": "desktop",
+        "classification": "Phase 0.4 still-based creative evidence",
+        "approval_state": "candidate for direct human Phase 0.4 review",
+        "render_settings": {
+          "engine": "BLENDER_EEVEE",
+          "samples": 128,
+          "denoising": false,
+          "color_management": "AgX / Medium High Contrast",
+          "resolution": [
+            1920,
+            1200
+          ]
+        },
+        "lineage": {
+          "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+          "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+          "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+          "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+          "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+          "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+        },
+        "package_relative_path": "renders/refined/power-on/power-07-portal-ready.png",
+        "width": 1920,
+        "height": 1200,
+        "bytes": 1729636,
+        "sha256": "5706bebba038922ca12b268510e57d3f539e7b36c8e8a26cf66b63a89ad99297"
+      }
+    ],
+    "status": "PASS"
+  },
+  "portal_transition_authority": {
+    "count": 8,
+    "exact_ids": [
+      "portal-01-television-in-scene",
+      "portal-02-screen-active",
+      "portal-03-close-approach",
+      "portal-04-glass-almost-fills",
+      "portal-05-bezel-exits",
+      "portal-06-distortion-reduces",
+      "portal-07-dom-takes-ownership",
+      "portal-08-full-semantic-surface"
+    ],
+    "records": [
+      {
+        "id": "portal-01-television-in-scene",
+        "order": 1,
+        "owner": "Blender physical CRT",
+        "render": {
+          "id": "portal-01-television-in-scene",
+          "order": 34,
+          "group": "portal",
+          "camera": "Camera_Path_60",
+          "camera_azimuth_degrees": -73.952624,
+          "conduction_progress": 0.86,
+          "indicator": false,
+          "phosphor": "off",
+          "interface": false,
+          "cable": "desktop",
+          "classification": "Phase 0.4 still-based creative evidence",
+          "approval_state": "candidate for direct human Phase 0.4 review",
+          "render_settings": {
+            "engine": "BLENDER_EEVEE",
+            "samples": 128,
+            "denoising": false,
+            "color_management": "AgX / Medium High Contrast",
+            "resolution": [
+              1920,
+              1200
+            ]
+          },
+          "lineage": {
+            "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+            "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+            "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+            "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+            "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+            "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+          },
+          "package_relative_path": "renders/refined/portal/portal-01-television-in-scene.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1360280,
+          "sha256": "ad1e2396f9094003b3ff69b53e7373304c87a152771e23cb948b0f3fe5ce8e01"
+        },
+        "lineage": {
+          "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+          "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+          "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+          "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+          "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+          "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+        },
+        "status": "FROZEN"
+      },
+      {
+        "id": "portal-02-screen-active",
+        "order": 2,
+        "owner": "Blender physical CRT",
+        "render": {
+          "id": "portal-02-screen-active",
+          "order": 35,
+          "group": "portal",
+          "camera": "Camera_Power_Front",
+          "camera_azimuth_degrees": -84.981235,
+          "conduction_progress": 1,
+          "indicator": true,
+          "phosphor": "interface",
+          "interface": true,
+          "cable": "desktop",
+          "classification": "Phase 0.4 still-based creative evidence",
+          "approval_state": "candidate for direct human Phase 0.4 review",
+          "render_settings": {
+            "engine": "BLENDER_EEVEE",
+            "samples": 128,
+            "denoising": false,
+            "color_management": "AgX / Medium High Contrast",
+            "resolution": [
+              1920,
+              1200
+            ]
+          },
+          "lineage": {
+            "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+            "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+            "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+            "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+            "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+            "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+          },
+          "package_relative_path": "renders/refined/portal/portal-02-screen-active.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1496931,
+          "sha256": "9373aa6c7f09c0b4849478196fc363ebdd009054b466c415cbf3f5b977049f0c"
+        },
+        "lineage": {
+          "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+          "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+          "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+          "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+          "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+          "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+        },
+        "status": "FROZEN"
+      },
+      {
+        "id": "portal-03-close-approach",
+        "order": 3,
+        "owner": "Blender physical CRT",
+        "render": {
+          "id": "portal-03-close-approach",
+          "order": 36,
+          "group": "portal",
+          "camera": "Camera_Portal_03_CloseApproach",
+          "camera_azimuth_degrees": -85.309316,
+          "conduction_progress": 1,
+          "indicator": true,
+          "phosphor": "interface",
+          "interface": true,
+          "cable": "desktop",
+          "classification": "Phase 0.4 still-based creative evidence",
+          "approval_state": "candidate for direct human Phase 0.4 review",
+          "render_settings": {
+            "engine": "BLENDER_EEVEE",
+            "samples": 128,
+            "denoising": false,
+            "color_management": "AgX / Medium High Contrast",
+            "resolution": [
+              1920,
+              1200
+            ]
+          },
+          "lineage": {
+            "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+            "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+            "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+            "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+            "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+            "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+          },
+          "package_relative_path": "renders/refined/portal/portal-03-close-approach.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1729636,
+          "sha256": "5706bebba038922ca12b268510e57d3f539e7b36c8e8a26cf66b63a89ad99297"
+        },
+        "lineage": {
+          "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+          "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+          "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+          "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+          "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+          "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+        },
+        "status": "FROZEN"
+      },
+      {
+        "id": "portal-04-glass-almost-fills",
+        "order": 4,
+        "owner": "Blender physical CRT",
+        "render": {
+          "id": "portal-04-glass-almost-fills",
+          "order": 37,
+          "group": "portal",
+          "camera": "Camera_Portal_04_GlassAlmostFills",
+          "camera_azimuth_degrees": -84.888756,
+          "conduction_progress": 1,
+          "indicator": true,
+          "phosphor": "interface",
+          "interface": true,
+          "cable": "desktop",
+          "classification": "Phase 0.4 still-based creative evidence",
+          "approval_state": "candidate for direct human Phase 0.4 review",
+          "render_settings": {
+            "engine": "BLENDER_EEVEE",
+            "samples": 128,
+            "denoising": false,
+            "color_management": "AgX / Medium High Contrast",
+            "resolution": [
+              1920,
+              1200
+            ]
+          },
+          "lineage": {
+            "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+            "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+            "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+            "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+            "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+            "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+          },
+          "package_relative_path": "renders/refined/portal/portal-04-glass-almost-fills.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1653343,
+          "sha256": "c864568cee3d0171bdc89c88a5b18ad56050da0e97c6a693fccb1c2386fd79b6"
+        },
+        "lineage": {
+          "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+          "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+          "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+          "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+          "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+          "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+        },
+        "status": "FROZEN"
+      },
+      {
+        "id": "portal-05-bezel-exits",
+        "order": 5,
+        "owner": "Blender physical CRT",
+        "render": {
+          "id": "portal-05-bezel-exits",
+          "order": 38,
+          "group": "portal",
+          "camera": "Camera_Portal_05_BezelExits",
+          "camera_azimuth_degrees": -85.614735,
+          "conduction_progress": 1,
+          "indicator": true,
+          "phosphor": "interface",
+          "interface": true,
+          "cable": "desktop",
+          "classification": "Phase 0.4 still-based creative evidence",
+          "approval_state": "candidate for direct human Phase 0.4 review",
+          "render_settings": {
+            "engine": "BLENDER_EEVEE",
+            "samples": 128,
+            "denoising": false,
+            "color_management": "AgX / Medium High Contrast",
+            "resolution": [
+              1920,
+              1200
+            ]
+          },
+          "lineage": {
+            "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+            "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+            "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+            "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+            "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+            "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+          },
+          "package_relative_path": "renders/refined/portal/portal-05-bezel-exits.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1578330,
+          "sha256": "c6adebf66caadc897cc303e297b5620d55036222398b34e0dfcad2d6cdf89f7f"
+        },
+        "lineage": {
+          "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+          "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+          "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+          "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+          "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+          "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+        },
+        "status": "FROZEN"
+      },
+      {
+        "id": "portal-06-distortion-reduces",
+        "order": 6,
+        "owner": "Blender physical CRT",
+        "render": {
+          "id": "portal-06-distortion-reduces",
+          "order": 39,
+          "group": "portal",
+          "camera": "Camera_Portal_06_TextFree",
+          "camera_azimuth_degrees": -90,
+          "conduction_progress": 1,
+          "indicator": true,
+          "phosphor": "low-bloom",
+          "interface": false,
+          "cable": "desktop",
+          "classification": "Phase 0.4 still-based creative evidence",
+          "approval_state": "candidate for direct human Phase 0.4 review",
+          "render_settings": {
+            "engine": "BLENDER_EEVEE",
+            "samples": 128,
+            "denoising": false,
+            "color_management": "AgX / Medium High Contrast",
+            "resolution": [
+              1920,
+              1200
+            ]
+          },
+          "lineage": {
+            "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+            "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+            "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+            "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+            "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+            "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+          },
+          "package_relative_path": "renders/refined/portal/portal-06-distortion-reduces.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1448324,
+          "sha256": "2d11b4c7809fe943ffe90268c752ac2de37bdc9f2ebf8418e810de40b2a1bae4"
+        },
+        "lineage": {
+          "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+          "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+          "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+          "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+          "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+          "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+        },
+        "status": "FROZEN"
+      },
+      {
+        "id": "portal-07-dom-takes-ownership",
+        "order": 7,
+        "owner": "repository browser semantic DOM",
+        "status": "PASS",
+        "case_id": "portal-actual--desktop-1440x900",
+        "source_id": "source-text-free-portal-takeover",
+        "source_sha256": "2d11b4c7809fe943ffe90268c752ac2de37bdc9f2ebf8418e810de40b2a1bae4",
+        "matrix_sha256": "5411220869170f0290423d2f235aba2dc659aa1820e6eb2a3680bbe179d073d7",
+        "capture": {
+          "path": "artifacts/evidence/phase-0-4-crt-television/captures/normalized/portal-actual--desktop-1440x900.png",
+          "width": 1440,
+          "height": 900,
+          "bytes": 356554,
+          "sha256": "d696ee372e582cef5252abf76091a1491f05dedf012224f3a5efcc0a10cb0775"
+        }
+      },
+      {
+        "id": "portal-08-full-semantic-surface",
+        "order": 8,
+        "owner": "repository browser semantic DOM",
+        "status": "PASS",
+        "case_id": "portal-actual--desktop-1440x900",
+        "source_id": "source-text-free-portal-takeover",
+        "source_sha256": "2d11b4c7809fe943ffe90268c752ac2de37bdc9f2ebf8418e810de40b2a1bae4",
+        "matrix_sha256": "5411220869170f0290423d2f235aba2dc659aa1820e6eb2a3680bbe179d073d7",
+        "capture": {
+          "path": "artifacts/evidence/phase-0-4-crt-television/captures/normalized/portal-actual--desktop-1440x900.png",
+          "width": 1440,
+          "height": 900,
+          "bytes": 356554,
+          "sha256": "d696ee372e582cef5252abf76091a1491f05dedf012224f3a5efcc0a10cb0775"
+        }
+      }
+    ],
+    "physical_state_count": 6,
+    "browser_state_count": 2,
+    "status": "PASS",
+    "browser_matrix": {
+      "path": "artifacts/evidence/phase-0-4-crt-television/browser-matrix-report.json",
+      "schema": "quantum-hub.phase-0-4-crt-television.typography-collision-matrix.v1",
+      "bytes": 1149989,
+      "sha256": "5411220869170f0290423d2f235aba2dc659aa1820e6eb2a3680bbe179d073d7",
+      "cases": 46,
+      "normalizedCaptures": 36
+    }
+  },
+  "full_animatic_created": false,
+  "render_count": 45,
+  "records": [
+    {
+      "id": "design-front",
+      "order": 1,
+      "group": "design",
+      "camera": "Camera_Front_Design",
+      "camera_azimuth_degrees": -90,
+      "conduction_progress": 0,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/design/design-front.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1196671,
+      "sha256": "85a88c7e0ad8c41713f91644279e4c2fe2057a9d75cdbce2d7376ef474194d28"
+    },
+    {
+      "id": "design-side",
+      "order": 2,
+      "group": "design",
+      "camera": "Camera_Side_Design",
+      "camera_azimuth_degrees": 0,
+      "conduction_progress": 0,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/design/design-side.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1048067,
+      "sha256": "4421b2151f42561fb107d0f171fea2e1e1ebdcc1207325b1c949571c632a9ab2"
+    },
+    {
+      "id": "design-rear",
+      "order": 3,
+      "group": "design",
+      "camera": "Camera_Rear_Design",
+      "camera_azimuth_degrees": 90,
+      "conduction_progress": 0,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/design/design-rear.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1193957,
+      "sha256": "eba6675b3f1030d733a0f6b583d813357f3c117a97b2fa7d2c064b425f5e7a36"
+    },
+    {
+      "id": "design-three-quarter-front",
+      "order": 4,
+      "group": "design",
+      "camera": "Camera_ThreeQuarter_Front_Design",
+      "camera_azimuth_degrees": -54.972058,
+      "conduction_progress": 0,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/design/design-three-quarter-front.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1405350,
+      "sha256": "878589bb95764394ea609bb09db19f9c8df90937b7f2aa79a466a7f952ea0155"
+    },
+    {
+      "id": "design-three-quarter-rear",
+      "order": 5,
+      "group": "design",
+      "camera": "Camera_ThreeQuarter_Rear_Design",
+      "camera_azimuth_degrees": 127.427051,
+      "conduction_progress": 0,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/design/design-three-quarter-rear.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1150391,
+      "sha256": "91a263f2251267b034c2a1214dba06c80d22efd7d016a5d06095ad099651bc99"
+    },
+    {
+      "id": "cabinet-three-quarter",
+      "order": 6,
+      "group": "materials",
+      "camera": "Camera_Cabinet_Material",
+      "camera_azimuth_degrees": 40.505642,
+      "conduction_progress": 0,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/materials/cabinet-three-quarter.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1517037,
+      "sha256": "976b18eeda26cb7b00e95e6e27dff7adb918ffcaca965ff5d09e5d63a43229e2"
+    },
+    {
+      "id": "cabinet-front-material",
+      "order": 7,
+      "group": "materials",
+      "camera": "Camera_ThreeQuarter_Front_Design",
+      "camera_azimuth_degrees": -54.972058,
+      "conduction_progress": 0,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/materials/cabinet-front-material.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1405350,
+      "sha256": "878589bb95764394ea609bb09db19f9c8df90937b7f2aa79a466a7f952ea0155"
+    },
+    {
+      "id": "cabinet-rear-material",
+      "order": 8,
+      "group": "materials",
+      "camera": "Camera_ThreeQuarter_Rear_Design",
+      "camera_azimuth_degrees": 127.427051,
+      "conduction_progress": 0,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/materials/cabinet-rear-material.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1150391,
+      "sha256": "91a263f2251267b034c2a1214dba06c80d22efd7d016a5d06095ad099651bc99"
+    },
+    {
+      "id": "glass-dormant-front",
+      "order": 9,
+      "group": "materials",
+      "camera": "Camera_Raster_Close",
+      "camera_azimuth_degrees": -85.959328,
+      "conduction_progress": 0,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/materials/glass-dormant-front.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1834979,
+      "sha256": "6b9a2e478de1cf8ef238751d9293d813b14624313a9653d6106f92629b2c4cdc"
+    },
+    {
+      "id": "glass-grazing-proof",
+      "order": 10,
+      "group": "materials",
+      "camera": "Camera_Glass_Grazing",
+      "camera_azimuth_degrees": -40.968199,
+      "conduction_progress": 0,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/materials/glass-grazing-proof.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1813306,
+      "sha256": "7331c1ee2f2799ba0027fb61fdc4f87543d39d09654bbe4ed4aa0a3f15ea5c25"
+    },
+    {
+      "id": "glass-electrical-wake",
+      "order": 11,
+      "group": "materials",
+      "camera": "Camera_Raster_Close",
+      "camera_azimuth_degrees": -85.959328,
+      "conduction_progress": 1,
+      "indicator": true,
+      "phosphor": "wake-line",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/materials/glass-electrical-wake.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1614389,
+      "sha256": "0f0f56b006de26ff64fa6455c1bb9e1567980cb18d89c5a118a7565ef3da37a0"
+    },
+    {
+      "id": "glass-raster-warm",
+      "order": 12,
+      "group": "materials",
+      "camera": "Camera_Raster_Close",
+      "camera_azimuth_degrees": -85.959328,
+      "conduction_progress": 1,
+      "indicator": true,
+      "phosphor": "raster",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/materials/glass-raster-warm.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1646983,
+      "sha256": "3e39afcad7470dc6dfc78129ccaeb5696e60a47ccbfcbfa6e8b66fe6ff4166cd"
+    },
+    {
+      "id": "detail-controls",
+      "order": 13,
+      "group": "details",
+      "camera": "Camera_Controls_Macro",
+      "camera_azimuth_degrees": -69.967575,
+      "conduction_progress": 0,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/details/detail-controls.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1636010,
+      "sha256": "e4c1b954ed24eaf5fb1b3bc87b1dd73b8214cb09283b803d96087f44c6e43108"
+    },
+    {
+      "id": "detail-speaker",
+      "order": 14,
+      "group": "details",
+      "camera": "Camera_Speaker_Macro",
+      "camera_azimuth_degrees": -116.50009,
+      "conduction_progress": 0,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/details/detail-speaker.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1585245,
+      "sha256": "010bb3d335e8e151317d75a37793fc6afaa276dd165419d352a40e3677f504e1"
+    },
+    {
+      "id": "detail-rear",
+      "order": 15,
+      "group": "details",
+      "camera": "Camera_Rear_Detail",
+      "camera_azimuth_degrees": 59.891341,
+      "conduction_progress": 0,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/details/detail-rear.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1372574,
+      "sha256": "46fe40bf92efb4403e0e7fbf9c734079a501f693e7bf21a962270b303e018020"
+    },
+    {
+      "id": "detail-connector",
+      "order": 16,
+      "group": "details",
+      "camera": "Camera_Connector_Macro",
+      "camera_azimuth_degrees": 45.470914,
+      "conduction_progress": 0,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/details/detail-connector.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1360972,
+      "sha256": "bab7b30204be1bfdbb0cc9695e6c14531e61676cca4517798794fa5ecd4b6147"
+    },
+    {
+      "id": "cable-dormant",
+      "order": 17,
+      "group": "cable",
+      "camera": "Camera_Conductor_Macro",
+      "camera_azimuth_degrees": -143.334365,
+      "conduction_progress": 0,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/cable/cable-dormant.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1309489,
+      "sha256": "369259a69886c59e25024876b4d3e3bdc0028a057105d5d9223475596a986c3c"
+    },
+    {
+      "id": "cable-conduction-boundary",
+      "order": 18,
+      "group": "cable",
+      "camera": "Camera_Conductor_Macro",
+      "camera_azimuth_degrees": -143.334365,
+      "conduction_progress": 0.4,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/cable/cable-conduction-boundary.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1314957,
+      "sha256": "83cf5293d77bb07eeee90a650382b0588ca18967188e8e4577c8e42fedb6207f"
+    },
+    {
+      "id": "cable-rear-arrival",
+      "order": 19,
+      "group": "cable",
+      "camera": "Camera_Rear_Arrival",
+      "camera_azimuth_degrees": 53.841815,
+      "conduction_progress": 0.985,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/cable/cable-rear-arrival.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1190792,
+      "sha256": "fad7166fcceab7042cacecce0544ecec7d57b3361b850925d89c32619212c769"
+    },
+    {
+      "id": "cable-connected-powered",
+      "order": 20,
+      "group": "cable",
+      "camera": "Camera_Connector_Macro",
+      "camera_azimuth_degrees": 45.470914,
+      "conduction_progress": 1,
+      "indicator": true,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/cable/cable-connected-powered.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1390236,
+      "sha256": "570e88504bfd7785137e9c1f752e8b0516e7a3f01478707a5a19b5747e753674"
+    },
+    {
+      "id": "proving-ground-master",
+      "order": 21,
+      "group": "environment",
+      "camera": "Camera_Path_Arrival",
+      "camera_azimuth_degrees": -57.198598,
+      "conduction_progress": 0,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/environment/proving-ground-master.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1266764,
+      "sha256": "0381200448c99d592a7d616a664badbeefa3a364f3e0f3a01801df77842bb928"
+    },
+    {
+      "id": "camera-01-arrival",
+      "order": 22,
+      "group": "camera-study",
+      "camera": "Camera_Path_Arrival",
+      "camera_azimuth_degrees": -57.198598,
+      "conduction_progress": 0,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/camera-study/camera-01-arrival.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1266764,
+      "sha256": "0381200448c99d592a7d616a664badbeefa3a364f3e0f3a01801df77842bb928"
+    },
+    {
+      "id": "camera-02-thirty-percent",
+      "order": 23,
+      "group": "camera-study",
+      "camera": "Camera_Path_30",
+      "camera_azimuth_degrees": -65.565002,
+      "conduction_progress": 0.3,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/camera-study/camera-02-thirty-percent.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1314515,
+      "sha256": "6b8023d4993e1a5552342fbfc49060283c8663af06e92e899e347844f042cbea"
+    },
+    {
+      "id": "camera-03-sixty-percent",
+      "order": 24,
+      "group": "camera-study",
+      "camera": "Camera_Path_60",
+      "camera_azimuth_degrees": -73.952624,
+      "conduction_progress": 0.6,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/camera-study/camera-03-sixty-percent.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1355982,
+      "sha256": "28d0c912572b527ea4e31507705ce5c66b52cd97e50aad4d7bd9525bff8f8373"
+    },
+    {
+      "id": "camera-04-near-frontal",
+      "order": 25,
+      "group": "camera-study",
+      "camera": "Camera_Path_NearFrontal",
+      "camera_azimuth_degrees": -83.510124,
+      "conduction_progress": 0.94,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/camera-study/camera-04-near-frontal.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1412905,
+      "sha256": "9e4cec560b5bfaa372b56c98b868394a4299177499cf230e005cc18ba7320ce2"
+    },
+    {
+      "id": "camera-05-portal-ready",
+      "order": 26,
+      "group": "camera-study",
+      "camera": "Camera_Portal_03_CloseApproach",
+      "camera_azimuth_degrees": -85.309316,
+      "conduction_progress": 1,
+      "indicator": true,
+      "phosphor": "interface",
+      "interface": true,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/camera-study/camera-05-portal-ready.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1729636,
+      "sha256": "5706bebba038922ca12b268510e57d3f539e7b36c8e8a26cf66b63a89ad99297"
+    },
+    {
+      "id": "power-01-completely-dormant",
+      "order": 27,
+      "group": "power-on",
+      "camera": "Camera_Path_Arrival",
+      "camera_azimuth_degrees": -57.198598,
+      "conduction_progress": 0,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/power-on/power-01-completely-dormant.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1266764,
+      "sha256": "0381200448c99d592a7d616a664badbeefa3a364f3e0f3a01801df77842bb928"
+    },
+    {
+      "id": "power-02-current-reaches-connection",
+      "order": 28,
+      "group": "power-on",
+      "camera": "Camera_Rear_Arrival",
+      "camera_azimuth_degrees": 53.841815,
+      "conduction_progress": 0.985,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/power-on/power-02-current-reaches-connection.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1190792,
+      "sha256": "fad7166fcceab7042cacecce0544ecec7d57b3361b850925d89c32619212c769"
+    },
+    {
+      "id": "power-03-power-indicator-response",
+      "order": 29,
+      "group": "power-on",
+      "camera": "Camera_Power_Front",
+      "camera_azimuth_degrees": -84.981235,
+      "conduction_progress": 1,
+      "indicator": true,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/power-on/power-03-power-indicator-response.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1534833,
+      "sha256": "6767e545a05480e25d1ab3dba44e1790e82774147e123ef2757174f40cded562"
+    },
+    {
+      "id": "power-04-crt-electrical-wake",
+      "order": 30,
+      "group": "power-on",
+      "camera": "Camera_Power_Front",
+      "camera_azimuth_degrees": -84.981235,
+      "conduction_progress": 1,
+      "indicator": true,
+      "phosphor": "wake-line",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/power-on/power-04-crt-electrical-wake.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1456445,
+      "sha256": "acff665096c436b523a2c62c28eaa57545bbf38a1851eb1b6043f3f325a52468"
+    },
+    {
+      "id": "power-05-raster-phosphor-appears",
+      "order": 31,
+      "group": "power-on",
+      "camera": "Camera_Raster_Close",
+      "camera_azimuth_degrees": -85.959328,
+      "conduction_progress": 1,
+      "indicator": true,
+      "phosphor": "raster",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/power-on/power-05-raster-phosphor-appears.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1646983,
+      "sha256": "3e39afcad7470dc6dfc78129ccaeb5696e60a47ccbfcbfa6e8b66fe6ff4166cd"
+    },
+    {
+      "id": "power-06-quantum-interface-stabilizes",
+      "order": 32,
+      "group": "power-on",
+      "camera": "Camera_Raster_Close",
+      "camera_azimuth_degrees": -85.959328,
+      "conduction_progress": 1,
+      "indicator": true,
+      "phosphor": "interface",
+      "interface": true,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/power-on/power-06-quantum-interface-stabilizes.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1688049,
+      "sha256": "30942c1b54ffbff9bd485db96e4f37227f35d7313a73e9f1365a69c24d9ca351"
+    },
+    {
+      "id": "power-07-portal-ready",
+      "order": 33,
+      "group": "power-on",
+      "camera": "Camera_Portal_03_CloseApproach",
+      "camera_azimuth_degrees": -85.309316,
+      "conduction_progress": 1,
+      "indicator": true,
+      "phosphor": "interface",
+      "interface": true,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/power-on/power-07-portal-ready.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1729636,
+      "sha256": "5706bebba038922ca12b268510e57d3f539e7b36c8e8a26cf66b63a89ad99297"
+    },
+    {
+      "id": "portal-01-television-in-scene",
+      "order": 34,
+      "group": "portal",
+      "camera": "Camera_Path_60",
+      "camera_azimuth_degrees": -73.952624,
+      "conduction_progress": 0.86,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/portal/portal-01-television-in-scene.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1360280,
+      "sha256": "ad1e2396f9094003b3ff69b53e7373304c87a152771e23cb948b0f3fe5ce8e01"
+    },
+    {
+      "id": "portal-02-screen-active",
+      "order": 35,
+      "group": "portal",
+      "camera": "Camera_Power_Front",
+      "camera_azimuth_degrees": -84.981235,
+      "conduction_progress": 1,
+      "indicator": true,
+      "phosphor": "interface",
+      "interface": true,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/portal/portal-02-screen-active.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1496931,
+      "sha256": "9373aa6c7f09c0b4849478196fc363ebdd009054b466c415cbf3f5b977049f0c"
+    },
+    {
+      "id": "portal-03-close-approach",
+      "order": 36,
+      "group": "portal",
+      "camera": "Camera_Portal_03_CloseApproach",
+      "camera_azimuth_degrees": -85.309316,
+      "conduction_progress": 1,
+      "indicator": true,
+      "phosphor": "interface",
+      "interface": true,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/portal/portal-03-close-approach.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1729636,
+      "sha256": "5706bebba038922ca12b268510e57d3f539e7b36c8e8a26cf66b63a89ad99297"
+    },
+    {
+      "id": "portal-04-glass-almost-fills",
+      "order": 37,
+      "group": "portal",
+      "camera": "Camera_Portal_04_GlassAlmostFills",
+      "camera_azimuth_degrees": -84.888756,
+      "conduction_progress": 1,
+      "indicator": true,
+      "phosphor": "interface",
+      "interface": true,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/portal/portal-04-glass-almost-fills.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1653343,
+      "sha256": "c864568cee3d0171bdc89c88a5b18ad56050da0e97c6a693fccb1c2386fd79b6"
+    },
+    {
+      "id": "portal-05-bezel-exits",
+      "order": 38,
+      "group": "portal",
+      "camera": "Camera_Portal_05_BezelExits",
+      "camera_azimuth_degrees": -85.614735,
+      "conduction_progress": 1,
+      "indicator": true,
+      "phosphor": "interface",
+      "interface": true,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/portal/portal-05-bezel-exits.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1578330,
+      "sha256": "c6adebf66caadc897cc303e297b5620d55036222398b34e0dfcad2d6cdf89f7f"
+    },
+    {
+      "id": "portal-06-distortion-reduces",
+      "order": 39,
+      "group": "portal",
+      "camera": "Camera_Portal_06_TextFree",
+      "camera_azimuth_degrees": -90,
+      "conduction_progress": 1,
+      "indicator": true,
+      "phosphor": "low-bloom",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "Phase 0.4 still-based creative evidence",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/portal/portal-06-distortion-reduces.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1448324,
+      "sha256": "2d11b4c7809fe943ffe90268c752ac2de37bdc9f2ebf8418e810de40b2a1bae4"
+    },
+    {
+      "id": "source-desktop-dormant",
+      "order": 40,
+      "group": "sources",
+      "camera": "Camera_Dormant_Hero",
+      "camera_azimuth_degrees": -57.198598,
+      "conduction_progress": 0,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "frozen desktop dormant browser-composition source",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/sources/source-desktop-dormant.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1266764,
+      "sha256": "0381200448c99d592a7d616a664badbeefa3a364f3e0f3a01801df77842bb928"
+    },
+    {
+      "id": "source-mobile-dormant",
+      "order": 41,
+      "group": "sources",
+      "camera": "Camera_Mobile_Dormant",
+      "camera_azimuth_degrees": -63.838434,
+      "conduction_progress": 0,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "mobile",
+      "classification": "frozen separately authored mobile dormant browser-composition source",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1080,
+          1800
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/sources/source-mobile-dormant.png",
+      "width": 1080,
+      "height": 1800,
+      "bytes": 1039559,
+      "sha256": "6c7e6237028e5f7bddd65c7e304d9b70b141a09051dc7c8e4e38d22a06340fdf"
+    },
+    {
+      "id": "source-reduced-desktop-dormant",
+      "order": 42,
+      "group": "sources",
+      "camera": "Camera_Reduced_Desktop",
+      "camera_azimuth_degrees": -57.334889,
+      "conduction_progress": 0,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "frozen reduced-motion desktop dormant source",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/sources/source-reduced-desktop-dormant.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1266709,
+      "sha256": "6dcce22f73395f2d55591d9fe4b7422246623372283628eee419f8b75221ea4f"
+    },
+    {
+      "id": "source-reduced-mobile-dormant",
+      "order": 43,
+      "group": "sources",
+      "camera": "Camera_Reduced_Mobile",
+      "camera_azimuth_degrees": -64.057705,
+      "conduction_progress": 0,
+      "indicator": false,
+      "phosphor": "off",
+      "interface": false,
+      "cable": "mobile",
+      "classification": "frozen reduced-motion separately authored mobile dormant source",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1080,
+          1800
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/sources/source-reduced-mobile-dormant.png",
+      "width": 1080,
+      "height": 1800,
+      "bytes": 1045309,
+      "sha256": "b4d6c7fb50c98108a43ddbfc94040b5c7e8c277dca90ae85a05d6d3dbc6ecc4b"
+    },
+    {
+      "id": "source-physical-portal-close",
+      "order": 44,
+      "group": "sources",
+      "camera": "Camera_Portal_04_GlassAlmostFills",
+      "camera_azimuth_degrees": -84.888756,
+      "conduction_progress": 1,
+      "indicator": true,
+      "phosphor": "interface",
+      "interface": true,
+      "cable": "desktop",
+      "classification": "frozen physical portal close source",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/sources/source-physical-portal-close.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1653343,
+      "sha256": "c864568cee3d0171bdc89c88a5b18ad56050da0e97c6a693fccb1c2386fd79b6"
+    },
+    {
+      "id": "source-text-free-portal-takeover",
+      "order": 45,
+      "group": "sources",
+      "camera": "Camera_Portal_06_TextFree",
+      "camera_azimuth_degrees": -90,
+      "conduction_progress": 1,
+      "indicator": true,
+      "phosphor": "low-bloom",
+      "interface": false,
+      "cable": "desktop",
+      "classification": "frozen text-free portal takeover source",
+      "approval_state": "candidate for direct human Phase 0.4 review",
+      "render_settings": {
+        "engine": "BLENDER_EEVEE",
+        "samples": 128,
+        "denoising": false,
+        "color_management": "AgX / Medium High Contrast",
+        "resolution": [
+          1920,
+          1200
+        ]
+      },
+      "lineage": {
+        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "refined_source_sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+        "render_generator_sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+        "layout_authority_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "package_relative_path": "renders/refined/sources/source-text-free-portal-takeover.png",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1448324,
+      "sha256": "2d11b4c7809fe943ffe90268c752ac2de37bdc9f2ebf8418e810de40b2a1bae4"
+    }
+  ],
+  "render_audit": {
+    "expected_count": 45,
+    "governed_count": 45,
+    "unique_id_count": 45,
+    "unique_path_count": 45,
+    "missing_count": 0,
+    "dimension_mismatch_count": 0,
+    "status": "PASS"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "quantum-hub.phase-0-4-crt-television.capture-recovery.v1",
+  "createdAt": "2026-08-18T15:34:14.569Z",
+  "reason": "repository-native checkpoint preserved because plan, contract, frozen scene, keepout or harness authority changed",
+  "sourceCheckpoint": {
+    "path": "artifacts/evidence/phase-0-4-crt-television/capture-checkpoint.json",
+    "bytes": 5488,
+    "sha256": "d6d2c4cab7c3b7e42ee5f3993288a5bebbde545fec246668fc1be0fbecdab5ed"
+  },
+  "preservedCheckpoint": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-d6d2c4cab7c3b7e4/capture-checkpoint.json",
+  "recoveredFiles": [
+    {
+      "kind": "case-report",
+      "source": "artifacts/evidence/phase-0-4-crt-television/reports/hero-actual--desktop-1440x900.json",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-d6d2c4cab7c3b7e4/reports/hero-actual--desktop-1440x900.json",
+      "bytes": 2850,
+      "sha256": "984726b080845633d4d2658a2ec81e486682445fb0c4f077ff6d05aa999aea6b",
+      "byteIdentical": true
+    }
+  ],
+  "policy": "preserved files are historical only and cannot be promoted or skipped under the replacement authority"
+}

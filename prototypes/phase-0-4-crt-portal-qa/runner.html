@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="description" content="Exact CSS-pixel runner for non-public Phase 0.4 CRT portal QA." />
+    <title>Phase 0.4 · Exact viewport runner</title>
+    <link rel="stylesheet" href="./runner.css?v=phase04-scaffold-v19" />
+    <script src="./runner.js?v=phase04-scaffold-v19" type="module"></script>
+  </head>
+  <body data-ready="false" data-pass="false">
+    <div id="capture-viewport" class="capture-viewport">
+      <iframe id="qa-frame" title="Exact viewport Phase 0.4 CRT portal QA surface"></iframe>
+    </div>
+    <output id="runner-status" role="status" aria-live="polite">Loading exact viewport…</output>
+    <pre id="phase04-runner-report" hidden aria-hidden="true">{}</pre>
+  </body>
+</html>

@@ -1,0 +1,601 @@
+{
+  "schema": "quantum-hub.phase-0-4-crt-television.typography-capture-plan.v1",
+  "status": "capture-ready against frozen six-source and accepted keepout authorities; no final matrix yet",
+  "baseUrl": "http://127.0.0.1:4173/prototypes/phase-0-4-crt-portal-qa/",
+  "runnerUrl": "http://127.0.0.1:4173/prototypes/phase-0-4-crt-portal-qa/runner.html",
+  "contractPath": "artifacts/original/phase-0-4-crt-television/crt-portal-layout.json",
+  "contractAuthority": {
+    "path": "artifacts/original/phase-0-4-crt-television/crt-portal-layout.json",
+    "bytes": 16248,
+    "sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+  },
+  "contractPolicy": "use the additive Phase 0.4 physical 4:3 screen and semantic-DOM takeover authority without changing the accepted Phase 0.3 harness or historical portal contracts",
+  "harnessStatus": "frozen capture-authoritative harness; final matrix remains incomplete until 46 cases and 36 normalized captures pass",
+  "harnessRevision": "phase04-scaffold-v19",
+  "fontMode": "preferred stacks when locally available plus forced metric-conscious system fallbacks; no font binary or remote dependency",
+  "sceneFreeze": {
+    "status": "frozen",
+    "matrixStatus": "ready-for-capture",
+    "captureAllowed": true,
+    "releaseAuthority": "this plan's exact six source records and the frozen accepted keepout ledger release capture additively while the byte-frozen layout contract preserves its original closed pre-freeze gate",
+    "requiredFrozenSourceRoles": [
+      "source-desktop-dormant",
+      "source-mobile-dormant",
+      "source-reduced-desktop-dormant",
+      "source-reduced-mobile-dormant",
+      "source-physical-portal-close",
+      "source-text-free-portal-takeover"
+    ],
+    "expectedSourceDescriptors": [
+      {
+        "id": "source-desktop-dormant",
+        "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-desktop-dormant.png",
+        "width": 1920,
+        "height": 1200
+      },
+      {
+        "id": "source-mobile-dormant",
+        "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-mobile-dormant.png",
+        "width": 1080,
+        "height": 1800
+      },
+      {
+        "id": "source-reduced-desktop-dormant",
+        "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-reduced-desktop-dormant.png",
+        "width": 1920,
+        "height": 1200
+      },
+      {
+        "id": "source-reduced-mobile-dormant",
+        "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-reduced-mobile-dormant.png",
+        "width": 1080,
+        "height": 1800
+      },
+      {
+        "id": "source-physical-portal-close",
+        "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-physical-portal-close.png",
+        "width": 1920,
+        "height": 1200
+      },
+      {
+        "id": "source-text-free-portal-takeover",
+        "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-text-free-portal-takeover.png",
+        "width": 1920,
+        "height": 1200
+      }
+    ],
+    "sources": [
+      {
+        "id": "source-desktop-dormant",
+        "role": "source-desktop-dormant",
+        "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-desktop-dormant.png",
+        "width": 1920,
+        "height": 1200,
+        "bytes": 1266764,
+        "sha256": "0381200448c99d592a7d616a664badbeefa3a364f3e0f3a01801df77842bb928"
+      },
+      {
+        "id": "source-mobile-dormant",
+        "role": "source-mobile-dormant",
+        "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-mobile-dormant.png",
+        "width": 1080,
+        "height": 1800,
+        "bytes": 1039559,
+        "sha256": "6c7e6237028e5f7bddd65c7e304d9b70b141a09051dc7c8e4e38d22a06340fdf"
+      },
+      {
+        "id": "source-reduced-desktop-dormant",
+        "role": "source-reduced-desktop-dormant",
+        "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-reduced-desktop-dormant.png",
+        "width": 1920,
+        "height": 1200,
+        "bytes": 1266709,
+        "sha256": "6dcce22f73395f2d55591d9fe4b7422246623372283628eee419f8b75221ea4f"
+      },
+      {
+        "id": "source-reduced-mobile-dormant",
+        "role": "source-reduced-mobile-dormant",
+        "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-reduced-mobile-dormant.png",
+        "width": 1080,
+        "height": 1800,
+        "bytes": 1045309,
+        "sha256": "b4d6c7fb50c98108a43ddbfc94040b5c7e8c277dca90ae85a05d6d3dbc6ecc4b"
+      },
+      {
+        "id": "source-physical-portal-close",
+        "role": "source-physical-portal-close",
+        "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-physical-portal-close.png",
+        "width": 1920,
+        "height": 1200,
+        "bytes": 1653343,
+        "sha256": "c864568cee3d0171bdc89c88a5b18ad56050da0e97c6a693fccb1c2386fd79b6"
+      },
+      {
+        "id": "source-text-free-portal-takeover",
+        "role": "source-text-free-portal-takeover",
+        "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-text-free-portal-takeover.png",
+        "width": 1920,
+        "height": 1200,
+        "bytes": 1448324,
+        "sha256": "2d11b4c7809fe943ffe90268c752ac2de37bdc9f2ebf8418e810de40b2a1bae4"
+      }
+    ],
+    "requiredSourceMetadata": [
+      "repository-relative path",
+      "width",
+      "height",
+      "bytes",
+      "SHA-256"
+    ],
+    "requiredKeepoutAuthority": {
+      "path": "artifacts/original/phase-0-4-crt-television/manifests/crt-scene-source-keepouts.json",
+      "schema": "quantum-hub.phase-0-4-crt-television.scene-source-keepouts.v1",
+      "layoutAuthority": {
+        "path": "crt-portal-layout.json",
+        "sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "sourceRolePolicy": "each sourceRole equals its exact source record ID",
+      "requiredRecords": [
+        "source-desktop-dormant",
+        "source-mobile-dormant",
+        "source-reduced-desktop-dormant",
+        "source-reduced-mobile-dormant",
+        "source-physical-portal-close",
+        "source-text-free-portal-takeover"
+      ],
+      "requiredGeometry": [
+        "crt-cabinet",
+        "crt-screen",
+        "spiral-cable segment rectangles"
+      ]
+    },
+    "keepoutAuthority": {
+      "path": "artifacts/original/phase-0-4-crt-television/manifests/crt-scene-source-keepouts.json",
+      "schema": "quantum-hub.phase-0-4-crt-television.scene-source-keepouts.v1",
+      "bytes": 1225841,
+      "sha256": "c2d371d4eb3d3bfafe82ad67728c2df48ef7e38b09b2d1306d5accd2c955ac3d"
+    },
+    "keepoutApplicability": {
+      "defaultPolicy": "source-projected CRT cabinet, CRT screen and spiral-cable geometry is collision-required with at least 16 CSS pixels of semantic clearance",
+      "postBezelSemanticTakeover": {
+        "sourceId": "source-text-free-portal-takeover",
+        "sourceSha256": "2d11b4c7809fe943ffe90268c752ac2de37bdc9f2ebf8418e810de40b2a1bae4",
+        "surface": "portal",
+        "motion": "no-preference",
+        "geometryIds": [
+          "crt-cabinet",
+          "crt-screen",
+          "spiral-cable"
+        ],
+        "collisionRequired": false,
+        "reason": "the frozen text-free takeover raster is post-bezel: cabinet, convex screen and cable have exited the visible camera frame; evaluated geometry remains provenance-bound but is intentionally non-applicable to semantic-copy collision testing"
+      }
+    }
+  },
+  "browserApi": {
+    "readyExpression": "await window.phase04Ready",
+    "reportExpression": "await window.runPhase04TypographyCheck()",
+    "reportGlobal": "window.phase04TypographyReport",
+    "runnerReadyExpression": "await window.phase04RunnerReady",
+    "runnerReportGlobal": "window.phase04RunnerReport",
+    "childReportDomSelector": "#phase04-report",
+    "runnerReportDomSelector": "#phase04-runner-report",
+    "runnerReadySelector": "body[data-ready='true']",
+    "runnerPassSelector": "body[data-pass='true']",
+    "runnerChildReportProperty": "report",
+    "captureElementSelector": "#capture-viewport",
+    "runnerViewportQuery": "vw={width}&vh={height}&captureScale={captureScale}",
+    "expectedSchema": "quantum-hub.phase-0-4-crt-television.typography-collision-browser-report.v1",
+    "expectedRunnerSchema": "quantum-hub.phase-0-4-crt-television.exact-viewport-runner-report.v1",
+    "passProperty": "pass"
+  },
+  "viewports": [
+    {
+      "id": "desktop-1440x900",
+      "width": 1440,
+      "height": 900,
+      "captureScale": 0.8333333333333334
+    },
+    {
+      "id": "short-desktop-1366x650",
+      "width": 1366,
+      "height": 650,
+      "captureScale": 0.8784773060029283
+    },
+    {
+      "id": "desktop-1280x800",
+      "width": 1280,
+      "height": 800,
+      "captureScale": 0.9375
+    },
+    {
+      "id": "tablet-landscape-1024x768",
+      "width": 1024,
+      "height": 768,
+      "captureScale": 1
+    },
+    {
+      "id": "tablet-portrait-768x1024",
+      "width": 768,
+      "height": 1024,
+      "captureScale": 1
+    },
+    {
+      "id": "mobile-390x844",
+      "width": 390,
+      "height": 844,
+      "captureScale": 1
+    },
+    {
+      "id": "mobile-360x800",
+      "width": 360,
+      "height": 800,
+      "captureScale": 1
+    },
+    {
+      "id": "narrow-320x800",
+      "width": 320,
+      "height": 800,
+      "captureScale": 1
+    },
+    {
+      "id": "mobile-landscape-844x390",
+      "width": 844,
+      "height": 390,
+      "captureScale": 1
+    }
+  ],
+  "caseTemplates": [
+    {
+      "idPrefix": "hero-actual",
+      "viewportIds": "all",
+      "query": "surface=hero&fixture=actual&zoom=100&motion=no-preference&font=normal&chrome=0",
+      "captureViewportIds": "all"
+    },
+    {
+      "idPrefix": "portal-actual",
+      "viewportIds": "all",
+      "query": "surface=portal&fixture=actual&zoom=100&motion=no-preference&font=normal&chrome=0",
+      "captureViewportIds": [
+        "desktop-1440x900",
+        "tablet-landscape-1024x768",
+        "mobile-390x844",
+        "narrow-320x800",
+        "mobile-landscape-844x390"
+      ]
+    },
+    {
+      "idPrefix": "hero-zoom-200",
+      "viewportIds": [
+        "desktop-1440x900",
+        "short-desktop-1366x650",
+        "mobile-390x844",
+        "narrow-320x800",
+        "mobile-landscape-844x390"
+      ],
+      "query": "surface=hero&fixture=actual&zoom=200&motion=no-preference&font=normal&chrome=0",
+      "captureViewportIds": [
+        "desktop-1440x900",
+        "mobile-390x844",
+        "narrow-320x800",
+        "mobile-landscape-844x390"
+      ]
+    },
+    {
+      "idPrefix": "portal-zoom-200",
+      "viewportIds": [
+        "desktop-1440x900",
+        "short-desktop-1366x650",
+        "mobile-390x844",
+        "narrow-320x800",
+        "mobile-landscape-844x390"
+      ],
+      "query": "surface=portal&fixture=actual&zoom=200&motion=no-preference&font=normal&chrome=0",
+      "captureViewportIds": [
+        "desktop-1440x900",
+        "mobile-390x844",
+        "narrow-320x800",
+        "mobile-landscape-844x390"
+      ]
+    },
+    {
+      "idPrefix": "hero-long-copy",
+      "viewportIds": [
+        "desktop-1440x900",
+        "short-desktop-1366x650",
+        "mobile-390x844",
+        "narrow-320x800",
+        "mobile-landscape-844x390"
+      ],
+      "query": "surface=hero&fixture=long&zoom=100&motion=no-preference&font=fallback&chrome=0",
+      "captureViewportIds": [
+        "desktop-1440x900",
+        "mobile-390x844",
+        "narrow-320x800",
+        "mobile-landscape-844x390"
+      ]
+    },
+    {
+      "idPrefix": "portal-long-copy",
+      "viewportIds": [
+        "desktop-1440x900",
+        "short-desktop-1366x650",
+        "mobile-390x844",
+        "narrow-320x800",
+        "mobile-landscape-844x390"
+      ],
+      "query": "surface=portal&fixture=long&zoom=100&motion=no-preference&font=fallback&chrome=0",
+      "captureViewportIds": [
+        "desktop-1440x900",
+        "mobile-390x844",
+        "narrow-320x800",
+        "mobile-landscape-844x390"
+      ]
+    },
+    {
+      "idPrefix": "hero-reduced-motion",
+      "viewportIds": [
+        "desktop-1440x900",
+        "mobile-390x844",
+        "narrow-320x800"
+      ],
+      "query": "surface=hero&fixture=actual&zoom=100&motion=reduce&font=normal&chrome=0",
+      "captureViewportIds": [
+        "desktop-1440x900",
+        "mobile-390x844"
+      ]
+    },
+    {
+      "idPrefix": "portal-reduced-motion",
+      "viewportIds": [
+        "desktop-1440x900",
+        "mobile-390x844",
+        "narrow-320x800"
+      ],
+      "query": "surface=portal&fixture=actual&zoom=100&motion=reduce&font=normal&chrome=0",
+      "captureViewportIds": [
+        "desktop-1440x900",
+        "mobile-390x844"
+      ]
+    },
+    {
+      "idPrefix": "hero-keyboard-focus",
+      "viewportIds": [
+        "desktop-1440x900"
+      ],
+      "query": "surface=hero&fixture=actual&zoom=100&motion=no-preference&font=normal&chrome=0",
+      "focusSelector": "#hero-industry",
+      "captureViewportIds": [
+        "desktop-1440x900"
+      ]
+    },
+    {
+      "idPrefix": "portal-keyboard-focus",
+      "viewportIds": [
+        "mobile-390x844"
+      ],
+      "query": "surface=portal&fixture=actual&zoom=100&motion=no-preference&font=normal&chrome=0",
+      "focusSelector": "#portal-industry",
+      "captureViewportIds": [
+        "mobile-390x844"
+      ]
+    }
+  ],
+  "capture": {
+    "rawDirectory": "artifacts/evidence/phase-0-4-crt-television/captures/raw",
+    "normalizedDirectory": "artifacts/evidence/phase-0-4-crt-television/captures/normalized",
+    "reportDirectory": "artifacts/evidence/phase-0-4-crt-television/reports",
+    "rawFilenameTemplate": "{idPrefix}--{viewportId}.jpg",
+    "normalizedFilenameTemplate": "{idPrefix}--{viewportId}.png",
+    "fullPage": true,
+    "omitBackground": false,
+    "devicePixelRatioPolicy": "record actual browser DPR; do not claim or require control",
+    "maximumRenderedWidth": 1200,
+    "normalizationMethod": "crop exact rendered frame and use high-quality resampling only where captureScale is below 1",
+    "stabilization": {
+      "method": "exact-byte-modal-winner",
+      "successiveFullPageJpegsPerVisualCase": 11,
+      "winnerSelection": "save only the unique JPEG byte sequence with the highest frequency; a tied mode is invalid",
+      "minimumWinnerVotes": 7,
+      "timingClaim": "none; readiness barriers do not independently prove raster stability"
+    }
+  },
+  "requiredAssertions": [
+    "contract SHA-256 and frozen scene/keepout SHA-256 authorities match every browser record",
+    "the historical Phase 0.3 portal authority and harness remain unchanged",
+    "physical CRT screen and active raster are exactly 4:3 before takeover",
+    "the physical screen presents QUANTUM HUB, the five-stage route and TEST ROUTE AVAILABLE only",
+    "the physical raster is absent before identical semantic DOM copy can appear and doubledCopyPass is true",
+    "WHERE, DO, YOU, ENTER, PROVE and WORK remain whole with word-break normal, overflow-wrap normal and hyphens none",
+    "wordFragmentationOffenders is exactly 0 and a humanLineBreakReport names every visible H1 and H2 line",
+    "no page, route or component horizontal overflow; no fixed-height clipping; no nested scroller",
+    "visible copy and controls clear source-projected CRT cabinet, CRT screen and spiral-cable keepouts by at least 16 CSS pixels wherever that physical geometry remains visible; the exact hash-bound post-bezel text-free takeover role records all three as provenance-bound but collision-non-applicable",
+    "mobile hero actual and reduced-motion states preserve semantic copy size while recomposing the copy upward and the frozen scene downward so the CRT and cable remain recognizable beneath the controls with at least 16 CSS pixels of measured clearance",
+    "wide, compact-wide, tablet-portrait and short-landscape hero actual/reduced states use explicit quiet-field compositions: constrained copy and calibrated right/down scene shifts for wide/compact-wide, right-shifted scene for short, portrait scene shifted below copy, and honest heading ink clearance without type shrink",
+    "200 percent hero headings retain their authored display size and whole-word line breaks while receiving 32 CSS pixels of content-driven ink clearance and normal document growth",
+    "the sole audience divider clears glyph bounds by at least 12 reference pixels",
+    "all visible controls are at least 44 by 44 CSS pixels and explicit keyboard focus exposes an outline of at least 2 CSS pixels",
+    "fallback-font, 200 percent text, approximately 25 percent longer support copy, focus and reduced-motion cases all pass",
+    "every font=fallback case proves forced fallback activation in computed display, editorial and UI stacks and records fallbackFontPass true",
+    "reduced motion instantiates no cinematic media and uses a dormant television, dormant cable, directional scrim and no large rounded glass panel",
+    "mobile uses an independently authored scene with approximately 2.25 visible spiral turns, no desktop crop and an earlier takeover",
+    "4:3 physical-screen growth, cabinet exit, distortion reduction and semantic takeover are continuous with no permanent letterbox or abrupt aspect snap",
+    "final capture is forbidden until sceneFreeze.status is frozen and exact paths, dimensions, bytes, SHA-256 values and evaluated keepouts are recorded"
+  ],
+  "expectedCaseCount": 46,
+  "expectedCaptureCount": 36,
+  "browserFinalization": {
+    "captureAuthoritySnapshot": {
+      "path": "artifacts/evidence/phase-0-4-crt-television/capture-plan-authority.json",
+      "expectedSchema": "quantum-hub.phase-0-4-crt-television.typography-capture-plan.v1",
+      "policy": "the snapshot is a byte-identical copy of the ready-for-capture plan hashed by the browser matrix; the mutable current plan is marked complete only after all downstream authorities pass"
+    },
+    "browserEvidenceManifest": {
+      "path": "artifacts/evidence/phase-0-4-crt-television/browser-evidence-manifest.json",
+      "expectedSchema": "quantum-hub.phase-0-4-crt-television.browser-evidence.v1"
+    },
+    "browserReviewCompositionManifest": {
+      "path": "artifacts/original/phase-0-4-crt-television/manifests/browser-review-composition-manifest.json",
+      "expectedSchema": "quantum-hub.phase-0-4-crt-television.browser-review-composition.v1"
+    },
+    "creativeReviewCompositionManifest": {
+      "path": "artifacts/original/phase-0-4-crt-television/manifests/crt-review-composition-manifest.json",
+      "expectedSchema": "quantum-hub.phase-0-4-crt-television.review-composition.v1"
+    },
+    "canonicalRenderManifest": {
+      "path": "artifacts/original/phase-0-4-crt-television/manifests/crt-canonical-render-manifest.json",
+      "expectedSchema": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1"
+    },
+    "powerOnStateAuthority": {
+      "path": "artifacts/original/phase-0-4-crt-television/manifests/crt-power-on-state-authority.json",
+      "expectedSchema": "quantum-hub.phase-0-4-crt-television.power-on-state-authority.v1"
+    },
+    "portalTransitionStateAuthority": {
+      "path": "artifacts/original/phase-0-4-crt-television/manifests/crt-portal-transition-state-authority.json",
+      "expectedSchema": "quantum-hub.phase-0-4-crt-television.portal-transition-state-authority.v1"
+    },
+    "materialAndAssetManifest": {
+      "path": "artifacts/original/phase-0-4-crt-television/manifests/crt-material-and-asset-manifest.json",
+      "expectedSchema": "quantum-hub.phase-0-4-crt-television.material-and-asset.v1"
+    },
+    "powerOnSheet": {
+      "reviewIndex": 9,
+      "filename": "crt-power-on-contact-sheet.png",
+      "stateIds": [
+        "power-01-completely-dormant",
+        "power-02-current-reaches-connection",
+        "power-03-power-indicator-response",
+        "power-04-crt-electrical-wake",
+        "power-05-raster-phosphor-appears",
+        "power-06-quantum-interface-stabilizes",
+        "power-07-portal-ready"
+      ]
+    },
+    "portalTransitionSheet": {
+      "reviewIndex": 10,
+      "filename": "crt-portal-transition-sheet.png",
+      "stateIds": [
+        "portal-01-television-in-scene",
+        "portal-02-screen-active",
+        "portal-03-close-approach",
+        "portal-04-glass-almost-fills",
+        "portal-05-bezel-exits",
+        "portal-06-distortion-reduces",
+        "portal-07-dom-takes-ownership",
+        "portal-08-full-semantic-surface"
+      ],
+      "physicalStateIds": [
+        "portal-01-television-in-scene",
+        "portal-02-screen-active",
+        "portal-03-close-approach",
+        "portal-04-glass-almost-fills",
+        "portal-05-bezel-exits",
+        "portal-06-distortion-reduces"
+      ],
+      "semanticBrowserStates": [
+        {
+          "id": "portal-07-dom-takes-ownership",
+          "caseId": "portal-actual--desktop-1440x900",
+          "sourceId": "source-text-free-portal-takeover",
+          "owner": "repository browser semantic DOM",
+          "role": "governed crossover against the text-free physical takeover source"
+        },
+        {
+          "id": "portal-08-full-semantic-surface",
+          "caseId": "portal-actual--desktop-1440x900",
+          "sourceId": "source-text-free-portal-takeover",
+          "owner": "repository browser semantic DOM",
+          "role": "full normalized semantic operating surface"
+        }
+      ]
+    },
+    "browserDerivedSheetIndices": [
+      11,
+      12,
+      13,
+      14,
+      15,
+      16
+    ],
+    "completionPolicy": "prepare snapshots the ready-for-capture plan and binds the normalized matrix plus exact seven-state power and eight-state portal lineage; complete requires all seven browser-governed sheets 10 through 16, the material manifest and their byte/hash lineage before changing matrixStatus to complete"
+  },
+  "browserDerivedReviewSheets": [
+    {
+      "reviewIndex": 11,
+      "filename": "crt-physical-dom-alignment-sheet.png",
+      "sourceCaseIds": [
+        "portal-actual--desktop-1440x900",
+        "portal-actual--tablet-landscape-1024x768",
+        "portal-actual--mobile-390x844"
+      ],
+      "additionalAuthorities": [
+        "source-physical-portal-close",
+        "source-text-free-portal-takeover",
+        "crt-portal-layout.json"
+      ]
+    },
+    {
+      "reviewIndex": 12,
+      "filename": "crt-desktop-hero-composition.png",
+      "sourceCaseIds": [
+        "hero-actual--desktop-1440x900",
+        "hero-actual--short-desktop-1366x650",
+        "hero-actual--desktop-1280x800",
+        "hero-actual--tablet-landscape-1024x768"
+      ]
+    },
+    {
+      "reviewIndex": 13,
+      "filename": "crt-mobile-hero-composition.png",
+      "sourceCaseIds": [
+        "hero-actual--mobile-390x844",
+        "hero-actual--mobile-360x800",
+        "hero-actual--narrow-320x800",
+        "hero-actual--mobile-landscape-844x390"
+      ]
+    },
+    {
+      "reviewIndex": 14,
+      "filename": "crt-text-zoom-and-fallback.png",
+      "sourceCaseIds": [
+        "hero-zoom-200--desktop-1440x900",
+        "portal-zoom-200--narrow-320x800",
+        "hero-long-copy--mobile-390x844",
+        "portal-long-copy--desktop-1440x900"
+      ]
+    },
+    {
+      "reviewIndex": 15,
+      "filename": "crt-reduced-motion-desktop.png",
+      "sourceCaseIds": [
+        "hero-reduced-motion--desktop-1440x900",
+        "portal-reduced-motion--desktop-1440x900"
+      ]
+    },
+    {
+      "reviewIndex": 16,
+      "filename": "crt-reduced-motion-mobile.png",
+      "sourceCaseIds": [
+        "hero-reduced-motion--mobile-390x844",
+        "portal-reduced-motion--mobile-390x844"
+      ]
+    }
+  ],
+  "reviewSheetLineagePolicy": "Portal sheet 10 and browser-derived sheets 11 through 16 must bind the final normalized matrix SHA-256 and every listed state or case's path, dimensions, bytes and SHA-256; labels and metadata may be added but scene/copy pixels may not be repainted.",
+  "finalMatrix": {
+    "path": "artifacts/evidence/phase-0-4-crt-television/browser-matrix-report.json",
+    "status": "ready for repository-native capture and normalization; incomplete until 46/36 authority is finalized",
+    "expectedSchema": "quantum-hub.phase-0-4-crt-television.typography-collision-matrix.v1",
+    "bytes": null,
+    "sha256": null,
+    "caseCount": 0,
+    "normalizedCaptureCount": 0
+  },
+  "captureAuthoritySnapshot": null,
+  "completionAuthority": null,
+  "browserReviewCompositionAuthority": null,
+  "creativeReviewCompositionAuthority": null,
+  "powerOnStateAuthority": null,
+  "portalTransitionStateAuthority": null,
+  "materialAndAssetAuthority": null
+}

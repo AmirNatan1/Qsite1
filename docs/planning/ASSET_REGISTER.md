@@ -257,6 +257,78 @@ The non-production evidence tree at `artifacts/evidence/phase-0-3d-repair-v3/` c
 
 The final 36 normalized captures were inspected at full size. Actual, keyboard-focus, long-copy, reduced-motion and 200% text-zoom states preserve whole words, visible focus only where requested, zero horizontal overflow and zero measured semantic-copy/Aperture Station/cable intersections. Desktop retains a quiet left copy field with the Aperture Station lower-right; the independently authored mobile composition keeps the station and spiral legible without cropping the desktop scene.
 
+## Original Quantum Phase 0.4 CRT television package
+
+The additive package at `artifacts/original/phase-0-4-crt-television/` is **original Quantum creative evidence** with approval state **pending human creative review**. It preserves the Phase 0 through Phase 0.3 packages unchanged. Every record is Class R and remains excluded from launch use unless the `CRT TELEVISION ART DIRECTION`, `CRT POWER-ON + SCREEN PORTAL`, and `TYPOGRAPHY + RESPONSIVE SAFETY` human gates are accepted.
+
+The package contains 119 files and 160,409,837 bytes. Its 82 binary records comprise 79 sanitized PNGs, two editable Blender sources and one compact review ZIP, totalling 158,547,998 bytes. The PNG set contains 63 source/canonical still renders and the exact 16-sheet review set. The other 37 records comprise 16 JSON authorities or contracts, 20 deterministic Python sources and one work-directory exclusion control, totalling 1,861,839 bytes. No video, audio, full animatic, numbered frame sequence, `.blend1`, cache, executable, font binary, external model, image texture, add-on, reference binary or third-party capture is present.
+
+`manifests/package-inventory.json` is the package-wide authority. It self-excludes its own hash and binds the other 118 intended files and 160,349,367 bytes; adding the 60,470-byte inventory itself gives the complete 119-file total above. Every inventory record includes its repository-relative and package-relative path, byte count, SHA-256, classification, approval state and `intendedCommit: true`.
+
+The user-supplied CRT television photograph informed broad era and proportion only. It remains intentionally uncommitted, is not embedded or packed, was never loaded as a Blender image or texture, and is represented in committed records only by that opaque classification. The final Blender validation reports zero external libraries, images, paths, packed files, missing files, image-texture nodes and third-party models.
+
+### Phase 0.4 binary register
+
+| Asset ID | Committed path or governed set | Records | Bytes | Integrity authority | Class | Approval and publication state |
+| --- | --- | ---: | ---: | --- | --- | --- |
+| `Q0-CRT04-SOURCE-001` | `artifacts/original/phase-0-4-crt-television/source/quantum-signal-television-proportion-options.blend` | 1 | 745,661 | SHA-256 `18bc895f5d94a30186c50e989e99d6a94bdcbd939909ef9a87026f1a1d3d5087`; `crt-proportion-source-validation.json` | R | Original editable proportion-gate source; selected Variant A decision provenance; not a launch asset |
+| `Q0-CRT04-SOURCE-002` | `artifacts/original/phase-0-4-crt-television/source/quantum-signal-television-v1.blend` | 1 | 1,049,052 | SHA-256 `9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d`; `blender-source-validation.json` | R | Original final editable Blender source; validator PASS 29/29; pending human creative review; not a launch asset |
+| `Q0-CRT04-RENDER-001` | `artifacts/original/phase-0-4-crt-television/renders/` | 63 PNG | 69,762,801 | `crt-proportion-render-manifest.json`; `crt-canonical-render-manifest.json`; `png-metadata-sanitization.json` | R | Original still-only Blender evidence; pending human creative review; not launch media |
+| `Q0-CRT04-REVIEW-001` | `artifacts/original/phase-0-4-crt-television/` exact top-level PNG set | 16 PNG | 43,686,887 | `review-bundle-manifest.json`; `crt-review-composition-manifest.json`; `browser-review-composition-manifest.json`; `png-metadata-sanitization.json` | R | Exact final human-review package; pending human creative review; not a public-launch surface |
+| `Q0-CRT04-REVIEW-002` | `artifacts/original/phase-0-4-crt-television/phase-0-4-crt-television-review.zip` | 17 top-level members: 16 PNG + 1 Markdown | 43,303,597 | SHA-256 `8eeec33182ad476d5dd78d5635a5dcb2cdfbeb96c97092462bd1af6227f642c7`; strict ZIP and README validation | R | Compact exact review copy; pending human creative review; not launch media |
+| `Q0-CRT04-MEDIA-001` | Package video, audio and full-animatic set | 0 | 0 | `blender-source-validation.json`; dedicated Phase 0.4 asset verifier | R | Intentionally still-only; no cinematic encode or full animatic was created |
+
+The exact 16-sheet review set is: `crt-television-proportion-options.png`, `crt-television-recommended-design-sheet.png`, `crt-cabinet-material-sheet.png`, `crt-screen-glass-and-phosphor-sheet.png`, `crt-controls-speaker-rear-detail-sheet.png`, `crt-cable-and-connection-sheet.png`, `crt-proving-ground-style-frame.png`, `crt-camera-path-study.png`, `crt-power-on-contact-sheet.png`, `crt-portal-transition-sheet.png`, `crt-physical-dom-alignment-sheet.png`, `crt-desktop-hero-composition.png`, `crt-mobile-hero-composition.png`, `crt-text-zoom-and-fallback.png`, `crt-reduced-motion-desktop.png`, and `crt-reduced-motion-mobile.png`.
+
+### Phase 0.4 manifest register
+
+These 15 machine-readable authorities total 1,601,780 bytes. `package-inventory.json`, the final source and material validation, canonical render inventory, exact power and portal state authorities, browser/static composition lineage, PNG sanitation and review-bundle manifest govern the settled package.
+
+| Manifest or report | Bytes | SHA-256 | Classification and approval |
+| --- | ---: | --- | --- |
+| `artifacts/original/phase-0-4-crt-television/manifests/blender-source-validation.json` | 12,051 | `e77fd738cba7bd7dbe5a8e9b7a1ee1ea507e7dbe4d55060f7f0f8ce3a5ff38ce` | Original Blender integrity evidence; PASS 29/29; pending human creative review |
+| `artifacts/original/phase-0-4-crt-television/manifests/browser-review-composition-manifest.json` | 16,341 | `00a51a6c9e5708ecbc64955687946cbc7400886bc001d56f73b4900f8741bcc9` | Canonical seven-sheet browser composition lineage; review-only |
+| `artifacts/original/phase-0-4-crt-television/manifests/crt-canonical-render-manifest.json` | 103,931 | `35022c438e3a64e1a6d86b8e7232533c161f1f7cbe47f7499573999e7ca77ff9` | Canonical exact 45-still refined-render inventory; pending human creative review |
+| `artifacts/original/phase-0-4-crt-television/manifests/crt-material-and-asset-manifest.json` | 47,991 | `8c24c24423c99b891f06e1f3398ac9f049883b3215c2f06fbb14961ebba3a9de` | Canonical 20-material procedural-only authority; PASS with zero external assets |
+| `artifacts/original/phase-0-4-crt-television/manifests/crt-portal-transition-state-authority.json` | 18,552 | `629a2b65c29e0e176c3f5952a7b519678142dfed5acbafedb4460ccb3fa666b7` | Canonical exact eight-state physical-to-DOM authority; PASS; pending human creative review |
+| `artifacts/original/phase-0-4-crt-television/manifests/crt-power-on-state-authority.json` | 13,176 | `735a891cc1d5b14a67f2f920302de541230a1a7e3e12437553444c4eae1ac8ce` | Canonical exact seven-state power authority; FROZEN; pending human creative review |
+| `artifacts/original/phase-0-4-crt-television/manifests/crt-proportion-decision-manifest.json` | 10,284 | `783984b2ef0658a74c381750966acf3d513bf5d5e4cce598375b1fa4a2084dc7` | Frozen proportion-gate decision snapshot; Variant A selected for refinement; review-only |
+| `artifacts/original/phase-0-4-crt-television/manifests/crt-proportion-render-manifest.json` | 9,931 | `92a909912cfbee9ce5f0fc175855d939c52bc73422b28f7264960b243e7224bc` | Canonical 18-render A/B/C proportion inventory; review-only |
+| `artifacts/original/phase-0-4-crt-television/manifests/crt-proportion-source-validation.json` | 7,139 | `c1eea6ef88b3d6a0d322ab437a4c2ed8e35de3b39df4af4d7bdb0e3b24c986d7` | Proportion-source integrity and private-reference isolation evidence; PASS; review-only |
+| `artifacts/original/phase-0-4-crt-television/manifests/crt-refined-source-build.json` | 2,781 | `2b7bd6fc3e0f0897132fd057e856a24cbf8c4ac17373573169540e387cef5748` | Deterministic refined-source build lineage; review-only |
+| `artifacts/original/phase-0-4-crt-television/manifests/crt-review-composition-manifest.json` | 14,440 | `32b5ef685cc322f89ee8f36e525bcc85b1f319d65d3cd469c8e6265f1fe37ca9` | Canonical sheets 2–9 static composition lineage; review-only |
+| `artifacts/original/phase-0-4-crt-television/manifests/crt-scene-source-keepouts.json` | 1,225,841 | `c2d371d4eb3d3bfafe82ad67728c2df48ef7e38b09b2d1306d5accd2c955ac3d` | Canonical six-source CRT, screen and cable geometry/scene-safety authority; PASS; review-only |
+| `artifacts/original/phase-0-4-crt-television/manifests/package-inventory.json` | 60,470 | `ee6564cb3a72c13b5385e9f2e66a5d59461b30c7981bfe81a7a857e5707103ef` | Canonical package-wide 118-record self-excluded inventory; review-only |
+| `artifacts/original/phase-0-4-crt-television/manifests/png-metadata-sanitization.json` | 51,196 | `5ad92428b8216b32d4786e7014812586c904062d04a5c5f56b769463ab255ef7` | Canonical 79-PNG sanitation and decoded-pixel-preservation evidence; PASS; review-only |
+| `artifacts/original/phase-0-4-crt-television/manifests/review-bundle-manifest.json` | 7,656 | `0cb59ecbe15c6adf423ccaa7794c37e8c19b20cf37f86c25e279568b2d6f7993` | Canonical exact 16-sheet review bundle; pending human creative review |
+
+### Phase 0.4 authoring, geometry and integrity notes
+
+The package inventory governs 20 deterministic Python sources (243,797 bytes), `crt-portal-layout.json` (16,248 bytes; SHA-256 `255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc`) and `work/.gitignore` (14 bytes). These are reproducibility and review controls, not launch assets or runtime dependencies.
+
+The final geometry authorities agree on a 27.782636-degree arrival-to-power camera arc; the close portal checkpoint is 28.110717 degrees from arrival. Desktop uses one physical 2.5-turn spiral and mobile uses a separately authored physical 2.25-turn spiral. The refined CRT assembly measures 0.841 × 0.6975 × 0.7685 metres and retains a 4:3 visible tube. The review evidence proves convex smoked glass and gasket/bezel depth, a recessed conductor below both graphite shoulders, physical rear strain relief, exact seven-state power causality, and an exact eight-state physical-to-semantic portal handoff.
+
+The largest package member is the 43,303,597-byte review ZIP; no package member approaches the 100 MiB GitHub per-file boundary. The package has no Git LFS pointer, attribute or dependency.
+
+### Phase 0.4 browser and repository evidence lineage
+
+The non-production evidence tree at `artifacts/evidence/phase-0-4-crt-television/` is Class R implementation, accessibility and provenance evidence, not launch media. Its final file and byte totals include the self-describing repository-impact report below. The canonical browser matrix governs 46 passing cases and 36 raw/normalized capture lineages. Recovery records preserve failed or superseded capture attempts as explicitly historical, non-promotable evidence and cannot replace the canonical captures.
+
+| Evidence authority or governed set | Records | Bytes | SHA-256 or authority | Classification and approval |
+| --- | ---: | ---: | --- | --- |
+| `artifacts/evidence/phase-0-4-crt-television/browser-matrix-report.json` | 46 cases; 36 capture lineages | 1,149,989 | `5411220869170f0290423d2f235aba2dc659aa1820e6eb2a3680bbe179d073d7` | Canonical responsive, collision, focus, reduced-motion, scene-safety and capture-lineage evidence; PASS; review-only |
+| `artifacts/evidence/phase-0-4-crt-television/browser-evidence-manifest.json` | 7 review outputs; exact 7 power and 8 portal states | 30,259 | `0ad595af087867134b7199f1d92855209a7dfd18205bef45efb2e64675c04a58` | Final browser-to-creative lineage authority; PASS; review-only |
+| `artifacts/evidence/phase-0-4-crt-television/capture-plan-authority.json` | 46 planned cases | 24,767 | `db2e7feddceba5ca80be22d5f8d0c97bf5ff11810a92de57478db816c6e68f0d` | Preserved capture-ready plan snapshot; review-only |
+| `artifacts/evidence/phase-0-4-crt-television/captures/` | 72: 36 raw JPEG + 36 normalized PNG | 12,946,123 | Member hashes and dimensions in `browser-matrix-report.json` | Canonical original browser captures; review-only |
+| `artifacts/evidence/phase-0-4-crt-television/reports/` | 46 JSON | 1,092,311 | Case authorities consolidated by `browser-matrix-report.json` | Canonical machine-readable browser reports; review-only |
+| `artifacts/evidence/phase-0-4-crt-television/capture-checkpoint.json` | 1 | 41,841 | `30dae639b65cf56f0699ebe2ba3c3a7dba427d1a2e5d6872b27b9de15713c591` | Final resumable-capture checkpoint; review-only |
+| `artifacts/evidence/phase-0-4-crt-television/recovery/` | 135 | 6,611,623 | Per-directory recovery manifests and preserved-member SHA-256 records | Historical failed/superseded capture evidence; non-authoritative; review-only |
+| `artifacts/evidence/phase-0-4-crt-television/TYPOGRAPHY_COLLISION_QA.md` | 1 | 13,984 | `f8f673ff305f7471d067e2e018d931eefaa32fb9c22b6ad530d722ef44b2f8cf` | Human-readable final visual and browser audit; PASS; review-only |
+| `artifacts/evidence/phase-0-4-crt-television/README.md` | 1 | 8,026 | `a6f04ccf9b98651c4f4430e0d189311e4a8dc6e6e3d3e990006e4f1360a69abf` | Evidence-scope, authority and recovery-lineage guide; review-only |
+| `artifacts/evidence/phase-0-4-crt-television/repository-impact-report.json` | 1 | 5,101 | `0efd3f0054c5f8be75238bdd7f9976d4269d7b32126f7f3b6ca2960b264dee31` | Projected candidate-tree, repository-size, privacy and delivery-state evidence; review-only |
+
+The final 36 normalized captures were independently inspected at full target size. Actual, keyboard-focus, long-copy, reduced-motion and 200% text-zoom states preserve whole words, intentional focus visibility, zero horizontal overflow and zero measured semantic-copy/CRT/cable intersections. Desktop retains a quiet left copy field with the CRT at the right; mobile uses its separately authored 2.25-turn physical cable rather than a desktop crop. Reduced motion instantiates no cinematic media and keeps the television powered off with the cable dormant.
+
 ## Original Phase 0 implementation evidence
 
 The raster dimensions below are the browser-capture dimensions; viewport targets remain encoded in filenames and are separately documented in `artifacts/evidence/phase-0/BROWSER_QA.md`.

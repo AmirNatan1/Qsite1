@@ -1,0 +1,80 @@
+{
+  "schema": "quantum-hub.phase-0-4-crt-television.refined-source-build.v1",
+  "script_version": "phase-0.4-crt-refinement-v1",
+  "source": {
+    "package_relative_path": "source/quantum-signal-television-v1.blend",
+    "bytes": 1049052,
+    "sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d"
+  },
+  "generator": {
+    "package_relative_path": "source/build_refined_crt.py",
+    "bytes": 45775,
+    "sha256": "d188d6b8f44795f56e17c6449f586d848fb304fa840c2036f00bc0c887c1f2ea"
+  },
+  "configuration_authority": [
+    {
+      "package_relative_path": "source/crt_refined_config.py",
+      "bytes": 6227,
+      "sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2"
+    },
+    {
+      "package_relative_path": "source/crt_canonical_config.py",
+      "bytes": 8705,
+      "sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497"
+    }
+  ],
+  "layout_authority": {
+    "package_relative_path": "crt-portal-layout.json",
+    "bytes": 16248,
+    "sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+  },
+  "selected_variant": "A / Rounded 1990s domestic CRT",
+  "dimensions_m": {
+    "width": 0.84,
+    "height": 0.69,
+    "depth": 0.76
+  },
+  "screen_class_inches": 29,
+  "screen_visible_m": {
+    "width": 0.59,
+    "height": 0.4425,
+    "aspect": "4:3"
+  },
+  "desktop_spiral_turns": 2.5,
+  "mobile_spiral_turns": 2.25,
+  "mobile_composition_authored_separately": true,
+  "desktop_cable_collection": "DESKTOP_2_5_TURN_SPIRAL_CABLE",
+  "mobile_cable_collection": "MOBILE_2_25_TURN_SPIRAL_CABLE",
+  "portal_layout_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc",
+  "canonical_state_authority": {
+    "schema": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+    "power_state_ids": [
+      "power-01-completely-dormant",
+      "power-02-current-reaches-connection",
+      "power-03-power-indicator-response",
+      "power-04-crt-electrical-wake",
+      "power-05-raster-phosphor-appears",
+      "power-06-quantum-interface-stabilizes",
+      "power-07-portal-ready"
+    ],
+    "portal_state_ids": [
+      "portal-01-television-in-scene",
+      "portal-02-screen-active",
+      "portal-03-close-approach",
+      "portal-04-glass-almost-fills",
+      "portal-05-bezel-exits",
+      "portal-06-distortion-reduces",
+      "portal-07-dom-takes-ownership",
+      "portal-08-full-semantic-surface"
+    ]
+  },
+  "creative_boundary": {
+    "modelled_from_scratch": true,
+    "procedural_materials_only": true,
+    "third_party_models": 0,
+    "external_images": 0,
+    "packed_files": 0,
+    "private_reference_loaded": false,
+    "full_animatic_created": false
+  }
+}

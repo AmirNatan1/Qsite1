@@ -8,10 +8,14 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "check": "astro check && node --test tests/*.test.mjs && node scripts/verify-creative-assets.mjs && node scripts/verify-phase0-3d-repair.mjs && node scripts/verify-phase0-3d-repair-v2-assets.mjs && node scripts/verify-phase0-3d-repair-v2-layout.mjs && node scripts/verify-phase0-3d-repair-v3-layout.mjs && node scripts/verify-phase0-3d-repair-v3-assets.mjs",
+    "check": "astro check && node --test tests/*.test.mjs && node scripts/verify-creative-assets.mjs && node scripts/verify-phase0-3d-repair.mjs && node scripts/verify-phase0-3d-repair-v2-assets.mjs && node scripts/verify-phase0-3d-repair-v2-layout.mjs && node scripts/verify-phase0-3d-repair-v3-layout.mjs && node scripts/verify-phase0-3d-repair-v3-assets.mjs && node scripts/verify-phase0-4-crt-layout.mjs && node scripts/verify-phase0-4-crt-assets.mjs --final",
     "test": "node --test tests/*.test.mjs",
     "build": "astro build && node scripts/verify-build.mjs",
     "capture:phase03": "node scripts/capture-phase03-browser-matrix.mjs",
+    "capture:phase04": "node scripts/capture-phase04-browser-matrix.mjs",
+    "prepare:phase04-browser": "node scripts/finalize-phase04-browser-evidence.mjs --prepare",
+    "finalize:phase04-browser": "node scripts/finalize-phase04-browser-evidence.mjs --complete",
+    "check:phase04-browser": "node scripts/finalize-phase04-browser-evidence.mjs --check",
     "preview": "astro preview",
     "prototype": "node scripts/serve-prototype.mjs"
   },

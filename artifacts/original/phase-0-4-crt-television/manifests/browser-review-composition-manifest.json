@@ -1,0 +1,384 @@
+{
+  "schema": "quantum-hub.phase-0-4-crt-television.browser-review-composition.v1",
+  "status": "PASS",
+  "composition_policy": "native source pixels pasted 1:1; no crop, resample, retouch or repaint; labels and frames outside source bounds only",
+  "composer": {
+    "path": "artifacts/original/phase-0-4-crt-television/source/compose_crt_browser_review_sheets.py",
+    "bytes": 19782,
+    "sha256": "8be4b8b636ef54f096d9a308f3549b9266a3dbdb4f827d726fc82c7c8feae159"
+  },
+  "browser_matrix": {
+    "path": "artifacts/evidence/phase-0-4-crt-television/browser-matrix-report.json",
+    "bytes": 1149989,
+    "sha256": "5411220869170f0290423d2f235aba2dc659aa1820e6eb2a3680bbe179d073d7",
+    "schema": "quantum-hub.phase-0-4-crt-television.typography-collision-matrix.v1",
+    "cases_total": 46,
+    "normalized_capture_count": 36
+  },
+  "portal_state_authority": {
+    "path": "artifacts/original/phase-0-4-crt-television/manifests/crt-portal-transition-state-authority.json",
+    "bytes": 18552,
+    "sha256": "629a2b65c29e0e176c3f5952a7b519678142dfed5acbafedb4460ccb3fa666b7",
+    "schema": "quantum-hub.phase-0-4-crt-television.portal-transition-state-authority.v1"
+  },
+  "record_count": 7,
+  "records": [
+    {
+      "filename": "crt-portal-transition-sheet.png",
+      "path": "artifacts/original/phase-0-4-crt-television/crt-portal-transition-sheet.png",
+      "width": 7954,
+      "height": 3018,
+      "bytes": 10703351,
+      "sha256": "ce7e80d633f66a48454593fbb3a459c994177f5c3b8a25480bb9b9c7e1c14515",
+      "reviewIndex": 10,
+      "stateIds": [
+        "portal-01-television-in-scene",
+        "portal-02-screen-active",
+        "portal-03-close-approach",
+        "portal-04-glass-almost-fills",
+        "portal-05-bezel-exits",
+        "portal-06-distortion-reduces",
+        "portal-07-dom-takes-ownership",
+        "portal-08-full-semantic-surface"
+      ],
+      "sources": [
+        {
+          "stateId": "portal-01-television-in-scene",
+          "path": "artifacts/original/phase-0-4-crt-television/renders/refined/portal/portal-01-television-in-scene.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1360280,
+          "sha256": "ad1e2396f9094003b3ff69b53e7373304c87a152771e23cb948b0f3fe5ce8e01"
+        },
+        {
+          "stateId": "portal-02-screen-active",
+          "path": "artifacts/original/phase-0-4-crt-television/renders/refined/portal/portal-02-screen-active.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1496931,
+          "sha256": "9373aa6c7f09c0b4849478196fc363ebdd009054b466c415cbf3f5b977049f0c"
+        },
+        {
+          "stateId": "portal-03-close-approach",
+          "path": "artifacts/original/phase-0-4-crt-television/renders/refined/portal/portal-03-close-approach.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1729636,
+          "sha256": "5706bebba038922ca12b268510e57d3f539e7b36c8e8a26cf66b63a89ad99297"
+        },
+        {
+          "stateId": "portal-04-glass-almost-fills",
+          "path": "artifacts/original/phase-0-4-crt-television/renders/refined/portal/portal-04-glass-almost-fills.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1653343,
+          "sha256": "c864568cee3d0171bdc89c88a5b18ad56050da0e97c6a693fccb1c2386fd79b6"
+        },
+        {
+          "stateId": "portal-05-bezel-exits",
+          "path": "artifacts/original/phase-0-4-crt-television/renders/refined/portal/portal-05-bezel-exits.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1578330,
+          "sha256": "c6adebf66caadc897cc303e297b5620d55036222398b34e0dfcad2d6cdf89f7f"
+        },
+        {
+          "stateId": "portal-06-distortion-reduces",
+          "path": "artifacts/original/phase-0-4-crt-television/renders/refined/portal/portal-06-distortion-reduces.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1448324,
+          "sha256": "2d11b4c7809fe943ffe90268c752ac2de37bdc9f2ebf8418e810de40b2a1bae4"
+        },
+        {
+          "stateId": "portal-07-dom-takes-ownership",
+          "path": "artifacts/evidence/phase-0-4-crt-television/captures/normalized/portal-actual--desktop-1440x900.png",
+          "width": 1440,
+          "height": 900,
+          "bytes": 356554,
+          "sha256": "d696ee372e582cef5252abf76091a1491f05dedf012224f3a5efcc0a10cb0775"
+        },
+        {
+          "stateId": "portal-08-full-semantic-surface",
+          "path": "artifacts/evidence/phase-0-4-crt-television/captures/normalized/portal-actual--desktop-1440x900.png",
+          "width": 1440,
+          "height": 900,
+          "bytes": 356554,
+          "sha256": "d696ee372e582cef5252abf76091a1491f05dedf012224f3a5efcc0a10cb0775"
+        }
+      ]
+    },
+    {
+      "filename": "crt-physical-dom-alignment-sheet.png",
+      "path": "artifacts/original/phase-0-4-crt-television/crt-physical-dom-alignment-sheet.png",
+      "width": 5984,
+      "height": 3018,
+      "bytes": 4447353,
+      "sha256": "e733948ae7d4b534eea5ef7becb858c776628376ce0954c24c168cc506bc7252",
+      "reviewIndex": 11,
+      "sourceCaseIds": [
+        "portal-actual--desktop-1440x900",
+        "portal-actual--tablet-landscape-1024x768",
+        "portal-actual--mobile-390x844"
+      ],
+      "sources": [
+        {
+          "captureId": "portal-actual--desktop-1440x900",
+          "path": "artifacts/evidence/phase-0-4-crt-television/captures/normalized/portal-actual--desktop-1440x900.png",
+          "width": 1440,
+          "height": 900,
+          "bytes": 356554,
+          "sha256": "d696ee372e582cef5252abf76091a1491f05dedf012224f3a5efcc0a10cb0775"
+        },
+        {
+          "captureId": "portal-actual--tablet-landscape-1024x768",
+          "path": "artifacts/evidence/phase-0-4-crt-television/captures/normalized/portal-actual--tablet-landscape-1024x768.png",
+          "width": 1024,
+          "height": 768,
+          "bytes": 263993,
+          "sha256": "8e8789fe27675957c12c3164764a6ebbcc033081d02647e3870da3a94cf75b00"
+        },
+        {
+          "captureId": "portal-actual--mobile-390x844",
+          "path": "artifacts/evidence/phase-0-4-crt-television/captures/normalized/portal-actual--mobile-390x844.png",
+          "width": 390,
+          "height": 844,
+          "bytes": 144350,
+          "sha256": "16608515a98dec48a9682b958fbbccab16460e1fe16b4e51d49a3a8a8374e403"
+        }
+      ],
+      "additionalAuthorities": [
+        {
+          "sourceId": "source-physical-portal-close",
+          "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-physical-portal-close.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1653343,
+          "sha256": "c864568cee3d0171bdc89c88a5b18ad56050da0e97c6a693fccb1c2386fd79b6"
+        },
+        {
+          "sourceId": "source-text-free-portal-takeover",
+          "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-text-free-portal-takeover.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1448324,
+          "sha256": "2d11b4c7809fe943ffe90268c752ac2de37bdc9f2ebf8418e810de40b2a1bae4"
+        },
+        {
+          "path": "artifacts/original/phase-0-4-crt-television/crt-portal-layout.json",
+          "bytes": 16248,
+          "sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+        }
+      ]
+    },
+    {
+      "filename": "crt-desktop-hero-composition.png",
+      "path": "artifacts/original/phase-0-4-crt-television/crt-desktop-hero-composition.png",
+      "width": 6034,
+      "height": 1356,
+      "bytes": 1758336,
+      "sha256": "b8123eca4d6c9ce05adfb16e29177604acb48730a6d49b6c7cc7821e8d81cfc0",
+      "reviewIndex": 12,
+      "sourceCaseIds": [
+        "hero-actual--desktop-1440x900",
+        "hero-actual--short-desktop-1366x650",
+        "hero-actual--desktop-1280x800",
+        "hero-actual--tablet-landscape-1024x768"
+      ],
+      "sources": [
+        {
+          "captureId": "hero-actual--desktop-1440x900",
+          "path": "artifacts/evidence/phase-0-4-crt-television/captures/normalized/hero-actual--desktop-1440x900.png",
+          "width": 1440,
+          "height": 900,
+          "bytes": 497535,
+          "sha256": "cb2c2b8042006f6b226922b80fedcfaafc1f44bdcf47971f516dfaee86c519c5"
+        },
+        {
+          "captureId": "hero-actual--short-desktop-1366x650",
+          "path": "artifacts/evidence/phase-0-4-crt-television/captures/normalized/hero-actual--short-desktop-1366x650.png",
+          "width": 1366,
+          "height": 650,
+          "bytes": 436860,
+          "sha256": "244f98ee6b83bb28129b832f5708dc5849c8dbf627951c39f24e58053aa65c0f"
+        },
+        {
+          "captureId": "hero-actual--desktop-1280x800",
+          "path": "artifacts/evidence/phase-0-4-crt-television/captures/normalized/hero-actual--desktop-1280x800.png",
+          "width": 1280,
+          "height": 800,
+          "bytes": 424155,
+          "sha256": "191983888672a45c774a014c5984d593ccba9e3f6d7296739c1049df2e29243f"
+        },
+        {
+          "captureId": "hero-actual--tablet-landscape-1024x768",
+          "path": "artifacts/evidence/phase-0-4-crt-television/captures/normalized/hero-actual--tablet-landscape-1024x768.png",
+          "width": 1024,
+          "height": 768,
+          "bytes": 331790,
+          "sha256": "64ed22ba0cdfb5e02a37b800c41869242c6a1a238ba49ab74b5ebf60cf1446bb"
+        }
+      ]
+    },
+    {
+      "filename": "crt-mobile-hero-composition.png",
+      "path": "artifacts/original/phase-0-4-crt-television/crt-mobile-hero-composition.png",
+      "width": 3650,
+      "height": 1300,
+      "bytes": 859548,
+      "sha256": "6880496b2341e6dd3e29824a528a6411518c664e9b8853f9cf602936e44569d3",
+      "reviewIndex": 13,
+      "sourceCaseIds": [
+        "hero-actual--mobile-390x844",
+        "hero-actual--mobile-360x800",
+        "hero-actual--narrow-320x800",
+        "hero-actual--mobile-landscape-844x390"
+      ],
+      "sources": [
+        {
+          "captureId": "hero-actual--mobile-390x844",
+          "path": "artifacts/evidence/phase-0-4-crt-television/captures/normalized/hero-actual--mobile-390x844.png",
+          "width": 390,
+          "height": 844,
+          "bytes": 199020,
+          "sha256": "0769f95edc22d9f4dcd6eaf1e114aa3c9839988e3cac37620b07e7cac6152027"
+        },
+        {
+          "captureId": "hero-actual--mobile-360x800",
+          "path": "artifacts/evidence/phase-0-4-crt-television/captures/normalized/hero-actual--mobile-360x800.png",
+          "width": 360,
+          "height": 800,
+          "bytes": 192006,
+          "sha256": "6fa4f3a8f163e7cbb8dcf2ff59cebd7c76a1de87670594ffb2f454ca89efcf26"
+        },
+        {
+          "captureId": "hero-actual--narrow-320x800",
+          "path": "artifacts/evidence/phase-0-4-crt-television/captures/normalized/hero-actual--narrow-320x800.png",
+          "width": 320,
+          "height": 800,
+          "bytes": 182516,
+          "sha256": "eb1addd7ad445207e43b6637eaada2e3d30a6ba7eba081de2da7a23e103d1c32"
+        },
+        {
+          "captureId": "hero-actual--mobile-landscape-844x390",
+          "path": "artifacts/evidence/phase-0-4-crt-television/captures/normalized/hero-actual--mobile-landscape-844x390.png",
+          "width": 844,
+          "height": 390,
+          "bytes": 235431,
+          "sha256": "fba9f567ab3508b1e8d1582cd943c68fec47fea706e286dec63f0569b4ececea"
+        }
+      ]
+    },
+    {
+      "filename": "crt-text-zoom-and-fallback.png",
+      "path": "artifacts/original/phase-0-4-crt-television/crt-text-zoom-and-fallback.png",
+      "width": 6034,
+      "height": 1356,
+      "bytes": 1383021,
+      "sha256": "1db1a05290a81b9a929c241fd7983a468c097e7e51751b6e24ff809de8119ec9",
+      "reviewIndex": 14,
+      "sourceCaseIds": [
+        "hero-zoom-200--desktop-1440x900",
+        "portal-zoom-200--narrow-320x800",
+        "hero-long-copy--mobile-390x844",
+        "portal-long-copy--desktop-1440x900"
+      ],
+      "sources": [
+        {
+          "captureId": "hero-zoom-200--desktop-1440x900",
+          "path": "artifacts/evidence/phase-0-4-crt-television/captures/normalized/hero-zoom-200--desktop-1440x900.png",
+          "width": 1440,
+          "height": 900,
+          "bytes": 500424,
+          "sha256": "e9e651c9a213dd9e75e79b40fd16c1dd2de09f928b0ed9f5c977daa637064ff3"
+        },
+        {
+          "captureId": "portal-zoom-200--narrow-320x800",
+          "path": "artifacts/evidence/phase-0-4-crt-television/captures/normalized/portal-zoom-200--narrow-320x800.png",
+          "width": 320,
+          "height": 800,
+          "bytes": 155714,
+          "sha256": "508bfe7ad4ce6d8914d9f19cf6d2ef4a67d2ccc3512ab8172c90cc8af8a975a2"
+        },
+        {
+          "captureId": "hero-long-copy--mobile-390x844",
+          "path": "artifacts/evidence/phase-0-4-crt-television/captures/normalized/hero-long-copy--mobile-390x844.png",
+          "width": 390,
+          "height": 844,
+          "bytes": 170465,
+          "sha256": "4bdb369f2420d4bc1970fe33d17eb42ab5cb9f4566bbae3329a8ab331c5ad8e8"
+        },
+        {
+          "captureId": "portal-long-copy--desktop-1440x900",
+          "path": "artifacts/evidence/phase-0-4-crt-television/captures/normalized/portal-long-copy--desktop-1440x900.png",
+          "width": 1440,
+          "height": 900,
+          "bytes": 426538,
+          "sha256": "9473f2e0d7e114f1529ddcca8b2a301a63fe6213e87f1a46cfaf93f70cdef468"
+        }
+      ]
+    },
+    {
+      "filename": "crt-reduced-motion-desktop.png",
+      "path": "artifacts/original/phase-0-4-crt-television/crt-reduced-motion-desktop.png",
+      "width": 3054,
+      "height": 1356,
+      "bytes": 877291,
+      "sha256": "7324db6378a9820c2ef930cff0eed3a5744030ed01aaadaaa29533ab75ab7b0f",
+      "reviewIndex": 15,
+      "sourceCaseIds": [
+        "hero-reduced-motion--desktop-1440x900",
+        "portal-reduced-motion--desktop-1440x900"
+      ],
+      "sources": [
+        {
+          "captureId": "hero-reduced-motion--desktop-1440x900",
+          "path": "artifacts/evidence/phase-0-4-crt-television/captures/normalized/hero-reduced-motion--desktop-1440x900.png",
+          "width": 1440,
+          "height": 900,
+          "bytes": 464146,
+          "sha256": "3e907538731346aba26e539e35768aa05a95198d9c212a25423950c10ff945fb"
+        },
+        {
+          "captureId": "portal-reduced-motion--desktop-1440x900",
+          "path": "artifacts/evidence/phase-0-4-crt-television/captures/normalized/portal-reduced-motion--desktop-1440x900.png",
+          "width": 1440,
+          "height": 900,
+          "bytes": 380530,
+          "sha256": "9d1721dc25626fa01d0cf891319812965ae1c0169f311824730838182ae60f58"
+        }
+      ]
+    },
+    {
+      "filename": "crt-reduced-motion-mobile.png",
+      "path": "artifacts/original/phase-0-4-crt-television/crt-reduced-motion-mobile.png",
+      "width": 954,
+      "height": 1300,
+      "bytes": 412148,
+      "sha256": "79a1373ccea650441777c3ad598bf0bcf50f57c6d5f82f1bea27d610c8a89785",
+      "reviewIndex": 16,
+      "sourceCaseIds": [
+        "hero-reduced-motion--mobile-390x844",
+        "portal-reduced-motion--mobile-390x844"
+      ],
+      "sources": [
+        {
+          "captureId": "hero-reduced-motion--mobile-390x844",
+          "path": "artifacts/evidence/phase-0-4-crt-television/captures/normalized/hero-reduced-motion--mobile-390x844.png",
+          "width": 390,
+          "height": 844,
+          "bytes": 202270,
+          "sha256": "76ec671056c7cbb44d16dad2ea146e4d4a2548c99576b510f8289bc7cd6e71a1"
+        },
+        {
+          "captureId": "portal-reduced-motion--mobile-390x844",
+          "path": "artifacts/evidence/phase-0-4-crt-television/captures/normalized/portal-reduced-motion--mobile-390x844.png",
+          "width": 390,
+          "height": 844,
+          "bytes": 171155,
+          "sha256": "be9cd1e84c5e958a888d351ec370efaac1f79e8009b034b41d3df5e6e94fb4be"
+        }
+      ]
+    }
+  ]
+}

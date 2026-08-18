@@ -1,0 +1,350 @@
+{
+  "schema": "quantum-hub.phase-0-4-crt-television.capture-recovery.v1",
+  "createdAt": "2026-08-18T15:46:36.331Z",
+  "reason": "repository-native checkpoint preserved because plan, contract, frozen scene, keepout or harness authority changed",
+  "sourceCheckpoint": {
+    "path": "artifacts/evidence/phase-0-4-crt-television/capture-checkpoint.json",
+    "bytes": 23827,
+    "sha256": "b87deae1dc4595fdaa68fb0ba0d44f4f37406f80588a6c4ada272f964f5ba7ae"
+  },
+  "preservedCheckpoint": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/capture-checkpoint.json",
+  "recoveredFiles": [
+    {
+      "kind": "case-report",
+      "source": "artifacts/evidence/phase-0-4-crt-television/reports/hero-actual--desktop-1440x900.json",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/reports/hero-actual--desktop-1440x900.json",
+      "bytes": 27153,
+      "sha256": "8d9cdfd17144d13840827170d41a0186576e22e292df198bd8b31a709304381a",
+      "byteIdentical": true
+    },
+    {
+      "kind": "raw-jpeg",
+      "source": "artifacts/evidence/phase-0-4-crt-television/captures/raw/hero-actual--desktop-1440x900.jpg",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/raw/hero-actual--desktop-1440x900.jpg",
+      "bytes": 124425,
+      "sha256": "46f37597da0777316ee89dc42d822e91c6b92fe82e3c69f5aa7224215ecf325d",
+      "byteIdentical": true
+    },
+    {
+      "kind": "case-report",
+      "source": "artifacts/evidence/phase-0-4-crt-television/reports/hero-actual--short-desktop-1366x650.json",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/reports/hero-actual--short-desktop-1366x650.json",
+      "bytes": 27115,
+      "sha256": "32710cf58019e01781dba4be3a9934f5f3c040e0bfc725eb63a69a52fe6d3b25",
+      "byteIdentical": true
+    },
+    {
+      "kind": "raw-jpeg",
+      "source": "artifacts/evidence/phase-0-4-crt-television/captures/raw/hero-actual--short-desktop-1366x650.jpg",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/raw/hero-actual--short-desktop-1366x650.jpg",
+      "bytes": 113162,
+      "sha256": "c69a600b6b628dcbb324d8d7ec5bda2d9b353a7ac770ed9adf4cb3349dab14db",
+      "byteIdentical": true
+    },
+    {
+      "kind": "case-report",
+      "source": "artifacts/evidence/phase-0-4-crt-television/reports/hero-actual--desktop-1280x800.json",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/reports/hero-actual--desktop-1280x800.json",
+      "bytes": 26980,
+      "sha256": "f4bcd6df927e4bb9a913a9ad4e3926f089db9046c01366db670de6cdb5031f56",
+      "byteIdentical": true
+    },
+    {
+      "kind": "raw-jpeg",
+      "source": "artifacts/evidence/phase-0-4-crt-television/captures/raw/hero-actual--desktop-1280x800.jpg",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/raw/hero-actual--desktop-1280x800.jpg",
+      "bytes": 120970,
+      "sha256": "138d608fd006e30287beb48dacee44590d6b489d31f21160af14094994e160a6",
+      "byteIdentical": true
+    },
+    {
+      "kind": "case-report",
+      "source": "artifacts/evidence/phase-0-4-crt-television/reports/hero-actual--tablet-landscape-1024x768.json",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/reports/hero-actual--tablet-landscape-1024x768.json",
+      "bytes": 27074,
+      "sha256": "bb60cffe1a9028fa9fc7e724a16fd0400d0d7357aac768a649c2673e87fd1d51",
+      "byteIdentical": true
+    },
+    {
+      "kind": "raw-jpeg",
+      "source": "artifacts/evidence/phase-0-4-crt-television/captures/raw/hero-actual--tablet-landscape-1024x768.jpg",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/raw/hero-actual--tablet-landscape-1024x768.jpg",
+      "bytes": 115867,
+      "sha256": "8f4c7e6210d0ad3ce3c95db6321d7b269062a2168c249c29fed66059931003b1",
+      "byteIdentical": true
+    },
+    {
+      "kind": "case-report",
+      "source": "artifacts/evidence/phase-0-4-crt-television/reports/hero-actual--tablet-portrait-768x1024.json",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/reports/hero-actual--tablet-portrait-768x1024.json",
+      "bytes": 26980,
+      "sha256": "0a951a5a29bce739691bed7aff4917ccea2d1ade8a33b87596482b41d82d5766",
+      "byteIdentical": true
+    },
+    {
+      "kind": "raw-jpeg",
+      "source": "artifacts/evidence/phase-0-4-crt-television/captures/raw/hero-actual--tablet-portrait-768x1024.jpg",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/raw/hero-actual--tablet-portrait-768x1024.jpg",
+      "bytes": 119081,
+      "sha256": "ff420094a37781ae4e51dd0a5806171681a2342ab2691eab18d4f477a1e2f3c0",
+      "byteIdentical": true
+    },
+    {
+      "kind": "case-report",
+      "source": "artifacts/evidence/phase-0-4-crt-television/reports/hero-actual--mobile-390x844.json",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/reports/hero-actual--mobile-390x844.json",
+      "bytes": 27266,
+      "sha256": "9d401fe6ee32311ab1bb0833683e5fe2e49023cde31b28c7dd22a2a0e821f5ae",
+      "byteIdentical": true
+    },
+    {
+      "kind": "raw-jpeg",
+      "source": "artifacts/evidence/phase-0-4-crt-television/captures/raw/hero-actual--mobile-390x844.jpg",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/raw/hero-actual--mobile-390x844.jpg",
+      "bytes": 78878,
+      "sha256": "311a415f36335cf9052761b9762a8ae48bb6294c524370de957929e2fddf9051",
+      "byteIdentical": true
+    },
+    {
+      "kind": "case-report",
+      "source": "artifacts/evidence/phase-0-4-crt-television/reports/hero-actual--mobile-360x800.json",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/reports/hero-actual--mobile-360x800.json",
+      "bytes": 27250,
+      "sha256": "03e6a4e477d3a1477e05337ad1b1b75ad5fed68e5d6dd051b9f5aa0213b62f11",
+      "byteIdentical": true
+    },
+    {
+      "kind": "raw-jpeg",
+      "source": "artifacts/evidence/phase-0-4-crt-television/captures/raw/hero-actual--mobile-360x800.jpg",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/raw/hero-actual--mobile-360x800.jpg",
+      "bytes": 74871,
+      "sha256": "3842b5bcd606b254ec27c1c1ceb193761e8255a22b7a30de7bca8a81146038fc",
+      "byteIdentical": true
+    },
+    {
+      "kind": "case-report",
+      "source": "artifacts/evidence/phase-0-4-crt-television/reports/hero-actual--narrow-320x800.json",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/reports/hero-actual--narrow-320x800.json",
+      "bytes": 27249,
+      "sha256": "6222a3b84f9e4d7976fd7a8d54d43460e3cd29f2ccf3761dcb16d99b320378f1",
+      "byteIdentical": true
+    },
+    {
+      "kind": "raw-jpeg",
+      "source": "artifacts/evidence/phase-0-4-crt-television/captures/raw/hero-actual--narrow-320x800.jpg",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/raw/hero-actual--narrow-320x800.jpg",
+      "bytes": 72073,
+      "sha256": "92560ea86930942d3d37647d9b2e7a416cce9f6f923eedea682b450f6929e111",
+      "byteIdentical": true
+    },
+    {
+      "kind": "case-report",
+      "source": "artifacts/evidence/phase-0-4-crt-television/reports/hero-actual--mobile-landscape-844x390.json",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/reports/hero-actual--mobile-landscape-844x390.json",
+      "bytes": 26964,
+      "sha256": "ad72abfa1bc6e7fd005b031f0dacc3ce7469e4007f49c907f71bccfa68d2a243",
+      "byteIdentical": true
+    },
+    {
+      "kind": "raw-jpeg",
+      "source": "artifacts/evidence/phase-0-4-crt-television/captures/raw/hero-actual--mobile-landscape-844x390.jpg",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/raw/hero-actual--mobile-landscape-844x390.jpg",
+      "bytes": 84362,
+      "sha256": "911ff062fb9ce2e306a973e2cd6f1e49d6f1834d45a0f6c352a77047e1faede3",
+      "byteIdentical": true
+    },
+    {
+      "kind": "case-report",
+      "source": "artifacts/evidence/phase-0-4-crt-television/reports/portal-actual--desktop-1440x900.json",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/reports/portal-actual--desktop-1440x900.json",
+      "bytes": 21470,
+      "sha256": "77d6270cafcb385ca356d6316c4f5eba06bacbe96f52c1514b3c22bff197d228",
+      "byteIdentical": true
+    },
+    {
+      "kind": "raw-jpeg",
+      "source": "artifacts/evidence/phase-0-4-crt-television/captures/raw/portal-actual--desktop-1440x900.jpg",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/raw/portal-actual--desktop-1440x900.jpg",
+      "bytes": 86094,
+      "sha256": "ef3d77f24d112b447834812af12370313a8166a9f99f2ba7afd0dd5d04a8682e",
+      "byteIdentical": true
+    },
+    {
+      "kind": "case-report",
+      "source": "artifacts/evidence/phase-0-4-crt-television/reports/portal-actual--short-desktop-1366x650.json",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/reports/portal-actual--short-desktop-1366x650.json",
+      "bytes": 17666,
+      "sha256": "3688d8e90429a359a4b969e6e9a5ac9e8183e1da2069839601a9ff1eae29b4c0",
+      "byteIdentical": true
+    },
+    {
+      "kind": "case-report",
+      "source": "artifacts/evidence/phase-0-4-crt-television/reports/portal-actual--desktop-1280x800.json",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/reports/portal-actual--desktop-1280x800.json",
+      "bytes": 18875,
+      "sha256": "509d5383c03ae5bf486633d1fe23862d3f3b67b4d669085f50aed0d5ded8eb0b",
+      "byteIdentical": true
+    },
+    {
+      "kind": "case-report",
+      "source": "artifacts/evidence/phase-0-4-crt-television/reports/portal-actual--tablet-landscape-1024x768.json",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/reports/portal-actual--tablet-landscape-1024x768.json",
+      "bytes": 20282,
+      "sha256": "d6867ec13f85529921e8592b989999a292a7289ed0e6950246c950b5cfb32c62",
+      "byteIdentical": true
+    },
+    {
+      "kind": "raw-jpeg",
+      "source": "artifacts/evidence/phase-0-4-crt-television/captures/raw/portal-actual--tablet-landscape-1024x768.jpg",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/raw/portal-actual--tablet-landscape-1024x768.jpg",
+      "bytes": 87700,
+      "sha256": "bb942204fcdf8d2e75ce143c65f8afea512c2487b58c6b2b720f86a8494cb1ff",
+      "byteIdentical": true
+    },
+    {
+      "kind": "case-report",
+      "source": "artifacts/evidence/phase-0-4-crt-television/reports/portal-actual--tablet-portrait-768x1024.json",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/reports/portal-actual--tablet-portrait-768x1024.json",
+      "bytes": 17619,
+      "sha256": "7ea65eede12cc939a65bc3c886a4b69413676d215b84562a7f3aaf7923a9e715",
+      "byteIdentical": true
+    },
+    {
+      "kind": "case-report",
+      "source": "artifacts/evidence/phase-0-4-crt-television/reports/portal-actual--mobile-390x844.json",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/reports/portal-actual--mobile-390x844.json",
+      "bytes": 20203,
+      "sha256": "89239483d0894cf794b12dc7335c745cfda736097a98f2fdbcd75003c9b7aca8",
+      "byteIdentical": true
+    },
+    {
+      "kind": "raw-jpeg",
+      "source": "artifacts/evidence/phase-0-4-crt-television/captures/raw/portal-actual--mobile-390x844.jpg",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/raw/portal-actual--mobile-390x844.jpg",
+      "bytes": 58965,
+      "sha256": "2125115316e9535c7aa1fb5b72ee14f6592402eb02282f322f4acfcb953ed0fe",
+      "byteIdentical": true
+    },
+    {
+      "kind": "case-report",
+      "source": "artifacts/evidence/phase-0-4-crt-television/reports/portal-actual--mobile-360x800.json",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/reports/portal-actual--mobile-360x800.json",
+      "bytes": 17533,
+      "sha256": "3a161a3c9470bd4ec5287292add975935a1b25291e319e328f0f71d95a60599c",
+      "byteIdentical": true
+    },
+    {
+      "kind": "case-report",
+      "source": "artifacts/evidence/phase-0-4-crt-television/reports/portal-actual--narrow-320x800.json",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/reports/portal-actual--narrow-320x800.json",
+      "bytes": 20178,
+      "sha256": "fbb2ff93a2e09d81d20bff4ba8b82c9df3f81dbf987299715f90f8652f11bf1e",
+      "byteIdentical": true
+    },
+    {
+      "kind": "raw-jpeg",
+      "source": "artifacts/evidence/phase-0-4-crt-television/captures/raw/portal-actual--narrow-320x800.jpg",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/raw/portal-actual--narrow-320x800.jpg",
+      "bytes": 52306,
+      "sha256": "f48cd049646599414251a248f1ac580625cada481d2f95388946356e3362dbd1",
+      "byteIdentical": true
+    },
+    {
+      "kind": "case-report",
+      "source": "artifacts/evidence/phase-0-4-crt-television/reports/portal-actual--mobile-landscape-844x390.json",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/reports/portal-actual--mobile-landscape-844x390.json",
+      "bytes": 20308,
+      "sha256": "09d68a377033e937e6ce0dfcc9f46995dd7d471d656dbf4bf76243538957cc41",
+      "byteIdentical": true
+    },
+    {
+      "kind": "raw-jpeg",
+      "source": "artifacts/evidence/phase-0-4-crt-television/captures/raw/portal-actual--mobile-landscape-844x390.jpg",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/raw/portal-actual--mobile-landscape-844x390.jpg",
+      "bytes": 61758,
+      "sha256": "50ad98c07ac20e20bd3fb725efc53f64eb12200285775af9c6b4c49e26e182cc",
+      "byteIdentical": true
+    },
+    {
+      "kind": "case-report",
+      "source": "artifacts/evidence/phase-0-4-crt-television/reports/hero-zoom-200--desktop-1440x900.json",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/reports/hero-zoom-200--desktop-1440x900.json",
+      "bytes": 27047,
+      "sha256": "d8a1a221301361c60dbb50b899bac7e1f69bc048cfa8ffa39a3775255d9ecc22",
+      "byteIdentical": true
+    },
+    {
+      "kind": "raw-jpeg",
+      "source": "artifacts/evidence/phase-0-4-crt-television/captures/raw/hero-zoom-200--desktop-1440x900.jpg",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/raw/hero-zoom-200--desktop-1440x900.jpg",
+      "bytes": 117012,
+      "sha256": "ec80a5b545fea0ac65dc29d53756283e9bd7694a5c853fe942ad1fa7c7f99498",
+      "byteIdentical": true
+    },
+    {
+      "kind": "case-report",
+      "source": "artifacts/evidence/phase-0-4-crt-television/reports/hero-zoom-200--short-desktop-1366x650.json",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/reports/hero-zoom-200--short-desktop-1366x650.json",
+      "bytes": 24473,
+      "sha256": "e4aaad159bb4ab3aaea2c3032233114eb5d5d9d0cb584a2d4ff9563a5e9107d4",
+      "byteIdentical": true
+    },
+    {
+      "kind": "case-report",
+      "source": "artifacts/evidence/phase-0-4-crt-television/reports/hero-zoom-200--mobile-390x844.json",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/reports/hero-zoom-200--mobile-390x844.json",
+      "bytes": 27443,
+      "sha256": "01790cb4e64a97d1b8658c0259291c8ccc0256f339aaf266847dad05da53cc51",
+      "byteIdentical": true
+    },
+    {
+      "kind": "raw-jpeg",
+      "source": "artifacts/evidence/phase-0-4-crt-television/captures/raw/hero-zoom-200--mobile-390x844.jpg",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/raw/hero-zoom-200--mobile-390x844.jpg",
+      "bytes": 85500,
+      "sha256": "073f7e7cc39c2a55a118636fcbe1cfbb2c324cff4c8efb08dd006fe54f5e23cb",
+      "byteIdentical": true
+    },
+    {
+      "kind": "case-report",
+      "source": "artifacts/evidence/phase-0-4-crt-television/reports/hero-zoom-200--narrow-320x800.json",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/reports/hero-zoom-200--narrow-320x800.json",
+      "bytes": 27453,
+      "sha256": "c400c4ab08dd331322c28e42585aed785587a7c3fb0d4ac529957e1efaf03cf7",
+      "byteIdentical": true
+    },
+    {
+      "kind": "raw-jpeg",
+      "source": "artifacts/evidence/phase-0-4-crt-television/captures/raw/hero-zoom-200--narrow-320x800.jpg",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/raw/hero-zoom-200--narrow-320x800.jpg",
+      "bytes": 62603,
+      "sha256": "2a4bbd63cd9ca1ea9c0733e81a114c3b45971d8fa1fc82e3e8148a5856721c60",
+      "byteIdentical": true
+    },
+    {
+      "kind": "case-report",
+      "source": "artifacts/evidence/phase-0-4-crt-television/reports/hero-zoom-200--mobile-landscape-844x390.json",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/reports/hero-zoom-200--mobile-landscape-844x390.json",
+      "bytes": 26985,
+      "sha256": "659cbebf69dd67a0b75ae92d3f40d378823641da84e8e994f4ad0b15229e8032",
+      "byteIdentical": true
+    },
+    {
+      "kind": "raw-jpeg",
+      "source": "artifacts/evidence/phase-0-4-crt-television/captures/raw/hero-zoom-200--mobile-landscape-844x390.jpg",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/raw/hero-zoom-200--mobile-landscape-844x390.jpg",
+      "bytes": 73332,
+      "sha256": "5e8e7726a186fdda70aaf1b16dc737c4d97123c34936ee843f2f284b300333a2",
+      "byteIdentical": true
+    },
+    {
+      "kind": "case-report",
+      "source": "artifacts/evidence/phase-0-4-crt-television/reports/portal-zoom-200--desktop-1440x900.json",
+      "preservedCopy": "artifacts/evidence/phase-0-4-crt-television/recovery/stale-authority-b87deae1dc4595fd/reports/portal-zoom-200--desktop-1440x900.json",
+      "bytes": 17981,
+      "sha256": "a343ad6728a6370e7c988c8588401939135414d133a4011e596db1e89a314e0b",
+      "byteIdentical": true
+    }
+  ],
+  "policy": "preserved files are historical only and cannot be promoted or skipped under the replacement authority"
+}

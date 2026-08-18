@@ -1,0 +1,1075 @@
+{
+  "schema": "quantum-hub.phase-0-4-crt-television.package-inventory.v1",
+  "status": "PASS",
+  "scope": "artifacts/original/phase-0-4-crt-television",
+  "intended_commit_only": true,
+  "exclusions": [
+    "manifests/package-inventory.json"
+  ],
+  "file_count": 118,
+  "total_bytes": 160349367,
+  "records": [
+    {
+      "package_relative_path": "crt-cabinet-material-sheet.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-cabinet-material-sheet.png",
+      "bytes": 1105801,
+      "sha256": "f7b81ddf7a0b031f1b3d84c0aff76bbb34bf20fd16106a21c6a149cf0e4beb93",
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "crt-cable-and-connection-sheet.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-cable-and-connection-sheet.png",
+      "bytes": 2593236,
+      "sha256": "7a5322ec0b88d73ec67ded6f64097320b3cc6aede20b03f10f65dafbd7262be4",
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "crt-camera-path-study.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-camera-path-study.png",
+      "bytes": 1813944,
+      "sha256": "1ef0766083ffdde4e6062374580cf29767c2605a59a8a22ebfca760f09f84232",
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "crt-controls-speaker-rear-detail-sheet.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-controls-speaker-rear-detail-sheet.png",
+      "bytes": 3441617,
+      "sha256": "0224be4cf40afcfbadd699445d4146594af236186ebda9881e38b03817451dec",
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "crt-desktop-hero-composition.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-desktop-hero-composition.png",
+      "bytes": 1758336,
+      "sha256": "b8123eca4d6c9ce05adfb16e29177604acb48730a6d49b6c7cc7821e8d81cfc0",
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "crt-mobile-hero-composition.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-mobile-hero-composition.png",
+      "bytes": 859548,
+      "sha256": "6880496b2341e6dd3e29824a528a6411518c664e9b8853f9cf602936e44569d3",
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "crt-physical-dom-alignment-sheet.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-physical-dom-alignment-sheet.png",
+      "bytes": 4447353,
+      "sha256": "e733948ae7d4b534eea5ef7becb858c776628376ce0954c24c168cc506bc7252",
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "crt-portal-layout.json",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-portal-layout.json",
+      "bytes": 16248,
+      "sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc",
+      "classification": "machine-readable evidence, layout or provenance authority",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "crt-portal-transition-sheet.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-portal-transition-sheet.png",
+      "bytes": 10703351,
+      "sha256": "ce7e80d633f66a48454593fbb3a459c994177f5c3b8a25480bb9b9c7e1c14515",
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "crt-power-on-contact-sheet.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-power-on-contact-sheet.png",
+      "bytes": 2357483,
+      "sha256": "b61535e954881a7dd9e263241e62cfd6e14adae8be3e4e634ce17ed4adbac583",
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "crt-proving-ground-style-frame.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-proving-ground-style-frame.png",
+      "bytes": 2320530,
+      "sha256": "f06437722067b3bb1e55355c18ff9f7d5d4aada66666052d69daebb2e612aff5",
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "crt-reduced-motion-desktop.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-reduced-motion-desktop.png",
+      "bytes": 877291,
+      "sha256": "7324db6378a9820c2ef930cff0eed3a5744030ed01aaadaaa29533ab75ab7b0f",
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "crt-reduced-motion-mobile.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-reduced-motion-mobile.png",
+      "bytes": 412148,
+      "sha256": "79a1373ccea650441777c3ad598bf0bcf50f57c6d5f82f1bea27d610c8a89785",
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "crt-screen-glass-and-phosphor-sheet.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-screen-glass-and-phosphor-sheet.png",
+      "bytes": 3158471,
+      "sha256": "f08ce94db324b70b1bdc0b6fc65990be03799ec28d230e1597e660766529c25d",
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "crt-television-proportion-options.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-television-proportion-options.png",
+      "bytes": 4912129,
+      "sha256": "4e33468ac0073f8d73fe5ad3290e9a2b3e06ad6b2c8ab810c83033ec7083a250",
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "crt-television-recommended-design-sheet.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-television-recommended-design-sheet.png",
+      "bytes": 1542628,
+      "sha256": "fee6271b2b5453a6228830e57e5481c67922d3fd2610aa88e79756224c656e4c",
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "crt-text-zoom-and-fallback.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-text-zoom-and-fallback.png",
+      "bytes": 1383021,
+      "sha256": "1db1a05290a81b9a929c241fd7983a468c097e7e51751b6e24ff809de8119ec9",
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "manifests/blender-source-validation.json",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/blender-source-validation.json",
+      "bytes": 12051,
+      "sha256": "e77fd738cba7bd7dbe5a8e9b7a1ee1ea507e7dbe4d55060f7f0f8ce3a5ff38ce",
+      "classification": "machine-readable evidence, layout or provenance authority",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "manifests/browser-review-composition-manifest.json",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/browser-review-composition-manifest.json",
+      "bytes": 16341,
+      "sha256": "00a51a6c9e5708ecbc64955687946cbc7400886bc001d56f73b4900f8741bcc9",
+      "classification": "machine-readable evidence, layout or provenance authority",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "manifests/crt-canonical-render-manifest.json",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-canonical-render-manifest.json",
+      "bytes": 103931,
+      "sha256": "35022c438e3a64e1a6d86b8e7232533c161f1f7cbe47f7499573999e7ca77ff9",
+      "classification": "machine-readable evidence, layout or provenance authority",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "manifests/crt-material-and-asset-manifest.json",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-material-and-asset-manifest.json",
+      "bytes": 47991,
+      "sha256": "8c24c24423c99b891f06e1f3398ac9f049883b3215c2f06fbb14961ebba3a9de",
+      "classification": "machine-readable evidence, layout or provenance authority",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "manifests/crt-portal-transition-state-authority.json",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-portal-transition-state-authority.json",
+      "bytes": 18552,
+      "sha256": "629a2b65c29e0e176c3f5952a7b519678142dfed5acbafedb4460ccb3fa666b7",
+      "classification": "machine-readable evidence, layout or provenance authority",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "manifests/crt-power-on-state-authority.json",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-power-on-state-authority.json",
+      "bytes": 13176,
+      "sha256": "735a891cc1d5b14a67f2f920302de541230a1a7e3e12437553444c4eae1ac8ce",
+      "classification": "machine-readable evidence, layout or provenance authority",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "manifests/crt-proportion-decision-manifest.json",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-proportion-decision-manifest.json",
+      "bytes": 10284,
+      "sha256": "783984b2ef0658a74c381750966acf3d513bf5d5e4cce598375b1fa4a2084dc7",
+      "classification": "machine-readable evidence, layout or provenance authority",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "manifests/crt-proportion-render-manifest.json",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-proportion-render-manifest.json",
+      "bytes": 9931,
+      "sha256": "92a909912cfbee9ce5f0fc175855d939c52bc73422b28f7264960b243e7224bc",
+      "classification": "machine-readable evidence, layout or provenance authority",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "manifests/crt-proportion-source-validation.json",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-proportion-source-validation.json",
+      "bytes": 7139,
+      "sha256": "c1eea6ef88b3d6a0d322ab437a4c2ed8e35de3b39df4af4d7bdb0e3b24c986d7",
+      "classification": "machine-readable evidence, layout or provenance authority",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "manifests/crt-refined-source-build.json",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-refined-source-build.json",
+      "bytes": 2781,
+      "sha256": "2b7bd6fc3e0f0897132fd057e856a24cbf8c4ac17373573169540e387cef5748",
+      "classification": "machine-readable evidence, layout or provenance authority",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "manifests/crt-review-composition-manifest.json",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-review-composition-manifest.json",
+      "bytes": 14440,
+      "sha256": "32b5ef685cc322f89ee8f36e525bcc85b1f319d65d3cd469c8e6265f1fe37ca9",
+      "classification": "machine-readable evidence, layout or provenance authority",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "manifests/crt-scene-source-keepouts.json",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-scene-source-keepouts.json",
+      "bytes": 1225841,
+      "sha256": "c2d371d4eb3d3bfafe82ad67728c2df48ef7e38b09b2d1306d5accd2c955ac3d",
+      "classification": "machine-readable evidence, layout or provenance authority",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "manifests/png-metadata-sanitization.json",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/png-metadata-sanitization.json",
+      "bytes": 51196,
+      "sha256": "5ad92428b8216b32d4786e7014812586c904062d04a5c5f56b769463ab255ef7",
+      "classification": "machine-readable evidence, layout or provenance authority",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "manifests/review-bundle-manifest.json",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/review-bundle-manifest.json",
+      "bytes": 7656,
+      "sha256": "0cb59ecbe15c6adf423ccaa7794c37e8c19b20cf37f86c25e279568b2d6f7993",
+      "classification": "machine-readable evidence, layout or provenance authority",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "phase-0-4-crt-television-review.zip",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/phase-0-4-crt-television-review.zip",
+      "bytes": 43303597,
+      "sha256": "8eeec33182ad476d5dd78d5635a5dcb2cdfbeb96c97092462bd1af6227f642c7",
+      "classification": "compact human-review archive",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/proportion-options/option-a/option-a-front.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/proportion-options/option-a/option-a-front.png",
+      "bytes": 316755,
+      "sha256": "06ee84380f80d63f8b357bec7bc242cdce3accee1f9b1032017848319837c8c8",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "preserved proportion-gate evidence",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/proportion-options/option-a/option-a-rear.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/proportion-options/option-a/option-a-rear.png",
+      "bytes": 310888,
+      "sha256": "401eb6bcc9bb76c418491896c669f17f855fc4db5d1d0dacd40903d206dd587b",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "preserved proportion-gate evidence",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/proportion-options/option-a/option-a-side.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/proportion-options/option-a/option-a-side.png",
+      "bytes": 289011,
+      "sha256": "bf40ba8bb1f5dbb1a7fcc8514565e70fe3262a05018fa382be75be28fe873bef",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "preserved proportion-gate evidence",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/proportion-options/option-a/option-a-three-quarter-front.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/proportion-options/option-a/option-a-three-quarter-front.png",
+      "bytes": 333466,
+      "sha256": "d8eb505b77bffdc24c0bc45fc961f8ec31506957d22231ad8c442d0ccb97f449",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "preserved proportion-gate evidence",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/proportion-options/option-a/option-a-three-quarter-rear.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/proportion-options/option-a/option-a-three-quarter-rear.png",
+      "bytes": 325197,
+      "sha256": "83d4ba43c4a9d155e32bc37b09189e90acabd517cf61fa6147bbcce39932e679",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "preserved proportion-gate evidence",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/proportion-options/option-a/option-a-top.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/proportion-options/option-a/option-a-top.png",
+      "bytes": 333770,
+      "sha256": "a3edcaff61291492b0d2a8eb38159e6b92833f59c65263d283af95f8e23d276f",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "preserved proportion-gate evidence",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/proportion-options/option-b/option-b-front.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/proportion-options/option-b/option-b-front.png",
+      "bytes": 318333,
+      "sha256": "629129971747a14331c055e0887023388a04e016f4da64084687cf18b927e27e",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "preserved proportion-gate evidence",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/proportion-options/option-b/option-b-rear.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/proportion-options/option-b/option-b-rear.png",
+      "bytes": 311693,
+      "sha256": "84d66e60b4b265426297a2a9b72c5d8b71d900baef1e17add31f21293fbc5feb",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "preserved proportion-gate evidence",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/proportion-options/option-b/option-b-side.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/proportion-options/option-b/option-b-side.png",
+      "bytes": 290779,
+      "sha256": "8bb7cbbccf57909d581a082de0e25c777e6c951814825c8195f70eb641f91814",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "preserved proportion-gate evidence",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/proportion-options/option-b/option-b-three-quarter-front.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/proportion-options/option-b/option-b-three-quarter-front.png",
+      "bytes": 331895,
+      "sha256": "dddfd2d1150e8d7068f2f64b1f954d6c2e7acd296740f513be93e67cd32887e8",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "preserved proportion-gate evidence",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/proportion-options/option-b/option-b-three-quarter-rear.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/proportion-options/option-b/option-b-three-quarter-rear.png",
+      "bytes": 330024,
+      "sha256": "5375ced65bef28c0f596941d1b8afbe553991db8000a07b895ac8d928acdeeaf",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "preserved proportion-gate evidence",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/proportion-options/option-b/option-b-top.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/proportion-options/option-b/option-b-top.png",
+      "bytes": 331463,
+      "sha256": "48c84b28c1a13801b1d4a790be13629bf2562859b3f27f565c8be051b225d727",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "preserved proportion-gate evidence",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/proportion-options/option-c/option-c-front.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/proportion-options/option-c/option-c-front.png",
+      "bytes": 327926,
+      "sha256": "2c136d8114eb48aa692bd0eee883cb40c2a56ac8e9f2ddcb4128e2c1d88b45dd",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "preserved proportion-gate evidence",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/proportion-options/option-c/option-c-rear.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/proportion-options/option-c/option-c-rear.png",
+      "bytes": 323657,
+      "sha256": "eafc505ec037886290b29e712e7828704d0f661a8d0af24e5c7eccdee36cc279",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "preserved proportion-gate evidence",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/proportion-options/option-c/option-c-side.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/proportion-options/option-c/option-c-side.png",
+      "bytes": 296367,
+      "sha256": "c8c589f89d93ab46e12850ea6fd7ea56c3218ef9e14815bd0b4c10eee23e2f65",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "preserved proportion-gate evidence",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/proportion-options/option-c/option-c-three-quarter-front.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/proportion-options/option-c/option-c-three-quarter-front.png",
+      "bytes": 340114,
+      "sha256": "5015eaab0e151da0333187bcaeee41e0f44f7005021a9587f833537e5c286996",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "preserved proportion-gate evidence",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/proportion-options/option-c/option-c-three-quarter-rear.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/proportion-options/option-c/option-c-three-quarter-rear.png",
+      "bytes": 330247,
+      "sha256": "db1244b17b152f8eac5063012109d37a2063826834647dd75dba86d4615c03ea",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "preserved proportion-gate evidence",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/proportion-options/option-c/option-c-top.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/proportion-options/option-c/option-c-top.png",
+      "bytes": 337150,
+      "sha256": "330ba833974111c19121d0d663ffb233e5a01f0067426931f116ade6abe22c12",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "preserved proportion-gate evidence",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/cable/cable-conduction-boundary.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/cable/cable-conduction-boundary.png",
+      "bytes": 1314957,
+      "sha256": "83cf5293d77bb07eeee90a650382b0588ca18967188e8e4577c8e42fedb6207f",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/cable/cable-connected-powered.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/cable/cable-connected-powered.png",
+      "bytes": 1390236,
+      "sha256": "570e88504bfd7785137e9c1f752e8b0516e7a3f01478707a5a19b5747e753674",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/cable/cable-dormant.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/cable/cable-dormant.png",
+      "bytes": 1309489,
+      "sha256": "369259a69886c59e25024876b4d3e3bdc0028a057105d5d9223475596a986c3c",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/cable/cable-rear-arrival.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/cable/cable-rear-arrival.png",
+      "bytes": 1190792,
+      "sha256": "fad7166fcceab7042cacecce0544ecec7d57b3361b850925d89c32619212c769",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/camera-study/camera-01-arrival.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/camera-study/camera-01-arrival.png",
+      "bytes": 1266764,
+      "sha256": "0381200448c99d592a7d616a664badbeefa3a364f3e0f3a01801df77842bb928",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/camera-study/camera-02-thirty-percent.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/camera-study/camera-02-thirty-percent.png",
+      "bytes": 1314515,
+      "sha256": "6b8023d4993e1a5552342fbfc49060283c8663af06e92e899e347844f042cbea",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/camera-study/camera-03-sixty-percent.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/camera-study/camera-03-sixty-percent.png",
+      "bytes": 1355982,
+      "sha256": "28d0c912572b527ea4e31507705ce5c66b52cd97e50aad4d7bd9525bff8f8373",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/camera-study/camera-04-near-frontal.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/camera-study/camera-04-near-frontal.png",
+      "bytes": 1412905,
+      "sha256": "9e4cec560b5bfaa372b56c98b868394a4299177499cf230e005cc18ba7320ce2",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/camera-study/camera-05-portal-ready.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/camera-study/camera-05-portal-ready.png",
+      "bytes": 1729636,
+      "sha256": "5706bebba038922ca12b268510e57d3f539e7b36c8e8a26cf66b63a89ad99297",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/design/design-front.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/design/design-front.png",
+      "bytes": 1196671,
+      "sha256": "85a88c7e0ad8c41713f91644279e4c2fe2057a9d75cdbce2d7376ef474194d28",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/design/design-rear.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/design/design-rear.png",
+      "bytes": 1193957,
+      "sha256": "eba6675b3f1030d733a0f6b583d813357f3c117a97b2fa7d2c064b425f5e7a36",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/design/design-side.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/design/design-side.png",
+      "bytes": 1048067,
+      "sha256": "4421b2151f42561fb107d0f171fea2e1e1ebdcc1207325b1c949571c632a9ab2",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/design/design-three-quarter-front.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/design/design-three-quarter-front.png",
+      "bytes": 1405350,
+      "sha256": "878589bb95764394ea609bb09db19f9c8df90937b7f2aa79a466a7f952ea0155",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/design/design-three-quarter-rear.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/design/design-three-quarter-rear.png",
+      "bytes": 1150391,
+      "sha256": "91a263f2251267b034c2a1214dba06c80d22efd7d016a5d06095ad099651bc99",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/details/detail-connector.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/details/detail-connector.png",
+      "bytes": 1360972,
+      "sha256": "bab7b30204be1bfdbb0cc9695e6c14531e61676cca4517798794fa5ecd4b6147",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/details/detail-controls.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/details/detail-controls.png",
+      "bytes": 1636010,
+      "sha256": "e4c1b954ed24eaf5fb1b3bc87b1dd73b8214cb09283b803d96087f44c6e43108",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/details/detail-rear.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/details/detail-rear.png",
+      "bytes": 1372574,
+      "sha256": "46fe40bf92efb4403e0e7fbf9c734079a501f693e7bf21a962270b303e018020",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/details/detail-speaker.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/details/detail-speaker.png",
+      "bytes": 1585245,
+      "sha256": "010bb3d335e8e151317d75a37793fc6afaa276dd165419d352a40e3677f504e1",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/environment/proving-ground-master.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/environment/proving-ground-master.png",
+      "bytes": 1266764,
+      "sha256": "0381200448c99d592a7d616a664badbeefa3a364f3e0f3a01801df77842bb928",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/materials/cabinet-front-material.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/materials/cabinet-front-material.png",
+      "bytes": 1405350,
+      "sha256": "878589bb95764394ea609bb09db19f9c8df90937b7f2aa79a466a7f952ea0155",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/materials/cabinet-rear-material.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/materials/cabinet-rear-material.png",
+      "bytes": 1150391,
+      "sha256": "91a263f2251267b034c2a1214dba06c80d22efd7d016a5d06095ad099651bc99",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/materials/cabinet-three-quarter.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/materials/cabinet-three-quarter.png",
+      "bytes": 1517037,
+      "sha256": "976b18eeda26cb7b00e95e6e27dff7adb918ffcaca965ff5d09e5d63a43229e2",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/materials/glass-dormant-front.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/materials/glass-dormant-front.png",
+      "bytes": 1834979,
+      "sha256": "6b9a2e478de1cf8ef238751d9293d813b14624313a9653d6106f92629b2c4cdc",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/materials/glass-electrical-wake.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/materials/glass-electrical-wake.png",
+      "bytes": 1614389,
+      "sha256": "0f0f56b006de26ff64fa6455c1bb9e1567980cb18d89c5a118a7565ef3da37a0",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/materials/glass-grazing-proof.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/materials/glass-grazing-proof.png",
+      "bytes": 1813306,
+      "sha256": "7331c1ee2f2799ba0027fb61fdc4f87543d39d09654bbe4ed4aa0a3f15ea5c25",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/materials/glass-raster-warm.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/materials/glass-raster-warm.png",
+      "bytes": 1646983,
+      "sha256": "3e39afcad7470dc6dfc78129ccaeb5696e60a47ccbfcbfa6e8b66fe6ff4166cd",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/portal/portal-01-television-in-scene.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/portal/portal-01-television-in-scene.png",
+      "bytes": 1360280,
+      "sha256": "ad1e2396f9094003b3ff69b53e7373304c87a152771e23cb948b0f3fe5ce8e01",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/portal/portal-02-screen-active.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/portal/portal-02-screen-active.png",
+      "bytes": 1496931,
+      "sha256": "9373aa6c7f09c0b4849478196fc363ebdd009054b466c415cbf3f5b977049f0c",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/portal/portal-03-close-approach.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/portal/portal-03-close-approach.png",
+      "bytes": 1729636,
+      "sha256": "5706bebba038922ca12b268510e57d3f539e7b36c8e8a26cf66b63a89ad99297",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/portal/portal-04-glass-almost-fills.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/portal/portal-04-glass-almost-fills.png",
+      "bytes": 1653343,
+      "sha256": "c864568cee3d0171bdc89c88a5b18ad56050da0e97c6a693fccb1c2386fd79b6",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/portal/portal-05-bezel-exits.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/portal/portal-05-bezel-exits.png",
+      "bytes": 1578330,
+      "sha256": "c6adebf66caadc897cc303e297b5620d55036222398b34e0dfcad2d6cdf89f7f",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/portal/portal-06-distortion-reduces.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/portal/portal-06-distortion-reduces.png",
+      "bytes": 1448324,
+      "sha256": "2d11b4c7809fe943ffe90268c752ac2de37bdc9f2ebf8418e810de40b2a1bae4",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/power-on/power-01-completely-dormant.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/power-on/power-01-completely-dormant.png",
+      "bytes": 1266764,
+      "sha256": "0381200448c99d592a7d616a664badbeefa3a364f3e0f3a01801df77842bb928",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/power-on/power-02-current-reaches-connection.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/power-on/power-02-current-reaches-connection.png",
+      "bytes": 1190792,
+      "sha256": "fad7166fcceab7042cacecce0544ecec7d57b3361b850925d89c32619212c769",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/power-on/power-03-power-indicator-response.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/power-on/power-03-power-indicator-response.png",
+      "bytes": 1534833,
+      "sha256": "6767e545a05480e25d1ab3dba44e1790e82774147e123ef2757174f40cded562",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/power-on/power-04-crt-electrical-wake.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/power-on/power-04-crt-electrical-wake.png",
+      "bytes": 1456445,
+      "sha256": "acff665096c436b523a2c62c28eaa57545bbf38a1851eb1b6043f3f325a52468",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/power-on/power-05-raster-phosphor-appears.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/power-on/power-05-raster-phosphor-appears.png",
+      "bytes": 1646983,
+      "sha256": "3e39afcad7470dc6dfc78129ccaeb5696e60a47ccbfcbfa6e8b66fe6ff4166cd",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/power-on/power-06-quantum-interface-stabilizes.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/power-on/power-06-quantum-interface-stabilizes.png",
+      "bytes": 1688049,
+      "sha256": "30942c1b54ffbff9bd485db96e4f37227f35d7313a73e9f1365a69c24d9ca351",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/power-on/power-07-portal-ready.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/power-on/power-07-portal-ready.png",
+      "bytes": 1729636,
+      "sha256": "5706bebba038922ca12b268510e57d3f539e7b36c8e8a26cf66b63a89ad99297",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/sources/source-desktop-dormant.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-desktop-dormant.png",
+      "bytes": 1266764,
+      "sha256": "0381200448c99d592a7d616a664badbeefa3a364f3e0f3a01801df77842bb928",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/sources/source-mobile-dormant.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-mobile-dormant.png",
+      "bytes": 1039559,
+      "sha256": "6c7e6237028e5f7bddd65c7e304d9b70b141a09051dc7c8e4e38d22a06340fdf",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/sources/source-physical-portal-close.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-physical-portal-close.png",
+      "bytes": 1653343,
+      "sha256": "c864568cee3d0171bdc89c88a5b18ad56050da0e97c6a693fccb1c2386fd79b6",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/sources/source-reduced-desktop-dormant.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-reduced-desktop-dormant.png",
+      "bytes": 1266709,
+      "sha256": "6dcce22f73395f2d55591d9fe4b7422246623372283628eee419f8b75221ea4f",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/sources/source-reduced-mobile-dormant.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-reduced-mobile-dormant.png",
+      "bytes": 1045309,
+      "sha256": "b4d6c7fb50c98108a43ddbfc94040b5c7e8c277dca90ae85a05d6d3dbc6ecc4b",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "renders/refined/sources/source-text-free-portal-takeover.png",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-text-free-portal-takeover.png",
+      "bytes": 1448324,
+      "sha256": "2d11b4c7809fe943ffe90268c752ac2de37bdc9f2ebf8418e810de40b2a1bae4",
+      "classification": "governed render or diagnostic evidence raster",
+      "approval_state": "frozen canonical evidence source",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "source/build_crt_proportion_options.py",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/build_crt_proportion_options.py",
+      "bytes": 22859,
+      "sha256": "209d23867dba0d64dc46311f3d9e21a94154d658cf610705d6dcf04d059b0858",
+      "classification": "deterministic generation, composition, validation or packaging source",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "source/build_refined_crt.py",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/build_refined_crt.py",
+      "bytes": 45775,
+      "sha256": "d188d6b8f44795f56e17c6449f586d848fb304fa840c2036f00bc0c887c1f2ea",
+      "classification": "deterministic generation, composition, validation or packaging source",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "source/compose_crt_browser_review_sheets.py",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/compose_crt_browser_review_sheets.py",
+      "bytes": 19782,
+      "sha256": "8be4b8b636ef54f096d9a308f3549b9266a3dbdb4f827d726fc82c7c8feae159",
+      "classification": "deterministic generation, composition, validation or packaging source",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "source/compose_crt_canonical_review_sheets.py",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/compose_crt_canonical_review_sheets.py",
+      "bytes": 21747,
+      "sha256": "1e1757ffa003ec6e914146a9ed1fce0e5bf110d5ad04ad0dfb59403534ec7717",
+      "classification": "deterministic generation, composition, validation or packaging source",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "source/compose_crt_proportion_sheet.py",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/compose_crt_proportion_sheet.py",
+      "bytes": 10239,
+      "sha256": "b6e35dc509b0277f74b945e363351c074d34fabf0d4555b31f95a5d9d4338645",
+      "classification": "deterministic generation, composition, validation or packaging source",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "source/compose_crt_refinement_diagnostics.py",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/compose_crt_refinement_diagnostics.py",
+      "bytes": 5719,
+      "sha256": "7438dc9ac4516c8526bab6a1cc0d51d98b0affc53ec818737bbca78d09da4bc1",
+      "classification": "deterministic generation, composition, validation or packaging source",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "source/crt_canonical_config.py",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/crt_canonical_config.py",
+      "bytes": 8705,
+      "sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497",
+      "classification": "deterministic generation, composition, validation or packaging source",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "source/crt_options_config.py",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/crt_options_config.py",
+      "bytes": 5674,
+      "sha256": "addc341e93f358b944e1fcf5826d24ecd02120ae054c500f407a10cebef1bd67",
+      "classification": "deterministic generation, composition, validation or packaging source",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "source/crt_refined_config.py",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/crt_refined_config.py",
+      "bytes": 6227,
+      "sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
+      "classification": "deterministic generation, composition, validation or packaging source",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "source/generate_crt_material_asset_manifest.py",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/generate_crt_material_asset_manifest.py",
+      "bytes": 4800,
+      "sha256": "1ed3a2b39a55bd83d25be0a98499d4052b7ba0fe887e490a44feb654eb9410e8",
+      "classification": "deterministic generation, composition, validation or packaging source",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "source/generate_crt_scene_source_keepouts.py",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/generate_crt_scene_source_keepouts.py",
+      "bytes": 14654,
+      "sha256": "da9bfc74e5638a37ac4f494fd1d7e227aa22cbe7bd227be7f5bc69ebaedcbfde",
+      "classification": "deterministic generation, composition, validation or packaging source",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "source/package_crt_review_bundle.py",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/package_crt_review_bundle.py",
+      "bytes": 9857,
+      "sha256": "01c90d07d9d77de28f5ba8d88e162edda34ebe774f5a1bb996a731cd6303c4b4",
+      "classification": "deterministic generation, composition, validation or packaging source",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "source/quantum-signal-television-proportion-options.blend",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/quantum-signal-television-proportion-options.blend",
+      "bytes": 745661,
+      "sha256": "18bc895f5d94a30186c50e989e99d6a94bdcbd939909ef9a87026f1a1d3d5087",
+      "classification": "editable Blender source",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "source/quantum-signal-television-v1.blend",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/quantum-signal-television-v1.blend",
+      "bytes": 1049052,
+      "sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+      "classification": "editable Blender source",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "source/refresh_crt_canonical_authorities.py",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/refresh_crt_canonical_authorities.py",
+      "bytes": 9157,
+      "sha256": "2887d6400fd2e75cd5f21c771087b4eeb6929d8bd5183b7de837f46e6deade26",
+      "classification": "deterministic generation, composition, validation or packaging source",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "source/refresh_crt_refinement_diagnostic_authorities.py",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/refresh_crt_refinement_diagnostic_authorities.py",
+      "bytes": 2904,
+      "sha256": "de5bc1b2993dca666b4edb14effac1fc57823992dca5f52cb753546f59b20ed0",
+      "classification": "deterministic generation, composition, validation or packaging source",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "source/render_crt_canonical_stills.py",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/render_crt_canonical_stills.py",
+      "bytes": 16466,
+      "sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef",
+      "classification": "deterministic generation, composition, validation or packaging source",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "source/render_crt_proportion_options.py",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/render_crt_proportion_options.py",
+      "bytes": 4709,
+      "sha256": "60cf7159217779be2f1a322edafc174b535d2545d6f9d7bcc3d9ccb70fce42e0",
+      "classification": "deterministic generation, composition, validation or packaging source",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "source/render_crt_refinement_diagnostics.py",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/render_crt_refinement_diagnostics.py",
+      "bytes": 5962,
+      "sha256": "f3c032554b925ed92ceb03647c1cf374e8d5e4b01c8692fa541c5889b058807f",
+      "classification": "deterministic generation, composition, validation or packaging source",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "source/sanitize_crt_png_metadata.py",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/sanitize_crt_png_metadata.py",
+      "bytes": 4408,
+      "sha256": "6c69ded06f079ce9883a4280dce5edf70d3d1e496d4dca75b90a15c4f044ea29",
+      "classification": "deterministic generation, composition, validation or packaging source",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "source/validate_crt_proportion_options.py",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/validate_crt_proportion_options.py",
+      "bytes": 8747,
+      "sha256": "29d0399069758e726da8c53c484873c3574073dc2ddefe5a9cd17603c28b8e62",
+      "classification": "deterministic generation, composition, validation or packaging source",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "source/validate_refined_crt_source.py",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/validate_refined_crt_source.py",
+      "bytes": 15406,
+      "sha256": "67e6461709de5a750f987c3e17283b0a1478d3873ab12a9de4d8aa22e237b54e",
+      "classification": "deterministic generation, composition, validation or packaging source",
+      "approval_state": "intended Phase 0.4 candidate package",
+      "intendedCommit": true
+    },
+    {
+      "package_relative_path": "work/.gitignore",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/work/.gitignore",
+      "bytes": 14,
+      "sha256": "240a3e0d37d2e86b614063f5347eb02d4f99ca6c254de6b82871ff8d95532a7d",
+      "classification": "governed Phase 0.4 package asset",
+      "approval_state": "preserved bounded diagnostic evidence",
+      "intendedCommit": true
+    }
+  ]
+}

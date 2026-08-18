@@ -1,0 +1,189 @@
+{
+  "schema": "quantum-hub.phase-0-4-crt-television.review-bundle.v1",
+  "status": "PASS",
+  "selected_option": "A",
+  "selected_design": "Rounded 1990s domestic CRT",
+  "record_count": 16,
+  "records": [
+    {
+      "path": "crt-television-proportion-options.png",
+      "bytes": 4912129,
+      "sha256": "4e33468ac0073f8d73fe5ad3290e9a2b3e06ad6b2c8ab810c83033ec7083a250",
+      "width": 4300,
+      "height": 3560,
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed"
+    },
+    {
+      "path": "crt-television-recommended-design-sheet.png",
+      "bytes": 1542628,
+      "sha256": "fee6271b2b5453a6228830e57e5481c67922d3fd2610aa88e79756224c656e4c",
+      "width": 3000,
+      "height": 2000,
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed"
+    },
+    {
+      "path": "crt-cabinet-material-sheet.png",
+      "bytes": 1105801,
+      "sha256": "f7b81ddf7a0b031f1b3d84c0aff76bbb34bf20fd16106a21c6a149cf0e4beb93",
+      "width": 3000,
+      "height": 1700,
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed"
+    },
+    {
+      "path": "crt-screen-glass-and-phosphor-sheet.png",
+      "bytes": 3158471,
+      "sha256": "f08ce94db324b70b1bdc0b6fc65990be03799ec28d230e1597e660766529c25d",
+      "width": 3000,
+      "height": 2200,
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed"
+    },
+    {
+      "path": "crt-controls-speaker-rear-detail-sheet.png",
+      "bytes": 3441617,
+      "sha256": "0224be4cf40afcfbadd699445d4146594af236186ebda9881e38b03817451dec",
+      "width": 3000,
+      "height": 2200,
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed"
+    },
+    {
+      "path": "crt-cable-and-connection-sheet.png",
+      "bytes": 2593236,
+      "sha256": "7a5322ec0b88d73ec67ded6f64097320b3cc6aede20b03f10f65dafbd7262be4",
+      "width": 3000,
+      "height": 2200,
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed"
+    },
+    {
+      "path": "crt-proving-ground-style-frame.png",
+      "bytes": 2320530,
+      "sha256": "f06437722067b3bb1e55355c18ff9f7d5d4aada66666052d69daebb2e612aff5",
+      "width": 3200,
+      "height": 2200,
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed"
+    },
+    {
+      "path": "crt-camera-path-study.png",
+      "bytes": 1813944,
+      "sha256": "1ef0766083ffdde4e6062374580cf29767c2605a59a8a22ebfca760f09f84232",
+      "width": 3000,
+      "height": 2000,
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed"
+    },
+    {
+      "path": "crt-power-on-contact-sheet.png",
+      "bytes": 2357483,
+      "sha256": "b61535e954881a7dd9e263241e62cfd6e14adae8be3e4e634ce17ed4adbac583",
+      "width": 3600,
+      "height": 2000,
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed"
+    },
+    {
+      "path": "crt-portal-transition-sheet.png",
+      "bytes": 10703351,
+      "sha256": "ce7e80d633f66a48454593fbb3a459c994177f5c3b8a25480bb9b9c7e1c14515",
+      "width": 7954,
+      "height": 3018,
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed"
+    },
+    {
+      "path": "crt-physical-dom-alignment-sheet.png",
+      "bytes": 4447353,
+      "sha256": "e733948ae7d4b534eea5ef7becb858c776628376ce0954c24c168cc506bc7252",
+      "width": 5984,
+      "height": 3018,
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed"
+    },
+    {
+      "path": "crt-desktop-hero-composition.png",
+      "bytes": 1758336,
+      "sha256": "b8123eca4d6c9ce05adfb16e29177604acb48730a6d49b6c7cc7821e8d81cfc0",
+      "width": 6034,
+      "height": 1356,
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed"
+    },
+    {
+      "path": "crt-mobile-hero-composition.png",
+      "bytes": 859548,
+      "sha256": "6880496b2341e6dd3e29824a528a6411518c664e9b8853f9cf602936e44569d3",
+      "width": 3650,
+      "height": 1300,
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed"
+    },
+    {
+      "path": "crt-text-zoom-and-fallback.png",
+      "bytes": 1383021,
+      "sha256": "1db1a05290a81b9a929c241fd7983a468c097e7e51751b6e24ff809de8119ec9",
+      "width": 6034,
+      "height": 1356,
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed"
+    },
+    {
+      "path": "crt-reduced-motion-desktop.png",
+      "bytes": 877291,
+      "sha256": "7324db6378a9820c2ef930cff0eed3a5744030ed01aaadaaa29533ab75ab7b0f",
+      "width": 3054,
+      "height": 1356,
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed"
+    },
+    {
+      "path": "crt-reduced-motion-mobile.png",
+      "bytes": 412148,
+      "sha256": "79a1373ccea650441777c3ad598bf0bcf50f57c6d5f82f1bea27d610c8a89785",
+      "width": 954,
+      "height": 1300,
+      "classification": "intermediate human-review evidence raster",
+      "approval_state": "review-candidate; automated and bounded visual QA passed"
+    }
+  ],
+  "readme": {
+    "path": "README.md",
+    "bytes": 3308,
+    "sha256": "8d580e16e85990f5b019377557b2d3c01b06d73122b5adfd8002d45808d6ae51"
+  },
+  "archive": {
+    "path": "phase-0-4-crt-television-review.zip",
+    "bytes": 43303597,
+    "sha256": "8eeec33182ad476d5dd78d5635a5dcb2cdfbeb96c97092462bd1af6227f642c7",
+    "member_count": 17,
+    "members": [
+      "README.md",
+      "crt-television-proportion-options.png",
+      "crt-television-recommended-design-sheet.png",
+      "crt-cabinet-material-sheet.png",
+      "crt-screen-glass-and-phosphor-sheet.png",
+      "crt-controls-speaker-rear-detail-sheet.png",
+      "crt-cable-and-connection-sheet.png",
+      "crt-proving-ground-style-frame.png",
+      "crt-camera-path-study.png",
+      "crt-power-on-contact-sheet.png",
+      "crt-portal-transition-sheet.png",
+      "crt-physical-dom-alignment-sheet.png",
+      "crt-desktop-hero-composition.png",
+      "crt-mobile-hero-composition.png",
+      "crt-text-zoom-and-fallback.png",
+      "crt-reduced-motion-desktop.png",
+      "crt-reduced-motion-mobile.png"
+    ]
+  },
+  "generator": {
+    "package_relative_path": "source/package_crt_review_bundle.py",
+    "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/package_crt_review_bundle.py",
+    "bytes": 9857,
+    "sha256": "01c90d07d9d77de28f5ba8d88e162edda34ebe774f5a1bb996a731cd6303c4b4"
+  }
+}

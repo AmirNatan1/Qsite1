@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="description" content="Non-public Phase 0.4 CRT portal typography and collision QA." />
+    <title>Phase 0.4 · CRT portal QA</title>
+    <link rel="stylesheet" href="./styles.css?v=phase04-scaffold-v19" />
+    <script src="./app.js?v=phase04-scaffold-v19" type="module"></script>
+  </head>
+  <body
+    data-ready="false"
+    data-surface="hero"
+    data-fixture="actual"
+    data-text-zoom="100"
+    data-font-mode="normal"
+    data-reduced="false"
+    data-authority-mode="scaffold"
+  >
+    <a class="skip-link" href="#review-surface">Skip to review surface</a>
+
+    <aside class="qa-toolbar" aria-label="Non-production review controls">
+      <p><strong>Phase 0.4 CRT review</strong><span>Not a public route</span></p>
+      <label>
+        Surface
+        <select id="surface-control">
+          <option value="hero">Hero composition</option>
+          <option value="portal">Portal DOM takeover</option>
+        </select>
+      </label>
+      <label>
+        Copy
+        <select id="fixture-control">
+          <option value="actual">Actual copy</option>
+          <option value="long">Long-copy stress</option>
+        </select>
+      </label>
+      <label>
+        Text size
+        <select id="zoom-control">
+          <option value="100">100%</option>
+          <option value="200">200%</option>
+        </select>
+      </label>
+      <label>
+        Font
+        <select id="font-control">
+          <option value="normal">Preferred stack</option>
+          <option value="fallback">Forced fallback</option>
+        </select>
+      </label>
+      <label class="checkbox-label">
+        <input id="motion-control" type="checkbox" />
+        Reduced motion
+      </label>
+      <button id="focus-check" type="button">Check focus</button>
+      <output id="qa-status" role="status" aria-live="polite">Loading CRT portal authority…</output>
+    </aside>
+
+    <main id="review-surface" class="review-surface" tabindex="-1">
+      <div class="scene-crop" aria-hidden="true">
+        <img id="scene-image" class="scene-image" alt="" decoding="sync" />
+        <div class="diagnostic-backdrop"></div>
+        <div class="scene-grade"></div>
+      </div>
+
+      <p class="scaffold-notice" aria-hidden="true">SCENE FREEZE PENDING · TYPOGRAPHY PREFLIGHT ONLY</p>
+
+      <section id="hero-compositor" class="hero-compositor" aria-labelledby="hero-heading">
+        <header class="hero-nav layout-block" data-collision="hero-nav">
+          <span class="brand ui-copy">Quantum-Hub</span>
+          <span class="review-boundary ui-copy">Phase 0.4 CRT composition study</span>
+        </header>
+        <div class="hero-copy">
+          <p id="hero-eyebrow" class="eyebrow editorial-copy layout-block" data-collision="hero-eyebrow"></p>
+          <h1 id="hero-heading" class="hero-heading display-copy layout-block" data-collision="hero-heading"></h1>
+          <p id="hero-supporting" class="hero-supporting editorial-copy layout-block" data-collision="hero-supporting"></p>
+          <div class="audience-actions layout-block" data-collision="hero-audiences" aria-label="Audience paths">
+            <button id="hero-industry" class="ui-copy" type="button"></button>
+            <button id="hero-startups" class="ui-copy" type="button"></button>
+          </div>
+        </div>
+      </section>
+
+      <section id="portal-compositor" class="portal-compositor" aria-labelledby="portal-heading" hidden>
+        <div id="physical-screen-probe" class="physical-screen-probe" aria-hidden="true">
+          <span data-physical-anchor="route-carrier-origin"></span>
+          <span data-physical-anchor="status-to-signal-origin"></span>
+        </div>
+        <div id="portal-contract-layer" class="portal-contract-layer">
+          <header class="portal-nav layout-block contract-position" data-region="navigation" data-collision="portal-nav">
+            <span id="portal-brand" class="brand ui-copy"></span>
+            <span class="review-boundary ui-copy">semantic operating surface</span>
+          </header>
+          <p id="portal-signal" class="portal-signal ui-copy layout-block contract-position" data-region="signalLine" data-collision="portal-signal"></p>
+          <p id="portal-eyebrow" class="eyebrow portal-eyebrow editorial-copy layout-block contract-position" data-region="eyebrow" data-collision="portal-eyebrow"></p>
+          <h1 id="portal-heading" class="portal-heading display-copy layout-block contract-position" data-region="heading" data-collision="portal-heading"></h1>
+          <ol id="portal-route" class="portal-route ui-copy layout-block contract-position" data-region="route" data-collision="portal-route"></ol>
+          <div class="portal-audience layout-block contract-position" data-region="audience" data-collision="portal-audience" aria-label="Audience paths">
+            <button id="portal-industry" class="ui-copy" type="button"></button>
+            <span class="audience-divider" aria-hidden="true"></span>
+            <button id="portal-startups" class="ui-copy" type="button"></button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <pre id="phase04-report" hidden aria-hidden="true">{}</pre>
+  </body>
+</html>

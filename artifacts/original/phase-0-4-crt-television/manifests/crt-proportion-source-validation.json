@@ -1,0 +1,305 @@
+{
+  "schema": "quantum-hub.phase-0-4-crt-television.proportion-source-validation.v1",
+  "script_version": "phase-0.4-crt-proportion-gate-v1",
+  "status": "PASS",
+  "source": {
+    "package_relative_path": "source/quantum-signal-television-proportion-options.blend",
+    "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/quantum-signal-television-proportion-options.blend",
+    "bytes": 745661,
+    "sha256": "18bc895f5d94a30186c50e989e99d6a94bdcbd939909ef9a87026f1a1d3d5087",
+    "classification": "editable procedural CRT proportion-gate Blender source",
+    "approval_state": "awaiting creative gate",
+    "intendedCommit": true
+  },
+  "counts": {
+    "objects": 156,
+    "collections": 6,
+    "materials": 13,
+    "cameras": 6,
+    "external_libraries": 0,
+    "external_images": 0,
+    "packed_files": 0,
+    "external_file_paths": 0,
+    "missing_files": 0,
+    "image_texture_nodes": 0
+  },
+  "option_collections": [
+    "OPTION_A_ROUNDED_1990S_DOMESTIC_CRT",
+    "OPTION_B_HEAVY_LATE_1980S_BOX_CRT",
+    "OPTION_C_LARGE_PREMIUM_FLOOR_SET_CRT"
+  ],
+  "screen_measurements": [
+    {
+      "object": "CRT_A_Convex43SmokedGlass",
+      "width_m": 0.589999,
+      "height_m": 0.4425,
+      "ratio": 1.333332
+    },
+    {
+      "object": "CRT_B_Convex43SmokedGlass",
+      "width_m": 0.569,
+      "height_m": 0.42675,
+      "ratio": 1.333332
+    },
+    {
+      "object": "CRT_C_Convex43SmokedGlass",
+      "width_m": 0.649999,
+      "height_m": 0.4875,
+      "ratio": 1.333332
+    }
+  ],
+  "cabinet_measurements": [
+    {
+      "option": "A",
+      "object": "CRT_A_DeepTubeCabinetShell",
+      "measured_m": {
+        "width": 0.847727,
+        "height": 0.69,
+        "depth": 0.715
+      },
+      "working_dimensions_m": {
+        "width": 0.84,
+        "height": 0.69,
+        "depth": 0.76
+      }
+    },
+    {
+      "option": "B",
+      "object": "CRT_B_DeepTubeCabinetShell",
+      "measured_m": {
+        "width": 0.907983,
+        "height": 0.74,
+        "depth": 0.775
+      },
+      "working_dimensions_m": {
+        "width": 0.9,
+        "height": 0.74,
+        "depth": 0.82
+      }
+    },
+    {
+      "option": "C",
+      "object": "CRT_C_DeepTubeCabinetShell",
+      "measured_m": {
+        "width": 0.957878,
+        "height": 0.77,
+        "depth": 0.735
+      },
+      "working_dimensions_m": {
+        "width": 0.95,
+        "height": 0.77,
+        "depth": 0.78
+      }
+    }
+  ],
+  "checks": [
+    {
+      "name": "Blender version",
+      "pass": true,
+      "actual": "5.2.0 LTS",
+      "expected": "5.2.0 LTS"
+    },
+    {
+      "name": "editable source exists",
+      "pass": true,
+      "actual": "quantum-signal-television-proportion-options.blend",
+      "expected": "quantum-signal-television-proportion-options.blend"
+    },
+    {
+      "name": "three option collections",
+      "pass": true,
+      "actual": 3,
+      "expected": 3
+    },
+    {
+      "name": "three procedural cabinet shells",
+      "pass": true,
+      "actual": 3,
+      "expected": 3
+    },
+    {
+      "name": "three convex 4:3 screens",
+      "pass": true,
+      "actual": 3,
+      "expected": 3
+    },
+    {
+      "name": "screen ratios",
+      "pass": true,
+      "actual": [
+        {
+          "object": "CRT_A_Convex43SmokedGlass",
+          "width_m": 0.589999,
+          "height_m": 0.4425,
+          "ratio": 1.333332
+        },
+        {
+          "object": "CRT_B_Convex43SmokedGlass",
+          "width_m": 0.569,
+          "height_m": 0.42675,
+          "ratio": 1.333332
+        },
+        {
+          "object": "CRT_C_Convex43SmokedGlass",
+          "width_m": 0.649999,
+          "height_m": 0.4875,
+          "ratio": 1.333332
+        }
+      ],
+      "expected": "4:3 within 0.002"
+    },
+    {
+      "name": "working cabinet dimensions",
+      "pass": true,
+      "actual": [
+        {
+          "option": "A",
+          "object": "CRT_A_DeepTubeCabinetShell",
+          "measured_m": {
+            "width": 0.847727,
+            "height": 0.69,
+            "depth": 0.715
+          },
+          "working_dimensions_m": {
+            "width": 0.84,
+            "height": 0.69,
+            "depth": 0.76
+          }
+        },
+        {
+          "option": "B",
+          "object": "CRT_B_DeepTubeCabinetShell",
+          "measured_m": {
+            "width": 0.907983,
+            "height": 0.74,
+            "depth": 0.775
+          },
+          "working_dimensions_m": {
+            "width": 0.9,
+            "height": 0.74,
+            "depth": 0.82
+          }
+        },
+        {
+          "option": "C",
+          "object": "CRT_C_DeepTubeCabinetShell",
+          "measured_m": {
+            "width": 0.957878,
+            "height": 0.77,
+            "depth": 0.735
+          },
+          "working_dimensions_m": {
+            "width": 0.95,
+            "height": 0.77,
+            "depth": 0.78
+          }
+        }
+      ],
+      "expected": "within 0.02 m"
+    },
+    {
+      "name": "six review cameras",
+      "pass": true,
+      "actual": 6,
+      "expected": 6
+    },
+    {
+      "name": "three dormant cable objects",
+      "pass": true,
+      "actual": 3,
+      "expected": 3
+    },
+    {
+      "name": "three dormant power indicators",
+      "pass": true,
+      "actual": 3,
+      "expected": 3
+    },
+    {
+      "name": "indicator emission is zero",
+      "pass": true,
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "external libraries",
+      "pass": true,
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "name": "external images",
+      "pass": true,
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "name": "packed files",
+      "pass": true,
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "name": "external file paths",
+      "pass": true,
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "name": "missing files",
+      "pass": true,
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "name": "image texture nodes",
+      "pass": true,
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "name": "private reference never loaded",
+      "pass": true,
+      "actual": false,
+      "expected": false
+    },
+    {
+      "name": "modelled from scratch",
+      "pass": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "procedural materials only",
+      "pass": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "no third-party models",
+      "pass": true,
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "name": "high-detail refinement held",
+      "pass": true,
+      "actual": false,
+      "expected": false
+    },
+    {
+      "name": "no manufacturer branding",
+      "pass": true,
+      "actual": [],
+      "expected": []
+    }
+  ]
+}

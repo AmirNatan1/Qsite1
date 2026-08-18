@@ -1,0 +1,393 @@
+{
+  "schema": "quantum-hub.phase-0-4-crt-television.review-composition.v1",
+  "status": "CREATIVE_SHEETS_2_TO_9_COMPLETE_BROWSER_SHEETS_PENDING",
+  "composer": {
+    "package_relative_path": "source/compose_crt_canonical_review_sheets.py",
+    "bytes": 21747,
+    "sha256": "1e1757ffa003ec6e914146a9ed1fce0e5bf110d5ad04ad0dfb59403534ec7717"
+  },
+  "refined_source": {
+    "package_relative_path": "source/quantum-signal-television-v1.blend",
+    "bytes": 1049052,
+    "sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d"
+  },
+  "canonical_render_authority": {
+    "package_relative_path": "manifests/crt-canonical-render-manifest.json",
+    "bytes": 103931,
+    "sha256": "35022c438e3a64e1a6d86b8e7232533c161f1f7cbe47f7499573999e7ca77ff9"
+  },
+  "power_state_authority": {
+    "package_relative_path": "manifests/crt-power-on-state-authority.json",
+    "bytes": 13176,
+    "sha256": "735a891cc1d5b14a67f2f920302de541230a1a7e3e12437553444c4eae1ac8ce"
+  },
+  "layout_authority": {
+    "package_relative_path": "crt-portal-layout.json",
+    "bytes": 16248,
+    "sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+  },
+  "review_indices_complete": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "review_indices_pending_browser": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16
+  ],
+  "sheet_count": 8,
+  "sheets": [
+    {
+      "package_relative_path": "crt-television-recommended-design-sheet.png",
+      "width": 3000,
+      "height": 2000,
+      "bytes": 1542628,
+      "sha256": "fee6271b2b5453a6228830e57e5481c67922d3fd2610aa88e79756224c656e4c",
+      "review_index": 2,
+      "classification": "Phase 0.4 CRT still-based creative review evidence",
+      "approval_state": "awaiting direct human Phase 0.4 review",
+      "intendedCommit": true,
+      "source_renders": [
+        {
+          "package_relative_path": "renders/refined/design/design-front.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1196671,
+          "sha256": "85a88c7e0ad8c41713f91644279e4c2fe2057a9d75cdbce2d7376ef474194d28"
+        },
+        {
+          "package_relative_path": "renders/refined/design/design-side.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1048067,
+          "sha256": "4421b2151f42561fb107d0f171fea2e1e1ebdcc1207325b1c949571c632a9ab2"
+        },
+        {
+          "package_relative_path": "renders/refined/design/design-rear.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1193957,
+          "sha256": "eba6675b3f1030d733a0f6b583d813357f3c117a97b2fa7d2c064b425f5e7a36"
+        },
+        {
+          "package_relative_path": "renders/refined/design/design-three-quarter-front.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1405350,
+          "sha256": "878589bb95764394ea609bb09db19f9c8df90937b7f2aa79a466a7f952ea0155"
+        },
+        {
+          "package_relative_path": "renders/refined/design/design-three-quarter-rear.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1150391,
+          "sha256": "91a263f2251267b034c2a1214dba06c80d22efd7d016a5d06095ad099651bc99"
+        }
+      ]
+    },
+    {
+      "package_relative_path": "crt-cabinet-material-sheet.png",
+      "width": 3000,
+      "height": 1700,
+      "bytes": 1105801,
+      "sha256": "f7b81ddf7a0b031f1b3d84c0aff76bbb34bf20fd16106a21c6a149cf0e4beb93",
+      "review_index": 3,
+      "classification": "Phase 0.4 CRT still-based creative review evidence",
+      "approval_state": "awaiting direct human Phase 0.4 review",
+      "intendedCommit": true,
+      "source_renders": [
+        {
+          "package_relative_path": "renders/refined/materials/cabinet-three-quarter.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1517037,
+          "sha256": "976b18eeda26cb7b00e95e6e27dff7adb918ffcaca965ff5d09e5d63a43229e2"
+        },
+        {
+          "package_relative_path": "renders/refined/materials/cabinet-front-material.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1405350,
+          "sha256": "878589bb95764394ea609bb09db19f9c8df90937b7f2aa79a466a7f952ea0155"
+        },
+        {
+          "package_relative_path": "renders/refined/materials/cabinet-rear-material.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1150391,
+          "sha256": "91a263f2251267b034c2a1214dba06c80d22efd7d016a5d06095ad099651bc99"
+        }
+      ]
+    },
+    {
+      "package_relative_path": "crt-screen-glass-and-phosphor-sheet.png",
+      "width": 3000,
+      "height": 2200,
+      "bytes": 3158471,
+      "sha256": "f08ce94db324b70b1bdc0b6fc65990be03799ec28d230e1597e660766529c25d",
+      "review_index": 4,
+      "classification": "Phase 0.4 CRT still-based creative review evidence",
+      "approval_state": "awaiting direct human Phase 0.4 review",
+      "intendedCommit": true,
+      "source_renders": [
+        {
+          "package_relative_path": "renders/refined/materials/glass-dormant-front.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1834979,
+          "sha256": "6b9a2e478de1cf8ef238751d9293d813b14624313a9653d6106f92629b2c4cdc"
+        },
+        {
+          "package_relative_path": "renders/refined/materials/glass-grazing-proof.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1813306,
+          "sha256": "7331c1ee2f2799ba0027fb61fdc4f87543d39d09654bbe4ed4aa0a3f15ea5c25"
+        },
+        {
+          "package_relative_path": "renders/refined/materials/glass-electrical-wake.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1614389,
+          "sha256": "0f0f56b006de26ff64fa6455c1bb9e1567980cb18d89c5a118a7565ef3da37a0"
+        },
+        {
+          "package_relative_path": "renders/refined/materials/glass-raster-warm.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1646983,
+          "sha256": "3e39afcad7470dc6dfc78129ccaeb5696e60a47ccbfcbfa6e8b66fe6ff4166cd"
+        }
+      ]
+    },
+    {
+      "package_relative_path": "crt-controls-speaker-rear-detail-sheet.png",
+      "width": 3000,
+      "height": 2200,
+      "bytes": 3441617,
+      "sha256": "0224be4cf40afcfbadd699445d4146594af236186ebda9881e38b03817451dec",
+      "review_index": 5,
+      "classification": "Phase 0.4 CRT still-based creative review evidence",
+      "approval_state": "awaiting direct human Phase 0.4 review",
+      "intendedCommit": true,
+      "source_renders": [
+        {
+          "package_relative_path": "renders/refined/details/detail-controls.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1636010,
+          "sha256": "e4c1b954ed24eaf5fb1b3bc87b1dd73b8214cb09283b803d96087f44c6e43108"
+        },
+        {
+          "package_relative_path": "renders/refined/details/detail-speaker.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1585245,
+          "sha256": "010bb3d335e8e151317d75a37793fc6afaa276dd165419d352a40e3677f504e1"
+        },
+        {
+          "package_relative_path": "renders/refined/details/detail-rear.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1372574,
+          "sha256": "46fe40bf92efb4403e0e7fbf9c734079a501f693e7bf21a962270b303e018020"
+        },
+        {
+          "package_relative_path": "renders/refined/details/detail-connector.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1360972,
+          "sha256": "bab7b30204be1bfdbb0cc9695e6c14531e61676cca4517798794fa5ecd4b6147"
+        }
+      ]
+    },
+    {
+      "package_relative_path": "crt-cable-and-connection-sheet.png",
+      "width": 3000,
+      "height": 2200,
+      "bytes": 2593236,
+      "sha256": "7a5322ec0b88d73ec67ded6f64097320b3cc6aede20b03f10f65dafbd7262be4",
+      "review_index": 6,
+      "classification": "Phase 0.4 CRT still-based creative review evidence",
+      "approval_state": "awaiting direct human Phase 0.4 review",
+      "intendedCommit": true,
+      "source_renders": [
+        {
+          "package_relative_path": "renders/refined/cable/cable-dormant.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1309489,
+          "sha256": "369259a69886c59e25024876b4d3e3bdc0028a057105d5d9223475596a986c3c"
+        },
+        {
+          "package_relative_path": "renders/refined/cable/cable-conduction-boundary.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1314957,
+          "sha256": "83cf5293d77bb07eeee90a650382b0588ca18967188e8e4577c8e42fedb6207f"
+        },
+        {
+          "package_relative_path": "renders/refined/cable/cable-rear-arrival.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1190792,
+          "sha256": "fad7166fcceab7042cacecce0544ecec7d57b3361b850925d89c32619212c769"
+        },
+        {
+          "package_relative_path": "renders/refined/cable/cable-connected-powered.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1390236,
+          "sha256": "570e88504bfd7785137e9c1f752e8b0516e7a3f01478707a5a19b5747e753674"
+        }
+      ]
+    },
+    {
+      "package_relative_path": "crt-proving-ground-style-frame.png",
+      "width": 3200,
+      "height": 2200,
+      "bytes": 2320530,
+      "sha256": "f06437722067b3bb1e55355c18ff9f7d5d4aada66666052d69daebb2e612aff5",
+      "review_index": 7,
+      "classification": "Phase 0.4 CRT still-based creative review evidence",
+      "approval_state": "awaiting direct human Phase 0.4 review",
+      "intendedCommit": true,
+      "source_renders": [
+        {
+          "package_relative_path": "renders/refined/environment/proving-ground-master.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1266764,
+          "sha256": "0381200448c99d592a7d616a664badbeefa3a364f3e0f3a01801df77842bb928"
+        }
+      ]
+    },
+    {
+      "package_relative_path": "crt-camera-path-study.png",
+      "width": 3000,
+      "height": 2000,
+      "bytes": 1813944,
+      "sha256": "1ef0766083ffdde4e6062374580cf29767c2605a59a8a22ebfca760f09f84232",
+      "review_index": 8,
+      "classification": "Phase 0.4 CRT still-based creative review evidence",
+      "approval_state": "awaiting direct human Phase 0.4 review",
+      "intendedCommit": true,
+      "source_renders": [
+        {
+          "package_relative_path": "renders/refined/camera-study/camera-01-arrival.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1266764,
+          "sha256": "0381200448c99d592a7d616a664badbeefa3a364f3e0f3a01801df77842bb928"
+        },
+        {
+          "package_relative_path": "renders/refined/camera-study/camera-02-thirty-percent.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1314515,
+          "sha256": "6b8023d4993e1a5552342fbfc49060283c8663af06e92e899e347844f042cbea"
+        },
+        {
+          "package_relative_path": "renders/refined/camera-study/camera-03-sixty-percent.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1355982,
+          "sha256": "28d0c912572b527ea4e31507705ce5c66b52cd97e50aad4d7bd9525bff8f8373"
+        },
+        {
+          "package_relative_path": "renders/refined/camera-study/camera-04-near-frontal.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1412905,
+          "sha256": "9e4cec560b5bfaa372b56c98b868394a4299177499cf230e005cc18ba7320ce2"
+        },
+        {
+          "package_relative_path": "renders/refined/camera-study/camera-05-portal-ready.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1729636,
+          "sha256": "5706bebba038922ca12b268510e57d3f539e7b36c8e8a26cf66b63a89ad99297"
+        }
+      ]
+    },
+    {
+      "package_relative_path": "crt-power-on-contact-sheet.png",
+      "width": 3600,
+      "height": 2000,
+      "bytes": 2357483,
+      "sha256": "b61535e954881a7dd9e263241e62cfd6e14adae8be3e4e634ce17ed4adbac583",
+      "review_index": 9,
+      "classification": "Phase 0.4 CRT still-based creative review evidence",
+      "approval_state": "awaiting direct human Phase 0.4 review",
+      "intendedCommit": true,
+      "source_renders": [
+        {
+          "package_relative_path": "renders/refined/power-on/power-01-completely-dormant.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1266764,
+          "sha256": "0381200448c99d592a7d616a664badbeefa3a364f3e0f3a01801df77842bb928"
+        },
+        {
+          "package_relative_path": "renders/refined/power-on/power-02-current-reaches-connection.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1190792,
+          "sha256": "fad7166fcceab7042cacecce0544ecec7d57b3361b850925d89c32619212c769"
+        },
+        {
+          "package_relative_path": "renders/refined/power-on/power-03-power-indicator-response.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1534833,
+          "sha256": "6767e545a05480e25d1ab3dba44e1790e82774147e123ef2757174f40cded562"
+        },
+        {
+          "package_relative_path": "renders/refined/power-on/power-04-crt-electrical-wake.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1456445,
+          "sha256": "acff665096c436b523a2c62c28eaa57545bbf38a1851eb1b6043f3f325a52468"
+        },
+        {
+          "package_relative_path": "renders/refined/power-on/power-05-raster-phosphor-appears.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1646983,
+          "sha256": "3e39afcad7470dc6dfc78129ccaeb5696e60a47ccbfcbfa6e8b66fe6ff4166cd"
+        },
+        {
+          "package_relative_path": "renders/refined/power-on/power-06-quantum-interface-stabilizes.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1688049,
+          "sha256": "30942c1b54ffbff9bd485db96e4f37227f35d7313a73e9f1365a69c24d9ca351"
+        },
+        {
+          "package_relative_path": "renders/refined/power-on/power-07-portal-ready.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1729636,
+          "sha256": "5706bebba038922ca12b268510e57d3f539e7b36c8e8a26cf66b63a89ad99297"
+        }
+      ]
+    }
+  ],
+  "creative_boundary": {
+    "private_reference_included": false,
+    "third_party_models": 0,
+    "external_textures": 0,
+    "full_animatic_created": false,
+    "production_media_created": false
+  }
+}

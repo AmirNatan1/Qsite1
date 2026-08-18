@@ -1,0 +1,529 @@
+{
+  "schema": "quantum-hub.phase-0-4-crt-television.crt-portal-layout.v1",
+  "status": "authoritative scaffold; browser capture blocked pending frozen CRT scene authorities",
+  "scope": "Phase 0.4 non-production Quantum Signal Television physical 4:3 screen, camera entry, semantic DOM takeover and responsive alignment",
+  "historicalBoundary": {
+    "acceptedPortalAuthority": {
+      "path": "artifacts/original/phase-0-3d-repair-v2/portal-layout.json",
+      "sha256": "25666cf071afe7564dc051cbec770ead325cdf19ef1f4926e43d793a2a053bc5",
+      "policy": "preserve byte-for-byte as the accepted Aperture Station-era portal history; this Phase 0.4 file is additive"
+    },
+    "apertureStationStatus": "superseded by direct human creative decision",
+    "reusePolicy": "Do not reuse the Aperture Station model or place a CRT surface inside it. The television is a new object modelled from scratch."
+  },
+  "privateReference": {
+    "reference": "user-supplied CRT television photograph",
+    "purpose": "proportion and era reference",
+    "repositoryStatus": "intentionally uncommitted",
+    "publicUse": false,
+    "textureUse": false,
+    "externalBlenderDependencyAllowed": false
+  },
+  "coordinateSystems": {
+    "physicalCameraFrame": {
+      "origin": "top-left",
+      "xDirection": "right",
+      "yDirection": "down",
+      "unit": "reference pixel",
+      "width": 1920,
+      "height": 1200,
+      "aspectRatio": "16:10",
+      "purpose": "near-frontal portal-ready render reference before the cabinet exits frame"
+    },
+    "physicalScreenLocal": {
+      "origin": "top-left on the unwarped active 4:3 design surface",
+      "xDirection": "right",
+      "yDirection": "down",
+      "unit": "reference pixel",
+      "width": 1600,
+      "height": 1200,
+      "aspectRatio": "4:3",
+      "purpose": "single source for physical raster content before curvature, overscan and glass projection"
+    },
+    "semanticDomReference": {
+      "origin": "top-left",
+      "xDirection": "right",
+      "yDirection": "down",
+      "unit": "reference pixel",
+      "width": 1920,
+      "height": 1200,
+      "aspectRatio": "16:10",
+      "projection": {
+        "strategy": "responsive DOM flow; exact anchors apply only to the 1920 by 1200 reference frame",
+        "rounding": "retain sub-pixel values; round only evidence rasters"
+      }
+    }
+  },
+  "physicalScreen": {
+    "screenGlassBoundsInCameraFrame": {
+      "x": 240,
+      "y": 60,
+      "width": 1440,
+      "height": 1080,
+      "aspectRatio": "4:3"
+    },
+    "activeRasterBoundsInCameraFrame": {
+      "x": 288,
+      "y": 96,
+      "width": 1344,
+      "height": 1008,
+      "aspectRatio": "4:3",
+      "overscanInset": {
+        "horizontalPx": 48,
+        "verticalPx": 36
+      }
+    },
+    "offState": {
+      "powered": false,
+      "emission": false,
+      "environmentalMagenta": false,
+      "screenTreatment": "dark smoked convex glass with restrained neutral field reflection"
+    },
+    "effectsOwnership": {
+      "physicalOnly": [
+        "barrel distortion",
+        "scanlines",
+        "phosphor softness",
+        "restrained bloom",
+        "glass reflections",
+        "slight overscan"
+      ],
+      "semanticDom": "none of the physical CRT distortion effects may be applied to live semantic text"
+    }
+  },
+  "copyOwnership": {
+    "physicalScreen": {
+      "brand": "QUANTUM HUB",
+      "route": [
+        "FRAME",
+        "SOURCE",
+        "ASSESS",
+        "TEST",
+        "DECIDE"
+      ],
+      "approvedStatus": "TEST ROUTE AVAILABLE",
+      "approvedStatusCount": 1,
+      "headingProhibited": "WHERE DO YOU ENTER?",
+      "policy": "The physical television presents only the brand, route carrier and one approved status phrase. It does not present the full semantic portal composition."
+    },
+    "semanticDom": {
+      "brand": "Quantum-Hub",
+      "signalLine": "test route available",
+      "eyebrow": "industrial innovation · herzliya",
+      "heading": "WHERE DO YOU ENTER?",
+      "headingLinesReference": [
+        "WHERE DO YOU ENTER?"
+      ],
+      "headingLinesCompact": [
+        "WHERE DO YOU",
+        "ENTER?"
+      ],
+      "route": [
+        "Frame",
+        "Source",
+        "Assess",
+        "Test",
+        "Decide"
+      ],
+      "audiences": [
+        "For industry",
+        "For startups"
+      ]
+    },
+    "handoffRule": "A text-bearing physical raster must never sit behind identical live DOM copy. Physical text is fully absent before the corresponding semantic DOM layer owns the frame."
+  },
+  "physicalScreenLayout": {
+    "safeMargins": {
+      "left": 112,
+      "right": 112,
+      "top": 96,
+      "bottom": 96
+    },
+    "brandBaseline": {
+      "x": 112,
+      "y": 286
+    },
+    "brandBounds": {
+      "x": 112,
+      "y": 190,
+      "width": 1050,
+      "height": 112
+    },
+    "routeBaseline": {
+      "x": 112,
+      "y": 634
+    },
+    "routeRegion": {
+      "x": 112,
+      "y": 566,
+      "width": 1376,
+      "height": 112,
+      "itemStarts": [
+        112,
+        376,
+        650,
+        936,
+        1164
+      ]
+    },
+    "statusBaseline": {
+      "x": 112,
+      "y": 908
+    },
+    "statusBounds": {
+      "x": 112,
+      "y": 842,
+      "width": 760,
+      "height": 86
+    }
+  },
+  "semanticDomLayout": {
+    "safeMargins": {
+      "left": 120,
+      "right": 120,
+      "top": 72,
+      "bottom": 72,
+      "minimumCompactCssPx": 32,
+      "minimumMobileCssPx": 20
+    },
+    "anchors": {
+      "navigationBaseline": {
+        "x": 120,
+        "y": 112
+      },
+      "signalLineBaseline": {
+        "x": 120,
+        "y": 234
+      },
+      "eyebrowBaseline": {
+        "x": 120,
+        "y": 302
+      },
+      "headingTopLeft": {
+        "x": 120,
+        "y": 338
+      },
+      "headingLine1Baseline": {
+        "x": 120,
+        "y": 420
+      },
+      "routeBaseline": {
+        "x": 120,
+        "y": 558
+      },
+      "audienceRegionTopLeft": {
+        "x": 120,
+        "y": 660
+      },
+      "audienceDividerTop": {
+        "x": 690,
+        "y": 690
+      },
+      "audienceDividerBottom": {
+        "x": 690,
+        "y": 804
+      },
+      "audienceIndustryBaseline": {
+        "x": 120,
+        "y": 760
+      },
+      "audienceStartupsBaseline": {
+        "x": 810,
+        "y": 760
+      }
+    },
+    "regions": {
+      "navigation": {
+        "x": 120,
+        "y": 72,
+        "width": 1680,
+        "height": 72
+      },
+      "signalLine": {
+        "x": 120,
+        "y": 208,
+        "width": 420,
+        "height": 34
+      },
+      "eyebrow": {
+        "x": 120,
+        "y": 278,
+        "width": 720,
+        "height": 32
+      },
+      "heading": {
+        "x": 120,
+        "y": 338,
+        "width": 1220,
+        "height": 104,
+        "lineCount": 1
+      },
+      "route": {
+        "x": 120,
+        "y": 522,
+        "width": 980,
+        "height": 54,
+        "itemStarts": [
+          120,
+          300,
+          480,
+          660,
+          840
+        ]
+      },
+      "audience": {
+        "x": 120,
+        "y": 660,
+        "width": 1110,
+        "height": 164,
+        "dividerX": 690,
+        "dividerY1": 690,
+        "dividerY2": 804
+      },
+      "navigationRevealZone": {
+        "x": 1490,
+        "y": 72,
+        "width": 310,
+        "height": 72
+      }
+    }
+  },
+  "portalAlignment": {
+    "maximumAnchorDeltaPx": 3,
+    "glyphRuleClearancePx": 12,
+    "sharedAnchorMappings": [
+      {
+        "id": "route-carrier-origin",
+        "physical": {
+          "coordinateSystem": "physicalScreenLocal",
+          "x": 112,
+          "y": 634
+        },
+        "semantic": {
+          "coordinateSystem": "semanticDomReference",
+          "x": 120,
+          "y": 558
+        },
+        "measurement": "compare after applying the authored camera-crop and takeover projection"
+      },
+      {
+        "id": "status-to-signal-origin",
+        "physical": {
+          "coordinateSystem": "physicalScreenLocal",
+          "x": 112,
+          "y": 908
+        },
+        "semantic": {
+          "coordinateSystem": "semanticDomReference",
+          "x": 120,
+          "y": 234
+        },
+        "measurement": "compare after applying the authored camera-crop and takeover projection"
+      }
+    ],
+    "finalCameraCrop": {
+      "source": "physicalScreen.screenGlassBoundsInCameraFrame",
+      "strategy": "continuous camera-authored cover from convex 4:3 glass to the actual browser viewport",
+      "noPermanentLetterbox": true,
+      "noAbruptAspectSnap": true,
+      "noAdditionalGesture": true
+    },
+    "humanReview": "Anchor checks are necessary but do not replace direct visual review of the physical 4:3 surface, cabinet exit, aspect expansion and first semantic DOM frame."
+  },
+  "aspectTransition": {
+    "progressUnit": "normalized portal-entry progress",
+    "checkpoints": [
+      {
+        "progress": 0,
+        "owner": "physical-crt",
+        "cabinetVisibility": 1,
+        "physicalRasterOpacity": 1,
+        "semanticDomOpacity": 0,
+        "curvatureStrength": 1,
+        "scanlineStrength": 1,
+        "geometry": "convex 4:3 surface inside cabinet"
+      },
+      {
+        "progress": 0.3,
+        "owner": "physical-crt",
+        "cabinetVisibility": 0.72,
+        "physicalRasterOpacity": 1,
+        "semanticDomOpacity": 0,
+        "curvatureStrength": 0.8,
+        "scanlineStrength": 0.86,
+        "geometry": "4:3 glass grows continuously; bezel approaches viewport edges"
+      },
+      {
+        "progress": 0.56,
+        "owner": "physical-crt-transition",
+        "cabinetVisibility": 0.24,
+        "physicalRasterOpacity": 0.68,
+        "semanticDomOpacity": 0,
+        "curvatureStrength": 0.42,
+        "scanlineStrength": 0.48,
+        "geometry": "bezel exits; crop expands without a letterbox or aspect snap"
+      },
+      {
+        "progress": 0.74,
+        "owner": "dom-takeover",
+        "cabinetVisibility": 0,
+        "physicalRasterOpacity": 0,
+        "semanticDomOpacity": 0.72,
+        "curvatureStrength": 0,
+        "scanlineStrength": 0,
+        "geometry": "text-free transition surface yields to crisp semantic DOM"
+      },
+      {
+        "progress": 1,
+        "owner": "semantic-dom",
+        "cabinetVisibility": 0,
+        "physicalRasterOpacity": 0,
+        "semanticDomOpacity": 1,
+        "curvatureStrength": 0,
+        "scanlineStrength": 0,
+        "geometry": "native DOM owns the actual viewport aspect ratio"
+      }
+    ],
+    "reverseRule": "Every displayed value is a direct function of document progress; reverse scrolling traverses the same checkpoints in reverse with no queue or delay."
+  },
+  "wholeWordContract": {
+    "css": {
+      "wordBreak": "normal",
+      "overflowWrap": "normal",
+      "hyphens": "none"
+    },
+    "protectedWords": [
+      "WHERE",
+      "DO",
+      "YOU",
+      "ENTER",
+      "PROVE",
+      "WORK"
+    ],
+    "fragmentationOffendersRequired": 0,
+    "humanLineBreakReportRequired": true,
+    "fixedHeightTextClippingAllowed": false
+  },
+  "typography": {
+    "display": {
+      "preferred": "Syne",
+      "fallback": "Arial Black, Arial, sans-serif",
+      "referenceSizePx": 86,
+      "referenceLineHeightPx": 96,
+      "weight": 800,
+      "letterSpacingEm": -0.035
+    },
+    "editorial": {
+      "preferred": "Newsreader",
+      "fallback": "Georgia, Times New Roman, serif",
+      "referenceSizePx": 28,
+      "referenceLineHeightPx": 38,
+      "weight": 400
+    },
+    "ui": {
+      "preferred": "Inter",
+      "fallback": "Arial, Helvetica, sans-serif",
+      "referenceSizePx": 20,
+      "referenceLineHeightPx": 28,
+      "weight": 600
+    },
+    "fontAssetPolicy": "No font binary or remote font dependency is introduced. Capture must exercise documented metric-conscious system fallbacks."
+  },
+  "keepoutContract": {
+    "status": "pending frozen creative scene projection",
+    "expectedAuthority": {
+      "path": "artifacts/original/phase-0-4-crt-television/manifests/crt-scene-source-keepouts.json",
+      "schema": "quantum-hub.phase-0-4-crt-television.scene-source-keepouts.v1",
+      "hashPolicy": "Record exact bytes and SHA-256 only after the selected CRT scene sources are frozen."
+    },
+    "requiredGeometry": [
+      {
+        "id": "crt-cabinet",
+        "semanticName": "Quantum Signal Television cabinet",
+        "representation": "evaluated-geometry projected convex hull plus padded bounds"
+      },
+      {
+        "id": "crt-screen",
+        "semanticName": "convex 4:3 CRT screen",
+        "representation": "evaluated-geometry projected convex hull plus active-raster bounds"
+      },
+      {
+        "id": "spiral-cable",
+        "semanticName": "visible physical spiral cable",
+        "representation": "evaluated cable centerline segment rectangles; do not replace with one broad union box"
+      }
+    ],
+    "sourceRoles": [
+      "desktop dormant scene",
+      "authored mobile dormant scene",
+      "reduced-motion desktop dormant scene",
+      "reduced-motion authored mobile dormant scene",
+      "physical portal close frame",
+      "text-free portal takeover frame"
+    ],
+    "minimumSemanticClearanceCssPx": 16,
+    "collisionPolicy": "Visible semantic copy and controls must not intersect cabinet, CRT-screen or cable keepouts. Stress states must reflow or displace decorative scene geometry rather than shrink, fragment or clip text."
+  },
+  "responsiveModes": {
+    "wideAndLandscape": {
+      "minimumWidthPx": 900,
+      "portalHeadingLines": [
+        "WHERE DO YOU ENTER?"
+      ],
+      "audienceLayout": "two-column where both 44px-minimum paths remain readable",
+      "sceneComposition": "semantic copy in a quiet region with CRT cabinet, screen and cable visibly separated"
+    },
+    "portraitTablet": {
+      "minimumWidthPx": 600,
+      "maximumWidthPx": 899,
+      "portalHeadingLines": [
+        "WHERE DO YOU",
+        "ENTER?"
+      ],
+      "audienceLayout": "responsive two-column or stacked native document flow",
+      "sceneComposition": "independently composed portrait relationship; copy above visible CRT and spiral"
+    },
+    "mobile": {
+      "maximumWidthPx": 599,
+      "portalHeadingLines": [
+        "WHERE DO YOU",
+        "ENTER?"
+      ],
+      "audienceLayout": "stacked or compact two-column native flow with no nested horizontal scroller",
+      "sceneComposition": "authored mobile source; copy in upper quiet region; recognizable CRT and approximately 2.25-turn spiral remain visible",
+      "portalTiming": "earlier than desktop with a shorter camera path"
+    }
+  },
+  "reducedMotion": {
+    "loadsCinematicVideoOrFrames": false,
+    "televisionPowered": false,
+    "cableDormant": true,
+    "screenGlow": false,
+    "scanlineAnimation": false,
+    "cameraMovement": false,
+    "semanticHeroAvailableImmediately": true,
+    "composition": "directional scrim and quiet field; no large floating rounded glass panel",
+    "sceneRequirement": "The dormant recognizable television and physical spiral cable remain meaningfully visible without intersecting semantic copy or controls."
+  },
+  "accessibility": {
+    "minimumInteractiveTargetCssPx": {
+      "width": 44,
+      "height": 44
+    },
+    "visibleKeyboardFocusRequired": true,
+    "focusOutlineMinimumCssPx": 2,
+    "semanticOwnership": "All essential meaning and actions are semantic DOM by takeover; physical-screen text has a semantic equivalent."
+  },
+  "captureGate": {
+    "status": "blocked",
+    "reason": "Final browser captures require frozen CRT desktop, authored-mobile, reduced-motion, portal-close and text-free takeover source paths, dimensions, byte counts and SHA-256 values plus a frozen evaluated-geometry keepout authority.",
+    "captureBeforeFreezeAllowed": false,
+    "matrixAuthorityExpected": "artifacts/evidence/phase-0-4-crt-television/browser-matrix-report.json"
+  },
+  "consumers": {
+    "physicalScreen": "Phase 0.4 Blender CRT raster and portal-ready render construction",
+    "semanticDom": "Phase 0.4 non-public portal typography QA harness",
+    "alignmentEvidence": "Phase 0.4 physical-screen, takeover and first-DOM comparison",
+    "requirement": "Consumers must read this file directly or bind a generated representation whose manifest records this file's exact SHA-256. Hand-copied coordinate forks are not authoritative."
+  }
+}

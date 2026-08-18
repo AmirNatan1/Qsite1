@@ -8,9 +8,11 @@ const allowedRoots = [
   join(repositoryRoot, "prototypes", "phase-0-spiral-field"),
   join(repositoryRoot, "prototypes", "phase-0-3d-media-spike"),
   join(repositoryRoot, "prototypes", "phase-0-portal-layout-qa"),
+  join(repositoryRoot, "prototypes", "phase-0-4-crt-portal-qa"),
   join(repositoryRoot, "artifacts", "original", "phase-0"),
   join(repositoryRoot, "artifacts", "original", "phase-0-3d-repair-v2"),
   join(repositoryRoot, "artifacts", "original", "phase-0-3d-repair-v3"),
+  join(repositoryRoot, "artifacts", "original", "phase-0-4-crt-television"),
   join(repositoryRoot, "artifacts", "original", "phase-0-3d-repair", "media"),
   join(repositoryRoot, "artifacts", "original", "phase-0-3d-repair", "review"),
 ].map((root) => resolve(root));
@@ -41,7 +43,10 @@ const commonHeaders = {
 };
 
 function headersForPath(pathname) {
-  if (!pathname.startsWith("/prototypes/phase-0-portal-layout-qa/")) return commonHeaders;
+  if (
+    !pathname.startsWith("/prototypes/phase-0-portal-layout-qa/") &&
+    !pathname.startsWith("/prototypes/phase-0-4-crt-portal-qa/")
+  ) return commonHeaders;
   return {
     ...commonHeaders,
     "content-security-policy":
@@ -160,4 +165,5 @@ createServer((request, response) => {
   console.log(`Spiral Conduction prototype: http://127.0.0.1:${port}${prototypeUrl}`);
   console.log(`3D media seek spike: http://127.0.0.1:${port}/prototypes/phase-0-3d-media-spike/`);
   console.log(`Portal typography QA: http://127.0.0.1:${port}/prototypes/phase-0-portal-layout-qa/`);
+  console.log(`CRT portal typography QA: http://127.0.0.1:${port}/prototypes/phase-0-4-crt-portal-qa/`);
 });
