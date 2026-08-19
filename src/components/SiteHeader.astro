@@ -1,0 +1,102 @@
+---
+interface Props {
+  currentPath: string;
+}
+
+const { currentPath } = Astro.props;
+
+const navigation = [
+  { href: "/", label: "Home" },
+  { href: "/for-partners/", label: "For industry" },
+  { href: "/for-startups/", label: "For startups" },
+  { href: "/industries/", label: "Industries" },
+  { href: "/pocs/", label: "Proof" },
+  { href: "/spark/", label: "SPARK" },
+  { href: "/about/", label: "About" },
+  { href: "/contact/", label: "Contact" },
+] as const;
+
+const normalizePath = (value: string) => {
+  if (value === "/") return value;
+  return value.endsWith("/") ? value : `${value}/`;
+};
+
+const activePath = normalizePath(currentPath);
+const isCurrent = (href: string) => {
+  if (href === "/") return activePath === "/";
+  if (href === "/pocs/") return activePath.startsWith("/pocs/");
+  return activePath === href;
+};
+---
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand-link" href="/" aria-label="Quantum home">
+      <img
+        src="/brand/quantum-full-logo-white.svg"
+        width="222"
+        height="72"
+        alt="Quantum"
+      />
+    </a>
+
+    <nav class="desktop-nav" aria-label="Primary navigation">
+      <ul>
+        {navigation.map((item) => (
+          <li>
+            <a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined}>
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <details class="mobile-nav" data-mobile-nav>
+      <summary>
+        <span>Menu</span>
+      </summary>
+      <nav aria-label="Mobile navigation">
+        <ul>
+          {navigation.map((item) => (
+            <li>
+              <a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </details>
+  </div>
+</header>
+
+<script is:inline>
+  (() => {
+    const menus = document.querySelectorAll("[data-mobile-nav]");
+    menus.forEach((menu) => {
+      const trigger = menu.querySelector("summary");
+      const syncState = () => {
+        const isOpen = menu.hasAttribute("open");
+        trigger?.setAttribute("aria-expanded", String(isOpen));
+      };
+
+      menu.addEventListener("toggle", syncState);
+      menu.addEventListener("click", (event) => {
+        if (event.target instanceof HTMLAnchorElement) menu.removeAttribute("open");
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && menu.hasAttribute("open")) {
+          menu.removeAttribute("open");
+          trigger?.focus();
+        }
+      });
+      document.addEventListener("pointerdown", (event) => {
+        if (menu.hasAttribute("open") && !menu.contains(event.target)) {
+          menu.removeAttribute("open");
+        }
+      });
+      syncState();
+    });
+  })();
+</script>

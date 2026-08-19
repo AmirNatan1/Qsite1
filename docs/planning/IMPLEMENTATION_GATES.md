@@ -1,16 +1,23 @@
 # Implementation Gates
 
 Status: binding delivery and human-review contract
-Current authorization: Phase 0 only
-Current branch: `planning/phase-0-reconciliation`
-Production branch: `main` (must not change during Phase 0)
-Current evidence state: Phase 0.2 package remains frozen; authoritative Phase 0.3 matrix, exact 13-PNG review bundle, validation, sanitation, inventory, complete checks, and static build pass locally; immutable pushed candidate, Cloudflare verification, clean-tree handoff, and human creative review pending
+Current authorization: Phase 1 — Static Semantic Foundation only
+Current branch: `feature/phase-1-semantic-foundation`
+Production branch: `main` (must not change during Phase 1)
+Accepted parent SHA: `9aec62c1d89ebb2095bbc8903a718f77bbb6dbda`
+Current evidence state: Phase 0 is human-accepted and closed. Phase 1 is authorized through the human implementation prompt dated 2026-08-19 and must stop at its own human-review handoff.
+
+## Phase 1 authorization amendment
+
+The 2026-08-19 human authorization supersedes the historical Phase 0 lock statements below. Phase 1 permits the complete static Astro route architecture, local schema-validated content, deny-by-default publication filtering, Dark V2 layout, self-hosted approved open-source fonts, metadata, sitemap, 404, minimal accessible navigation JavaScript, automated QA, curated review evidence, commit, normal feature-branch push, and Cloudflare branch-preview verification.
+
+Phase 1 does not permit Phase 2 interior experience work, cinematic integration, CRT runtime work, animation systems, scroll choreography, WebGL, a client framework, a public form or endpoint, Cloudflare setting changes, another host, a merge to `main`, or inference of human acceptance.
 
 ## Gate principle
 
 Automated success is evidence, not human acceptance. Every phase ends at a pushed, immutable candidate SHA with a clean working tree and waits for its declared human decision. Work does not silently continue into the next phase.
 
-The active Phase 0 authorization permits:
+The historical Phase 0 authorization permitted:
 
 - safe repository reconciliation;
 - read-only audit of the existing Cloudflare contract;
@@ -330,13 +337,13 @@ Interpretation:
 - `REDIRECT`: stop the current architecture or feasibility direction and return to planning.
 - `2.5D REDIRECT`: make the accepted premium browser-native 2.5D method the future production-opening medium; do not begin later work without its separate authorization.
 
-## Later gates (locked)
+## Phase 1 and later gates
 
-These phases remain planning records, not current authorization.
+Phase 1 is active. Phases 2–8 remain planning records, not current authorization.
 
 | Phase | Branch | Required result | Human decision |
 |---|---|---|---|
-| 1. Static semantic foundation | `feature/phase-1-semantic-foundation` | All real static routes, metadata, schemas, Dark V2 foundation, publication denial tests | `FOUNDATION ACCEPT / REPAIR / REDIRECT` |
+| 1. Static semantic foundation — active | `feature/phase-1-semantic-foundation` | All real static routes, metadata, schemas, Dark V2 foundation, publication denial tests | `FOUNDATION ACCEPT / REPAIR / REDIRECT` |
 | 2. Interior visual system | `feature/phase-2-interior-system` | Native operating surface and homepage chapters; only method/domains extended sticky | `INTERIOR SYSTEM ACCEPT / REPAIR / REDIRECT` |
 | 3. Production opening prototype | `feature/phase-3-field-unit-media` | Production-quality desktop slice, authored mobile opening, final poster, codec and portal evidence | `FIELD UNIT + PORTAL CREATIVE ACCEPT / REPAIR / 2.5D REDIRECT` |
 | 4. Cinematic integration | `feature/phase-4-cinematic-integration` | Deterministic one-root intro, matched handoff, reverse, lifecycle evidence | `CINEMATIC ACCEPT / REPAIR / REDIRECT` |

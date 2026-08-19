@@ -1,0 +1,36 @@
+---
+const footerLinks = [
+  { href: "/for-partners/", label: "For industry" },
+  { href: "/for-startups/", label: "For startups" },
+  { href: "/industries/", label: "Industries" },
+  { href: "/pocs/", label: "Proof" },
+  { href: "/spark/", label: "SPARK" },
+  { href: "/about/", label: "About" },
+  { href: "/contact/", label: "Contact" },
+] as const;
+---
+
+<footer class="site-footer">
+  <div class="site-footer__inner container">
+    <div class="site-footer__identity">
+      <a class="brand-link" href="/" aria-label="Quantum home">
+        <img
+          src="/brand/quantum-full-logo-white.svg"
+          width="222"
+          height="72"
+          alt="Quantum"
+          loading="lazy"
+        />
+      </a>
+      <p>Industrial innovation, grounded in evidence.</p>
+    </div>
+    <nav aria-label="Footer navigation">
+      <ul>
+        {footerLinks.map((item) => (
+          <li><a href={item.href}>{item.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+    <p class="site-footer__location">Herzliya</p>
+  </div>
+</footer>

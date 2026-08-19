@@ -1,0 +1,98 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ClosingCta from "../components/ClosingCta.astro";
+import PageHero from "../components/PageHero.astro";
+import { PUBLIC_INDUSTRIES } from "../content";
+import "../styles/routes/standard.css";
+
+const title = "Industries where relevance is tested";
+const description =
+  "Quantum works across automotive and mobility, logistics and supply chain, advanced manufacturing, and energy and infrastructure.";
+
+const descriptions: Record<(typeof PUBLIC_INDUSTRIES)[number]["id"], string> = {
+  "automotive-mobility": "Vehicle systems, mobility operations and human-machine interaction create demanding contexts for field evidence.",
+  "logistics-supply-chain": "Movement, visibility and coordination must be understood across real workflows and physical infrastructure.",
+  "advanced-manufacturing": "Production environments bring equipment, people, data and process constraints into the same test.",
+  "energy-infrastructure": "Energy systems and physical assets require relevance to be assessed inside operating and implementation conditions.",
+};
+
+const technologyCategories = [
+  "AI and data",
+  "robotics and autonomy",
+  "sensors and computer vision",
+  "cybersecurity",
+  "advanced materials",
+  "energy systems",
+  "enterprise software",
+] as const;
+---
+
+<BaseLayout {title} {description} bodyClass="industries-page">
+  <PageHero
+    eyebrow="industrial domains"
+    title="Industry is where relevance is tested."
+    intro="A technology becomes meaningful when it meets the systems, constraints and operating conditions of a real domain."
+  />
+
+  <section class="editorial-section" aria-labelledby="domains-title">
+    <div class="container">
+      <div class="editorial-section__intro">
+        <p class="eyebrow">four domains</p>
+        <div>
+          <h2 id="domains-title">Different fields. The same evidence discipline.</h2>
+          <p>Each domain changes the question, environment and conditions a useful POC must address.</p>
+        </div>
+      </div>
+      <ul class="domain-list">
+        {PUBLIC_INDUSTRIES.map((industry) => (
+          <li>
+            <h3>{industry.name}</h3>
+            <p>{descriptions[industry.id]}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="editorial-section" aria-labelledby="technology-title">
+    <div class="container">
+      <div class="editorial-section__intro">
+        <p class="eyebrow">technology perspectives</p>
+        <div>
+          <h2 id="technology-title">Capabilities can cross domain lines.</h2>
+          <p>
+            These labels describe technology perspectives, not additional
+            industries or interactive filters. Relevance is still determined by
+            the specific operational context.
+          </p>
+        </div>
+      </div>
+      <ul class="label-cloud" aria-label="Technology categories">
+        {technologyCategories.map((category) => <li>{category}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="editorial-section" aria-labelledby="industry-method-title">
+    <div class="container">
+      <div class="editorial-section__intro">
+        <p class="eyebrow">method</p>
+        <div>
+          <h2 id="industry-method-title">Design around the field.</h2>
+          <p>
+            Quantum begins with the need and works outward: stakeholders,
+            environment, constraints, technology fit and the evidence required.
+            The test is shaped around that whole system rather than a generic demo.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <ClosingCta
+    title="Bring the domain context."
+    copy="A useful conversation begins with the operating challenge, not a preselected solution."
+  >
+    <a class="button button--primary" href="/contact/#for-industry">Start with the challenge</a>
+  </ClosingCta>
+</BaseLayout>

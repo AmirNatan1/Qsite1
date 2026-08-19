@@ -1,7 +1,7 @@
-# Phase 0 Asset Register
+# Quantum Asset Register
 
-Status: controlled register for committed Phase 0 assets
-Last verified: 2026-08-18
+Status: controlled register for production assets and frozen Phase 0 review evidence
+Last verified: 2026-08-19
 
 ## Classification model
 
@@ -10,6 +10,7 @@ Last verified: 2026-08-18
 | A | Official Quantum identity owned or explicitly authorized for public use | May ship when its exact registered hash is present |
 | B | Record- or programme-specific public material with explicit approval | May ship only in the approved context and without expanding its claims |
 | R | Original Quantum Phase 0 review artifact or implementation evidence | May be committed and reviewed on the non-production branch; not accepted production creative or launch media until its human gate |
+| F | Open-source production font with preserved license and authoritative provenance | May ship only at the registered hash with its license notice |
 | C | Internal, private or review-only evidence | Must not enter `public/`, generated output or a public preview |
 | D | Prohibited, unapproved, third-party-reference or placeholder material | Must not be committed as a production asset or published |
 
@@ -29,9 +30,21 @@ All source rows below use repository `https://github.com/AmirNatan1/Q-HUB.git` a
 | `MARADIN-IMG-001` | `public/media/maradin/maradin-field-aperture-poster-approved.jpg` | JPEG | 86,343 | `6afc1a69570f2541b89b4f6a5074bec04a5d607743d91670321f550b4d6364bd` | B | Approved poster for the same proof context |
 | `MARADIN-VID-002` | `public/media/maradin/maradin-test-contact-approved.mp4` | MP4 | 4,133,483 | `076aecf40d9e67ac29eb0b8e2d34ffc374619862a9679a6e44bc08ccfd2c113d` | B | Approved field-test media; silent presentation; no inferred outcome |
 | `MARADIN-IMG-002` | `public/media/maradin/maradin-prove-field-frame-approved.jpg` | JPEG | 169,156 | `b85f1bd5413b6fe7da235e5217e16b106ae4ff0763e8deb9db6e509dbc0b8b8c` | B | Approved proof frame; factual adjacent caption required when published |
-| `MARADIN-IMG-003` | `public/media/maradin/maradin-real-field-still-approved.jpg` | JPEG | 961,699 | `49ab9aca0d2e3ef9e9ce164f43f9dbd1514ef815179626bef2bb4217827a6741` | B | Approved field still; no expanded relationship claim |
+| `MARADIN-IMG-003` | `public/media/maradin/maradin-real-field-still-approved.jpg` | JPEG | 961,699 | `49ab9aca0d2e3ef9e9ce164f43f9dbd1514ef815179626bef2bb4217827a6741` | B | Approved field still; frozen binary retains EXIF Orientation 6 and is intentionally presented with a portrait crop; no expanded relationship claim |
 
-See `QHUB_IMPORT_LEDGER.md` for source paths, Git-object verification and the registered-but-unimported Maradin content source.
+See `QHUB_IMPORT_LEDGER.md` for source paths, Git-object verification and the independently authored Phase 1 Maradin mapping.
+
+## Phase 1 self-hosted fonts
+
+The Latin WOFF2 assets below were obtained from versioned `fonts.gstatic.com` delivery URLs returned by the official Google Fonts CSS API. Their SIL Open Font License notices were obtained from the official `google/fonts` repository. Exact URLs, license-object IDs and retrieval details are recorded in `FONT_PROVENANCE.md`.
+
+| Asset ID | Destination | Type | Bytes | SHA-256 | Class | Approval and permitted use |
+| --- | --- | --- | ---: | --- | --- | --- |
+| `FONT-SYNE-800` | `public/fonts/syne-latin-800.woff2` | WOFF2 | 13,684 | `1a340e84b78c7e1e7ed24306d682fdcd6dc8cc6cb52b158fbaf22c03f7f001c3` | F | Syne display, normal 800, Latin |
+| `FONT-NEWSREADER-400` | `public/fonts/newsreader-latin-400.woff2` | WOFF2 | 22,480 | `e66067814f1c672d33a457e4f4d102c818b481420e2234cf685ebdbf2f443904` | F | Newsreader editorial, normal 400, Latin |
+| `FONT-INTER-400-600` | `public/fonts/inter-latin-400-600.woff2` | WOFF2 | 48,256 | `3100e775e8616cd2611beecfa23a4263d7037586789b43f035236a2e6fbd4c62` | F | Inter UI, variable normal 400–600, Latin |
+
+The three license notices under `public/fonts/licenses/` are required distribution companions and are governed by `FONT_PROVENANCE.md`.
 
 ## Original Quantum Phase 0 creative sources
 

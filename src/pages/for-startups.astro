@@ -1,0 +1,119 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ClosingCta from "../components/ClosingCta.astro";
+import PageHero from "../components/PageHero.astro";
+import ProcessList from "../components/ProcessList.astro";
+import { sparkProgramme } from "../content";
+import "../styles/routes/standard.css";
+
+const title = "For startups — bring technology into the real world";
+const description =
+  "A structured route for MVP+ technologies to meet relevant industrial needs, prepare a POC and learn from real operating conditions.";
+
+const startupSteps = [
+  { title: "Readiness", description: "Establish the technology, team and use case are ready for an industrial conversation." },
+  { title: "Relevance", description: "Connect the capability to a real operational need and operating context." },
+  { title: "Design", description: "Define the POC question, environment and evidence criteria with the parties involved." },
+  { title: "Field", description: "Run a bounded test and observe how the technology behaves under meaningful conditions." },
+  { title: "Evidence", description: "Use what was learned to define an appropriate next step." },
+] as const;
+---
+
+<BaseLayout {title} {description} bodyClass="for-startups-page">
+  <PageHero
+    eyebrow="for startups"
+    title="Bring your technology into the real world."
+    intro="Move from a promising capability to a relevant industrial question, a structured POC and evidence grounded in operating conditions."
+  >
+    <div class="button-row">
+      <a class="button button--primary" href="/contact/#for-startups">Introduce your technology</a>
+      <a class="button button--secondary" href="/spark/">Explore SPARK</a>
+    </div>
+  </PageHero>
+
+  <section class="editorial-section" aria-labelledby="readiness-title">
+    <div class="container">
+      <div class="editorial-section__intro">
+        <p class="eyebrow">readiness</p>
+        <div>
+          <h2 id="readiness-title">Ready means more than interesting.</h2>
+          <p>A useful industrial test needs a technology, use case and team that can engage with real constraints.</p>
+        </div>
+      </div>
+      <ul class="feature-list">
+        <li><h3>MVP+ technology</h3><p>A working capability that can move beyond a concept-only conversation.</p></li>
+        <li><h3>Clear industrial use case</h3><p>A credible connection between what the technology does and an operational need.</p></li>
+        <li><h3>Deployable team</h3><p>People available to prepare, support and learn from a structured field test.</p></li>
+        <li><h3>Measurable value</h3><p>A practical view of what evidence would make the POC informative.</p></li>
+        <li><h3>Organisational readiness</h3><p>Willingness to work with a large organisation, its processes and its operating environment.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="editorial-section" aria-labelledby="provide-title">
+    <div class="container">
+      <div class="editorial-section__intro">
+        <p class="eyebrow">what quantum can provide</p>
+        <div>
+          <h2 id="provide-title">Context for a better test.</h2>
+          <p>Quantum connects a technology’s potential to an industrial evidence question.</p>
+        </div>
+      </div>
+      <ul class="feature-list">
+        <li><h3>Relevant industrial access</h3><p>Connections shaped around an identified need.</p></li>
+        <li><h3>Use-case design</h3><p>A clearer link between the capability, user and operating problem.</p></li>
+        <li><h3>POC design</h3><p>A bounded plan for what to test, where and why.</p></li>
+        <li><h3>Domain feedback</h3><p>Input grounded in the operating environment.</p></li>
+        <li><h3>Real operating environments</h3><p>Conditions that reveal practical constraints an abstract demo cannot.</p></li>
+        <li><h3>Evidence‑based next step</h3><p>A structured record for what follows the test.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="editorial-section" aria-labelledby="startup-route-title">
+    <div class="container">
+      <div class="editorial-section__intro">
+        <p class="eyebrow">startup route</p>
+        <div>
+          <h2 id="startup-route-title">From readiness to evidence.</h2>
+          <p>The route narrows possibility into a relevant industrial test.</p>
+        </div>
+      </div>
+      <ProcessList steps={startupSteps} label="Five-stage startup route" />
+    </div>
+  </section>
+
+  <section class="editorial-section" aria-labelledby="spark-path-title">
+    <div class="container">
+      <div class="editorial-section__intro">
+        <p class="eyebrow">spark pathway</p>
+        <div>
+          <h2 id="spark-path-title">{sparkProgramme.name}</h2>
+          <p>{sparkProgramme.summary}</p>
+        </div>
+      </div>
+      <div class="notice">
+        <span class="status-pill">{sparkProgramme.status}</span>
+        <p class="status-copy">
+          The public pathway is not accepting applications. No future date or
+          alternative registration route is being offered here.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="editorial-section" aria-label="Participation note">
+    <div class="container">
+      <p class="notice">
+        <strong>Participation note:</strong> Quantum develops relevant opportunities and structured POCs; participation does not guarantee a pilot, procurement agreement or investment.
+      </p>
+    </div>
+  </section>
+
+  <ClosingCta
+    title="Introduce the technology."
+    copy="Start with the capability, industrial use case and the conditions you are ready to test."
+  >
+    <a class="button button--primary" href="/contact/#for-startups">Choose the startup path</a>
+  </ClosingCta>
+</BaseLayout>

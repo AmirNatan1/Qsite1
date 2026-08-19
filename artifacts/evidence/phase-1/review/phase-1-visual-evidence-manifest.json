@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 2,
+  "authority": "phase-1-curated-visual-evidence",
+  "generatedAt": "2026-08-19T11:49:03.875Z",
+  "browserReport": {
+    "path": "../phase-1-browser-report.json",
+    "sha256": "7293f751ae24441e2a4345358e7ea4b413dc699b4f887d33a4603ff57b7c37c2"
+  },
+  "buildReport": {
+    "filename": "phase-1-build-report.json",
+    "sha256": "9a91827a17e728040f62863c9690167f28cca9347560edcd75f53289f10b6733",
+    "generatedAt": "2026-08-19T11:38:17.389Z",
+    "verifiedLaunchRoutes": 9,
+    "verified404": true,
+    "verifiedOutputFiles": 29,
+    "path": "../phase-1-build-report.json"
+  },
+  "browserCases": 309,
+  "browserStatus": "PASS",
+  "rawCapturePolicy": "Generated in OS temporary storage; only the seven curated PNG files are retained.",
+  "files": [
+    {
+      "filename": "phase-1-accessibility-review.png",
+      "kind": "contact-sheet",
+      "width": 1420,
+      "height": 856,
+      "bytes": 260199,
+      "sha256": "164d68bb785a55de4d9872f89e7ff7e0b03b58ff378ace9d4c6d2a5da13964d1",
+      "group": "accessibility",
+      "sourceFrames": 5
+    },
+    {
+      "filename": "phase-1-home-desktop-1440x900.png",
+      "kind": "key-full-size",
+      "width": 1440,
+      "height": 900,
+      "bytes": 113972,
+      "sha256": "eb3b5c0137d0984772421c2302291fec39987b3f3c2f8c7cde00de3487305048",
+      "sourceCase": "baseline--home--desktop-1440x900",
+      "route": "/",
+      "viewport": "desktop-1440x900",
+      "scenario": "baseline"
+    },
+    {
+      "filename": "phase-1-home-mobile-390x844.png",
+      "kind": "key-full-size",
+      "width": 390,
+      "height": 844,
+      "bytes": 58148,
+      "sha256": "a4c9ded260c9f2276a8593cc45858b2e67c08aa0601733af10ebcd92d3d8c659",
+      "sourceCase": "baseline--home--mobile-390x844",
+      "route": "/",
+      "viewport": "mobile-390x844",
+      "scenario": "baseline"
+    },
+    {
+      "filename": "phase-1-home-review.png",
+      "kind": "contact-sheet",
+      "width": 1420,
+      "height": 856,
+      "bytes": 227908,
+      "sha256": "81b34876d7c3839a3911a083e5d8c41626893a93c0b13347cb0d5ab8f375d660",
+      "group": "home",
+      "sourceFrames": 5
+    },
+    {
+      "filename": "phase-1-home-short-1366x650.png",
+      "kind": "key-full-size",
+      "width": 1366,
+      "height": 650,
+      "bytes": 99726,
+      "sha256": "fe1edf9f746593b180228abf3ac9d81e4fd433136ac2a7ea14a9adb7251f55dd",
+      "sourceCase": "baseline--home--short-desktop-1366x650",
+      "route": "/",
+      "viewport": "short-desktop-1366x650",
+      "scenario": "baseline"
+    },
+    {
+      "filename": "phase-1-responsive-review.png",
+      "kind": "contact-sheet",
+      "width": 1420,
+      "height": 856,
+      "bytes": 225766,
+      "sha256": "bb8fd171aee1c8bce103f531f3c459d691d2d64e879a5726d91aa38fddfa6e8b",
+      "group": "responsive",
+      "sourceFrames": 5
+    },
+    {
+      "filename": "phase-1-supporting-routes-review.png",
+      "kind": "contact-sheet",
+      "width": 1420,
+      "height": 1236,
+      "bytes": 475728,
+      "sha256": "7a507c63980141ee6f5c295eacc0f3304c41674738befad4b63dced91b7b136f",
+      "group": "supporting",
+      "sourceFrames": 9
+    }
+  ]
+}

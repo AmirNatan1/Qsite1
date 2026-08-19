@@ -1,0 +1,23 @@
+---
+interface Step {
+  title: string;
+  description: string;
+}
+
+interface Props {
+  steps: readonly Step[];
+  label: string;
+}
+
+const { steps, label } = Astro.props;
+---
+
+<ol class="process-list" aria-label={label}>
+  {steps.map((step, index) => (
+    <li>
+      <span class="process-list__index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+      <h3>{step.title}</h3>
+      <p>{step.description}</p>
+    </li>
+  ))}
+</ol>

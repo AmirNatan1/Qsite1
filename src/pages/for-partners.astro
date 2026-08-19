@@ -1,0 +1,142 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ClosingCta from "../components/ClosingCta.astro";
+import PageHero from "../components/PageHero.astro";
+import ProcessList from "../components/ProcessList.astro";
+import { champProgramme } from "../content";
+import "../styles/routes/standard.css";
+
+const title = "For industry — turn needs into testable decisions";
+const description =
+  "Define industrial challenges, source relevant technologies and run structured POCs that produce evidence for the next step.";
+
+const processSteps = [
+  { title: "Frame", description: "Define the challenge, operating context, owner and success criteria." },
+  { title: "Source", description: "Identify technologies that are relevant to the need and environment." },
+  { title: "Assess", description: "Examine technical, business and implementation fit before testing." },
+  { title: "Test", description: "Design and execute a focused POC under meaningful conditions." },
+  { title: "Decide", description: "Use the evidence to determine a responsible next step." },
+] as const;
+---
+
+<BaseLayout {title} {description} bodyClass="for-industry-page">
+  <PageHero
+    eyebrow="for industry"
+    title="Turn industrial needs into testable decisions."
+    intro="Bring Quantum an operational challenge. We help shape it into a clear search, assessment and field-test process."
+  >
+    <div class="button-row">
+      <a class="button button--primary" href="/contact/#for-industry">Start with your challenge</a>
+      <a class="button button--secondary" href="/pocs/">See the proof approach</a>
+    </div>
+  </PageHero>
+
+  <section class="editorial-section" aria-labelledby="challenge-title">
+    <div class="container">
+      <div class="editorial-section__intro">
+        <p class="eyebrow">the challenge</p>
+        <div>
+          <h2 id="challenge-title">The need comes before the technology.</h2>
+          <p>
+            An industrial challenge becomes useful when its context, owner and
+            evidence needs are explicit. Quantum works with the people closest to
+            the operation to frame that foundation before a solution is selected.
+          </p>
+        </div>
+      </div>
+      <div class="editorial-copy">
+        <p>
+          That discipline keeps technology sourcing relevant. Candidates are
+          assessed against the actual environment, constraints and route to a
+          practical test—not against a generic innovation brief.
+        </p>
+        <p>
+          The result is a bounded POC designed to answer specific questions and
+          support a responsible next step without overstating what the test proves.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="editorial-section" aria-labelledby="capabilities-title">
+    <div class="container">
+      <div class="editorial-section__intro">
+        <p class="eyebrow">capabilities</p>
+        <div>
+          <h2 id="capabilities-title">Support across the evidence path.</h2>
+          <p>Quantum connects challenge definition, technology assessment and field execution.</p>
+        </div>
+      </div>
+      <ul class="feature-list">
+        <li><h3>Challenge definition</h3><p>Clarify the operational problem, stakeholder, environment and criteria for a useful test.</p></li>
+        <li><h3>Curated technology sourcing</h3><p>Search for relevant technologies with the industrial context kept in view.</p></li>
+        <li><h3>Technical and business assessment</h3><p>Evaluate feasibility, fit, readiness and the conditions required for a POC.</p></li>
+        <li><h3>POC planning and execution</h3><p>Turn open questions into a structured test design and coordinated field process.</p></li>
+        <li><h3>Commercialisation and decision support</h3><p>Organise the evidence so the parties can identify an appropriate next step.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="editorial-section" aria-labelledby="route-title">
+    <div class="container">
+      <div class="editorial-section__intro">
+        <p class="eyebrow">engagement route</p>
+        <div>
+          <h2 id="route-title">Five stages. One evidence thread.</h2>
+          <p>The method keeps the original need connected to every sourcing, assessment and test choice.</p>
+        </div>
+      </div>
+      <ProcessList steps={processSteps} label="Five-stage industry engagement route" />
+    </div>
+  </section>
+
+  <section class="editorial-section" aria-labelledby="engagement-title">
+    <div class="container">
+      <div class="editorial-section__intro">
+        <p class="eyebrow">ways to work</p>
+        <div>
+          <h2 id="engagement-title">A defined challenge or an ongoing context.</h2>
+          <p>The right structure depends on whether the need is already clear or must be developed over time.</p>
+        </div>
+      </div>
+      <ul class="feature-list">
+        <li><h3>Defined challenge</h3><p>Begin with a specific operational need and build a focused route toward a testable question.</p></li>
+        <li><h3>Ongoing innovation partnership</h3><p>Develop a repeatable way to surface needs, assess relevance and prepare selected opportunities for evidence.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="champ" class="editorial-section" aria-labelledby="champ-title">
+    <div class="container">
+      <div class="editorial-section__intro">
+        <p class="eyebrow">industry programme</p>
+        <div>
+          <h2 id="champ-title">{champProgramme.name}</h2>
+          <p>{champProgramme.summary}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="editorial-section" aria-labelledby="industry-network-title">
+    <div class="container">
+      <div class="editorial-section__intro">
+        <p class="eyebrow">industry network</p>
+        <div>
+          <h2 id="industry-network-title">Context needs continuity.</h2>
+        <p>
+          Quantum’s industry network supports contextual work without turning
+          unverified relationships into public claims or a decorative logo wall.
+        </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <ClosingCta
+    title="Bring the operating challenge."
+    copy="Describe the context you need to understand. Quantum will begin with the questions a useful test should answer."
+  >
+    <a class="button button--primary" href="/contact/#for-industry">Choose the industry path</a>
+  </ClosingCta>
+</BaseLayout>

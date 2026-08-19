@@ -1,0 +1,49 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHero from "../components/PageHero.astro";
+import { contactDestination } from "../content";
+import "../styles/routes/standard.css";
+
+const title = "Contact Quantum";
+const description =
+  "Choose the Quantum contact context that matches an industrial challenge, a technology introduction or a general ecosystem conversation.";
+
+if (contactDestination !== null) {
+  throw new Error("The Phase 1 contact destination must remain unpublished until it is verified.");
+}
+---
+
+<BaseLayout {title} {description} bodyClass="contact-page">
+  <PageHero
+    eyebrow="contact"
+    title="Start with the challenge."
+    intro="Choose where you enter. A public contact destination will be added only after verification."
+    compact
+  />
+
+  <section class="editorial-section" aria-labelledby="contact-paths-title">
+    <div class="container">
+      <div class="editorial-section__intro">
+        <p class="eyebrow">intent paths</p>
+        <div>
+          <h2 id="contact-paths-title">Three useful starting points.</h2>
+          <p>These paths clarify intent without collecting or transmitting information.</p>
+        </div>
+      </div>
+      <ul class="intent-list">
+        <li id="for-industry">
+          <span class="intent-list__meta">01 / challenge</span>
+          <div><h3>For industry</h3><p>Begin with the operational need, its context and what a useful test should answer.</p></div>
+        </li>
+        <li id="for-startups">
+          <span class="intent-list__meta">02 / technology</span>
+          <div><h3>For startups / technology</h3><p>Begin with the capability, industrial use case, readiness and conditions you can support.</p></div>
+        </li>
+        <li id="general">
+          <span class="intent-list__meta">03 / network</span>
+          <div><h3>General / ecosystem / media</h3><p>Use this context for institutional, ecosystem or media conversations that do not fit the first two paths.</p></div>
+        </li>
+      </ul>
+    </div>
+  </section>
+</BaseLayout>

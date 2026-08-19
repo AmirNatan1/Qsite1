@@ -1,0 +1,71 @@
+:root {
+  color-scheme: dark;
+  --q-black: #0e1112;
+  --q-black-soft: #121617;
+  --q-neutral-900: #14181a;
+  --q-neutral-850: #1a2020;
+  --q-neutral-800: #283030;
+  --q-neutral-700: #3a4444;
+  --q-neutral-600: #4d5a5a;
+  --q-neutral-400: #8a9797;
+  --q-neutral-300: #c2cbcb;
+  --q-white: #ffffff;
+  --q-magenta: #d82b72;
+  --q-magenta-soft: #f06ba0;
+  --q-magenta-dark: #b81f5e;
+  --text-heading: var(--q-white);
+  --text-body: var(--q-neutral-300);
+  --text-muted: var(--q-neutral-400);
+  --text-link: var(--q-magenta-soft);
+  --surface-page: var(--q-black);
+  --surface-card: rgba(255, 255, 255, 0.04);
+  --surface-card-hover: rgba(255, 255, 255, 0.065);
+  --surface-strong: rgba(255, 255, 255, 0.075);
+  --border-default: rgba(255, 255, 255, 0.09);
+  --border-strong: rgba(255, 255, 255, 0.17);
+  --border-accent: rgba(240, 107, 160, 0.58);
+  --font-display: "Syne", "Arial Black", Arial, sans-serif;
+  --font-body: "Newsreader", Georgia, "Times New Roman", serif;
+  --font-ui: "Inter", Arial, Helvetica, sans-serif;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1.0625rem;
+  --text-md: clamp(1.125rem, 1.5vw, 1.3rem);
+  --text-lg: clamp(1.35rem, 2vw, 1.7rem);
+  --text-h3: clamp(1.55rem, 2.5vw, 2.2rem);
+  --text-h2: clamp(2.25rem, 4vw, 55px);
+  --text-h1: clamp(3rem, 5vw, 66px);
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --space-10: 8rem;
+  --space-section: clamp(5.5rem, 10vw, 10rem);
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1.125rem;
+  --radius-xl: 1.75rem;
+  --radius-pill: 999px;
+  --container-max: 90rem;
+  --container-copy: 75rem;
+  --gutter: clamp(16px, 4vw, 48px);
+  --header-height: 88px;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 140ms;
+  --duration-base: 220ms;
+  --shadow-focus: 0 0 0 3px rgba(216, 43, 114, 0.3);
+}
+
+@media (max-width: 40rem) {
+  :root {
+    --text-h1: clamp(1.75rem, 9vw, 36px);
+    --text-h2: clamp(1.1rem, 5vw, 20px);
+    --text-h3: clamp(1.1rem, 7vw, 1.9rem);
+    --space-section: clamp(4.5rem, 19vw, 6.5rem);
+  }
+}

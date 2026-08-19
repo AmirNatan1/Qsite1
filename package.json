@@ -1,16 +1,23 @@
 {
   "name": "quantum-hub-qsite1",
-  "version": "0.0.0-phase-0",
+  "version": "0.1.0-phase-1",
   "private": true,
   "type": "module",
   "engines": {
     "node": ">=22.12.0"
   },
+  "overrides": {
+    "unifont": "0.7.4"
+  },
   "scripts": {
     "dev": "astro dev",
-    "check": "astro check && node --test tests/*.test.mjs && node scripts/verify-creative-assets.mjs && node scripts/verify-phase0-3d-repair.mjs && node scripts/verify-phase0-3d-repair-v2-assets.mjs && node scripts/verify-phase0-3d-repair-v2-layout.mjs && node scripts/verify-phase0-3d-repair-v3-layout.mjs && node scripts/verify-phase0-3d-repair-v3-assets.mjs && node scripts/verify-phase0-4r-crt-layout.mjs && node scripts/verify-phase0-4r-crt-assets.mjs --final",
-    "test": "node --test tests/*.test.mjs",
-    "build": "astro build && node scripts/verify-build.mjs",
+    "check": "astro check && node --test tests/phase1-publication.test.mjs && node scripts/verify-phase1-source.mjs",
+    "test": "node --test tests/phase1-publication.test.mjs",
+    "build": "astro build && node scripts/verify-phase1-output.mjs",
+    "qa:browser": "node scripts/qa-phase1-browser.mjs --server-mode astro-preview",
+    "qa:visual": "node scripts/create-phase1-contact-sheets.mjs",
+    "qa:phase1": "npm run check && npm run build && npm run qa:browser && npm run qa:visual",
+    "check:phase0-evidence": "node --test tests/phase0.test.mjs && node scripts/verify-creative-assets.mjs && node scripts/verify-phase0-3d-repair.mjs && node scripts/verify-phase0-3d-repair-v2-assets.mjs && node scripts/verify-phase0-3d-repair-v2-layout.mjs && node scripts/verify-phase0-3d-repair-v3-layout.mjs && node scripts/verify-phase0-3d-repair-v3-assets.mjs && node scripts/verify-phase0-4r-crt-layout.mjs && node scripts/verify-phase0-4r-crt-assets.mjs --final",
     "capture:phase03": "node scripts/capture-phase03-browser-matrix.mjs",
     "capture:phase04": "node scripts/capture-phase04-browser-matrix.mjs",
     "prepare:phase04-browser": "node scripts/finalize-phase04-browser-evidence.mjs --prepare",
@@ -28,6 +35,9 @@
   },
   "devDependencies": {
     "@astrojs/check": "0.9.8",
+    "axe-core": "4.10.3",
+    "playwright-core": "1.62.1",
+    "sharp": "0.35.3",
     "typescript": "5.9.3"
   }
 }

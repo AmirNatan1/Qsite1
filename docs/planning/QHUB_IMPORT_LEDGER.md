@@ -49,10 +49,10 @@ The nine imported assets total 9,326,266 bytes. The largest single file is 4,133
 | Frozen source SHA-256 | `0c2f7b4ae1ee4ad4fe253b2f496d8b82d8a2107523e7bf88c8ac819248d00f7b` |
 | Classification in source | B |
 | Approval flag in source | `publicApproved: true` |
-| Qsite1 destination | None in Phase 0 |
-| Destination SHA-256 | Not applicable until a separately reviewed, independently authored record exists |
+| Qsite1 destination | Independently authored Phase 1 mapping in `src/content/proofs.ts` |
+| Destination SHA-256 | `1a1b2a8547ab1133edc1c7dee9d2cb19a4a074070b390ea00b3e074632fe1a49` |
 
-`src/content/proof.ts` is Q-HUB code, so it was inspected at the frozen object and deliberately not copied. Phase 0 does not create a public Maradin record. A later accepted content phase may map approved fields into Qsite1's independent schema, but must not copy imports, validators, publication code, routing or internal source data from Q-HUB. Numeric statements in the frozen record are not authorized for this launch and must be omitted unless separately approved.
+`src/content/proof.ts` is Q-HUB code, so it was inspected at the frozen object and deliberately not copied. The authorized Phase 1 implementation independently maps its approved qualitative fields into Qsite1's own strict schema and publication filter. It copies no Q-HUB imports, validators, publication code, routing or internal source data. Numeric statements in the frozen record remain unauthorized for launch and are omitted.
 
 The frozen manifest also attests to an upstream, intentionally unshipped authoring file named `content/maradin-homepage-approved.json`: 4,428 bytes, SHA-256 `2023610b79391854ecde407154310ffdd07d08ad3c8b63cf215f81a74748f06f`. Those bytes are not present in the frozen Git tree, so that checksum is recorded as manifest evidence rather than claimed as independently re-hashed. The file was not retrieved or imported.
 

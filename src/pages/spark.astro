@@ -1,0 +1,135 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ClosingCta from "../components/ClosingCta.astro";
+import PageHero from "../components/PageHero.astro";
+import ProcessList from "../components/ProcessList.astro";
+import { sparkProgramme } from "../content";
+import "../styles/routes/standard.css";
+
+const title = "SPARK — from MVP+ to industrial POC";
+const description =
+  "SPARK is a pathway for MVP+ technologies to develop industrial relevance and prepare structured POCs. Applications are closed.";
+
+const programmeSteps = [
+  { title: "Readiness", description: "Establish that the technology, team and use case can support an industrial process." },
+  { title: "Need", description: "Connect the capability to a relevant operational challenge and stakeholder context." },
+  { title: "Fit", description: "Assess technical relevance, implementation conditions and the questions a POC should address." },
+  { title: "Design", description: "Shape a bounded field test with clear conditions and evidence criteria." },
+  { title: "Evidence", description: "Use the POC record to understand an appropriate next step without a guaranteed outcome." },
+] as const;
+---
+
+<BaseLayout {title} {description} bodyClass="spark-page">
+  <PageHero
+    eyebrow="spark programme"
+    title="A runway from MVP+ to industrial POC."
+    intro="SPARK helps ready technologies connect their capabilities to relevant industrial needs and prepare a structured route toward field evidence."
+  >
+    <span class="status-pill">{sparkProgramme.status}</span>
+  </PageHero>
+
+  <section class="editorial-section" aria-labelledby="proposition-title">
+    <div class="container">
+      <div class="editorial-section__intro">
+        <p class="eyebrow">proposition</p>
+        <div>
+          <h2 id="proposition-title">Industrial relevance is developed, not assumed.</h2>
+          <p>
+            SPARK creates a structured context for startups to test how their
+            technology connects to an operational need. The work begins with
+            readiness and relevance, then narrows toward a POC question that can be
+            examined in meaningful conditions.
+          </p>
+        </div>
+      </div>
+      <div class="editorial-copy">
+        <p>
+          The intended audience is a startup with MVP+ technology, a clear
+          industrial use case, a deployable team and the ability to engage with
+          the processes of a large organisation.
+        </p>
+        <p>
+          Eligibility is about preparedness for the work: a functioning
+          capability, measurable value hypothesis and willingness to adapt the POC
+          design around the actual environment.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="editorial-section" aria-labelledby="programme-route-title">
+    <div class="container">
+      <div class="editorial-section__intro">
+        <p class="eyebrow">programme route</p>
+        <div>
+          <h2 id="programme-route-title">From capability to evidence question.</h2>
+          <p>Each stage adds context so a potential POC is relevant to both the startup and the industrial need.</p>
+        </div>
+      </div>
+      <ProcessList steps={programmeSteps} label="SPARK programme route" />
+    </div>
+  </section>
+
+  <section class="editorial-section" aria-labelledby="value-title">
+    <div class="container">
+      <div class="editorial-section__intro">
+        <p class="eyebrow">participant value</p>
+        <div>
+          <h2 id="value-title">Context, feedback and test discipline.</h2>
+          <p>The value sits in better questions and a more credible route into real operating conditions.</p>
+        </div>
+      </div>
+      <ul class="feature-list">
+        <li><h3>Industrial context</h3><p>Understand the need, stakeholders and constraints that make a technology relevant.</p></li>
+        <li><h3>Use-case refinement</h3><p>Translate a broad capability into a focused application and evidence question.</p></li>
+        <li><h3>Domain feedback</h3><p>Learn how operating requirements affect readiness, fit and implementation.</p></li>
+        <li><h3>POC preparation</h3><p>Develop a bounded plan for test conditions, roles and useful observations.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="editorial-section" aria-labelledby="status-title">
+    <div class="container">
+      <div class="editorial-section__intro">
+        <p class="eyebrow">status</p>
+        <div>
+          <h2 id="status-title">{sparkProgramme.status}</h2>
+          <p>
+            SPARK is not accepting applications. No future cohort date,
+            registration route or waiting list is being published at this stage.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="editorial-section" aria-labelledby="faq-title">
+    <div class="container">
+      <div class="editorial-section__intro">
+        <p class="eyebrow">faq</p>
+        <div><h2 id="faq-title">Programme questions.</h2></div>
+      </div>
+      <div class="faq-list">
+        <details>
+          <summary>Who is SPARK for?</summary>
+          <p>Startups with MVP+ technology, a clear industrial use case, a team able to engage in field work and a practical view of what value should be measured.</p>
+        </details>
+        <details>
+          <summary>Is a POC guaranteed?</summary>
+          <p>No. The pathway develops relevant opportunities and structured POCs, but participation does not guarantee a pilot, procurement agreement or investment.</p>
+        </details>
+        <details>
+          <summary>Can I apply now?</summary>
+          <p>No. Applications are closed, and this site does not offer an application, waiting-list or registration route.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <ClosingCta
+    title="Follow the startup route."
+    copy="General technology introductions can begin through the non-application startup contact path."
+  >
+    <a class="button button--primary" href="/contact/#for-startups">Introduce your technology</a>
+  </ClosingCta>
+</BaseLayout>

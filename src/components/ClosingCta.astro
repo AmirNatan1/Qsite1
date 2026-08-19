@@ -1,0 +1,22 @@
+---
+interface Props {
+  eyebrow?: string;
+  title: string;
+  copy: string;
+}
+
+const { eyebrow = "next signal", title, copy } = Astro.props;
+---
+
+<section class="closing-cta section-shell" aria-labelledby="closing-title">
+  <div class="closing-cta__inner container">
+    <p class="eyebrow">{eyebrow}</p>
+    <div class="closing-cta__copy">
+      <h2 id="closing-title">{title}</h2>
+      <p>{copy}</p>
+      <div class="button-row">
+        <slot />
+      </div>
+    </div>
+  </div>
+</section>

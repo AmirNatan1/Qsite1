@@ -1,8 +1,24 @@
-# Phase 0.2–0.3 typography and layout contract
+# Typography and layout contract
 
-Status: binding shared-source contract; Phase 0.2 evidence remains frozen and passing; authoritative Phase 0.3 matrix, exact 13-image bundle, validation, sanitation, inventory, checks, and static build complete locally; human typography and portal review pending; Phase 1 locked
+Status: permanent binding contract; Phase 0 evidence remains frozen; Phase 1 static semantic foundation active
 
-## Scope and separation
+## Phase 1 permanent implementation rules
+
+These rules govern every public Phase 1 route and remain in force for later phases:
+
+- Text-bearing containers use content-driven height. Fixed heights are prohibited unless content is mathematically bounded and tested.
+- `overflow: hidden` and clipping may not conceal text overflow, wrapping defects, insufficient height or collisions. Clipping is reserved for text-free media crops.
+- Text-bearing flex and grid descendants use `min-width: 0` and, where needed, `min-height: 0` so intrinsic size cannot force page overflow.
+- Display headings use controlled `clamp()` values with explicit minimum, preferred and maximum sizes, deliberate measure and responsive line height. Unrestricted viewport-width type is prohibited.
+- Every H1/H2 keeps `word-break: normal`, `overflow-wrap: normal` and `hyphens: none`. Line growth is accepted; mid-word fragmentation is not.
+- Body copy normally remains within 45–62 characters per line and avoids dense paragraphs. Vertical document growth is preferred to typography compression.
+- Decorative rules, borders, media and geometry must clear readable glyphs. Later animation must adapt around typography, not shrink typography into unreadability.
+- Interactive controls are at least 44×44 CSS pixels. Labels remain centered, visible and free from clipping; extreme reflow may intentionally add a line rather than overflow.
+- Responsive spacing preserves section rhythm, heading-to-body separation, action spacing and readable mobile gutters without making all elements enormous.
+- Required QA covers 1440×900, 1366×650, 1280×800, 1024×768, 768×1024, 390×844, 360×800, 320×800 and 844×390, plus breakpoint sweeps, 200% text, forced fallbacks, 25%-longer support copy, keyboard focus and reduced motion.
+- A machine pass never replaces direct inspection of the full-size captures.
+
+## Historical Phase 0 scope and separation
 
 This contract governs two related but distinct non-production review surfaces:
 
