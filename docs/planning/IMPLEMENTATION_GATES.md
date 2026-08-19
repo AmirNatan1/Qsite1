@@ -13,6 +13,8 @@ The 2026-08-19 human authorization supersedes the historical Phase 0 lock statem
 
 Phase 1 does not permit Phase 2 interior experience work, cinematic integration, CRT runtime work, animation systems, scroll choreography, WebGL, a client framework, a public form or endpoint, Cloudflare setting changes, another host, a merge to `main`, or inference of human acceptance.
 
+The 2026-08-19 Phase 1 human-review repair additionally permits static scene-ready homepage boundaries and the planning-only [portal-to-interior contract](./PORTAL_TO_INTERIOR_CONTRACT.md). That contract constrains future continuity but does not authorize Phase 2, Phase 3/4 production or integration, or any cinematic or scroll runtime in Phase 1.
+
 ## Gate principle
 
 Automated success is evidence, not human acceptance. Every phase ends at a pushed, immutable candidate SHA with a clean working tree and waits for its declared human decision. Work does not silently continue into the next phase.

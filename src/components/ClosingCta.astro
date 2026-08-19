@@ -1,15 +1,17 @@
 ---
 interface Props {
+  id?: string;
+  scene?: string;
   eyebrow?: string;
   title: string;
   copy: string;
 }
 
-const { eyebrow = "next signal", title, copy } = Astro.props;
+const { id, scene, eyebrow = "next signal", title, copy } = Astro.props;
 ---
 
-<section class="closing-cta section-shell" aria-labelledby="closing-title">
-  <div class="closing-cta__inner container">
+<section {id} class="closing-cta section-shell" aria-labelledby="closing-title" data-home-scene={scene}>
+  <div class="closing-cta__inner container" data-scene-layer={scene ? "content" : undefined}>
     <p class="eyebrow">{eyebrow}</p>
     <div class="closing-cta__copy">
       <h2 id="closing-title">{title}</h2>

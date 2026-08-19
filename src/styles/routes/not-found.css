@@ -44,9 +44,18 @@
     font-size: clamp(3.5rem, 15vw, 5rem);
   }
 
+}
+
+@media (max-width: 36rem) {
   .not-found h1 {
     max-width: 100%;
-    font-size: clamp(1.35rem, 5.4vw, 2rem);
-    letter-spacing: -0.08em;
+    font-family: var(--font-body);
+    font-size: clamp(2rem, 9.25vw, 2.5rem);
+    font-weight: 400;
+    hyphens: none;
+    letter-spacing: -0.055em;
+    line-height: 1.12;
+    overflow-wrap: normal;
+    word-break: normal;
   }
 }

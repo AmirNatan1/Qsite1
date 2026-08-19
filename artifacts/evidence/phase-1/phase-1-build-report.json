@@ -1,14 +1,14 @@
 {
   "schema": "quantum-hub.phase-1.static-build-qa.v1",
-  "generatedAt": "2026-08-19T11:38:17.389Z",
+  "generatedAt": "2026-08-19T13:46:03.371Z",
   "canonicalOrigin": "https://qsite1.pages.dev",
   "passed": true,
   "routes": [
     {
       "path": "/",
       "output": "index.html",
-      "bytes": 11633,
-      "gzipBytes": 3178,
+      "bytes": 12665,
+      "gzipBytes": 3364,
       "mainCount": 1,
       "h1Count": 1,
       "headings": [
@@ -37,8 +37,8 @@
     {
       "path": "/for-partners/",
       "output": "for-partners/index.html",
-      "bytes": 10038,
-      "gzipBytes": 2938,
+      "bytes": 10103,
+      "gzipBytes": 2931,
       "mainCount": 1,
       "h1Count": 1,
       "headings": [
@@ -71,8 +71,8 @@
     {
       "path": "/for-startups/",
       "output": "for-startups/index.html",
-      "bytes": 9625,
-      "gzipBytes": 2778,
+      "bytes": 9684,
+      "gzipBytes": 2806,
       "mainCount": 1,
       "h1Count": 1,
       "headings": [
@@ -107,8 +107,8 @@
     {
       "path": "/industries/",
       "output": "industries/index.html",
-      "bytes": 7451,
-      "gzipBytes": 2300,
+      "bytes": 7480,
+      "gzipBytes": 2318,
       "mainCount": 1,
       "h1Count": 1,
       "headings": [
@@ -130,8 +130,8 @@
     {
       "path": "/pocs/",
       "output": "pocs/index.html",
-      "bytes": 7820,
-      "gzipBytes": 2462,
+      "bytes": 7857,
+      "gzipBytes": 2456,
       "mainCount": 1,
       "h1Count": 1,
       "headings": [
@@ -153,8 +153,8 @@
     {
       "path": "/pocs/maradin/",
       "output": "pocs/maradin/index.html",
-      "bytes": 13056,
-      "gzipBytes": 3627,
+      "bytes": 13047,
+      "gzipBytes": 3587,
       "mainCount": 1,
       "h1Count": 1,
       "headings": [
@@ -177,8 +177,8 @@
     {
       "path": "/spark/",
       "output": "spark/index.html",
-      "bytes": 9648,
-      "gzipBytes": 2891,
+      "bytes": 9707,
+      "gzipBytes": 2918,
       "mainCount": 1,
       "h1Count": 1,
       "headings": [
@@ -207,8 +207,8 @@
     {
       "path": "/about/",
       "output": "about/index.html",
-      "bytes": 7753,
-      "gzipBytes": 2440,
+      "bytes": 7812,
+      "gzipBytes": 2468,
       "mainCount": 1,
       "h1Count": 1,
       "headings": [
@@ -230,8 +230,8 @@
     {
       "path": "/contact/",
       "output": "contact/index.html",
-      "bytes": 5726,
-      "gzipBytes": 1766,
+      "bytes": 5790,
+      "gzipBytes": 1746,
       "mainCount": 1,
       "h1Count": 1,
       "headings": [
@@ -249,8 +249,8 @@
     {
       "path": "/404/",
       "output": "404.html",
-      "bytes": 4949,
-      "gzipBytes": 1637,
+      "bytes": 5087,
+      "gzipBytes": 1696,
       "mainCount": 1,
       "h1Count": 1,
       "headings": [
@@ -423,12 +423,12 @@
       }
     },
     "css": {
-      "raw": 23428,
-      "gzip": 5913
+      "raw": 24185,
+      "gzip": 6151
     },
     "output": {
-      "raw": 9535690,
-      "gzip": 9409516
+      "raw": 9537980,
+      "gzip": 9410027
     },
     "largestAsset": {
       "path": "media/maradin/maradin-test-contact-approved.mp4",
@@ -445,5 +445,9 @@
     "/api/contact",
     "/.git/config"
   ],
+  "editorialReview": {
+    "routesReviewed": 10,
+    "findings": []
+  },
   "failures": []
 }

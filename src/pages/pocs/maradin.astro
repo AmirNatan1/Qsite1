@@ -16,7 +16,7 @@ const chapters = [
   { label: "Test design", title: "Conditions that matter", copy: maradinProofRecord.testDesign },
   { label: "Execution", title: "Into the field", copy: maradinProofRecord.execution },
   { label: "Evidence", title: "What the POC produced", copy: maradinProofRecord.evidence },
-  { label: "Next step", title: "The approved public state", copy: maradinProofRecord.nextStep },
+  { label: "Next step", title: "What followed", copy: maradinProofRecord.nextStep },
 ] as const;
 
 const maradinPoster = maradinProofRecord.media[0];
@@ -41,7 +41,7 @@ if (!maradinPoster || !testContactVideo || !projectionFrame || !realFieldStill) 
     </div>
   </PageHero>
 
-  <section class="maradin-media section-shell" aria-label="Approved Maradin field media">
+  <section class="maradin-media section-shell" aria-label="Maradin field media">
     <div class="container maradin-media__grid">
       <video
         controls
@@ -52,7 +52,7 @@ if (!maradinPoster || !testContactVideo || !projectionFrame || !realFieldStill) 
         aria-label={maradinProofRecord.heroMedia.alt}
       >
         <source src={maradinProofRecord.heroMedia.src} type="video/mp4" />
-        Your browser does not support the approved field-test video.
+        Your browser does not support the field-test video.
       </video>
       <figure>
         <img
@@ -67,7 +67,7 @@ if (!maradinPoster || !testContactVideo || !projectionFrame || !realFieldStill) 
     </div>
   </section>
 
-  <section class="maradin-support-media section-shell" aria-label="Additional approved Maradin test media">
+  <section class="maradin-support-media section-shell" aria-label="Additional Maradin test media">
     <div class="container maradin-support-media__grid">
       <figure>
         <video
@@ -78,7 +78,7 @@ if (!maradinPoster || !testContactVideo || !projectionFrame || !realFieldStill) 
           aria-label={testContactVideo.alt}
         >
           <source src={testContactVideo.src} type="video/mp4" />
-          Your browser does not support the approved field-test video.
+          Your browser does not support the field-test video.
         </video>
         <figcaption>Vehicle-mounted testing in the operating environment.</figcaption>
       </figure>
@@ -90,7 +90,7 @@ if (!maradinPoster || !testContactVideo || !projectionFrame || !realFieldStill) 
           height={realFieldStill.height}
           loading="lazy"
         />
-        <figcaption>A field-test vehicle documented in the approved Maradin record.</figcaption>
+        <figcaption>A field-test vehicle documented in the Maradin record.</figcaption>
       </figure>
     </div>
   </section>
@@ -101,7 +101,10 @@ if (!maradinPoster || !testContactVideo || !projectionFrame || !realFieldStill) 
         <p class="eyebrow">field record</p>
         <div>
           <h2 id="field-record-title">Condition, test and evidence.</h2>
-          <p>The public record preserves the test context without publishing proprietary measurements or extending the result into a commercial claim.</p>
+          <p>
+            The record connects the operating need to the tested conditions, the
+            observations produced and what followed.
+          </p>
         </div>
       </div>
       <ol class="record-chapter-list">
@@ -125,7 +128,7 @@ if (!maradinPoster || !testContactVideo || !projectionFrame || !realFieldStill) 
         <p class="eyebrow">related capabilities</p>
         <div>
           <h2 id="capability-title">Work around the test.</h2>
-          <p>These capabilities describe the structure of the field record, not a broader result.</p>
+          <p>POC design, field execution and evidence synthesis kept the test connected to its operating question.</p>
         </div>
       </div>
       <ul class="label-cloud" aria-label="Related capabilities">

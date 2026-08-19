@@ -159,6 +159,7 @@ const report = {
   assets: { governed: INTENDED_PUBLIC_ASSETS.length, files: [] },
   sizes: {},
   privacyProbes: SOURCE_LIKE_PATHS,
+  editorialReview: { routesReviewed: 0, findings: [] },
   failures,
 };
 
@@ -269,6 +270,63 @@ check(
   "/",
   "Home must visibly include the exact approved Maradin proof title",
 );
+
+const homeHtml = routeHtml.get("/") ?? "";
+const expectedHomeScenes = ["entry", "built-with-industry", "method", "industries", "proof", "programmes", "conversion"];
+const homeSceneSections = tags(homeHtml, "section")
+  .map((tag) => ({
+    identity: attribute(tag, "data-home-scene"),
+    id: attribute(tag, "id"),
+    labelledBy: attribute(tag, "aria-labelledby"),
+  }))
+  .filter(({ identity }) => identity !== undefined);
+check(
+  homeSceneSections.length === expectedHomeScenes.length && homeSceneSections.every(({ identity }, index) => identity === expectedHomeScenes[index]),
+  "home-scene-order",
+  "/",
+  `Home must expose the exact ordered scene identities: ${expectedHomeScenes.join(", ")}`,
+  homeSceneSections,
+);
+const homeIds = new Set([...homeHtml.matchAll(/\sid\s*=\s*(?:"([^"]+)"|'([^']+)')/gi)].map((match) => decodeHtml(match[1] ?? match[2])));
+for (const scene of homeSceneSections) {
+  check(Boolean(scene.id), "home-scene-id", "/", `Home scene ${scene.identity} is missing a stable id`);
+  check(Boolean(scene.labelledBy) && homeIds.has(scene.labelledBy), "home-scene-label", "/", `Home scene ${scene.identity} has no valid accessible label target`);
+}
+check(new Set(homeSceneSections.map(({ id }) => id)).size === homeSceneSections.length, "home-scene-id", "/", "Home scene ids must be unique");
+check(/data-scene=["']threshold["']/i.test(homeHtml), "home-threshold", "/", "Home must expose the static threshold marker");
+check(/class=["'][^"']*\bfield-aperture\b/i.test(homeHtml), "home-static-aperture", "/", "Home must include the static rectangular field aperture");
+check(!/signal-field|current-signal|\bradar\b|\bscanner\b|\bconcentric\b/i.test(homeHtml), "home-rejected-visual", "/", "Home contains rejected or unapproved scene language");
+
+const editorialConcepts = [
+  { id: "verification-caveat", pattern: /\b(?:unverified|non-public|provenance)\b/gi },
+  { id: "interface-note", pattern: /\binteractive filters?\b/gi },
+  { id: "implementation-status", pattern: /\b(?:collecting|transmitting|will be added)\b/gi },
+  { id: "logo-wall", pattern: /\blogo wall\b/gi },
+  { id: "internal-governance", pattern: /\binternal\b/gi },
+  { id: "implementation-note", pattern: /\bimplementation (?:note|status)\b/gi },
+  { id: "review-note", pattern: /\breview (?:note|status)\b/gi },
+  { id: "publication-status", pattern: /\bpublication(?:-| )status\b/gi },
+  { id: "placeholder-wording", pattern: /\bplaceholder\b/gi },
+];
+for (const route of ALL_HTML_ROUTES) {
+  const publicText = visibleText(routeHtml.get(route.path) ?? "");
+  report.editorialReview.routesReviewed += 1;
+  for (const concept of editorialConcepts) {
+    concept.pattern.lastIndex = 0;
+    for (const match of publicText.matchAll(concept.pattern)) {
+      const start = Math.max(0, match.index - 55);
+      const end = Math.min(publicText.length, match.index + match[0].length + 55);
+      const finding = {
+        route: route.path,
+        concept: concept.id,
+        match: match[0],
+        context: publicText.slice(start, end),
+      };
+      report.editorialReview.findings.push(finding);
+      check(false, "public-editorial-leakage", route.path, `visitor-facing ${concept.id} language requires editorial review`, finding);
+    }
+  }
+}
 
 const sitemapPath = path.join(outputRoot, "sitemap.xml");
 if (!(await exists(sitemapPath))) {

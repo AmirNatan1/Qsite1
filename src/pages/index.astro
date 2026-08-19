@@ -25,12 +25,28 @@ const processSteps = [
 
 const maradinPoster = maradinProofRecord.media[0];
 if (!maradinPoster) throw new Error("The approved Maradin poster is required on Home.");
+
+const homeScenes = {
+  threshold: { id: "home-threshold", identity: "threshold" },
+  entry: { id: "entry", identity: "entry" },
+  industry: { id: "built-with-industry", identity: "built-with-industry" },
+  method: { id: "method", identity: "method" },
+  industries: { id: "industries", identity: "industries" },
+  proof: { id: "proof", identity: "proof" },
+  programmes: { id: "programmes", identity: "programmes" },
+  conversion: { id: "conversion", identity: "conversion" },
+} as const satisfies Record<string, { id: string; identity: string }>;
 ---
 
 <BaseLayout {title} {description} bodyClass="home-page">
-  <section class="home-hero section-shell" aria-labelledby="home-title">
+  <section
+    id={homeScenes.threshold.id}
+    class="home-hero home-scene home-scene--threshold section-shell"
+    aria-labelledby="home-title"
+    data-scene={homeScenes.threshold.identity}
+  >
     <div class="container home-hero__grid">
-      <div class="home-hero__copy">
+      <div class="home-hero__copy" data-scene-layer="content">
         <p class="eyebrow">industrial innovation · herzliya</p>
         <h1 id="home-title">Prove it where it has to work.</h1>
         <p class="hero-support">
@@ -43,17 +59,26 @@ if (!maradinPoster) throw new Error("The approved Maradin poster is required on 
         </div>
       </div>
 
-      <div class="signal-field" aria-hidden="true">
-        <span class="signal-field__label">FIELD / 01</span>
-        <div class="signal-field__lines"></div>
-        <span class="signal-field__point"></span>
-        <span class="signal-field__caption">need · test · evidence</span>
+      <div class="field-aperture" data-scene-layer="media" aria-hidden="true">
+        <span class="field-aperture__plane"></span>
+        <span class="field-aperture__frame">
+          <span class="field-aperture__raster"></span>
+          <span class="field-aperture__overscan"></span>
+        </span>
+        <span class="field-aperture__trace field-aperture__trace--lead"></span>
+        <span class="field-aperture__trace field-aperture__trace--return"></span>
+        <span class="field-aperture__current"></span>
       </div>
     </div>
   </section>
 
-  <section class="section-shell audience-section" aria-labelledby="audience-title">
-    <div class="container">
+  <section
+    id={homeScenes.entry.id}
+    class="home-scene home-scene--entry section-shell audience-section"
+    aria-labelledby="audience-title"
+    data-home-scene={homeScenes.entry.identity}
+  >
+    <div class="container" data-scene-layer="content">
       <div class="section-heading section-heading--wide">
         <p class="eyebrow">two ways in</p>
         <h2 id="audience-title">Where do you enter?</h2>
@@ -79,8 +104,13 @@ if (!maradinPoster) throw new Error("The approved Maradin poster is required on 
     </div>
   </section>
 
-  <section class="editorial-section" aria-labelledby="industry-model-title">
-    <div class="container">
+  <section
+    id={homeScenes.industry.id}
+    class="home-scene home-scene--industry editorial-section"
+    aria-labelledby="industry-model-title"
+    data-home-scene={homeScenes.industry.identity}
+  >
+    <div class="container" data-scene-layer="content">
       <div class="editorial-section__intro">
         <p class="eyebrow">built with industry</p>
         <div>
@@ -105,8 +135,13 @@ if (!maradinPoster) throw new Error("The approved Maradin poster is required on 
     </div>
   </section>
 
-  <section class="editorial-section" aria-labelledby="process-title">
-    <div class="container">
+  <section
+    id={homeScenes.method.id}
+    class="home-scene home-scene--method editorial-section"
+    aria-labelledby="process-title"
+    data-home-scene={homeScenes.method.identity}
+  >
+    <div class="container" data-scene-layer="content">
       <div class="editorial-section__intro">
         <p class="eyebrow">from need to decision</p>
         <div>
@@ -118,8 +153,13 @@ if (!maradinPoster) throw new Error("The approved Maradin poster is required on 
     </div>
   </section>
 
-  <section class="editorial-section" aria-labelledby="industries-title">
-    <div class="container">
+  <section
+    id={homeScenes.industries.id}
+    class="home-scene home-scene--industries editorial-section"
+    aria-labelledby="industries-title"
+    data-home-scene={homeScenes.industries.identity}
+  >
+    <div class="container" data-scene-layer="content">
       <div class="editorial-section__intro">
         <p class="eyebrow">industries</p>
         <div>
@@ -139,18 +179,24 @@ if (!maradinPoster) throw new Error("The approved Maradin poster is required on 
     </div>
   </section>
 
-  <section class="editorial-section" aria-labelledby="proof-title">
-    <div class="container">
+  <section
+    id={homeScenes.proof.id}
+    class="home-scene home-scene--proof editorial-section"
+    aria-labelledby="proof-title"
+    data-home-scene={homeScenes.proof.identity}
+  >
+    <div class="container" data-scene-layer="content">
       <article class="proof-feature">
         <img
           class="proof-feature__media"
+          data-scene-layer="media"
           src={maradinPoster.src}
           alt={maradinPoster.alt}
           width={maradinPoster.width}
           height={maradinPoster.height}
           loading="lazy"
         />
-        <div class="proof-feature__copy">
+        <div class="proof-feature__copy" data-scene-layer="copy">
           <p class="eyebrow">proof</p>
           <h2 id="proof-title">Evidence before scale.</h2>
           <h3 class="proof-feature__title">{maradinProofRecord.title}</h3>
@@ -161,8 +207,13 @@ if (!maradinPoster) throw new Error("The approved Maradin poster is required on 
     </div>
   </section>
 
-  <section class="editorial-section" aria-labelledby="programmes-title">
-    <div class="container">
+  <section
+    id={homeScenes.programmes.id}
+    class="home-scene home-scene--programmes editorial-section"
+    aria-labelledby="programmes-title"
+    data-home-scene={homeScenes.programmes.identity}
+  >
+    <div class="container" data-scene-layer="content">
       <div class="editorial-section__intro">
         <p class="eyebrow">programmes</p>
         <div>
@@ -192,6 +243,8 @@ if (!maradinPoster) throw new Error("The approved Maradin poster is required on 
   </section>
 
   <ClosingCta
+    id={homeScenes.conversion.id}
+    scene={homeScenes.conversion.identity}
     title="Start with the challenge."
     copy="Choose the route that matches where you are entering the work."
   >

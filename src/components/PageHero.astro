@@ -9,8 +9,12 @@ interface Props {
 const { eyebrow, title, intro, compact = false } = Astro.props;
 ---
 
-<section class:list={["page-hero", "section-shell", { "page-hero--compact": compact }]} aria-labelledby="page-title">
-  <div class="page-hero__inner container">
+<section
+  class:list={["page-hero", "section-shell", { "page-hero--compact": compact }]}
+  aria-labelledby="page-title"
+  data-scene="route-introduction"
+>
+  <div class="page-hero__inner container" data-scene-layer="content">
     <p class="eyebrow">{eyebrow}</p>
     <div class="page-hero__copy">
       <h1 id="page-title">{title}</h1>

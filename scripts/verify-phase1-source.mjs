@@ -88,6 +88,40 @@ check(
   "src/pages/index.astro",
   "Home must visibly render the exact approved Maradin proof title",
 );
+const homeStyles = await readFile(path.join(root, "src", "styles", "routes", "home.css"), "utf8");
+const portalContractPath = path.join(root, "docs", "planning", "PORTAL_TO_INTERIOR_CONTRACT.md");
+let portalContract = "";
+try {
+  portalContract = await readFile(portalContractPath, "utf8");
+} catch {
+  check(false, "portal-contract", "docs/planning/PORTAL_TO_INTERIOR_CONTRACT.md", "portal-to-interior contract is missing");
+}
+for (const identifier of ["signal-field", "radar", "scanner", "concentric"]) {
+  check(
+    !new RegExp(identifier, "i").test(`${homeSource}\n${homeStyles}`),
+    "home-visual-language",
+    "src/pages/index.astro + src/styles/routes/home.css",
+    `rejected Home visual identifier remains: ${identifier}`,
+  );
+}
+check(/class=["']field-aperture["']/.test(homeSource), "home-static-aperture", "src/pages/index.astro", "Home must include the static field-aperture marker");
+check(/\.field-aperture\b/.test(homeStyles), "home-static-aperture", "src/styles/routes/home.css", "Home must style the static field aperture");
+check(!/border-radius\s*:\s*50%/i.test(homeStyles), "home-circular-geometry", "src/styles/routes/home.css", "Home route styles must not recreate circular target geometry");
+check(!/@keyframes\b|\banimation(?:-name)?\s*:/i.test(homeStyles), "home-motion", "src/styles/routes/home.css", "Phase 1 Home visual must remain static");
+for (const identity of ["entry", "built-with-industry", "method", "industries", "proof", "programmes", "conversion"]) {
+  check(
+    new RegExp(`identity:\\s*["']${identity}["']`).test(homeSource),
+    "home-scene-identity",
+    "src/pages/index.astro",
+    `Home scene registry is missing ${identity}`,
+  );
+}
+check(!/current-signal/i.test(homeSource), "home-current-signal", "src/pages/index.astro", "Current Signal must remain absent until approved content exists");
+if (portalContract) {
+  check(/physical CRT glass fills (?:the )?viewport/i.test(portalContract), "portal-contract", "docs/planning/PORTAL_TO_INTERIOR_CONTRACT.md", "contract must define the physical CRT handoff");
+  check(/native (?:browser )?scroll/i.test(portalContract), "portal-contract", "docs/planning/PORTAL_TO_INTERIOR_CONTRACT.md", "contract must preserve native scroll authority");
+  check(/Phase 2/i.test(portalContract) && /not authorized|separately gated|remains gated/i.test(portalContract), "portal-contract", "docs/planning/PORTAL_TO_INTERIOR_CONTRACT.md", "contract must keep Phase 2 separately gated");
+}
 
 for (const route of ALL_HTML_ROUTES) {
   let source;

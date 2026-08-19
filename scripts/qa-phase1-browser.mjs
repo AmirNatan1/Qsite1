@@ -116,6 +116,33 @@ const SUPPORTING_CAPTURE_ORDER = Object.freeze([
   "404",
 ]);
 
+const SHORT_HEIGHT_CAPTURE_ORDER = Object.freeze([
+  "for-industry",
+  "for-startups",
+  "industries",
+  "maradin",
+]);
+
+const TYPOGRAPHY_REVIEW_ROUTE_ORDER = Object.freeze([
+  "for-industry",
+  "maradin",
+  "spark",
+  "contact",
+]);
+
+const HOME_SCENE_IDENTITIES = Object.freeze([
+  "entry",
+  "built-with-industry",
+  "method",
+  "industries",
+  "proof",
+  "programmes",
+  "conversion",
+]);
+
+const MOBILE_H1_MINIMUM_PX = 30;
+const MOBILE_H1_BODY_RATIO_MINIMUM = 1.6;
+
 function parseArguments(argv) {
   const options = { smoke: false, list: false, report: null, browser: null, match: null, serverMode: null, help: false };
   for (let index = 0; index < argv.length; index += 1) {
@@ -169,82 +196,96 @@ function caseId(scenario, route, viewport) {
 
 function baselineCapture(route, viewport) {
   if (route.id === "home") {
-    const homeIds = [
+    if ([
       "desktop-1440x900",
       "short-desktop-1366x650",
       "mobile-390x844",
-      "mobile-360x800",
       "narrow-320x800",
-    ];
-    const homeOrder = homeIds.indexOf(viewport.id);
-    if (homeOrder >= 0) {
-      const groups = ["home"];
-      const groupOrder = { home: homeOrder };
-      if (["mobile-390x844", "mobile-360x800", "narrow-320x800"].includes(viewport.id)) {
-        groups.push("responsive");
-        groupOrder.responsive = homeIds.slice(2).indexOf(viewport.id);
-      }
+    ].includes(viewport.id)) {
       return {
         label: `Home · ${viewport.width}×${viewport.height}`,
-        groups,
-        groupOrder,
+        groups: [],
+        groupOrder: {},
       };
     }
     if (viewport.id === "mobile-landscape-844x390") {
       return {
         label: "Home · mobile landscape · 844×390",
-        groups: ["responsive"],
-        groupOrder: { responsive: 3 },
+        groups: ["mobile-landscape"],
+        groupOrder: { "mobile-landscape": 0 },
       };
     }
   }
 
-  if (viewport.id === "desktop-1440x900") {
-    const supportingOrder = SUPPORTING_CAPTURE_ORDER.indexOf(route.id);
-    if (supportingOrder >= 0) {
-      return {
-        label: `${route.id.replaceAll("-", " ")} · 1440×900`,
-        groups: ["supporting"],
-        groupOrder: { supporting: supportingOrder },
-      };
-    }
+  const supportingOrder = SUPPORTING_CAPTURE_ORDER.indexOf(route.id);
+  if (supportingOrder < 0) return null;
+
+  const groups = [];
+  const groupOrder = {};
+  if (viewport.id === "mobile-390x844") {
+    groups.push("supporting-mobile-390");
+    groupOrder["supporting-mobile-390"] = supportingOrder;
+  }
+  if (viewport.id === "narrow-320x800") {
+    groups.push("supporting-mobile-320");
+    groupOrder["supporting-mobile-320"] = supportingOrder;
+  }
+
+  const shortOrder = SHORT_HEIGHT_CAPTURE_ORDER.indexOf(route.id);
+  if (viewport.id === "short-desktop-1366x650" && shortOrder >= 0) {
+    groups.push("short-height");
+    groupOrder["short-height"] = shortOrder;
+  }
+  if (viewport.id === "mobile-landscape-844x390" && shortOrder >= 0) {
+    groups.push("mobile-landscape");
+    groupOrder["mobile-landscape"] = shortOrder + 1;
+  }
+
+  if (groups.length > 0) {
+    return {
+      label: `${route.id.replaceAll("-", " ")} · ${viewport.width}×${viewport.height}`,
+      groups,
+      groupOrder,
+    };
   }
   return null;
 }
 
 function stressCapture(id) {
-  const captures = {
-    "text-200-desktop": {
-      label: "Home · 200% text · 1440×900",
-      groups: ["accessibility"],
-      groupOrder: { accessibility: 0 },
-    },
-    "fallback-desktop": {
-      label: "Home · forced fallback fonts · 1440×900",
-      groups: ["accessibility"],
-      groupOrder: { accessibility: 1 },
-    },
-    "keyboard-focus-desktop": {
-      label: "Home · keyboard focus · 1440×900",
-      groups: ["accessibility"],
-      groupOrder: { accessibility: 2 },
-    },
-    "reduced-motion-desktop": {
-      label: "Home · reduced motion · 1440×900",
-      groups: ["accessibility"],
-      groupOrder: { accessibility: 3 },
-    },
-    "long-copy-mobile": {
-      label: "Home · 25% longer support copy · 390×844",
-      groups: ["responsive"],
-      groupOrder: { responsive: 4 },
-    },
-    "js-disabled-nav-mobile": {
-      label: "Home · JavaScript-disabled navigation · 390×844",
-      groups: ["accessibility"],
-      groupOrder: { accessibility: 4 },
-    },
-  };
+  const captures = Object.fromEntries([
+    ...TYPOGRAPHY_REVIEW_ROUTE_ORDER.map((routeId, index) => [
+      `text-200--${routeId}--mobile`,
+      {
+        label: `${routeId.replaceAll("-", " ")} · 200% text · 390×844`,
+        groups: ["accessibility-typography"],
+        groupOrder: { "accessibility-typography": index },
+      },
+    ]),
+    ...TYPOGRAPHY_REVIEW_ROUTE_ORDER.map((routeId, index) => [
+      `fallback--${routeId}--mobile-390x844`,
+      {
+        label: `${routeId.replaceAll("-", " ")} · forced fallback fonts · 390×844`,
+        groups: ["accessibility-typography"],
+        groupOrder: { "accessibility-typography": index + TYPOGRAPHY_REVIEW_ROUTE_ORDER.length },
+      },
+    ]),
+    [
+      "keyboard-focus-mobile",
+      {
+        label: "Home · open keyboard navigation · 390×844",
+        groups: ["accessibility-typography"],
+        groupOrder: { "accessibility-typography": 8 },
+      },
+    ],
+    [
+      "js-disabled-nav-mobile",
+      {
+        label: "Home · open no-JavaScript navigation · 320×800",
+        groups: ["accessibility-typography"],
+        groupOrder: { "accessibility-typography": 9 },
+      },
+    ],
+  ]);
   return captures[id] ?? null;
 }
 
@@ -310,15 +351,16 @@ function buildCases(smoke) {
 
   for (const route of ROUTES) {
     for (const viewport of ALL_VIEWPORTS) {
+      const id = caseId("fallback", route, viewport);
       cases.push({
-        id: caseId("fallback", route, viewport),
+        id,
         route,
         viewport,
         scenario: "fallback-font-matrix",
         mutation: "fallback-fonts",
         javaScriptEnabled: true,
         reducedMotion: "no-preference",
-        capture: null,
+        capture: stressCapture(id),
         runSkipLink: false,
         runMobileMenu: false,
       });
@@ -359,7 +401,7 @@ function buildCases(smoke) {
     ["reduced-motion-mobile", "mobile-390x844", null, true, "reduce"],
     ["keyboard-focus-desktop", "desktop-1440x900", "keyboard-focus", true, "no-preference"],
     ["keyboard-focus-mobile", "mobile-390x844", "keyboard-focus", true, "no-preference"],
-    ["js-disabled-nav-mobile", "mobile-390x844", "js-disabled-nav", false, "no-preference"],
+    ["js-disabled-nav-mobile", "narrow-320x800", "js-disabled-nav", false, "no-preference"],
   ];
   for (const [id, viewportId, mutation, javaScriptEnabled, reducedMotion] of stressCases) {
     cases.push({
@@ -711,6 +753,15 @@ function primaryFontFamily(computedFamily) {
     .replace(/^(?:"([^"]+)"|'([^']+)')$/, "$1$2");
 }
 
+function fontProbeExpectation(plan, role) {
+  const supportingMobileEditorialH1 = role === "display"
+    && plan.route.id !== "home"
+    && plan.viewport.width <= 576;
+  return supportingMobileEditorialH1
+    ? { preferred: "Newsreader", fallback: "Georgia" }
+    : FONT_PROBE_EXPECTATIONS[role];
+}
+
 function collectFontFamilyFailures(plan, mutation) {
   const failures = [];
   for (const expectedFont of PREFERRED_FONT_LOAD_EXPECTATIONS) {
@@ -729,7 +780,8 @@ function collectFontFamilyFailures(plan, mutation) {
       ));
     }
   }
-  for (const [role, expected] of Object.entries(FONT_PROBE_EXPECTATIONS)) {
+  for (const role of Object.keys(FONT_PROBE_EXPECTATIONS)) {
+    const expected = fontProbeExpectation(plan, role);
     const selector = mutation?.selectors?.[role] ?? `font-probe:${role}`;
     const preferredEvidence = mutation?.preferred?.[role] ?? null;
     const fallbackEvidence = mutation?.fallback?.[role] ?? null;
@@ -812,6 +864,195 @@ async function collectNavigationFailures(page, plan) {
   return { state, failures };
 }
 
+async function collectMobileH1Authority(page, plan) {
+  const applicable = plan.route.id !== "home" && plan.viewport.width <= 390;
+  if (!applicable) return { state: { applicable: false }, failures: [] };
+
+  const state = await page.evaluate(() => {
+    const h1 = document.querySelector("main h1");
+    if (!(h1 instanceof HTMLElement)) return { applicable: true, found: false };
+    const style = getComputedStyle(h1);
+    const bodyStyle = getComputedStyle(document.body);
+    const rect = h1.getBoundingClientRect();
+    const range = document.createRange();
+    range.selectNodeContents(h1);
+    const glyphRects = [...range.getClientRects()].filter((glyph) => glyph.width > 0 && glyph.height > 0);
+    const lineTops = [];
+    for (const glyph of glyphRects) {
+      if (!lineTops.some((top) => Math.abs(top - glyph.top) <= 1)) lineTops.push(glyph.top);
+    }
+    const fontSizePx = Number.parseFloat(style.fontSize);
+    const bodyFontSizePx = Number.parseFloat(bodyStyle.fontSize);
+    const primaryFamily = style.fontFamily
+      .split(",", 1)[0]
+      .trim()
+      .replace(/^(?:"([^"]+)"|'([^']+)')$/, "$1$2");
+    return {
+      applicable: true,
+      found: true,
+      text: h1.textContent?.trim() ?? "",
+      fontFamily: style.fontFamily,
+      primaryFamily,
+      fontSizePx,
+      bodyFontSizePx,
+      sizeRatio: Number((fontSizePx / Math.max(bodyFontSizePx, 1)).toFixed(3)),
+      lineHeightPx: Number.parseFloat(style.lineHeight),
+      lineCount: lineTops.length,
+      wordBreak: style.wordBreak,
+      overflowWrap: style.overflowWrap,
+      hyphens: style.hyphens,
+      rect: { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom, width: rect.width, height: rect.height },
+      glyphBounds: glyphRects.length > 0 ? {
+        left: Math.min(...glyphRects.map((glyph) => glyph.left)),
+        top: Math.min(...glyphRects.map((glyph) => glyph.top)),
+        right: Math.max(...glyphRects.map((glyph) => glyph.right)),
+        bottom: Math.max(...glyphRects.map((glyph) => glyph.bottom)),
+      } : null,
+      scrollWidth: h1.scrollWidth,
+      clientWidth: h1.clientWidth,
+      scrollHeight: h1.scrollHeight,
+      clientHeight: h1.clientHeight,
+    };
+  });
+
+  const failures = [];
+  if (!state.found) {
+    failures.push(failureFor(plan, "mobile-h1-authority", "main h1", state, { found: true }));
+    return { state, failures };
+  }
+  if (state.fontSizePx < MOBILE_H1_MINIMUM_PX || state.sizeRatio < MOBILE_H1_BODY_RATIO_MINIMUM) {
+    failures.push(failureFor(plan, "mobile-h1-authority", "main h1", state, {
+      minimumFontSizePx: MOBILE_H1_MINIMUM_PX,
+      minimumBodySizeRatio: MOBILE_H1_BODY_RATIO_MINIMUM,
+    }));
+  }
+  if (state.wordBreak !== "normal" || state.overflowWrap !== "normal" || state.hyphens !== "none") {
+    failures.push(failureFor(plan, "mobile-h1-word-integrity", "main h1", state, {
+      wordBreak: "normal",
+      overflowWrap: "normal",
+      hyphens: "none",
+    }));
+  }
+  const glyphsInside = state.glyphBounds
+    && state.glyphBounds.left >= state.rect.left - 1
+    && state.glyphBounds.right <= state.rect.right + 1
+    && state.glyphBounds.top >= state.rect.top - 1
+    && state.glyphBounds.bottom <= state.rect.bottom + 1;
+  if (!glyphsInside || state.scrollWidth > state.clientWidth + 1 || state.scrollHeight > state.clientHeight + 1) {
+    failures.push(failureFor(plan, "mobile-h1-intrinsic-geometry", "main h1", state, {
+      glyphsInsideElement: true,
+      scrollWidthAtMost: state.clientWidth + 1,
+      scrollHeightAtMost: state.clientHeight + 1,
+    }));
+  }
+  const expectedFamily = plan.mutation === "fallback-fonts" ? "Georgia" : "Newsreader";
+  if (state.primaryFamily !== expectedFamily) {
+    failures.push(failureFor(plan, "mobile-h1-editorial-family", "main h1", {
+      computed: state.fontFamily,
+      primary: state.primaryFamily,
+    }, { primary: expectedFamily }));
+  }
+  return { state, failures };
+}
+
+async function collectHomeSceneContract(page, plan) {
+  if (plan.route.id !== "home") return { state: { applicable: false }, failures: [] };
+  const state = await page.evaluate((expectedIdentities) => {
+    const main = document.querySelector("main");
+    const scenes = [...document.querySelectorAll("main [data-home-scene]")];
+    const records = scenes.map((scene) => {
+      const labelledBy = scene.getAttribute("aria-labelledby");
+      const label = labelledBy ? document.getElementById(labelledBy) : null;
+      const rect = scene.getBoundingClientRect();
+      return {
+        tagName: scene.tagName,
+        identity: scene.getAttribute("data-home-scene"),
+        id: scene.id || null,
+        directMainChild: scene.parentElement === main,
+        labelledBy,
+        labelExists: Boolean(label),
+        labelTagName: label?.tagName ?? null,
+        top: rect.top,
+        bottom: rect.bottom,
+        height: rect.height,
+      };
+    });
+    const threshold = document.querySelector('main > section[data-scene="threshold"]');
+    const apertures = [...document.querySelectorAll('main .field-aperture[data-scene-layer="media"]')];
+    return {
+      applicable: true,
+      expectedIdentities,
+      identities: records.map(({ identity }) => identity),
+      records,
+      uniqueIdentities: new Set(records.map(({ identity }) => identity)).size,
+      uniqueIds: new Set(records.map(({ id }) => id).filter(Boolean)).size,
+      currentSignalCount: document.querySelectorAll('[data-home-scene="current-signal"]').length,
+      legacyRadarCount: document.querySelectorAll('.signal-field, [class*="signal-field"]').length,
+      threshold: threshold ? {
+        id: threshold.id || null,
+        labelledBy: threshold.getAttribute("aria-labelledby"),
+        labelExists: Boolean(threshold.getAttribute("aria-labelledby") && document.getElementById(threshold.getAttribute("aria-labelledby"))),
+      } : null,
+      apertures: apertures.map((aperture) => ({
+        ariaHidden: aperture.getAttribute("aria-hidden"),
+        insideThreshold: Boolean(threshold?.contains(aperture)),
+      })),
+    };
+  }, HOME_SCENE_IDENTITIES);
+
+  const failures = [];
+  if (JSON.stringify(state.identities) !== JSON.stringify(HOME_SCENE_IDENTITIES)) {
+    failures.push(failureFor(plan, "home-scene-order", "main [data-home-scene]", state.identities, HOME_SCENE_IDENTITIES));
+  }
+  const validRecords = state.records.length === HOME_SCENE_IDENTITIES.length
+    && state.records.every((record, index) => (
+      record.tagName === "SECTION"
+      && record.identity === HOME_SCENE_IDENTITIES[index]
+      && record.id === record.identity
+      && record.directMainChild
+      && record.labelledBy
+      && record.labelExists
+      && /^H[1-6]$/.test(record.labelTagName ?? "")
+      && record.height > 0
+      && (index === 0 || record.top >= state.records[index - 1].bottom - 1)
+    ));
+  if (!validRecords || state.uniqueIdentities !== HOME_SCENE_IDENTITIES.length || state.uniqueIds !== HOME_SCENE_IDENTITIES.length) {
+    failures.push(failureFor(plan, "home-scene-semantics", "main [data-home-scene]", state.records, {
+      count: HOME_SCENE_IDENTITIES.length,
+      tagName: "SECTION",
+      stableUniqueIdEqualToIdentity: true,
+      directMainChild: true,
+      validHeadingLabel: true,
+      orderedDocumentFlow: true,
+    }));
+  }
+  if (state.currentSignalCount !== 0) {
+    failures.push(failureFor(plan, "home-current-signal-publication", '[data-home-scene="current-signal"]', state.currentSignalCount, 0));
+  }
+  if (state.legacyRadarCount !== 0) {
+    failures.push(failureFor(plan, "home-radar-removal", '.signal-field, [class*="signal-field"]', state.legacyRadarCount, 0));
+  }
+  const aperture = state.apertures[0];
+  if (
+    state.threshold?.id !== "home-threshold"
+    || state.threshold?.labelledBy !== "home-title"
+    || !state.threshold?.labelExists
+    || state.apertures.length !== 1
+    || aperture?.ariaHidden !== "true"
+    || !aperture?.insideThreshold
+  ) {
+    failures.push(failureFor(plan, "home-threshold-contract", 'main > section[data-scene="threshold"]', {
+      threshold: state.threshold,
+      apertures: state.apertures,
+    }, {
+      threshold: { id: "home-threshold", labelledBy: "home-title", labelExists: true },
+      apertureCount: 1,
+      aperture: { ariaHidden: "true", insideThreshold: true },
+    }));
+  }
+  return { state, failures };
+}
+
 async function checkSkipLink(page, plan) {
   const failures = [];
   await page.evaluate(() => {
@@ -849,6 +1090,72 @@ async function checkSkipLink(page, plan) {
   return failures;
 }
 
+async function collectOpenMobileMenuLayout(page, plan) {
+  const state = await page.evaluate(() => {
+    const menu = document.querySelector("[data-mobile-nav]");
+    const trigger = menu?.querySelector("summary");
+    const header = document.querySelector(".site-header");
+    const panel = menu?.querySelector("nav");
+    const links = [...(menu?.querySelectorAll("nav a[href]") ?? [])];
+    const rectFor = (element) => {
+      const rect = element?.getBoundingClientRect();
+      return rect ? {
+        left: rect.left,
+        top: rect.top,
+        right: rect.right,
+        bottom: rect.bottom,
+        width: rect.width,
+        height: rect.height,
+      } : null;
+    };
+    return {
+      open: menu?.hasAttribute("open") ?? false,
+      ariaExpanded: trigger?.getAttribute("aria-expanded") ?? null,
+      viewportWidth: document.documentElement.clientWidth,
+      documentScrollWidth: document.documentElement.scrollWidth,
+      header: rectFor(header),
+      panel: rectFor(panel),
+      trigger: rectFor(trigger),
+      links: links.map((link) => ({ href: link.getAttribute("href"), rect: rectFor(link) })),
+    };
+  });
+  const failures = [];
+  if (!state.open) {
+    failures.push(failureFor(plan, "mobile-menu-expanded-state", "[data-mobile-nav] > summary", state, { open: true }));
+  }
+  if (plan.javaScriptEnabled && state.ariaExpanded !== "true") {
+    failures.push(failureFor(plan, "mobile-menu-expanded-state", "[data-mobile-nav] > summary", state, { open: true, ariaExpanded: "true" }));
+  }
+  if (state.documentScrollWidth > state.viewportWidth + 1) {
+    failures.push(failureFor(plan, "mobile-menu-open-overflow", "[data-mobile-nav]", state, { documentScrollWidthAtMost: state.viewportWidth + 1 }));
+  }
+  if (!state.header || !state.panel || state.panel.top < state.header.bottom - 1) {
+    failures.push(failureFor(plan, "mobile-menu-header-overlap", "[data-mobile-nav] nav", {
+      header: state.header,
+      panel: state.panel,
+    }, { panelTopAtLeast: state.header?.bottom ?? null }));
+  }
+  if (state.links.length !== NAVIGATION_LINK_COUNT) {
+    failures.push(failureFor(plan, "mobile-menu-link-count", "[data-mobile-nav] nav", state.links.length, NAVIGATION_LINK_COUNT));
+  }
+  for (const [index, link] of state.links.entries()) {
+    const rect = link.rect;
+    const geometryPass = rect
+      && rect.width >= 44
+      && rect.height >= 44
+      && rect.left >= -1
+      && rect.right <= state.viewportWidth + 1;
+    if (!geometryPass) {
+      failures.push(failureFor(plan, "mobile-menu-open-target", `[data-mobile-nav] nav a:nth-of-type(${index + 1})`, rect, {
+        minimumWidth: 44,
+        minimumHeight: 44,
+        insideViewport: true,
+      }));
+    }
+  }
+  return { state, failures };
+}
+
 async function checkMobileMenu(page, plan) {
   const failures = [];
   const summary = page.locator("[data-mobile-nav] > summary");
@@ -877,52 +1184,8 @@ async function checkMobileMenu(page, plan) {
     failures.push(failureFor(plan, "mobile-menu-expanded-state", "[data-mobile-nav] > summary", openState, { open: true, ariaExpanded: "true" }));
   }
 
-  const openLayout = await page.evaluate(() => {
-    const menu = document.querySelector("[data-mobile-nav]");
-    const trigger = menu?.querySelector("summary");
-    const header = document.querySelector(".site-header");
-    const panel = menu?.querySelector("nav");
-    const links = [...(menu?.querySelectorAll("nav a[href]") ?? [])];
-    const rectFor = (element) => {
-      const rect = element?.getBoundingClientRect();
-      return rect ? { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom, width: rect.width, height: rect.height } : null;
-    };
-    return {
-      viewportWidth: document.documentElement.clientWidth,
-      documentScrollWidth: document.documentElement.scrollWidth,
-      header: rectFor(header),
-      panel: rectFor(panel),
-      trigger: rectFor(trigger),
-      links: links.map((link) => ({ href: link.getAttribute("href"), rect: rectFor(link) })),
-    };
-  });
-  if (openLayout.documentScrollWidth > openLayout.viewportWidth + 1) {
-    failures.push(failureFor(plan, "mobile-menu-open-overflow", "[data-mobile-nav]", openLayout, { documentScrollWidthAtMost: openLayout.viewportWidth + 1 }));
-  }
-  if (!openLayout.header || !openLayout.panel || openLayout.panel.top < openLayout.header.bottom - 1) {
-    failures.push(failureFor(plan, "mobile-menu-header-overlap", "[data-mobile-nav] nav", {
-      header: openLayout.header,
-      panel: openLayout.panel,
-    }, { panelTopAtLeast: openLayout.header?.bottom ?? null }));
-  }
-  if (openLayout.links.length !== NAVIGATION_LINK_COUNT) {
-    failures.push(failureFor(plan, "mobile-menu-link-count", "[data-mobile-nav] nav", openLayout.links.length, NAVIGATION_LINK_COUNT));
-  }
-  for (const [index, link] of openLayout.links.entries()) {
-    const rect = link.rect;
-    const geometryPass = rect
-      && rect.width >= 44
-      && rect.height >= 44
-      && rect.left >= -1
-      && rect.right <= openLayout.viewportWidth + 1;
-    if (!geometryPass) {
-      failures.push(failureFor(plan, "mobile-menu-open-target", `[data-mobile-nav] nav a:nth-of-type(${index + 1})`, rect, {
-        minimumWidth: 44,
-        minimumHeight: 44,
-        insideViewport: true,
-      }));
-    }
-  }
+  const openLayout = await collectOpenMobileMenuLayout(page, plan);
+  failures.push(...openLayout.failures);
 
   const tabbedHrefs = [];
   for (const expectedHref of MOBILE_NAVIGATION_HREFS) {
@@ -979,22 +1242,94 @@ async function openJavaScriptDisabledNavigation(page, plan) {
   const failures = [];
   if (!(await summary.isVisible())) {
     failures.push(failureFor(plan, "js-disabled-navigation", "[data-mobile-nav] > summary", { visible: false }, { visible: true }));
-    return failures;
+    return { failures, state: null };
   }
-  await summary.click();
+  await summary.focus();
+  await page.keyboard.press("Enter");
+  await page.waitForFunction(() => document.querySelector("[data-mobile-nav]")?.hasAttribute("open"));
   const state = await page.evaluate(() => {
     const menu = document.querySelector("[data-mobile-nav]");
+    const trigger = menu?.querySelector("summary");
     const links = [...(menu?.querySelectorAll("nav a[href]") ?? [])];
     const visibleLinks = links.filter((link) => {
       const rect = link.getBoundingClientRect();
       return rect.width > 0 && rect.height > 0;
     });
-    return { open: menu?.hasAttribute("open") ?? false, linkCount: links.length, visibleLinkCount: visibleLinks.length };
+    const style = trigger instanceof HTMLElement ? getComputedStyle(trigger) : null;
+    return {
+      open: menu?.hasAttribute("open") ?? false,
+      linkCount: links.length,
+      visibleLinkCount: visibleLinks.length,
+      triggerFocused: document.activeElement === trigger,
+      focusVisible: trigger?.matches(":focus-visible") ?? false,
+      outlineStyle: style?.outlineStyle ?? null,
+      outlineWidth: style?.outlineWidth ?? null,
+    };
   });
   if (!state.open || state.linkCount !== NAVIGATION_LINK_COUNT || state.visibleLinkCount !== NAVIGATION_LINK_COUNT) {
     failures.push(failureFor(plan, "js-disabled-navigation", "[data-mobile-nav] nav", state, { open: true, linkCount: NAVIGATION_LINK_COUNT, visibleLinkCount: NAVIGATION_LINK_COUNT }));
   }
-  return failures;
+  if (!state.triggerFocused || !state.focusVisible || state.outlineStyle === "none" || Number.parseFloat(state.outlineWidth ?? "0") < 2) {
+    failures.push(failureFor(plan, "js-disabled-navigation-focus", "[data-mobile-nav] > summary", state, {
+      triggerFocused: true,
+      focusVisible: true,
+      outlineStyle: "not none",
+      minimumOutlineWidth: 2,
+    }));
+  }
+  const openLayout = await collectOpenMobileMenuLayout(page, plan);
+  failures.push(...openLayout.failures);
+  return { failures, state: { ...state, layout: openLayout.state } };
+}
+
+async function prepareKeyboardOpenNavigationEvidence(page, plan) {
+  const failures = [];
+  const summary = page.locator("[data-mobile-nav] > summary");
+  if (!(await summary.isVisible())) {
+    return {
+      failures: [failureFor(plan, "mobile-menu-evidence-availability", "[data-mobile-nav] > summary", { visible: false }, { visible: true })],
+      state: null,
+    };
+  }
+  await summary.focus();
+  await page.keyboard.press("Space");
+  await page.waitForFunction(() => document.querySelector("[data-mobile-nav]")?.hasAttribute("open"));
+  await page.waitForFunction(
+    () => document.querySelector("[data-mobile-nav] > summary")?.getAttribute("aria-expanded") === "true",
+    undefined,
+    { timeout: 1_000 },
+  ).catch(() => null);
+  const openLayout = await collectOpenMobileMenuLayout(page, plan);
+  failures.push(...openLayout.failures);
+  await page.keyboard.press("Tab");
+  const focus = await page.evaluate(() => {
+    const element = document.activeElement;
+    const rect = element instanceof HTMLElement ? element.getBoundingClientRect() : null;
+    const style = element instanceof HTMLElement ? getComputedStyle(element) : null;
+    return {
+      href: element instanceof HTMLAnchorElement ? element.getAttribute("href") : null,
+      visible: Boolean(rect && rect.width > 0 && rect.height > 0),
+      focusVisible: element instanceof HTMLElement ? element.matches(":focus-visible") : false,
+      outlineStyle: style?.outlineStyle ?? null,
+      outlineWidth: style?.outlineWidth ?? null,
+    };
+  });
+  if (
+    focus.href !== MOBILE_NAVIGATION_HREFS[0]
+    || !focus.visible
+    || !focus.focusVisible
+    || focus.outlineStyle === "none"
+    || Number.parseFloat(focus.outlineWidth ?? "0") < 2
+  ) {
+    failures.push(failureFor(plan, "mobile-menu-evidence-focus", "[data-mobile-nav] nav a:first-of-type", focus, {
+      href: MOBILE_NAVIGATION_HREFS[0],
+      visible: true,
+      focusVisible: true,
+      outlineStyle: "not none",
+      minimumOutlineWidth: 2,
+    }));
+  }
+  return { failures, state: { layout: openLayout.state, focus } };
 }
 
 async function runAxe(page, plan) {
@@ -1305,6 +1640,8 @@ async function runCase(browser, plan, baseUrl, captureRoot, screenshotSequence) 
   let response = null;
   let mutation = null;
   let navigation = null;
+  let mobileH1Authority = { applicable: false };
+  let homeSceneContract = { applicable: false };
   let axe = { skipped: "navigation did not complete", violations: [], failures: [] };
   let screenshot = null;
   try {
@@ -1334,6 +1671,14 @@ async function runCase(browser, plan, baseUrl, captureRoot, screenshotSequence) 
     if (plan.javaScriptEnabled) {
       failures.push(...(await withTimeout(runLayoutAudit(page, plan), 20_000, `${plan.id} layout audit`)));
     }
+    debug(plan, "mobile H1 authority");
+    const mobileH1Result = await withTimeout(collectMobileH1Authority(page, plan), 10_000, `${plan.id} mobile H1 authority`);
+    mobileH1Authority = mobileH1Result.state;
+    failures.push(...mobileH1Result.failures);
+    debug(plan, "Home scene contract");
+    const homeSceneResult = await withTimeout(collectHomeSceneContract(page, plan), 10_000, `${plan.id} Home scene contract`);
+    homeSceneContract = homeSceneResult.state;
+    failures.push(...homeSceneResult.failures);
 
     if (plan.runSkipLink) {
       debug(plan, "skip link");
@@ -1365,8 +1710,14 @@ async function runCase(browser, plan, baseUrl, captureRoot, screenshotSequence) 
       }
     }
     if (plan.mutation === "js-disabled-nav") {
-      failures.push(...(await openJavaScriptDisabledNavigation(page, plan)));
-      mutation = { applied: true, pageJavaScriptEnabled: false };
+      const noJavaScriptNavigation = await openJavaScriptDisabledNavigation(page, plan);
+      failures.push(...noJavaScriptNavigation.failures);
+      mutation = { applied: true, pageJavaScriptEnabled: false, openNavigationEvidence: noJavaScriptNavigation.state };
+    }
+    if (plan.id === "keyboard-focus-mobile") {
+      const openNavigationEvidence = await prepareKeyboardOpenNavigationEvidence(page, plan);
+      failures.push(...openNavigationEvidence.failures);
+      mutation = { ...mutation, openNavigationEvidence: openNavigationEvidence.state };
     }
 
     debug(plan, "screenshot");
@@ -1408,6 +1759,8 @@ async function runCase(browser, plan, baseUrl, captureRoot, screenshotSequence) 
     durationMs: Date.now() - started,
     mutation,
     navigation,
+    mobileH1Authority,
+    homeSceneContract,
     consoleMessages,
     pageErrors,
     requestFailures,
