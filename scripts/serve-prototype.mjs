@@ -9,6 +9,7 @@ const allowedRoots = [
   join(repositoryRoot, "prototypes", "phase-0-3d-media-spike"),
   join(repositoryRoot, "prototypes", "phase-0-portal-layout-qa"),
   join(repositoryRoot, "prototypes", "phase-0-4-crt-portal-qa"),
+  join(repositoryRoot, "prototypes", "phase-0-4r-crt-portal-qa"),
   join(repositoryRoot, "artifacts", "original", "phase-0"),
   join(repositoryRoot, "artifacts", "original", "phase-0-3d-repair-v2"),
   join(repositoryRoot, "artifacts", "original", "phase-0-3d-repair-v3"),
@@ -45,7 +46,8 @@ const commonHeaders = {
 function headersForPath(pathname) {
   if (
     !pathname.startsWith("/prototypes/phase-0-portal-layout-qa/") &&
-    !pathname.startsWith("/prototypes/phase-0-4-crt-portal-qa/")
+    !pathname.startsWith("/prototypes/phase-0-4-crt-portal-qa/") &&
+    !pathname.startsWith("/prototypes/phase-0-4r-crt-portal-qa/")
   ) return commonHeaders;
   return {
     ...commonHeaders,
@@ -166,4 +168,5 @@ createServer((request, response) => {
   console.log(`3D media seek spike: http://127.0.0.1:${port}/prototypes/phase-0-3d-media-spike/`);
   console.log(`Portal typography QA: http://127.0.0.1:${port}/prototypes/phase-0-portal-layout-qa/`);
   console.log(`CRT portal typography QA: http://127.0.0.1:${port}/prototypes/phase-0-4-crt-portal-qa/`);
+  console.log(`CRT Phase 0.4R portal QA: http://127.0.0.1:${port}/prototypes/phase-0-4r-crt-portal-qa/`);
 });

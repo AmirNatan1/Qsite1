@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -63,8 +64,12 @@ def main() -> None:
             if after_mode != mode or after_size != size or after_pixels != pixels:
                 temporary.unlink(missing_ok=True)
                 raise RuntimeError(f"Pixel preservation failed for {relative}")
-            path.write_bytes(temporary.read_bytes())
-            temporary.unlink(missing_ok=True)
+            # Replace atomically from the same directory. Directly reopening a
+            # synced OneDrive target for ``wb`` can intermittently raise
+            # ``OSError(22)`` even though both files are valid and writable.
+            # ``os.replace`` preserves the already verified decoded pixels and
+            # never exposes a partially rewritten PNG to downstream sealers.
+            os.replace(temporary, path)
             after_bytes = path.read_bytes()
         else:
             remaining_info = []
@@ -110,4 +115,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

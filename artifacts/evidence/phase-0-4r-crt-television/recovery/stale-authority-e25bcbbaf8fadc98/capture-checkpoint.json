@@ -1,0 +1,223 @@
+{
+  "schema": "quantum-hub.phase-0-4r-crt-television.capture-checkpoint.v1",
+  "authority": "repository-native-playwright",
+  "status": "in-progress",
+  "createdAt": "2026-08-18T23:41:32.927Z",
+  "updatedAt": "2026-08-18T23:41:43.501Z",
+  "authorityFingerprint": "f55aa25c527d99b8b379c25282fad478c27dee3aa3ea85783fb7e1dc5a1d7938",
+  "plan": {
+    "path": "prototypes/phase-0-4r-crt-portal-qa/capture-plan.json",
+    "bytes": 43068,
+    "sha256": "dd0651adce6501236e75d8fa5fea1f83ec58a68d6448ea6ee5fb9db8011318c4"
+  },
+  "contract": {
+    "path": "artifacts/original/phase-0-4-crt-television/crt-portal-layout.json",
+    "bytes": 16248,
+    "sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+  },
+  "keepout": {
+    "path": "artifacts/original/phase-0-4-crt-television/manifests/crt-scene-source-keepouts.json",
+    "bytes": 1157579,
+    "sha256": "4dcf0d9b6e7e583682b8d148178634fabb54b331f02ab31e7d7e9358ff6cd26c",
+    "schema": "quantum-hub.phase-0-4-crt-television.scene-source-keepouts.v1"
+  },
+  "sources": [
+    {
+      "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-desktop-dormant.png",
+      "bytes": 1169534,
+      "sha256": "9b637bf010231ebd2efcb898d20e6b60b23d299c5a2aa9651e58e077c0715652",
+      "id": "source-desktop-dormant",
+      "role": "source-desktop-dormant",
+      "width": 1920,
+      "height": 1200
+    },
+    {
+      "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-mobile-dormant.png",
+      "bytes": 996525,
+      "sha256": "526e89ceed44aa870c4842ce2e608e044d1b0bc8c413f8514135d515a055090b",
+      "id": "source-mobile-dormant",
+      "role": "source-mobile-dormant",
+      "width": 1080,
+      "height": 1800
+    },
+    {
+      "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-reduced-desktop-dormant.png",
+      "bytes": 1161188,
+      "sha256": "3d80543ae17891320107686b5a1c063fc91d30070685b9d1a8aae79829ac2725",
+      "id": "source-reduced-desktop-dormant",
+      "role": "source-reduced-desktop-dormant",
+      "width": 1920,
+      "height": 1200
+    },
+    {
+      "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-reduced-mobile-dormant.png",
+      "bytes": 996830,
+      "sha256": "ed0d62e872fa7a3982a21e26907366471a7eccb4dafe5259b888a8cf2cef727b",
+      "id": "source-reduced-mobile-dormant",
+      "role": "source-reduced-mobile-dormant",
+      "width": 1080,
+      "height": 1800
+    },
+    {
+      "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-physical-portal-close.png",
+      "bytes": 1205903,
+      "sha256": "0974e72295eb1fe0530cafd6f6c686dbc7196c3741fc91dba3300af6cfa8219c",
+      "id": "source-physical-portal-close",
+      "role": "source-physical-portal-close",
+      "width": 1920,
+      "height": 1200
+    },
+    {
+      "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-text-free-portal-takeover.png",
+      "bytes": 1096906,
+      "sha256": "0b42ee33b5bc8743335bb441e3c4d845e7a43e36ab6810fa3a3f8329ad8dd537",
+      "id": "source-text-free-portal-takeover",
+      "role": "source-text-free-portal-takeover",
+      "width": 1920,
+      "height": 1200
+    }
+  ],
+  "harness": {
+    "schema": "quantum-hub.phase-0-4r-crt-television.harness-authority.v1",
+    "sha256": "f7fe2573a628e453dc904558f5cf544e76002c5eb14bf4bb658438812d028091",
+    "files": [
+      {
+        "path": "prototypes/phase-0-4r-crt-portal-qa/index.html",
+        "bytes": 5523,
+        "sha256": "20a4436bafd05ecd20ee5fbc02fb7d6481f86905eaa915452403273e3044073e"
+      },
+      {
+        "path": "prototypes/phase-0-4-crt-portal-qa/styles.css",
+        "bytes": 15161,
+        "sha256": "3a63a0c3def48b009a12e684885a5c2487e809ffb601dabe8abc02fa78cc4735"
+      },
+      {
+        "path": "prototypes/phase-0-4r-crt-portal-qa/repair.css",
+        "bytes": 855,
+        "sha256": "def449e098b722dc7a995ea062b3b0a6e316b2ffe12fd1f912086d49977d5f2c"
+      },
+      {
+        "path": "prototypes/phase-0-4r-crt-portal-qa/app.js",
+        "bytes": 50815,
+        "sha256": "c3ec42af2f27ad6b1135512d93d92f3af89a01a94af9c20d02d36602950fb903"
+      },
+      {
+        "path": "prototypes/phase-0-4r-crt-portal-qa/runner.html",
+        "bytes": 983,
+        "sha256": "dda13f71addefeade70b6c5d1942811870904840640808df41ecddd9c0c6b8bf"
+      },
+      {
+        "path": "prototypes/phase-0-4-crt-portal-qa/runner.css",
+        "bytes": 846,
+        "sha256": "6f6b4cac83d8d41d2ffaabb167be0ced7dbafa26ccc82b617341e930e32254c5"
+      },
+      {
+        "path": "prototypes/phase-0-4-crt-portal-qa/runner.js",
+        "bytes": 5729,
+        "sha256": "3c20b0a17b4d9471a60c235bb9848bc7a6b676363f09955ed874923390a26c7e"
+      }
+    ]
+  },
+  "migration": {
+    "path": "artifacts/evidence/phase-0-4r-crt-television/recovery/stale-authority-e4776162d6a77871/recovery-report.json",
+    "bytes": 1182,
+    "sha256": "e23124b6173ea33f3fc2996078f0bb9cabcec2d3070e97c76feeaa259d9f7d54"
+  },
+  "browser": {
+    "engine": "Chromium",
+    "product": "chrome",
+    "version": "151.0.7922.34",
+    "executableResolution": "playwright-managed-executable",
+    "automationPackage": "playwright",
+    "localAuthority": true
+  },
+  "completedAuthorityCases": 4,
+  "cases": {
+    "hero-actual--desktop-1440x900": {
+      "id": "hero-actual--desktop-1440x900",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "authorityFingerprint": "f55aa25c527d99b8b379c25282fad478c27dee3aa3ea85783fb7e1dc5a1d7938",
+      "completedAt": "2026-08-18T23:41:36.157Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-4r-crt-television/reports/hero-actual--desktop-1440x900.json",
+        "bytes": 28296,
+        "sha256": "9fb28d131ca0f66fd3053066067bad9bbbecb65acf32c707e93bb5dd65c4966e"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-4r-crt-television/captures/raw/hero-actual--desktop-1440x900.jpg",
+        "bytes": 112313,
+        "sha256": "71516b0822ad34c964797ad10eae3f7588ac63aecb94fc79cd5a255e05661eeb",
+        "format": "JPEG"
+      }
+    },
+    "hero-actual--short-desktop-1366x650": {
+      "id": "hero-actual--short-desktop-1366x650",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "authorityFingerprint": "f55aa25c527d99b8b379c25282fad478c27dee3aa3ea85783fb7e1dc5a1d7938",
+      "completedAt": "2026-08-18T23:41:38.252Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-4r-crt-television/reports/hero-actual--short-desktop-1366x650.json",
+        "bytes": 28280,
+        "sha256": "d81ff16e47d52fae8b2943a6282bed079f8cc0eeed59f5357373ba514dd76f23"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-4r-crt-television/captures/raw/hero-actual--short-desktop-1366x650.jpg",
+        "bytes": 102242,
+        "sha256": "1f1a355f61723b4148573ce0a444b9e7c3dd9fcf9939d6ea83eb50436710d3f0",
+        "format": "JPEG"
+      }
+    },
+    "hero-actual--desktop-1280x800": {
+      "id": "hero-actual--desktop-1280x800",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "authorityFingerprint": "f55aa25c527d99b8b379c25282fad478c27dee3aa3ea85783fb7e1dc5a1d7938",
+      "completedAt": "2026-08-18T23:41:40.370Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-4r-crt-television/reports/hero-actual--desktop-1280x800.json",
+        "bytes": 28118,
+        "sha256": "dff46e7cd124db7692a827619836fd997d4caa1d223a8007895b505757eb917f"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-4r-crt-television/captures/raw/hero-actual--desktop-1280x800.jpg",
+        "bytes": 108959,
+        "sha256": "d8bb72126c14eafc06e4536ee4d2f56c1229a43962d5194e1461f5d468f76142",
+        "format": "JPEG"
+      }
+    },
+    "hero-actual--tablet-landscape-1024x768": {
+      "id": "hero-actual--tablet-landscape-1024x768",
+      "status": "complete",
+      "authority": "repository-native-playwright",
+      "authorityFingerprint": "f55aa25c527d99b8b379c25282fad478c27dee3aa3ea85783fb7e1dc5a1d7938",
+      "completedAt": "2026-08-18T23:41:42.310Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-4r-crt-television/reports/hero-actual--tablet-landscape-1024x768.json",
+        "bytes": 28200,
+        "sha256": "02fbd8c2f9478a7ee01dfbf1e53e1c6810dc199e9a0ef3ecf46dae0055b5afcc"
+      },
+      "raw": {
+        "path": "artifacts/evidence/phase-0-4r-crt-television/captures/raw/hero-actual--tablet-landscape-1024x768.jpg",
+        "bytes": 106977,
+        "sha256": "bd328ff4d11d32d955daf01ac02785f0131cace808502be877d9379249daa714",
+        "format": "JPEG"
+      }
+    },
+    "hero-actual--tablet-portrait-768x1024": {
+      "id": "hero-actual--tablet-portrait-768x1024",
+      "status": "failed-browser-gate",
+      "authority": "repository-native-playwright",
+      "authorityFingerprint": "f55aa25c527d99b8b379c25282fad478c27dee3aa3ea85783fb7e1dc5a1d7938",
+      "completedAt": "2026-08-18T23:41:43.495Z",
+      "report": {
+        "path": "artifacts/evidence/phase-0-4r-crt-television/reports/hero-actual--tablet-portrait-768x1024.json",
+        "bytes": 25811,
+        "sha256": "2a61208e2442446305f75c58620de80438f18e57d0ea0a5254a2bb6b11b77a2a"
+      },
+      "raw": null
+    }
+  },
+  "matrix": null
+}

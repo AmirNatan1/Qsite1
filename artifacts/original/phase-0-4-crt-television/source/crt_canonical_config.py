@@ -20,11 +20,10 @@ PORTRAIT_RESOLUTION = (1080, 1800)
 EEVEE_ENGINE = "BLENDER_EEVEE"
 EEVEE_SAMPLES = 128
 RENDER_ENGINE_DECISION = (
-    "A controlled Eevee 128-sample canonical pipeline is retained for the still gate: "
-    "the scene uses dense procedural geometry, no bitmap displacement, and its dark ABS, "
-    "smoked-glass and contact-shadow evidence showed no material review improvement that "
-    "justified a non-deterministic noisy CPU Cycles pass. Cycles remains authorized for "
-    "future production integration after the still art direction is accepted."
+    "The eight named Phase 0.4R material-quality masters use deterministic 64-sample "
+    "CPU Cycles with OIDN and AgX Medium High Contrast. Eevee 128-sample rendering is "
+    "retained only for the authorized supplemental camera, cable, causal-state, and "
+    "browser-scene source evidence where rapid exact-state coverage is required."
 )
 COLOR_MANAGEMENT = "AgX / Medium High Contrast"
 
@@ -58,21 +57,38 @@ def still(
     indicator: bool = False,
     phosphor: str = "off",
     interface: bool = False,
+    interface_stage: str = "none",
     cable: str = "desktop",
     glass_proof: bool = False,
+    connector_response: bool = False,
+    startup_vertical_fill_ratio: float | None = None,
+    degaussing_ripple: str | None = None,
     resolution: tuple[int, int] = DESKTOP_RESOLUTION,
     engine: str = EEVEE_ENGINE,
     classification: str = "Phase 0.4 still-based creative evidence",
 ) -> dict:
+    resolved_interface_stage = interface_stage if interface_stage != "none" else ("ready" if interface else "none")
+    if startup_vertical_fill_ratio is None:
+        startup_vertical_fill_ratio = (
+            0.48 if phosphor == "raster-expansion" else (1.0 if phosphor in ("raster", "interface", "takeover") else 0.0)
+        )
+    if degaussing_ripple is None:
+        degaussing_ripple = (
+            "active" if phosphor == "raster-expansion" else ("settled" if phosphor in ("raster", "interface", "takeover") else "not yet visible")
+        )
     return {
         "group": group,
         "camera": camera,
         "conduction_progress": progress,
         "indicator": indicator,
         "phosphor": phosphor,
-        "interface": interface,
+        "interface": resolved_interface_stage != "none",
+        "interface_stage": resolved_interface_stage,
         "cable": cable,
         "glass_proof": glass_proof,
+        "connector_response": connector_response,
+        "startup_vertical_fill_ratio": startup_vertical_fill_ratio,
+        "degaussing_ripple": degaussing_ripple,
         "resolution": resolution,
         "engine": engine,
         "classification": classification,
@@ -97,7 +113,8 @@ CANONICAL_STATES = {
         "materials", "Camera_Raster_Close", progress=1.0, indicator=True, phosphor="wake-line"
     ),
     "glass-raster-warm": still(
-        "materials", "Camera_Raster_Close", progress=1.0, indicator=True, phosphor="raster"
+        "materials", "Camera_Raster_Close", progress=1.0, indicator=True, phosphor="raster-expansion",
+        startup_vertical_fill_ratio=0.48, degaussing_ripple="active"
     ),
     "detail-controls": still("details", "Camera_Controls_Macro"),
     "detail-speaker": still("details", "Camera_Speaker_Macro"),
@@ -108,7 +125,7 @@ CANONICAL_STATES = {
     "cable-conduction-boundary": still("cable", "Camera_Conductor_Macro", progress=0.40),
     "cable-rear-arrival": still("cable", "Camera_Rear_Arrival", progress=0.985),
     "cable-connected-powered": still(
-        "cable", "Camera_Connector_Macro", progress=1.0, indicator=True
+        "cable", "Camera_Connector_Macro", progress=1.0, indicator=True, connector_response=True
     ),
     # Environment and camera path.
     "proving-ground-master": still("environment", "Camera_Path_Arrival"),
@@ -117,45 +134,58 @@ CANONICAL_STATES = {
     "camera-03-sixty-percent": still("camera-study", "Camera_Path_60", progress=0.60),
     "camera-04-near-frontal": still("camera-study", "Camera_Path_NearFrontal", progress=0.94),
     "camera-05-portal-ready": still(
-        "camera-study", "Camera_Portal_03_CloseApproach", progress=1.0, indicator=True, phosphor="interface", interface=True
+        "camera-study", "Camera_Portal_03_CloseApproach", progress=1.0, indicator=True,
+        phosphor="interface", interface_stage="ready"
     ),
     # Exact seven-state power-on authority.
     "power-01-completely-dormant": still("power-on", "Camera_Path_Arrival"),
     "power-02-current-reaches-connection": still(
-        "power-on", "Camera_Rear_Arrival", progress=0.985
+        "power-on", "Camera_Rear_Arrival", progress=0.985, connector_response=False
     ),
     "power-03-power-indicator-response": still(
-        "power-on", "Camera_Power_Front", progress=1.0, indicator=True
+        "power-on", "Camera_Power_Front", progress=1.0, indicator=True, connector_response=True
     ),
     "power-04-crt-electrical-wake": still(
         "power-on", "Camera_Power_Front", progress=1.0, indicator=True, phosphor="wake-line"
     ),
     "power-05-raster-phosphor-appears": still(
-        "power-on", "Camera_Raster_Close", progress=1.0, indicator=True, phosphor="raster"
+        "power-on", "Camera_Raster_Close", progress=1.0, indicator=True,
+        phosphor="raster-expansion", startup_vertical_fill_ratio=0.48, degaussing_ripple="active"
     ),
     "power-06-quantum-interface-stabilizes": still(
-        "power-on", "Camera_Raster_Close", progress=1.0, indicator=True, phosphor="interface", interface=True
+        "power-on", "Camera_Raster_Close", progress=1.0, indicator=True,
+        phosphor="interface", interface_stage="brand",
+        startup_vertical_fill_ratio=1.0, degaussing_ripple="settled"
     ),
     "power-07-portal-ready": still(
-        "power-on", "Camera_Portal_03_CloseApproach", progress=1.0, indicator=True, phosphor="interface", interface=True
+        "power-on", "Camera_Portal_03_CloseApproach", progress=1.0, indicator=True,
+        phosphor="interface", interface_stage="route"
     ),
     # Physical portion of the exact eight-state portal authority. States 7–8
     # are supplied by the repository browser harness after the source freeze.
-    "portal-01-television-in-scene": still("portal", "Camera_Path_60", progress=0.86),
+    "portal-01-television-in-scene": still(
+        "portal", "Camera_Path_60", progress=1.0, indicator=True,
+        phosphor="interface", interface_stage="route"
+    ),
     "portal-02-screen-active": still(
-        "portal", "Camera_Power_Front", progress=1.0, indicator=True, phosphor="interface", interface=True
+        "portal", "Camera_Power_Front", progress=1.0, indicator=True,
+        phosphor="interface", interface_stage="ready"
     ),
     "portal-03-close-approach": still(
-        "portal", "Camera_Portal_03_CloseApproach", progress=1.0, indicator=True, phosphor="interface", interface=True
+        "portal", "Camera_Portal_03_CloseApproach", progress=1.0, indicator=True,
+        phosphor="interface", interface_stage="ready"
     ),
     "portal-04-glass-almost-fills": still(
-        "portal", "Camera_Portal_04_GlassAlmostFills", progress=1.0, indicator=True, phosphor="interface", interface=True
+        "portal", "Camera_Portal_04_GlassAlmostFills", progress=1.0, indicator=True,
+        phosphor="interface", interface_stage="ready"
     ),
     "portal-05-bezel-exits": still(
-        "portal", "Camera_Portal_05_BezelExits", progress=1.0, indicator=True, phosphor="interface", interface=True
+        "portal", "Camera_Portal_05_BezelExits", progress=1.0, indicator=True,
+        phosphor="interface", interface_stage="ready"
     ),
     "portal-06-distortion-reduces": still(
-        "portal", "Camera_Portal_06_TextFree", progress=1.0, indicator=True, phosphor="low-bloom", interface=False
+        "portal", "Camera_Portal_06_TextFree", progress=1.0, indicator=True,
+        phosphor="takeover", interface_stage="none"
     ),
     # Six frozen browser/keepout source roles.
     "source-desktop-dormant": still(
@@ -174,11 +204,11 @@ CANONICAL_STATES = {
     ),
     "source-physical-portal-close": still(
         "sources", "Camera_Portal_04_GlassAlmostFills", progress=1.0, indicator=True,
-        phosphor="interface", interface=True, classification="frozen physical portal close source",
+        phosphor="interface", interface_stage="ready", classification="frozen physical portal close source",
     ),
     "source-text-free-portal-takeover": still(
         "sources", "Camera_Portal_06_TextFree", progress=1.0, indicator=True,
-        phosphor="low-bloom", interface=False, classification="frozen text-free portal takeover source",
+        phosphor="takeover", interface_stage="none", classification="frozen text-free portal takeover source",
     ),
 }
 

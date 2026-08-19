@@ -22,6 +22,17 @@ if str(SCRIPT_DIR) not in sys.path:
 import crt_canonical_config as cfg
 
 
+SCENE_LIGHT_SPECULAR_FACTORS = {
+    "Scene_NeutralKey": 0.08,
+    "Scene_GrazingRim": 0.22,
+    "Scene_FrontFill": 0.05,
+    "Scene_BackServiceFill": 0.08,
+}
+GLASS_PROOF_ACCENT_ENERGY_W = 22.75
+GLASS_PROOF_ACCENT_SIZE_M = 0.08
+GLASS_PROOF_ROUGHNESS = 0.08
+
+
 def sha256(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:
@@ -60,7 +71,11 @@ def set_material(obj: bpy.types.Object, mat: bpy.types.Material) -> None:
 
 def cable_segments(prefix: str) -> list[bpy.types.Object]:
     return sorted(
-        (obj for obj in bpy.data.objects if obj.name.startswith(prefix)),
+        (
+            obj
+            for obj in bpy.data.objects
+            if obj.name.startswith(prefix) and not bool(obj.get("entry_hidden", False))
+        ),
         key=lambda obj: float(obj.get("progress_start", 0.0)),
     )
 
@@ -72,6 +87,11 @@ def set_conduction(prefix: str, progress: float) -> None:
     segments = cable_segments(prefix)
     if not segments:
         raise RuntimeError(f"missing cable segments for {prefix}")
+    for obj in bpy.data.objects:
+        if obj.name.startswith(prefix) and bool(obj.get("entry_hidden", False)):
+            obj.hide_render = True
+    for obj in segments:
+        obj.hide_render = False
     leading_index = None
     for index, obj in enumerate(segments):
         start = float(obj.get("progress_start", 0.0))
@@ -119,32 +139,60 @@ def set_state(state: dict) -> None:
     if glass_shader is None:
         raise RuntimeError("missing CRT smoked-glass shader")
     active_screen = phosphor_state != "off"
-    glass_shader.inputs["Roughness"].default_value = 0.22 if active_screen else 0.13
-    if "Transmission Weight" in glass_shader.inputs:
-        glass_shader.inputs["Transmission Weight"].default_value = 0.72 if active_screen else 0.18
-    if "IOR Level" in glass_shader.inputs:
-        glass_shader.inputs["IOR Level"].default_value = 0.03 if active_screen else 0.50
-    if "Coat Weight" in glass_shader.inputs:
-        glass_shader.inputs["Coat Weight"].default_value = 0.0 if active_screen else 0.28
-    phosphor = bpy.data.objects["CRT_InternalPhosphorLayer"]
-    set_material(
-        phosphor,
-        material("CRT_PhosphorOff") if phosphor_state == "off" else material("CRT_PhosphorLowGrey"),
+    glass_proof = bool(state.get("glass_proof", False))
+    glass_shader.inputs["Roughness"].default_value = (
+        GLASS_PROOF_ROUGHNESS if glass_proof else (0.12 if active_screen else 0.14)
     )
+    if "Transmission Weight" in glass_shader.inputs:
+        glass_shader.inputs["Transmission Weight"].default_value = 0.72 if active_screen else 0.58
+    for input_name in ("Specular IOR Level", "IOR Level"):
+        if input_name in glass_shader.inputs:
+            glass_shader.inputs[input_name].default_value = 0.20 if active_screen else 0.32
+    if "Coat Weight" in glass_shader.inputs:
+        glass_shader.inputs["Coat Weight"].default_value = 0.0
+    phosphor = bpy.data.objects["CRT_InternalPhosphorLayer"]
+    if phosphor_state == "takeover":
+        phosphor_material = material("CRT_PhosphorTakeoverField")
+    elif phosphor_state in ("raster", "interface"):
+        phosphor_material = material("CRT_PhosphorLowGrey")
+    else:
+        phosphor_material = material("CRT_PhosphorOff")
+    set_material(phosphor, phosphor_material)
     phosphor["state"] = phosphor_state
     bpy.data.objects["CRT_WakeHorizontalPhosphorLine"].hide_render = phosphor_state != "wake-line"
+    for obj in list(bpy.data.collections["CRT_STARTUP_RASTER_EXPANSION"].all_objects):
+        if obj is not None:
+            obj.hide_render = phosphor_state != "raster-expansion"
 
     # Snapshot Blender's collection view before mutating visibility. Iterating
     # the live view while unhiding objects skips members in Blender 5.2.
     for obj in list(bpy.data.collections["CRT_SCANLINE_GEOMETRY"].all_objects):
         if obj is not None:
-            obj.hide_render = phosphor_state not in ("raster", "interface")
+            obj.hide_render = phosphor_state not in ("raster", "interface", "takeover")
+    interface_stage = str(state.get("interface_stage", "ready" if state.get("interface") else "none"))
     for obj in list(bpy.data.collections["CRT_PHYSICAL_SIGNAL_INTERFACE"].all_objects):
         if obj is not None:
-            obj.hide_render = not bool(state["interface"])
+            obj.hide_render = str(obj.get("interface_stage", "none")) != interface_stage
+    for obj in list(bpy.data.collections["CRT_PORTAL_TAKEOVER_CUES"].all_objects):
+        if obj is not None:
+            obj.hide_render = phosphor_state != "takeover"
+    connector_response = bpy.data.objects.get("CRT_ConnectorArrivalResponseRing")
+    if connector_response is not None:
+        connector_response.hide_render = not bool(state.get("connector_response", False))
     proof_light = bpy.data.objects.get("Scene_GlassProofAccent")
     if proof_light is not None:
-        proof_light.hide_render = not bool(state.get("glass_proof", False))
+        proof_light.hide_render = not glass_proof
+        proof_light.data.energy = GLASS_PROOF_ACCENT_ENERGY_W
+        proof_light.data.shape = "DISK"
+        proof_light.data.size = GLASS_PROOF_ACCENT_SIZE_M
+    # The proof view is an optical-stack diagnostic, not a studio-product
+    # beauty shot. Suppress the broad scene-light specular fields for this
+    # state and use only the small edge-biased accent above. Restore the exact
+    # authored factors on every other state so the change is view-local.
+    for light_name, authored_factor in SCENE_LIGHT_SPECULAR_FACTORS.items():
+        scene_light = bpy.data.objects.get(light_name)
+        if scene_light is not None and hasattr(scene_light.data, "specular_factor"):
+            scene_light.data.specular_factor = 0.0 if glass_proof else authored_factor
 
 
 def camera_azimuth(camera_name: str) -> float:
@@ -166,7 +214,7 @@ def main() -> None:
     canonical_config_sha256 = sha256(canonical_config)
     refined_config_sha256 = sha256(refined_config)
     record_lineage = {
-        "parent": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "parent": "quantum-hub.phase-0-4r-crt-television.canonical-render-inventory.v1",
         "refined_source_sha256": source_sha256,
         "render_generator_sha256": script_sha256,
         "canonical_config_sha256": canonical_config_sha256,
@@ -233,6 +281,10 @@ def main() -> None:
                 "indicator": state["indicator"],
                 "phosphor": state["phosphor"],
                 "interface": state["interface"],
+                "interface_stage": state.get("interface_stage", "none"),
+                "connector_response": bool(state.get("connector_response", False)),
+                "startup_vertical_fill_ratio": float(state.get("startup_vertical_fill_ratio", 0.0)),
+                "degaussing_ripple": str(state.get("degaussing_ripple", "not yet visible")),
                 "cable": state["cable"],
                 "classification": state["classification"],
                 "approval_state": state["approval_state"],
@@ -275,7 +327,7 @@ def main() -> None:
         check_manifest.write_text(
             json.dumps(
                 {
-                    "schema": "quantum-hub.phase-0-4-crt-television.canonical-check.v1",
+                    "schema": "quantum-hub.phase-0-4r-crt-television.canonical-check.v1",
                     "status": "VISUAL_INSPECTION_REQUIRED",
                     "layout_authority_sha256": cfg.PORTAL_LAYOUT_SHA256,
                     "records": records,
@@ -315,8 +367,9 @@ def main() -> None:
             )
 
     manifest = {
-        "schema": "quantum-hub.phase-0-4-crt-television.canonical-still-render-inventory.v1",
+        "schema": "quantum-hub.phase-0-4r-crt-television.canonical-render-inventory.v1",
         "status": "PASS",
+        "repair_baseline": "fec1f0e9243a9cda188c539ab1b79e4a99c30623",
         "source": {
             "package_relative_path": source.relative_to(cfg.PACKAGE_DIR).as_posix(),
             "bytes": source.stat().st_size,
@@ -392,7 +445,7 @@ def main() -> None:
         "render_count": len(records),
         "records": records,
     }
-    target = cfg.MANIFEST_DIR / "crt-canonical-render-manifest.json"
+    target = cfg.MANIFEST_DIR / "crt-phase-0-4r-canonical-render-inventory.json"
     target.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     print(f"QH_PHASE04_CRT_CANONICAL_RENDERS={len(records)}")
     print(f"QH_PHASE04_CRT_CANONICAL_MANIFEST={target.resolve()}")

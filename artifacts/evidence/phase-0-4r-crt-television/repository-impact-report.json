@@ -1,0 +1,136 @@
+{
+  "schema": "quantum-hub.phase-0-4r-crt-television.repository-impact.v1",
+  "status": "PASS",
+  "generated_at": "2026-08-19T03:25:55+03:00",
+  "accepted_parent": "fec1f0e9243a9cda188c539ab1b79e4a99c30623",
+  "branch": "redirect/phase-0-4-crt-television",
+  "remote": "https://github.com/AmirNatan1/Qsite1.git",
+  "baseline": {
+    "head": "fec1f0e9243a9cda188c539ab1b79e4a99c30623",
+    "file_count": 1097,
+    "total_blob_bytes": 520536106,
+    "creative_package_file_count": 119,
+    "creative_package_bytes": 160357141,
+    "phase_0_4_evidence_file_count": 260,
+    "phase_0_4_evidence_bytes": 21923821
+  },
+  "candidate_files": 1275,
+  "candidate_bytes": 536852539,
+  "filesystem_materialized_bytes": 536996024,
+  "net_growth_bytes": 16316433,
+  "true_new_blob_count": 229,
+  "true_new_blob_bytes": 107073309,
+  "preferred_budget_bytes": 80000000,
+  "preferred_budget_exception": {
+    "reason": "The exact true-new object total includes the required governed Cycles masters, canonical and browser evidence, repaired review sheets, editable source, and one VP9 turntable. Omitting those records would break the accepted audit and human-review contract even though strict net-tree growth remains below the preferred limit.",
+    "required_evidence_preserved": true,
+    "bytes_deleted_to_game_budget": false,
+    "raw_eleven_shot_candidates_committed": false,
+    "true_new_blob_bytes": 107073309
+  },
+  "measurement": {
+    "baseline_method": "git ls-tree -r -l --full-tree at the accepted parent",
+    "candidate_method": "git ls-files --cached --others --exclude-standard; accepted-parent blob sizes retained for unchanged tracked files and current filesystem bytes used for added or modified files",
+    "true_new_method": "unique candidate Git blob object IDs absent from the accepted-parent tree",
+    "ignored_files_excluded": true,
+    "git_directory_excluded": true,
+    "report_self_included": true
+  },
+  "phase_0_4r_scope": {
+    "creative_package": {
+      "path": "artifacts/original/phase-0-4-crt-television/",
+      "file_count": 145,
+      "total_bytes": 160550295,
+      "inventory_path": "artifacts/original/phase-0-4-crt-television/manifests/package-inventory.json",
+      "inventory_record_count": 144,
+      "inventory_record_bytes": 160474380,
+      "inventory_bytes": 75915,
+      "inventory_sha256": "a0d654ddfe8638b666284a9c4881a2391977a88888b2705c5248b8c437fb0f33"
+    },
+    "governed_repair_deliverables": {
+      "record_count": 17,
+      "total_bytes": 39122383,
+      "png_count": 16,
+      "webm_count": 1,
+      "repair_manifest_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-phase-0-4r-repair-manifest.json",
+      "repair_manifest_bytes": 60420,
+      "repair_manifest_sha256": "f694107b2eda05a1a8fb81a83412bb63bc6f2140eea784cccb5ca5874b0a9b9a"
+    },
+    "browser_and_provenance_evidence": {
+      "path": "artifacts/evidence/phase-0-4r-crt-television/",
+      "file_count": 142,
+      "total_bytes": 15629384,
+      "case_report_count": 46,
+      "raw_winner_count": 36,
+      "normalized_capture_count": 36,
+      "canonical_matrix_path": "artifacts/evidence/phase-0-4r-crt-television/browser-matrix-report.json",
+      "canonical_matrix_bytes": 1159197,
+      "canonical_matrix_sha256": "82ae5672fba028f813bc98754038e0deb9ab2b022bb199e3e2dcb1a8b272b00d"
+    },
+    "ignored_external_review_output": {
+      "path": "artifacts/original/phase-0-4-crt-television/work/phase-0-4r-crt-quality-review.zip",
+      "intended_commit": false,
+      "bytes": 38798059,
+      "sha256": "a7f1b14f4bb8b05acddee6714b5dd1b28ed1ea0b5f72995a10fd9a821dac93d51",
+      "member_count": 17,
+      "duplicates_historical_review_zip": false
+    }
+  },
+  "largest_candidate_file": {
+    "path": "artifacts/original/phase-0-4-crt-television/phase-0-4-crt-television-review.zip",
+    "bytes": 43303597,
+    "sha256": "8eeec33182ad476d5dd78d5635a5dcb2cdfbeb96c97092462bd1af6227f642c7"
+  },
+  "repository_boundaries": {
+    "files_at_or_above_100_mib": [],
+    "git_lfs_required": false,
+    "git_lfs_pointer_count": 0,
+    "git_lfs_configuration_count": 0,
+    "protected_phase_0_through_0_4_diff_count": 0,
+    "protected_qhub_import_and_publication_diff_count": 0,
+    "raw_eleven_shot_candidate_count": 0,
+    "full_frame_sequence_count": 0,
+    "exr_or_cache_count": 0,
+    "private_path_findings": 0,
+    "private_reference_binary_count": 0,
+    "external_blender_dependency_count": 0,
+    "third_party_reference_binary_count": 0,
+    "prohibited_public_taxonomy_findings": 0
+  },
+  "quality_and_media": {
+    "cycles_master_count": 8,
+    "canonical_still_count": 45,
+    "power_state_count": 7,
+    "portal_state_count": 8,
+    "review_png_count": 16,
+    "turntable": {
+      "path": "artifacts/original/phase-0-4-crt-television/crt-model-turntable.webm",
+      "bytes": 386890,
+      "sha256": "20aa30adb49bf1df7b09278a5fb15dba56409a4256771685ac431a93fc329ee6",
+      "codec": "VP9",
+      "duration_seconds": 6.0,
+      "width": 960,
+      "height": 600,
+      "frames_per_second": 24,
+      "audio_stream_count": 0
+    }
+  },
+  "working_tree_snapshot": {
+    "clean": false,
+    "staged_file_count": 0,
+    "unexpected_file_count": 0,
+    "state": "Phase 0.4R projected candidate before commit and push"
+  },
+  "delivery_state": {
+    "head_at_measurement": "fec1f0e9243a9cda188c539ab1b79e4a99c30623",
+    "upstream_at_measurement": "fec1f0e9243a9cda188c539ab1b79e4a99c30623",
+    "candidate_committed": false,
+    "candidate_pushed": false,
+    "pushed_sha": null,
+    "cloudflare_preview_url": null,
+    "preview_deployed_sha": null,
+    "production_branch_touched": false,
+    "cloudflare_settings_modified": false,
+    "refresh_after_commit_required": true
+  }
+}

@@ -1,0 +1,464 @@
+{
+  "schema": "quantum-hub.phase-0-4r-crt-television.review-composition.v1",
+  "status": "CREATIVE_SHEETS_2_TO_9_COMPLETE_BROWSER_SHEETS_PENDING",
+  "repair_baseline": "fec1f0e9243a9cda188c539ab1b79e4a99c30623",
+  "composer": {
+    "package_relative_path": "source/compose_crt_canonical_review_sheets.py",
+    "bytes": 27520,
+    "sha256": "19759a04256db85f3ca6c8c326123f84816867eaad02ad281fa4fcc2934d753a"
+  },
+  "refined_source": {
+    "package_relative_path": "source/quantum-signal-television-v1.blend",
+    "bytes": 1516222,
+    "sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7"
+  },
+  "canonical_render_authority": {
+    "package_relative_path": "manifests/crt-phase-0-4r-canonical-render-inventory.json",
+    "bytes": 140281,
+    "sha256": "266075ca1f1b131c477690118a4d7337f9a0666d9b44fb476feb6f85d8d19a8a"
+  },
+  "power_state_authority": {
+    "package_relative_path": "manifests/crt-phase-0-4r-power-on-state-authority.json",
+    "bytes": 39520,
+    "sha256": "9b2f1c5ea3c7b777025d4350fc7742bb173f1a285db11b952945f5e33bda4835"
+  },
+  "cycles_master_authority": {
+    "package_relative_path": "manifests/crt-phase-0-4r-cycles-master-render-manifest.json",
+    "bytes": 35304,
+    "sha256": "e3d225fd44feff1adfeb6e43a30cea9c9ee563d735556549cc475df4ed4f50c9"
+  },
+  "layout_authority": {
+    "package_relative_path": "crt-portal-layout.json",
+    "bytes": 16248,
+    "sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+  },
+  "review_indices_complete": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "review_indices_pending_browser": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16
+  ],
+  "sheet_count": 8,
+  "sheets": [
+    {
+      "package_relative_path": "crt-television-recommended-design-sheet.png",
+      "width": 3000,
+      "height": 2000,
+      "bytes": 1532700,
+      "sha256": "061c7070653fafc98cee8153db6f4eaf45def31aa7c7f790174f6f0011900a44",
+      "review_index": 2,
+      "classification": "Phase 0.4R CRT bounded creative repair evidence",
+      "approval_state": "awaiting direct human Phase 0.4R review",
+      "intendedCommit": true,
+      "source_renders": [
+        {
+          "package_relative_path": "renders/refined/design/design-front.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1052269,
+          "sha256": "7f422df790a92c040e6b8a23c5c9c7848147ad7ede5477a8e3d82d77dc17a264"
+        },
+        {
+          "package_relative_path": "renders/refined/design/design-side.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 916677,
+          "sha256": "2eb360e19c088187cf367de63a817f4d1e6e13066231ebe02c8906bbeb6cc223"
+        },
+        {
+          "package_relative_path": "renders/refined/design/design-rear.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1082082,
+          "sha256": "b5381ec6e3682e334a7e0fa0784576f7baf3d1da75e9c5a3a6ddfbf656a64869"
+        },
+        {
+          "package_relative_path": "renders/repair-masters/cycles-design-three-quarter-front.png",
+          "width": 1600,
+          "height": 1000,
+          "bytes": 1021438,
+          "sha256": "3a6ec3e89be07a0cd016bd922eb0921885a70dd66439bff65f5f9e1136369353"
+        },
+        {
+          "package_relative_path": "renders/refined/design/design-three-quarter-rear.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1062762,
+          "sha256": "992830803ff22d3534ada4e9e8be2067fd271d689cc0d72add2eb92bded16b2a"
+        }
+      ]
+    },
+    {
+      "package_relative_path": "crt-cabinet-material-sheet.png",
+      "width": 3000,
+      "height": 1700,
+      "bytes": 1318564,
+      "sha256": "c81f34e6d5eb1fb85c93a76dc7cee9c1a561a51442e43d40c9b66b086c897c1d",
+      "review_index": 3,
+      "classification": "Phase 0.4R CRT bounded creative repair evidence",
+      "approval_state": "awaiting direct human Phase 0.4R review",
+      "intendedCommit": true,
+      "source_renders": [
+        {
+          "package_relative_path": "renders/repair-masters/cycles-cabinet-material-closeup.png",
+          "width": 1600,
+          "height": 1000,
+          "bytes": 1113899,
+          "sha256": "a7a6e30ab1266347e5c21f884fcc38910d0f0472331dc4a5e3e67c9996bfc933"
+        },
+        {
+          "package_relative_path": "renders/repair-masters/cycles-design-three-quarter-front.png",
+          "width": 1600,
+          "height": 1000,
+          "bytes": 1021438,
+          "sha256": "3a6ec3e89be07a0cd016bd922eb0921885a70dd66439bff65f5f9e1136369353"
+        },
+        {
+          "package_relative_path": "renders/repair-masters/cycles-rear-strain-relief-closeup.png",
+          "width": 1600,
+          "height": 1000,
+          "bytes": 907213,
+          "sha256": "e42423f9539d5b824d068136d8cae8651801f93a6df7fc1f1cfb3eefdb75bc9f"
+        }
+      ]
+    },
+    {
+      "package_relative_path": "crt-screen-glass-and-phosphor-sheet.png",
+      "width": 3000,
+      "height": 2200,
+      "bytes": 3352761,
+      "sha256": "62b8f24fcb926a9769baf2c3ebadbde0506bccba88f66d4f69e97e42f7e2269b",
+      "review_index": 4,
+      "classification": "Phase 0.4R CRT bounded creative repair evidence",
+      "approval_state": "awaiting direct human Phase 0.4R review",
+      "intendedCommit": true,
+      "source_renders": [
+        {
+          "package_relative_path": "renders/repair-masters/cycles-dormant-glass-closeup.png",
+          "width": 1600,
+          "height": 1000,
+          "bytes": 1006048,
+          "sha256": "2989939145c7fd31c34957cbf5d61aeb87d845420a18c8c9ae2bd3c676db1ac8"
+        },
+        {
+          "package_relative_path": "renders/repair-masters/cycles-design-three-quarter-front.png",
+          "width": 1600,
+          "height": 1000,
+          "bytes": 1021438,
+          "sha256": "3a6ec3e89be07a0cd016bd922eb0921885a70dd66439bff65f5f9e1136369353"
+        },
+        {
+          "package_relative_path": "renders/refined/materials/glass-electrical-wake.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1233610,
+          "sha256": "5c0b2c2af52902b149661f491fba9ff754e53e1c55f24808854e5bff651b1336"
+        },
+        {
+          "package_relative_path": "renders/repair-masters/cycles-powered-glass-phosphor-closeup.png",
+          "width": 1600,
+          "height": 1000,
+          "bytes": 1075960,
+          "sha256": "7f41707ba5ac9071a7b13b0b5fbe1fbafc93767e6bc16bed2f743e8865d37a88"
+        }
+      ]
+    },
+    {
+      "package_relative_path": "crt-controls-speaker-rear-detail-sheet.png",
+      "width": 3000,
+      "height": 2200,
+      "bytes": 2085948,
+      "sha256": "d56443b0bdf15349338a95c4dc7e33bf11656e80af022aee725b8cc2144f3a36",
+      "review_index": 5,
+      "classification": "Phase 0.4R CRT bounded creative repair evidence",
+      "approval_state": "awaiting direct human Phase 0.4R review",
+      "intendedCommit": true,
+      "source_renders": [
+        {
+          "package_relative_path": "renders/repair-masters/cycles-speaker-controls-closeup.png",
+          "width": 1600,
+          "height": 1000,
+          "bytes": 998207,
+          "sha256": "d2528af15f59a7bb2069e1aff1498cb5d44dcdb1be1c48b0422bb6bf1a234d14"
+        },
+        {
+          "package_relative_path": "renders/repair-masters/cycles-cabinet-material-closeup.png",
+          "width": 1600,
+          "height": 1000,
+          "bytes": 1113899,
+          "sha256": "a7a6e30ab1266347e5c21f884fcc38910d0f0472331dc4a5e3e67c9996bfc933"
+        },
+        {
+          "package_relative_path": "renders/repair-masters/cycles-rear-strain-relief-closeup.png",
+          "width": 1600,
+          "height": 1000,
+          "bytes": 907213,
+          "sha256": "e42423f9539d5b824d068136d8cae8651801f93a6df7fc1f1cfb3eefdb75bc9f"
+        }
+      ]
+    },
+    {
+      "package_relative_path": "crt-cable-and-connection-sheet.png",
+      "width": 3000,
+      "height": 2200,
+      "bytes": 2396715,
+      "sha256": "c3da1a610c8ed2978d9c5b8e1c68e4fbe94994a201db670d2f597e961ccc52b9",
+      "review_index": 6,
+      "classification": "Phase 0.4R CRT bounded creative repair evidence",
+      "approval_state": "awaiting direct human Phase 0.4R review",
+      "intendedCommit": true,
+      "source_renders": [
+        {
+          "package_relative_path": "renders/refined/cable/cable-dormant.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1398157,
+          "sha256": "a21d0a4bb8c10c57d74e4b2efb48ee7ab497a729e2eb13f660247aa694434128"
+        },
+        {
+          "package_relative_path": "renders/refined/cable/cable-conduction-boundary.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1399862,
+          "sha256": "289b771f30dc4c5e0823cbdb7331fabe3e7f8c1e82d9649ae925ddd2693e400a"
+        },
+        {
+          "package_relative_path": "renders/refined/cable/cable-rear-arrival.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1075357,
+          "sha256": "790a5dbcecc5f08c93d12a178e13c5baab4ff90839e550f1eeea43e1fecd772c"
+        },
+        {
+          "package_relative_path": "renders/refined/cable/cable-connected-powered.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1300586,
+          "sha256": "086665b0d3a996edcc16a914af57249f427d9b05fe50e70b703811786120c40b"
+        }
+      ]
+    },
+    {
+      "package_relative_path": "crt-proving-ground-style-frame.png",
+      "width": 3200,
+      "height": 2200,
+      "bytes": 2295885,
+      "sha256": "5b51c137c25513290dcf54a07900fc9aaa3647f0dccab259ec8cebf81b80818a",
+      "review_index": 7,
+      "classification": "Phase 0.4R CRT bounded creative repair evidence",
+      "approval_state": "awaiting direct human Phase 0.4R review",
+      "intendedCommit": true,
+      "source_renders": [
+        {
+          "package_relative_path": "renders/repair-masters/cycles-proving-ground-master.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1252542,
+          "sha256": "9af775bd6b97aa6b605f50cbceeb9c358acff4e599f072b9d0dde7ecdfa76593"
+        }
+      ]
+    },
+    {
+      "package_relative_path": "crt-camera-path-study.png",
+      "width": 3000,
+      "height": 2000,
+      "bytes": 1526862,
+      "sha256": "941ff25c9186a55a971a8bac93540399fe4733c642909cbafdde623578bfa09f",
+      "review_index": 8,
+      "classification": "Phase 0.4R CRT bounded creative repair evidence",
+      "approval_state": "awaiting direct human Phase 0.4R review",
+      "intendedCommit": true,
+      "source_renders": [
+        {
+          "package_relative_path": "renders/refined/camera-study/camera-01-arrival.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1180902,
+          "sha256": "6be86805795563cff10b779c1454f915b5f3e89c0c9d3f9212441b3eb3752da8"
+        },
+        {
+          "package_relative_path": "renders/refined/camera-study/camera-02-thirty-percent.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1198511,
+          "sha256": "038ebf16ca3191f13bcafd4678363148e6aad367572b571d18c716b552f4ddf8"
+        },
+        {
+          "package_relative_path": "renders/refined/camera-study/camera-03-sixty-percent.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1228832,
+          "sha256": "b638b1e5b617dc36233b6a9c476d4d3d9fda5926298efbe635ad3ade6c29f639"
+        },
+        {
+          "package_relative_path": "renders/refined/camera-study/camera-04-near-frontal.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1214727,
+          "sha256": "c44ace4acbc4601e73dcdc2fef51a593c9137de0fa9e8ce6c96e42adcccbeaec"
+        },
+        {
+          "package_relative_path": "renders/refined/camera-study/camera-05-portal-ready.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1326080,
+          "sha256": "0f861ab3c64a047d9c92a43cfb3b313859f06d0450e7c1177607081c131d7ca7"
+        }
+      ]
+    },
+    {
+      "package_relative_path": "crt-power-on-contact-sheet.png",
+      "width": 3600,
+      "height": 2000,
+      "bytes": 2084206,
+      "sha256": "8fc4809be087679ca07043499e51b591b496cc23f3918cb093b924de0f17acb3",
+      "review_index": 9,
+      "classification": "Phase 0.4R CRT bounded creative repair evidence",
+      "approval_state": "awaiting direct human Phase 0.4R review",
+      "intendedCommit": true,
+      "source_renders": [
+        {
+          "package_relative_path": "renders/refined/power-on/power-01-completely-dormant.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1180902,
+          "sha256": "6be86805795563cff10b779c1454f915b5f3e89c0c9d3f9212441b3eb3752da8"
+        },
+        {
+          "package_relative_path": "renders/refined/power-on/power-02-current-reaches-connection.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1075357,
+          "sha256": "790a5dbcecc5f08c93d12a178e13c5baab4ff90839e550f1eeea43e1fecd772c"
+        },
+        {
+          "package_relative_path": "renders/refined/power-on/power-03-power-indicator-response.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1251797,
+          "sha256": "af230b461db48014247addcc4a71ce4c484bbce9a252fb2a8e0f71e8d6c81a6c"
+        },
+        {
+          "package_relative_path": "renders/refined/power-on/power-04-crt-electrical-wake.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1191649,
+          "sha256": "1e1d10964777b4a1f57c47761eeb1f794cbf32f0182717ebba6586e1e2a35f40"
+        },
+        {
+          "package_relative_path": "renders/refined/power-on/power-05-raster-phosphor-appears.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1307593,
+          "sha256": "9e83de8b8f831fd3cff599ff57c009c0ff344f98d100b246e48d7a0dc900eda5"
+        },
+        {
+          "package_relative_path": "renders/refined/power-on/power-06-quantum-interface-stabilizes.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1347624,
+          "sha256": "472cd6ba2ca0ce21dcd9b0d8fa018734d854df328dc311307c4f6db75782a948"
+        },
+        {
+          "package_relative_path": "renders/refined/power-on/power-07-portal-ready.png",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 1328924,
+          "sha256": "5d9beb9b49f948de8ab13ccde0b78dc13acce289ee5e60f84d822a21ca5acfac"
+        }
+      ]
+    }
+  ],
+  "quality_closeups": {
+    "package_relative_path": "crt-model-quality-closeups.png",
+    "width": 4200,
+    "height": 2400,
+    "bytes": 4798936,
+    "sha256": "a7f753064db65cdf3b7cc1eab42cd60c340e006d38ec5089e96d94f72952cf9f",
+    "classification": "Phase 0.4R supplemental Cycles model-quality evidence",
+    "approval_state": "awaiting direct human Phase 0.4R review",
+    "intendedCommit": true,
+    "source_renders": [
+      {
+        "package_relative_path": "renders/repair-masters/cycles-design-three-quarter-front.png",
+        "width": 1600,
+        "height": 1000,
+        "bytes": 1021438,
+        "sha256": "3a6ec3e89be07a0cd016bd922eb0921885a70dd66439bff65f5f9e1136369353"
+      },
+      {
+        "package_relative_path": "renders/repair-masters/cycles-cabinet-material-closeup.png",
+        "width": 1600,
+        "height": 1000,
+        "bytes": 1113899,
+        "sha256": "a7a6e30ab1266347e5c21f884fcc38910d0f0472331dc4a5e3e67c9996bfc933"
+      },
+      {
+        "package_relative_path": "renders/repair-masters/cycles-speaker-controls-closeup.png",
+        "width": 1600,
+        "height": 1000,
+        "bytes": 998207,
+        "sha256": "d2528af15f59a7bb2069e1aff1498cb5d44dcdb1be1c48b0422bb6bf1a234d14"
+      },
+      {
+        "package_relative_path": "renders/repair-masters/cycles-rear-strain-relief-closeup.png",
+        "width": 1600,
+        "height": 1000,
+        "bytes": 907213,
+        "sha256": "e42423f9539d5b824d068136d8cae8651801f93a6df7fc1f1cfb3eefdb75bc9f"
+      },
+      {
+        "package_relative_path": "renders/repair-masters/cycles-dormant-glass-closeup.png",
+        "width": 1600,
+        "height": 1000,
+        "bytes": 1006048,
+        "sha256": "2989939145c7fd31c34957cbf5d61aeb87d845420a18c8c9ae2bd3c676db1ac8"
+      },
+      {
+        "package_relative_path": "renders/repair-masters/cycles-powered-glass-phosphor-closeup.png",
+        "width": 1600,
+        "height": 1000,
+        "bytes": 1075960,
+        "sha256": "7f41707ba5ac9071a7b13b0b5fbe1fbafc93767e6bc16bed2f743e8865d37a88"
+      },
+      {
+        "package_relative_path": "renders/repair-masters/cycles-proving-ground-master.png",
+        "width": 1920,
+        "height": 1200,
+        "bytes": 1252542,
+        "sha256": "9af775bd6b97aa6b605f50cbceeb9c358acff4e599f072b9d0dde7ecdfa76593"
+      },
+      {
+        "package_relative_path": "renders/repair-masters/cycles-portal-ready-closeup.png",
+        "width": 1600,
+        "height": 1000,
+        "bytes": 969880,
+        "sha256": "1c4622f1a1caed025322cc6b0b66db2106fb995f478835e7c1eadbb3d46a8f90"
+      }
+    ]
+  },
+  "render_engine_split": {
+    "material_quality_authority": "eight exact-source BLENDER_CYCLES masters",
+    "supplemental_state_authority": "BLENDER_EEVEE camera/cable/power/source-group stills"
+  },
+  "creative_boundary": {
+    "private_reference_included": false,
+    "third_party_models": 0,
+    "external_textures": 0,
+    "full_animatic_created": false,
+    "production_media_created": false
+  }
+}

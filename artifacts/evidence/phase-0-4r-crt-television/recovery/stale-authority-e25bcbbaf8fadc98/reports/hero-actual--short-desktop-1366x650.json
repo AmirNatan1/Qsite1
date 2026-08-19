@@ -1,0 +1,936 @@
+{
+  "schema": "quantum-hub.phase-0-4r-crt-television.local-browser-case.v1",
+  "authority": "repository-native-playwright",
+  "authorityFingerprint": "f55aa25c527d99b8b379c25282fad478c27dee3aa3ea85783fb7e1dc5a1d7938",
+  "capturedAt": "2026-08-18T23:41:38.252Z",
+  "plan": {
+    "path": "prototypes/phase-0-4r-crt-portal-qa/capture-plan.json",
+    "bytes": 43068,
+    "sha256": "dd0651adce6501236e75d8fa5fea1f83ec58a68d6448ea6ee5fb9db8011318c4"
+  },
+  "contract": {
+    "path": "artifacts/original/phase-0-4-crt-television/crt-portal-layout.json",
+    "bytes": 16248,
+    "sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+  },
+  "keepout": {
+    "path": "artifacts/original/phase-0-4-crt-television/manifests/crt-scene-source-keepouts.json",
+    "bytes": 1157579,
+    "sha256": "4dcf0d9b6e7e583682b8d148178634fabb54b331f02ab31e7d7e9358ff6cd26c",
+    "schema": "quantum-hub.phase-0-4-crt-television.scene-source-keepouts.v1"
+  },
+  "harness": {
+    "schema": "quantum-hub.phase-0-4r-crt-television.harness-authority.v1",
+    "sha256": "f7fe2573a628e453dc904558f5cf544e76002c5eb14bf4bb658438812d028091",
+    "files": [
+      {
+        "path": "prototypes/phase-0-4r-crt-portal-qa/index.html",
+        "bytes": 5523,
+        "sha256": "20a4436bafd05ecd20ee5fbc02fb7d6481f86905eaa915452403273e3044073e"
+      },
+      {
+        "path": "prototypes/phase-0-4-crt-portal-qa/styles.css",
+        "bytes": 15161,
+        "sha256": "3a63a0c3def48b009a12e684885a5c2487e809ffb601dabe8abc02fa78cc4735"
+      },
+      {
+        "path": "prototypes/phase-0-4r-crt-portal-qa/repair.css",
+        "bytes": 855,
+        "sha256": "def449e098b722dc7a995ea062b3b0a6e316b2ffe12fd1f912086d49977d5f2c"
+      },
+      {
+        "path": "prototypes/phase-0-4r-crt-portal-qa/app.js",
+        "bytes": 50815,
+        "sha256": "c3ec42af2f27ad6b1135512d93d92f3af89a01a94af9c20d02d36602950fb903"
+      },
+      {
+        "path": "prototypes/phase-0-4r-crt-portal-qa/runner.html",
+        "bytes": 983,
+        "sha256": "dda13f71addefeade70b6c5d1942811870904840640808df41ecddd9c0c6b8bf"
+      },
+      {
+        "path": "prototypes/phase-0-4-crt-portal-qa/runner.css",
+        "bytes": 846,
+        "sha256": "6f6b4cac83d8d41d2ffaabb167be0ced7dbafa26ccc82b617341e930e32254c5"
+      },
+      {
+        "path": "prototypes/phase-0-4-crt-portal-qa/runner.js",
+        "bytes": 5729,
+        "sha256": "3c20b0a17b4d9471a60c235bb9848bc7a6b676363f09955ed874923390a26c7e"
+      }
+    ]
+  },
+  "browser": {
+    "engine": "Chromium",
+    "product": "chrome",
+    "version": "151.0.7922.34",
+    "executableResolution": "playwright-managed-executable",
+    "automationPackage": "playwright",
+    "localAuthority": true
+  },
+  "id": "hero-actual--short-desktop-1366x650",
+  "viewportId": "short-desktop-1366x650",
+  "query": "surface=hero&fixture=actual&zoom=100&motion=no-preference&font=normal&chrome=0",
+  "focusSelector": null,
+  "captureRequired": true,
+  "runnerDomReportSha256": "6b764a83633b8dd7bc5aa884dc43e9be554b80c0ab2095e0dc259c4958c1b7ac",
+  "runner": {
+    "schema": "quantum-hub.phase-0-4-crt-television.exact-viewport-runner-report.v1",
+    "requestedViewport": {
+      "width": 1366,
+      "height": 650,
+      "unit": "CSS pixel"
+    },
+    "iframeViewport": {
+      "width": 1366,
+      "height": 650,
+      "devicePixelRatio": 1
+    },
+    "viewportMatch": true,
+    "devicePixelRatioPolicy": "record actual browser DPR; do not claim control",
+    "captureScale": 0.8784773060029283,
+    "captureScalePolicy": "evidence-only outer transform; iframe layout remains at the exact requested CSS viewport",
+    "maximumRenderedWidth": 1200,
+    "captureRenderedBounds": {
+      "left": 0,
+      "top": 0,
+      "x": 0,
+      "y": 0,
+      "width": 1200,
+      "height": 571.01,
+      "rasterX": 0,
+      "rasterY": 0,
+      "rasterWidth": 1200,
+      "rasterHeight": 571
+    },
+    "captureBoundsMatch": true,
+    "focusSelector": null,
+    "focusState": {
+      "requested": false,
+      "requestedSelector": null,
+      "activeReviewControlId": null,
+      "pass": true
+    },
+    "pass": true
+  },
+  "report": {
+    "schema": "quantum-hub.phase-0-4-crt-television.typography-collision-browser-report.v1",
+    "generatedAt": "2026-08-18T23:41:36.942Z",
+    "authority": {
+      "mode": "final",
+      "captureEligible": true,
+      "scaffoldPreflight": false,
+      "checks": {
+        "contractPath": true,
+        "contractBytes": true,
+        "contractSha256": true,
+        "physicalScreenFourByThree": true,
+        "activeRasterFourByThree": true,
+        "maximumAnchorDelta": true,
+        "glyphRuleClearance": true,
+        "keepoutLayoutAuthority": true,
+        "immutableContractCaptureBoundary": true,
+        "frozenSourceCount": true,
+        "keepoutRecordCount": true,
+        "keepoutHash": true
+      },
+      "contract": {
+        "path": "artifacts/original/phase-0-4-crt-television/crt-portal-layout.json",
+        "bytes": 16248,
+        "sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "plan": {
+        "path": "prototypes/phase-0-4r-crt-portal-qa/capture-plan.json",
+        "sha256": "dd0651adce6501236e75d8fa5fea1f83ec58a68d6448ea6ee5fb9db8011318c4"
+      }
+    },
+    "viewport": {
+      "width": 1366,
+      "height": 650,
+      "devicePixelRatio": 1
+    },
+    "state": {
+      "surface": "hero",
+      "fixture": "actual",
+      "textZoom": 100,
+      "motion": "no-preference",
+      "fontMode": "normal",
+      "chrome": false
+    },
+    "fonts": {
+      "requestedMode": "normal",
+      "forcedFallbackRequested": false,
+      "forcedFallbackActive": false,
+      "computed": {
+        "display": "Syne, \"Arial Black\", Arial, sans-serif",
+        "editorial": "Newsreader, Georgia, \"Times New Roman\", serif",
+        "ui": "Inter, Arial, Helvetica, sans-serif"
+      },
+      "expectedFallback": {
+        "display": "Arial Black, Arial, sans-serif",
+        "editorial": "Georgia, Times New Roman, serif",
+        "ui": "Arial, Helvetica, sans-serif"
+      },
+      "computedFallbackStackMatches": {
+        "display": false,
+        "editorial": false,
+        "ui": false
+      },
+      "preferredTokensAbsent": false,
+      "exercise": "preferred stacks with documented system fallbacks",
+      "fallbackFontPass": true
+    },
+    "copy": {
+      "wordFragmentationOffenders": 0,
+      "humanLineBreakReport": [
+        {
+          "id": "hero-heading",
+          "lines": [
+            "Prove it",
+            "where",
+            "it has",
+            "to work."
+          ]
+        }
+      ],
+      "longSupportLength": 148,
+      "actualSupportLength": 118,
+      "longSupportRatio": 1.2542372881355932,
+      "longSupportRatioPass": true
+    },
+    "layout": {
+      "layoutWidth": 1366,
+      "documentScrollWidth": 1366,
+      "pageHorizontalOverflow": false,
+      "routeHorizontalOverflow": false,
+      "textOverflow": {
+        "blocks": [
+          {
+            "id": "hero-nav",
+            "clientWidthPx": 1195,
+            "scrollWidthPx": 1195,
+            "clientHeightPx": 26,
+            "scrollHeightPx": 26,
+            "pass": true
+          },
+          {
+            "id": "hero-eyebrow",
+            "clientWidthPx": 410,
+            "scrollWidthPx": 410,
+            "clientHeightPx": 24,
+            "scrollHeightPx": 24,
+            "pass": true
+          },
+          {
+            "id": "hero-heading",
+            "clientWidthPx": 410,
+            "scrollWidthPx": 410,
+            "clientHeightPx": 364,
+            "scrollHeightPx": 364,
+            "pass": true
+          },
+          {
+            "id": "hero-supporting",
+            "clientWidthPx": 410,
+            "scrollWidthPx": 410,
+            "clientHeightPx": 88,
+            "scrollHeightPx": 88,
+            "pass": true
+          },
+          {
+            "id": "hero-audiences",
+            "clientWidthPx": 410,
+            "scrollWidthPx": 410,
+            "clientHeightPx": 52,
+            "scrollHeightPx": 52,
+            "pass": true
+          },
+          {
+            "id": "hero-industry",
+            "clientWidthPx": 197,
+            "scrollWidthPx": 197,
+            "clientHeightPx": 50,
+            "scrollHeightPx": 50,
+            "pass": true
+          },
+          {
+            "id": "hero-startups",
+            "clientWidthPx": 197,
+            "scrollWidthPx": 197,
+            "clientHeightPx": 50,
+            "scrollHeightPx": 50,
+            "pass": true
+          }
+        ],
+        "offenders": []
+      },
+      "textOverflowPass": true,
+      "nestedScrollerOffenders": [],
+      "collisions": [],
+      "collisionPass": true,
+      "wordIntegrity": {
+        "headings": [
+          "hero-heading"
+        ],
+        "cssOffenders": [],
+        "wordFragmentationDetails": [],
+        "wordFragmentationOffenders": 0,
+        "humanLineBreakReport": [
+          {
+            "id": "hero-heading",
+            "lines": [
+              "Prove it",
+              "where",
+              "it has",
+              "to work."
+            ]
+          }
+        ],
+        "pass": true
+      },
+      "buttons": [
+        {
+          "id": "hero-industry",
+          "widthPx": 198.891,
+          "heightPx": 52
+        },
+        {
+          "id": "hero-startups",
+          "widthPx": 198.906,
+          "heightPx": 52
+        }
+      ],
+      "buttonPass": true,
+      "dividerPass": true,
+      "ruleSafetyPass": true,
+      "ruleIntersections": [],
+      "anchors": {
+        "applicable": false,
+        "mode": "responsive-dom-flow",
+        "pass": true,
+        "maximumDeltaPx": null,
+        "anchors": []
+      },
+      "referenceHeadingGlyphClearanceCssPx": null,
+      "sceneSafety": {
+        "applicable": true,
+        "pass": true,
+        "reason": "source-normalized Blender geometry projected through the live scene image with 16 CSS-pixel semantic clearance",
+        "applicability": {
+          "mode": "visible-physical-geometry",
+          "physicalGeometryVisible": true,
+          "collisionRequired": true,
+          "sourceId": "source-desktop-dormant",
+          "sourceSha256": "9b637bf010231ebd2efcb898d20e6b60b23d299c5a2aa9651e58e077c0715652",
+          "geometryIds": [
+            "crt-cabinet",
+            "crt-screen",
+            "spiral-cable"
+          ]
+        },
+        "minimumClearanceCssPx": 16,
+        "keepoutAuthority": {
+          "path": "artifacts/original/phase-0-4-crt-television/manifests/crt-scene-source-keepouts.json",
+          "schema": "quantum-hub.phase-0-4-crt-television.scene-source-keepouts.v1",
+          "bytes": 1157579,
+          "sha256": "4dcf0d9b6e7e583682b8d148178634fabb54b331f02ab31e7d7e9358ff6cd26c"
+        },
+        "source": {
+          "id": "source-desktop-dormant",
+          "role": "source-desktop-dormant",
+          "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-desktop-dormant.png",
+          "bytes": 1169534,
+          "sha256": "9b637bf010231ebd2efcb898d20e6b60b23d299c5a2aa9651e58e077c0715652",
+          "width": 1920,
+          "height": 1200
+        },
+        "imageRect": {
+          "left": 513.175,
+          "top": -13.875,
+          "right": 1879.175,
+          "bottom": 839.875,
+          "width": 1366,
+          "height": 853.75
+        },
+        "imageTransform": "matrix(1, 0, 0, 1, 513.175, 88)",
+        "keepouts": [
+          {
+            "id": "crt-cabinet",
+            "semanticName": "Quantum Signal Television cabinet",
+            "visible": true,
+            "visibility": "visible-in-frame",
+            "collisionRequired": true,
+            "intentionalOverlapReason": null,
+            "rectangles": [
+              {
+                "left": 1113.513,
+                "top": 180.062,
+                "right": 1641.127,
+                "bottom": 638.306,
+                "width": 527.614,
+                "height": 458.244
+              }
+            ],
+            "sourceRectangleCount": 1
+          },
+          {
+            "id": "crt-screen",
+            "semanticName": "convex 4:3 CRT screen",
+            "visible": true,
+            "visibility": "visible-in-frame",
+            "collisionRequired": true,
+            "intentionalOverlapReason": null,
+            "rectangles": [
+              {
+                "left": 1164.408,
+                "top": 211.778,
+                "right": 1487.723,
+                "bottom": 511.134,
+                "width": 323.315,
+                "height": 299.356
+              }
+            ],
+            "sourceRectangleCount": 1
+          },
+          {
+            "id": "spiral-cable",
+            "semanticName": "visible physical spiral cable",
+            "visible": true,
+            "visibility": "visible-in-frame",
+            "collisionRequired": true,
+            "intentionalOverlapReason": null,
+            "rectangles": [
+              {
+                "left": 1658.223,
+                "top": 412.199,
+                "right": 1871.323,
+                "bottom": 449.222,
+                "width": 213.099,
+                "height": 37.024
+              },
+              {
+                "left": 1458.447,
+                "top": 406.646,
+                "right": 1661.955,
+                "bottom": 435.307,
+                "width": 203.509,
+                "height": 28.661
+              },
+              {
+                "left": 1262.205,
+                "top": 406.367,
+                "right": 1459.161,
+                "bottom": 430.953,
+                "width": 196.956,
+                "height": 24.586
+              },
+              {
+                "left": 1074.61,
+                "top": 408.098,
+                "right": 1267.074,
+                "bottom": 439.76,
+                "width": 192.464,
+                "height": 31.662
+              },
+              {
+                "left": 898.237,
+                "top": 416.394,
+                "right": 1083.836,
+                "bottom": 455.995,
+                "width": 185.599,
+                "height": 39.601
+              },
+              {
+                "left": 737.41,
+                "top": 431.695,
+                "right": 912.122,
+                "bottom": 480.084,
+                "width": 174.713,
+                "height": 48.389
+              },
+              {
+                "left": 599.145,
+                "top": 454.4,
+                "right": 756.368,
+                "bottom": 512.561,
+                "width": 157.222,
+                "height": 58.161
+              },
+              {
+                "left": 513.324,
+                "top": 485.013,
+                "right": 623.578,
+                "bottom": 553.326,
+                "width": 110.254,
+                "height": 68.314
+              },
+              {
+                "left": 513.324,
+                "top": 524.393,
+                "right": 633.776,
+                "bottom": 738.311,
+                "width": 120.452,
+                "height": 213.917
+              },
+              {
+                "left": 597.487,
+                "top": 696.328,
+                "right": 849.995,
+                "bottom": 789.797,
+                "width": 252.508,
+                "height": 93.469
+              },
+              {
+                "left": 822.482,
+                "top": 744.135,
+                "right": 1139.726,
+                "bottom": 824.498,
+                "width": 317.244,
+                "height": 80.363
+              },
+              {
+                "left": 1127.435,
+                "top": 776.285,
+                "right": 1468.917,
+                "bottom": 834.927,
+                "width": 341.482,
+                "height": 58.642
+              },
+              {
+                "left": 1462.355,
+                "top": 771.553,
+                "right": 1789.287,
+                "bottom": 834.927,
+                "width": 326.932,
+                "height": 63.374
+              },
+              {
+                "left": 1765.154,
+                "top": 474.266,
+                "right": 1879.054,
+                "bottom": 819.371,
+                "width": 113.9,
+                "height": 345.105
+              },
+              {
+                "left": 1672.357,
+                "top": 460.975,
+                "right": 1822.062,
+                "bottom": 501.406,
+                "width": 149.704,
+                "height": 40.432
+              },
+              {
+                "left": 1536.008,
+                "top": 453.745,
+                "right": 1679.995,
+                "bottom": 487.346,
+                "width": 143.987,
+                "height": 33.6
+              },
+              {
+                "left": 1400.182,
+                "top": 452.084,
+                "right": 1538.036,
+                "bottom": 479.696,
+                "width": 137.854,
+                "height": 27.612
+              },
+              {
+                "left": 1270.147,
+                "top": 452.163,
+                "right": 1403.731,
+                "bottom": 481.977,
+                "width": 133.583,
+                "height": 29.815
+              },
+              {
+                "left": 1151.606,
+                "top": 455.903,
+                "right": 1279.146,
+                "bottom": 491.28,
+                "width": 127.54,
+                "height": 35.378
+              },
+              {
+                "left": 1048.778,
+                "top": 464.704,
+                "right": 1166.043,
+                "bottom": 505.639,
+                "width": 117.265,
+                "height": 40.935
+              },
+              {
+                "left": 966.575,
+                "top": 478.299,
+                "right": 1068.561,
+                "bottom": 524.682,
+                "width": 101.986,
+                "height": 46.383
+              },
+              {
+                "left": 910.568,
+                "top": 496.319,
+                "right": 991.401,
+                "bottom": 547.76,
+                "width": 80.833,
+                "height": 51.442
+              },
+              {
+                "left": 886.539,
+                "top": 518.161,
+                "right": 939.726,
+                "bottom": 573.829,
+                "width": 53.186,
+                "height": 55.668
+              },
+              {
+                "left": 886.539,
+                "top": 542.739,
+                "right": 932.459,
+                "bottom": 601.343,
+                "width": 45.92,
+                "height": 58.603
+              },
+              {
+                "left": 899.475,
+                "top": 568.372,
+                "right": 982.803,
+                "bottom": 628.125,
+                "width": 83.328,
+                "height": 59.753
+              },
+              {
+                "left": 951.972,
+                "top": 593.253,
+                "right": 1067.495,
+                "bottom": 651.597,
+                "width": 115.523,
+                "height": 58.344
+              },
+              {
+                "left": 1042.353,
+                "top": 614.984,
+                "right": 1179.296,
+                "bottom": 669.138,
+                "width": 136.943,
+                "height": 54.154
+              },
+              {
+                "left": 1163.274,
+                "top": 631.178,
+                "right": 1306.297,
+                "bottom": 678.749,
+                "width": 143.023,
+                "height": 47.571
+              },
+              {
+                "left": 1301.856,
+                "top": 640.014,
+                "right": 1441.905,
+                "bottom": 680.249,
+                "width": 140.049,
+                "height": 40.235
+              },
+              {
+                "left": 1433.959,
+                "top": 633.867,
+                "right": 1567.532,
+                "bottom": 679.537,
+                "width": 133.573,
+                "height": 45.67
+              },
+              {
+                "left": 1548.317,
+                "top": 620.982,
+                "right": 1666.697,
+                "bottom": 672.05,
+                "width": 118.38,
+                "height": 51.068
+              },
+              {
+                "left": 1638.797,
+                "top": 604.238,
+                "right": 1733.041,
+                "bottom": 658.042,
+                "width": 94.244,
+                "height": 53.804
+              },
+              {
+                "left": 1699.794,
+                "top": 585.837,
+                "right": 1765.734,
+                "bottom": 639.884,
+                "width": 65.94,
+                "height": 54.048
+              },
+              {
+                "left": 1730.519,
+                "top": 567.658,
+                "right": 1770.313,
+                "bottom": 619.971,
+                "width": 39.794,
+                "height": 52.312
+              },
+              {
+                "left": 1714.357,
+                "top": 550.879,
+                "right": 1767.995,
+                "bottom": 600.367,
+                "width": 53.638,
+                "height": 49.488
+              },
+              {
+                "left": 1677.939,
+                "top": 536.533,
+                "right": 1745.284,
+                "bottom": 582.565,
+                "width": 67.345,
+                "height": 46.033
+              },
+              {
+                "left": 1653.623,
+                "top": 526.766,
+                "right": 1703.84,
+                "bottom": 567.513,
+                "width": 50.218,
+                "height": 40.747
+              }
+            ],
+            "sourceRectangleCount": 37
+          }
+        ],
+        "blocks": [
+          {
+            "id": "hero-nav",
+            "rect": {
+              "left": 85.375,
+              "top": 39,
+              "right": 1280.625,
+              "bottom": 65,
+              "width": 1195.25,
+              "height": 26
+            },
+            "intersectingKeepouts": [],
+            "pass": true
+          },
+          {
+            "id": "hero-eyebrow",
+            "rect": {
+              "left": 85.375,
+              "top": 110.5,
+              "right": 495.172,
+              "bottom": 134.469,
+              "width": 409.797,
+              "height": 23.969
+            },
+            "intersectingKeepouts": [],
+            "pass": true
+          },
+          {
+            "id": "hero-heading",
+            "rect": {
+              "left": 85.375,
+              "top": 148.469,
+              "right": 495.172,
+              "bottom": 512.094,
+              "width": 409.797,
+              "height": 363.625
+            },
+            "intersectingKeepouts": [],
+            "pass": true
+          },
+          {
+            "id": "hero-supporting",
+            "rect": {
+              "left": 85.375,
+              "top": 526.094,
+              "right": 495.172,
+              "bottom": 613.703,
+              "width": 409.797,
+              "height": 87.609
+            },
+            "intersectingKeepouts": [],
+            "pass": true
+          },
+          {
+            "id": "hero-audiences",
+            "rect": {
+              "left": 85.375,
+              "top": 627.703,
+              "right": 495.172,
+              "bottom": 679.703,
+              "width": 409.797,
+              "height": 52
+            },
+            "intersectingKeepouts": [],
+            "pass": true
+          },
+          {
+            "id": "hero-industry",
+            "rect": {
+              "left": 85.375,
+              "top": 627.703,
+              "right": 284.266,
+              "bottom": 679.703,
+              "width": 198.891,
+              "height": 52
+            },
+            "intersectingKeepouts": [],
+            "pass": true
+          },
+          {
+            "id": "hero-startups",
+            "rect": {
+              "left": 296.266,
+              "top": 627.703,
+              "right": 495.172,
+              "bottom": 679.703,
+              "width": 198.906,
+              "height": 52
+            },
+            "intersectingKeepouts": [],
+            "pass": true
+          }
+        ]
+      },
+      "reducedMotionComposition": {
+        "applicable": false,
+        "pass": true,
+        "strategy": null,
+        "floatingRoundedPanelOffenders": []
+      }
+    },
+    "assets": {
+      "sceneId": "source-desktop-dormant",
+      "scene": "/artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-desktop-dormant.png",
+      "sceneSha256": "9b637bf010231ebd2efcb898d20e6b60b23d299c5a2aa9651e58e077c0715652",
+      "sceneClassification": "dormant CRT proving-ground scene",
+      "doubledCopyPass": true,
+      "televisionPowered": null,
+      "cableDormant": null
+    },
+    "portal": {
+      "applicable": false,
+      "physicalScreen": {
+        "width": 1600,
+        "height": 1200,
+        "aspectRatio": "4:3",
+        "measuredRatio": 1.3333333333333333,
+        "pass": true
+      },
+      "takeover": {
+        "pass": true,
+        "noPermanentLetterbox": true,
+        "noAbruptAspectSnap": true,
+        "semanticDomUndistorted": true,
+        "physicalTextAbsentBeforeDomCopy": true
+      }
+    },
+    "media": {
+      "videoElements": 0,
+      "canvasElements": 0,
+      "cinematicAssetsInstantiated": false
+    },
+    "accessibility": {
+      "focus": {
+        "target": "hero-industry",
+        "outlineWidthPx": 3,
+        "outlineStyle": "none",
+        "visibleOutline": true,
+        "restoredWithoutReviewControlResidue": true,
+        "pass": true
+      },
+      "reducedMotionPass": true,
+      "semanticHeadingCount": 1
+    },
+    "pass": true
+  },
+  "capture": {
+    "raw": {
+      "path": "artifacts/evidence/phase-0-4r-crt-television/captures/raw/hero-actual--short-desktop-1366x650.jpg",
+      "bytes": 102242,
+      "sha256": "1f1a355f61723b4148573ce0a444b9e7c3dd9fcf9939d6ea83eb50436710d3f0",
+      "format": "JPEG"
+    },
+    "modal": {
+      "pass": true,
+      "method": "exact-byte-modal-winner",
+      "successiveFullPageJpegs": 11,
+      "minimumWinnerVotes": 7,
+      "round": 1,
+      "winner": {
+        "sha256": "1f1a355f61723b4148573ce0a444b9e7c3dd9fcf9939d6ea83eb50436710d3f0",
+        "bytes": 102242,
+        "votes": 11
+      },
+      "uniqueByteSequences": 1,
+      "histogram": [
+        {
+          "sha256": "1f1a355f61723b4148573ce0a444b9e7c3dd9fcf9939d6ea83eb50436710d3f0",
+          "bytes": 102242,
+          "votes": 11
+        }
+      ],
+      "samples": [
+        {
+          "shot": 1,
+          "sha256": "1f1a355f61723b4148573ce0a444b9e7c3dd9fcf9939d6ea83eb50436710d3f0",
+          "bytes": 102242
+        },
+        {
+          "shot": 2,
+          "sha256": "1f1a355f61723b4148573ce0a444b9e7c3dd9fcf9939d6ea83eb50436710d3f0",
+          "bytes": 102242
+        },
+        {
+          "shot": 3,
+          "sha256": "1f1a355f61723b4148573ce0a444b9e7c3dd9fcf9939d6ea83eb50436710d3f0",
+          "bytes": 102242
+        },
+        {
+          "shot": 4,
+          "sha256": "1f1a355f61723b4148573ce0a444b9e7c3dd9fcf9939d6ea83eb50436710d3f0",
+          "bytes": 102242
+        },
+        {
+          "shot": 5,
+          "sha256": "1f1a355f61723b4148573ce0a444b9e7c3dd9fcf9939d6ea83eb50436710d3f0",
+          "bytes": 102242
+        },
+        {
+          "shot": 6,
+          "sha256": "1f1a355f61723b4148573ce0a444b9e7c3dd9fcf9939d6ea83eb50436710d3f0",
+          "bytes": 102242
+        },
+        {
+          "shot": 7,
+          "sha256": "1f1a355f61723b4148573ce0a444b9e7c3dd9fcf9939d6ea83eb50436710d3f0",
+          "bytes": 102242
+        },
+        {
+          "shot": 8,
+          "sha256": "1f1a355f61723b4148573ce0a444b9e7c3dd9fcf9939d6ea83eb50436710d3f0",
+          "bytes": 102242
+        },
+        {
+          "shot": 9,
+          "sha256": "1f1a355f61723b4148573ce0a444b9e7c3dd9fcf9939d6ea83eb50436710d3f0",
+          "bytes": 102242
+        },
+        {
+          "shot": 10,
+          "sha256": "1f1a355f61723b4148573ce0a444b9e7c3dd9fcf9939d6ea83eb50436710d3f0",
+          "bytes": 102242
+        },
+        {
+          "shot": 11,
+          "sha256": "1f1a355f61723b4148573ce0a444b9e7c3dd9fcf9939d6ea83eb50436710d3f0",
+          "bytes": 102242
+        }
+      ],
+      "discardedAttempts": [],
+      "timingClaim": "none; readiness barriers do not prove raster stability"
+    }
+  }
+}

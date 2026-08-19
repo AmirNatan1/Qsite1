@@ -1,32 +1,33 @@
 {
   "schema": "quantum-hub.phase-0-4-crt-television.blender-source-validation.v1",
   "status": "PASS",
+  "blender_version": "5.2.0 LTS",
   "selected_option": "A",
   "selected_design": "Rounded 1990s domestic CRT",
   "source": {
     "package_relative_path": "source/quantum-signal-television-v1.blend",
     "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/quantum-signal-television-v1.blend",
-    "bytes": 1049052,
-    "sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d",
+    "bytes": 1516222,
+    "sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7",
     "signature": "BLENDER Zstd-compressed editable source"
   },
   "validator": {
     "package_relative_path": "source/validate_refined_crt_source.py",
     "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/validate_refined_crt_source.py",
-    "bytes": 15406,
-    "sha256": "67e6461709de5a750f987c3e17283b0a1478d3873ab12a9de4d8aa22e237b54e"
+    "bytes": 43123,
+    "sha256": "9b50f7fced84cf3d095f3eca69f11e56a39787febaded0e0628cbac472154879"
   },
   "assembled_overall_dimensions_m": {
-    "width": 0.841,
+    "width": 0.845959,
     "height": 0.6975,
-    "depth": 0.7685,
+    "depth": 0.769766,
     "minimum_world": [
-      0.23,
-      -0.106,
+      0.22702,
+      -0.107266,
       0.0
     ],
     "maximum_world": [
-      1.071,
+      1.07298,
       0.6625,
       0.6975
     ],
@@ -41,21 +42,37 @@
   "desktop_spiral_turns": 2.5,
   "mobile_spiral_turns": 2.25,
   "mobile_composition_authored_separately": true,
-  "camera_arc_degrees": 27.782636,
+  "camera_arc_degrees": 28.193991,
   "external_libraries": 0,
+  "external_library_count": 0,
   "external_images": 0,
+  "external_image_count": 0,
   "packed_files": 0,
+  "packed_file_count": 0,
   "external_paths": 0,
+  "external_path_count": 0,
   "external_file_paths": 0,
   "missing_files": 0,
+  "missing_file_count": 0,
   "image_texture_nodes": 0,
   "third_party_models": 0,
+  "third_party_model_count": 0,
   "modelled_from_scratch": true,
   "private_photo_loaded": false,
   "full_animatic_created": false,
   "manufacturer_branding": false,
   "physical_rear_cable_connection_committed": true,
   "portal_layout_sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc",
+  "repair_baseline": "fec1f0e9243a9cda188c539ab1b79e4a99c30623",
+  "summary": {
+    "external_library_count": 0,
+    "external_image_count": 0,
+    "packed_file_count": 0,
+    "external_path_count": 0,
+    "missing_file_count": 0,
+    "third_party_model_count": 0,
+    "raw_sequence_count": 0
+  },
   "checks": [
     {
       "id": "refined_assembly_collection",
@@ -70,7 +87,7 @@
       "name": "assembled overall width",
       "pass": true,
       "status": "PASS",
-      "actual": 0.841,
+      "actual": 0.845959,
       "expected": {
         "target_m": 0.84,
         "tolerance_m": 0.012
@@ -92,7 +109,7 @@
       "name": "assembled overall depth",
       "pass": true,
       "status": "PASS",
-      "actual": 0.7685,
+      "actual": 0.769766,
       "expected": {
         "target_m": 0.76,
         "tolerance_m": 0.035
@@ -121,12 +138,304 @@
       "expected": "distinct CRT_InternalPhosphorLayer"
     },
     {
+      "id": "glass_transmission_and_roughness",
+      "name": "glass transmission and roughness",
+      "pass": true,
+      "status": "PASS",
+      "actual": {
+        "evaluated_from_blend": true,
+        "material": "CRT_ThickSmokedGlass",
+        "principled_node_type": "ShaderNodeBsdfPrincipled",
+        "roughness": 0.14000000059604645,
+        "transmission_weight": 0.5799999833106995,
+        "ior": 1.5199999809265137,
+        "specular_ior_level": 0.3199999928474426,
+        "coat_weight": 0.0,
+        "coat_roughness": 0.14000000059604645,
+        "glass_phosphor_gap_m": 0.005,
+        "dormant_phosphor_emission_strength": 0.0
+      },
+      "expected": {
+        "transmission_weight": {
+          "minimum": 0.35,
+          "maximum": 0.9
+        },
+        "roughness": {
+          "minimum": 0.03,
+          "maximum": 0.18
+        },
+        "coat_roughness": {
+          "minimum": 0.02,
+          "maximum": 0.2
+        },
+        "ior": {
+          "minimum": 1.4,
+          "maximum": 1.7
+        },
+        "specular_ior_level": "> 0",
+        "coat_weight": 0.0,
+        "glass_phosphor_gap_m": "> 0",
+        "dormant_phosphor_emission_strength": 0.0
+      }
+    },
+    {
+      "id": "glass_evaluated_principled_inputs",
+      "name": "glass evaluated principled inputs",
+      "pass": true,
+      "status": "PASS",
+      "actual": {
+        "evaluated_from_blend": true,
+        "material": "CRT_ThickSmokedGlass",
+        "principled_node_type": "ShaderNodeBsdfPrincipled",
+        "roughness": 0.14000000059604645,
+        "transmission_weight": 0.5799999833106995,
+        "ior": 1.5199999809265137,
+        "specular_ior_level": 0.3199999928474426,
+        "coat_weight": 0.0,
+        "coat_roughness": 0.14000000059604645,
+        "glass_phosphor_gap_m": 0.005,
+        "dormant_phosphor_emission_strength": 0.0
+      },
+      "expected": {
+        "transmission_weight": {
+          "minimum": 0.35,
+          "maximum": 0.9
+        },
+        "roughness": {
+          "minimum": 0.03,
+          "maximum": 0.18
+        },
+        "coat_roughness": {
+          "minimum": 0.02,
+          "maximum": 0.2
+        },
+        "ior": {
+          "minimum": 1.4,
+          "maximum": 1.7
+        },
+        "specular_ior_level": "> 0",
+        "coat_weight": 0.0,
+        "glass_phosphor_gap_m": "> 0",
+        "dormant_phosphor_emission_strength": 0.0
+      }
+    },
+    {
       "id": "visible_screen_aspect_4_3",
       "name": "visible screen aspect 4 3",
       "pass": true,
       "status": "PASS",
       "actual": 1.333333333,
       "expected": 1.333333333
+    },
+    {
+      "id": "glass_phosphor_layer_order",
+      "name": "glass phosphor layer order",
+      "pass": true,
+      "status": "PASS",
+      "actual": {
+        "layer_order": [
+          "cabinet shell",
+          "protective bezel",
+          "perimeter gasket",
+          "convex smoked glass",
+          "air gap",
+          "internal phosphor"
+        ],
+        "glass_object": "CRT_ConvexThickSmokedGlass",
+        "phosphor_object": "CRT_InternalPhosphorLayer",
+        "glass_thickness_m": 0.012,
+        "gap_m": 0.005
+      },
+      "expected": "bezel/gasket > convex glass > positive air gap > internal phosphor"
+    },
+    {
+      "id": "glass_phosphor_positive_gap",
+      "name": "glass phosphor positive gap",
+      "pass": true,
+      "status": "PASS",
+      "actual": {
+        "gap_m": 0.005
+      },
+      "expected": {
+        "gap_m": "> 0"
+      }
+    },
+    {
+      "id": "glass_fresnel_and_ior",
+      "name": "glass fresnel and ior",
+      "pass": true,
+      "status": "PASS",
+      "actual": {
+        "fresnel_enabled": true,
+        "ior": 1.5199999809265137,
+        "specular_ior_level": 0.3199999928474426
+      },
+      "expected": {
+        "fresnel_enabled": true,
+        "ior_range": [
+          1.4,
+          1.7
+        ]
+      }
+    },
+    {
+      "id": "dormant_emission_zero",
+      "name": "dormant emission zero",
+      "pass": true,
+      "status": "PASS",
+      "actual": {
+        "emission_strength": 0.0
+      },
+      "expected": {
+        "emission_strength": 0.0
+      }
+    },
+    {
+      "id": "speaker_true_recess_and_plenum",
+      "name": "speaker true recess and plenum",
+      "pass": true,
+      "status": "PASS",
+      "actual": {
+        "open_depth_m": 0.05,
+        "plenum_depth_m": 0.029,
+        "through_opening": true,
+        "plenum_object": "CRT_SpeakerGrilleDarkInterior"
+      },
+      "expected": {
+        "through_opening": true,
+        "positive_open_and_plenum_depth": true
+      }
+    },
+    {
+      "id": "rear_vent_true_recess_and_plenum",
+      "name": "rear vent true recess and plenum",
+      "pass": true,
+      "status": "PASS",
+      "actual": {
+        "open_depth_m": 0.012,
+        "plenum_depth_m": 0.01,
+        "through_opening": true,
+        "plenum_object": "CRT_RearVentDarkInterior"
+      },
+      "expected": {
+        "through_opening": true,
+        "positive_open_and_plenum_depth": true
+      }
+    },
+    {
+      "id": "side_vent_true_recess_and_plenum",
+      "name": "side vent true recess and plenum",
+      "pass": true,
+      "status": "PASS",
+      "actual": {
+        "open_depth_m": 0.018,
+        "plenum_depth_m": 0.045,
+        "through_opening": true,
+        "plenum_object": "CRT_SideVentDarkPlenum"
+      },
+      "expected": {
+        "through_opening": true,
+        "positive_open_and_plenum_depth": true
+      }
+    },
+    {
+      "id": "period_control_taxonomy",
+      "name": "period control taxonomy",
+      "pass": true,
+      "status": "PASS",
+      "actual": {
+        "expected_count": 2,
+        "actual_count": 2,
+        "controls": [
+          {
+            "name": "CRT_RecessedRoundPowerButton",
+            "type": "round latching power button",
+            "recess_depth_m": 0.004,
+            "travel_m": 0.0025
+          },
+          {
+            "name": "CRT_RecessedTuningRocker",
+            "type": "horizontal tuning rocker",
+            "recess_depth_m": 0.004,
+            "travel_m": 0.0018
+          }
+        ]
+      },
+      "expected": {
+        "exact_count": 2,
+        "distinct_types": true
+      }
+    },
+    {
+      "id": "period_control_recess_and_travel",
+      "name": "period control recess and travel",
+      "pass": true,
+      "status": "PASS",
+      "actual": {
+        "expected_count": 2,
+        "actual_count": 2,
+        "controls": [
+          {
+            "name": "CRT_RecessedRoundPowerButton",
+            "type": "round latching power button",
+            "recess_depth_m": 0.004,
+            "travel_m": 0.0025
+          },
+          {
+            "name": "CRT_RecessedTuningRocker",
+            "type": "horizontal tuning rocker",
+            "recess_depth_m": 0.004,
+            "travel_m": 0.0018
+          }
+        ]
+      },
+      "expected": {
+        "each_control_positive_recess_and_travel": true
+      }
+    },
+    {
+      "id": "abs_node_topology_and_settings",
+      "name": "abs node topology and settings",
+      "pass": true,
+      "status": "PASS",
+      "actual": {
+        "material": "CRT_CaredForCharcoalABS",
+        "node_types": [
+          "ShaderNodeBsdfPrincipled",
+          "ShaderNodeBump",
+          "ShaderNodeOutputMaterial",
+          "ShaderNodeTexNoise",
+          "ShaderNodeValToRGB"
+        ],
+        "roughness": 0.5,
+        "specular_ior_level": 0.5,
+        "bump_strength": 0.10999999940395355,
+        "grain_scale": 240.0,
+        "procedural": true,
+        "external_texture_count": 0
+      },
+      "expected": {
+        "principled_noise_bump": true,
+        "numeric_settings": true,
+        "procedural": true
+      }
+    },
+    {
+      "id": "active_raster_measured_4_3",
+      "name": "active raster measured 4 3",
+      "pass": true,
+      "status": "PASS",
+      "actual": {
+        "active_width_m": 0.52,
+        "active_height_m": 0.39,
+        "measured_aspect_ratio": 1.3333333333333333,
+        "aspect_error": 0.0,
+        "shape": "rounded rectangular 4:3-class overscan field; never elliptical"
+      },
+      "expected": {
+        "aspect": 1.3333333333333333,
+        "maximum_error": 0.01
+      }
     },
     {
       "id": "desktop_spiral_2_5_turns",
@@ -153,6 +462,34 @@
       "expected": true
     },
     {
+      "id": "closed_protected_cable_entry",
+      "name": "closed protected cable entry",
+      "pass": true,
+      "status": "PASS",
+      "actual": {
+        "desktop": {
+          "name": "SpiralCable_ProtectedEntryOvermould",
+          "endpoint_inside_collar": true,
+          "exposed_cut_end": false,
+          "start_radius_m": 0.0294,
+          "end_radius_m": 0.0185
+        },
+        "mobile": {
+          "name": "MobileSpiralCable_ProtectedEntryOvermould",
+          "endpoint_inside_collar": true,
+          "exposed_cut_end": false,
+          "start_radius_m": 0.0294,
+          "end_radius_m": 0.0185
+        }
+      },
+      "expected": {
+        "desktop_and_mobile": true,
+        "endpoint_inside_collar": true,
+        "exposed_cut_end": false,
+        "tapered_overmould": true
+      }
+    },
+    {
       "id": "physical_rear_cable_connection",
       "name": "physical rear cable connection",
       "pass": true,
@@ -160,12 +497,50 @@
       "actual": {
         "collar": "CRT_IntegratedCableCollar",
         "strain_relief_ribs": 6,
-        "desktop_continuity": "one continuous outer-to-inner cable ending inside the rear strain relief"
+        "desktop_continuity": "one continuous outer-to-inner cable ending inside the rear strain relief",
+        "protected_entries": {
+          "desktop": {
+            "name": "SpiralCable_ProtectedEntryOvermould",
+            "endpoint_inside_collar": true,
+            "exposed_cut_end": false,
+            "start_radius_m": 0.0294,
+            "end_radius_m": 0.0185
+          },
+          "mobile": {
+            "name": "MobileSpiralCable_ProtectedEntryOvermould",
+            "endpoint_inside_collar": true,
+            "exposed_cut_end": false,
+            "start_radius_m": 0.0294,
+            "end_radius_m": 0.0185
+          }
+        }
       },
       "expected": {
         "collar": "CRT_IntegratedCableCollar",
         "strain_relief_ribs": 6,
-        "continuous_sheath_committed": true
+        "continuous_sheath_committed": true,
+        "closed_tapered_entry": true
+      }
+    },
+    {
+      "id": "connector_localized_post_arrival",
+      "name": "connector localized post arrival",
+      "pass": true,
+      "status": "PASS",
+      "actual": {
+        "pre_arrival_emission_strength": 0.0,
+        "post_arrival_emission_strength": 0.44999998807907104,
+        "localized": true,
+        "affected_area_ratio": 0.0001699085419648656,
+        "response_curve_length_m": 0.05471055145248965,
+        "response_bevel_radius_m": 0.0008999999845400453,
+        "response_object": "CRT_ConnectorArrivalResponseRing"
+      },
+      "expected": {
+        "pre_arrival_emission_strength": 0.0,
+        "post_arrival_emission_strength": "> 0",
+        "localized": true,
+        "maximum_area_ratio": 0.1
       }
     },
     {
@@ -174,12 +549,38 @@
       "pass": true,
       "status": "PASS",
       "actual": {
-        "shoulder_crown_relative_m": 0.027110883423451918,
-        "groove_floor_relative_m": 0.018000000000000002,
-        "recess_depth_below_shoulders_m": 0.009111
+        "outer_sheath_radius_m": 0.028,
+        "sheath_diameter_m": 0.056,
+        "groove_half_width_m": 0.006,
+        "groove_depth_m": 0.012,
+        "shoulder_crown_relative_m": 0.027349588662354686,
+        "groove_floor_relative_m": 0.016,
+        "recess_depth_below_shoulders_m": 0.01135,
+        "core_diameter_m": 0.0023,
+        "core_crown_below_sheath_shoulders_m": 0.0086,
+        "core_recess_below_shoulders_m": 0.0086,
+        "core_lateral_offset_m": 0.0,
+        "desktop": {
+          "sheath_radius_m": 0.028,
+          "sheath_diameter_m": 0.056,
+          "core_diameter_m": 0.0023,
+          "groove_depth_m": 0.012,
+          "core_recess_below_shoulders_m": 0.0086
+        },
+        "mobile": {
+          "sheath_radius_m": 0.028,
+          "sheath_diameter_m": 0.056,
+          "core_diameter_m": 0.0023,
+          "groove_depth_m": 0.012,
+          "core_recess_below_shoulders_m": 0.0086
+        },
+        "evaluated_from_blend": true
       },
       "expected": {
-        "minimum_recess_depth_below_shoulders_m": 0.008
+        "minimum_recess_depth_below_shoulders_m": 0.008,
+        "core_narrower_than_channel": true,
+        "minimum_core_crown_below_shoulders_m": 0.008,
+        "core_lateral_offset_m": 0.0
       }
     },
     {
@@ -287,14 +688,21 @@
       "pass": true,
       "status": "PASS",
       "actual": {
-        "source_generator_sha256": "d188d6b8f44795f56e17c6449f586d848fb304fa840c2036f00bc0c887c1f2ea",
-        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
-        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497"
+        "source_generator_sha256": "78c35d2a827273d49d097db6d26f83a32f554fb894ff064db3cd5f624402ce6f",
+        "refined_config_sha256": "946fff88593473483dd708cc2a00cc63eeccd106aa186bd1527991fe5157bbb7",
+        "canonical_config_sha256": "6633a4484c35d66db6973f721af11bd6c03a5f30666ac7502551bb0fb552c9e4",
+        "current_canonical_config_sha256": "6633a4484c35d66db6973f721af11bd6c03a5f30666ac7502551bb0fb552c9e4",
+        "semantic_only_render_engine_decision_update": false,
+        "semantic_decision_current": true,
+        "pixel_affecting_state_change": false
       },
       "expected": {
-        "source_generator_sha256": "d188d6b8f44795f56e17c6449f586d848fb304fa840c2036f00bc0c887c1f2ea",
-        "refined_config_sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2",
-        "canonical_config_sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497"
+        "source_generator_sha256": "78c35d2a827273d49d097db6d26f83a32f554fb894ff064db3cd5f624402ce6f",
+        "refined_config_sha256": "946fff88593473483dd708cc2a00cc63eeccd106aa186bd1527991fe5157bbb7",
+        "canonical_config_sha256": "6633a4484c35d66db6973f721af11bd6c03a5f30666ac7502551bb0fb552c9e4",
+        "accepted_sealed_canonical_config_sha256": "5221a7134ef9e395904ec6bc79a75111177cc047a2a285aeaa3713fddd513e55",
+        "semantic_decision_current": true,
+        "pixel_affecting_state_change": false
       }
     },
     {
@@ -323,6 +731,156 @@
           "DECIDE"
         ],
         "status": "TEST ROUTE AVAILABLE"
+      }
+    },
+    {
+      "id": "phosphor_line_to_rectangular_raster_sequence",
+      "name": "phosphor line to rectangular raster sequence",
+      "pass": true,
+      "status": "PASS",
+      "actual": {
+        "wake": {
+          "id": "wake-line",
+          "shape": "bowed phosphor line",
+          "orientation": "horizontal",
+          "bowed": true,
+          "bow_amount": 0.004799991846084595,
+          "object": "CRT_WakeHorizontalPhosphorLine"
+        },
+        "partial_raster": {
+          "id": "partial-raster",
+          "shape": "partial-height rounded rectangular 4:3 raster; never elliptical",
+          "rounded": true,
+          "measured_aspect_ratio": 1.3333333333333333,
+          "vertical_fill_ratio": 0.48,
+          "expanded_from_horizontal_line": true,
+          "degaussing_ripple": {
+            "active": true,
+            "state": "active and visibly settling"
+          }
+        },
+        "full_raster": {
+          "id": "full-raster",
+          "shape": "rounded rectangular 4:3-class overscan field; never elliptical",
+          "rounded": true,
+          "measured_aspect_ratio": 1.3333333333333333,
+          "vertical_fill_ratio": 1.0,
+          "degaussing_ripple": {
+            "settled": true
+          },
+          "degaussing_settled": true
+        }
+      },
+      "expected": {
+        "wake_line": "bowed horizontal",
+        "partial_fill": "0 < ratio < 1, rounded 4:3, active ripple",
+        "full_fill": ">= 0.98, rounded 4:3, settled"
+      }
+    },
+    {
+      "id": "simplified_physical_screen_content",
+      "name": "simplified physical screen content",
+      "pass": true,
+      "status": "PASS",
+      "actual": {
+        "states": [
+          {
+            "id": "stage-1-brand",
+            "simplified": true,
+            "lines": [
+              "QUANTUM HUB"
+            ]
+          },
+          {
+            "id": "stage-2-route-resolved",
+            "simplified": true,
+            "lines": [
+              "FRAME SOURCE ASSESS TEST DECIDE"
+            ]
+          },
+          {
+            "id": "stage-3-portal-ready",
+            "simplified": true,
+            "lines": [
+              "TEST ROUTE AVAILABLE"
+            ]
+          }
+        ],
+        "approved_copy": [
+          "QUANTUM HUB",
+          "FRAME SOURCE ASSESS TEST DECIDE",
+          "TEST ROUTE AVAILABLE"
+        ],
+        "fictional_os_chrome": false,
+        "dense_telemetry": false
+      },
+      "expected": {
+        "exact_three_stages": true,
+        "one_to_four_lines_each": true
+      }
+    },
+    {
+      "id": "portal_transition_continuity",
+      "name": "portal transition continuity",
+      "pass": true,
+      "status": "PASS",
+      "actual": {
+        "blank_frame_count": 0,
+        "aspect_snap_count": 0,
+        "doubled_semantic_copy_count": 0,
+        "contract": "same phosphor field, 4:3 rectangular scanlines, route baseline and overscan cues; no blank frame and no doubled semantic copy"
+      },
+      "expected": {
+        "blank_frame_count": 0,
+        "aspect_snap_count": 0,
+        "doubled_semantic_copy_count": 0
+      }
+    },
+    {
+      "id": "cycles_master_settings",
+      "name": "cycles master settings",
+      "pass": true,
+      "status": "PASS",
+      "actual": {
+        "engine": "BLENDER_CYCLES",
+        "blender_engine_enum": "CYCLES",
+        "device": "CPU",
+        "samples": 64,
+        "seed": 2404,
+        "adaptive_sampling": true,
+        "adaptive_threshold": 0.02,
+        "denoising": true,
+        "denoiser": "OPENIMAGEDENOISE",
+        "film_transparent": false,
+        "max_bounces": 8,
+        "diffuse_bounces": 4,
+        "glossy_bounces": 4,
+        "transmission_bounces": 8,
+        "transparent_bounces": 8,
+        "volume_bounces": 0,
+        "view_transform": "AgX",
+        "look": "AgX - Medium High Contrast",
+        "resolution_percentage": 100,
+        "image_format": "PNG RGB 8-bit"
+      },
+      "expected": {
+        "engine": "BLENDER_CYCLES",
+        "minimum_samples": 64,
+        "denoising": true,
+        "view_transform": "AgX"
+      }
+    },
+    {
+      "id": "raw_sequence_absent",
+      "name": "raw sequence absent",
+      "pass": true,
+      "status": "PASS",
+      "actual": {
+        "count": 0,
+        "paths": []
+      },
+      "expected": {
+        "count": 0
       }
     },
     {
@@ -403,7 +961,7 @@
       "name": "camera arrival to power arc",
       "pass": true,
       "status": "PASS",
-      "actual": 27.782636,
+      "actual": 28.193991,
       "expected": {
         "minimum_degrees": 20.0,
         "maximum_degrees": 30.0

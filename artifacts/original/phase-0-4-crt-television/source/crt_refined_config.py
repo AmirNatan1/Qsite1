@@ -16,7 +16,7 @@ MANIFEST_DIR = PACKAGE_DIR / "manifests"
 REFINED_BLEND = SOURCE_DIR / "quantum-signal-television-v1.blend"
 PORTAL_LAYOUT = PACKAGE_DIR / "crt-portal-layout.json"
 PORTAL_LAYOUT_SHA256 = "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
-SCRIPT_VERSION = "phase-0.4-crt-refinement-v1"
+SCRIPT_VERSION = "phase-0.4r-crt-quality-repair-v1"
 
 DIMENSIONS_M = {"width": 0.84, "height": 0.69, "depth": 0.76}
 SCREEN_CLASS_INCHES = 29
@@ -34,58 +34,161 @@ CANONICAL_RESOLUTION = (1920, 1200)
 COLOR_MANAGEMENT = "AgX / Medium High Contrast"
 
 DIAGNOSTIC_STATES = {
-    "dormant-hero": {
-        "camera": "Camera_Dormant_Hero",
+    "quality-front-three-quarter": {
+        "camera": "Camera_ThreeQuarter_Front_Design",
         "conduction_progress": 0.0,
         "indicator": 0.0,
         "phosphor": "off",
-        "interface": False,
+        "interface_stage": "none",
         "glass_proof": False,
+    },
+    "controls-speaker": {
+        "camera": "Camera_LowerBand_Diagnostic",
+        "conduction_progress": 0.0,
+        "indicator": 0.0,
+        "phosphor": "off",
+        "interface_stage": "none",
+        "glass_proof": False,
+    },
+    "rear-manufacturing": {
+        "camera": "Camera_Rear_Detail",
+        "conduction_progress": 0.0,
+        "indicator": 0.0,
+        "phosphor": "off",
+        "interface_stage": "none",
+        "glass_proof": False,
+    },
+    "dormant-glass": {
+        "camera": "Camera_Raster_Close",
+        "conduction_progress": 0.0,
+        "indicator": 0.0,
+        "phosphor": "off",
+        "interface_stage": "none",
+        "glass_proof": True,
+        "exposure": 0.90,
     },
     "conductor-macro": {
         "camera": "Camera_Conductor_Macro",
         "conduction_progress": 0.40,
         "indicator": 0.0,
         "phosphor": "off",
-        "interface": False,
+        "interface_stage": "none",
         "glass_proof": False,
+        "exposure": 0.72,
+    },
+    "connector-before-arrival": {
+        "camera": "Camera_Connector_Macro",
+        "conduction_progress": 0.955,
+        "indicator": 0.0,
+        "phosphor": "off",
+        "interface_stage": "none",
+        "connector_response": False,
+        "glass_proof": False,
+        "exposure": 0.88,
+    },
+    "connector-after-arrival": {
+        "camera": "Camera_Connector_Macro",
+        "conduction_progress": 1.0,
+        "indicator": 0.0,
+        "phosphor": "off",
+        "interface_stage": "none",
+        "connector_response": True,
+        "glass_proof": False,
+        "exposure": 0.88,
     },
     "rear-arrival": {
         "camera": "Camera_Rear_Arrival",
         "conduction_progress": 0.985,
         "indicator": 0.0,
         "phosphor": "off",
-        "interface": False,
+        "interface_stage": "none",
         "glass_proof": False,
     },
-    "crt-wake": {
-        "camera": "Camera_CRT_Wake",
-        "conduction_progress": 1.0,
-        "indicator": 1.0,
-        "phosphor": "wake-line",
-        "interface": False,
-        "glass_proof": False,
-    },
-    "glass-grazing": {
-        "camera": "Camera_Glass_Grazing",
+    "proving-ground-arrival": {
+        "camera": "Camera_Path_Arrival",
         "conduction_progress": 0.0,
         "indicator": 0.0,
         "phosphor": "off",
-        "interface": False,
-        "glass_proof": True,
+        "interface_stage": "none",
+        "glass_proof": False,
+    },
+    "startup-wake-line": {
+        "camera": "Camera_Raster_Close",
+        "conduction_progress": 1.0,
+        "indicator": 1.0,
+        "phosphor": "wake-line",
+        "interface_stage": "none",
+        "connector_response": False,
+        "glass_proof": False,
+        "exposure": 1.00,
+    },
+    "startup-raster-expansion": {
+        "camera": "Camera_Raster_Close",
+        "conduction_progress": 1.0,
+        "indicator": 1.0,
+        "phosphor": "raster-expansion",
+        "interface_stage": "none",
+        "connector_response": False,
+        "glass_proof": False,
+        "exposure": 1.00,
+    },
+    "rectangular-raster": {
+        "camera": "Camera_Raster_Close",
+        "conduction_progress": 1.0,
+        "indicator": 1.0,
+        "phosphor": "raster",
+        "interface_stage": "none",
+        "glass_proof": False,
+        "exposure": 1.05,
+    },
+    "content-brand": {
+        "camera": "Camera_Raster_Close",
+        "conduction_progress": 1.0,
+        "indicator": 1.0,
+        "phosphor": "interface",
+        "interface_stage": "brand",
+        "glass_proof": False,
+        "exposure": 1.05,
+    },
+    "content-route": {
+        "camera": "Camera_Raster_Close",
+        "conduction_progress": 1.0,
+        "indicator": 1.0,
+        "phosphor": "interface",
+        "interface_stage": "route",
+        "glass_proof": False,
+        "exposure": 1.05,
+    },
+    "content-ready": {
+        "camera": "Camera_Raster_Close",
+        "conduction_progress": 1.0,
+        "indicator": 1.0,
+        "phosphor": "interface",
+        "interface_stage": "ready",
+        "glass_proof": False,
+        "exposure": 1.05,
+    },
+    "portal-takeover-continuity": {
+        "camera": "Camera_Portal_06_TextFree",
+        "conduction_progress": 1.0,
+        "indicator": 1.0,
+        "phosphor": "takeover",
+        "interface_stage": "none",
+        "glass_proof": False,
+        "exposure": 1.55,
     },
 }
 
 CAMERAS = {
     "Camera_Dormant_Hero": {
-        "location": (3.45, -4.65, 1.52),
-        "target": (0.35, 0.16, 0.30),
-        "lens": 55.0,
+        "location": (2.70, -3.48, 0.88),
+        "target": (0.27, 0.15, 0.28),
+        "lens": 66.0,
     },
     "Camera_Conductor_Macro": {
-        "location": (-1.00, -1.78, 1.85),
+        "location": (-0.11, -1.105, 1.08),
         "target": (-0.10, -1.11, 0.052),
-        "lens": 98.0,
+        "lens": 104.0,
     },
     "Camera_Rear_Arrival": {
         "location": (3.72, 4.55, 1.50),
@@ -118,9 +221,9 @@ CAMERAS = {
         "lens": 68.0,
     },
     "Camera_ThreeQuarter_Front_Design": {
-        "location": (3.65, -4.0, 1.82),
-        "target": (0.65, 0.28, 0.34),
-        "lens": 64.0,
+        "location": (2.80, -3.00, 1.12),
+        "target": (0.65, 0.28, 0.32),
+        "lens": 70.0,
     },
     "Camera_ThreeQuarter_Rear_Design": {
         "location": (-2.35, 4.2, 1.76),
@@ -136,6 +239,11 @@ CAMERAS = {
         "location": (1.48, -1.92, 0.36),
         "target": (0.80, -0.055, 0.105),
         "lens": 104.0,
+    },
+    "Camera_LowerBand_Diagnostic": {
+        "location": (0.98, -2.02, 0.30),
+        "target": (0.62, -0.058, 0.083),
+        "lens": 92.0,
     },
     "Camera_Speaker_Macro": {
         "location": (-0.48, -1.82, 0.36),
@@ -153,29 +261,29 @@ CAMERAS = {
         "lens": 112.0,
     },
     "Camera_Path_Arrival": {
-        "location": (3.45, -4.65, 1.52),
-        "target": (0.35, 0.16, 0.30),
-        "lens": 55.0,
+        "location": (2.55, -3.30, 0.82),
+        "target": (0.25, 0.15, 0.28),
+        "lens": 68.0,
     },
     "Camera_Path_30": {
-        "location": (2.62, -4.72, 1.46),
-        "target": (0.43, 0.10, 0.33),
-        "lens": 59.0,
+        "location": (2.05, -3.45, 0.82),
+        "target": (0.42, 0.12, 0.32),
+        "lens": 68.0,
     },
     "Camera_Path_60": {
-        "location": (1.79, -4.42, 1.31),
+        "location": (1.48, -3.30, 0.78),
         "target": (0.51, 0.03, 0.36),
-        "lens": 64.0,
+        "lens": 72.0,
     },
     "Camera_Path_NearFrontal": {
-        "location": (1.03, -3.80, 1.04),
+        "location": (0.92, -3.05, 0.72),
         "target": (0.60, -0.02, 0.40),
-        "lens": 70.0,
+        "lens": 76.0,
     },
     "Camera_Power_Front": {
-        "location": (0.93, -3.54, 1.10),
+        "location": (0.90, -2.92, 0.72),
         "target": (0.62, -0.01, 0.40),
-        "lens": 74.0,
+        "lens": 80.0,
     },
     "Camera_Raster_Close": {
         "location": (0.80, -2.34, 0.82),
@@ -208,9 +316,9 @@ CAMERAS = {
         "lens": 58.0,
     },
     "Camera_Reduced_Desktop": {
-        "location": (3.58, -4.82, 1.58),
-        "target": (0.40, 0.14, 0.32),
-        "lens": 57.0,
+        "location": (2.72, -3.55, 0.90),
+        "target": (0.29, 0.15, 0.29),
+        "lens": 65.0,
     },
     "Camera_Reduced_Mobile": {
         "location": (2.48, -4.42, 2.58),

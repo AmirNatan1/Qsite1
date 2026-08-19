@@ -1,26 +1,26 @@
 {
   "schema": "quantum-hub.phase-0-4-crt-television.refined-source-build.v1",
-  "script_version": "phase-0.4-crt-refinement-v1",
+  "script_version": "phase-0.4r-crt-quality-repair-v1",
   "source": {
     "package_relative_path": "source/quantum-signal-television-v1.blend",
-    "bytes": 1049052,
-    "sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d"
+    "bytes": 1516222,
+    "sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7"
   },
   "generator": {
     "package_relative_path": "source/build_refined_crt.py",
-    "bytes": 45775,
-    "sha256": "d188d6b8f44795f56e17c6449f586d848fb304fa840c2036f00bc0c887c1f2ea"
+    "bytes": 66215,
+    "sha256": "78c35d2a827273d49d097db6d26f83a32f554fb894ff064db3cd5f624402ce6f"
   },
   "configuration_authority": [
     {
       "package_relative_path": "source/crt_refined_config.py",
-      "bytes": 6227,
-      "sha256": "26ee3b17faf19bec9ea18eae515bc617de31331877d5f035895ad9b5d637e6f2"
+      "bytes": 9496,
+      "sha256": "946fff88593473483dd708cc2a00cc63eeccd106aa186bd1527991fe5157bbb7"
     },
     {
       "package_relative_path": "source/crt_canonical_config.py",
-      "bytes": 8705,
-      "sha256": "72b01afe373cbd7b8cb40dfeda42da26f10c1f8dd2e0d75d57f4ef1ff56eb497"
+      "bytes": 10112,
+      "sha256": "6633a4484c35d66db6973f721af11bd6c03a5f30666ac7502551bb0fb552c9e4"
     }
   ],
   "layout_authority": {

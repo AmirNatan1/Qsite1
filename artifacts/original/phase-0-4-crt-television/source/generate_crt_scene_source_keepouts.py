@@ -20,6 +20,7 @@ import render_crt_canonical_stills as renderer
 
 
 REPOSITORY_ROOT = cfg.PACKAGE_DIR.parents[2]
+REPAIR_BASELINE = "fec1f0e9243a9cda188c539ab1b79e4a99c30623"
 
 
 def sha256(path: Path) -> str:
@@ -292,6 +293,9 @@ def main() -> None:
         )
         records[source_id] = {
             "sourceRole": source_id,
+            "status": "frozen",
+            "validationStatus": "PASS",
+            "sourceStatus": "accepted",
             "roleLabel": role_label,
             "camera": state["camera"],
             "cableVariant": state["cable"],
@@ -337,7 +341,6 @@ def main() -> None:
                 ),
                 "spiral-cable": cable_record,
             },
-            "status": "accepted",
         }
 
     blend = cfg.REFINED_BLEND
@@ -345,7 +348,12 @@ def main() -> None:
     manifest = {
         "schema": "quantum-hub.phase-0-4-crt-television.scene-source-keepouts.v1",
         "status": "frozen",
+        "validationStatus": "PASS",
         "sourceStatus": "accepted",
+        "repair_baseline": REPAIR_BASELINE,
+        "lineage": {
+            "accepted_parent": REPAIR_BASELINE,
+        },
         "source": {
             "packageRelativePath": blend.relative_to(cfg.PACKAGE_DIR).as_posix(),
             "repositoryRelativePath": repository_relative(blend),

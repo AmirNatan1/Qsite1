@@ -1,0 +1,26 @@
+/* Phase 0.4R bounded decorative-rule clearance repair. */
+body[data-surface="portal"][data-text-zoom="200"] .portal-audience {
+  row-gap: 24px;
+}
+
+body[data-surface="hero"][data-layout="wide"][data-fixture="actual"][data-text-zoom="100"] .scene-image {
+  transform: translate(27.5vw, clamp(88px, 10vh, 104px)) scale(0.8);
+}
+
+body[data-surface="hero"][data-layout="portrait"][data-fixture="actual"][data-text-zoom="100"] .scene-image {
+  transform: translateY(calc(20vh + 88px)) scale(0.92);
+}
+
+body[data-surface="portal"][data-reduced="true"][data-layout="wide"] .scene-image {
+  transform: translate(22vw, 325px);
+}
+
+@media (min-width: 900px) and (max-width: 1100px) {
+  body[data-surface="hero"][data-layout="wide"][data-fixture="actual"][data-text-zoom="100"] .scene-image {
+    transform: translate(36.5vw, 88px) scale(0.8);
+  }
+
+  body[data-surface="portal"][data-reduced="true"][data-layout="wide"] .scene-image {
+    transform: translate(36.5vw, 325px) scale(0.8);
+  }
+}

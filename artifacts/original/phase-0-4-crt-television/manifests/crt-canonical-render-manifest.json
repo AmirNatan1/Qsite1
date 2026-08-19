@@ -37,7 +37,7 @@
     "denoising_note": "not applicable; no denoiser used by the Eevee still pipeline",
     "color_management": "AgX / Medium High Contrast",
     "image_format": "PNG RGB 8-bit",
-    "engine_decision": "A controlled Eevee 128-sample canonical pipeline is retained for the still gate: the scene uses dense procedural geometry, no bitmap displacement, and its dark ABS, smoked-glass and contact-shadow evidence showed no material review improvement that justified a non-deterministic noisy CPU Cycles pass. Cycles remains authorized for future production integration after the still art direction is accepted."
+    "engine_decision": "Phase 0.4R supersedes the historical material-quality rationale: eight named deterministic 64-sample CPU Cycles masters with OIDN and AgX Medium High Contrast are the final material-quality authority. Eevee 128-sample rendering remains authorized only for supplemental camera, cable, causal-state, and browser-scene source evidence."
   },
   "camera_path": {
     "measurements": [

@@ -1,0 +1,345 @@
+{
+  "schema": "quantum-hub.phase-0-4r-crt-television.browser-evidence.v1",
+  "status": "PASS",
+  "generatedAt": "2026-08-18T23:54:49.079Z",
+  "authorityPolicy": "acyclic capture-plan snapshot -> normalized matrix -> evidence core -> PASS 8/8 portal authority -> browser evidence; the shared core digest cross-binds portal and evidence without circular file hashes",
+  "evidenceCore": {
+    "capturePlanAuthority": {
+      "path": "artifacts/evidence/phase-0-4r-crt-television/capture-plan-authority.json",
+      "schema": "quantum-hub.phase-0-4r-crt-television.typography-capture-plan.v1",
+      "bytes": 43077,
+      "sha256": "dfd21e2e70fddd02285c8f00979d8cb95aacca43462ef079fff063aafa0d3f08",
+      "originalAuthorityPath": "prototypes/phase-0-4r-crt-portal-qa/capture-plan.json"
+    },
+    "matrix": {
+      "path": "artifacts/evidence/phase-0-4r-crt-television/browser-matrix-report.json",
+      "schema": "quantum-hub.phase-0-4r-crt-television.typography-collision-matrix.v1",
+      "bytes": 1159197,
+      "sha256": "82ae5672fba028f813bc98754038e0deb9ab2b022bb199e3e2dcb1a8b272b00d",
+      "caseCount": 46,
+      "normalizedCaptureCount": 36
+    },
+    "contract": {
+      "path": "artifacts/original/phase-0-4-crt-television/crt-portal-layout.json",
+      "bytes": 16248,
+      "sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+    },
+    "keepout": {
+      "path": "artifacts/original/phase-0-4-crt-television/manifests/crt-scene-source-keepouts.json",
+      "schema": "quantum-hub.phase-0-4-crt-television.scene-source-keepouts.v1",
+      "bytes": 1157579,
+      "sha256": "4dcf0d9b6e7e583682b8d148178634fabb54b331f02ab31e7d7e9358ff6cd26c",
+      "status": "frozen"
+    },
+    "sceneSources": [
+      {
+        "id": "source-desktop-dormant",
+        "role": "source-desktop-dormant",
+        "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-desktop-dormant.png",
+        "width": 1920,
+        "height": 1200,
+        "bytes": 1169534,
+        "sha256": "9b637bf010231ebd2efcb898d20e6b60b23d299c5a2aa9651e58e077c0715652",
+        "status": "frozen"
+      },
+      {
+        "id": "source-mobile-dormant",
+        "role": "source-mobile-dormant",
+        "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-mobile-dormant.png",
+        "width": 1080,
+        "height": 1800,
+        "bytes": 996525,
+        "sha256": "526e89ceed44aa870c4842ce2e608e044d1b0bc8c413f8514135d515a055090b",
+        "status": "frozen"
+      },
+      {
+        "id": "source-reduced-desktop-dormant",
+        "role": "source-reduced-desktop-dormant",
+        "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-reduced-desktop-dormant.png",
+        "width": 1920,
+        "height": 1200,
+        "bytes": 1161188,
+        "sha256": "3d80543ae17891320107686b5a1c063fc91d30070685b9d1a8aae79829ac2725",
+        "status": "frozen"
+      },
+      {
+        "id": "source-reduced-mobile-dormant",
+        "role": "source-reduced-mobile-dormant",
+        "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-reduced-mobile-dormant.png",
+        "width": 1080,
+        "height": 1800,
+        "bytes": 996830,
+        "sha256": "ed0d62e872fa7a3982a21e26907366471a7eccb4dafe5259b888a8cf2cef727b",
+        "status": "frozen"
+      },
+      {
+        "id": "source-physical-portal-close",
+        "role": "source-physical-portal-close",
+        "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-physical-portal-close.png",
+        "width": 1920,
+        "height": 1200,
+        "bytes": 1205903,
+        "sha256": "0974e72295eb1fe0530cafd6f6c686dbc7196c3741fc91dba3300af6cfa8219c",
+        "status": "frozen"
+      },
+      {
+        "id": "source-text-free-portal-takeover",
+        "role": "source-text-free-portal-takeover",
+        "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-text-free-portal-takeover.png",
+        "width": 1920,
+        "height": 1200,
+        "bytes": 1096906,
+        "sha256": "0b42ee33b5bc8743335bb441e3c4d845e7a43e36ab6810fa3a3f8329ad8dd537",
+        "status": "frozen"
+      }
+    ],
+    "canonicalRenderAuthority": {
+      "path": "artifacts/original/phase-0-4-crt-television/manifests/crt-phase-0-4r-canonical-render-inventory.json",
+      "schema": "quantum-hub.phase-0-4r-crt-television.canonical-render-inventory.v1",
+      "bytes": 140281,
+      "sha256": "266075ca1f1b131c477690118a4d7337f9a0666d9b44fb476feb6f85d8d19a8a",
+      "status": "PASS"
+    },
+    "physicalPortalAuthority": {
+      "path": "artifacts/original/phase-0-4-crt-television/manifests/crt-phase-0-4r-portal-physical-state-authority.json",
+      "schema": "quantum-hub.phase-0-4r-crt-television.portal-physical-state-authority.v1",
+      "bytes": 35419,
+      "sha256": "27c1b1bbf7c4367ac2af31aab8d981460dcbcb81a06800df978b11f23bbad4f5",
+      "status": "PASS"
+    },
+    "powerStateAuthority": {
+      "path": "artifacts/original/phase-0-4-crt-television/manifests/crt-phase-0-4r-power-on-state-authority.json",
+      "schema": "quantum-hub.phase-0-4r-crt-television.power-on-state-authority.v1",
+      "bytes": 39520,
+      "sha256": "9b2f1c5ea3c7b777025d4350fc7742bb173f1a285db11b952945f5e33bda4835",
+      "status": "PASS",
+      "stateCount": 7,
+      "exactStateIds": [
+        "power-01-completely-dormant",
+        "power-02-current-reaches-connection",
+        "power-03-power-indicator-response",
+        "power-04-crt-electrical-wake",
+        "power-05-raster-phosphor-appears",
+        "power-06-quantum-interface-stabilizes",
+        "power-07-portal-ready"
+      ],
+      "stateHashes": [
+        "6be86805795563cff10b779c1454f915b5f3e89c0c9d3f9212441b3eb3752da8",
+        "790a5dbcecc5f08c93d12a178e13c5baab4ff90839e550f1eeea43e1fecd772c",
+        "af230b461db48014247addcc4a71ce4c484bbce9a252fb2a8e0f71e8d6c81a6c",
+        "1e1d10964777b4a1f57c47761eeb1f794cbf32f0182717ebba6586e1e2a35f40",
+        "9e83de8b8f831fd3cff599ff57c009c0ff344f98d100b246e48d7a0dc900eda5",
+        "472cd6ba2ca0ce21dcd9b0d8fa018734d854df328dc311307c4f6db75782a948",
+        "5d9beb9b49f948de8ab13ccde0b78dc13acce289ee5e60f84d822a21ca5acfac"
+      ],
+      "contentStateMapSha256": "1df396cb6b3f97c8416106c3d02802d8a51a27fa95ead7da14277bb5c97cbfab",
+      "source": {
+        "package_relative_path": "source/quantum-signal-television-v1.blend",
+        "bytes": 1516222,
+        "sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7"
+      },
+      "generator": {
+        "package_relative_path": "source/render_crt_canonical_stills.py",
+        "bytes": 19232,
+        "sha256": "3bc9989b91a04a4bc1b62d41e56185014801d735e40e2881ac9678fdbfe3cab6"
+      }
+    },
+    "blenderValidationAuthority": {
+      "path": "artifacts/original/phase-0-4-crt-television/manifests/blender-source-validation.json",
+      "schema": "quantum-hub.phase-0-4-crt-television.blender-source-validation.v1",
+      "bytes": 28963,
+      "sha256": "8162fa6b312b51800b320c65798aca1082ee1b8c9335cc806c48529e9f4cadea",
+      "status": "PASS",
+      "source": {
+        "package_relative_path": "source/quantum-signal-television-v1.blend",
+        "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/quantum-signal-television-v1.blend",
+        "bytes": 1516222,
+        "sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7",
+        "signature": "BLENDER Zstd-compressed editable source"
+      }
+    },
+    "physicalScreenContentStateMapSha256": "1df396cb6b3f97c8416106c3d02802d8a51a27fa95ead7da14277bb5c97cbfab",
+    "portalBrowserStateAuthority": {
+      "path": "artifacts/evidence/phase-0-4r-crt-television/portal-states/portal-browser-state-authority.json",
+      "schema": "quantum-hub.phase-0-4r-crt-television.portal-browser-state-authority.v1",
+      "bytes": 5621,
+      "sha256": "7e0470f712ca4a20e214cf9c0fcc04c7b2a53085c8ed30d75bab5975712483e1",
+      "status": "PASS",
+      "stateCount": 2
+    },
+    "semanticStates": [
+      {
+        "id": "portal-07-dom-takes-ownership",
+        "order": 7,
+        "owner": "repository browser semantic DOM",
+        "status": "PASS",
+        "case_id": "portal-actual--desktop-1440x900",
+        "source_id": "source-text-free-portal-takeover",
+        "source_sha256": "0b42ee33b5bc8743335bb441e3c4d845e7a43e36ab6810fa3a3f8329ad8dd537",
+        "matrix_sha256": "82ae5672fba028f813bc98754038e0deb9ab2b022bb199e3e2dcb1a8b272b00d",
+        "semantic_state": "DOM takes ownership over the frozen text-free takeover raster",
+        "capture": {
+          "path": "artifacts/evidence/phase-0-4r-crt-television/captures/normalized/portal-actual--desktop-1440x900.png",
+          "width": 1440,
+          "height": 900,
+          "bytes": 379945,
+          "sha256": "ac3ce4905e48298925416b54ba994e0fc786ed3c51d5d2eeb35cd85d13d96149"
+        }
+      },
+      {
+        "id": "portal-08-full-semantic-surface",
+        "order": 8,
+        "owner": "repository browser semantic DOM",
+        "status": "PASS",
+        "case_id": "portal-actual--desktop-1440x900",
+        "source_id": "source-text-free-portal-takeover",
+        "source_sha256": "0b42ee33b5bc8743335bb441e3c4d845e7a43e36ab6810fa3a3f8329ad8dd537",
+        "matrix_sha256": "82ae5672fba028f813bc98754038e0deb9ab2b022bb199e3e2dcb1a8b272b00d",
+        "semantic_state": "full semantic surface after the decorative takeover raster exits",
+        "capture": {
+          "path": "artifacts/evidence/phase-0-4r-crt-television/portal-states/portal-08-full-semantic-surface.jpg",
+          "width": 1440,
+          "height": 900,
+          "bytes": 80759,
+          "sha256": "dd296817ac84a4d55da49db4fc6c5583d842ed60a7b59f6d618ec1223da1eb26"
+        },
+        "capture_report": {
+          "path": "artifacts/evidence/phase-0-4r-crt-television/portal-states/portal-08-full-semantic-surface.json",
+          "schema": "quantum-hub.phase-0-4r-crt-television.portal-state-browser-capture.v1",
+          "bytes": 25702,
+          "sha256": "1ec8e80c7396fbe15c2b953dc7ddec02bc8253b271faf4eb004de38ff6ec28b0"
+        }
+      }
+    ],
+    "transitionIntegrity": {
+      "portalCaseCount": 23,
+      "blankBridgeCount": 0,
+      "aspectSnapCount": 0,
+      "doubledCopyCount": 0,
+      "blankBridgeCaseIds": [],
+      "aspectSnapCaseIds": [],
+      "doubledCopyCaseIds": [],
+      "pass": true
+    },
+    "canonicalSha256": "e7900bcf689d69ac6471ee6199825e0d606b1dbd44edd30d0979b1ce08f76da8"
+  },
+  "evidence_core_sha256": "e7900bcf689d69ac6471ee6199825e0d606b1dbd44edd30d0979b1ce08f76da8",
+  "evidenceCoreSha256": "e7900bcf689d69ac6471ee6199825e0d606b1dbd44edd30d0979b1ce08f76da8",
+  "plan": {
+    "path": "artifacts/evidence/phase-0-4r-crt-television/capture-plan-authority.json",
+    "schema": "quantum-hub.phase-0-4r-crt-television.typography-capture-plan.v1",
+    "bytes": 43077,
+    "sha256": "dfd21e2e70fddd02285c8f00979d8cb95aacca43462ef079fff063aafa0d3f08",
+    "originalAuthorityPath": "prototypes/phase-0-4r-crt-portal-qa/capture-plan.json"
+  },
+  "capturePlanAuthority": {
+    "path": "artifacts/evidence/phase-0-4r-crt-television/capture-plan-authority.json",
+    "schema": "quantum-hub.phase-0-4r-crt-television.typography-capture-plan.v1",
+    "bytes": 43077,
+    "sha256": "dfd21e2e70fddd02285c8f00979d8cb95aacca43462ef079fff063aafa0d3f08",
+    "originalAuthorityPath": "prototypes/phase-0-4r-crt-portal-qa/capture-plan.json"
+  },
+  "matrix": {
+    "path": "artifacts/evidence/phase-0-4r-crt-television/browser-matrix-report.json",
+    "schema": "quantum-hub.phase-0-4r-crt-television.typography-collision-matrix.v1",
+    "bytes": 1159197,
+    "sha256": "82ae5672fba028f813bc98754038e0deb9ab2b022bb199e3e2dcb1a8b272b00d",
+    "caseCount": 46,
+    "normalizedCaptureCount": 36
+  },
+  "matrix_summary": {
+    "case_count": 46,
+    "normalized_capture_count": 36
+  },
+  "power_state_authority": {
+    "path": "artifacts/original/phase-0-4-crt-television/manifests/crt-phase-0-4r-power-on-state-authority.json",
+    "schema": "quantum-hub.phase-0-4r-crt-television.power-on-state-authority.v1",
+    "bytes": 39520,
+    "sha256": "9b2f1c5ea3c7b777025d4350fc7742bb173f1a285db11b952945f5e33bda4835",
+    "status": "PASS",
+    "stateCount": 7,
+    "exactStateIds": [
+      "power-01-completely-dormant",
+      "power-02-current-reaches-connection",
+      "power-03-power-indicator-response",
+      "power-04-crt-electrical-wake",
+      "power-05-raster-phosphor-appears",
+      "power-06-quantum-interface-stabilizes",
+      "power-07-portal-ready"
+    ],
+    "stateHashes": [
+      "6be86805795563cff10b779c1454f915b5f3e89c0c9d3f9212441b3eb3752da8",
+      "790a5dbcecc5f08c93d12a178e13c5baab4ff90839e550f1eeea43e1fecd772c",
+      "af230b461db48014247addcc4a71ce4c484bbce9a252fb2a8e0f71e8d6c81a6c",
+      "1e1d10964777b4a1f57c47761eeb1f794cbf32f0182717ebba6586e1e2a35f40",
+      "9e83de8b8f831fd3cff599ff57c009c0ff344f98d100b246e48d7a0dc900eda5",
+      "472cd6ba2ca0ce21dcd9b0d8fa018734d854df328dc311307c4f6db75782a948",
+      "5d9beb9b49f948de8ab13ccde0b78dc13acce289ee5e60f84d822a21ca5acfac"
+    ],
+    "contentStateMapSha256": "1df396cb6b3f97c8416106c3d02802d8a51a27fa95ead7da14277bb5c97cbfab",
+    "source": {
+      "package_relative_path": "source/quantum-signal-television-v1.blend",
+      "bytes": 1516222,
+      "sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7"
+    },
+    "generator": {
+      "package_relative_path": "source/render_crt_canonical_stills.py",
+      "bytes": 19232,
+      "sha256": "3bc9989b91a04a4bc1b62d41e56185014801d735e40e2881ac9678fdbfe3cab6"
+    }
+  },
+  "portal_state_authority": {
+    "path": "artifacts/original/phase-0-4-crt-television/manifests/crt-phase-0-4r-portal-transition-state-authority.json",
+    "schema": "quantum-hub.phase-0-4r-crt-television.portal-transition-state-authority.v1",
+    "bytes": 56690,
+    "sha256": "3d3df7884f78cd9ee573a82f5961013d038c390324fb4b95efd109f3ccf236cb",
+    "status": "PASS",
+    "stateCount": 8
+  },
+  "portalTransitionStateAuthority": {
+    "path": "artifacts/original/phase-0-4-crt-television/manifests/crt-phase-0-4r-portal-transition-state-authority.json",
+    "schema": "quantum-hub.phase-0-4r-crt-television.portal-transition-state-authority.v1",
+    "bytes": 56690,
+    "sha256": "3d3df7884f78cd9ee573a82f5961013d038c390324fb4b95efd109f3ccf236cb",
+    "status": "PASS",
+    "stateCount": 8
+  },
+  "browserReviewCompositionInputs": {
+    "path": "artifacts/evidence/phase-0-4r-crt-television/browser-review-composition-inputs.json",
+    "schema": "quantum-hub.phase-0-4r-crt-television.browser-review-composition-inputs.v1",
+    "bytes": 14468,
+    "sha256": "020776b9965e68e189d1f22d58329a396289fc444808d1018fe75281c45d9eb2",
+    "status": "READY_FOR_CREATIVE_COMPOSITION",
+    "sheetCount": 7
+  },
+  "browserReviewCompositionManifest": {
+    "path": "artifacts/original/phase-0-4-crt-television/manifests/phase-0-4r-browser-review-composition-manifest.json",
+    "schema": "quantum-hub.phase-0-4r-crt-television.browser-review-composition.v1",
+    "bytes": 17615,
+    "sha256": "82a338594cac6f56e1c36dafaddd929d54b9c7b91c1710bae538a3770cddeca4",
+    "status": "PASS",
+    "outputCount": 7
+  },
+  "transitionIntegrity": {
+    "portalCaseCount": 23,
+    "blankBridgeCount": 0,
+    "aspectSnapCount": 0,
+    "doubledCopyCount": 0,
+    "blankBridgeCaseIds": [],
+    "aspectSnapCaseIds": [],
+    "doubledCopyCaseIds": [],
+    "pass": true
+  },
+  "blankBridgeCount": 0,
+  "aspectSnapCount": 0,
+  "doubledCopyCount": 0,
+  "completion": {
+    "caseCount": 46,
+    "normalizedCaptureCount": 36,
+    "exactPortalStateCount": 8,
+    "distinctBrowserStateCount": 2,
+    "browserReviewSheetCount": 7,
+    "outputsBound": 7,
+    "humanCreativeAcceptance": "pending"
+  }
+}

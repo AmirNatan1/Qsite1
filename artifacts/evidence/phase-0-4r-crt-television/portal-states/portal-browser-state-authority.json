@@ -1,0 +1,157 @@
+{
+  "schema": "quantum-hub.phase-0-4r-crt-television.portal-browser-state-authority.v1",
+  "status": "PASS",
+  "generatedAt": "2026-08-18T23:55:29.859Z",
+  "plan": {
+    "path": "prototypes/phase-0-4r-crt-portal-qa/capture-plan.json",
+    "bytes": 43077,
+    "sha256": "dfd21e2e70fddd02285c8f00979d8cb95aacca43462ef079fff063aafa0d3f08"
+  },
+  "matrix": {
+    "path": "artifacts/evidence/phase-0-4r-crt-television/browser-matrix-report.json",
+    "schema": "quantum-hub.phase-0-4r-crt-television.typography-collision-matrix.v1",
+    "bytes": 1159197,
+    "sha256": "82ae5672fba028f813bc98754038e0deb9ab2b022bb199e3e2dcb1a8b272b00d",
+    "cases": 46,
+    "normalizedCaptures": 36
+  },
+  "source": {
+    "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-text-free-portal-takeover.png",
+    "bytes": 1096906,
+    "sha256": "0b42ee33b5bc8743335bb441e3c4d845e7a43e36ab6810fa3a3f8329ad8dd537",
+    "id": "source-text-free-portal-takeover",
+    "role": "source-text-free-portal-takeover",
+    "width": 1920,
+    "height": 1200
+  },
+  "stateCount": 2,
+  "exactStateIds": [
+    "portal-07-dom-takes-ownership",
+    "portal-08-full-semantic-surface"
+  ],
+  "states": [
+    {
+      "id": "portal-07-dom-takes-ownership",
+      "order": 7,
+      "owner": "repository browser semantic DOM",
+      "caseId": "portal-actual--desktop-1440x900",
+      "capture": {
+        "path": "artifacts/evidence/phase-0-4r-crt-television/captures/normalized/portal-actual--desktop-1440x900.png",
+        "width": 1440,
+        "height": 900,
+        "bytes": 379945,
+        "sha256": "ac3ce4905e48298925416b54ba994e0fc786ed3c51d5d2eeb35cd85d13d96149"
+      }
+    },
+    {
+      "id": "portal-08-full-semantic-surface",
+      "order": 8,
+      "owner": "repository browser semantic DOM",
+      "caseId": "portal-actual--desktop-1440x900",
+      "capture": {
+        "path": "artifacts/evidence/phase-0-4r-crt-television/portal-states/portal-08-full-semantic-surface.jpg",
+        "format": "JPEG",
+        "width": 1440,
+        "height": 900,
+        "bytes": 80759,
+        "sha256": "dd296817ac84a4d55da49db4fc6c5583d842ed60a7b59f6d618ec1223da1eb26",
+        "modal": {
+          "pass": true,
+          "method": "exact-byte-modal-winner",
+          "successiveFullPageJpegs": 11,
+          "minimumWinnerVotes": 7,
+          "round": 1,
+          "winner": {
+            "sha256": "dd296817ac84a4d55da49db4fc6c5583d842ed60a7b59f6d618ec1223da1eb26",
+            "bytes": 80759,
+            "votes": 11
+          },
+          "uniqueByteSequences": 1,
+          "histogram": [
+            {
+              "sha256": "dd296817ac84a4d55da49db4fc6c5583d842ed60a7b59f6d618ec1223da1eb26",
+              "bytes": 80759,
+              "votes": 11
+            }
+          ],
+          "samples": [
+            {
+              "shot": 1,
+              "sha256": "dd296817ac84a4d55da49db4fc6c5583d842ed60a7b59f6d618ec1223da1eb26",
+              "bytes": 80759
+            },
+            {
+              "shot": 2,
+              "sha256": "dd296817ac84a4d55da49db4fc6c5583d842ed60a7b59f6d618ec1223da1eb26",
+              "bytes": 80759
+            },
+            {
+              "shot": 3,
+              "sha256": "dd296817ac84a4d55da49db4fc6c5583d842ed60a7b59f6d618ec1223da1eb26",
+              "bytes": 80759
+            },
+            {
+              "shot": 4,
+              "sha256": "dd296817ac84a4d55da49db4fc6c5583d842ed60a7b59f6d618ec1223da1eb26",
+              "bytes": 80759
+            },
+            {
+              "shot": 5,
+              "sha256": "dd296817ac84a4d55da49db4fc6c5583d842ed60a7b59f6d618ec1223da1eb26",
+              "bytes": 80759
+            },
+            {
+              "shot": 6,
+              "sha256": "dd296817ac84a4d55da49db4fc6c5583d842ed60a7b59f6d618ec1223da1eb26",
+              "bytes": 80759
+            },
+            {
+              "shot": 7,
+              "sha256": "dd296817ac84a4d55da49db4fc6c5583d842ed60a7b59f6d618ec1223da1eb26",
+              "bytes": 80759
+            },
+            {
+              "shot": 8,
+              "sha256": "dd296817ac84a4d55da49db4fc6c5583d842ed60a7b59f6d618ec1223da1eb26",
+              "bytes": 80759
+            },
+            {
+              "shot": 9,
+              "sha256": "dd296817ac84a4d55da49db4fc6c5583d842ed60a7b59f6d618ec1223da1eb26",
+              "bytes": 80759
+            },
+            {
+              "shot": 10,
+              "sha256": "dd296817ac84a4d55da49db4fc6c5583d842ed60a7b59f6d618ec1223da1eb26",
+              "bytes": 80759
+            },
+            {
+              "shot": 11,
+              "sha256": "dd296817ac84a4d55da49db4fc6c5583d842ed60a7b59f6d618ec1223da1eb26",
+              "bytes": 80759
+            }
+          ],
+          "discardedAttempts": [],
+          "timingClaim": "none; readiness barriers do not prove raster stability"
+        }
+      },
+      "captureReport": {
+        "path": "artifacts/evidence/phase-0-4r-crt-television/portal-states/portal-08-full-semantic-surface.json",
+        "schema": "quantum-hub.phase-0-4r-crt-television.portal-state-browser-capture.v1",
+        "bytes": 25702,
+        "sha256": "1ec8e80c7396fbe15c2b953dc7ddec02bc8253b271faf4eb004de38ff6ec28b0"
+      }
+    }
+  ],
+  "distinctCaptureHashes": {
+    "pass": true,
+    "state7Sha256": "ac3ce4905e48298925416b54ba994e0fc786ed3c51d5d2eeb35cd85d13d96149",
+    "state8Sha256": "dd296817ac84a4d55da49db4fc6c5583d842ed60a7b59f6d618ec1223da1eb26"
+  },
+  "semanticInvariant": {
+    "pass": true,
+    "state8SceneCropDisplay": "none",
+    "typographyAndAnchorsChanged": false,
+    "queryTopologyChanged": false
+  }
+}

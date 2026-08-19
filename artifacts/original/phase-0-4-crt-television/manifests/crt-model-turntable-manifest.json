@@ -1,0 +1,156 @@
+{
+  "schema": "quantum-hub.phase-0-4r-crt-television.turntable.v1",
+  "status": "PASS",
+  "repair_baseline": "fec1f0e9243a9cda188c539ab1b79e4a99c30623",
+  "source": {
+    "package_relative_path": "source/quantum-signal-television-v1.blend",
+    "bytes": 1516222,
+    "sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7"
+  },
+  "renderer": {
+    "package_relative_path": "source/render_phase0_4r_crt_turntable.py",
+    "bytes": 16445,
+    "sha256": "44011d34a6bf4926b6aeeef6fc2c57cfeef4047eecd3951c60e3890b1fe589b1"
+  },
+  "output": {
+    "package_relative_path": "crt-model-turntable.webm",
+    "bytes": 386890,
+    "sha256": "20aa30adb49bf1df7b09278a5fb15dba56409a4256771685ac431a93fc329ee6",
+    "width": 960,
+    "height": 600
+  },
+  "render_lineage": {
+    "source_sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7",
+    "renderer_sha256": "44011d34a6bf4926b6aeeef6fc2c57cfeef4047eecd3951c60e3890b1fe589b1",
+    "camera_orbit": {
+      "start_view": "front three-quarter",
+      "end_view": "rear three-quarter",
+      "start_angle_degrees": -55.0,
+      "end_angle_degrees": 55.0,
+      "start_azimuth_degrees": -55.0,
+      "end_azimuth_degrees": 55.0,
+      "orbit_radius_m": 2.2,
+      "interpolation": "linear"
+    },
+    "seed": 2404,
+    "frame_count": 144,
+    "fps": 24,
+    "width": 960,
+    "height": 600,
+    "temporary_frames_retained": false,
+    "temporary_frame_count_created": 144,
+    "temporary_intermediate_retained": false,
+    "engine": "BLENDER_EEVEE",
+    "samples": 32,
+    "color_management": {
+      "view_transform": "AgX",
+      "look": "AgX - Medium High Contrast"
+    },
+    "manifest_only_reconciliation": true
+  },
+  "encoder": {
+    "tool": "FFmpeg",
+    "version": "ffmpeg version 9.0.1-essentials_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers",
+    "license": "FFmpeg build distributed under the licenses reported by `ffmpeg -L`; VP9 encoder libvpx-vp9",
+    "command": [
+      "ffmpeg",
+      "-y",
+      "-framerate",
+      "24",
+      "-start_number",
+      "1",
+      "-i",
+      "<temporary-frame-%04d.png>",
+      "-map",
+      "0:v:0",
+      "-c:v",
+      "libvpx-vp9",
+      "-b:v",
+      "0",
+      "-crf",
+      "30",
+      "-deadline",
+      "good",
+      "-cpu-used",
+      "2",
+      "-row-mt",
+      "1",
+      "-pix_fmt",
+      "yuv420p",
+      "-g",
+      "24",
+      "-an",
+      "-sn",
+      "-dn",
+      "crt-model-turntable.webm"
+    ],
+    "codec": "libvpx-vp9",
+    "audio": "disabled with -an",
+    "pix_fmt": "yuv420p",
+    "gop_frames": 24,
+    "crf": 30
+  },
+  "ffprobe": {
+    "codec_name": "vp9",
+    "duration": 6.0,
+    "fps": 24.0,
+    "frame_count": 144,
+    "width": 960,
+    "height": 600,
+    "time_base": "1/1000",
+    "pix_fmt": "yuv420p",
+    "video_stream_count": 1,
+    "audio_stream_count": 0,
+    "subtitle_stream_count": 0,
+    "data_stream_count": 0,
+    "attachment_stream_count": 0,
+    "no_audio": true
+  },
+  "decoded_sample_proof": {
+    "status": "PASS",
+    "sample_count": 3,
+    "all_distinct": true,
+    "samples": [
+      {
+        "timestamp_seconds": 0.5,
+        "width": 960,
+        "height": 600,
+        "decoded_rgb_sha256": "236ac7e73a6738649a030236257fc1e65528518c9431f1dd3d4dfe9e18be894e"
+      },
+      {
+        "timestamp_seconds": 3.0,
+        "width": 960,
+        "height": 600,
+        "decoded_rgb_sha256": "c7690edbfa59cebc562804310436d7ab2b871e2178980fb0d861c43c8ccb9a81"
+      },
+      {
+        "timestamp_seconds": 5.5,
+        "width": 960,
+        "height": 600,
+        "decoded_rgb_sha256": "0f4271f05d69a49caec01cb65818d82231cf28d51a9e4d24181d0d2b3c79d0d5"
+      }
+    ],
+    "adjacent_differences": [
+      {
+        "from": 0.5,
+        "to": 3.0,
+        "mean_absolute_rgb_delta": 52.457661458333334,
+        "changed_pixel_ratio": 0.8283888888888888
+      },
+      {
+        "from": 3.0,
+        "to": 5.5,
+        "mean_absolute_rgb_delta": 40.379496527777775,
+        "changed_pixel_ratio": 0.7014444444444444
+      }
+    ]
+  },
+  "no_audio": true,
+  "temporary_frames_retained": false,
+  "frame_sequence": {
+    "created": true,
+    "frame_count": 144,
+    "retained": false
+  },
+  "full_animatic_created": false
+}

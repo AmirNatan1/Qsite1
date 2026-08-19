@@ -1,32 +1,38 @@
 {
   "schema": "quantum-hub.phase-0-4-crt-television.material-and-asset.v1",
   "status": "PASS",
+  "repair_baseline": "fec1f0e9243a9cda188c539ab1b79e4a99c30623",
   "selected_option": "A",
   "selected_design": "Rounded 1990s domestic CRT",
   "source": {
     "package_relative_path": "source/quantum-signal-television-v1.blend",
-    "bytes": 1049052,
-    "sha256": "9980c054e0db0b04fb238aced3bf149589dffb555a1f018ba58b521c1ad89a5d"
+    "bytes": 1516222,
+    "sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7"
   },
   "builder": {
     "package_relative_path": "source/build_refined_crt.py",
-    "bytes": 45775,
-    "sha256": "d188d6b8f44795f56e17c6449f586d848fb304fa840c2036f00bc0c887c1f2ea"
+    "bytes": 66215,
+    "sha256": "78c35d2a827273d49d097db6d26f83a32f554fb894ff064db3cd5f624402ce6f"
   },
   "renderer": {
     "package_relative_path": "source/render_crt_canonical_stills.py",
-    "bytes": 16466,
-    "sha256": "d881aff37c3edb25d54b97c714db0c500666afddff05bb427b86e9bae55ebcef"
+    "bytes": 19232,
+    "sha256": "3bc9989b91a04a4bc1b62d41e56185014801d735e40e2881ac9678fdbfe3cab6"
+  },
+  "cycles_renderer": {
+    "package_relative_path": "source/render_crt_cycles_masters.py",
+    "bytes": 20975,
+    "sha256": "389fa8d58d83ea69d7e24c4a652baee9a40b480a4474566debc3a17054743afc"
   },
   "validator": {
     "package_relative_path": "source/validate_refined_crt_source.py",
-    "bytes": 15406,
-    "sha256": "67e6461709de5a750f987c3e17283b0a1478d3873ab12a9de4d8aa22e237b54e"
+    "bytes": 43123,
+    "sha256": "9b50f7fced84cf3d095f3eca69f11e56a39787febaded0e0628cbac472154879"
   },
   "manifest_generator": {
     "package_relative_path": "source/generate_crt_material_asset_manifest.py",
-    "bytes": 4800,
-    "sha256": "1ed3a2b39a55bd83d25be0a98499d4052b7ba0fe887e490a44feb654eb9410e8"
+    "bytes": 6649,
+    "sha256": "0360ab263d5598d90627aa6774c3e61a1be807a5c51bfbbd6714abee04e548e4"
   },
   "procedural_only": true,
   "external_texture_count": 0,
@@ -53,9 +59,10 @@
       "procedural": true,
       "external_texture_count": 0,
       "image_texture_nodes": 0,
-      "assigned_object_count": 2,
+      "assigned_object_count": 3,
       "assigned_objects": [
         "CRT_LowerSpeakerControlBand",
+        "CRT_ProtectedCableEntryShroud",
         "CRT_RearRemovableServicePanel"
       ]
     },
@@ -150,11 +157,10 @@
       "procedural": true,
       "external_texture_count": 0,
       "image_texture_nodes": 0,
-      "assigned_object_count": 3,
+      "assigned_object_count": 2,
       "assigned_objects": [
-        "CRT_ControlButtonCap_01",
-        "CRT_ControlButtonCap_02",
-        "CRT_ControlButtonCap_03"
+        "CRT_RecessedRoundPowerButton",
+        "CRT_RecessedTuningRocker"
       ]
     },
     {
@@ -186,151 +192,29 @@
       "procedural": true,
       "external_texture_count": 0,
       "image_texture_nodes": 0,
-      "assigned_object_count": 143,
+      "assigned_object_count": 21,
       "assigned_objects": [
-        "CRT_ControlRecess_01",
-        "CRT_ControlRecess_02",
-        "CRT_ControlRecess_03",
+        "CRT_LowerSpeakerControlBand",
+        "CRT_RearRemovableServicePanel",
         "CRT_RearServicePanelGasket",
-        "CRT_RearVentSlot_01_01",
-        "CRT_RearVentSlot_01_02",
-        "CRT_RearVentSlot_01_03",
-        "CRT_RearVentSlot_01_04",
-        "CRT_RearVentSlot_01_05",
-        "CRT_RearVentSlot_01_06",
-        "CRT_RearVentSlot_01_07",
-        "CRT_RearVentSlot_01_08",
-        "CRT_RearVentSlot_01_09",
-        "CRT_RearVentSlot_01_10",
-        "CRT_RearVentSlot_01_11",
-        "CRT_RearVentSlot_01_12",
-        "CRT_RearVentSlot_02_01",
-        "CRT_RearVentSlot_02_02",
-        "CRT_RearVentSlot_02_03",
-        "CRT_RearVentSlot_02_04",
-        "CRT_RearVentSlot_02_05",
-        "CRT_RearVentSlot_02_06",
-        "CRT_RearVentSlot_02_07",
-        "CRT_RearVentSlot_02_08",
-        "CRT_RearVentSlot_02_09",
-        "CRT_RearVentSlot_02_10",
-        "CRT_RearVentSlot_02_11",
-        "CRT_RearVentSlot_02_12",
-        "CRT_RearVentSlot_03_01",
-        "CRT_RearVentSlot_03_02",
-        "CRT_RearVentSlot_03_03",
-        "CRT_RearVentSlot_03_04",
-        "CRT_RearVentSlot_03_05",
-        "CRT_RearVentSlot_03_06",
-        "CRT_RearVentSlot_03_07",
-        "CRT_RearVentSlot_03_08",
-        "CRT_RearVentSlot_03_09",
-        "CRT_RearVentSlot_03_10",
-        "CRT_RearVentSlot_03_11",
-        "CRT_RearVentSlot_03_12",
-        "CRT_SideVentSlot_01_01",
-        "CRT_SideVentSlot_01_02",
-        "CRT_SideVentSlot_01_03",
-        "CRT_SideVentSlot_01_04",
-        "CRT_SideVentSlot_01_05",
-        "CRT_SideVentSlot_01_06",
-        "CRT_SideVentSlot_01_07",
-        "CRT_SideVentSlot_01_08",
-        "CRT_SideVentSlot_01_09",
-        "CRT_SideVentSlot_02_01",
-        "CRT_SideVentSlot_02_02",
-        "CRT_SideVentSlot_02_03",
-        "CRT_SideVentSlot_02_04",
-        "CRT_SideVentSlot_02_05",
-        "CRT_SideVentSlot_02_06",
-        "CRT_SideVentSlot_02_07",
-        "CRT_SideVentSlot_02_08",
-        "CRT_SideVentSlot_02_09",
-        "CRT_SpeakerPerforation_01_01",
-        "CRT_SpeakerPerforation_01_02",
-        "CRT_SpeakerPerforation_01_03",
-        "CRT_SpeakerPerforation_01_04",
-        "CRT_SpeakerPerforation_01_05",
-        "CRT_SpeakerPerforation_01_06",
-        "CRT_SpeakerPerforation_01_07",
-        "CRT_SpeakerPerforation_01_08",
-        "CRT_SpeakerPerforation_01_09",
-        "CRT_SpeakerPerforation_01_10",
-        "CRT_SpeakerPerforation_01_11",
-        "CRT_SpeakerPerforation_01_12",
-        "CRT_SpeakerPerforation_01_13",
-        "CRT_SpeakerPerforation_01_14",
-        "CRT_SpeakerPerforation_01_15",
-        "CRT_SpeakerPerforation_01_16",
-        "CRT_SpeakerPerforation_01_17",
-        "CRT_SpeakerPerforation_02_01",
-        "CRT_SpeakerPerforation_02_02",
-        "CRT_SpeakerPerforation_02_03",
-        "CRT_SpeakerPerforation_02_04",
-        "CRT_SpeakerPerforation_02_05",
-        "CRT_SpeakerPerforation_02_06",
-        "CRT_SpeakerPerforation_02_07",
-        "CRT_SpeakerPerforation_02_08",
-        "CRT_SpeakerPerforation_02_09",
-        "CRT_SpeakerPerforation_02_10",
-        "CRT_SpeakerPerforation_02_11",
-        "CRT_SpeakerPerforation_02_12",
-        "CRT_SpeakerPerforation_02_13",
-        "CRT_SpeakerPerforation_02_14",
-        "CRT_SpeakerPerforation_02_15",
-        "CRT_SpeakerPerforation_02_16",
-        "CRT_SpeakerPerforation_03_01",
-        "CRT_SpeakerPerforation_03_02",
-        "CRT_SpeakerPerforation_03_03",
-        "CRT_SpeakerPerforation_03_04",
-        "CRT_SpeakerPerforation_03_05",
-        "CRT_SpeakerPerforation_03_06",
-        "CRT_SpeakerPerforation_03_07",
-        "CRT_SpeakerPerforation_03_08",
-        "CRT_SpeakerPerforation_03_09",
-        "CRT_SpeakerPerforation_03_10",
-        "CRT_SpeakerPerforation_03_11",
-        "CRT_SpeakerPerforation_03_12",
-        "CRT_SpeakerPerforation_03_13",
-        "CRT_SpeakerPerforation_03_14",
-        "CRT_SpeakerPerforation_03_15",
-        "CRT_SpeakerPerforation_03_16",
-        "CRT_SpeakerPerforation_03_17",
-        "CRT_SpeakerPerforation_04_01",
-        "CRT_SpeakerPerforation_04_02",
-        "CRT_SpeakerPerforation_04_03",
-        "CRT_SpeakerPerforation_04_04",
-        "CRT_SpeakerPerforation_04_05",
-        "CRT_SpeakerPerforation_04_06",
-        "CRT_SpeakerPerforation_04_07",
-        "CRT_SpeakerPerforation_04_08",
-        "CRT_SpeakerPerforation_04_09",
-        "CRT_SpeakerPerforation_04_10",
-        "CRT_SpeakerPerforation_04_11",
-        "CRT_SpeakerPerforation_04_12",
-        "CRT_SpeakerPerforation_04_13",
-        "CRT_SpeakerPerforation_04_14",
-        "CRT_SpeakerPerforation_04_15",
-        "CRT_SpeakerPerforation_04_16",
-        "CRT_SpeakerPerforation_05_01",
-        "CRT_SpeakerPerforation_05_02",
-        "CRT_SpeakerPerforation_05_03",
-        "CRT_SpeakerPerforation_05_04",
-        "CRT_SpeakerPerforation_05_05",
-        "CRT_SpeakerPerforation_05_06",
-        "CRT_SpeakerPerforation_05_07",
-        "CRT_SpeakerPerforation_05_08",
-        "CRT_SpeakerPerforation_05_09",
-        "CRT_SpeakerPerforation_05_10",
-        "CRT_SpeakerPerforation_05_11",
-        "CRT_SpeakerPerforation_05_12",
-        "CRT_SpeakerPerforation_05_13",
-        "CRT_SpeakerPerforation_05_14",
-        "CRT_SpeakerPerforation_05_15",
-        "CRT_SpeakerPerforation_05_16",
-        "CRT_SpeakerPerforation_05_17",
+        "CRT_RearVentDarkInterior",
+        "CRT_RefinedDeepMouldedCabinetShell",
+        "CRT_SideVentDarkPlenum",
+        "CRT_SpeakerGrilleDarkInterior",
         "ProvingGround_DrainageSeam",
-        "ProvingGround_MaterialTransition"
+        "ProvingGround_DrainageSlot_01",
+        "ProvingGround_DrainageSlot_02",
+        "ProvingGround_DrainageSlot_03",
+        "ProvingGround_DrainageSlot_04",
+        "ProvingGround_DrainageSlot_05",
+        "ProvingGround_DrainageSlot_06",
+        "ProvingGround_DrainageSlot_07",
+        "ProvingGround_InstallationSeam_01",
+        "ProvingGround_InstallationSeam_02",
+        "ProvingGround_InstallationSeam_03",
+        "ProvingGround_InstallationSeam_04",
+        "ProvingGround_MaterialTransition",
+        "ProvingGround_ProtectedCableEntryChannel"
       ]
     },
     {
@@ -340,7 +224,7 @@
       "procedural": true,
       "external_texture_count": 0,
       "image_texture_nodes": 0,
-      "assigned_object_count": 9,
+      "assigned_object_count": 11,
       "assigned_objects": [
         "CRT_IntegratedCableCollar",
         "CRT_StrainReliefRib_01",
@@ -350,7 +234,9 @@
         "CRT_StrainReliefRib_05",
         "CRT_StrainReliefRib_06",
         "MobileSpiralCable_ContinuousGraphiteSheath",
-        "SpiralCable_ContinuousGraphiteSheath"
+        "MobileSpiralCable_ProtectedEntryOvermould",
+        "SpiralCable_ContinuousGraphiteSheath",
+        "SpiralCable_ProtectedEntryOvermould"
       ]
     },
     {
@@ -360,7 +246,7 @@
       "procedural": true,
       "external_texture_count": 0,
       "image_texture_nodes": 0,
-      "assigned_object_count": 366,
+      "assigned_object_count": 370,
       "assigned_objects": [
         "MobileSpiralCable_InternalChannel_001",
         "MobileSpiralCable_InternalChannel_002",
@@ -545,6 +431,8 @@
         "MobileSpiralCable_InternalChannel_181",
         "MobileSpiralCable_InternalChannel_182",
         "MobileSpiralCable_InternalChannel_183",
+        "MobileSpiralCable_InternalChannel_184",
+        "MobileSpiralCable_InternalChannel_185",
         "SpiralCable_InternalChannel_001",
         "SpiralCable_InternalChannel_002",
         "SpiralCable_InternalChannel_003",
@@ -727,7 +615,9 @@
         "SpiralCable_InternalChannel_180",
         "SpiralCable_InternalChannel_181",
         "SpiralCable_InternalChannel_182",
-        "SpiralCable_InternalChannel_183"
+        "SpiralCable_InternalChannel_183",
+        "SpiralCable_InternalChannel_184",
+        "SpiralCable_InternalChannel_185"
       ]
     },
     {
@@ -737,7 +627,7 @@
       "procedural": true,
       "external_texture_count": 0,
       "image_texture_nodes": 0,
-      "assigned_object_count": 366,
+      "assigned_object_count": 370,
       "assigned_objects": [
         "MobileSpiralCable_InternalChannel_001",
         "MobileSpiralCable_InternalChannel_002",
@@ -922,6 +812,8 @@
         "MobileSpiralCable_InternalChannel_181",
         "MobileSpiralCable_InternalChannel_182",
         "MobileSpiralCable_InternalChannel_183",
+        "MobileSpiralCable_InternalChannel_184",
+        "MobileSpiralCable_InternalChannel_185",
         "SpiralCable_InternalChannel_001",
         "SpiralCable_InternalChannel_002",
         "SpiralCable_InternalChannel_003",
@@ -1104,7 +996,9 @@
         "SpiralCable_InternalChannel_180",
         "SpiralCable_InternalChannel_181",
         "SpiralCable_InternalChannel_182",
-        "SpiralCable_InternalChannel_183"
+        "SpiralCable_InternalChannel_183",
+        "SpiralCable_InternalChannel_184",
+        "SpiralCable_InternalChannel_185"
       ]
     },
     {
@@ -1151,5 +1045,29 @@
         "ProvingGround_ForegroundServicePlate"
       ]
     }
-  ]
+  ],
+  "phase_0_4r_quality": {
+    "abs_node_topology": {
+      "status": "PASS",
+      "pass": true,
+      "material": "CRT_CaredForCharcoalABS",
+      "evaluated_from_blend": true,
+      "node_types": [
+        "ShaderNodeBsdfPrincipled",
+        "ShaderNodeBump",
+        "ShaderNodeOutputMaterial",
+        "ShaderNodeTexNoise",
+        "ShaderNodeValToRGB"
+      ],
+      "roughness": 0.5,
+      "specular_ior_level": 0.5,
+      "bump_strength": 0.10999999940395355,
+      "bump_distance": 0.00044999999227002263,
+      "grain_scale": 240.0,
+      "grain_detail": 2.0,
+      "grain_roughness": 0.550000011920929
+    },
+    "material_quality_authority": "eight exact-source deterministic Cycles masters",
+    "supplemental_state_authority": "Eevee camera/cable/power/browser-source stills"
+  }
 }

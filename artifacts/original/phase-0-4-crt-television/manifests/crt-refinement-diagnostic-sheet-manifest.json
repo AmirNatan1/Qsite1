@@ -1,0 +1,115 @@
+{
+  "schema": "quantum-hub.phase-0-4r-crt-television.refinement-diagnostic-sheet.v1",
+  "status": "awaiting visual gate",
+  "canonical_review_batch_started": false,
+  "sheet": {
+    "package_relative_path": "work/crt-refinement-diagnostic-sheet.png",
+    "width": 5200,
+    "height": 4350,
+    "bytes": 8440539,
+    "sha256": "d42b4eb5bc59be2320fee98268f0973aaea63d1a19e928fdc54c0fbf373c33cf"
+  },
+  "source_frames": [
+    {
+      "state_id": "quality-front-three-quarter",
+      "package_relative_path": "work/refinement-diagnostics/diagnostic-quality-front-three-quarter.png",
+      "bytes": 1125729,
+      "sha256": "f67a6f383befbd4dc71093f777d11ecc775e143c72c2d99a3b89dd5108a6afd5"
+    },
+    {
+      "state_id": "controls-speaker",
+      "package_relative_path": "work/refinement-diagnostics/diagnostic-controls-speaker.png",
+      "bytes": 1059855,
+      "sha256": "87b75916b443924172c0b581fb9cd713b9e4530c170e14bfc2377ab8f6bad0b1"
+    },
+    {
+      "state_id": "rear-manufacturing",
+      "package_relative_path": "work/refinement-diagnostics/diagnostic-rear-manufacturing.png",
+      "bytes": 1041835,
+      "sha256": "c98a46f204d50e41f3c19f0e8865dbcc496c522ebf3519680d0f4bb86b909a09"
+    },
+    {
+      "state_id": "dormant-glass",
+      "package_relative_path": "work/refinement-diagnostics/diagnostic-dormant-glass.png",
+      "bytes": 1382799,
+      "sha256": "ae0acc9ece11cf5d80d5a7c549cef27580ad32be37ce5a40fc62914a828b6598"
+    },
+    {
+      "state_id": "conductor-macro",
+      "package_relative_path": "work/refinement-diagnostics/diagnostic-conductor-macro.png",
+      "bytes": 1074362,
+      "sha256": "89a483be3b05fc6137cb2feac5b55e829660e41052f373c91c073c0146d64ef5"
+    },
+    {
+      "state_id": "connector-before-arrival",
+      "package_relative_path": "work/refinement-diagnostics/diagnostic-connector-before-arrival.png",
+      "bytes": 997465,
+      "sha256": "bd6960df62ef6345379518d2430b0260a4c5dc6ede3c5448e3e607e604ea2506"
+    },
+    {
+      "state_id": "connector-after-arrival",
+      "package_relative_path": "work/refinement-diagnostics/diagnostic-connector-after-arrival.png",
+      "bytes": 1001574,
+      "sha256": "7181b69fb8e02409b21e4eaf1d82611e41557519ca333e3860a7f4ee1782fafc"
+    },
+    {
+      "state_id": "rear-arrival",
+      "package_relative_path": "work/refinement-diagnostics/diagnostic-rear-arrival.png",
+      "bytes": 877230,
+      "sha256": "41ff84f2e40c4d1aaef728a727f64523a8f0213017d54f2eaaba2a186344d766"
+    },
+    {
+      "state_id": "proving-ground-arrival",
+      "package_relative_path": "work/refinement-diagnostics/diagnostic-proving-ground-arrival.png",
+      "bytes": 1081652,
+      "sha256": "b55f21f9b5616854f0fd5911d799ec128456902f8798a57daaf4826be344b905"
+    },
+    {
+      "state_id": "startup-wake-line",
+      "package_relative_path": "work/refinement-diagnostics/diagnostic-startup-wake-line.png",
+      "bytes": 1254136,
+      "sha256": "b9ad178be3c693960644bd41bc9abe8ff334e4ce6683d1a42ad162bba18b1025"
+    },
+    {
+      "state_id": "startup-raster-expansion",
+      "package_relative_path": "work/refinement-diagnostics/diagnostic-startup-raster-expansion.png",
+      "bytes": 1297111,
+      "sha256": "0285d0c7783a66826142d79f934a271fd2b6061b80a5c69594267be5359eb4c0"
+    },
+    {
+      "state_id": "rectangular-raster",
+      "package_relative_path": "work/refinement-diagnostics/diagnostic-rectangular-raster.png",
+      "bytes": 1300507,
+      "sha256": "e522be8a22b1dd97a2d6c481849a3100fa53ff451a096356a842bf088737fc20"
+    },
+    {
+      "state_id": "content-brand",
+      "package_relative_path": "work/refinement-diagnostics/diagnostic-content-brand.png",
+      "bytes": 1313478,
+      "sha256": "d103a6553e01c2527d309a0b95aa0644cc922a0ba5d0382ae8c68e3aedc0ec16"
+    },
+    {
+      "state_id": "content-route",
+      "package_relative_path": "work/refinement-diagnostics/diagnostic-content-route.png",
+      "bytes": 1313314,
+      "sha256": "f53bfc01c111fa0055cc92280700bec79024074619fb9b03173f3c69efe91520"
+    },
+    {
+      "state_id": "content-ready",
+      "package_relative_path": "work/refinement-diagnostics/diagnostic-content-ready.png",
+      "bytes": 1310316,
+      "sha256": "0b9013367264c747ca5ec7af0a6f39675628d30ec28d4235fa2ad913c00457c0"
+    },
+    {
+      "state_id": "portal-takeover-continuity",
+      "package_relative_path": "work/refinement-diagnostics/diagnostic-portal-takeover-continuity.png",
+      "bytes": 1516980,
+      "sha256": "315feca9b5f2245b971b7ede98e35c83b7e9ec95b0f45d15768120ebfa4c97c5"
+    }
+  ],
+  "png_sanitizer": {
+    "package_relative_path": "manifests/png-metadata-sanitization.json",
+    "bytes": 65995,
+    "sha256": "9e4aecf2cab166e7f5762fbb8ea308cfd2a658571632b37bfcbc4c69b8590600"
+  }
+}

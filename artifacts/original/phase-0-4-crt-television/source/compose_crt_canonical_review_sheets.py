@@ -1,4 +1,9 @@
-"""Compose Phase 0.4 CRT review sheets 2–9 from governed canonical stills."""
+"""Compose Phase 0.4R sheets 2–9 plus model-quality Cycles closeups.
+
+Material-critical panels consume the exact governed Cycles masters; bounded
+camera, cable, and causal-state panels consume the 45-state Eevee authority.
+The historical Phase 0.4 composition manifest is never rewritten.
+"""
 
 from __future__ import annotations
 
@@ -26,6 +31,7 @@ MUTED = "#a9b3b3"
 SOFT = "#7f8b8c"
 MAGENTA = "#ef6099"
 GREEN = "#9bc6b3"
+CYCLES_ROOT = cfg.PACKAGE_DIR / "renders" / "repair-masters"
 
 
 def font(size: int, bold: bool = False) -> ImageFont.ImageFont:
@@ -65,6 +71,24 @@ def authority_record(path: Path) -> dict:
         "bytes": path.stat().st_size,
         "sha256": sha256(path),
     }
+
+
+def evaluated_conductor_caption() -> str:
+    """Read conductor dimensions from the evaluated Blender validation authority."""
+    validation_path = cfg.MANIFEST_DIR / "blender-source-validation.json"
+    validation = json.loads(validation_path.read_text(encoding="utf-8"))
+    record = next(
+        item for item in validation.get("checks", []) if item.get("id") == "recessed_conductor_channel"
+    )
+    actual = record["actual"]
+    sheath_radius_mm = actual["outer_sheath_radius_m"] * 1000.0
+    groove_depth_mm = actual["groove_depth_m"] * 1000.0
+    core_diameter_mm = actual["core_diameter_m"] * 1000.0
+    crown_recess_mm = actual["core_crown_below_sheath_shoulders_m"] * 1000.0
+    return (
+        f"{sheath_radius_mm:.0f} mm sheath radius · {groove_depth_mm:.0f} mm groove depth · "
+        f"{core_diameter_mm:.1f} mm centred core · core crown {crown_recess_mm:.1f} mm below both graphite shoulders"
+    )
 
 
 def wrap(draw: ImageDraw.ImageDraw, text: str, face: ImageFont.ImageFont, width: int) -> list[str]:
@@ -120,9 +144,25 @@ def source_path(group: str, state_id: str) -> Path:
     return cfg.RENDER_ROOT / group / f"{state_id}.png"
 
 
+def cycles_path(master_id: str) -> Path:
+    path = CYCLES_ROOT / f"{master_id}.png"
+    if not path.is_file():
+        raise RuntimeError(f"missing governed Cycles master: {path}")
+    return path
+
+
 def fit(path: Path, size: tuple[int, int]) -> Image.Image:
     with Image.open(path) as opened:
         return ImageOps.fit(opened.convert("RGB"), size, method=Image.Resampling.LANCZOS)
+
+
+def contain(path: Path, size: tuple[int, int]) -> Image.Image:
+    """Preserve the complete governed frame when edge content is evidentiary."""
+    with Image.open(path) as opened:
+        image = ImageOps.contain(opened.convert("RGB"), size, method=Image.Resampling.LANCZOS)
+    framed = Image.new("RGB", size, "#050708")
+    framed.paste(image, ((size[0] - image.width) // 2, (size[1] - image.height) // 2))
+    return framed
 
 
 def card(
@@ -133,6 +173,7 @@ def card(
     note: str,
     *,
     accent: str = MAGENTA,
+    contain_image: bool = False,
 ) -> None:
     draw = ImageDraw.Draw(canvas)
     x, y, width, height = box
@@ -140,7 +181,8 @@ def card(
     note_height = 78
     image_height = height - label_height - note_height
     draw.rounded_rectangle((x, y, x + width, y + height), radius=18, fill=PANEL, outline=LINE, width=2)
-    image = fit(path, (width - 8, image_height - 4))
+    image_size = (width - 8, image_height - 4)
+    image = contain(path, image_size) if contain_image else fit(path, image_size)
     canvas.paste(image, (x + 4, y + label_height))
     draw.text((x + 18, y + 12), label, font=font(22, True), fill=accent)
     draw_wrapped(
@@ -178,8 +220,8 @@ def save_sheet(canvas: Image.Image, filename: str, review_index: int, source_fil
     record.update(
         {
             "review_index": review_index,
-            "classification": "Phase 0.4 CRT still-based creative review evidence",
-            "approval_state": "awaiting direct human Phase 0.4 review",
+            "classification": "Phase 0.4R CRT bounded creative repair evidence",
+            "approval_state": "awaiting direct human Phase 0.4R review",
             "intendedCommit": True,
             "source_renders": [file_record(path) for path in source_files],
         }
@@ -204,6 +246,7 @@ def design_sheet() -> tuple[Image.Image, list[Path]]:
         ("design-three-quarter-rear", "3Q REAR", "Rear taper and connection preserve interest through the controlled camera orbit."),
     ]
     sources = [source_path("design", state_id) for state_id, _, _ in frames]
+    sources[3] = cycles_path("cycles-design-three-quarter-front")
     x_positions = (50, 1025, 2000)
     y_positions = (220, 990)
     for index, ((_, label, note), path) in enumerate(zip(frames, sources)):
@@ -215,7 +258,7 @@ def design_sheet() -> tuple[Image.Image, list[Path]]:
         "SELECTED SPECIFICATION",
         [
             ("working envelope", "0.84 W × 0.69 H × 0.76 D m / 29-inch screen class"),
-            ("validated assembled bounds", "0.841 W × 0.6975 H × 0.7685 D m including glass, feet and cable collar"),
+            ("validated assembled bounds", "0.845959 W × 0.697500 H × 0.769766 D m including glass, feet and cable collar"),
             ("screen", "4:3 visible CRT / 0.590 × 0.4425 m"),
             ("camera", "27.782636° arrival-to-power arc; near frontal only at cable arrival"),
             ("boundary", "Modelled from scratch / procedural materials / zero manufacturer branding"),
@@ -236,9 +279,13 @@ def material_sheet() -> tuple[Image.Image, list[Path]]:
     frames = [
         ("cabinet-three-quarter", "PRIMARY CABINET", "Near-black injection-moulded charcoal retains form under grazing light."),
         ("cabinet-front-material", "FRONT ASSEMBLY", "Bezel, gasket, shell and control band separate through roughness—not colour blocking."),
-        ("cabinet-rear-material", "REAR MANUFACTURING", "Few deliberate seams, recessed service access and materially quiet ventilation."),
+        ("cabinet-rear-material", "REAR MATERIAL + CONNECTION", "Quiet rear moulding, service hierarchy and the protected physical cable entry remain materially coherent."),
     ]
-    sources = [source_path("materials", state_id) for state_id, _, _ in frames]
+    sources = [
+        cycles_path("cycles-cabinet-material-closeup"),
+        cycles_path("cycles-design-three-quarter-front"),
+        cycles_path("cycles-rear-strain-relief-closeup"),
+    ]
     for index, ((_, label, note), path) in enumerate(zip(frames, sources)):
         card(canvas, path, (50 + index * 975, 220, 950, 710), label, note)
     draw = ImageDraw.Draw(canvas)
@@ -271,11 +318,16 @@ def glass_sheet() -> tuple[Image.Image, list[Path]]:
     )
     frames = [
         ("glass-dormant-front", "DORMANT / ZERO EMISSION", "Smoked black level keeps a controlled environmental reflection and visible bezel depth."),
-        ("glass-grazing-proof", "OBLIQUE GRAZING PROOF", "Bent highlight proves the outward crown plus glass / gasket / bezel separation."),
+        ("glass-grazing-proof", "OBLIQUE CROWN PROOF", "The accepted Cycles front three-quarter master proves crown, glass / gasket / bezel separation without broad glare."),
         ("glass-electrical-wake", "ELECTRICAL WAKE", "One restrained bowed horizontal phosphor response follows physical current arrival."),
         ("glass-raster-warm", "RASTER / PHOSPHOR WARMING", "Low grey phosphor and subtle scanlines establish a real tube before interface ownership."),
     ]
-    sources = [source_path("materials", state_id) for state_id, _, _ in frames]
+    sources = [
+        cycles_path("cycles-dormant-glass-closeup"),
+        cycles_path("cycles-design-three-quarter-front"),
+        source_path("materials", "glass-electrical-wake"),
+        cycles_path("cycles-powered-glass-phosphor-closeup"),
+    ]
     for index, ((_, label, note), path) in enumerate(zip(frames, sources)):
         row, column = divmod(index, 2)
         card(canvas, path, (50 + column * 1460, 220 + row * 965, 1440, 925), label, note)
@@ -295,15 +347,17 @@ def detail_sheet() -> tuple[Image.Image, list[Path]]:
         3000,
     )
     frames = [
-        ("detail-controls", "ERA-PHYSICAL CONTROLS", "Sparse moulded buttons with tactile travel, one tiny indicator and no touch UI."),
-        ("detail-speaker", "SPEAKER GRILLE", "Modelled perforation field reads as recessed acoustic geometry rather than a flat image."),
-        ("detail-rear", "REAR SERVICE + VENTILATION", "Deep tube shell, controlled vent field and removable access panel withstand rear review."),
-        ("detail-connector", "LOAD-BEARING CABLE ENTRY", "Integrated collar and six strain-relief ribs commit the spiral to the rear cabinet."),
+        ("speaker-controls", "TRUE SPEAKER APERTURES + ERA CONTROLS", "Open grille depth and acoustic plenum sit beside one round power control and one restrained rocker."),
+        ("rear-service", "OPEN REAR VENTS + SERVICE HIERARCHY", "Cycles material proof shows recessed ventilation, interior darkness, sparse seams and a deliberate service panel."),
+        ("rear-entry", "CLOSED STRAIN-RELIEF CONNECTION", "One continuous graphite sheath flows through the protected collar with no open stump, gap or decorative plug."),
     ]
-    sources = [source_path("details", state_id) for state_id, _, _ in frames]
+    sources = [
+        cycles_path("cycles-speaker-controls-closeup"),
+        cycles_path("cycles-cabinet-material-closeup"),
+        cycles_path("cycles-rear-strain-relief-closeup"),
+    ]
     for index, ((_, label, note), path) in enumerate(zip(frames, sources)):
-        row, column = divmod(index, 2)
-        card(canvas, path, (50 + column * 1460, 220 + row * 965, 1440, 925), label, note)
+        card(canvas, path, (50 + index * 975, 220, 950, 1870), label, note)
     draw = ImageDraw.Draw(canvas)
     draw.text((60, 2133), "MANUFACTURING RULE: fewer panels / coherent seams / restrained fasteners / no decorative sci-fi surface language", font=font(22, True), fill=GREEN)
     return canvas, sources
@@ -330,12 +384,12 @@ def cable_sheet() -> tuple[Image.Image, list[Path]]:
         card(canvas, path, (50 + column * 1460, 220 + row * 965, 1440, 925), label, note)
     draw = ImageDraw.Draw(canvas)
     draw.rounded_rectangle((60, 2108, 2940, 2174), radius=14, fill="#090d0e", outline=LINE, width=2)
-    draw.text((88, 2126), "28 mm sheath radius · 10 mm true groove · 6 mm core · core crown 2.1 mm below both graphite shoulders", font=font(22, True), fill=GREEN)
+    draw.text((88, 2126), evaluated_conductor_caption(), font=font(22, True), fill=GREEN)
     return canvas, sources
 
 
 def environment_sheet() -> tuple[Image.Image, list[Path]]:
-    source = source_path("environment", "proving-ground-master")
+    source = cycles_path("cycles-proving-ground-master")
     canvas = Image.new("RGB", (3200, 2200), BG)
     header(
         canvas,
@@ -406,8 +460,8 @@ def power_sheet() -> tuple[Image.Image, list[Path]]:
         ("power-03-power-indicator-response", "03 / INDICATOR RESPONSE", "One tiny physical indicator responds once."),
         ("power-04-crt-electrical-wake", "04 / CRT ELECTRICAL WAKE", "One restrained bowed horizontal phosphor line."),
         ("power-05-raster-phosphor-appears", "05 / RASTER + PHOSPHOR", "Low grey phosphor bloom and subtle scanlines."),
-        ("power-06-quantum-interface-stabilizes", "06 / INTERFACE STABILIZES", "Approved physical copy resolves on the tube."),
-        ("power-07-portal-ready", "07 / PORTAL READY", "Full five-stage carrier is legible before entry."),
+        ("power-06-quantum-interface-stabilizes", "06 / STAGE 1 · BRAND", "QUANTUM HUB resolves alone over the settled 4:3 raster."),
+        ("power-07-portal-ready", "07 / STAGE 2 · ROUTE", "FRAME SOURCE ASSESS TEST DECIDE becomes fully legible before portal continuity."),
     ]
     sources = [source_path("power-on", state_id) for state_id, _, _ in labels]
     positions = []
@@ -422,6 +476,43 @@ def power_sheet() -> tuple[Image.Image, list[Path]]:
     draw.text((78, 1837), "CAUSALITY PASS", font=font(22, True), fill=GREEN)
     draw.text((300, 1837), "dormant field → cable arrival → indicator → tube wake → raster → signal interface → portal-ready", font=font(23), fill=WHITE)
     draw.text((78, 1882), "Physical copy: QUANTUM HUB · FRAME  SOURCE  ASSESS  TEST  DECIDE · TEST ROUTE AVAILABLE", font=font(21), fill=MUTED)
+    return canvas, sources
+
+
+def quality_closeups_sheet() -> tuple[Image.Image, list[Path]]:
+    canvas = Image.new("RGB", (4200, 2400), BG)
+    header(
+        canvas,
+        "PHASE 0.4R / MODEL QUALITY CLOSEUPS",
+        "Exact-source Cycles material and manufacturing authority",
+        "64 samples · OIDN · AgX Medium High Contrast · one sealed source / renderer / settings lineage",
+        4200,
+    )
+    frames = [
+        ("cycles-design-three-quarter-front", "SELECTED FRONT 3Q", "Heavy domestic CRT proportions and direct ground contact."),
+        ("cycles-cabinet-material-closeup", "CHARCOAL ABS", "Fine moulded grain, restrained bevels and coherent seams."),
+        ("cycles-speaker-controls-closeup", "SPEAKER + CONTROLS", "True recessed perforations and distinct period control types."),
+        ("cycles-rear-strain-relief-closeup", "REAR ENTRY", "Closed tapered sheath enters the ribbed strain relief continuously."),
+        ("cycles-dormant-glass-closeup", "DORMANT GLASS", "Optically black tube with one localized bent grazing cue."),
+        ("cycles-powered-glass-phosphor-closeup", "POWERED PHOSPHOR", "Convex smoked glass remains distinct from the 4:3 raster."),
+        ("cycles-proving-ground-master", "PROVING GROUND", "Installed scale, terrain contact and industrial depth."),
+        ("cycles-portal-ready-closeup", "PORTAL READY", "Restrained glass cue preserves raster and three-stage physical copy."),
+    ]
+    sources = [cycles_path(master_id) for master_id, _, _ in frames]
+    for index, ((master_id, label, note), path) in enumerate(zip(frames, sources)):
+        row, column = divmod(index, 4)
+        card(
+            canvas,
+            path,
+            (40 + column * 1040, 220 + row * 1040, 1010, 1000),
+            label,
+            note,
+            contain_image=master_id in {"cycles-powered-glass-phosphor-closeup", "cycles-portal-ready-closeup"},
+        )
+    draw = ImageDraw.Draw(canvas)
+    draw.rounded_rectangle((40, 2280, 4160, 2360), radius=14, fill=PANEL_ALT, outline=LINE, width=2)
+    draw.text((72, 2303), "QUALITY BOUNDARY", font=font(22, True), fill=GREEN)
+    draw.text((330, 2303), "no external textures · no third-party models · no manufacturer branding · no full animatic", font=font(23), fill=WHITE)
     return canvas, sources
 
 
@@ -441,20 +532,41 @@ def main() -> None:
         canvas, sources = builder()
         sheets.append(save_sheet(canvas, filename, review_index, sources))
 
-    canonical_manifest = cfg.MANIFEST_DIR / "crt-canonical-render-manifest.json"
-    power_authority = cfg.MANIFEST_DIR / "crt-power-on-state-authority.json"
+    quality_canvas, quality_sources = quality_closeups_sheet()
+    quality_output = cfg.PACKAGE_DIR / "crt-model-quality-closeups.png"
+    quality_canvas.save(quality_output, format="PNG", optimize=True, compress_level=9)
+    quality_record = file_record(quality_output)
+    quality_record.update(
+        {
+            "classification": "Phase 0.4R supplemental Cycles model-quality evidence",
+            "approval_state": "awaiting direct human Phase 0.4R review",
+            "intendedCommit": True,
+            "source_renders": [file_record(path) for path in quality_sources],
+        }
+    )
+
+    canonical_manifest = cfg.MANIFEST_DIR / "crt-phase-0-4r-canonical-render-inventory.json"
+    power_authority = cfg.MANIFEST_DIR / "crt-phase-0-4r-power-on-state-authority.json"
+    cycles_authority = cfg.MANIFEST_DIR / "crt-phase-0-4r-cycles-master-render-manifest.json"
     manifest = {
-        "schema": "quantum-hub.phase-0-4-crt-television.review-composition.v1",
+        "schema": "quantum-hub.phase-0-4r-crt-television.review-composition.v1",
         "status": "CREATIVE_SHEETS_2_TO_9_COMPLETE_BROWSER_SHEETS_PENDING",
+        "repair_baseline": "fec1f0e9243a9cda188c539ab1b79e4a99c30623",
         "composer": authority_record(Path(__file__).resolve()),
         "refined_source": authority_record(cfg.REFINED_BLEND),
         "canonical_render_authority": authority_record(canonical_manifest),
         "power_state_authority": authority_record(power_authority),
+        "cycles_master_authority": authority_record(cycles_authority),
         "layout_authority": authority_record(cfg.PORTAL_LAYOUT),
         "review_indices_complete": list(range(2, 10)),
         "review_indices_pending_browser": list(range(10, 17)),
         "sheet_count": len(sheets),
         "sheets": sheets,
+        "quality_closeups": quality_record,
+        "render_engine_split": {
+            "material_quality_authority": "eight exact-source BLENDER_CYCLES masters",
+            "supplemental_state_authority": "BLENDER_EEVEE camera/cable/power/source-group stills",
+        },
         "creative_boundary": {
             "private_reference_included": False,
             "third_party_models": 0,
@@ -463,11 +575,11 @@ def main() -> None:
             "production_media_created": False,
         },
     }
-    target = cfg.MANIFEST_DIR / "crt-review-composition-manifest.json"
+    target = cfg.MANIFEST_DIR / "crt-phase-0-4r-review-composition-manifest.json"
     target.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     print(f"QH_PHASE04_CRT_REVIEW_SHEETS={len(sheets)}")
     print("QH_PHASE04_CRT_REVIEW_INDICES=2-9")
-    print(f"QH_PHASE04_CRT_REVIEW_COMPOSITION_MANIFEST={target.resolve()}")
+    print(f"QH_PHASE04R_CRT_REVIEW_COMPOSITION_MANIFEST={target.resolve()}")
 
 
 if __name__ == "__main__":

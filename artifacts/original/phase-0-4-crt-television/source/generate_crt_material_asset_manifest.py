@@ -57,6 +57,13 @@ def file_record(path: Path) -> dict:
     }
 
 
+def input_value(node, names: tuple[str, ...], default: float = 0.0) -> float:
+    for name in names:
+        if name in node.inputs:
+            return float(node.inputs[name].default_value)
+    return default
+
+
 def main() -> None:
     records = []
     missing = []
@@ -92,14 +99,37 @@ def main() -> None:
         raise RuntimeError(f"required governed materials are missing: {missing}")
     external_images = len(bpy.data.images)
     image_texture_nodes = sum(item["image_texture_nodes"] for item in records)
+    cabinet = bpy.data.materials["CRT_CaredForCharcoalABS"]
+    cabinet_nodes = cabinet.node_tree.nodes
+    cabinet_shader = cabinet_nodes.get("Principled BSDF")
+    noise = next((node for node in cabinet_nodes if node.bl_idname == "ShaderNodeTexNoise"), None)
+    bump = next((node for node in cabinet_nodes if node.bl_idname == "ShaderNodeBump"), None)
+    if cabinet_shader is None or noise is None or bump is None:
+        raise RuntimeError("evaluated ABS material omits required Principled/noise/bump topology")
+    abs_quality = {
+        "status": "PASS",
+        "pass": True,
+        "material": cabinet.name,
+        "evaluated_from_blend": True,
+        "node_types": sorted({node.bl_idname for node in cabinet_nodes}),
+        "roughness": input_value(cabinet_shader, ("Roughness",)),
+        "specular_ior_level": input_value(cabinet_shader, ("Specular IOR Level", "IOR Level", "Specular")),
+        "bump_strength": input_value(bump, ("Strength",)),
+        "bump_distance": input_value(bump, ("Distance",)),
+        "grain_scale": input_value(noise, ("Scale",)),
+        "grain_detail": input_value(noise, ("Detail",)),
+        "grain_roughness": input_value(noise, ("Roughness",)),
+    }
     manifest = {
         "schema": "quantum-hub.phase-0-4-crt-television.material-and-asset.v1",
         "status": "PASS",
+        "repair_baseline": "fec1f0e9243a9cda188c539ab1b79e4a99c30623",
         "selected_option": "A",
         "selected_design": "Rounded 1990s domestic CRT",
         "source": file_record(cfg.REFINED_BLEND),
         "builder": file_record(SCRIPT_DIR / "build_refined_crt.py"),
         "renderer": file_record(SCRIPT_DIR / "render_crt_canonical_stills.py"),
+        "cycles_renderer": file_record(SCRIPT_DIR / "render_crt_cycles_masters.py"),
         "validator": file_record(SCRIPT_DIR / "validate_refined_crt_source.py"),
         "manifest_generator": file_record(Path(__file__).resolve()),
         "procedural_only": external_images == 0 and image_texture_nodes == 0,
@@ -110,6 +140,11 @@ def main() -> None:
         ),
         "material_count": len(records),
         "materials": records,
+        "phase_0_4r_quality": {
+            "abs_node_topology": abs_quality,
+            "material_quality_authority": "eight exact-source deterministic Cycles masters",
+            "supplemental_state_authority": "Eevee camera/cable/power/browser-source stills",
+        },
     }
     if (
         not manifest["procedural_only"]

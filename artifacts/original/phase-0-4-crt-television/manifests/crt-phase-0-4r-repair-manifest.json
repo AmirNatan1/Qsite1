@@ -1,0 +1,1181 @@
+{
+  "schema": "quantum-hub.phase-0-4r-crt-television.repair-package.v1",
+  "status": "PASS",
+  "accepted_parent": "fec1f0e9243a9cda188c539ab1b79e4a99c30623",
+  "baseline": {
+    "head": "fec1f0e9243a9cda188c539ab1b79e4a99c30623"
+  },
+  "selected_option": "A",
+  "selected_design": "Rounded 1990s domestic CRT",
+  "record_count": 17,
+  "records": [
+    {
+      "package_relative_path": "crt-cabinet-material-sheet.png",
+      "bytes": 1318564,
+      "sha256": "c81f34e6d5eb1fb85c93a76dc7cee9c1a561a51442e43d40c9b66b086c897c1d",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-cabinet-material-sheet.png",
+      "width": 3000,
+      "height": 1700,
+      "pixel_sha256": "90429e29e6dc03e246a82ae056990e995804109cb43760c94e3d3cba0148f256",
+      "classification": "Phase 0.4R governed human-review evidence raster",
+      "approval_state": "bounded visual, source-lineage and browser QA passed; direct human review pending",
+      "intendedCommit": true,
+      "before": {
+        "bytes": 1105801,
+        "sha256": "f7b81ddf7a0b031f1b3d84c0aff76bbb34bf20fd16106a21c6a149cf0e4beb93"
+      },
+      "lineage": {
+        "kind": "cycles-composition",
+        "composition_authority": {
+          "package_relative_path": "manifests/crt-phase-0-4r-review-composition-manifest.json",
+          "bytes": 17846,
+          "sha256": "d454ebc04f0bfd6c6cd2a6cc6efa0d454b6e1417026fc32284c919324143b609",
+          "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-phase-0-4r-review-composition-manifest.json"
+        },
+        "sources": [
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/repair-masters/cycles-cabinet-material-closeup.png",
+            "bytes": 1113899,
+            "sha256": "a7a6e30ab1266347e5c21f884fcc38910d0f0472331dc4a5e3e67c9996bfc933",
+            "package_relative_path": "renders/repair-masters/cycles-cabinet-material-closeup.png",
+            "width": 1600,
+            "height": 1000
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/repair-masters/cycles-design-three-quarter-front.png",
+            "bytes": 1021438,
+            "sha256": "3a6ec3e89be07a0cd016bd922eb0921885a70dd66439bff65f5f9e1136369353",
+            "package_relative_path": "renders/repair-masters/cycles-design-three-quarter-front.png",
+            "width": 1600,
+            "height": 1000
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/repair-masters/cycles-rear-strain-relief-closeup.png",
+            "bytes": 907213,
+            "sha256": "e42423f9539d5b824d068136d8cae8651801f93a6df7fc1f1cfb3eefdb75bc9f",
+            "package_relative_path": "renders/repair-masters/cycles-rear-strain-relief-closeup.png",
+            "width": 1600,
+            "height": 1000
+          }
+        ]
+      }
+    },
+    {
+      "package_relative_path": "crt-cable-and-connection-sheet.png",
+      "bytes": 2396715,
+      "sha256": "c3da1a610c8ed2978d9c5b8e1c68e4fbe94994a201db670d2f597e961ccc52b9",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-cable-and-connection-sheet.png",
+      "width": 3000,
+      "height": 2200,
+      "pixel_sha256": "d250ca09b63cee860b6b9bf765c0944048c8288fed4386864c76ac32b2bb8d8d",
+      "classification": "Phase 0.4R governed human-review evidence raster",
+      "approval_state": "bounded visual, source-lineage and browser QA passed; direct human review pending",
+      "intendedCommit": true,
+      "before": {
+        "bytes": 2593236,
+        "sha256": "7a5322ec0b88d73ec67ded6f64097320b3cc6aede20b03f10f65dafbd7262be4"
+      },
+      "lineage": {
+        "kind": "supplemental-eevee-composition",
+        "composition_authority": {
+          "package_relative_path": "manifests/crt-phase-0-4r-review-composition-manifest.json",
+          "bytes": 17846,
+          "sha256": "d454ebc04f0bfd6c6cd2a6cc6efa0d454b6e1417026fc32284c919324143b609",
+          "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-phase-0-4r-review-composition-manifest.json"
+        },
+        "sources": [
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/cable/cable-dormant.png",
+            "bytes": 1398157,
+            "sha256": "a21d0a4bb8c10c57d74e4b2efb48ee7ab497a729e2eb13f660247aa694434128",
+            "package_relative_path": "renders/refined/cable/cable-dormant.png",
+            "width": 1920,
+            "height": 1200
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/cable/cable-conduction-boundary.png",
+            "bytes": 1399862,
+            "sha256": "289b771f30dc4c5e0823cbdb7331fabe3e7f8c1e82d9649ae925ddd2693e400a",
+            "package_relative_path": "renders/refined/cable/cable-conduction-boundary.png",
+            "width": 1920,
+            "height": 1200
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/cable/cable-rear-arrival.png",
+            "bytes": 1075357,
+            "sha256": "790a5dbcecc5f08c93d12a178e13c5baab4ff90839e550f1eeea43e1fecd772c",
+            "package_relative_path": "renders/refined/cable/cable-rear-arrival.png",
+            "width": 1920,
+            "height": 1200
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/cable/cable-connected-powered.png",
+            "bytes": 1300586,
+            "sha256": "086665b0d3a996edcc16a914af57249f427d9b05fe50e70b703811786120c40b",
+            "package_relative_path": "renders/refined/cable/cable-connected-powered.png",
+            "width": 1920,
+            "height": 1200
+          }
+        ]
+      }
+    },
+    {
+      "package_relative_path": "crt-camera-path-study.png",
+      "bytes": 1526862,
+      "sha256": "941ff25c9186a55a971a8bac93540399fe4733c642909cbafdde623578bfa09f",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-camera-path-study.png",
+      "width": 3000,
+      "height": 2000,
+      "pixel_sha256": "babca2e3ae9b5cde397be3f8e321c60f574839696dc051a04eb5e113cbfbadec",
+      "classification": "Phase 0.4R governed human-review evidence raster",
+      "approval_state": "bounded visual, source-lineage and browser QA passed; direct human review pending",
+      "intendedCommit": true,
+      "before": {
+        "bytes": 1813944,
+        "sha256": "1ef0766083ffdde4e6062374580cf29767c2605a59a8a22ebfca760f09f84232"
+      },
+      "lineage": {
+        "kind": "supplemental-eevee-composition",
+        "composition_authority": {
+          "package_relative_path": "manifests/crt-phase-0-4r-review-composition-manifest.json",
+          "bytes": 17846,
+          "sha256": "d454ebc04f0bfd6c6cd2a6cc6efa0d454b6e1417026fc32284c919324143b609",
+          "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-phase-0-4r-review-composition-manifest.json"
+        },
+        "sources": [
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/camera-study/camera-01-arrival.png",
+            "bytes": 1180902,
+            "sha256": "6be86805795563cff10b779c1454f915b5f3e89c0c9d3f9212441b3eb3752da8",
+            "package_relative_path": "renders/refined/camera-study/camera-01-arrival.png",
+            "width": 1920,
+            "height": 1200
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/camera-study/camera-02-thirty-percent.png",
+            "bytes": 1198511,
+            "sha256": "038ebf16ca3191f13bcafd4678363148e6aad367572b571d18c716b552f4ddf8",
+            "package_relative_path": "renders/refined/camera-study/camera-02-thirty-percent.png",
+            "width": 1920,
+            "height": 1200
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/camera-study/camera-03-sixty-percent.png",
+            "bytes": 1228832,
+            "sha256": "b638b1e5b617dc36233b6a9c476d4d3d9fda5926298efbe635ad3ade6c29f639",
+            "package_relative_path": "renders/refined/camera-study/camera-03-sixty-percent.png",
+            "width": 1920,
+            "height": 1200
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/camera-study/camera-04-near-frontal.png",
+            "bytes": 1214727,
+            "sha256": "c44ace4acbc4601e73dcdc2fef51a593c9137de0fa9e8ce6c96e42adcccbeaec",
+            "package_relative_path": "renders/refined/camera-study/camera-04-near-frontal.png",
+            "width": 1920,
+            "height": 1200
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/camera-study/camera-05-portal-ready.png",
+            "bytes": 1326080,
+            "sha256": "0f861ab3c64a047d9c92a43cfb3b313859f06d0450e7c1177607081c131d7ca7",
+            "package_relative_path": "renders/refined/camera-study/camera-05-portal-ready.png",
+            "width": 1920,
+            "height": 1200
+          }
+        ]
+      }
+    },
+    {
+      "package_relative_path": "crt-controls-speaker-rear-detail-sheet.png",
+      "bytes": 2085948,
+      "sha256": "d56443b0bdf15349338a95c4dc7e33bf11656e80af022aee725b8cc2144f3a36",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-controls-speaker-rear-detail-sheet.png",
+      "width": 3000,
+      "height": 2200,
+      "pixel_sha256": "4c70636f6c9f25b2fbb56d8d45003c9185911ec98c7aba995fba80cc16c49b04",
+      "classification": "Phase 0.4R governed human-review evidence raster",
+      "approval_state": "bounded visual, source-lineage and browser QA passed; direct human review pending",
+      "intendedCommit": true,
+      "before": {
+        "bytes": 3441617,
+        "sha256": "0224be4cf40afcfbadd699445d4146594af236186ebda9881e38b03817451dec"
+      },
+      "lineage": {
+        "kind": "cycles-composition",
+        "composition_authority": {
+          "package_relative_path": "manifests/crt-phase-0-4r-review-composition-manifest.json",
+          "bytes": 17846,
+          "sha256": "d454ebc04f0bfd6c6cd2a6cc6efa0d454b6e1417026fc32284c919324143b609",
+          "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-phase-0-4r-review-composition-manifest.json"
+        },
+        "sources": [
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/repair-masters/cycles-speaker-controls-closeup.png",
+            "bytes": 998207,
+            "sha256": "d2528af15f59a7bb2069e1aff1498cb5d44dcdb1be1c48b0422bb6bf1a234d14",
+            "package_relative_path": "renders/repair-masters/cycles-speaker-controls-closeup.png",
+            "width": 1600,
+            "height": 1000
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/repair-masters/cycles-cabinet-material-closeup.png",
+            "bytes": 1113899,
+            "sha256": "a7a6e30ab1266347e5c21f884fcc38910d0f0472331dc4a5e3e67c9996bfc933",
+            "package_relative_path": "renders/repair-masters/cycles-cabinet-material-closeup.png",
+            "width": 1600,
+            "height": 1000
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/repair-masters/cycles-rear-strain-relief-closeup.png",
+            "bytes": 907213,
+            "sha256": "e42423f9539d5b824d068136d8cae8651801f93a6df7fc1f1cfb3eefdb75bc9f",
+            "package_relative_path": "renders/repair-masters/cycles-rear-strain-relief-closeup.png",
+            "width": 1600,
+            "height": 1000
+          }
+        ]
+      }
+    },
+    {
+      "package_relative_path": "crt-desktop-hero-composition.png",
+      "bytes": 1614028,
+      "sha256": "375e8e2bb9fcbf800364e4f148d011d2a25ff2a7d3ae30c1c8eae63ad4b87279",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-desktop-hero-composition.png",
+      "width": 6034,
+      "height": 1356,
+      "pixel_sha256": "33f6ca3b3b9e188a2ba901a78c2dfcb971f670d01fd60ca8491650b010d66938",
+      "classification": "Phase 0.4R governed human-review evidence raster",
+      "approval_state": "bounded visual, source-lineage and browser QA passed; direct human review pending",
+      "intendedCommit": true,
+      "before": {
+        "bytes": 1758336,
+        "sha256": "b8123eca4d6c9ce05adfb16e29177604acb48730a6d49b6c7cc7821e8d81cfc0"
+      },
+      "lineage": {
+        "kind": "browser-composition",
+        "composition_authority": {
+          "package_relative_path": "manifests/phase-0-4r-browser-review-composition-manifest.json",
+          "bytes": 17615,
+          "sha256": "82a338594cac6f56e1c36dafaddd929d54b9c7b91c1710bae538a3770cddeca4",
+          "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/phase-0-4r-browser-review-composition-manifest.json"
+        },
+        "sources": [
+          {
+            "repository_relative_path": "artifacts/evidence/phase-0-4r-crt-television/captures/normalized/hero-actual--desktop-1440x900.png",
+            "bytes": 456541,
+            "sha256": "6c096168baae8f71d074cb8cb041f38cff19c8f1e6f2c28d9317fd90944ad329",
+            "captureId": "hero-actual--desktop-1440x900",
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "repository_relative_path": "artifacts/evidence/phase-0-4r-crt-television/captures/normalized/hero-actual--short-desktop-1366x650.png",
+            "bytes": 392902,
+            "sha256": "21121692a36b149f33d05ecbd187c2108526e129d2afceaa63026d3bc6ccfad6",
+            "captureId": "hero-actual--short-desktop-1366x650",
+            "width": 1366,
+            "height": 650
+          },
+          {
+            "repository_relative_path": "artifacts/evidence/phase-0-4r-crt-television/captures/normalized/hero-actual--desktop-1280x800.png",
+            "bytes": 387015,
+            "sha256": "ecb420cba9429e8bf99a1bb019daabb866e6e5108fad0445682d01d84f3e53fc",
+            "captureId": "hero-actual--desktop-1280x800",
+            "width": 1280,
+            "height": 800
+          },
+          {
+            "repository_relative_path": "artifacts/evidence/phase-0-4r-crt-television/captures/normalized/hero-actual--tablet-landscape-1024x768.png",
+            "bytes": 300632,
+            "sha256": "b47da4a48273910ba2a523fca72f29e1a285e299f6d3df711df982add71383fb",
+            "captureId": "hero-actual--tablet-landscape-1024x768",
+            "width": 1024,
+            "height": 768
+          }
+        ]
+      },
+      "sourceCaseIds": [
+        "hero-actual--desktop-1440x900",
+        "hero-actual--short-desktop-1366x650",
+        "hero-actual--desktop-1280x800",
+        "hero-actual--tablet-landscape-1024x768"
+      ]
+    },
+    {
+      "package_relative_path": "crt-mobile-hero-composition.png",
+      "bytes": 807173,
+      "sha256": "b47bb5fec55d8c229788680f778d05619b510c6e856a30dd4f997e72e82722ed",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-mobile-hero-composition.png",
+      "width": 3650,
+      "height": 1300,
+      "pixel_sha256": "f5c8c10e775c131128735cae67d4a35ec66c6578303f1f74278dd5c75b2b89f2",
+      "classification": "Phase 0.4R governed human-review evidence raster",
+      "approval_state": "bounded visual, source-lineage and browser QA passed; direct human review pending",
+      "intendedCommit": true,
+      "before": {
+        "bytes": 859548,
+        "sha256": "6880496b2341e6dd3e29824a528a6411518c664e9b8853f9cf602936e44569d3"
+      },
+      "lineage": {
+        "kind": "browser-composition",
+        "composition_authority": {
+          "package_relative_path": "manifests/phase-0-4r-browser-review-composition-manifest.json",
+          "bytes": 17615,
+          "sha256": "82a338594cac6f56e1c36dafaddd929d54b9c7b91c1710bae538a3770cddeca4",
+          "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/phase-0-4r-browser-review-composition-manifest.json"
+        },
+        "sources": [
+          {
+            "repository_relative_path": "artifacts/evidence/phase-0-4r-crt-television/captures/normalized/hero-actual--mobile-390x844.png",
+            "bytes": 187739,
+            "sha256": "1e8d8d29c7abeebff286fc88a40c5b36c0ce51a07abc148de0737dc7816a34d8",
+            "captureId": "hero-actual--mobile-390x844",
+            "width": 390,
+            "height": 844
+          },
+          {
+            "repository_relative_path": "artifacts/evidence/phase-0-4r-crt-television/captures/normalized/hero-actual--mobile-360x800.png",
+            "bytes": 181977,
+            "sha256": "6db81e1272cb7245dddc2fa7caa93e4a36a9b93f95ea57040bcf01dc99c8c911",
+            "captureId": "hero-actual--mobile-360x800",
+            "width": 360,
+            "height": 800
+          },
+          {
+            "repository_relative_path": "artifacts/evidence/phase-0-4r-crt-television/captures/normalized/hero-actual--narrow-320x800.png",
+            "bytes": 173958,
+            "sha256": "900fd2f4ba652b544a2b09a821bed7955153a2a34fc1549e4ceebb835ac1be78",
+            "captureId": "hero-actual--narrow-320x800",
+            "width": 320,
+            "height": 800
+          },
+          {
+            "repository_relative_path": "artifacts/evidence/phase-0-4r-crt-television/captures/normalized/hero-actual--mobile-landscape-844x390.png",
+            "bytes": 221537,
+            "sha256": "a640c371eaff2d416c25b5649e6cb1d422838c338bdce705efa789ea5335285b",
+            "captureId": "hero-actual--mobile-landscape-844x390",
+            "width": 844,
+            "height": 390
+          }
+        ]
+      },
+      "sourceCaseIds": [
+        "hero-actual--mobile-390x844",
+        "hero-actual--mobile-360x800",
+        "hero-actual--narrow-320x800",
+        "hero-actual--mobile-landscape-844x390"
+      ]
+    },
+    {
+      "package_relative_path": "crt-physical-dom-alignment-sheet.png",
+      "bytes": 3701397,
+      "sha256": "1e739704f033e3456b58ce0dcaeb6a0bc70f079bade1bc1bc7c7419f1bcd4f17",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-physical-dom-alignment-sheet.png",
+      "width": 5984,
+      "height": 3018,
+      "pixel_sha256": "97e396fcc4b4250f06f99fb97caa48c8dbecef70a84c63821a83a272a5bb873f",
+      "classification": "Phase 0.4R governed human-review evidence raster",
+      "approval_state": "bounded visual, source-lineage and browser QA passed; direct human review pending",
+      "intendedCommit": true,
+      "before": {
+        "bytes": 4447353,
+        "sha256": "e733948ae7d4b534eea5ef7becb858c776628376ce0954c24c168cc506bc7252"
+      },
+      "lineage": {
+        "kind": "browser-composition",
+        "composition_authority": {
+          "package_relative_path": "manifests/phase-0-4r-browser-review-composition-manifest.json",
+          "bytes": 17615,
+          "sha256": "82a338594cac6f56e1c36dafaddd929d54b9c7b91c1710bae538a3770cddeca4",
+          "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/phase-0-4r-browser-review-composition-manifest.json"
+        },
+        "sources": [
+          {
+            "repository_relative_path": "artifacts/evidence/phase-0-4r-crt-television/captures/normalized/portal-actual--desktop-1440x900.png",
+            "bytes": 379945,
+            "sha256": "ac3ce4905e48298925416b54ba994e0fc786ed3c51d5d2eeb35cd85d13d96149",
+            "captureId": "portal-actual--desktop-1440x900",
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "repository_relative_path": "artifacts/evidence/phase-0-4r-crt-television/captures/normalized/portal-actual--tablet-landscape-1024x768.png",
+            "bytes": 256688,
+            "sha256": "6994b72767445c6ddf2faef95ebe496de1e83b43ba0168e36749146535265920",
+            "captureId": "portal-actual--tablet-landscape-1024x768",
+            "width": 1024,
+            "height": 768
+          },
+          {
+            "repository_relative_path": "artifacts/evidence/phase-0-4r-crt-television/captures/normalized/portal-actual--mobile-390x844.png",
+            "bytes": 134865,
+            "sha256": "0aff11b6489707481b39ab07b6d40ca084d363a29a3bf217bf457a6d8ec296be",
+            "captureId": "portal-actual--mobile-390x844",
+            "width": 390,
+            "height": 844
+          }
+        ]
+      },
+      "sourceCaseIds": [
+        "portal-actual--desktop-1440x900",
+        "portal-actual--tablet-landscape-1024x768",
+        "portal-actual--mobile-390x844"
+      ]
+    },
+    {
+      "package_relative_path": "crt-portal-transition-sheet.png",
+      "bytes": 8684618,
+      "sha256": "ca58fff514f8019c251bfeb0a8245a80015d1395b605c7139a6786c3e2e3e5c1",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-portal-transition-sheet.png",
+      "width": 7954,
+      "height": 3018,
+      "pixel_sha256": "66fd733e6f2ac1a87712a83423e2a1a3f9c6f48299b38b3bbd62f07a8e3dfdf1",
+      "classification": "Phase 0.4R governed human-review evidence raster",
+      "approval_state": "bounded visual, source-lineage and browser QA passed; direct human review pending",
+      "intendedCommit": true,
+      "before": {
+        "bytes": 10703351,
+        "sha256": "ce7e80d633f66a48454593fbb3a459c994177f5c3b8a25480bb9b9c7e1c14515"
+      },
+      "lineage": {
+        "kind": "cycles-browser-composition",
+        "composition_authority": {
+          "package_relative_path": "manifests/phase-0-4r-browser-review-composition-manifest.json",
+          "bytes": 17615,
+          "sha256": "82a338594cac6f56e1c36dafaddd929d54b9c7b91c1710bae538a3770cddeca4",
+          "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/phase-0-4r-browser-review-composition-manifest.json"
+        },
+        "sources": [
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/portal/portal-01-television-in-scene.png",
+            "bytes": 1254452,
+            "sha256": "26da4091e5a1ab4251406f16c9450c7227258e45335632ede1479a418203b8bc",
+            "package_relative_path": "renders/refined/portal/portal-01-television-in-scene.png",
+            "stateId": "portal-01-television-in-scene",
+            "width": 1920,
+            "height": 1200
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/portal/portal-02-screen-active.png",
+            "bytes": 1245280,
+            "sha256": "fbddf92089953eb4ca73d65ba88b5843a0fc306a3b17ac1d1b77dbdcab598df4",
+            "package_relative_path": "renders/refined/portal/portal-02-screen-active.png",
+            "stateId": "portal-02-screen-active",
+            "width": 1920,
+            "height": 1200
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/portal/portal-03-close-approach.png",
+            "bytes": 1326080,
+            "sha256": "0f861ab3c64a047d9c92a43cfb3b313859f06d0450e7c1177607081c131d7ca7",
+            "package_relative_path": "renders/refined/portal/portal-03-close-approach.png",
+            "stateId": "portal-03-close-approach",
+            "width": 1920,
+            "height": 1200
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/portal/portal-04-glass-almost-fills.png",
+            "bytes": 1205903,
+            "sha256": "0974e72295eb1fe0530cafd6f6c686dbc7196c3741fc91dba3300af6cfa8219c",
+            "package_relative_path": "renders/refined/portal/portal-04-glass-almost-fills.png",
+            "stateId": "portal-04-glass-almost-fills",
+            "width": 1920,
+            "height": 1200
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/portal/portal-05-bezel-exits.png",
+            "bytes": 1168513,
+            "sha256": "54eaaba2de4ddb20cd452e236ec0e762b7a63863dd2db6e7c2a561ede84ddd8c",
+            "package_relative_path": "renders/refined/portal/portal-05-bezel-exits.png",
+            "stateId": "portal-05-bezel-exits",
+            "width": 1920,
+            "height": 1200
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/portal/portal-06-distortion-reduces.png",
+            "bytes": 1096906,
+            "sha256": "0b42ee33b5bc8743335bb441e3c4d845e7a43e36ab6810fa3a3f8329ad8dd537",
+            "package_relative_path": "renders/refined/portal/portal-06-distortion-reduces.png",
+            "stateId": "portal-06-distortion-reduces",
+            "width": 1920,
+            "height": 1200
+          },
+          {
+            "repository_relative_path": "artifacts/evidence/phase-0-4r-crt-television/captures/normalized/portal-actual--desktop-1440x900.png",
+            "bytes": 379945,
+            "sha256": "ac3ce4905e48298925416b54ba994e0fc786ed3c51d5d2eeb35cd85d13d96149",
+            "stateId": "portal-07-dom-takes-ownership",
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "repository_relative_path": "artifacts/evidence/phase-0-4r-crt-television/portal-states/portal-08-full-semantic-surface.jpg",
+            "bytes": 80759,
+            "sha256": "dd296817ac84a4d55da49db4fc6c5583d842ed60a7b59f6d618ec1223da1eb26",
+            "stateId": "portal-08-full-semantic-surface",
+            "width": 1440,
+            "height": 900
+          }
+        ]
+      },
+      "stateIds": [
+        "portal-01-television-in-scene",
+        "portal-02-screen-active",
+        "portal-03-close-approach",
+        "portal-04-glass-almost-fills",
+        "portal-05-bezel-exits",
+        "portal-06-distortion-reduces",
+        "portal-07-dom-takes-ownership",
+        "portal-08-full-semantic-surface"
+      ]
+    },
+    {
+      "package_relative_path": "crt-power-on-contact-sheet.png",
+      "bytes": 2084206,
+      "sha256": "8fc4809be087679ca07043499e51b591b496cc23f3918cb093b924de0f17acb3",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-power-on-contact-sheet.png",
+      "width": 3600,
+      "height": 2000,
+      "pixel_sha256": "b47da6bfabc8d9fadc434fb4dd2ba093a4151501bc596f0c5bbd382e5dba6e90",
+      "classification": "Phase 0.4R governed human-review evidence raster",
+      "approval_state": "bounded visual, source-lineage and browser QA passed; direct human review pending",
+      "intendedCommit": true,
+      "before": {
+        "bytes": 2357483,
+        "sha256": "b61535e954881a7dd9e263241e62cfd6e14adae8be3e4e634ce17ed4adbac583"
+      },
+      "lineage": {
+        "kind": "supplemental-eevee-composition",
+        "composition_authority": {
+          "package_relative_path": "manifests/crt-phase-0-4r-review-composition-manifest.json",
+          "bytes": 17846,
+          "sha256": "d454ebc04f0bfd6c6cd2a6cc6efa0d454b6e1417026fc32284c919324143b609",
+          "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-phase-0-4r-review-composition-manifest.json"
+        },
+        "sources": [
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/power-on/power-01-completely-dormant.png",
+            "bytes": 1180902,
+            "sha256": "6be86805795563cff10b779c1454f915b5f3e89c0c9d3f9212441b3eb3752da8",
+            "package_relative_path": "renders/refined/power-on/power-01-completely-dormant.png",
+            "width": 1920,
+            "height": 1200
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/power-on/power-02-current-reaches-connection.png",
+            "bytes": 1075357,
+            "sha256": "790a5dbcecc5f08c93d12a178e13c5baab4ff90839e550f1eeea43e1fecd772c",
+            "package_relative_path": "renders/refined/power-on/power-02-current-reaches-connection.png",
+            "width": 1920,
+            "height": 1200
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/power-on/power-03-power-indicator-response.png",
+            "bytes": 1251797,
+            "sha256": "af230b461db48014247addcc4a71ce4c484bbce9a252fb2a8e0f71e8d6c81a6c",
+            "package_relative_path": "renders/refined/power-on/power-03-power-indicator-response.png",
+            "width": 1920,
+            "height": 1200
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/power-on/power-04-crt-electrical-wake.png",
+            "bytes": 1191649,
+            "sha256": "1e1d10964777b4a1f57c47761eeb1f794cbf32f0182717ebba6586e1e2a35f40",
+            "package_relative_path": "renders/refined/power-on/power-04-crt-electrical-wake.png",
+            "width": 1920,
+            "height": 1200
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/power-on/power-05-raster-phosphor-appears.png",
+            "bytes": 1307593,
+            "sha256": "9e83de8b8f831fd3cff599ff57c009c0ff344f98d100b246e48d7a0dc900eda5",
+            "package_relative_path": "renders/refined/power-on/power-05-raster-phosphor-appears.png",
+            "width": 1920,
+            "height": 1200
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/power-on/power-06-quantum-interface-stabilizes.png",
+            "bytes": 1347624,
+            "sha256": "472cd6ba2ca0ce21dcd9b0d8fa018734d854df328dc311307c4f6db75782a948",
+            "package_relative_path": "renders/refined/power-on/power-06-quantum-interface-stabilizes.png",
+            "width": 1920,
+            "height": 1200
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/power-on/power-07-portal-ready.png",
+            "bytes": 1328924,
+            "sha256": "5d9beb9b49f948de8ab13ccde0b78dc13acce289ee5e60f84d822a21ca5acfac",
+            "package_relative_path": "renders/refined/power-on/power-07-portal-ready.png",
+            "width": 1920,
+            "height": 1200
+          }
+        ]
+      }
+    },
+    {
+      "package_relative_path": "crt-proving-ground-style-frame.png",
+      "bytes": 2295885,
+      "sha256": "5b51c137c25513290dcf54a07900fc9aaa3647f0dccab259ec8cebf81b80818a",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-proving-ground-style-frame.png",
+      "width": 3200,
+      "height": 2200,
+      "pixel_sha256": "232eb1b72f24138cbaa1bda5458ae2887efe4542b368eb1ee6d09ae4dd45b00b",
+      "classification": "Phase 0.4R governed human-review evidence raster",
+      "approval_state": "bounded visual, source-lineage and browser QA passed; direct human review pending",
+      "intendedCommit": true,
+      "before": {
+        "bytes": 2320530,
+        "sha256": "f06437722067b3bb1e55355c18ff9f7d5d4aada66666052d69daebb2e612aff5"
+      },
+      "lineage": {
+        "kind": "cycles-composition",
+        "composition_authority": {
+          "package_relative_path": "manifests/crt-phase-0-4r-review-composition-manifest.json",
+          "bytes": 17846,
+          "sha256": "d454ebc04f0bfd6c6cd2a6cc6efa0d454b6e1417026fc32284c919324143b609",
+          "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-phase-0-4r-review-composition-manifest.json"
+        },
+        "sources": [
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/repair-masters/cycles-proving-ground-master.png",
+            "bytes": 1252542,
+            "sha256": "9af775bd6b97aa6b605f50cbceeb9c358acff4e599f072b9d0dde7ecdfa76593",
+            "package_relative_path": "renders/repair-masters/cycles-proving-ground-master.png",
+            "width": 1920,
+            "height": 1200
+          }
+        ]
+      }
+    },
+    {
+      "package_relative_path": "crt-reduced-motion-desktop.png",
+      "bytes": 756908,
+      "sha256": "dc8692e00078ec15468c39cfc39efd3920e96868bc6283e523d89d2c1923fde6",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-reduced-motion-desktop.png",
+      "width": 3054,
+      "height": 1356,
+      "pixel_sha256": "19f82f9dcb136dbdaf26346e4c50ddc557e5ca3e66f6bb33fecb13779721be09",
+      "classification": "Phase 0.4R governed human-review evidence raster",
+      "approval_state": "bounded visual, source-lineage and browser QA passed; direct human review pending",
+      "intendedCommit": true,
+      "before": {
+        "bytes": 877291,
+        "sha256": "7324db6378a9820c2ef930cff0eed3a5744030ed01aaadaaa29533ab75ab7b0f"
+      },
+      "lineage": {
+        "kind": "browser-composition",
+        "composition_authority": {
+          "package_relative_path": "manifests/phase-0-4r-browser-review-composition-manifest.json",
+          "bytes": 17615,
+          "sha256": "82a338594cac6f56e1c36dafaddd929d54b9c7b91c1710bae538a3770cddeca4",
+          "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/phase-0-4r-browser-review-composition-manifest.json"
+        },
+        "sources": [
+          {
+            "repository_relative_path": "artifacts/evidence/phase-0-4r-crt-television/captures/normalized/hero-reduced-motion--desktop-1440x900.png",
+            "bytes": 417768,
+            "sha256": "27cbbc50ce1d74b6f0800e6d168dca49106e3cd1c25f2ddd72f979ba981f6297",
+            "captureId": "hero-reduced-motion--desktop-1440x900",
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "repository_relative_path": "artifacts/evidence/phase-0-4r-crt-television/captures/normalized/portal-reduced-motion--desktop-1440x900.png",
+            "bytes": 324553,
+            "sha256": "512ca30079f616de3ebea24699681feca5f235605caf0bdb240c2d5fab3e0a7a",
+            "captureId": "portal-reduced-motion--desktop-1440x900",
+            "width": 1440,
+            "height": 900
+          }
+        ]
+      },
+      "sourceCaseIds": [
+        "hero-reduced-motion--desktop-1440x900",
+        "portal-reduced-motion--desktop-1440x900"
+      ]
+    },
+    {
+      "package_relative_path": "crt-reduced-motion-mobile.png",
+      "bytes": 396891,
+      "sha256": "d2cc897d1efa63637f411d6d5f20a4ef63656cb98ed49af53e28f2cf5f7a84fb",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-reduced-motion-mobile.png",
+      "width": 1200,
+      "height": 1300,
+      "pixel_sha256": "cde3bf24bcb0bc3bbf94c32331c5ec871c3b1569373bf40a4a9b21f39700feef",
+      "classification": "Phase 0.4R governed human-review evidence raster",
+      "approval_state": "bounded visual, source-lineage and browser QA passed; direct human review pending",
+      "intendedCommit": true,
+      "before": {
+        "bytes": 412148,
+        "sha256": "79a1373ccea650441777c3ad598bf0bcf50f57c6d5f82f1bea27d610c8a89785"
+      },
+      "lineage": {
+        "kind": "browser-composition",
+        "composition_authority": {
+          "package_relative_path": "manifests/phase-0-4r-browser-review-composition-manifest.json",
+          "bytes": 17615,
+          "sha256": "82a338594cac6f56e1c36dafaddd929d54b9c7b91c1710bae538a3770cddeca4",
+          "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/phase-0-4r-browser-review-composition-manifest.json"
+        },
+        "sources": [
+          {
+            "repository_relative_path": "artifacts/evidence/phase-0-4r-crt-television/captures/normalized/hero-reduced-motion--mobile-390x844.png",
+            "bytes": 190137,
+            "sha256": "1cad100014c449bdf80b2137e8c3e00a3f6f79e37eeca552e9d1d1e0186d39ce",
+            "captureId": "hero-reduced-motion--mobile-390x844",
+            "width": 390,
+            "height": 844
+          },
+          {
+            "repository_relative_path": "artifacts/evidence/phase-0-4r-crt-television/captures/normalized/portal-reduced-motion--mobile-390x844.png",
+            "bytes": 160980,
+            "sha256": "db316035963a9dc64b2a69eb974e4f823dab2af7a451adbad8cc60bf65ca5f19",
+            "captureId": "portal-reduced-motion--mobile-390x844",
+            "width": 390,
+            "height": 844
+          }
+        ]
+      },
+      "sourceCaseIds": [
+        "hero-reduced-motion--mobile-390x844",
+        "portal-reduced-motion--mobile-390x844"
+      ]
+    },
+    {
+      "package_relative_path": "crt-screen-glass-and-phosphor-sheet.png",
+      "bytes": 3352761,
+      "sha256": "62b8f24fcb926a9769baf2c3ebadbde0506bccba88f66d4f69e97e42f7e2269b",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-screen-glass-and-phosphor-sheet.png",
+      "width": 3000,
+      "height": 2200,
+      "pixel_sha256": "42cba2f833169fe936a66cf1ecbf60ebd2d86dc87b9ccaa61d9bc903e9f44c9d",
+      "classification": "Phase 0.4R governed human-review evidence raster",
+      "approval_state": "bounded visual, source-lineage and browser QA passed; direct human review pending",
+      "intendedCommit": true,
+      "before": {
+        "bytes": 3158471,
+        "sha256": "f08ce94db324b70b1bdc0b6fc65990be03799ec28d230e1597e660766529c25d"
+      },
+      "lineage": {
+        "kind": "cycles-eevee-composition",
+        "composition_authority": {
+          "package_relative_path": "manifests/crt-phase-0-4r-review-composition-manifest.json",
+          "bytes": 17846,
+          "sha256": "d454ebc04f0bfd6c6cd2a6cc6efa0d454b6e1417026fc32284c919324143b609",
+          "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-phase-0-4r-review-composition-manifest.json"
+        },
+        "sources": [
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/repair-masters/cycles-dormant-glass-closeup.png",
+            "bytes": 1006048,
+            "sha256": "2989939145c7fd31c34957cbf5d61aeb87d845420a18c8c9ae2bd3c676db1ac8",
+            "package_relative_path": "renders/repair-masters/cycles-dormant-glass-closeup.png",
+            "width": 1600,
+            "height": 1000
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/repair-masters/cycles-design-three-quarter-front.png",
+            "bytes": 1021438,
+            "sha256": "3a6ec3e89be07a0cd016bd922eb0921885a70dd66439bff65f5f9e1136369353",
+            "package_relative_path": "renders/repair-masters/cycles-design-three-quarter-front.png",
+            "width": 1600,
+            "height": 1000
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/materials/glass-electrical-wake.png",
+            "bytes": 1233610,
+            "sha256": "5c0b2c2af52902b149661f491fba9ff754e53e1c55f24808854e5bff651b1336",
+            "package_relative_path": "renders/refined/materials/glass-electrical-wake.png",
+            "width": 1920,
+            "height": 1200
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/repair-masters/cycles-powered-glass-phosphor-closeup.png",
+            "bytes": 1075960,
+            "sha256": "7f41707ba5ac9071a7b13b0b5fbe1fbafc93767e6bc16bed2f743e8865d37a88",
+            "package_relative_path": "renders/repair-masters/cycles-powered-glass-phosphor-closeup.png",
+            "width": 1600,
+            "height": 1000
+          }
+        ]
+      }
+    },
+    {
+      "package_relative_path": "crt-television-recommended-design-sheet.png",
+      "bytes": 1532700,
+      "sha256": "061c7070653fafc98cee8153db6f4eaf45def31aa7c7f790174f6f0011900a44",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-television-recommended-design-sheet.png",
+      "width": 3000,
+      "height": 2000,
+      "pixel_sha256": "4fc0adb41a59a5c6b4b5d08140a28cc4446d443cb1923f90a135abe8d21477fa",
+      "classification": "Phase 0.4R governed human-review evidence raster",
+      "approval_state": "bounded visual, source-lineage and browser QA passed; direct human review pending",
+      "intendedCommit": true,
+      "before": {
+        "bytes": 1542628,
+        "sha256": "fee6271b2b5453a6228830e57e5481c67922d3fd2610aa88e79756224c656e4c"
+      },
+      "lineage": {
+        "kind": "cycles-eevee-composition",
+        "composition_authority": {
+          "package_relative_path": "manifests/crt-phase-0-4r-review-composition-manifest.json",
+          "bytes": 17846,
+          "sha256": "d454ebc04f0bfd6c6cd2a6cc6efa0d454b6e1417026fc32284c919324143b609",
+          "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-phase-0-4r-review-composition-manifest.json"
+        },
+        "sources": [
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/design/design-front.png",
+            "bytes": 1052269,
+            "sha256": "7f422df790a92c040e6b8a23c5c9c7848147ad7ede5477a8e3d82d77dc17a264",
+            "package_relative_path": "renders/refined/design/design-front.png",
+            "width": 1920,
+            "height": 1200
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/design/design-side.png",
+            "bytes": 916677,
+            "sha256": "2eb360e19c088187cf367de63a817f4d1e6e13066231ebe02c8906bbeb6cc223",
+            "package_relative_path": "renders/refined/design/design-side.png",
+            "width": 1920,
+            "height": 1200
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/design/design-rear.png",
+            "bytes": 1082082,
+            "sha256": "b5381ec6e3682e334a7e0fa0784576f7baf3d1da75e9c5a3a6ddfbf656a64869",
+            "package_relative_path": "renders/refined/design/design-rear.png",
+            "width": 1920,
+            "height": 1200
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/repair-masters/cycles-design-three-quarter-front.png",
+            "bytes": 1021438,
+            "sha256": "3a6ec3e89be07a0cd016bd922eb0921885a70dd66439bff65f5f9e1136369353",
+            "package_relative_path": "renders/repair-masters/cycles-design-three-quarter-front.png",
+            "width": 1600,
+            "height": 1000
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/refined/design/design-three-quarter-rear.png",
+            "bytes": 1062762,
+            "sha256": "992830803ff22d3534ada4e9e8be2067fd271d689cc0d72add2eb92bded16b2a",
+            "package_relative_path": "renders/refined/design/design-three-quarter-rear.png",
+            "width": 1920,
+            "height": 1200
+          }
+        ]
+      }
+    },
+    {
+      "package_relative_path": "crt-text-zoom-and-fallback.png",
+      "bytes": 1381901,
+      "sha256": "6396d3c98c078028ef4b262ba8272f1053d5ae6588469af9a4c61abcf0217ec3",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-text-zoom-and-fallback.png",
+      "width": 6034,
+      "height": 1356,
+      "pixel_sha256": "5545aa4dfe7821a5b54a0e65e127a38aaf5d735a7e098f2880c0ef12ce1ffc98",
+      "classification": "Phase 0.4R governed human-review evidence raster",
+      "approval_state": "bounded visual, source-lineage and browser QA passed; direct human review pending",
+      "intendedCommit": true,
+      "before": {
+        "bytes": 1383021,
+        "sha256": "1db1a05290a81b9a929c241fd7983a468c097e7e51751b6e24ff809de8119ec9"
+      },
+      "lineage": {
+        "kind": "browser-composition",
+        "composition_authority": {
+          "package_relative_path": "manifests/phase-0-4r-browser-review-composition-manifest.json",
+          "bytes": 17615,
+          "sha256": "82a338594cac6f56e1c36dafaddd929d54b9c7b91c1710bae538a3770cddeca4",
+          "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/phase-0-4r-browser-review-composition-manifest.json"
+        },
+        "sources": [
+          {
+            "repository_relative_path": "artifacts/evidence/phase-0-4r-crt-television/captures/normalized/hero-zoom-200--desktop-1440x900.png",
+            "bytes": 500424,
+            "sha256": "e9e651c9a213dd9e75e79b40fd16c1dd2de09f928b0ed9f5c977daa637064ff3",
+            "captureId": "hero-zoom-200--desktop-1440x900",
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "repository_relative_path": "artifacts/evidence/phase-0-4r-crt-television/captures/normalized/portal-zoom-200--narrow-320x800.png",
+            "bytes": 154961,
+            "sha256": "049fb1e0103b9bf01411117e183aca8bf6d87ab917f0d6e992d83455e99d84b3",
+            "captureId": "portal-zoom-200--narrow-320x800",
+            "width": 320,
+            "height": 800
+          },
+          {
+            "repository_relative_path": "artifacts/evidence/phase-0-4r-crt-television/captures/normalized/hero-long-copy--mobile-390x844.png",
+            "bytes": 170465,
+            "sha256": "4bdb369f2420d4bc1970fe33d17eb42ab5cb9f4566bbae3329a8ab331c5ad8e8",
+            "captureId": "hero-long-copy--mobile-390x844",
+            "width": 390,
+            "height": 844
+          },
+          {
+            "repository_relative_path": "artifacts/evidence/phase-0-4r-crt-television/captures/normalized/portal-long-copy--desktop-1440x900.png",
+            "bytes": 426538,
+            "sha256": "9473f2e0d7e114f1529ddcca8b2a301a63fe6213e87f1a46cfaf93f70cdef468",
+            "captureId": "portal-long-copy--desktop-1440x900",
+            "width": 1440,
+            "height": 900
+          }
+        ]
+      },
+      "sourceCaseIds": [
+        "hero-zoom-200--desktop-1440x900",
+        "portal-zoom-200--narrow-320x800",
+        "hero-long-copy--mobile-390x844",
+        "portal-long-copy--desktop-1440x900"
+      ]
+    },
+    {
+      "package_relative_path": "crt-model-quality-closeups.png",
+      "bytes": 4798936,
+      "sha256": "a7f753064db65cdf3b7cc1eab42cd60c340e006d38ec5089e96d94f72952cf9f",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-model-quality-closeups.png",
+      "width": 4200,
+      "height": 2400,
+      "pixel_sha256": "836411d8af4fe6831784fb422dcb4bf40b7531071df84a07d9e4d0c672cfccc8",
+      "classification": "Phase 0.4R governed human-review evidence raster",
+      "approval_state": "bounded visual, source-lineage and browser QA passed; direct human review pending",
+      "intendedCommit": true,
+      "lineage": {
+        "kind": "cycles-composition",
+        "composition_authority": {
+          "package_relative_path": "manifests/crt-phase-0-4r-review-composition-manifest.json",
+          "bytes": 17846,
+          "sha256": "d454ebc04f0bfd6c6cd2a6cc6efa0d454b6e1417026fc32284c919324143b609",
+          "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-phase-0-4r-review-composition-manifest.json"
+        },
+        "sources": [
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/repair-masters/cycles-design-three-quarter-front.png",
+            "bytes": 1021438,
+            "sha256": "3a6ec3e89be07a0cd016bd922eb0921885a70dd66439bff65f5f9e1136369353",
+            "package_relative_path": "renders/repair-masters/cycles-design-three-quarter-front.png",
+            "width": 1600,
+            "height": 1000
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/repair-masters/cycles-cabinet-material-closeup.png",
+            "bytes": 1113899,
+            "sha256": "a7a6e30ab1266347e5c21f884fcc38910d0f0472331dc4a5e3e67c9996bfc933",
+            "package_relative_path": "renders/repair-masters/cycles-cabinet-material-closeup.png",
+            "width": 1600,
+            "height": 1000
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/repair-masters/cycles-speaker-controls-closeup.png",
+            "bytes": 998207,
+            "sha256": "d2528af15f59a7bb2069e1aff1498cb5d44dcdb1be1c48b0422bb6bf1a234d14",
+            "package_relative_path": "renders/repair-masters/cycles-speaker-controls-closeup.png",
+            "width": 1600,
+            "height": 1000
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/repair-masters/cycles-rear-strain-relief-closeup.png",
+            "bytes": 907213,
+            "sha256": "e42423f9539d5b824d068136d8cae8651801f93a6df7fc1f1cfb3eefdb75bc9f",
+            "package_relative_path": "renders/repair-masters/cycles-rear-strain-relief-closeup.png",
+            "width": 1600,
+            "height": 1000
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/repair-masters/cycles-dormant-glass-closeup.png",
+            "bytes": 1006048,
+            "sha256": "2989939145c7fd31c34957cbf5d61aeb87d845420a18c8c9ae2bd3c676db1ac8",
+            "package_relative_path": "renders/repair-masters/cycles-dormant-glass-closeup.png",
+            "width": 1600,
+            "height": 1000
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/repair-masters/cycles-powered-glass-phosphor-closeup.png",
+            "bytes": 1075960,
+            "sha256": "7f41707ba5ac9071a7b13b0b5fbe1fbafc93767e6bc16bed2f743e8865d37a88",
+            "package_relative_path": "renders/repair-masters/cycles-powered-glass-phosphor-closeup.png",
+            "width": 1600,
+            "height": 1000
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/repair-masters/cycles-proving-ground-master.png",
+            "bytes": 1252542,
+            "sha256": "9af775bd6b97aa6b605f50cbceeb9c358acff4e599f072b9d0dde7ecdfa76593",
+            "package_relative_path": "renders/repair-masters/cycles-proving-ground-master.png",
+            "width": 1920,
+            "height": 1200
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/renders/repair-masters/cycles-portal-ready-closeup.png",
+            "bytes": 969880,
+            "sha256": "1c4622f1a1caed025322cc6b0b66db2106fb995f478835e7c1eadbb3d46a8f90",
+            "package_relative_path": "renders/repair-masters/cycles-portal-ready-closeup.png",
+            "width": 1600,
+            "height": 1000
+          }
+        ]
+      }
+    },
+    {
+      "package_relative_path": "crt-model-turntable.webm",
+      "bytes": 386890,
+      "sha256": "20aa30adb49bf1df7b09278a5fb15dba56409a4256771685ac431a93fc329ee6",
+      "repository_relative_path": "artifacts/original/phase-0-4-crt-television/crt-model-turntable.webm",
+      "classification": "Phase 0.4R review-only neutral-studio CRT turntable",
+      "approval_state": "technical and bounded visual review passed; direct human review pending",
+      "intendedCommit": true,
+      "lineage": {
+        "kind": "blender-turntable",
+        "turntable_authority": {
+          "package_relative_path": "manifests/crt-model-turntable-manifest.json",
+          "bytes": 4371,
+          "sha256": "f9b727262a7caed701a6e753ae79e0ec044f14e2093a7a76e737c2741d4d784a",
+          "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-model-turntable-manifest.json"
+        },
+        "sources": [
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/quantum-signal-television-v1.blend",
+            "bytes": 1516222,
+            "sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7",
+            "package_relative_path": "source/quantum-signal-television-v1.blend"
+          },
+          {
+            "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/render_phase0_4r_crt_turntable.py",
+            "bytes": 16445,
+            "sha256": "44011d34a6bf4926b6aeeef6fc2c57cfeef4047eecd3951c60e3890b1fe589b1",
+            "package_relative_path": "source/render_phase0_4r_crt_turntable.py"
+          }
+        ]
+      }
+    }
+  ],
+  "packager": {
+    "package_relative_path": "source/package_phase0_4r_quality_review.py",
+    "bytes": 21584,
+    "sha256": "3ba3551da59e8554009d5b13e540b81ae2d6314991af9f7226e3a1dd452aa310",
+    "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/package_phase0_4r_quality_review.py"
+  },
+  "review_composition_authority": {
+    "package_relative_path": "manifests/crt-phase-0-4r-review-composition-manifest.json",
+    "bytes": 17846,
+    "sha256": "d454ebc04f0bfd6c6cd2a6cc6efa0d454b6e1417026fc32284c919324143b609",
+    "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-phase-0-4r-review-composition-manifest.json"
+  },
+  "browser_review_composition_authority": {
+    "package_relative_path": "manifests/phase-0-4r-browser-review-composition-manifest.json",
+    "bytes": 17615,
+    "sha256": "82a338594cac6f56e1c36dafaddd929d54b9c7b91c1710bae538a3770cddeca4",
+    "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/phase-0-4r-browser-review-composition-manifest.json"
+  },
+  "canonical_inventory": {
+    "package_relative_path": "manifests/crt-phase-0-4r-canonical-render-inventory.json",
+    "bytes": 140281,
+    "sha256": "266075ca1f1b131c477690118a4d7337f9a0666d9b44fb476feb6f85d8d19a8a",
+    "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-phase-0-4r-canonical-render-inventory.json"
+  },
+  "power_state_authority": {
+    "package_relative_path": "manifests/crt-phase-0-4r-power-on-state-authority.json",
+    "bytes": 39520,
+    "sha256": "9b2f1c5ea3c7b777025d4350fc7742bb173f1a285db11b952945f5e33bda4835",
+    "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-phase-0-4r-power-on-state-authority.json"
+  },
+  "physical_portal_state_authority": {
+    "package_relative_path": "manifests/crt-phase-0-4r-portal-physical-state-authority.json",
+    "bytes": 35419,
+    "sha256": "27c1b1bbf7c4367ac2af31aab8d981460dcbcb81a06800df978b11f23bbad4f5",
+    "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-phase-0-4r-portal-physical-state-authority.json"
+  },
+  "portal_state_authority": {
+    "package_relative_path": "manifests/crt-phase-0-4r-portal-transition-state-authority.json",
+    "bytes": 56690,
+    "sha256": "3d3df7884f78cd9ee573a82f5961013d038c390324fb4b95efd109f3ccf236cb",
+    "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-phase-0-4r-portal-transition-state-authority.json"
+  },
+  "cycles_master_authority": {
+    "package_relative_path": "manifests/crt-phase-0-4r-cycles-master-render-manifest.json",
+    "bytes": 35304,
+    "sha256": "e3d225fd44feff1adfeb6e43a30cea9c9ee563d735556549cc475df4ed4f50c9",
+    "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-phase-0-4r-cycles-master-render-manifest.json"
+  },
+  "turntable_authority": {
+    "package_relative_path": "manifests/crt-model-turntable-manifest.json",
+    "bytes": 4371,
+    "sha256": "f9b727262a7caed701a6e753ae79e0ec044f14e2093a7a76e737c2741d4d784a",
+    "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-model-turntable-manifest.json"
+  },
+  "blender_validation_authority": {
+    "package_relative_path": "manifests/blender-source-validation.json",
+    "bytes": 28963,
+    "sha256": "8162fa6b312b51800b320c65798aca1082ee1b8c9335cc806c48529e9f4cadea",
+    "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/blender-source-validation.json"
+  },
+  "scene_keepout_authority": {
+    "package_relative_path": "manifests/crt-scene-source-keepouts.json",
+    "bytes": 1157579,
+    "sha256": "4dcf0d9b6e7e583682b8d148178634fabb54b331f02ab31e7d7e9358ff6cd26c",
+    "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-scene-source-keepouts.json"
+  },
+  "material_asset_authority": {
+    "package_relative_path": "manifests/crt-material-and-asset-manifest.json",
+    "bytes": 44949,
+    "sha256": "8d931e05f0fd0fbc76cd6a7f7dee846f1ddbf34fb15f3b58e6462afb436cfbd1",
+    "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/crt-material-and-asset-manifest.json"
+  },
+  "png_sanitizer_authority": {
+    "package_relative_path": "manifests/png-metadata-sanitization.json",
+    "bytes": 72099,
+    "sha256": "8fa66734a17484a5a8051c313754141433ceb7a61de7def5cb505ab1d315d821",
+    "repository_relative_path": "artifacts/original/phase-0-4-crt-television/manifests/png-metadata-sanitization.json"
+  },
+  "external_review_zip": {
+    "local_relative_path": "artifacts/original/phase-0-4-crt-television/work/phase-0-4r-crt-quality-review.zip",
+    "bytes": 38798059,
+    "sha256": "a7f1b14f4bb8b05acdde6714b5dd1b28ed1ea0b5f72995a10fd9a821dac93d51",
+    "member_count": 17,
+    "members": [
+      "crt-cabinet-material-sheet.png",
+      "crt-cable-and-connection-sheet.png",
+      "crt-camera-path-study.png",
+      "crt-controls-speaker-rear-detail-sheet.png",
+      "crt-desktop-hero-composition.png",
+      "crt-mobile-hero-composition.png",
+      "crt-physical-dom-alignment-sheet.png",
+      "crt-portal-transition-sheet.png",
+      "crt-power-on-contact-sheet.png",
+      "crt-proving-ground-style-frame.png",
+      "crt-reduced-motion-desktop.png",
+      "crt-reduced-motion-mobile.png",
+      "crt-screen-glass-and-phosphor-sheet.png",
+      "crt-television-recommended-design-sheet.png",
+      "crt-text-zoom-and-fallback.png",
+      "crt-model-quality-closeups.png",
+      "crt-model-turntable.webm"
+    ],
+    "intentionally_uncommitted": true,
+    "repository_status": "intentionally uncommitted"
+  },
+  "historical_phase_0_4_archive": {
+    "package_relative_path": "phase-0-4-crt-television-review.zip",
+    "bytes": 43303597,
+    "sha256": "8eeec33182ad476d5dd78d5635a5dcb2cdfbeb96c97092462bd1af6227f642c7",
+    "repository_relative_path": "artifacts/original/phase-0-4-crt-television/phase-0-4-crt-television-review.zip",
+    "preserved_byte_exact": true
+  },
+  "privacy": {
+    "private_reference_loaded": false,
+    "private_reference_committed": false,
+    "private_reference_used_as_texture": false,
+    "external_texture_count": 0,
+    "external_model_count": 0,
+    "third_party_model_count": 0
+  },
+  "production_boundary": {
+    "full_animatic_created": false,
+    "production_cinematic_created": false,
+    "turntable_review_only": true
+  }
+}

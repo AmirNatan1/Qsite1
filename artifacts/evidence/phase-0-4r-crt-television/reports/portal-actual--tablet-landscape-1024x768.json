@@ -1,0 +1,640 @@
+{
+  "schema": "quantum-hub.phase-0-4r-crt-television.local-browser-case.v1",
+  "authority": "repository-native-playwright",
+  "authorityFingerprint": "5dc0da47871b570e986a2cd8b83db665bfe602207536e7eac6db48e06d9447ac",
+  "capturedAt": "2026-08-18T23:53:12.803Z",
+  "plan": {
+    "path": "prototypes/phase-0-4r-crt-portal-qa/capture-plan.json",
+    "bytes": 43077,
+    "sha256": "dfd21e2e70fddd02285c8f00979d8cb95aacca43462ef079fff063aafa0d3f08"
+  },
+  "contract": {
+    "path": "artifacts/original/phase-0-4-crt-television/crt-portal-layout.json",
+    "bytes": 16248,
+    "sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+  },
+  "keepout": {
+    "path": "artifacts/original/phase-0-4-crt-television/manifests/crt-scene-source-keepouts.json",
+    "bytes": 1157579,
+    "sha256": "4dcf0d9b6e7e583682b8d148178634fabb54b331f02ab31e7d7e9358ff6cd26c",
+    "schema": "quantum-hub.phase-0-4-crt-television.scene-source-keepouts.v1"
+  },
+  "harness": {
+    "schema": "quantum-hub.phase-0-4r-crt-television.harness-authority.v1",
+    "sha256": "0f05a44cbb904c5ad13a0ce3ea91192500786827fe8405c13c46cb1117472a5e",
+    "files": [
+      {
+        "path": "prototypes/phase-0-4r-crt-portal-qa/index.html",
+        "bytes": 5523,
+        "sha256": "8462d326631fc5f5b7b5b6dbdc5761cebceea8141e223a1efd1d78d26d71eade"
+      },
+      {
+        "path": "prototypes/phase-0-4-crt-portal-qa/styles.css",
+        "bytes": 15161,
+        "sha256": "3a63a0c3def48b009a12e684885a5c2487e809ffb601dabe8abc02fa78cc4735"
+      },
+      {
+        "path": "prototypes/phase-0-4r-crt-portal-qa/repair.css",
+        "bytes": 979,
+        "sha256": "29b5fd6402c7d29c0d96a320fd254b700703f6d3e29c89ad2ca0ed08955b52f3"
+      },
+      {
+        "path": "prototypes/phase-0-4r-crt-portal-qa/app.js",
+        "bytes": 50815,
+        "sha256": "c3ec42af2f27ad6b1135512d93d92f3af89a01a94af9c20d02d36602950fb903"
+      },
+      {
+        "path": "prototypes/phase-0-4r-crt-portal-qa/runner.html",
+        "bytes": 983,
+        "sha256": "dda13f71addefeade70b6c5d1942811870904840640808df41ecddd9c0c6b8bf"
+      },
+      {
+        "path": "prototypes/phase-0-4-crt-portal-qa/runner.css",
+        "bytes": 846,
+        "sha256": "6f6b4cac83d8d41d2ffaabb167be0ced7dbafa26ccc82b617341e930e32254c5"
+      },
+      {
+        "path": "prototypes/phase-0-4-crt-portal-qa/runner.js",
+        "bytes": 5729,
+        "sha256": "3c20b0a17b4d9471a60c235bb9848bc7a6b676363f09955ed874923390a26c7e"
+      }
+    ]
+  },
+  "browser": {
+    "engine": "Chromium",
+    "product": "chrome",
+    "version": "151.0.7922.34",
+    "executableResolution": "playwright-managed-executable",
+    "automationPackage": "playwright",
+    "localAuthority": true
+  },
+  "id": "portal-actual--tablet-landscape-1024x768",
+  "viewportId": "tablet-landscape-1024x768",
+  "query": "surface=portal&fixture=actual&zoom=100&motion=no-preference&font=normal&chrome=0",
+  "focusSelector": null,
+  "captureRequired": true,
+  "runnerDomReportSha256": "c7cf6281aa5017c80665297f23616d0249366e1d667f74f1d7b3190c9b237443",
+  "runner": {
+    "schema": "quantum-hub.phase-0-4-crt-television.exact-viewport-runner-report.v1",
+    "requestedViewport": {
+      "width": 1024,
+      "height": 768,
+      "unit": "CSS pixel"
+    },
+    "iframeViewport": {
+      "width": 1024,
+      "height": 768,
+      "devicePixelRatio": 1
+    },
+    "viewportMatch": true,
+    "devicePixelRatioPolicy": "record actual browser DPR; do not claim control",
+    "captureScale": 1,
+    "captureScalePolicy": "evidence-only outer transform; iframe layout remains at the exact requested CSS viewport",
+    "maximumRenderedWidth": 1200,
+    "captureRenderedBounds": {
+      "left": 0,
+      "top": 0,
+      "x": 0,
+      "y": 0,
+      "width": 1024,
+      "height": 768,
+      "rasterX": 0,
+      "rasterY": 0,
+      "rasterWidth": 1024,
+      "rasterHeight": 768
+    },
+    "captureBoundsMatch": true,
+    "focusSelector": null,
+    "focusState": {
+      "requested": false,
+      "requestedSelector": null,
+      "activeReviewControlId": null,
+      "pass": true
+    },
+    "pass": true
+  },
+  "report": {
+    "schema": "quantum-hub.phase-0-4-crt-television.typography-collision-browser-report.v1",
+    "generatedAt": "2026-08-18T23:53:11.715Z",
+    "authority": {
+      "mode": "final",
+      "captureEligible": true,
+      "scaffoldPreflight": false,
+      "checks": {
+        "contractPath": true,
+        "contractBytes": true,
+        "contractSha256": true,
+        "physicalScreenFourByThree": true,
+        "activeRasterFourByThree": true,
+        "maximumAnchorDelta": true,
+        "glyphRuleClearance": true,
+        "keepoutLayoutAuthority": true,
+        "immutableContractCaptureBoundary": true,
+        "frozenSourceCount": true,
+        "keepoutRecordCount": true,
+        "keepoutHash": true
+      },
+      "contract": {
+        "path": "artifacts/original/phase-0-4-crt-television/crt-portal-layout.json",
+        "bytes": 16248,
+        "sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+      },
+      "plan": {
+        "path": "prototypes/phase-0-4r-crt-portal-qa/capture-plan.json",
+        "sha256": "dfd21e2e70fddd02285c8f00979d8cb95aacca43462ef079fff063aafa0d3f08"
+      }
+    },
+    "viewport": {
+      "width": 1024,
+      "height": 768,
+      "devicePixelRatio": 1
+    },
+    "state": {
+      "surface": "portal",
+      "fixture": "actual",
+      "textZoom": 100,
+      "motion": "no-preference",
+      "fontMode": "normal",
+      "chrome": false
+    },
+    "fonts": {
+      "requestedMode": "normal",
+      "forcedFallbackRequested": false,
+      "forcedFallbackActive": false,
+      "computed": {
+        "display": "Syne, \"Arial Black\", Arial, sans-serif",
+        "editorial": "Newsreader, Georgia, \"Times New Roman\", serif",
+        "ui": "Inter, Arial, Helvetica, sans-serif"
+      },
+      "expectedFallback": {
+        "display": "Arial Black, Arial, sans-serif",
+        "editorial": "Georgia, Times New Roman, serif",
+        "ui": "Arial, Helvetica, sans-serif"
+      },
+      "computedFallbackStackMatches": {
+        "display": false,
+        "editorial": false,
+        "ui": false
+      },
+      "preferredTokensAbsent": false,
+      "exercise": "preferred stacks with documented system fallbacks",
+      "fallbackFontPass": true
+    },
+    "copy": {
+      "wordFragmentationOffenders": 0,
+      "humanLineBreakReport": [
+        {
+          "id": "portal-heading",
+          "lines": [
+            "WHERE DO",
+            "YOU ENTER?"
+          ]
+        }
+      ],
+      "longSupportLength": 148,
+      "actualSupportLength": 118,
+      "longSupportRatio": 1.2542372881355932,
+      "longSupportRatioPass": true
+    },
+    "layout": {
+      "layoutWidth": 1024,
+      "documentScrollWidth": 1024,
+      "pageHorizontalOverflow": false,
+      "routeHorizontalOverflow": false,
+      "textOverflow": {
+        "blocks": [
+          {
+            "id": "portal-nav",
+            "clientWidthPx": 896,
+            "scrollWidthPx": 896,
+            "clientHeightPx": 21,
+            "scrollHeightPx": 21,
+            "pass": true
+          },
+          {
+            "id": "portal-signal",
+            "clientWidthPx": 896,
+            "scrollWidthPx": 896,
+            "clientHeightPx": 15,
+            "scrollHeightPx": 15,
+            "pass": true
+          },
+          {
+            "id": "portal-eyebrow",
+            "clientWidthPx": 896,
+            "scrollWidthPx": 896,
+            "clientHeightPx": 22,
+            "scrollHeightPx": 22,
+            "pass": true
+          },
+          {
+            "id": "portal-heading",
+            "clientWidthPx": 669,
+            "scrollWidthPx": 669,
+            "clientHeightPx": 171,
+            "scrollHeightPx": 171,
+            "pass": true
+          },
+          {
+            "id": "portal-route",
+            "clientWidthPx": 896,
+            "scrollWidthPx": 896,
+            "clientHeightPx": 39,
+            "scrollHeightPx": 39,
+            "pass": true
+          },
+          {
+            "id": "portal-audience",
+            "clientWidthPx": 896,
+            "scrollWidthPx": 896,
+            "clientHeightPx": 72,
+            "scrollHeightPx": 72,
+            "pass": true
+          },
+          {
+            "id": "portal-industry",
+            "clientWidthPx": 415,
+            "scrollWidthPx": 415,
+            "clientHeightPx": 70,
+            "scrollHeightPx": 70,
+            "pass": true
+          },
+          {
+            "id": "portal-startups",
+            "clientWidthPx": 415,
+            "scrollWidthPx": 415,
+            "clientHeightPx": 70,
+            "scrollHeightPx": 70,
+            "pass": true
+          }
+        ],
+        "offenders": []
+      },
+      "textOverflowPass": true,
+      "nestedScrollerOffenders": [],
+      "collisions": [],
+      "collisionPass": true,
+      "wordIntegrity": {
+        "headings": [
+          "portal-heading"
+        ],
+        "cssOffenders": [],
+        "wordFragmentationDetails": [],
+        "wordFragmentationOffenders": 0,
+        "humanLineBreakReport": [
+          {
+            "id": "portal-heading",
+            "lines": [
+              "WHERE DO",
+              "YOU ENTER?"
+            ]
+          }
+        ],
+        "pass": true
+      },
+      "buttons": [
+        {
+          "id": "portal-industry",
+          "widthPx": 416.781,
+          "heightPx": 72
+        },
+        {
+          "id": "portal-startups",
+          "widthPx": 416.781,
+          "heightPx": 72
+        }
+      ],
+      "buttonPass": true,
+      "dividerPass": true,
+      "ruleSafetyPass": true,
+      "ruleIntersections": [],
+      "anchors": {
+        "applicable": false,
+        "mode": "responsive-dom-flow",
+        "pass": true,
+        "maximumDeltaPx": null,
+        "anchors": []
+      },
+      "referenceHeadingGlyphClearanceCssPx": null,
+      "sceneSafety": {
+        "applicable": true,
+        "pass": true,
+        "reason": "the frozen text-free takeover raster is post-bezel: cabinet, convex screen and cable have exited the visible camera frame; evaluated geometry remains provenance-bound but is intentionally non-applicable to semantic-copy collision testing",
+        "applicability": {
+          "mode": "post-bezel-physical-geometry-exited",
+          "physicalGeometryVisible": false,
+          "collisionRequired": false,
+          "sourceId": "source-text-free-portal-takeover",
+          "sourceSha256": "0b42ee33b5bc8743335bb441e3c4d845e7a43e36ab6810fa3a3f8329ad8dd537",
+          "geometryIds": [
+            "crt-cabinet",
+            "crt-screen",
+            "spiral-cable"
+          ]
+        },
+        "minimumClearanceCssPx": 16,
+        "keepoutAuthority": {
+          "path": "artifacts/original/phase-0-4-crt-television/manifests/crt-scene-source-keepouts.json",
+          "schema": "quantum-hub.phase-0-4-crt-television.scene-source-keepouts.v1",
+          "bytes": 1157579,
+          "sha256": "4dcf0d9b6e7e583682b8d148178634fabb54b331f02ab31e7d7e9358ff6cd26c"
+        },
+        "source": {
+          "id": "source-text-free-portal-takeover",
+          "role": "source-text-free-portal-takeover",
+          "path": "artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-text-free-portal-takeover.png",
+          "bytes": 1096906,
+          "sha256": "0b42ee33b5bc8743335bb441e3c4d845e7a43e36ab6810fa3a3f8329ad8dd537",
+          "width": 1920,
+          "height": 1200
+        },
+        "imageRect": {
+          "left": -102.391,
+          "top": 0,
+          "right": 1126.406,
+          "bottom": 768,
+          "width": 1228.797,
+          "height": 768
+        },
+        "imageTransform": "none",
+        "keepouts": [
+          {
+            "id": "crt-cabinet",
+            "semanticName": "Quantum Signal Television cabinet",
+            "visible": false,
+            "visibility": "out-of-frame/no-visible-geometry",
+            "collisionRequired": false,
+            "intentionalOverlapReason": "the frozen text-free takeover raster is post-bezel: cabinet, convex screen and cable have exited the visible camera frame; evaluated geometry remains provenance-bound but is intentionally non-applicable to semantic-copy collision testing",
+            "rectangles": [],
+            "sourceRectangleCount": 0
+          },
+          {
+            "id": "crt-screen",
+            "semanticName": "convex 4:3 CRT screen",
+            "visible": false,
+            "visibility": "out-of-frame/no-visible-geometry",
+            "collisionRequired": false,
+            "intentionalOverlapReason": "the frozen text-free takeover raster is post-bezel: cabinet, convex screen and cable have exited the visible camera frame; evaluated geometry remains provenance-bound but is intentionally non-applicable to semantic-copy collision testing",
+            "rectangles": [],
+            "sourceRectangleCount": 0
+          },
+          {
+            "id": "spiral-cable",
+            "semanticName": "visible physical spiral cable",
+            "visible": false,
+            "visibility": "out-of-frame/no-visible-geometry",
+            "collisionRequired": false,
+            "intentionalOverlapReason": "the frozen text-free takeover raster is post-bezel: cabinet, convex screen and cable have exited the visible camera frame; evaluated geometry remains provenance-bound but is intentionally non-applicable to semantic-copy collision testing",
+            "rectangles": [],
+            "sourceRectangleCount": 0
+          }
+        ],
+        "blocks": [
+          {
+            "id": "portal-nav",
+            "rect": {
+              "left": 64,
+              "top": 46.078,
+              "right": 960,
+              "bottom": 67.078,
+              "width": 896,
+              "height": 21
+            },
+            "intersectingKeepouts": [],
+            "pass": true
+          },
+          {
+            "id": "portal-signal",
+            "rect": {
+              "left": 64,
+              "top": 90.109,
+              "right": 960,
+              "bottom": 105.109,
+              "width": 896,
+              "height": 15
+            },
+            "intersectingKeepouts": [],
+            "pass": true
+          },
+          {
+            "id": "portal-eyebrow",
+            "rect": {
+              "left": 64,
+              "top": 128.141,
+              "right": 960,
+              "bottom": 149.734,
+              "width": 896,
+              "height": 21.594
+            },
+            "intersectingKeepouts": [],
+            "pass": true
+          },
+          {
+            "id": "portal-heading",
+            "rect": {
+              "left": 64,
+              "top": 172.766,
+              "right": 733.328,
+              "bottom": 343.609,
+              "width": 669.328,
+              "height": 170.844
+            },
+            "intersectingKeepouts": [],
+            "pass": true
+          },
+          {
+            "id": "portal-route",
+            "rect": {
+              "left": 64,
+              "top": 366.641,
+              "right": 960,
+              "bottom": 405.641,
+              "width": 896,
+              "height": 39
+            },
+            "intersectingKeepouts": [],
+            "pass": true
+          },
+          {
+            "id": "portal-audience",
+            "rect": {
+              "left": 64,
+              "top": 428.672,
+              "right": 960,
+              "bottom": 500.672,
+              "width": 896,
+              "height": 72
+            },
+            "intersectingKeepouts": [],
+            "pass": true
+          },
+          {
+            "id": "portal-industry",
+            "rect": {
+              "left": 64,
+              "top": 428.672,
+              "right": 480.781,
+              "bottom": 500.672,
+              "width": 416.781,
+              "height": 72
+            },
+            "intersectingKeepouts": [],
+            "pass": true
+          },
+          {
+            "id": "portal-startups",
+            "rect": {
+              "left": 543.219,
+              "top": 428.672,
+              "right": 960,
+              "bottom": 500.672,
+              "width": 416.781,
+              "height": 72
+            },
+            "intersectingKeepouts": [],
+            "pass": true
+          }
+        ]
+      },
+      "reducedMotionComposition": {
+        "applicable": false,
+        "pass": true,
+        "strategy": null,
+        "floatingRoundedPanelOffenders": []
+      }
+    },
+    "assets": {
+      "sceneId": "source-text-free-portal-takeover",
+      "scene": "/artifacts/original/phase-0-4-crt-television/renders/refined/sources/source-text-free-portal-takeover.png",
+      "sceneSha256": "0b42ee33b5bc8743335bb441e3c4d845e7a43e36ab6810fa3a3f8329ad8dd537",
+      "sceneClassification": "text-free CRT takeover scene",
+      "doubledCopyPass": true,
+      "televisionPowered": null,
+      "cableDormant": null
+    },
+    "portal": {
+      "applicable": true,
+      "physicalScreen": {
+        "width": 160,
+        "height": 120,
+        "aspectRatio": "4:3",
+        "measuredRatio": 1.3333333333333333,
+        "pass": true
+      },
+      "takeover": {
+        "checkpointCount": 5,
+        "monotonic": true,
+        "noPermanentLetterbox": true,
+        "noAbruptAspectSnap": true,
+        "semanticDomUndistorted": true,
+        "physicalTextAbsentBeforeDomCopy": true,
+        "pass": true
+      }
+    },
+    "media": {
+      "videoElements": 0,
+      "canvasElements": 0,
+      "cinematicAssetsInstantiated": false
+    },
+    "accessibility": {
+      "focus": {
+        "target": "portal-industry",
+        "outlineWidthPx": 3,
+        "outlineStyle": "none",
+        "visibleOutline": true,
+        "restoredWithoutReviewControlResidue": true,
+        "pass": true
+      },
+      "reducedMotionPass": true,
+      "semanticHeadingCount": 1
+    },
+    "pass": true
+  },
+  "capture": {
+    "raw": {
+      "path": "artifacts/evidence/phase-0-4r-crt-television/captures/raw/portal-actual--tablet-landscape-1024x768.jpg",
+      "bytes": 108683,
+      "sha256": "61e92213211446722e16d5226e566de7df8cbdff8426613ace1d180e50c6a27c",
+      "format": "JPEG"
+    },
+    "modal": {
+      "pass": true,
+      "method": "exact-byte-modal-winner",
+      "successiveFullPageJpegs": 11,
+      "minimumWinnerVotes": 7,
+      "round": 1,
+      "winner": {
+        "sha256": "61e92213211446722e16d5226e566de7df8cbdff8426613ace1d180e50c6a27c",
+        "bytes": 108683,
+        "votes": 11
+      },
+      "uniqueByteSequences": 1,
+      "histogram": [
+        {
+          "sha256": "61e92213211446722e16d5226e566de7df8cbdff8426613ace1d180e50c6a27c",
+          "bytes": 108683,
+          "votes": 11
+        }
+      ],
+      "samples": [
+        {
+          "shot": 1,
+          "sha256": "61e92213211446722e16d5226e566de7df8cbdff8426613ace1d180e50c6a27c",
+          "bytes": 108683
+        },
+        {
+          "shot": 2,
+          "sha256": "61e92213211446722e16d5226e566de7df8cbdff8426613ace1d180e50c6a27c",
+          "bytes": 108683
+        },
+        {
+          "shot": 3,
+          "sha256": "61e92213211446722e16d5226e566de7df8cbdff8426613ace1d180e50c6a27c",
+          "bytes": 108683
+        },
+        {
+          "shot": 4,
+          "sha256": "61e92213211446722e16d5226e566de7df8cbdff8426613ace1d180e50c6a27c",
+          "bytes": 108683
+        },
+        {
+          "shot": 5,
+          "sha256": "61e92213211446722e16d5226e566de7df8cbdff8426613ace1d180e50c6a27c",
+          "bytes": 108683
+        },
+        {
+          "shot": 6,
+          "sha256": "61e92213211446722e16d5226e566de7df8cbdff8426613ace1d180e50c6a27c",
+          "bytes": 108683
+        },
+        {
+          "shot": 7,
+          "sha256": "61e92213211446722e16d5226e566de7df8cbdff8426613ace1d180e50c6a27c",
+          "bytes": 108683
+        },
+        {
+          "shot": 8,
+          "sha256": "61e92213211446722e16d5226e566de7df8cbdff8426613ace1d180e50c6a27c",
+          "bytes": 108683
+        },
+        {
+          "shot": 9,
+          "sha256": "61e92213211446722e16d5226e566de7df8cbdff8426613ace1d180e50c6a27c",
+          "bytes": 108683
+        },
+        {
+          "shot": 10,
+          "sha256": "61e92213211446722e16d5226e566de7df8cbdff8426613ace1d180e50c6a27c",
+          "bytes": 108683
+        },
+        {
+          "shot": 11,
+          "sha256": "61e92213211446722e16d5226e566de7df8cbdff8426613ace1d180e50c6a27c",
+          "bytes": 108683
+        }
+      ],
+      "discardedAttempts": [],
+      "timingClaim": "none; readiness barriers do not prove raster stability"
+    }
+  }
+}

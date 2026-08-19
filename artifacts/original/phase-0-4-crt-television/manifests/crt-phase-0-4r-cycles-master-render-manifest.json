@@ -1,0 +1,901 @@
+{
+  "schema": "quantum-hub.phase-0-4r-crt-television.cycles-master-render.v1",
+  "status": "PASS",
+  "selected_option": "A",
+  "source": {
+    "package_relative_path": "source/quantum-signal-television-v1.blend",
+    "bytes": 1516222,
+    "sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7"
+  },
+  "builder": {
+    "package_relative_path": "source/build_refined_crt.py",
+    "bytes": 66215,
+    "sha256": "78c35d2a827273d49d097db6d26f83a32f554fb894ff064db3cd5f624402ce6f"
+  },
+  "renderer": {
+    "package_relative_path": "source/render_crt_cycles_masters.py",
+    "bytes": 20975,
+    "sha256": "389fa8d58d83ea69d7e24c4a652baee9a40b480a4474566debc3a17054743afc"
+  },
+  "validator": {
+    "package_relative_path": "source/validate_refined_crt_source.py",
+    "bytes": 43123,
+    "sha256": "9b50f7fced84cf3d095f3eca69f11e56a39787febaded0e0628cbac472154879"
+  },
+  "configuration_authority": [
+    {
+      "package_relative_path": "source/crt_canonical_config.py",
+      "bytes": 10112,
+      "sha256": "6633a4484c35d66db6973f721af11bd6c03a5f30666ac7502551bb0fb552c9e4"
+    },
+    {
+      "package_relative_path": "source/crt_refined_config.py",
+      "bytes": 9496,
+      "sha256": "946fff88593473483dd708cc2a00cc63eeccd106aa186bd1527991fe5157bbb7"
+    }
+  ],
+  "layout_authority": {
+    "package_relative_path": "crt-portal-layout.json",
+    "bytes": 16248,
+    "sha256": "255c5b1499857ab8a2409adf368543efa0d6f9bfe3171e8a0a0a680e2caf31cc"
+  },
+  "render_settings": {
+    "engine": "BLENDER_CYCLES",
+    "blender_engine_enum": "CYCLES",
+    "device": "CPU",
+    "samples": 64,
+    "seed": 2404,
+    "adaptive_sampling": true,
+    "adaptive_threshold": 0.02,
+    "denoising": true,
+    "denoiser": "OPENIMAGEDENOISE",
+    "film_transparent": false,
+    "max_bounces": 8,
+    "diffuse_bounces": 4,
+    "glossy_bounces": 4,
+    "transmission_bounces": 8,
+    "transparent_bounces": 8,
+    "volume_bounces": 0,
+    "view_transform": "AgX",
+    "look": "AgX - Medium High Contrast",
+    "resolution_percentage": 100,
+    "image_format": "PNG RGB 8-bit"
+  },
+  "render_settings_sha256": "e649a4fc474f18ae2e33d311f37ec51c44d0995db30c145f7abb124d5185668c",
+  "lighting_profile": {
+    "name": "Phase 0.4R restrained CRT glass reflection",
+    "primary_light_specular_factor": 0.0,
+    "glass_grazing_light_energy_w": 55.0,
+    "glass_grazing_light_shape": "RECTANGLE",
+    "glass_grazing_light_size_m": 0.22,
+    "glass_grazing_light_size_y_m": 0.012,
+    "glass_grazing_light_location_m": [
+      0.0,
+      -1.9,
+      1.45
+    ],
+    "glass_grazing_light_target_m": [
+      0.58,
+      -0.35,
+      0.58
+    ],
+    "portal_ready_grazing_light_energy_w": 0.0,
+    "portal_ready_grazing_light_size_m": 0.006,
+    "portal_ready_grazing_light_size_y_m": 0.001,
+    "portal_ready_grazing_light_target_m": [
+      0.88,
+      -0.35,
+      0.62
+    ],
+    "glass_grazing_light_specular_factor": 1.0,
+    "glass_grazing_light_diffuse_factor": 0.0,
+    "glass_specular_ior_level": 0.32,
+    "glass_coat_weight": 0.0,
+    "glass_roughness": 0.14,
+    "glass_dormant_transmission_weight": 0.58,
+    "glass_powered_transmission_weight": 0.72,
+    "glass_reflected_base_color": [
+      0.0018,
+      0.004,
+      0.0048,
+      1.0
+    ],
+    "phosphor_reflected_base_color": [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ],
+    "phosphor_specular_ior_level": 0.0,
+    "main_light_linking": "all renderable scene objects except CRT optical layers and screen-owned emission geometry",
+    "glass_accent_light_linking": "CRT_ConvexThickSmokedGlass only",
+    "intent": "retain diffuse cabinet legibility while replacing broad white tube glare with an edge-biased narrow bent Fresnel cue"
+  },
+  "master_count": 8,
+  "expected_master_count": 8,
+  "exact_master_ids": [
+    "cycles-design-three-quarter-front",
+    "cycles-cabinet-material-closeup",
+    "cycles-speaker-controls-closeup",
+    "cycles-rear-strain-relief-closeup",
+    "cycles-dormant-glass-closeup",
+    "cycles-powered-glass-phosphor-closeup",
+    "cycles-proving-ground-master",
+    "cycles-portal-ready-closeup"
+  ],
+  "records": [
+    {
+      "package_relative_path": "renders/repair-masters/cycles-design-three-quarter-front.png",
+      "bytes": 1021438,
+      "sha256": "3a6ec3e89be07a0cd016bd922eb0921885a70dd66439bff65f5f9e1136369353",
+      "id": "cycles-design-three-quarter-front",
+      "filename": "cycles-design-three-quarter-front.png",
+      "width": 1600,
+      "height": 1000,
+      "state_id": "design-three-quarter-front",
+      "camera": "Camera_ThreeQuarter_Front_Design",
+      "material_role": "selected front three-quarter hero / shell, bezel, lower-band and grounded proportion proof",
+      "phosphor": "off",
+      "conduction_progress": 0.0,
+      "connector_response": false,
+      "engine": "BLENDER_CYCLES",
+      "render_settings": {
+        "engine": "BLENDER_CYCLES",
+        "blender_engine_enum": "CYCLES",
+        "device": "CPU",
+        "samples": 64,
+        "seed": 2404,
+        "adaptive_sampling": true,
+        "adaptive_threshold": 0.02,
+        "denoising": true,
+        "denoiser": "OPENIMAGEDENOISE",
+        "film_transparent": false,
+        "max_bounces": 8,
+        "diffuse_bounces": 4,
+        "glossy_bounces": 4,
+        "transmission_bounces": 8,
+        "transparent_bounces": 8,
+        "volume_bounces": 0,
+        "view_transform": "AgX",
+        "look": "AgX - Medium High Contrast",
+        "resolution_percentage": 100,
+        "image_format": "PNG RGB 8-bit"
+      },
+      "lighting_profile": {
+        "name": "Phase 0.4R restrained CRT glass reflection",
+        "primary_light_specular_factor": 0.0,
+        "glass_grazing_light_energy_w": 55.0,
+        "glass_grazing_light_shape": "RECTANGLE",
+        "glass_grazing_light_size_m": 0.22,
+        "glass_grazing_light_size_y_m": 0.012,
+        "glass_grazing_light_location_m": [
+          0.0,
+          -1.9,
+          1.45
+        ],
+        "glass_grazing_light_target_m": [
+          0.58,
+          -0.35,
+          0.58
+        ],
+        "portal_ready_grazing_light_energy_w": 0.0,
+        "portal_ready_grazing_light_size_m": 0.006,
+        "portal_ready_grazing_light_size_y_m": 0.001,
+        "portal_ready_grazing_light_target_m": [
+          0.88,
+          -0.35,
+          0.62
+        ],
+        "glass_grazing_light_specular_factor": 1.0,
+        "glass_grazing_light_diffuse_factor": 0.0,
+        "glass_specular_ior_level": 0.32,
+        "glass_coat_weight": 0.0,
+        "glass_roughness": 0.14,
+        "glass_dormant_transmission_weight": 0.58,
+        "glass_powered_transmission_weight": 0.72,
+        "glass_reflected_base_color": [
+          0.0018,
+          0.004,
+          0.0048,
+          1.0
+        ],
+        "phosphor_reflected_base_color": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "phosphor_specular_ior_level": 0.0,
+        "main_light_linking": "all renderable scene objects except CRT optical layers and screen-owned emission geometry",
+        "glass_accent_light_linking": "CRT_ConvexThickSmokedGlass only",
+        "intent": "retain diffuse cabinet legibility while replacing broad white tube glare with an edge-biased narrow bent Fresnel cue"
+      },
+      "approval_state": "Phase 0.4R Cycles quality master candidate",
+      "source_sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7",
+      "renderer_sha256": "389fa8d58d83ea69d7e24c4a652baee9a40b480a4474566debc3a17054743afc",
+      "render_settings_sha256": "e649a4fc474f18ae2e33d311f37ec51c44d0995db30c145f7abb124d5185668c",
+      "lineage": {
+        "source_sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7",
+        "renderer_sha256": "389fa8d58d83ea69d7e24c4a652baee9a40b480a4474566debc3a17054743afc",
+        "render_settings_sha256": "e649a4fc474f18ae2e33d311f37ec51c44d0995db30c145f7abb124d5185668c"
+      }
+    },
+    {
+      "package_relative_path": "renders/repair-masters/cycles-cabinet-material-closeup.png",
+      "bytes": 1113899,
+      "sha256": "a7a6e30ab1266347e5c21f884fcc38910d0f0472331dc4a5e3e67c9996bfc933",
+      "id": "cycles-cabinet-material-closeup",
+      "filename": "cycles-cabinet-material-closeup.png",
+      "width": 1600,
+      "height": 1000,
+      "state_id": "cabinet-three-quarter",
+      "camera": "Camera_Cabinet_Material",
+      "material_role": "specific near-black injection-moulded ABS and controlled grazing response",
+      "phosphor": "off",
+      "conduction_progress": 0.0,
+      "connector_response": false,
+      "engine": "BLENDER_CYCLES",
+      "render_settings": {
+        "engine": "BLENDER_CYCLES",
+        "blender_engine_enum": "CYCLES",
+        "device": "CPU",
+        "samples": 64,
+        "seed": 2404,
+        "adaptive_sampling": true,
+        "adaptive_threshold": 0.02,
+        "denoising": true,
+        "denoiser": "OPENIMAGEDENOISE",
+        "film_transparent": false,
+        "max_bounces": 8,
+        "diffuse_bounces": 4,
+        "glossy_bounces": 4,
+        "transmission_bounces": 8,
+        "transparent_bounces": 8,
+        "volume_bounces": 0,
+        "view_transform": "AgX",
+        "look": "AgX - Medium High Contrast",
+        "resolution_percentage": 100,
+        "image_format": "PNG RGB 8-bit"
+      },
+      "lighting_profile": {
+        "name": "Phase 0.4R restrained CRT glass reflection",
+        "primary_light_specular_factor": 0.0,
+        "glass_grazing_light_energy_w": 55.0,
+        "glass_grazing_light_shape": "RECTANGLE",
+        "glass_grazing_light_size_m": 0.22,
+        "glass_grazing_light_size_y_m": 0.012,
+        "glass_grazing_light_location_m": [
+          0.0,
+          -1.9,
+          1.45
+        ],
+        "glass_grazing_light_target_m": [
+          0.58,
+          -0.35,
+          0.58
+        ],
+        "portal_ready_grazing_light_energy_w": 0.0,
+        "portal_ready_grazing_light_size_m": 0.006,
+        "portal_ready_grazing_light_size_y_m": 0.001,
+        "portal_ready_grazing_light_target_m": [
+          0.88,
+          -0.35,
+          0.62
+        ],
+        "glass_grazing_light_specular_factor": 1.0,
+        "glass_grazing_light_diffuse_factor": 0.0,
+        "glass_specular_ior_level": 0.32,
+        "glass_coat_weight": 0.0,
+        "glass_roughness": 0.14,
+        "glass_dormant_transmission_weight": 0.58,
+        "glass_powered_transmission_weight": 0.72,
+        "glass_reflected_base_color": [
+          0.0018,
+          0.004,
+          0.0048,
+          1.0
+        ],
+        "phosphor_reflected_base_color": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "phosphor_specular_ior_level": 0.0,
+        "main_light_linking": "all renderable scene objects except CRT optical layers and screen-owned emission geometry",
+        "glass_accent_light_linking": "CRT_ConvexThickSmokedGlass only",
+        "intent": "retain diffuse cabinet legibility while replacing broad white tube glare with an edge-biased narrow bent Fresnel cue"
+      },
+      "approval_state": "Phase 0.4R Cycles quality master candidate",
+      "source_sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7",
+      "renderer_sha256": "389fa8d58d83ea69d7e24c4a652baee9a40b480a4474566debc3a17054743afc",
+      "render_settings_sha256": "e649a4fc474f18ae2e33d311f37ec51c44d0995db30c145f7abb124d5185668c",
+      "lineage": {
+        "source_sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7",
+        "renderer_sha256": "389fa8d58d83ea69d7e24c4a652baee9a40b480a4474566debc3a17054743afc",
+        "render_settings_sha256": "e649a4fc474f18ae2e33d311f37ec51c44d0995db30c145f7abb124d5185668c"
+      }
+    },
+    {
+      "package_relative_path": "renders/repair-masters/cycles-speaker-controls-closeup.png",
+      "bytes": 998207,
+      "sha256": "d2528af15f59a7bb2069e1aff1498cb5d44dcdb1be1c48b0422bb6bf1a234d14",
+      "id": "cycles-speaker-controls-closeup",
+      "filename": "cycles-speaker-controls-closeup.png",
+      "width": 1600,
+      "height": 1000,
+      "state_id": "detail-controls",
+      "camera": "Camera_Controls_Macro",
+      "material_role": "true recessed speaker perforations and distinct period control taxonomy",
+      "phosphor": "off",
+      "conduction_progress": 0.0,
+      "connector_response": false,
+      "engine": "BLENDER_CYCLES",
+      "render_settings": {
+        "engine": "BLENDER_CYCLES",
+        "blender_engine_enum": "CYCLES",
+        "device": "CPU",
+        "samples": 64,
+        "seed": 2404,
+        "adaptive_sampling": true,
+        "adaptive_threshold": 0.02,
+        "denoising": true,
+        "denoiser": "OPENIMAGEDENOISE",
+        "film_transparent": false,
+        "max_bounces": 8,
+        "diffuse_bounces": 4,
+        "glossy_bounces": 4,
+        "transmission_bounces": 8,
+        "transparent_bounces": 8,
+        "volume_bounces": 0,
+        "view_transform": "AgX",
+        "look": "AgX - Medium High Contrast",
+        "resolution_percentage": 100,
+        "image_format": "PNG RGB 8-bit"
+      },
+      "lighting_profile": {
+        "name": "Phase 0.4R restrained CRT glass reflection",
+        "primary_light_specular_factor": 0.0,
+        "glass_grazing_light_energy_w": 55.0,
+        "glass_grazing_light_shape": "RECTANGLE",
+        "glass_grazing_light_size_m": 0.22,
+        "glass_grazing_light_size_y_m": 0.012,
+        "glass_grazing_light_location_m": [
+          0.0,
+          -1.9,
+          1.45
+        ],
+        "glass_grazing_light_target_m": [
+          0.58,
+          -0.35,
+          0.58
+        ],
+        "portal_ready_grazing_light_energy_w": 0.0,
+        "portal_ready_grazing_light_size_m": 0.006,
+        "portal_ready_grazing_light_size_y_m": 0.001,
+        "portal_ready_grazing_light_target_m": [
+          0.88,
+          -0.35,
+          0.62
+        ],
+        "glass_grazing_light_specular_factor": 1.0,
+        "glass_grazing_light_diffuse_factor": 0.0,
+        "glass_specular_ior_level": 0.32,
+        "glass_coat_weight": 0.0,
+        "glass_roughness": 0.14,
+        "glass_dormant_transmission_weight": 0.58,
+        "glass_powered_transmission_weight": 0.72,
+        "glass_reflected_base_color": [
+          0.0018,
+          0.004,
+          0.0048,
+          1.0
+        ],
+        "phosphor_reflected_base_color": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "phosphor_specular_ior_level": 0.0,
+        "main_light_linking": "all renderable scene objects except CRT optical layers and screen-owned emission geometry",
+        "glass_accent_light_linking": "CRT_ConvexThickSmokedGlass only",
+        "intent": "retain diffuse cabinet legibility while replacing broad white tube glare with an edge-biased narrow bent Fresnel cue"
+      },
+      "approval_state": "Phase 0.4R Cycles quality master candidate",
+      "source_sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7",
+      "renderer_sha256": "389fa8d58d83ea69d7e24c4a652baee9a40b480a4474566debc3a17054743afc",
+      "render_settings_sha256": "e649a4fc474f18ae2e33d311f37ec51c44d0995db30c145f7abb124d5185668c",
+      "lineage": {
+        "source_sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7",
+        "renderer_sha256": "389fa8d58d83ea69d7e24c4a652baee9a40b480a4474566debc3a17054743afc",
+        "render_settings_sha256": "e649a4fc474f18ae2e33d311f37ec51c44d0995db30c145f7abb124d5185668c"
+      }
+    },
+    {
+      "package_relative_path": "renders/repair-masters/cycles-rear-strain-relief-closeup.png",
+      "bytes": 907213,
+      "sha256": "e42423f9539d5b824d068136d8cae8651801f93a6df7fc1f1cfb3eefdb75bc9f",
+      "id": "cycles-rear-strain-relief-closeup",
+      "filename": "cycles-rear-strain-relief-closeup.png",
+      "width": 1600,
+      "height": 1000,
+      "state_id": "detail-connector",
+      "camera": "Camera_Connector_Macro",
+      "material_role": "rear cable collar, strain relief and hidden load-bearing connection close-up",
+      "phosphor": "off",
+      "conduction_progress": 0.0,
+      "connector_response": false,
+      "engine": "BLENDER_CYCLES",
+      "render_settings": {
+        "engine": "BLENDER_CYCLES",
+        "blender_engine_enum": "CYCLES",
+        "device": "CPU",
+        "samples": 64,
+        "seed": 2404,
+        "adaptive_sampling": true,
+        "adaptive_threshold": 0.02,
+        "denoising": true,
+        "denoiser": "OPENIMAGEDENOISE",
+        "film_transparent": false,
+        "max_bounces": 8,
+        "diffuse_bounces": 4,
+        "glossy_bounces": 4,
+        "transmission_bounces": 8,
+        "transparent_bounces": 8,
+        "volume_bounces": 0,
+        "view_transform": "AgX",
+        "look": "AgX - Medium High Contrast",
+        "resolution_percentage": 100,
+        "image_format": "PNG RGB 8-bit"
+      },
+      "lighting_profile": {
+        "name": "Phase 0.4R restrained CRT glass reflection",
+        "primary_light_specular_factor": 0.0,
+        "glass_grazing_light_energy_w": 55.0,
+        "glass_grazing_light_shape": "RECTANGLE",
+        "glass_grazing_light_size_m": 0.22,
+        "glass_grazing_light_size_y_m": 0.012,
+        "glass_grazing_light_location_m": [
+          0.0,
+          -1.9,
+          1.45
+        ],
+        "glass_grazing_light_target_m": [
+          0.58,
+          -0.35,
+          0.58
+        ],
+        "portal_ready_grazing_light_energy_w": 0.0,
+        "portal_ready_grazing_light_size_m": 0.006,
+        "portal_ready_grazing_light_size_y_m": 0.001,
+        "portal_ready_grazing_light_target_m": [
+          0.88,
+          -0.35,
+          0.62
+        ],
+        "glass_grazing_light_specular_factor": 1.0,
+        "glass_grazing_light_diffuse_factor": 0.0,
+        "glass_specular_ior_level": 0.32,
+        "glass_coat_weight": 0.0,
+        "glass_roughness": 0.14,
+        "glass_dormant_transmission_weight": 0.58,
+        "glass_powered_transmission_weight": 0.72,
+        "glass_reflected_base_color": [
+          0.0018,
+          0.004,
+          0.0048,
+          1.0
+        ],
+        "phosphor_reflected_base_color": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "phosphor_specular_ior_level": 0.0,
+        "main_light_linking": "all renderable scene objects except CRT optical layers and screen-owned emission geometry",
+        "glass_accent_light_linking": "CRT_ConvexThickSmokedGlass only",
+        "intent": "retain diffuse cabinet legibility while replacing broad white tube glare with an edge-biased narrow bent Fresnel cue"
+      },
+      "approval_state": "Phase 0.4R Cycles quality master candidate",
+      "source_sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7",
+      "renderer_sha256": "389fa8d58d83ea69d7e24c4a652baee9a40b480a4474566debc3a17054743afc",
+      "render_settings_sha256": "e649a4fc474f18ae2e33d311f37ec51c44d0995db30c145f7abb124d5185668c",
+      "lineage": {
+        "source_sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7",
+        "renderer_sha256": "389fa8d58d83ea69d7e24c4a652baee9a40b480a4474566debc3a17054743afc",
+        "render_settings_sha256": "e649a4fc474f18ae2e33d311f37ec51c44d0995db30c145f7abb124d5185668c"
+      }
+    },
+    {
+      "package_relative_path": "renders/repair-masters/cycles-dormant-glass-closeup.png",
+      "bytes": 1006048,
+      "sha256": "2989939145c7fd31c34957cbf5d61aeb87d845420a18c8c9ae2bd3c676db1ac8",
+      "id": "cycles-dormant-glass-closeup",
+      "filename": "cycles-dormant-glass-closeup.png",
+      "width": 1600,
+      "height": 1000,
+      "state_id": "glass-dormant-front",
+      "camera": "Camera_Raster_Close",
+      "material_role": "dormant convex smoked glass, gasket, air-gap and zero-emission proof",
+      "phosphor": "off",
+      "conduction_progress": 0.0,
+      "connector_response": false,
+      "engine": "BLENDER_CYCLES",
+      "render_settings": {
+        "engine": "BLENDER_CYCLES",
+        "blender_engine_enum": "CYCLES",
+        "device": "CPU",
+        "samples": 64,
+        "seed": 2404,
+        "adaptive_sampling": true,
+        "adaptive_threshold": 0.02,
+        "denoising": true,
+        "denoiser": "OPENIMAGEDENOISE",
+        "film_transparent": false,
+        "max_bounces": 8,
+        "diffuse_bounces": 4,
+        "glossy_bounces": 4,
+        "transmission_bounces": 8,
+        "transparent_bounces": 8,
+        "volume_bounces": 0,
+        "view_transform": "AgX",
+        "look": "AgX - Medium High Contrast",
+        "resolution_percentage": 100,
+        "image_format": "PNG RGB 8-bit"
+      },
+      "lighting_profile": {
+        "name": "Phase 0.4R restrained CRT glass reflection",
+        "primary_light_specular_factor": 0.0,
+        "glass_grazing_light_energy_w": 55.0,
+        "glass_grazing_light_shape": "RECTANGLE",
+        "glass_grazing_light_size_m": 0.22,
+        "glass_grazing_light_size_y_m": 0.012,
+        "glass_grazing_light_location_m": [
+          0.0,
+          -1.9,
+          1.45
+        ],
+        "glass_grazing_light_target_m": [
+          0.58,
+          -0.35,
+          0.58
+        ],
+        "portal_ready_grazing_light_energy_w": 0.0,
+        "portal_ready_grazing_light_size_m": 0.006,
+        "portal_ready_grazing_light_size_y_m": 0.001,
+        "portal_ready_grazing_light_target_m": [
+          0.88,
+          -0.35,
+          0.62
+        ],
+        "glass_grazing_light_specular_factor": 1.0,
+        "glass_grazing_light_diffuse_factor": 0.0,
+        "glass_specular_ior_level": 0.32,
+        "glass_coat_weight": 0.0,
+        "glass_roughness": 0.14,
+        "glass_dormant_transmission_weight": 0.58,
+        "glass_powered_transmission_weight": 0.72,
+        "glass_reflected_base_color": [
+          0.0018,
+          0.004,
+          0.0048,
+          1.0
+        ],
+        "phosphor_reflected_base_color": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "phosphor_specular_ior_level": 0.0,
+        "main_light_linking": "all renderable scene objects except CRT optical layers and screen-owned emission geometry",
+        "glass_accent_light_linking": "CRT_ConvexThickSmokedGlass only",
+        "intent": "retain diffuse cabinet legibility while replacing broad white tube glare with an edge-biased narrow bent Fresnel cue"
+      },
+      "approval_state": "Phase 0.4R Cycles quality master candidate",
+      "source_sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7",
+      "renderer_sha256": "389fa8d58d83ea69d7e24c4a652baee9a40b480a4474566debc3a17054743afc",
+      "render_settings_sha256": "e649a4fc474f18ae2e33d311f37ec51c44d0995db30c145f7abb124d5185668c",
+      "lineage": {
+        "source_sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7",
+        "renderer_sha256": "389fa8d58d83ea69d7e24c4a652baee9a40b480a4474566debc3a17054743afc",
+        "render_settings_sha256": "e649a4fc474f18ae2e33d311f37ec51c44d0995db30c145f7abb124d5185668c"
+      }
+    },
+    {
+      "package_relative_path": "renders/repair-masters/cycles-powered-glass-phosphor-closeup.png",
+      "bytes": 1075960,
+      "sha256": "7f41707ba5ac9071a7b13b0b5fbe1fbafc93767e6bc16bed2f743e8865d37a88",
+      "id": "cycles-powered-glass-phosphor-closeup",
+      "filename": "cycles-powered-glass-phosphor-closeup.png",
+      "width": 1600,
+      "height": 1000,
+      "state_id": "power-06-quantum-interface-stabilizes",
+      "camera": "Camera_Raster_Close",
+      "material_role": "settled powered 4:3 raster, phosphor separation and scanline continuity",
+      "phosphor": "interface",
+      "conduction_progress": 1.0,
+      "connector_response": false,
+      "engine": "BLENDER_CYCLES",
+      "render_settings": {
+        "engine": "BLENDER_CYCLES",
+        "blender_engine_enum": "CYCLES",
+        "device": "CPU",
+        "samples": 64,
+        "seed": 2404,
+        "adaptive_sampling": true,
+        "adaptive_threshold": 0.02,
+        "denoising": true,
+        "denoiser": "OPENIMAGEDENOISE",
+        "film_transparent": false,
+        "max_bounces": 8,
+        "diffuse_bounces": 4,
+        "glossy_bounces": 4,
+        "transmission_bounces": 8,
+        "transparent_bounces": 8,
+        "volume_bounces": 0,
+        "view_transform": "AgX",
+        "look": "AgX - Medium High Contrast",
+        "resolution_percentage": 100,
+        "image_format": "PNG RGB 8-bit"
+      },
+      "lighting_profile": {
+        "name": "Phase 0.4R restrained CRT glass reflection",
+        "primary_light_specular_factor": 0.0,
+        "glass_grazing_light_energy_w": 55.0,
+        "glass_grazing_light_shape": "RECTANGLE",
+        "glass_grazing_light_size_m": 0.22,
+        "glass_grazing_light_size_y_m": 0.012,
+        "glass_grazing_light_location_m": [
+          0.0,
+          -1.9,
+          1.45
+        ],
+        "glass_grazing_light_target_m": [
+          0.58,
+          -0.35,
+          0.58
+        ],
+        "portal_ready_grazing_light_energy_w": 0.0,
+        "portal_ready_grazing_light_size_m": 0.006,
+        "portal_ready_grazing_light_size_y_m": 0.001,
+        "portal_ready_grazing_light_target_m": [
+          0.88,
+          -0.35,
+          0.62
+        ],
+        "glass_grazing_light_specular_factor": 1.0,
+        "glass_grazing_light_diffuse_factor": 0.0,
+        "glass_specular_ior_level": 0.32,
+        "glass_coat_weight": 0.0,
+        "glass_roughness": 0.14,
+        "glass_dormant_transmission_weight": 0.58,
+        "glass_powered_transmission_weight": 0.72,
+        "glass_reflected_base_color": [
+          0.0018,
+          0.004,
+          0.0048,
+          1.0
+        ],
+        "phosphor_reflected_base_color": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "phosphor_specular_ior_level": 0.0,
+        "main_light_linking": "all renderable scene objects except CRT optical layers and screen-owned emission geometry",
+        "glass_accent_light_linking": "CRT_ConvexThickSmokedGlass only",
+        "intent": "retain diffuse cabinet legibility while replacing broad white tube glare with an edge-biased narrow bent Fresnel cue"
+      },
+      "approval_state": "Phase 0.4R Cycles quality master candidate",
+      "source_sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7",
+      "renderer_sha256": "389fa8d58d83ea69d7e24c4a652baee9a40b480a4474566debc3a17054743afc",
+      "render_settings_sha256": "e649a4fc474f18ae2e33d311f37ec51c44d0995db30c145f7abb124d5185668c",
+      "lineage": {
+        "source_sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7",
+        "renderer_sha256": "389fa8d58d83ea69d7e24c4a652baee9a40b480a4474566debc3a17054743afc",
+        "render_settings_sha256": "e649a4fc474f18ae2e33d311f37ec51c44d0995db30c145f7abb124d5185668c"
+      }
+    },
+    {
+      "package_relative_path": "renders/repair-masters/cycles-proving-ground-master.png",
+      "bytes": 1252542,
+      "sha256": "9af775bd6b97aa6b605f50cbceeb9c358acff4e599f072b9d0dde7ecdfa76593",
+      "id": "cycles-proving-ground-master",
+      "filename": "cycles-proving-ground-master.png",
+      "width": 1920,
+      "height": 1200,
+      "state_id": "proving-ground-master",
+      "camera": "Camera_Path_Arrival",
+      "material_role": "installed proving-ground master with lower, larger CRT arrival framing",
+      "phosphor": "off",
+      "conduction_progress": 0.0,
+      "connector_response": false,
+      "engine": "BLENDER_CYCLES",
+      "render_settings": {
+        "engine": "BLENDER_CYCLES",
+        "blender_engine_enum": "CYCLES",
+        "device": "CPU",
+        "samples": 64,
+        "seed": 2404,
+        "adaptive_sampling": true,
+        "adaptive_threshold": 0.02,
+        "denoising": true,
+        "denoiser": "OPENIMAGEDENOISE",
+        "film_transparent": false,
+        "max_bounces": 8,
+        "diffuse_bounces": 4,
+        "glossy_bounces": 4,
+        "transmission_bounces": 8,
+        "transparent_bounces": 8,
+        "volume_bounces": 0,
+        "view_transform": "AgX",
+        "look": "AgX - Medium High Contrast",
+        "resolution_percentage": 100,
+        "image_format": "PNG RGB 8-bit"
+      },
+      "lighting_profile": {
+        "name": "Phase 0.4R restrained CRT glass reflection",
+        "primary_light_specular_factor": 0.0,
+        "glass_grazing_light_energy_w": 55.0,
+        "glass_grazing_light_shape": "RECTANGLE",
+        "glass_grazing_light_size_m": 0.22,
+        "glass_grazing_light_size_y_m": 0.012,
+        "glass_grazing_light_location_m": [
+          0.0,
+          -1.9,
+          1.45
+        ],
+        "glass_grazing_light_target_m": [
+          0.58,
+          -0.35,
+          0.58
+        ],
+        "portal_ready_grazing_light_energy_w": 0.0,
+        "portal_ready_grazing_light_size_m": 0.006,
+        "portal_ready_grazing_light_size_y_m": 0.001,
+        "portal_ready_grazing_light_target_m": [
+          0.88,
+          -0.35,
+          0.62
+        ],
+        "glass_grazing_light_specular_factor": 1.0,
+        "glass_grazing_light_diffuse_factor": 0.0,
+        "glass_specular_ior_level": 0.32,
+        "glass_coat_weight": 0.0,
+        "glass_roughness": 0.14,
+        "glass_dormant_transmission_weight": 0.58,
+        "glass_powered_transmission_weight": 0.72,
+        "glass_reflected_base_color": [
+          0.0018,
+          0.004,
+          0.0048,
+          1.0
+        ],
+        "phosphor_reflected_base_color": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "phosphor_specular_ior_level": 0.0,
+        "main_light_linking": "all renderable scene objects except CRT optical layers and screen-owned emission geometry",
+        "glass_accent_light_linking": "CRT_ConvexThickSmokedGlass only",
+        "intent": "retain diffuse cabinet legibility while replacing broad white tube glare with an edge-biased narrow bent Fresnel cue"
+      },
+      "approval_state": "Phase 0.4R Cycles quality master candidate",
+      "source_sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7",
+      "renderer_sha256": "389fa8d58d83ea69d7e24c4a652baee9a40b480a4474566debc3a17054743afc",
+      "render_settings_sha256": "e649a4fc474f18ae2e33d311f37ec51c44d0995db30c145f7abb124d5185668c",
+      "lineage": {
+        "source_sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7",
+        "renderer_sha256": "389fa8d58d83ea69d7e24c4a652baee9a40b480a4474566debc3a17054743afc",
+        "render_settings_sha256": "e649a4fc474f18ae2e33d311f37ec51c44d0995db30c145f7abb124d5185668c"
+      }
+    },
+    {
+      "package_relative_path": "renders/repair-masters/cycles-portal-ready-closeup.png",
+      "bytes": 969880,
+      "sha256": "1c4622f1a1caed025322cc6b0b66db2106fb995f478835e7c1eadbb3d46a8f90",
+      "id": "cycles-portal-ready-closeup",
+      "filename": "cycles-portal-ready-closeup.png",
+      "width": 1600,
+      "height": 1000,
+      "state_id": "portal-04-glass-almost-fills",
+      "camera": "Camera_Portal_04_GlassAlmostFills",
+      "material_role": "portal-ready physical 4:3 screen close-up before semantic DOM ownership",
+      "phosphor": "interface",
+      "conduction_progress": 1.0,
+      "connector_response": false,
+      "engine": "BLENDER_CYCLES",
+      "render_settings": {
+        "engine": "BLENDER_CYCLES",
+        "blender_engine_enum": "CYCLES",
+        "device": "CPU",
+        "samples": 64,
+        "seed": 2404,
+        "adaptive_sampling": true,
+        "adaptive_threshold": 0.02,
+        "denoising": true,
+        "denoiser": "OPENIMAGEDENOISE",
+        "film_transparent": false,
+        "max_bounces": 8,
+        "diffuse_bounces": 4,
+        "glossy_bounces": 4,
+        "transmission_bounces": 8,
+        "transparent_bounces": 8,
+        "volume_bounces": 0,
+        "view_transform": "AgX",
+        "look": "AgX - Medium High Contrast",
+        "resolution_percentage": 100,
+        "image_format": "PNG RGB 8-bit"
+      },
+      "lighting_profile": {
+        "name": "Phase 0.4R restrained CRT glass reflection",
+        "primary_light_specular_factor": 0.0,
+        "glass_grazing_light_energy_w": 55.0,
+        "glass_grazing_light_shape": "RECTANGLE",
+        "glass_grazing_light_size_m": 0.22,
+        "glass_grazing_light_size_y_m": 0.012,
+        "glass_grazing_light_location_m": [
+          0.0,
+          -1.9,
+          1.45
+        ],
+        "glass_grazing_light_target_m": [
+          0.58,
+          -0.35,
+          0.58
+        ],
+        "portal_ready_grazing_light_energy_w": 0.0,
+        "portal_ready_grazing_light_size_m": 0.006,
+        "portal_ready_grazing_light_size_y_m": 0.001,
+        "portal_ready_grazing_light_target_m": [
+          0.88,
+          -0.35,
+          0.62
+        ],
+        "glass_grazing_light_specular_factor": 1.0,
+        "glass_grazing_light_diffuse_factor": 0.0,
+        "glass_specular_ior_level": 0.32,
+        "glass_coat_weight": 0.0,
+        "glass_roughness": 0.14,
+        "glass_dormant_transmission_weight": 0.58,
+        "glass_powered_transmission_weight": 0.72,
+        "glass_reflected_base_color": [
+          0.0018,
+          0.004,
+          0.0048,
+          1.0
+        ],
+        "phosphor_reflected_base_color": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "phosphor_specular_ior_level": 0.0,
+        "main_light_linking": "all renderable scene objects except CRT optical layers and screen-owned emission geometry",
+        "glass_accent_light_linking": "CRT_ConvexThickSmokedGlass only",
+        "intent": "retain diffuse cabinet legibility while replacing broad white tube glare with an edge-biased narrow bent Fresnel cue"
+      },
+      "approval_state": "Phase 0.4R Cycles quality master candidate",
+      "source_sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7",
+      "renderer_sha256": "389fa8d58d83ea69d7e24c4a652baee9a40b480a4474566debc3a17054743afc",
+      "render_settings_sha256": "e649a4fc474f18ae2e33d311f37ec51c44d0995db30c145f7abb124d5185668c",
+      "lineage": {
+        "source_sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7",
+        "renderer_sha256": "389fa8d58d83ea69d7e24c4a652baee9a40b480a4474566debc3a17054743afc",
+        "render_settings_sha256": "e649a4fc474f18ae2e33d311f37ec51c44d0995db30c145f7abb124d5185668c"
+      }
+    }
+  ],
+  "private_reference_loaded": false,
+  "external_textures": 0,
+  "external_models": 0,
+  "full_animatic_created": false,
+  "frame_sequence_created": false
+}
