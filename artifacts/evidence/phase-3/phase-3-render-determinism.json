@@ -1,0 +1,636 @@
+{
+  "schema": "quantum-hub.phase-3-render-determinism.v1",
+  "status": "PASS",
+  "authority": "fresh-process-sparse-production-rerender-decoded-pixel-comparison",
+  "deterministicProtocol": {
+    "desktopFreshBlenderProcess": true,
+    "mobileFreshBlenderProcess": true,
+    "comparison": "PNG byte identity is recorded but not required; PASS requires exact geometry, decoded p95 delta 0, maximum channel delta <= 1/255, and changed-channel ratio <= 0.0001",
+    "renderSettings": "Cycles GPU, OptiX, OIDN, AgX Medium High Contrast, 48 adaptive samples",
+    "randomFrameDependentEvents": false,
+    "rationale": "Fresh OptiX/OIDN processes may differ at a sparse set of 8-bit rounding values without changing authored state or visible timeline access."
+  },
+  "derivativeSource": {
+    "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/source/quantum-signal-television-phase3-opening.blend",
+    "bytes": 2182647,
+    "sha256": "bbde82220f500c6f047c2e2d33a8580c08a40e65800615dd7256bebc2f4472ba"
+  },
+  "verifier": {
+    "repositoryRelativePath": "scripts/verify-phase3-render-determinism.mjs",
+    "sha256": "0019dce1194cf67d0461305e416671010fe9cd9e906c19d4f204f6835ac82c20"
+  },
+  "variants": {
+    "desktop": {
+      "status": "PASS",
+      "expectedDimensions": [
+        1920,
+        1080
+      ],
+      "sampleFrames": [
+        1,
+        72,
+        126,
+        154,
+        196,
+        246,
+        270
+      ],
+      "storagePolicy": "RAW_REFERENCE_AND_RERENDER_PATHS_OUTSIDE_GIT_AND_INTENTIONALLY_OMITTED",
+      "records": [
+        {
+          "frame": 1,
+          "normalizedProgress": 0,
+          "filename": "phase3-desktop-0001.png",
+          "expectedDimensions": [
+            1920,
+            1080
+          ],
+          "reference": {
+            "bytes": 1462293,
+            "sha256": "12718d7662ff8a13953b30fe0966312ff1862561bce8e7e1c3657f1ae865fb69",
+            "width": 1920,
+            "height": 1080
+          },
+          "rerender": {
+            "bytes": 1462409,
+            "sha256": "663f633229be5c3fe6260e37dea85733156228aa18df225f99cc9c27b9617560",
+            "width": 1920,
+            "height": 1080
+          },
+          "dimensionsPassed": true,
+          "pngByteIdentityPassed": false,
+          "pixelComparison": {
+            "comparable": true,
+            "decodedChannels": 3,
+            "decodedChannelValues": 6220800,
+            "changedChannels": 186,
+            "changedChannelRatio": 0.0000299,
+            "mae8Bit": 0.0000299,
+            "rmse8Bit": 0.005468061,
+            "p95AbsChannelDelta": 0,
+            "maxAbsChannelDelta": 1,
+            "thresholds": {
+              "p95AbsChannelDelta": 0,
+              "maxAbsChannelDelta": 1,
+              "maximumChangedChannelRatio": 0.0001
+            },
+            "visualStateIdentityPassed": true
+          },
+          "status": "PASS"
+        },
+        {
+          "frame": 72,
+          "normalizedProgress": 0.263941,
+          "filename": "phase3-desktop-0072.png",
+          "expectedDimensions": [
+            1920,
+            1080
+          ],
+          "reference": {
+            "bytes": 1460777,
+            "sha256": "17424e17b5b3fbd1e1aba2e7a8f96f55edf1a1c02be86af0e716ffd6c6ba8542",
+            "width": 1920,
+            "height": 1080
+          },
+          "rerender": {
+            "bytes": 1461037,
+            "sha256": "e3375b15b201f144aaa34b349a770cd69fde53ec7408018900eb9c886e3959cc",
+            "width": 1920,
+            "height": 1080
+          },
+          "dimensionsPassed": true,
+          "pngByteIdentityPassed": false,
+          "pixelComparison": {
+            "comparable": true,
+            "decodedChannels": 3,
+            "decodedChannelValues": 6220800,
+            "changedChannels": 183,
+            "changedChannelRatio": 0.000029417,
+            "mae8Bit": 0.000029417,
+            "rmse8Bit": 0.005423784,
+            "p95AbsChannelDelta": 0,
+            "maxAbsChannelDelta": 1,
+            "thresholds": {
+              "p95AbsChannelDelta": 0,
+              "maxAbsChannelDelta": 1,
+              "maximumChangedChannelRatio": 0.0001
+            },
+            "visualStateIdentityPassed": true
+          },
+          "status": "PASS"
+        },
+        {
+          "frame": 126,
+          "normalizedProgress": 0.464684,
+          "filename": "phase3-desktop-0126.png",
+          "expectedDimensions": [
+            1920,
+            1080
+          ],
+          "reference": {
+            "bytes": 1500103,
+            "sha256": "8895a43525a0307bb44c059a87c5bc67d3490662e0caea551b42d1473a098cb4",
+            "width": 1920,
+            "height": 1080
+          },
+          "rerender": {
+            "bytes": 1499854,
+            "sha256": "91edc8813bb661cbb90c8af30a342cfac72ec5ecaafc7d97c6ac115c6e06aa9d",
+            "width": 1920,
+            "height": 1080
+          },
+          "dimensionsPassed": true,
+          "pngByteIdentityPassed": false,
+          "pixelComparison": {
+            "comparable": true,
+            "decodedChannels": 3,
+            "decodedChannelValues": 6220800,
+            "changedChannels": 212,
+            "changedChannelRatio": 0.000034079,
+            "mae8Bit": 0.000034079,
+            "rmse8Bit": 0.005837741,
+            "p95AbsChannelDelta": 0,
+            "maxAbsChannelDelta": 1,
+            "thresholds": {
+              "p95AbsChannelDelta": 0,
+              "maxAbsChannelDelta": 1,
+              "maximumChangedChannelRatio": 0.0001
+            },
+            "visualStateIdentityPassed": true
+          },
+          "status": "PASS"
+        },
+        {
+          "frame": 154,
+          "normalizedProgress": 0.568773,
+          "filename": "phase3-desktop-0154.png",
+          "expectedDimensions": [
+            1920,
+            1080
+          ],
+          "reference": {
+            "bytes": 1583535,
+            "sha256": "09246011c42ff28ee39e60e287c50df84a1b1a8f19e824159b6744c9e7a914b3",
+            "width": 1920,
+            "height": 1080
+          },
+          "rerender": {
+            "bytes": 1583594,
+            "sha256": "b7c981b24d4328aed538a8ebb4186446c816ec644032c2aa78bc66949ae06884",
+            "width": 1920,
+            "height": 1080
+          },
+          "dimensionsPassed": true,
+          "pngByteIdentityPassed": false,
+          "pixelComparison": {
+            "comparable": true,
+            "decodedChannels": 3,
+            "decodedChannelValues": 6220800,
+            "changedChannels": 184,
+            "changedChannelRatio": 0.000029578,
+            "mae8Bit": 0.000029578,
+            "rmse8Bit": 0.005438583,
+            "p95AbsChannelDelta": 0,
+            "maxAbsChannelDelta": 1,
+            "thresholds": {
+              "p95AbsChannelDelta": 0,
+              "maxAbsChannelDelta": 1,
+              "maximumChangedChannelRatio": 0.0001
+            },
+            "visualStateIdentityPassed": true
+          },
+          "status": "PASS"
+        },
+        {
+          "frame": 196,
+          "normalizedProgress": 0.724907,
+          "filename": "phase3-desktop-0196.png",
+          "expectedDimensions": [
+            1920,
+            1080
+          ],
+          "reference": {
+            "bytes": 1661684,
+            "sha256": "62d694c446c6a0cf358950f57eabcaaabe44a2976e82e0a8a2fd5a80048ce6a6",
+            "width": 1920,
+            "height": 1080
+          },
+          "rerender": {
+            "bytes": 1661496,
+            "sha256": "7ab5ec9e7f44a81586bb0b8e27e758c2e032bb128dbb10408006fd0dc87ab6ee",
+            "width": 1920,
+            "height": 1080
+          },
+          "dimensionsPassed": true,
+          "pngByteIdentityPassed": false,
+          "pixelComparison": {
+            "comparable": true,
+            "decodedChannels": 3,
+            "decodedChannelValues": 6220800,
+            "changedChannels": 188,
+            "changedChannelRatio": 0.000030221,
+            "mae8Bit": 0.000030221,
+            "rmse8Bit": 0.005497381,
+            "p95AbsChannelDelta": 0,
+            "maxAbsChannelDelta": 1,
+            "thresholds": {
+              "p95AbsChannelDelta": 0,
+              "maxAbsChannelDelta": 1,
+              "maximumChangedChannelRatio": 0.0001
+            },
+            "visualStateIdentityPassed": true
+          },
+          "status": "PASS"
+        },
+        {
+          "frame": 246,
+          "normalizedProgress": 0.910781,
+          "filename": "phase3-desktop-0246.png",
+          "expectedDimensions": [
+            1920,
+            1080
+          ],
+          "reference": {
+            "bytes": 1395320,
+            "sha256": "e38e24da2574a2e342027399b1506483c942cf5ae35684fc9a4d15792c4c5cb2",
+            "width": 1920,
+            "height": 1080
+          },
+          "rerender": {
+            "bytes": 1394998,
+            "sha256": "cab14d690786b0406b554f29fa436e0a39b86fd3aea2457f7da58f8a9429ff77",
+            "width": 1920,
+            "height": 1080
+          },
+          "dimensionsPassed": true,
+          "pngByteIdentityPassed": false,
+          "pixelComparison": {
+            "comparable": true,
+            "decodedChannels": 3,
+            "decodedChannelValues": 6220800,
+            "changedChannels": 57,
+            "changedChannelRatio": 0.000009163,
+            "mae8Bit": 0.000009163,
+            "rmse8Bit": 0.003027013,
+            "p95AbsChannelDelta": 0,
+            "maxAbsChannelDelta": 1,
+            "thresholds": {
+              "p95AbsChannelDelta": 0,
+              "maxAbsChannelDelta": 1,
+              "maximumChangedChannelRatio": 0.0001
+            },
+            "visualStateIdentityPassed": true
+          },
+          "status": "PASS"
+        },
+        {
+          "frame": 270,
+          "normalizedProgress": 1,
+          "filename": "phase3-desktop-0270.png",
+          "expectedDimensions": [
+            1920,
+            1080
+          ],
+          "reference": {
+            "bytes": 782797,
+            "sha256": "fac5a6cc388eadcb38a90d94dd9c13ace62d09e4f6a8250f94328ec15023921e",
+            "width": 1920,
+            "height": 1080
+          },
+          "rerender": {
+            "bytes": 782820,
+            "sha256": "d5bf8a012d5573e8785dcd5d98bff97f2fde006b97da31b8e68622f434276d5d",
+            "width": 1920,
+            "height": 1080
+          },
+          "dimensionsPassed": true,
+          "pngByteIdentityPassed": false,
+          "pixelComparison": {
+            "comparable": true,
+            "decodedChannels": 3,
+            "decodedChannelValues": 6220800,
+            "changedChannels": 24,
+            "changedChannelRatio": 0.000003858,
+            "mae8Bit": 0.000003858,
+            "rmse8Bit": 0.001964186,
+            "p95AbsChannelDelta": 0,
+            "maxAbsChannelDelta": 1,
+            "thresholds": {
+              "p95AbsChannelDelta": 0,
+              "maxAbsChannelDelta": 1,
+              "maximumChangedChannelRatio": 0.0001
+            },
+            "visualStateIdentityPassed": true
+          },
+          "status": "PASS"
+        }
+      ]
+    },
+    "mobile": {
+      "status": "PASS",
+      "expectedDimensions": [
+        720,
+        1280
+      ],
+      "sampleFrames": [
+        1,
+        72,
+        126,
+        154,
+        196,
+        222,
+        270
+      ],
+      "storagePolicy": "RAW_REFERENCE_AND_RERENDER_PATHS_OUTSIDE_GIT_AND_INTENTIONALLY_OMITTED",
+      "records": [
+        {
+          "frame": 1,
+          "normalizedProgress": 0,
+          "filename": "phase3-mobile-0001.png",
+          "expectedDimensions": [
+            720,
+            1280
+          ],
+          "reference": {
+            "bytes": 687384,
+            "sha256": "3ec03ca412da91de4bb0b23620fcd88352957529f4e13bf34d7618a8583adbb8",
+            "width": 720,
+            "height": 1280
+          },
+          "rerender": {
+            "bytes": 687239,
+            "sha256": "760b69f0c9e4ecce6c55311bac1e72a71715fabc502e9279272c970627170d73",
+            "width": 720,
+            "height": 1280
+          },
+          "dimensionsPassed": true,
+          "pngByteIdentityPassed": false,
+          "pixelComparison": {
+            "comparable": true,
+            "decodedChannels": 3,
+            "decodedChannelValues": 2764800,
+            "changedChannels": 81,
+            "changedChannelRatio": 0.000029297,
+            "mae8Bit": 0.000029297,
+            "rmse8Bit": 0.005412659,
+            "p95AbsChannelDelta": 0,
+            "maxAbsChannelDelta": 1,
+            "thresholds": {
+              "p95AbsChannelDelta": 0,
+              "maxAbsChannelDelta": 1,
+              "maximumChangedChannelRatio": 0.0001
+            },
+            "visualStateIdentityPassed": true
+          },
+          "status": "PASS"
+        },
+        {
+          "frame": 72,
+          "normalizedProgress": 0.263941,
+          "filename": "phase3-mobile-0072.png",
+          "expectedDimensions": [
+            720,
+            1280
+          ],
+          "reference": {
+            "bytes": 687567,
+            "sha256": "355f18f0e828a1bc34705d1c3e75d1481f5c1a6268329e884b2d8cf56ea9bd0e",
+            "width": 720,
+            "height": 1280
+          },
+          "rerender": {
+            "bytes": 687862,
+            "sha256": "d7bffd9e07c51c181c927e73d0b6405ea5eb3f9e8d8e5adf2400d4ea5143b2a2",
+            "width": 720,
+            "height": 1280
+          },
+          "dimensionsPassed": true,
+          "pngByteIdentityPassed": false,
+          "pixelComparison": {
+            "comparable": true,
+            "decodedChannels": 3,
+            "decodedChannelValues": 2764800,
+            "changedChannels": 77,
+            "changedChannelRatio": 0.00002785,
+            "mae8Bit": 0.00002785,
+            "rmse8Bit": 0.005277321,
+            "p95AbsChannelDelta": 0,
+            "maxAbsChannelDelta": 1,
+            "thresholds": {
+              "p95AbsChannelDelta": 0,
+              "maxAbsChannelDelta": 1,
+              "maximumChangedChannelRatio": 0.0001
+            },
+            "visualStateIdentityPassed": true
+          },
+          "status": "PASS"
+        },
+        {
+          "frame": 126,
+          "normalizedProgress": 0.464684,
+          "filename": "phase3-mobile-0126.png",
+          "expectedDimensions": [
+            720,
+            1280
+          ],
+          "reference": {
+            "bytes": 678564,
+            "sha256": "4db0a986196da4319142164d03934aebc045dc2b026f31fa7d9ddce94674d5ef",
+            "width": 720,
+            "height": 1280
+          },
+          "rerender": {
+            "bytes": 678506,
+            "sha256": "b7ad9cf25b8f817e293653f0c3bf523dfb247f7c4c138543ef0e535f070e5baf",
+            "width": 720,
+            "height": 1280
+          },
+          "dimensionsPassed": true,
+          "pngByteIdentityPassed": false,
+          "pixelComparison": {
+            "comparable": true,
+            "decodedChannels": 3,
+            "decodedChannelValues": 2764800,
+            "changedChannels": 65,
+            "changedChannelRatio": 0.00002351,
+            "mae8Bit": 0.00002351,
+            "rmse8Bit": 0.004848694,
+            "p95AbsChannelDelta": 0,
+            "maxAbsChannelDelta": 1,
+            "thresholds": {
+              "p95AbsChannelDelta": 0,
+              "maxAbsChannelDelta": 1,
+              "maximumChangedChannelRatio": 0.0001
+            },
+            "visualStateIdentityPassed": true
+          },
+          "status": "PASS"
+        },
+        {
+          "frame": 154,
+          "normalizedProgress": 0.568773,
+          "filename": "phase3-mobile-0154.png",
+          "expectedDimensions": [
+            720,
+            1280
+          ],
+          "reference": {
+            "bytes": 703811,
+            "sha256": "78cb02d41890f9aba745f50f10999e1b39e302341db977cccf7ddf4023728a94",
+            "width": 720,
+            "height": 1280
+          },
+          "rerender": {
+            "bytes": 703459,
+            "sha256": "e675d9fc1d3a2e01814125a616391a2511aac0fafc3cdf39bff07afda85de798",
+            "width": 720,
+            "height": 1280
+          },
+          "dimensionsPassed": true,
+          "pngByteIdentityPassed": false,
+          "pixelComparison": {
+            "comparable": true,
+            "decodedChannels": 3,
+            "decodedChannelValues": 2764800,
+            "changedChannels": 73,
+            "changedChannelRatio": 0.000026403,
+            "mae8Bit": 0.000026403,
+            "rmse8Bit": 0.00513842,
+            "p95AbsChannelDelta": 0,
+            "maxAbsChannelDelta": 1,
+            "thresholds": {
+              "p95AbsChannelDelta": 0,
+              "maxAbsChannelDelta": 1,
+              "maximumChangedChannelRatio": 0.0001
+            },
+            "visualStateIdentityPassed": true
+          },
+          "status": "PASS"
+        },
+        {
+          "frame": 196,
+          "normalizedProgress": 0.724907,
+          "filename": "phase3-mobile-0196.png",
+          "expectedDimensions": [
+            720,
+            1280
+          ],
+          "reference": {
+            "bytes": 652010,
+            "sha256": "bed67bfc6ab10d2ed1c35ad37c7e402054f7d2e91dd61730f433aad011c37661",
+            "width": 720,
+            "height": 1280
+          },
+          "rerender": {
+            "bytes": 652124,
+            "sha256": "8dfffb243045a3b67639d8dac4b4ba34e46a428f9ccdadf258b3bc2b7b374f90",
+            "width": 720,
+            "height": 1280
+          },
+          "dimensionsPassed": true,
+          "pngByteIdentityPassed": false,
+          "pixelComparison": {
+            "comparable": true,
+            "decodedChannels": 3,
+            "decodedChannelValues": 2764800,
+            "changedChannels": 73,
+            "changedChannelRatio": 0.000026403,
+            "mae8Bit": 0.000026403,
+            "rmse8Bit": 0.00513842,
+            "p95AbsChannelDelta": 0,
+            "maxAbsChannelDelta": 1,
+            "thresholds": {
+              "p95AbsChannelDelta": 0,
+              "maxAbsChannelDelta": 1,
+              "maximumChangedChannelRatio": 0.0001
+            },
+            "visualStateIdentityPassed": true
+          },
+          "status": "PASS"
+        },
+        {
+          "frame": 222,
+          "normalizedProgress": 0.821561,
+          "filename": "phase3-mobile-0222.png",
+          "expectedDimensions": [
+            720,
+            1280
+          ],
+          "reference": {
+            "bytes": 615980,
+            "sha256": "5ed6dd30f02260414385d1af145e4ae4033399f6bcceb59dad41306b6e6162aa",
+            "width": 720,
+            "height": 1280
+          },
+          "rerender": {
+            "bytes": 616363,
+            "sha256": "e6dbef3cfc429f0b8727c5deebd1bc1f8d81d255b4040cb18bd420abb1ffad9c",
+            "width": 720,
+            "height": 1280
+          },
+          "dimensionsPassed": true,
+          "pngByteIdentityPassed": false,
+          "pixelComparison": {
+            "comparable": true,
+            "decodedChannels": 3,
+            "decodedChannelValues": 2764800,
+            "changedChannels": 50,
+            "changedChannelRatio": 0.000018084,
+            "mae8Bit": 0.000018084,
+            "rmse8Bit": 0.004252586,
+            "p95AbsChannelDelta": 0,
+            "maxAbsChannelDelta": 1,
+            "thresholds": {
+              "p95AbsChannelDelta": 0,
+              "maxAbsChannelDelta": 1,
+              "maximumChangedChannelRatio": 0.0001
+            },
+            "visualStateIdentityPassed": true
+          },
+          "status": "PASS"
+        },
+        {
+          "frame": 270,
+          "normalizedProgress": 1,
+          "filename": "phase3-mobile-0270.png",
+          "expectedDimensions": [
+            720,
+            1280
+          ],
+          "reference": {
+            "bytes": 351106,
+            "sha256": "3eefa296089a8f0231a2de93f6b3ecf8d6b66295d57f7d63abe641084e794199",
+            "width": 720,
+            "height": 1280
+          },
+          "rerender": {
+            "bytes": 351293,
+            "sha256": "26e314d622f51a20d3154ede5354a5bcc1bea57c6bb3c14644a897bc2b583aee",
+            "width": 720,
+            "height": 1280
+          },
+          "dimensionsPassed": true,
+          "pngByteIdentityPassed": false,
+          "pixelComparison": {
+            "comparable": true,
+            "decodedChannels": 3,
+            "decodedChannelValues": 2764800,
+            "changedChannels": 9,
+            "changedChannelRatio": 0.000003255,
+            "mae8Bit": 0.000003255,
+            "rmse8Bit": 0.00180422,
+            "p95AbsChannelDelta": 0,
+            "maxAbsChannelDelta": 1,
+            "thresholds": {
+              "p95AbsChannelDelta": 0,
+              "maxAbsChannelDelta": 1,
+              "maximumChangedChannelRatio": 0.0001
+            },
+            "visualStateIdentityPassed": true
+          },
+          "status": "PASS"
+        }
+      ]
+    }
+  }
+}
