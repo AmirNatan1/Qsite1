@@ -73,6 +73,7 @@ RAW_SEQUENCE_FILENAME = re.compile(r"^phase3-(desktop|mobile)-\d{4}\.png$", re.I
 DESKTOP_SIZE = (1920, 1080)
 MOBILE_SIZE = (720, 1280)
 DESKTOP_REVIEW_SIZE = (1280, 720)
+MOBILE_REVIEW_SIZE = (360, 640)
 
 ACCEPTED_CRT_SHA256 = "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7"
 ACCEPTED_CRT_RELATIVE = Path(
@@ -477,7 +478,7 @@ def probe_media(ffprobe: Path, path: Path) -> dict[str, Any]:
             (
                 "stream=index,codec_type,codec_name,width,height,pix_fmt,r_frame_rate,"
                 "avg_frame_rate,nb_frames,nb_read_frames,bit_rate:"
-                "format=duration,size,bit_rate"
+                "format=format_name,duration,size,bit_rate"
             ),
             "-of",
             "json",
@@ -529,6 +530,7 @@ def probe_media(ffprobe: Path, path: Path) -> dict[str, Any]:
             or data.get("format", {}).get("bit_rate")
             or 0
         ),
+        "containerFormats": data.get("format", {}).get("format_name"),
         "audioStreamCount": len(audios),
         "keyframeFrames": keyframes,
         "keyframeIntervals": intervals,
@@ -1697,6 +1699,7 @@ def main() -> None:
     def register_video(
         path: Path,
         role: str,
+        variant: str,
         frames: Any,
         probe: dict[str, Any],
         progress: Any,
@@ -1706,7 +1709,7 @@ def main() -> None:
             {
                 "repositoryRelativePath": path.relative_to(repository).as_posix(),
                 "role": role,
-                "sourceVariant": "desktop",
+                "sourceVariant": variant,
                 "sourceFrames": frames,
                 "sourceNormalizedProgress": progress,
                 "mediaProbe": probe,
@@ -1714,6 +1717,48 @@ def main() -> None:
         )
         review_outputs.append(record)
         review_zip_files.append((path, path.relative_to(review_root).as_posix()))
+
+    media_lab_recording = review_root / "phase-3-media-lab-scrub-evidence.webm"
+    media_lab_recording_registered = False
+    if media_lab_recording.is_file():
+        media_lab_probe = probe_media(ffprobe, media_lab_recording)
+        container_formats = set((media_lab_probe.get("containerFormats") or "").split(","))
+        if "webm" not in container_formats:
+            raise ValueError(
+                f"Isolated media-lab evidence is not a WebM container: {media_lab_probe}"
+            )
+        if media_lab_probe["audioStreamCount"] != 0:
+            raise ValueError(
+                f"Isolated media-lab evidence must be silent: {media_lab_recording}"
+            )
+        if (
+            media_lab_probe["width"] <= 0
+            or media_lab_probe["height"] <= 0
+            or media_lab_probe["durationSeconds"] <= 0
+            or not media_lab_probe["frameCount"]
+        ):
+            raise ValueError(
+                f"Isolated media-lab evidence has invalid video geometry/duration: {media_lab_probe}"
+            )
+        register_video(
+            media_lab_recording,
+            "actual isolated media-lab interaction recording",
+            "isolated-media-lab",
+            {
+                "captureType": "headed browser interaction recording",
+                "testedBehaviors": [
+                    "forward scrub",
+                    "fast forward jump",
+                    "reverse scrub",
+                    "rapid alternating seek",
+                    "direct portal jump",
+                    "return to conduction",
+                ],
+            },
+            media_lab_probe,
+            "non-linear user/media timeline interaction; visual source progress is shown in capture",
+        )
+        media_lab_recording_registered = True
 
     candidate_records = {candidate["id"]: candidate for candidate in candidates}
     for variant, source_sequence_root in (
@@ -1998,6 +2043,7 @@ def main() -> None:
     register_video(
         forward_review,
         "complete compact forward desktop review",
+        "desktop",
         {"order": "forward", "frameStart": 1, "frameEnd": 270},
         forward_probe,
         {"start": 0.0, "end": 1.0},
@@ -2023,9 +2069,81 @@ def main() -> None:
     register_video(
         reverse_review,
         "complete compact reverse desktop review",
+        "desktop",
         {"order": "reverse", "frameStart": 270, "frameEnd": 1},
         reverse_probe,
         {"start": 1.0, "end": 0.0},
+    )
+
+    mobile_forward_review = review_root / "phase-3-mobile-forward-review.mp4"
+    encode_atomic(
+        ffmpeg,
+        [
+            *input_sequence_arguments(mobile_root, "mobile"),
+            *h264_arguments(24, MOBILE_REVIEW_SIZE),
+        ],
+        mobile_forward_review,
+    )
+    mobile_forward_probe = verify_candidate(
+        ffprobe, mobile_forward_review, MOBILE_REVIEW_SIZE, "h264"
+    )
+    register_video(
+        mobile_forward_review,
+        "complete transferable forward mobile review derived from the authored 720x1280 source",
+        "mobile",
+        {
+            "order": "forward",
+            "frameStart": FRAME_START,
+            "frameEnd": FRAME_END,
+            "frameCount": FRAME_COUNT,
+            "sourceDimensions": {"width": MOBILE_SIZE[0], "height": MOBILE_SIZE[1]},
+        },
+        mobile_forward_probe,
+        {
+            "start": 0.0,
+            "end": 1.0,
+            "formula": "(frame - 1) / 269",
+        },
+    )
+
+    with tempfile.TemporaryDirectory(prefix="phase3-mobile-reverse-") as temporary_text:
+        temporary = Path(temporary_text)
+        for output_frame, source_frame in enumerate(
+            range(FRAME_END, FRAME_START - 1, -1), start=1
+        ):
+            link_or_copy(
+                frame_path(mobile_root, "mobile", source_frame),
+                temporary / f"phase3-reverse-{output_frame:04d}.png",
+            )
+        mobile_reverse_review = review_root / "phase-3-mobile-reverse-review.mp4"
+        encode_atomic(
+            ffmpeg,
+            [
+                *input_sequence_arguments(temporary, "reverse"),
+                *h264_arguments(25, MOBILE_REVIEW_SIZE),
+            ],
+            mobile_reverse_review,
+        )
+    mobile_reverse_probe = verify_candidate(
+        ffprobe, mobile_reverse_review, MOBILE_REVIEW_SIZE, "h264"
+    )
+    register_video(
+        mobile_reverse_review,
+        "complete transferable reverse mobile review derived from the authored 720x1280 source",
+        "mobile",
+        {
+            "order": "reverse",
+            "frameStart": FRAME_END,
+            "frameEnd": FRAME_START,
+            "frameCount": FRAME_COUNT,
+            "sourceDimensions": {"width": MOBILE_SIZE[0], "height": MOBILE_SIZE[1]},
+        },
+        mobile_reverse_probe,
+        {
+            "start": 1.0,
+            "end": 0.0,
+            "formula": "(frame - 1) / 269",
+        },
     )
 
     with tempfile.TemporaryDirectory(prefix="phase3-scrub-") as temporary_text:
@@ -2058,6 +2176,7 @@ def main() -> None:
     register_video(
         scrub_review,
         "deterministic scrub simulation: forward/jump/reverse/alternating/portal/conduction",
+        "desktop",
         [
             {
                 "label": label,
@@ -2068,6 +2187,15 @@ def main() -> None:
         ],
         scrub_probe,
         "non-linear authored seek pattern; exact values recorded with each segment",
+    )
+
+    media_lab_readme_line = (
+        "14. `phase-3-media-lab-scrub-evidence.webm` — verified silent headed interaction capture"
+        if media_lab_recording_registered
+        else (
+            "14. Optional `phase-3-media-lab-scrub-evidence.webm` was not present; "
+            "no synthetic headed-interaction evidence was substituted"
+        )
     )
 
     readme = f"""# Phase 3 CRT Opening — Human Review Package
@@ -2087,7 +2215,10 @@ desktop or mobile PNG sequences and it is not a Phase 4 integration.
 8. `phase-3-to-phase-2b-handoff-comparison.png`
 9. mobile 390/360/320 px, landscape, and reduced-motion evidence
 10. selected full-resolution stills
-11. forward, reverse, then scrub-simulation desktop review videos
+11. `phase-3-desktop-forward-review.mp4` and `phase-3-desktop-reverse-review.mp4`
+12. `phase-3-mobile-forward-review.mp4` and `phase-3-mobile-reverse-review.mp4`
+13. `phase-3-desktop-scrub-simulation-review.mp4`
+{media_lab_readme_line}
 
 The portal guides exist only in evidence. They are not baked into production
 media. The Phase 2B ENTRY panel is cropped from the frozen accepted evidence
@@ -2171,6 +2302,11 @@ Phase 3 if the handoff does not feel inevitable.
             "audioTracks": 0,
             "selectedGopFrames": GOP,
             "selectedGopMilliseconds": round(GOP / FPS * 1000),
+        },
+        "mediaLabEvidence": {
+            "optionalRepositoryRelativePath": media_lab_recording.relative_to(repository).as_posix(),
+            "registered": media_lab_recording_registered,
+            "syntheticHeadedInteractionSubstituteCreated": False,
         },
         "reviewArtifacts": review_outputs,
         "reviewReadme": {
