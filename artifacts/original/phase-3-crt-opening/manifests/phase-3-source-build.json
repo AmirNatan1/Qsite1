@@ -8,13 +8,13 @@
   },
   "derivative_source": {
     "package_relative_path": "source/quantum-signal-television-phase3-opening.blend",
-    "bytes": 2164667,
-    "sha256": "8ad939e06358084da08309ed1dadff1cc27fde6d63aa4488c73e3839da93f46b"
+    "bytes": 2182647,
+    "sha256": "bbde82220f500c6f047c2e2d33a8580c08a40e65800615dd7256bebc2f4472ba"
   },
   "builder": {
     "package_relative_path": "source/build_phase3_crt_opening.py",
-    "bytes": 33162,
-    "sha256": "99ed79bd4048617f49bbd234cce5542bea2f848ee81e64514482f58e8f1daaac"
+    "bytes": 35873,
+    "sha256": "6f597873171871cc393fd1da3090b5a0bbab9fda2ae01f97854e23ae11c1a73b"
   },
   "configuration": {
     "package_relative_path": "source/phase3_config.py",

@@ -46,6 +46,16 @@ def emission_strength(material: bpy.types.Material) -> float | None:
     return float(shader.inputs["Emission Strength"].default_value)
 
 
+def shader_color(material: bpy.types.Material, socket_name: str) -> tuple[float, float, float] | None:
+    if material.node_tree is None:
+        return None
+    shader = material.node_tree.nodes.get("Principled BSDF")
+    if shader is None or shader.inputs.get(socket_name) is None:
+        return None
+    value = shader.inputs[socket_name].default_value
+    return tuple(float(channel) for channel in value[:3])
+
+
 def main() -> None:
     records: list[dict] = []
     scene = bpy.context.scene
@@ -68,6 +78,17 @@ def main() -> None:
     check(records, "no_external_images", len(bpy.data.images) == 0, len(bpy.data.images), 0)
     check(records, "no_linked_libraries", len(bpy.data.libraries) == 0, len(bpy.data.libraries), 0)
     check(records, "no_audio", len(bpy.data.sounds) == 0, len(bpy.data.sounds), 0)
+    check(records, "no_movie_clips", len(bpy.data.movieclips) == 0, len(bpy.data.movieclips), 0)
+    check(records, "no_cache_files", len(bpy.data.cache_files) == 0, len(bpy.data.cache_files), 0)
+    external_fonts = [font.filepath for font in bpy.data.fonts if font.filepath not in {"", "<builtin>"}]
+    check(records, "no_external_fonts", len(external_fonts) == 0, external_fonts, [])
+    external_paths = sorted(set(bpy.utils.blend_paths(absolute=True, packed=False, local=False)))
+    check(records, "no_external_file_paths", len(external_paths) == 0, external_paths, [])
+    strips = []
+    if scene.sequence_editor is not None:
+        strips = [strip.name for strip in scene.sequence_editor.strips]
+    check(records, "no_sequence_editor_strips", len(strips) == 0, strips, [])
+    check(records, "motion_blur_disabled", not scene.render.use_motion_blur, scene.render.use_motion_blur, False)
     circular_terms = ("reticle", "radar", "scanning_ring", "portal_ring", "oscilloscope_circle")
     circular_names = [name for name in bpy.data.objects.keys() if any(term in name.lower() for term in circular_terms)]
     check(records, "no_circular_startup_graphics", len(circular_names) == 0, circular_names, [])
@@ -97,18 +118,92 @@ def main() -> None:
         and all(abs(value) <= 1e-9 for value in portal_emissions.values())
         and abs(magenta_light_energy) <= 1e-9
     )
+    dormant_scanlines_hidden = all(
+        obj.hide_render for obj in bpy.data.collections["CRT_SCANLINE_GEOMETRY"].all_objects
+    )
     check(
         records,
         "true_dormancy_zero_environmental_magenta",
-        zero_magenta,
+        zero_magenta and dormant_scanlines_hidden,
         {
             "maximum_cable_emission": max(cable_emissions.values(), default=0.0),
             "indicator_emission": indicator,
             "wake_emission": wake,
             "maximum_portal_emission": max(portal_emissions.values(), default=0.0),
             "phase3_source_light_energy_w": magenta_light_energy,
+            "scanlines_hidden": dormant_scanlines_hidden,
         },
-        "all zero at frame 1",
+        "all magenta sources zero and physical scanline geometry hidden at frame 1",
+    )
+
+    scene.frame_set(cfg.FRAME_END)
+    interface_materials = [material for material in bpy.data.materials if material.name.startswith("Phase3_Interface_")]
+    interface_handoff_state = {
+        material.name: {
+            "base_color": shader_color(material, "Base Color"),
+            "emission_color": shader_color(material, "Emission Color"),
+            "emission_strength": emission_strength(material),
+        }
+        for material in interface_materials
+    }
+    interface_text_retired = len(interface_materials) == 3 and all(
+        all(abs(channel) <= 1e-9 for channel in state["base_color"] or ())
+        and all(abs(channel) <= 1e-9 for channel in state["emission_color"] or ())
+        and abs(state["emission_strength"] or 0.0) <= 1e-9
+        for state in interface_handoff_state.values()
+    )
+    interface_objects = [
+        obj
+        for obj in bpy.data.collections["CRT_PHYSICAL_SIGNAL_INTERFACE"].all_objects
+        if str(obj.get("interface_stage", "none")) in {"brand", "route", "ready"}
+    ]
+    interface_geometry_hidden = bool(interface_objects) and all(obj.hide_render for obj in interface_objects)
+    check(
+        records,
+        "handoff_physical_interface_text_retired",
+        interface_text_retired and interface_geometry_hidden,
+        {"materials": interface_handoff_state, "hidden_objects": sum(obj.hide_render for obj in interface_objects), "object_count": len(interface_objects)},
+        "three black, non-emissive interface materials and all physical interface geometry hidden at frame 270",
+    )
+    portal_objects = list(bpy.data.collections["PHASE3_PORTAL_ALIGNMENT_FIELD"].all_objects)
+    portal_review_only = len(portal_objects) == 4 and all(
+        obj.hide_render and bool(obj.get("phase3_review_overlay_only", False)) for obj in portal_objects
+    )
+    check(
+        records,
+        "handoff_alignment_guides_not_baked",
+        portal_review_only,
+        {obj.name: {"hide_render": obj.hide_render, "review_overlay_only": obj.get("phase3_review_overlay_only")} for obj in portal_objects},
+        "four hidden review-overlay objects; accepted text-free raster cues remain the rendered authority",
+    )
+    final_conductor_strengths = {
+        material.name: emission_strength(material)
+        for material in desktop_materials + mobile_materials
+    }
+    final_contact_energy = sum(
+        float(obj.data.energy)
+        for obj in bpy.data.objects
+        if obj.type == "LIGHT" and "ContactLight" in obj.name
+    )
+    late_sources_neutral = (
+        all(abs(strength or 0.0) <= 1e-9 for strength in final_conductor_strengths.values())
+        and abs(final_contact_energy) <= 1e-9
+        and abs(emission_strength(bpy.data.materials["Phase3_PowerIndicator"]) or 0.0) <= 1e-9
+        and bpy.data.objects["CRT_ConnectorArrivalResponseRing"].hide_render
+        and bpy.data.objects["CRT_WakeHorizontalPhosphorLine"].hide_render
+    )
+    check(
+        records,
+        "handoff_physical_magenta_sources_retired",
+        late_sources_neutral,
+        {
+            "maximum_conductor_emission": max((strength or 0.0 for strength in final_conductor_strengths.values()), default=0.0),
+            "contact_light_energy_w": final_contact_energy,
+            "indicator_emission": emission_strength(bpy.data.materials["Phase3_PowerIndicator"]),
+            "connector_hidden": bpy.data.objects["CRT_ConnectorArrivalResponseRing"].hide_render,
+            "wake_line_hidden": bpy.data.objects["CRT_WakeHorizontalPhosphorLine"].hide_render,
+        },
+        "all physical magenta sources neutral or hidden at frame 270",
     )
 
     failed = [record for record in records if not record["pass"]]

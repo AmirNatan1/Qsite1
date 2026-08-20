@@ -131,6 +131,10 @@ def configure_light_linking() -> None:
                 light.data.specular_factor = 0.0
             light.light_linking.receiver_collection = main_receivers
 
+    for obj in bpy.data.objects:
+        if obj.type == "LIGHT" and "ContactLight" in obj.name:
+            obj.light_linking.receiver_collection = main_receivers
+
     accent = bpy.data.objects.get("Scene_GlassProofAccent")
     if accent is not None:
         accent.hide_render = True

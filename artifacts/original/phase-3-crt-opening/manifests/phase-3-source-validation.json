@@ -5,10 +5,10 @@
   "accepted_source_sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7",
   "derivative_source": {
     "package_relative_path": "source/quantum-signal-television-phase3-opening.blend",
-    "bytes": 2164667,
-    "sha256": "8ad939e06358084da08309ed1dadff1cc27fde6d63aa4488c73e3839da93f46b"
+    "bytes": 2182647,
+    "sha256": "bbde82220f500c6f047c2e2d33a8580c08a40e65800615dd7256bebc2f4472ba"
   },
-  "check_count": 19,
+  "check_count": 28,
   "failed_count": 0,
   "checks": [
     {
@@ -117,6 +117,48 @@
       "expected": 0
     },
     {
+      "id": "no_movie_clips",
+      "status": "PASS",
+      "pass": true,
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "id": "no_cache_files",
+      "status": "PASS",
+      "pass": true,
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "id": "no_external_fonts",
+      "status": "PASS",
+      "pass": true,
+      "actual": [],
+      "expected": []
+    },
+    {
+      "id": "no_external_file_paths",
+      "status": "PASS",
+      "pass": true,
+      "actual": [],
+      "expected": []
+    },
+    {
+      "id": "no_sequence_editor_strips",
+      "status": "PASS",
+      "pass": true,
+      "actual": [],
+      "expected": []
+    },
+    {
+      "id": "motion_blur_disabled",
+      "status": "PASS",
+      "pass": true,
+      "actual": false,
+      "expected": false
+    },
+    {
       "id": "no_circular_startup_graphics",
       "status": "PASS",
       "pass": true,
@@ -146,9 +188,98 @@
         "indicator_emission": 0.0,
         "wake_emission": 0.0,
         "maximum_portal_emission": 0.0,
-        "phase3_source_light_energy_w": 0.0
+        "phase3_source_light_energy_w": 0.0,
+        "scanlines_hidden": true
       },
-      "expected": "all zero at frame 1"
+      "expected": "all magenta sources zero and physical scanline geometry hidden at frame 1"
+    },
+    {
+      "id": "handoff_physical_interface_text_retired",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "materials": {
+          "Phase3_Interface_Brand": {
+            "base_color": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "emission_color": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "emission_strength": 0.0
+          },
+          "Phase3_Interface_Ready": {
+            "base_color": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "emission_color": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "emission_strength": 0.0
+          },
+          "Phase3_Interface_Route": {
+            "base_color": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "emission_color": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "emission_strength": 0.0
+          }
+        },
+        "hidden_objects": 3,
+        "object_count": 3
+      },
+      "expected": "three black, non-emissive interface materials and all physical interface geometry hidden at frame 270"
+    },
+    {
+      "id": "handoff_alignment_guides_not_baked",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "Phase3_PortalLeftField": {
+          "hide_render": true,
+          "review_overlay_only": true
+        },
+        "Phase3_PortalRightField": {
+          "hide_render": true,
+          "review_overlay_only": true
+        },
+        "Phase3_PortalLeftRouteDatum": {
+          "hide_render": true,
+          "review_overlay_only": true
+        },
+        "Phase3_PortalRightRouteDatum": {
+          "hide_render": true,
+          "review_overlay_only": true
+        }
+      },
+      "expected": "four hidden review-overlay objects; accepted text-free raster cues remain the rendered authority"
+    },
+    {
+      "id": "handoff_physical_magenta_sources_retired",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "maximum_conductor_emission": 0.0,
+        "contact_light_energy_w": 0.0,
+        "indicator_emission": 0.0,
+        "connector_hidden": true,
+        "wake_line_hidden": true
+      },
+      "expected": "all physical magenta sources neutral or hidden at frame 270"
     }
   ]
 }

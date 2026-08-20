@@ -174,6 +174,8 @@ def animate_cable(prefix: str, variant: str) -> list[bpy.types.Object]:
         mat.name = f"Phase3_{variant.title()}Conductor_{index:03d}"
         shader = principled(mat)
         assign_material(obj, mat)
+        if hasattr(obj, "visible_glossy"):
+            obj.visible_glossy = False
         progress = float(obj.get("progress_start", (index - 1) / len(segments)))
         arrival = start + round(progress * (end - start))
         pre = max(cfg.FRAME_START, arrival - 1)
@@ -187,7 +189,12 @@ def animate_cable(prefix: str, variant: str) -> list[bpy.types.Object]:
         keyframe_socket(shader.inputs["Base Color"], settle, trail.inputs["Base Color"].default_value)
         keyframe_socket(shader.inputs["Emission Color"], settle, trail.inputs["Emission Color"].default_value)
         keyframe_socket(shader.inputs["Emission Strength"], settle, 0.27)
-        keyframe_socket(shader.inputs["Emission Strength"], cfg.FRAME_END, 0.27)
+        keyframe_socket(shader.inputs["Base Color"], 246, trail.inputs["Base Color"].default_value)
+        keyframe_socket(shader.inputs["Emission Color"], 246, trail.inputs["Emission Color"].default_value)
+        keyframe_socket(shader.inputs["Emission Strength"], 246, 0.27)
+        keyframe_socket(shader.inputs["Base Color"], cfg.EVENTS["late_flattening"], inactive.inputs["Base Color"].default_value)
+        keyframe_socket(shader.inputs["Emission Color"], cfg.EVENTS["late_flattening"], inactive.inputs["Emission Color"].default_value)
+        keyframe_socket(shader.inputs["Emission Strength"], cfg.EVENTS["late_flattening"], 0.0)
         obj["phase3_variant"] = variant
         obj["phase3_arrival_frame"] = arrival
     for obj in bpy.data.objects:
@@ -221,7 +228,8 @@ def animate_contact_lights(segments: list[bpy.types.Object], variant: str) -> No
         keyframe_property(data, "energy", max(cfg.FRAME_START, arrival - 1), 0.0)
         keyframe_property(data, "energy", arrival, 5.0)
         keyframe_property(data, "energy", min(arrival + 4, cfg.FRAME_END), 2.1)
-        keyframe_property(data, "energy", cfg.FRAME_END, 1.25)
+        keyframe_property(data, "energy", 246, 1.25)
+        keyframe_property(data, "energy", cfg.EVENTS["late_flattening"], 0.0)
 
 
 def animate_power_sequence() -> None:
@@ -240,7 +248,10 @@ def animate_power_sequence() -> None:
     keyframe_socket(indicator_shader.inputs["Emission Color"], cfg.EVENTS["indicator_on"], indicator_emission)
     keyframe_socket(indicator_shader.inputs["Emission Strength"], cfg.EVENTS["current_arrival"], 0.0)
     keyframe_socket(indicator_shader.inputs["Emission Strength"], cfg.EVENTS["indicator_on"], 1.4)
-    keyframe_socket(indicator_shader.inputs["Emission Strength"], cfg.FRAME_END, 0.72)
+    keyframe_socket(indicator_shader.inputs["Emission Strength"], 246, 0.72)
+    keyframe_socket(indicator_shader.inputs["Base Color"], cfg.EVENTS["late_flattening"], (0.0, 0.0, 0.0, 1.0))
+    keyframe_socket(indicator_shader.inputs["Emission Color"], cfg.EVENTS["late_flattening"], (0.0, 0.0, 0.0, 1.0))
+    keyframe_socket(indicator_shader.inputs["Emission Strength"], cfg.EVENTS["late_flattening"], 0.0)
 
     connector = object_required("CRT_ConnectorArrivalResponseRing")
     connector.hide_render = False
@@ -262,6 +273,8 @@ def animate_power_sequence() -> None:
     keyframe_socket(connector_shader.inputs["Emission Strength"], cfg.EVENTS["current_arrival"], 0.52)
     keyframe_socket(connector_shader.inputs["Emission Strength"], cfg.EVENTS["indicator_on"] + 3, 0.12)
     keyframe_socket(connector_shader.inputs["Emission Strength"], cfg.EVENTS["horizontal_line_start"], 0.0)
+    keyframe_property(connector, "hide_render", cfg.EVENTS["horizontal_line_start"] - 1, False)
+    keyframe_property(connector, "hide_render", cfg.EVENTS["horizontal_line_start"], True)
 
     wake = object_required("CRT_WakeHorizontalPhosphorLine")
     wake.hide_render = False
@@ -271,6 +284,10 @@ def animate_power_sequence() -> None:
     wake_base = wake_shader.inputs["Base Color"].default_value[:]
     wake_emission = wake_shader.inputs["Emission Color"].default_value[:]
     assign_material(wake, wake_mat)
+    keyframe_property(wake, "hide_render", cfg.FRAME_START, True)
+    keyframe_property(wake, "hide_render", cfg.EVENTS["horizontal_line_start"] - 1, True)
+    keyframe_property(wake, "hide_render", cfg.EVENTS["horizontal_line_start"], False)
+    keyframe_property(wake, "hide_render", cfg.EVENTS["raster_expansion_start"] + 3, True)
     keyframe_socket(wake_shader.inputs["Base Color"], cfg.FRAME_START, (0.0, 0.0, 0.0, 1.0))
     keyframe_socket(wake_shader.inputs["Base Color"], cfg.EVENTS["horizontal_line_start"] - 1, (0.0, 0.0, 0.0, 1.0))
     keyframe_socket(wake_shader.inputs["Base Color"], cfg.EVENTS["horizontal_line_start"], wake_base)
@@ -315,7 +332,9 @@ def animate_power_sequence() -> None:
     scan_emission = scan_shader.inputs["Emission Color"].default_value[:]
     for obj in scanlines:
         assign_material(obj, scan_mat)
-        obj.hide_render = False
+        keyframe_property(obj, "hide_render", cfg.FRAME_START, True)
+        keyframe_property(obj, "hide_render", cfg.EVENTS["raster_expansion_start"], True)
+        keyframe_property(obj, "hide_render", cfg.EVENTS["raster_expansion_end"], False)
     keyframe_socket(scan_shader.inputs["Base Color"], cfg.FRAME_START, (0.0, 0.0, 0.0, 1.0))
     keyframe_socket(scan_shader.inputs["Base Color"], cfg.EVENTS["raster_expansion_start"], (0.0, 0.0, 0.0, 1.0))
     keyframe_socket(scan_shader.inputs["Base Color"], cfg.EVENTS["raster_expansion_end"], scan_base)
@@ -383,15 +402,23 @@ def animate_interface() -> None:
         for obj in list(collection.all_objects):
             if str(obj.get("interface_stage", "none")) == stage:
                 assign_material(obj, mat)
-                obj.hide_render = False
                 if hasattr(obj, "visible_shadow"):
                     obj.visible_shadow = False
+                keyframe_property(obj, "hide_render", cfg.FRAME_START, True)
+                keyframe_property(obj, "hide_render", max(cfg.FRAME_START, schedule[0][0] - 1), True)
+                keyframe_property(obj, "hide_render", schedule[0][0], False)
+                keyframe_property(obj, "hide_render", schedule[-1][0] - 1, False)
+                keyframe_property(obj, "hide_render", schedule[-1][0], True)
         keyframe_socket(shader.inputs["Base Color"], cfg.FRAME_START, (0.0, 0.0, 0.0, 1.0))
         keyframe_socket(shader.inputs["Base Color"], schedule[0][0], (0.0, 0.0, 0.0, 1.0))
         keyframe_socket(shader.inputs["Base Color"], schedule[1][0], interface_base)
+        keyframe_socket(shader.inputs["Base Color"], schedule[-2][0], interface_base)
+        keyframe_socket(shader.inputs["Base Color"], schedule[-1][0], (0.0, 0.0, 0.0, 1.0))
         keyframe_socket(shader.inputs["Emission Color"], cfg.FRAME_START, (0.0, 0.0, 0.0, 1.0))
         keyframe_socket(shader.inputs["Emission Color"], schedule[0][0], (0.0, 0.0, 0.0, 1.0))
         keyframe_socket(shader.inputs["Emission Color"], schedule[1][0], interface_emission)
+        keyframe_socket(shader.inputs["Emission Color"], schedule[-2][0], interface_emission)
+        keyframe_socket(shader.inputs["Emission Color"], schedule[-1][0], (0.0, 0.0, 0.0, 1.0))
         for frame, strength in schedule:
             keyframe_socket(shader.inputs["Emission Strength"], frame, strength)
 
@@ -442,30 +469,33 @@ def create_portal_alignment_field() -> None:
         [(232, 0.0), (252, 0.05), (266, 0.11), (270, 0.12)],
     )
     y = -0.1095
-    create_screen_polygon(
+    left_field = create_screen_polygon(
         "Phase3_PortalLeftField",
         [(0.385, 0.230), (0.590, 0.230), (0.665, 0.620), (0.385, 0.620)],
         y,
         dark_slate,
     )
-    create_screen_polygon(
+    right_field = create_screen_polygon(
         "Phase3_PortalRightField",
         [(0.695, 0.230), (0.915, 0.230), (0.915, 0.620), (0.755, 0.620)],
         y - 0.0002,
         dark_magenta,
     )
-    create_screen_polygon(
+    left_datum = create_screen_polygon(
         "Phase3_PortalLeftRouteDatum",
         [(0.405, 0.270), (0.630, 0.270), (0.630, 0.273), (0.405, 0.273)],
         y - 0.0004,
         route_accent,
     )
-    create_screen_polygon(
+    right_datum = create_screen_polygon(
         "Phase3_PortalRightRouteDatum",
         [(0.670, 0.270), (0.895, 0.270), (0.895, 0.273), (0.670, 0.273)],
         y - 0.0004,
         route_accent,
     )
+    for obj in (left_field, right_field, left_datum, right_datum):
+        obj.hide_render = True
+        obj["phase3_review_overlay_only"] = True
 
     cue_collection = bpy.data.collections.get("CRT_PORTAL_TAKEOVER_CUES")
     if cue_collection is not None:
