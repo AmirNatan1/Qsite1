@@ -1,0 +1,154 @@
+{
+  "schema": "quantum-hub.phase-3-crt-opening.source-validation.v1",
+  "status": "PASS",
+  "blender_version": "5.2.0 LTS",
+  "accepted_source_sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7",
+  "derivative_source": {
+    "package_relative_path": "source/quantum-signal-television-phase3-opening.blend",
+    "bytes": 2164667,
+    "sha256": "8ad939e06358084da08309ed1dadff1cc27fde6d63aa4488c73e3839da93f46b"
+  },
+  "check_count": 19,
+  "failed_count": 0,
+  "checks": [
+    {
+      "id": "accepted_source_hash",
+      "status": "PASS",
+      "pass": true,
+      "actual": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7",
+      "expected": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7"
+    },
+    {
+      "id": "opened_derivative",
+      "status": "PASS",
+      "pass": true,
+      "actual": "C:\\Users\\amir\\OneDrive\\Documents\\Quantum-Hub\\Qsite1\\artifacts\\original\\phase-3-crt-opening\\source\\quantum-signal-television-phase3-opening.blend",
+      "expected": "C:\\Users\\amir\\OneDrive\\Documents\\Quantum-Hub\\Qsite1\\artifacts\\original\\phase-3-crt-opening\\source\\quantum-signal-television-phase3-opening.blend"
+    },
+    {
+      "id": "derivative_distinct_from_master",
+      "status": "PASS",
+      "pass": true,
+      "actual": "C:\\Users\\amir\\OneDrive\\Documents\\Quantum-Hub\\Qsite1\\artifacts\\original\\phase-3-crt-opening\\source\\quantum-signal-television-phase3-opening.blend",
+      "expected": "different path"
+    },
+    {
+      "id": "timeline_fps",
+      "status": "PASS",
+      "pass": true,
+      "actual": 30,
+      "expected": 30
+    },
+    {
+      "id": "timeline_frame_start",
+      "status": "PASS",
+      "pass": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "id": "timeline_frame_end",
+      "status": "PASS",
+      "pass": true,
+      "actual": 270,
+      "expected": 270
+    },
+    {
+      "id": "desktop_camera",
+      "status": "PASS",
+      "pass": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "id": "mobile_camera",
+      "status": "PASS",
+      "pass": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "id": "mobile_authored_separately",
+      "status": "PASS",
+      "pass": true,
+      "actual": "authored independently",
+      "expected": "authored independently"
+    },
+    {
+      "id": "desktop_animated_conductor_count",
+      "status": "PASS",
+      "pass": true,
+      "actual": 180,
+      "expected": 180
+    },
+    {
+      "id": "mobile_animated_conductor_count",
+      "status": "PASS",
+      "pass": true,
+      "actual": 180,
+      "expected": 180
+    },
+    {
+      "id": "portal_text_free_geometry",
+      "status": "PASS",
+      "pass": true,
+      "actual": 4,
+      "expected": 4
+    },
+    {
+      "id": "no_external_images",
+      "status": "PASS",
+      "pass": true,
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "id": "no_linked_libraries",
+      "status": "PASS",
+      "pass": true,
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "id": "no_audio",
+      "status": "PASS",
+      "pass": true,
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "id": "no_circular_startup_graphics",
+      "status": "PASS",
+      "pass": true,
+      "actual": [],
+      "expected": []
+    },
+    {
+      "id": "deterministic_random_event_count",
+      "status": "PASS",
+      "pass": true,
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "id": "accepted_crt_dimensions_unchanged",
+      "status": "PASS",
+      "pass": true,
+      "actual": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7",
+      "expected": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7"
+    },
+    {
+      "id": "true_dormancy_zero_environmental_magenta",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "maximum_cable_emission": 0.0,
+        "indicator_emission": 0.0,
+        "wake_emission": 0.0,
+        "maximum_portal_emission": 0.0,
+        "phase3_source_light_energy_w": 0.0
+      },
+      "expected": "all zero at frame 1"
+    }
+  ]
+}

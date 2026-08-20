@@ -1,0 +1,415 @@
+{
+  "schema": "quantum-hub.phase-3-crt-opening.source-build.v1",
+  "status": "PASS",
+  "accepted_source": {
+    "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/quantum-signal-television-v1.blend",
+    "bytes": 1516222,
+    "sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7"
+  },
+  "derivative_source": {
+    "package_relative_path": "source/quantum-signal-television-phase3-opening.blend",
+    "bytes": 2164667,
+    "sha256": "8ad939e06358084da08309ed1dadff1cc27fde6d63aa4488c73e3839da93f46b"
+  },
+  "builder": {
+    "package_relative_path": "source/build_phase3_crt_opening.py",
+    "bytes": 33162,
+    "sha256": "99ed79bd4048617f49bbd234cce5542bea2f848ee81e64514482f58e8f1daaac"
+  },
+  "configuration": {
+    "package_relative_path": "source/phase3_config.py",
+    "bytes": 4314,
+    "sha256": "e9212ee03658ac53b3f20505e80f23a11b43706309c9920a7210a50146902839"
+  },
+  "blender_version": "5.2.0 LTS",
+  "timeline": {
+    "fps": 30,
+    "frame_start": 1,
+    "frame_end": 270,
+    "duration_seconds": 9.0,
+    "events": {
+      "dormancy_start": {
+        "frame": 1,
+        "progress": 0.0
+      },
+      "dormancy_hold_end": {
+        "frame": 30,
+        "progress": 0.107807
+      },
+      "conduction_start": {
+        "frame": 31,
+        "progress": 0.111524
+      },
+      "conduction_midpoint": {
+        "frame": 72,
+        "progress": 0.263941
+      },
+      "current_arrival": {
+        "frame": 112,
+        "progress": 0.412639
+      },
+      "indicator_on": {
+        "frame": 116,
+        "progress": 0.427509
+      },
+      "horizontal_line_start": {
+        "frame": 121,
+        "progress": 0.446097
+      },
+      "horizontal_line_peak": {
+        "frame": 126,
+        "progress": 0.464684
+      },
+      "horizontal_line_end": {
+        "frame": 132,
+        "progress": 0.486989
+      },
+      "raster_expansion_start": {
+        "frame": 133,
+        "progress": 0.490706
+      },
+      "raster_expansion_end": {
+        "frame": 154,
+        "progress": 0.568773
+      },
+      "settling_start": {
+        "frame": 155,
+        "progress": 0.572491
+      },
+      "black_stabilized": {
+        "frame": 176,
+        "progress": 0.650558
+      },
+      "brand_start": {
+        "frame": 177,
+        "progress": 0.654275
+      },
+      "route_start": {
+        "frame": 190,
+        "progress": 0.702602
+      },
+      "status_start": {
+        "frame": 201,
+        "progress": 0.743494
+      },
+      "signal_stabilized": {
+        "frame": 210,
+        "progress": 0.776952
+      },
+      "camera_entry_start": {
+        "frame": 211,
+        "progress": 0.780669
+      },
+      "front_alignment": {
+        "frame": 232,
+        "progress": 0.858736
+      },
+      "bezel_exit": {
+        "frame": 252,
+        "progress": 0.933086
+      },
+      "late_flattening": {
+        "frame": 255,
+        "progress": 0.944238
+      },
+      "handoff": {
+        "frame": 270,
+        "progress": 1.0
+      }
+    }
+  },
+  "render_authority": {
+    "engine": "CYCLES",
+    "device": "GPU",
+    "compute_backend": "OPTIX",
+    "samples": 48,
+    "preview_samples": 16,
+    "adaptive_sampling": true,
+    "adaptive_threshold": 0.018,
+    "denoising": true,
+    "denoiser": "OPENIMAGEDENOISE",
+    "seed": 2404,
+    "max_bounces": 8,
+    "diffuse_bounces": 4,
+    "glossy_bounces": 4,
+    "transmission_bounces": 8,
+    "transparent_bounces": 8,
+    "volume_bounces": 0,
+    "view_transform": "AgX",
+    "look": "AgX - Medium High Contrast"
+  },
+  "animation": {
+    "desktop_camera_keys": [
+      [
+        1,
+        [
+          2.7,
+          -3.48,
+          0.88
+        ],
+        [
+          0.27,
+          0.15,
+          0.28
+        ],
+        66.0
+      ],
+      [
+        72,
+        [
+          2.62,
+          -3.42,
+          0.86
+        ],
+        [
+          0.31,
+          0.13,
+          0.3
+        ],
+        67.0
+      ],
+      [
+        112,
+        [
+          2.45,
+          -3.34,
+          0.84
+        ],
+        [
+          0.37,
+          0.1,
+          0.32
+        ],
+        68.0
+      ],
+      [
+        176,
+        [
+          1.02,
+          -3.0,
+          0.74
+        ],
+        [
+          0.58,
+          -0.01,
+          0.4
+        ],
+        78.0
+      ],
+      [
+        210,
+        [
+          0.8,
+          -2.34,
+          0.8
+        ],
+        [
+          0.64,
+          -0.075,
+          0.425
+        ],
+        84.0
+      ],
+      [
+        232,
+        [
+          0.76,
+          -1.72,
+          0.64
+        ],
+        [
+          0.65,
+          -0.096,
+          0.425
+        ],
+        74.0
+      ],
+      [
+        246,
+        [
+          0.72,
+          -1.04,
+          0.51
+        ],
+        [
+          0.65,
+          -0.104,
+          0.425
+        ],
+        63.0
+      ],
+      [
+        258,
+        [
+          0.68,
+          -0.69,
+          0.45
+        ],
+        [
+          0.65,
+          -0.109,
+          0.425
+        ],
+        54.0
+      ],
+      [
+        270,
+        [
+          0.65,
+          -0.47,
+          0.425
+        ],
+        [
+          0.65,
+          -0.112,
+          0.425
+        ],
+        45.0
+      ]
+    ],
+    "mobile_camera_keys": [
+      [
+        1,
+        [
+          2.25,
+          -3.86,
+          2.24
+        ],
+        [
+          0.37,
+          0.02,
+          0.69
+        ],
+        53.0
+      ],
+      [
+        72,
+        [
+          2.15,
+          -3.75,
+          2.16
+        ],
+        [
+          0.4,
+          0.01,
+          0.67
+        ],
+        54.0
+      ],
+      [
+        112,
+        [
+          1.86,
+          -3.52,
+          1.86
+        ],
+        [
+          0.45,
+          -0.01,
+          0.61
+        ],
+        57.0
+      ],
+      [
+        166,
+        [
+          1.04,
+          -2.86,
+          1.05
+        ],
+        [
+          0.59,
+          -0.04,
+          0.46
+        ],
+        66.0
+      ],
+      [
+        198,
+        [
+          0.78,
+          -2.2,
+          0.78
+        ],
+        [
+          0.64,
+          -0.08,
+          0.43
+        ],
+        72.0
+      ],
+      [
+        222,
+        [
+          0.71,
+          -1.43,
+          0.58
+        ],
+        [
+          0.65,
+          -0.1,
+          0.425
+        ],
+        63.0
+      ],
+      [
+        244,
+        [
+          0.67,
+          -0.83,
+          0.47
+        ],
+        [
+          0.65,
+          -0.108,
+          0.425
+        ],
+        54.0
+      ],
+      [
+        260,
+        [
+          0.65,
+          -0.58,
+          0.435
+        ],
+        [
+          0.65,
+          -0.111,
+          0.425
+        ],
+        48.0
+      ],
+      [
+        270,
+        [
+          0.65,
+          -0.43,
+          0.425
+        ],
+        [
+          0.65,
+          -0.112,
+          0.425
+        ],
+        43.0
+      ]
+    ],
+    "desktop_conductor_segments": 180,
+    "mobile_conductor_segments": 180,
+    "contact_lights_per_variant": 12,
+    "deterministic": true,
+    "random_events": 0,
+    "audio_tracks": 0
+  },
+  "creative_boundaries": {
+    "accepted_crt_remodelled": false,
+    "accepted_master_modified": false,
+    "phase2b_homepage_modified": false,
+    "external_models": 0,
+    "external_images": 0,
+    "third_party_textures": 0,
+    "private_reference_loaded": false,
+    "circular_startup_graphics": 0
+  }
+}
