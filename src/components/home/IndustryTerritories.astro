@@ -1,0 +1,56 @@
+---
+interface Industry {
+  id: string;
+  name: string;
+}
+
+interface Props {
+  industries: readonly Industry[];
+}
+
+const { industries } = Astro.props;
+const territoryKinds = ["automotive", "logistics", "manufacturing", "energy"] as const;
+---
+
+<section
+  id="industries"
+  class="operating-chapter territories"
+  aria-labelledby="industries-title"
+  data-home-scene="industries"
+  data-field-section
+>
+  <header class="operating-shell territories__intro">
+    <p class="field-label">Industries</p>
+    <div>
+      <h2 id="industries-title">Context changes the test.</h2>
+      <p>
+        Quantum focuses on four industrial domains where field conditions,
+        systems and implementation constraints matter.
+      </p>
+    </div>
+  </header>
+
+  <div class="territories__sequence">
+    {industries.map((industry, index) => (
+      <article
+        id={industry.id}
+        class={`territory territory--${territoryKinds[index]}`}
+        aria-labelledby={`${industry.id}-title`}
+        data-territory={territoryKinds[index]}
+        data-evidence-id={`industry-${territoryKinds[index]}`}
+      >
+        <div class="territory__architecture" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="operating-shell territory__content">
+          <p class="territory__index">{String(index + 1).padStart(2, "0")} / 04</p>
+          <h3 id={`${industry.id}-title`}>{industry.name}</h3>
+        </div>
+      </article>
+    ))}
+  </div>
+
+  <div class="operating-shell territories__link-wrap">
+    <a class="field-link" href="/industries/">Explore the industries</a>
+  </div>
+</section>

@@ -1,7 +1,12 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import ClosingCta from "../components/ClosingCta.astro";
-import ProcessList from "../components/ProcessList.astro";
+import BuiltWithIndustry from "../components/home/BuiltWithIndustry.astro";
+import ConversionField from "../components/home/ConversionField.astro";
+import EntryField from "../components/home/EntryField.astro";
+import IndustryTerritories from "../components/home/IndustryTerritories.astro";
+import MethodField from "../components/home/MethodField.astro";
+import ProgrammesField from "../components/home/ProgrammesField.astro";
+import ProofField from "../components/home/ProofField.astro";
 import {
   PUBLIC_INDUSTRIES,
   champProgramme,
@@ -9,7 +14,8 @@ import {
   sparkProgramme,
 } from "../content";
 import "../styles/routes/home.css";
-import "../styles/routes/standard.css";
+import "../styles/routes/home-method.css";
+import "../styles/routes/home-responsive.css";
 
 const title = "Industrial innovation tested in the real world";
 const description =
@@ -23,242 +29,25 @@ const processSteps = [
   { title: "Decide", description: "Use evidence to determine the next step." },
 ] as const;
 
-const maradinPoster = maradinProofRecord.media[0];
-if (!maradinPoster) throw new Error("The approved Maradin poster is required on Home.");
-
-const homeScenes = {
-  threshold: { id: "home-threshold", identity: "threshold" },
-  entry: { id: "entry", identity: "entry" },
-  industry: { id: "built-with-industry", identity: "built-with-industry" },
-  method: { id: "method", identity: "method" },
-  industries: { id: "industries", identity: "industries" },
-  proof: { id: "proof", identity: "proof" },
-  programmes: { id: "programmes", identity: "programmes" },
-  conversion: { id: "conversion", identity: "conversion" },
-} as const satisfies Record<string, { id: string; identity: string }>;
+const maradinOpening = maradinProofRecord.media.find(({ id }) => id === "maradin-field-aperture-poster");
+const maradinClimax = maradinProofRecord.media.find(({ id }) => id === "maradin-real-field-still");
+if (!maradinOpening || !maradinClimax) {
+  throw new Error("The approved Maradin stills are required on Home.");
+}
 ---
 
 <BaseLayout {title} {description} bodyClass="home-page">
-  <section
-    id={homeScenes.threshold.id}
-    class="home-hero home-scene home-scene--threshold section-shell"
-    aria-labelledby="home-title"
-    data-scene={homeScenes.threshold.identity}
-  >
-    <div class="container home-hero__grid">
-      <div class="home-hero__copy" data-scene-layer="content">
-        <p class="eyebrow">industrial innovation · herzliya</p>
-        <h1 id="home-title">Prove it where it has to work.</h1>
-        <p class="hero-support">
-          Quantum brings industry and technology together to define real needs,
-          test solutions and turn evidence into decisions.
-        </p>
-        <div class="button-row" aria-label="Choose your route">
-          <a class="button button--primary" href="/for-partners/">For industry</a>
-          <a class="button button--secondary" href="/for-startups/">For startups</a>
-        </div>
-      </div>
-
-      <div class="field-aperture" data-scene-layer="media" aria-hidden="true">
-        <span class="field-aperture__plane"></span>
-        <span class="field-aperture__frame">
-          <span class="field-aperture__raster"></span>
-          <span class="field-aperture__overscan"></span>
-        </span>
-        <span class="field-aperture__trace field-aperture__trace--lead"></span>
-        <span class="field-aperture__trace field-aperture__trace--return"></span>
-        <span class="field-aperture__current"></span>
-      </div>
-    </div>
-  </section>
-
-  <section
-    id={homeScenes.entry.id}
-    class="home-scene home-scene--entry section-shell audience-section"
-    aria-labelledby="audience-title"
-    data-home-scene={homeScenes.entry.identity}
-  >
-    <div class="container" data-scene-layer="content">
-      <div class="section-heading section-heading--wide">
-        <p class="eyebrow">two ways in</p>
-        <h2 id="audience-title">Where do you enter?</h2>
-      </div>
-      <div class="audience-paths">
-        <a class="audience-path" href="/for-partners/">
-          <span class="audience-path__index" aria-hidden="true">01</span>
-          <span class="audience-path__copy">
-            <strong>For industry</strong>
-            <span>Bring us an operational challenge.</span>
-          </span>
-          <span class="text-link" aria-hidden="true">Explore</span>
-        </a>
-        <a class="audience-path" href="/for-startups/">
-          <span class="audience-path__index" aria-hidden="true">02</span>
-          <span class="audience-path__copy">
-            <strong>For startups</strong>
-            <span>Bring us a technology ready to be tested.</span>
-          </span>
-          <span class="text-link" aria-hidden="true">Explore</span>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <section
-    id={homeScenes.industry.id}
-    class="home-scene home-scene--industry editorial-section"
-    aria-labelledby="industry-model-title"
-    data-home-scene={homeScenes.industry.identity}
-  >
-    <div class="container" data-scene-layer="content">
-      <div class="editorial-section__intro">
-        <p class="eyebrow">built with industry</p>
-        <div>
-          <h2 id="industry-model-title">Start with the operating reality.</h2>
-          <p>
-            Quantum works from a defined industrial need. The operating context,
-            constraints and success criteria shape which technologies are relevant
-            and how a POC should be designed.
-          </p>
-        </div>
-      </div>
-      <div class="editorial-copy">
-        <p>
-          Industry relationships anchor the work in real environments rather than
-          abstract technology scouting.
-        </p>
-        <p>
-          Technology is assessed against the challenge, then tested through a
-          structured path that produces evidence for a responsible next step.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <section
-    id={homeScenes.method.id}
-    class="home-scene home-scene--method editorial-section"
-    aria-labelledby="process-title"
-    data-home-scene={homeScenes.method.identity}
-  >
-    <div class="container" data-scene-layer="content">
-      <div class="editorial-section__intro">
-        <p class="eyebrow">from need to decision</p>
-        <div>
-          <h2 id="process-title">A disciplined route through uncertainty.</h2>
-          <p>Each stage protects the connection between an operational problem and the evidence used to move forward.</p>
-        </div>
-      </div>
-      <ProcessList steps={processSteps} label="Quantum five-stage method" />
-    </div>
-  </section>
-
-  <section
-    id={homeScenes.industries.id}
-    class="home-scene home-scene--industries editorial-section"
-    aria-labelledby="industries-title"
-    data-home-scene={homeScenes.industries.identity}
-  >
-    <div class="container" data-scene-layer="content">
-      <div class="editorial-section__intro">
-        <p class="eyebrow">industries</p>
-        <div>
-          <h2 id="industries-title">Context changes the test.</h2>
-          <p>Quantum focuses on four industrial domains where field conditions, systems and implementation constraints matter.</p>
-        </div>
-      </div>
-      <ul class="home-domain-list">
-        {PUBLIC_INDUSTRIES.map((industry, index) => (
-          <li>
-            <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-            <strong>{industry.name}</strong>
-          </li>
-        ))}
-      </ul>
-      <a class="text-link home-section-link" href="/industries/">Explore the industries</a>
-    </div>
-  </section>
-
-  <section
-    id={homeScenes.proof.id}
-    class="home-scene home-scene--proof editorial-section"
-    aria-labelledby="proof-title"
-    data-home-scene={homeScenes.proof.identity}
-  >
-    <div class="container" data-scene-layer="content">
-      <article class="proof-feature">
-        <img
-          class="proof-feature__media"
-          data-scene-layer="media"
-          src={maradinPoster.src}
-          alt={maradinPoster.alt}
-          width={maradinPoster.width}
-          height={maradinPoster.height}
-          loading="lazy"
-        />
-        <div class="proof-feature__copy" data-scene-layer="copy">
-          <p class="eyebrow">proof</p>
-          <h2 id="proof-title">Evidence before scale.</h2>
-          <h3 class="proof-feature__title">{maradinProofRecord.title}</h3>
-          <p>{maradinProofRecord.summary}</p>
-          <a class="text-link" href="/pocs/maradin/">Read the Maradin field record</a>
-        </div>
-      </article>
-    </div>
-  </section>
-
-  <section
-    id={homeScenes.programmes.id}
-    class="home-scene home-scene--programmes editorial-section"
-    aria-labelledby="programmes-title"
-    data-home-scene={homeScenes.programmes.identity}
-  >
-    <div class="container" data-scene-layer="content">
-      <div class="editorial-section__intro">
-        <p class="eyebrow">programmes</p>
-        <div>
-          <h2 id="programmes-title">Structured paths into the field.</h2>
-          <p>Programmes create a clear context for industry needs and technologies that are ready to be assessed.</p>
-        </div>
-      </div>
-      <ul class="programme-list">
-        <li>
-          <span class="programme-list__meta">startup pathway</span>
-          <div>
-            <h3>{sparkProgramme.name}</h3>
-            <p>{sparkProgramme.summary}</p>
-          </div>
-          <span class="status-pill">{sparkProgramme.status}</span>
-        </li>
-        <li>
-          <span class="programme-list__meta">industry context</span>
-          <div>
-            <h3>{champProgramme.name}</h3>
-            <p>{champProgramme.summary}</p>
-          </div>
-          <a class="text-link" href="/for-partners/#champ">For industry</a>
-        </li>
-      </ul>
-    </div>
-  </section>
-
-  <ClosingCta
-    id={homeScenes.conversion.id}
-    scene={homeScenes.conversion.identity}
-    title="Start with the challenge."
-    copy="Choose the route that matches where you are entering the work."
-  >
-    <a class="button button--primary" href="/contact/#for-industry" aria-label="Bring us an industrial challenge">
-      <span class="button__label--full">Bring us an industrial challenge</span>
-      <span class="button__label--compact" aria-hidden="true">Industry challenge</span>
-    </a>
-    <a class="button button--secondary" href="/contact/#for-startups" aria-label="Introduce your technology">
-      <span class="button__label--full">Introduce your technology</span>
-      <span class="button__label--compact" aria-hidden="true">Startup technology</span>
-    </a>
-    <a class="button button--secondary" href="/contact/#general" aria-label="General or ecosystem contact">
-      <span class="button__label--full">General or ecosystem</span>
-      <span class="button__label--compact" aria-hidden="true">General contact</span>
-    </a>
-  </ClosingCta>
+  <EntryField />
+  <BuiltWithIndustry />
+  <MethodField steps={processSteps} />
+  <IndustryTerritories industries={PUBLIC_INDUSTRIES} />
+  <ProofField
+    title={maradinProofRecord.title}
+    summary={maradinProofRecord.summary}
+    execution={maradinProofRecord.execution}
+    openingMedia={maradinOpening}
+    climaxMedia={maradinClimax}
+  />
+  <ProgrammesField spark={sparkProgramme} champ={champProgramme} inheritedMedia={maradinClimax} />
+  <ConversionField />
 </BaseLayout>

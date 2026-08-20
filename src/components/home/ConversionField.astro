@@ -1,0 +1,46 @@
+<section
+  id="conversion"
+  class="operating-chapter conversion-field"
+  aria-labelledby="conversion-title"
+  data-home-scene="conversion"
+  data-field-section
+  data-evidence-id="conversion"
+>
+  <div class="conversion-field__architecture" aria-hidden="true">
+    <span class="conversion-field__plane conversion-field__plane--left"></span>
+    <span class="conversion-field__plane conversion-field__plane--right"></span>
+    <span class="conversion-field__ceiling"></span>
+    <span class="conversion-field__floor"></span>
+    <span class="conversion-field__current"></span>
+  </div>
+
+  <div class="operating-shell conversion-field__content">
+    <p class="field-label">The field resolves here</p>
+    <h2 id="conversion-title">Start with the challenge.</h2>
+    <p>Choose the route that matches where you are entering the work.</p>
+
+    <nav class="conversion-paths" aria-label="Contact pathways">
+      <a href="/contact/#for-industry" aria-label="Bring us an industrial challenge">
+        <span class="conversion-path__full">Bring us an industrial challenge</span>
+        <span class="conversion-path__compact" aria-hidden="true">Industry challenge</span>
+      </a>
+      <a href="/contact/#for-startups" aria-label="Introduce your technology">
+        <span class="conversion-path__full">Introduce your technology</span>
+        <span class="conversion-path__compact" aria-hidden="true">Startup technology</span>
+      </a>
+      <a href="/contact/#general" aria-label="General or ecosystem contact">
+        <span class="conversion-path__full">General or ecosystem</span>
+        <span class="conversion-path__compact" aria-hidden="true">General contact</span>
+      </a>
+    </nav>
+  </div>
+
+  <script>
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (!reducedMotion.matches && "ResizeObserver" in window && "requestAnimationFrame" in window) {
+      void import("../../scripts/home-operating-field").then(({ initOperatingField }) => {
+        initOperatingField();
+      });
+    }
+  </script>
+</section>
