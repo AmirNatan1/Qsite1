@@ -3,7 +3,7 @@
   "phase": "2B",
   "status": "PASS",
   "acceptedParent": "4121e009b970cce480c4220c964cbc218e35d73c",
-  "repositoryHeadAtCapture": "6032f71e53fb62aa9fb0e455d377225e70ae5611",
+  "repositoryHeadAtCapture": "304599071fc65725e8394dd9df9f69d15cee937f",
   "branchAtCapture": "feature/phase-2b-operating-field-production",
   "productionAuthority": "actual Astro static build served through astro preview",
   "rawCapturePolicy": "OS-temporary only; raw browser frames are not retained in the repository",
@@ -103,8 +103,8 @@
     },
     {
       "path": "scripts/qa-phase2b-browser.mjs",
-      "bytes": 29205,
-      "sha256": "af7a4af4139b1eaacbe9c70909f43faa204cd570358a7ae92aed15692dd7f76d"
+      "bytes": 29213,
+      "sha256": "8cc4891dbd7f05cc9bf3b1bfb3582ae85c2ae239c9aff9883912f33879a98297"
     },
     {
       "path": "scripts/capture-phase2b-evidence.mjs",
