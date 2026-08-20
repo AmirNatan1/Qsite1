@@ -1,6 +1,6 @@
 {
   "schema": "quantum-hub.phase-2b.browser-qa.v1",
-  "generatedAt": "2026-08-20T11:52:01.217Z",
+  "generatedAt": "2026-08-20T11:57:14.463Z",
   "baseUrl": "http://127.0.0.1:4322",
   "passed": true,
   "browser": "Chromium",
@@ -594,29 +594,29 @@
             "id": "method",
             "top": 1269.015625,
             "width": 844,
-            "height": 1417.234375
+            "height": 1408.234375
           },
           {
             "id": "industries",
-            "top": 2686.25,
+            "top": 2677.25,
             "width": 844,
             "height": 3126.390625
           },
           {
             "id": "proof",
-            "top": 5812.640625,
+            "top": 5803.640625,
             "width": 844,
             "height": 1248
           },
           {
             "id": "programmes",
-            "top": 7060.640625,
+            "top": 7051.640625,
             "width": 844,
             "height": 660.375
           },
           {
             "id": "conversion",
-            "top": 7721.015625,
+            "top": 7712.015625,
             "width": 844,
             "height": 645.265625
           }
@@ -893,7 +893,7 @@
       }
     },
     {
-      "id": "text-200",
+      "id": "text-200-mobile",
       "layout": {
         "chapterOrder": [
           "entry",
@@ -957,6 +957,101 @@
         "methodStickyFlag": "false",
         "workpiecePosition": "absolute",
         "operatingMode": null
+      },
+      "semantic": {
+        "h1": "WHERE DO YOU ENTER?",
+        "chapters": [
+          "entry",
+          "built-with-industry",
+          "method",
+          "industries",
+          "proof",
+          "programmes",
+          "conversion"
+        ],
+        "visibleChapters": 7
+      }
+    },
+    {
+      "id": "text-200-desktop",
+      "layout": {
+        "chapterOrder": [
+          "entry",
+          "built-with-industry",
+          "method",
+          "industries",
+          "proof",
+          "programmes",
+          "conversion"
+        ],
+        "chapters": [
+          {
+            "id": "entry",
+            "top": 121.3125,
+            "width": 1440,
+            "height": 812
+          },
+          {
+            "id": "built-with-industry",
+            "top": 933.3125,
+            "width": 1440,
+            "height": 1344.78125
+          },
+          {
+            "id": "method",
+            "top": 2278.09375,
+            "width": 1440,
+            "height": 2826.796875
+          },
+          {
+            "id": "industries",
+            "top": 5104.890625,
+            "width": 1440,
+            "height": 4644.859375
+          },
+          {
+            "id": "proof",
+            "top": 9749.75,
+            "width": 1440,
+            "height": 1908
+          },
+          {
+            "id": "programmes",
+            "top": 11657.75,
+            "width": 1440,
+            "height": 1320.921875
+          },
+          {
+            "id": "conversion",
+            "top": 12978.671875,
+            "width": 1440,
+            "height": 1272.96875
+          }
+        ],
+        "horizontalOverflow": 0,
+        "textOverhang": [
+          {
+            "tag": "H2",
+            "text": "Start with the operating reality.",
+            "scrollWidth": 804,
+            "clientWidth": 800,
+            "clippingAncestors": []
+          },
+          {
+            "tag": "H3",
+            "text": "Maradin — Dynamic Ground Projection",
+            "scrollWidth": 702,
+            "clientWidth": 648,
+            "clippingAncestors": []
+          }
+        ],
+        "textClipping": [],
+        "nestedScroll": [],
+        "undersizedControls": [],
+        "h1FontSize": 140.8,
+        "methodStickyFlag": "false",
+        "workpiecePosition": "relative",
+        "operatingMode": "enhanced"
       },
       "semantic": {
         "h1": "WHERE DO YOU ENTER?",
@@ -1461,7 +1556,7 @@
       "pageShows": [
         {
           "persisted": false,
-          "at": 66.7999999821186
+          "at": 23.69999998807907
         }
       ],
       "y": 2341

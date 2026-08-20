@@ -19,7 +19,7 @@
 
 .method-field__intro h2 {
   max-width: 12ch;
-  font-size: clamp(3.7rem, 6.7vw, 7.4rem);
+  font-size: clamp(3.3rem, 6.7vw, 7.4rem);
   letter-spacing: -0.08em;
   line-height: 0.85;
 }

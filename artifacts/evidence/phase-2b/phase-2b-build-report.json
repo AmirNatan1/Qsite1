@@ -1,6 +1,6 @@
 {
   "schema": "quantum-hub.phase-2b.static-build-qa.v1",
-  "generatedAt": "2026-08-20T11:51:08.401Z",
+  "generatedAt": "2026-08-20T11:57:03.555Z",
   "passed": true,
   "chapters": [
     "entry",
@@ -52,7 +52,7 @@
       "_astro/home-operating-field.DcvjkAwK.js"
     ],
     "phase2bHomeStyleFiles": [
-      "_astro/index.NbRitIdW.css"
+      "_astro/index.DPQhMM_E.css"
     ],
     "homeReferencedJavaScript": [
       "_astro/ConversionField.astro_astro_type_script_index_0_lang.CAJNPxQf.js"

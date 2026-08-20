@@ -237,8 +237,8 @@ async function runViewport(browser, baseUrl, viewport, failures) {
   return { viewport: viewport.id, layout, axeViolations: compactAxe(violations), runtimeErrors, externalRequests };
 }
 
-async function runStaticMode(browser, baseUrl, { id, javaScriptEnabled = true, reducedMotion = "no-preference", fontFallback = false, textZoom = false }, failures) {
-  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, javaScriptEnabled, reducedMotion });
+async function runStaticMode(browser, baseUrl, { id, viewport = { width: 390, height: 844 }, javaScriptEnabled = true, reducedMotion = "no-preference", fontFallback = false, textZoom = false }, failures) {
+  const context = await browser.newContext({ viewport, javaScriptEnabled, reducedMotion });
   if (fontFallback) await context.route(/\.(?:woff2?|ttf|otf)(?:\?|$)/i, (route) => route.abort());
   const page = await context.newPage();
   await page.goto(`${baseUrl}/`, { waitUntil: "networkidle" });
@@ -446,7 +446,8 @@ try {
   report.stress.push(await runStaticMode(browser, baseUrl, { id: "no-js", javaScriptEnabled: false }, failures));
   if (!options.smoke) {
     report.stress.push(await runStaticMode(browser, baseUrl, { id: "fallback-fonts", fontFallback: true }, failures));
-    report.stress.push(await runStaticMode(browser, baseUrl, { id: "text-200", textZoom: true }, failures));
+    report.stress.push(await runStaticMode(browser, baseUrl, { id: "text-200-mobile", textZoom: true }, failures));
+    report.stress.push(await runStaticMode(browser, baseUrl, { id: "text-200-desktop", viewport: { width: 1440, height: 900 }, textZoom: true }, failures));
     report.keyboard = await runKeyboardAndMenu(browser, baseUrl, failures);
     report.scroll = await runScrollBehavior(browser, baseUrl, failures);
     report.backForwardCache = await runBackForwardCache(browser, baseUrl, failures);
