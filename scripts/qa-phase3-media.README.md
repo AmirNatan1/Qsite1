@@ -22,7 +22,7 @@ Example:
       --mobile-webm "artifacts\original\phase-3-crt-opening\media\phase-3-crt-opening-mobile-vp9.webm" ^
       --headed ^
       --record-candidate desktop-webm ^
-      --record-video "artifacts\evidence\phase-3\review\phase-3-crt-opening-media-lab-run.webm" ^
+      --record-video "artifacts\original\phase-3-crt-opening\review\phase-3-media-lab-scrub-evidence.webm" ^
       --require-browser
 
 The defaults match the authored Phase 3 contract: 30 fps, 9 seconds, 270 frames, a 12-frame GOP, 1920 by 1080 desktop media, and 720 by 1280 mobile media. Override flags exist for any deliberately revised contract.
@@ -55,3 +55,9 @@ The seeded targets and field ordering are deterministic. Wall-clock latencies, p
 A headless run may be unable to create a genuine hidden document. That result is explicitly partial-hidden-tab-inconclusive at candidate level and partial-browser-evidence-incomplete in the report summary; it can never become a full browser pass. Use --headed for the final focus/visibility evidence when the environment permits a visible Chromium window. If even a headed session cannot expose hidden state, the report requests a manual visible-browser focus-switch trace.
 
 If Chromium is unavailable, the report is still written as a partial ffprobe result. Partial browser evidence exits successfully by default so probe-only automation remains usable, but --require-browser makes missing or inconclusive browser evidence return a nonzero exit code.
+
+## Report privacy
+
+Absolute paths remain internal execution details. In the tracked JSON report, repository candidates and review recordings use forward-slash repository-relative paths; external ffprobe and Chromium executables use basename-only identities with an explicit path scope; and protected production roots are recorded only as src, public, and dist.
+
+Immediately before writing JSON, the complete report is recursively sanitized, including browser, probe, and recording error strings. Path detection requires a start/whitespace/quote/parenthesis boundary, so logical HTTP URLs and media routes remain intact. A final assertion rejects Windows drive paths, user-home paths, temporary-directory paths, and known host roots. Report generation stops instead of writing if an absolute host path survives that privacy boundary.

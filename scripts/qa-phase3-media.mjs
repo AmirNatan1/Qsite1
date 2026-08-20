@@ -13,7 +13,8 @@ import { fileURLToPath } from "node:url";
 
 const execFileAsync = promisify(execFile);
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const productionRoots = ["src", "public", "dist"].map((entry) => path.join(repositoryRoot, entry));
+const productionRootNames = Object.freeze(["src", "public", "dist"]);
+const productionRoots = productionRootNames.map((entry) => path.join(repositoryRoot, entry));
 const mediaLabRoot = path.join(repositoryRoot, "prototypes", "phase-3-crt-media-lab");
 const candidateDefinitions = [
   {
@@ -179,10 +180,125 @@ function isWithin(parent, candidate) {
 }
 
 function assertIsolatedPath(absolutePath, label) {
-  for (const root of productionRoots) {
+  for (const [index, root] of productionRoots.entries()) {
     if (isWithin(root, absolutePath)) {
-      throw new Error(label + " must remain outside production root " + root);
+      throw new Error(
+        label + " must remain outside production root " + productionRootNames[index],
+      );
     }
+  }
+}
+
+function portablePath(absolutePath) {
+  const resolved = path.resolve(absolutePath);
+  if (isWithin(repositoryRoot, resolved)) {
+    return path.relative(repositoryRoot, resolved).replaceAll("\\", "/");
+  }
+  return path.basename(resolved);
+}
+
+function portablePathScope(absolutePath) {
+  return isWithin(repositoryRoot, path.resolve(absolutePath)) ? "repository-relative" : "external-basename";
+}
+
+function escapedPattern(value) {
+  return value.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
+}
+
+function knownHostRoots(additionalPaths = []) {
+  return [
+    repositoryRoot,
+    process.cwd(),
+    process.env.USERPROFILE,
+    process.env.HOME,
+    process.env.LOCALAPPDATA,
+    process.env.APPDATA,
+    process.env.TEMP,
+    process.env.TMP,
+    ...additionalPaths,
+  ]
+    .filter((value) => typeof value === "string" && value.trim().length > 0)
+    .map((value) => path.resolve(value))
+    .sort((left, right) => right.length - left.length);
+}
+
+function sanitizeTrackedString(value, additionalPaths = []) {
+  let sanitized = value;
+  for (const root of knownHostRoots(additionalPaths)) {
+    const variants = new Set([root, root.replaceAll("\\", "/"), root.replaceAll("/", "\\")]);
+    for (const variant of variants) {
+      sanitized = sanitized.replace(
+        new RegExp(escapedPattern(variant), process.platform === "win32" ? "gi" : "g"),
+        "<host-root>",
+      );
+    }
+  }
+  sanitized = sanitized
+    .replace(
+      /(^|[\s"'\x60(])([A-Za-z]:[\\/][^\r\n"'\x60<>|]*)/gm,
+      (_match, boundary) => boundary + "<host-path>",
+    )
+    .replace(
+      /(^|[\s"'\x60(])\/(?:Users|home|tmp|private\/var|var\/tmp|Applications|opt|usr\/bin|usr\/local\/bin)\/[^\r\n"'\x60<>|]*/gm,
+      (_match, boundary) => boundary + "<host-path>",
+    );
+  return sanitized;
+}
+
+function sanitizeTrackedValue(value, additionalPaths = []) {
+  if (typeof value === "string") return sanitizeTrackedString(value, additionalPaths);
+  if (Array.isArray(value)) {
+    return value.map((entry) => sanitizeTrackedValue(entry, additionalPaths));
+  }
+  if (value === null || typeof value !== "object") return value;
+  return Object.fromEntries(
+    Object.entries(value).map(([key, child]) => [
+      key,
+      sanitizeTrackedValue(child, additionalPaths),
+    ]),
+  );
+}
+
+function assertTrackedReportPrivacy(value, additionalPaths = []) {
+  const failures = [];
+  const visit = (child, location) => {
+    if (typeof child === "string") {
+      if (/(?:^|[\s"'\x60(])[A-Za-z]:[\\/]/m.test(child)) {
+        failures.push(location + " contains a drive-absolute path");
+      }
+      if (
+        /(?:^|[\s"'\x60(])\/(?:Users|home|tmp|private\/var|var\/tmp|Applications|opt|usr\/bin|usr\/local\/bin)\//m.test(
+          child,
+        )
+      ) {
+        failures.push(location + " contains a host-absolute path");
+      }
+      for (const root of knownHostRoots(additionalPaths)) {
+        if (
+          child.includes(root) ||
+          child.includes(root.replaceAll("\\", "/")) ||
+          child.includes(root.replaceAll("/", "\\"))
+        ) {
+          failures.push(location + " contains a known host root");
+          break;
+        }
+      }
+      return;
+    }
+    if (Array.isArray(child)) {
+      child.forEach((entry, index) => visit(entry, location + "[" + index + "]"));
+      return;
+    }
+    if (child && typeof child === "object") {
+      for (const [key, entry] of Object.entries(child)) visit(entry, location + "." + key);
+    }
+  };
+  visit(value, "$");
+  if (failures.length > 0) {
+    throw new Error(
+      "Tracked media QA report failed absolute-path privacy assertion: " +
+        failures.slice(0, 8).join("; "),
+    );
   }
 }
 
@@ -294,7 +410,8 @@ async function probeCandidate(options, candidate) {
   const base = {
     id: candidate.id,
     role: candidate.role,
-    path: candidate.absolutePath,
+    path: portablePath(candidate.absolutePath),
+    pathScope: portablePathScope(candidate.absolutePath),
     expected: {
       container: candidate.container,
       codec: candidate.codec,
@@ -1480,7 +1597,8 @@ async function recordMediaLabEvidence(browser, origin, options, candidate) {
     status: "failed",
     candidateId: options.recordCandidate,
     output: {
-      path: requestedPath,
+      path: portablePath(requestedPath),
+      pathScope: portablePathScope(requestedPath),
       container: "webm",
       bytes: null,
       sha256: null,
@@ -1717,7 +1835,12 @@ async function runBrowserQa(options, probeRecords) {
       reviewVideo: {
         requested: options.recordVideo !== null,
         status: options.recordVideo ? "not-executed" : "not-requested",
-        output: options.recordVideo ? { path: options.recordVideo } : null,
+        output: options.recordVideo
+          ? {
+              path: portablePath(options.recordVideo),
+              pathScope: portablePathScope(options.recordVideo),
+            }
+          : null,
       },
       candidateResults: {},
     };
@@ -1747,14 +1870,22 @@ async function runBrowserQa(options, probeRecords) {
     return {
       tested: false,
       status: "launch-failed",
-      reason: String(error.message || error),
+      reason: sanitizeTrackedString(String(error.message || error), [
+        resolution.executablePath,
+      ]),
       required: options.requireBrowser,
-      executablePath: resolution.executablePath,
+      executablePath: portablePath(resolution.executablePath),
+      executableScope: portablePathScope(resolution.executablePath),
       executableSource: resolution.executableSource,
       reviewVideo: {
         requested: options.recordVideo !== null,
         status: options.recordVideo ? "not-executed" : "not-requested",
-        output: options.recordVideo ? { path: options.recordVideo } : null,
+        output: options.recordVideo
+          ? {
+              path: portablePath(options.recordVideo),
+              pathScope: portablePathScope(options.recordVideo),
+            }
+          : null,
       },
       candidateResults: {},
     };
@@ -1764,7 +1895,12 @@ async function runBrowserQa(options, probeRecords) {
   let reviewVideo = {
     requested: options.recordVideo !== null,
     status: options.recordVideo ? "pending" : "not-requested",
-    output: options.recordVideo ? { path: options.recordVideo } : null,
+    output: options.recordVideo
+      ? {
+          path: portablePath(options.recordVideo),
+          pathScope: portablePathScope(options.recordVideo),
+        }
+      : null,
   };
   let version = null;
   try {
@@ -1816,7 +1952,8 @@ async function runBrowserQa(options, probeRecords) {
     product: "Chromium",
     version,
     automation: "playwright-core",
-    executablePath: resolution.executablePath,
+    executablePath: portablePath(resolution.executablePath),
+    executableScope: portablePathScope(resolution.executablePath),
     executableSource: resolution.executableSource,
     harness: {
       productionRoutesEntered: false,
@@ -1898,7 +2035,7 @@ async function main() {
     }
   }
   if (!(await exists(options.ffprobe))) {
-    throw new Error("ffprobe executable does not exist: " + options.ffprobe);
+    throw new Error("ffprobe executable does not exist: " + portablePath(options.ffprobe));
   }
 
   const versionRun = await runExecutable(options.ffprobe, ["-version"], "ffprobe version");
@@ -1960,10 +2097,13 @@ async function main() {
     },
     isolation: {
       productionImports: [],
-      productionRootsRejected: productionRoots,
+      productionRootsRejected: productionRootNames,
       productionRoutesEntered: false,
       productionBuildRequired: false,
-      recordedMediaLabVideoPath: options.recordVideo,
+      recordedMediaLabVideoPath: options.recordVideo ? portablePath(options.recordVideo) : null,
+      recordedMediaLabVideoPathScope: options.recordVideo
+        ? portablePathScope(options.recordVideo)
+        : null,
     },
     expectations: {
       fps: options.expectedFps,
@@ -1979,7 +2119,8 @@ async function main() {
       platform: process.platform,
       architecture: process.arch,
       ffprobe: {
-        path: options.ffprobe,
+        path: portablePath(options.ffprobe),
+        pathScope: portablePathScope(options.ffprobe),
         version: ffprobeVersion,
       },
       chromium: {
@@ -1988,6 +2129,7 @@ async function main() {
         product: browser.product || null,
         version: browser.version || null,
         executablePath: browser.executablePath || null,
+        executableScope: browser.executableScope || null,
         executableSource: browser.executableSource || null,
       },
     },
@@ -2017,29 +2159,49 @@ async function main() {
     },
     candidates,
     browser,
+    privacy: {
+      absoluteHostPathsAllowed: false,
+      repositoryFiles: "repository-relative",
+      externalExecutables: "basename-only",
+      errorStringsSanitized: true,
+      preWriteAssertion: true,
+    },
     summary: null,
   };
   report.summary = summarize(options, candidates, browser);
+  const privateExecutionPaths = [
+    options.ffprobe,
+    options.output,
+    options.recordVideo,
+    options.browserExecutable,
+    ...options.candidates.map((candidate) => candidate.absolutePath),
+  ].filter(Boolean);
+  const trackedReport = sanitizeTrackedValue(report, privateExecutionPaths);
+  assertTrackedReportPrivacy(trackedReport, privateExecutionPaths);
 
   await mkdir(path.dirname(options.output), { recursive: true });
-  await writeFile(options.output, JSON.stringify(report, null, 2) + "\n", "utf8");
+  await writeFile(options.output, JSON.stringify(trackedReport, null, 2) + "\n", "utf8");
   process.stdout.write(
     "Phase 3 media QA " +
-      report.summary.status +
+      trackedReport.summary.status +
       ": " +
       options.output +
       " (" +
-      report.summary.probeCandidatesPassed +
+      trackedReport.summary.probeCandidatesPassed +
       "/" +
-      report.summary.probeCandidatesTotal +
+      trackedReport.summary.probeCandidatesTotal +
       " probe candidates passed; Chromium " +
       (browser.tested ? browser.status : "not executed") +
       ")\n",
   );
-  if (!report.summary.commandSucceeded) process.exitCode = 1;
+  if (!trackedReport.summary.commandSucceeded) process.exitCode = 1;
 }
 
 main().catch((error) => {
-  process.stderr.write("Phase 3 media QA failed before report generation: " + error.message + "\n");
+  process.stderr.write(
+    "Phase 3 media QA failed before report generation: " +
+      sanitizeTrackedString(String(error.message || error)) +
+      "\n",
+  );
   process.exitCode = 1;
 });
