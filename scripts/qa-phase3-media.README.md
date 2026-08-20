@@ -16,10 +16,10 @@ Example:
     node scripts/qa-phase3-media.mjs ^
       --ffprobe "C:\path\to\ffprobe.exe" ^
       --output "artifacts\evidence\phase-3\reports\phase-3-media-qa.json" ^
-      --desktop-mp4 "artifacts\original\phase-3-crt-opening\media\phase-3-desktop-h264.mp4" ^
-      --desktop-webm "artifacts\original\phase-3-crt-opening\media\phase-3-desktop-vp9.webm" ^
-      --mobile-mp4 "artifacts\original\phase-3-crt-opening\media\phase-3-mobile-h264.mp4" ^
-      --mobile-webm "artifacts\original\phase-3-crt-opening\media\phase-3-mobile-vp9.webm" ^
+      --desktop-mp4 "artifacts\original\phase-3-crt-opening\media\phase-3-crt-opening-desktop-h264.mp4" ^
+      --desktop-webm "artifacts\original\phase-3-crt-opening\media\phase-3-crt-opening-desktop-vp9.webm" ^
+      --mobile-mp4 "artifacts\original\phase-3-crt-opening\media\phase-3-crt-opening-mobile-h264.mp4" ^
+      --mobile-webm "artifacts\original\phase-3-crt-opening\media\phase-3-crt-opening-mobile-vp9.webm" ^
       --headed ^
       --require-browser
 
