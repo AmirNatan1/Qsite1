@@ -25,6 +25,16 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def portable_path(path: Path) -> str:
+    """Return a stable identity without serializing a workstation path."""
+    resolved = path.resolve()
+    repository = cfg.REPOSITORY_ROOT.resolve()
+    try:
+        return resolved.relative_to(repository).as_posix()
+    except ValueError:
+        return f"<outside-repository>/{resolved.name}"
+
+
 def check(records: list[dict], identifier: str, passed: bool, actual, expected) -> None:
     records.append(
         {
@@ -62,8 +72,21 @@ def main() -> None:
     source_hash = sha256(cfg.ACCEPTED_SOURCE)
     check(records, "accepted_source_hash", source_hash == cfg.ACCEPTED_SOURCE_SHA256, source_hash, cfg.ACCEPTED_SOURCE_SHA256)
     derivative_hash = sha256(cfg.DERIVATIVE_SOURCE)
-    check(records, "opened_derivative", Path(bpy.data.filepath).resolve() == cfg.DERIVATIVE_SOURCE.resolve(), bpy.data.filepath, str(cfg.DERIVATIVE_SOURCE))
-    check(records, "derivative_distinct_from_master", cfg.DERIVATIVE_SOURCE.resolve() != cfg.ACCEPTED_SOURCE.resolve(), str(cfg.DERIVATIVE_SOURCE), "different path")
+    opened_source = Path(bpy.data.filepath)
+    check(
+        records,
+        "opened_derivative",
+        opened_source.resolve() == cfg.DERIVATIVE_SOURCE.resolve(),
+        portable_path(opened_source),
+        portable_path(cfg.DERIVATIVE_SOURCE),
+    )
+    check(
+        records,
+        "derivative_distinct_from_master",
+        cfg.DERIVATIVE_SOURCE.resolve() != cfg.ACCEPTED_SOURCE.resolve(),
+        portable_path(cfg.DERIVATIVE_SOURCE),
+        f"different from {portable_path(cfg.ACCEPTED_SOURCE)}",
+    )
     check(records, "timeline_fps", scene.render.fps == cfg.FPS, scene.render.fps, cfg.FPS)
     check(records, "timeline_frame_start", scene.frame_start == cfg.FRAME_START, scene.frame_start, cfg.FRAME_START)
     check(records, "timeline_frame_end", scene.frame_end == cfg.FRAME_END, scene.frame_end, cfg.FRAME_END)

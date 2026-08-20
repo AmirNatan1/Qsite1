@@ -22,15 +22,15 @@
       "id": "opened_derivative",
       "status": "PASS",
       "pass": true,
-      "actual": "C:\\Users\\amir\\OneDrive\\Documents\\Quantum-Hub\\Qsite1\\artifacts\\original\\phase-3-crt-opening\\source\\quantum-signal-television-phase3-opening.blend",
-      "expected": "C:\\Users\\amir\\OneDrive\\Documents\\Quantum-Hub\\Qsite1\\artifacts\\original\\phase-3-crt-opening\\source\\quantum-signal-television-phase3-opening.blend"
+      "actual": "artifacts/original/phase-3-crt-opening/source/quantum-signal-television-phase3-opening.blend",
+      "expected": "artifacts/original/phase-3-crt-opening/source/quantum-signal-television-phase3-opening.blend"
     },
     {
       "id": "derivative_distinct_from_master",
       "status": "PASS",
       "pass": true,
-      "actual": "C:\\Users\\amir\\OneDrive\\Documents\\Quantum-Hub\\Qsite1\\artifacts\\original\\phase-3-crt-opening\\source\\quantum-signal-television-phase3-opening.blend",
-      "expected": "different path"
+      "actual": "artifacts/original/phase-3-crt-opening/source/quantum-signal-television-phase3-opening.blend",
+      "expected": "different from artifacts/original/phase-0-4-crt-television/source/quantum-signal-television-v1.blend"
     },
     {
       "id": "timeline_fps",
