@@ -90,7 +90,7 @@ async function waitForServer(baseUrl, child) {
   const deadline = Date.now() + 30_000;
   let lastError = "no response";
   while (Date.now() < deadline) {
-    if (child?.exitCode !== null) throw new Error(`Astro preview exited before it became ready (${child.exitCode}).`);
+    if (child && child.exitCode !== null) throw new Error(`Astro preview exited before it became ready (${child.exitCode}).`);
     try {
       const response = await fetch(baseUrl, { redirect: "manual" });
       if (response.status >= 200 && response.status < 500) return;
