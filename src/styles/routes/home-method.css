@@ -40,7 +40,6 @@
 }
 
 .method-workpiece {
-  --workpiece-depth: clamp(1rem, 2vw, 2rem);
   position: relative;
   display: grid;
   align-self: start;
@@ -54,7 +53,6 @@
   box-shadow:
     0 3rem 7rem rgba(0, 0, 0, 0.34),
     inset 0 0 0 0.75rem #0a0e0f;
-  perspective: 60rem;
 }
 
 .method-workpiece span {
@@ -70,27 +68,35 @@
     linear-gradient(90deg, transparent 49.8%, rgba(218, 226, 225, 0.12) 50%, transparent 50.2%),
     linear-gradient(#1a2223, #0c1011);
   clip-path: polygon(0 4%, 96% 0, 100% 92%, 5% 100%);
+  opacity: calc(1 - var(--method-decide) * 0.68);
+  transform: translateY(calc(var(--method-decide) * 20%)) scaleY(calc(1 - var(--method-decide) * 0.82));
 }
 
 .method-workpiece__jaw {
+  --jaw-shift: 0%;
   z-index: 2;
   top: 22%;
   bottom: 23%;
   width: 25%;
   background: linear-gradient(90deg, #111617, #445051 58%, #1c2324);
   box-shadow: inset 0 1px rgba(255, 255, 255, 0.15);
+  transform:
+    translateX(calc((1 - var(--method-frame)) * var(--jaw-shift)))
+    translateY(calc(var(--method-decide) * 30%))
+    scaleX(calc(1 + var(--method-decide) * 0.5))
+    scaleY(calc(1 - var(--method-decide) * 0.84));
 }
 
 .method-workpiece__jaw--left {
+  --jaw-shift: -26%;
   left: 8%;
   clip-path: polygon(0 0, 100% 7%, 82% 100%, 8% 93%);
-  transform: translateX(calc((1 - var(--method-frame)) * -26%));
 }
 
 .method-workpiece__jaw--right {
+  --jaw-shift: 26%;
   right: 8%;
   clip-path: polygon(18% 7%, 100% 0, 92% 93%, 0 100%);
-  transform: translateX(calc((1 - var(--method-frame)) * 26%));
 }
 
 .method-workpiece__core {
@@ -102,34 +108,43 @@
   background: linear-gradient(160deg, #8d9999 0, #394344 24%, #111617 86%);
   clip-path: polygon(3% 9%, 95% 0, 100% 86%, 8% 100%);
   box-shadow: inset 0 1px rgba(255, 255, 255, 0.34);
-  transform: scaleX(calc(0.9 + var(--method-frame) * 0.1));
+  transform:
+    translateY(calc(var(--method-decide) * 48%))
+    scaleX(calc(0.9 + var(--method-frame) * 0.1 + var(--method-decide) * 0.35))
+    scaleY(calc(1 - var(--method-decide) * 0.75));
 }
 
 .method-workpiece__channel {
+  --assess-shift: 0%;
+  --decide-shift: 0%;
   z-index: 4;
   left: 27%;
   width: calc(46% * var(--method-source));
   height: clamp(0.55rem, 1.15vw, 0.95rem);
   background: linear-gradient(90deg, #667273, #c7cecd 48%, #242c2d);
-  box-shadow: 0 0.35rem 0 #0a0d0e;
+  transform:
+    translateY(calc((1 - var(--method-assess)) * var(--assess-shift) + var(--method-decide) * var(--decide-shift)))
+    scaleX(calc(1 + var(--method-decide) * 0.52))
+    scaleY(calc(1 - var(--method-decide) * 0.42));
   transform-origin: left center;
 }
 
 .method-workpiece__channel--one {
+  --assess-shift: -180%;
+  --decide-shift: 900%;
   top: 38%;
-  transform: translateY(calc((1 - var(--method-assess)) * -180%));
 }
 
 .method-workpiece__channel--two {
+  --assess-shift: 95%;
+  --decide-shift: 500%;
   top: 48%;
-  opacity: calc(1 - var(--method-decide));
-  transform: translateY(calc((1 - var(--method-assess)) * 95%));
 }
 
 .method-workpiece__channel--three {
+  --assess-shift: 270%;
+  --decide-shift: 140%;
   top: 58%;
-  opacity: calc(1 - var(--method-decide));
-  transform: translateY(calc((1 - var(--method-assess)) * 270%));
 }
 
 .method-workpiece__tolerance {
@@ -138,7 +153,7 @@
   bottom: 20%;
   width: 1px;
   background: rgba(221, 228, 227, calc(0.08 + var(--method-assess) * 0.2));
-  opacity: var(--method-assess);
+  opacity: calc(var(--method-assess) - var(--method-decide));
 }
 
 .method-workpiece__tolerance--one { left: 39%; }
@@ -159,12 +174,11 @@
 
 .method-workpiece__tested {
   z-index: 7;
-  top: 39.5%;
-  right: 16%;
-  left: 59%;
+  top: calc(39.5% + var(--method-decide) * 27%);
+  right: calc(16% - var(--method-decide) * 14%);
+  left: calc(72% - var(--method-test) * 45%);
   height: clamp(0.6rem, 1.2vw, 1rem);
   background: linear-gradient(90deg, #cbd2d1, #778283 56%, #222a2b);
-  box-shadow: 0 0.35rem 0 #090c0d;
   opacity: var(--method-test);
   transform: scaleX(var(--method-test));
   transform-origin: left center;
@@ -172,10 +186,10 @@
 
 .method-workpiece__current {
   z-index: 8;
-  top: 39%;
+  top: 27%;
   left: 65.8%;
   width: clamp(0.22rem, 0.4vw, 0.36rem);
-  height: clamp(1.25rem, 2.2vw, 2rem);
+  height: 46%;
   background: var(--q-magenta-soft);
   box-shadow: 0 0 1.3rem rgba(239, 85, 147, 0.42);
   opacity: calc(var(--method-test) * (1 - var(--method-decide)));
@@ -183,13 +197,12 @@
 
 .method-workpiece__edge {
   z-index: 8;
-  top: 35%;
-  right: 12%;
+  top: calc(35% + var(--method-decide) * 29%);
+  right: calc(12% - var(--method-decide) * 10%);
   width: clamp(0.45rem, 0.85vw, 0.75rem);
-  height: 30%;
+  height: calc(30% - var(--method-decide) * 22%);
   background: linear-gradient(180deg, #d6dcdb, #5a6566 42%, #121718);
   opacity: var(--method-decide);
-  transform: scaleY(var(--method-decide));
 }
 
 .method-stages {

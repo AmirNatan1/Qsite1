@@ -1,9 +1,5 @@
 .home-page {
   --field-black: #080b0c;
-  --field-ink: #0d1112;
-  --field-graphite: #151b1c;
-  --field-metal: #263031;
-  --field-pale: #d9dfde;
   --field-progress: 0;
   background: var(--field-black);
 }
@@ -20,7 +16,6 @@
 .home-page .site-header {
   border-color: rgba(255, 255, 255, 0.08);
   background: #090c0d;
-  backdrop-filter: none;
 }
 
 .home-page .site-footer {
@@ -112,7 +107,6 @@
   bottom: -8%;
   width: 42%;
   background: linear-gradient(120deg, rgba(31, 40, 41, 0.88), rgba(10, 13, 14, 0.15));
-  transition: transform 180ms var(--ease-out);
 }
 
 .entry-field__boundary--left {
@@ -135,7 +129,6 @@
   height: 2px;
   background: var(--q-magenta-soft);
   transform: translateX(50%);
-  transform-origin: center;
 }
 
 .entry-field__content {
@@ -187,7 +180,6 @@
   height: 2px;
   background: transparent;
   content: "";
-  transition: width 160ms var(--ease-out), background-color 160ms var(--ease-out);
 }
 
 .entry-path--industry::before {
@@ -239,7 +231,6 @@
 
 .industry-cavity__architecture {
   inset: 0 44% 0 0;
-  perspective: 70rem;
 }
 
 .industry-cavity__rear {
@@ -358,7 +349,31 @@
   background: #080b0c;
 }
 
+.method-field::before,
+.territories::before {
+  position: absolute;
+  top: 0;
+  width: min(55%, 48rem);
+  height: clamp(8rem, 18vw, 17rem);
+  background: #182021;
+  clip-path: polygon(16% 0, 100% 0, 76% 78%, 7% 100%, 0 44%);
+  content: "";
+  opacity: 0.74;
+  pointer-events: none;
+}
+
+.method-field::before {
+  left: 0;
+  transform: scaleX(-1);
+}
+
+.territories::before {
+  right: -4%;
+}
+
 .territories__intro {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: minmax(9rem, 0.35fr) minmax(0, 1fr);
   gap: clamp(2rem, 7vw, 8rem);
@@ -646,7 +661,6 @@
   object-position: center 58%;
   opacity: 0.42;
   clip-path: polygon(0 0, 100% 0, 87% 68%, 61% 84%, 29% 62%, 0 76%);
-  filter: saturate(0.55) brightness(0.52);
 }
 
 .programme-field__architecture,
@@ -778,7 +792,6 @@
 
 .conversion-field__architecture {
   inset: 0;
-  perspective: 70rem;
 }
 
 .conversion-field__plane {
