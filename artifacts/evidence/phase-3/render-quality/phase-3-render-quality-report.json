@@ -1,0 +1,542 @@
+{
+  "schema": "quantum-hub.phase-3-render-quality-gate.v1",
+  "status": "PASS",
+  "authority": "fresh-derivative-16-sample-preview-versus-48-sample-production",
+  "decision": "SELECT_48_SAMPLE_PRODUCTION",
+  "decisionBasis": [
+    "three times the sampling budget with OIDN and identical seed/color transform",
+    "full 1920x1080 desktop and 720x1280 mobile delivery dimensions",
+    "16-sample reduced-resolution renders retained only as outside-Git comparison inputs",
+    "thin scanlines, CRT glass, dark gradients, cable response, and interface type receive the production profile"
+  ],
+  "derivativeSource": {
+    "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/source/quantum-signal-television-phase3-opening.blend",
+    "bytes": 2182647,
+    "sha256": "bbde82220f500c6f047c2e2d33a8580c08a40e65800615dd7256bebc2f4472ba"
+  },
+  "renderConstants": {
+    "engine": "Cycles GPU",
+    "backend": "OptiX",
+    "denoiser": "OpenImageDenoise",
+    "viewTransform": "AgX Medium High Contrast",
+    "seed": 2404
+  },
+  "variants": {
+    "desktop": {
+      "status": "PASS",
+      "preview": {
+        "samples": 16,
+        "resolution": [
+          1280,
+          720
+        ]
+      },
+      "production": {
+        "samples": 48,
+        "resolution": [
+          1920,
+          1080
+        ]
+      },
+      "rawSequencePaths": "OUTSIDE_GIT_AND_INTENTIONALLY_OMITTED",
+      "records": [
+        {
+          "frame": 1,
+          "normalizedProgress": 0.0,
+          "preview16": {
+            "filename": "phase3-desktop-0001.png",
+            "bytes": 689050,
+            "sha256": "bd1f41de8c23c12e9e0cec89cca67a1834dac137193c53cbd0d7b42fbb429288",
+            "width": 1280,
+            "height": 720
+          },
+          "production48": {
+            "filename": "phase3-desktop-0001.png",
+            "bytes": 1462293,
+            "sha256": "12718d7662ff8a13953b30fe0966312ff1862561bce8e7e1c3657f1ae865fb69",
+            "width": 1920,
+            "height": 1080
+          },
+          "decodedComparison": {
+            "comparisonGeometry": [
+              1280,
+              720
+            ],
+            "productionResample": "Lanczos to native 16-sample preview dimensions",
+            "mae8Bit": 0.596937,
+            "rmse8Bit": 1.136316,
+            "p95AbsChannelDelta": 2,
+            "maxAbsChannelDelta": 45,
+            "changedChannelRatio": 0.447242
+          }
+        },
+        {
+          "frame": 72,
+          "normalizedProgress": 0.263941,
+          "preview16": {
+            "filename": "phase3-desktop-0072.png",
+            "bytes": 691397,
+            "sha256": "c54c8cbd6d70cbe01b39ef26032983a0487f84f90530889617a28937d1e35b44",
+            "width": 1280,
+            "height": 720
+          },
+          "production48": {
+            "filename": "phase3-desktop-0072.png",
+            "bytes": 1460777,
+            "sha256": "17424e17b5b3fbd1e1aba2e7a8f96f55edf1a1c02be86af0e716ffd6c6ba8542",
+            "width": 1920,
+            "height": 1080
+          },
+          "decodedComparison": {
+            "comparisonGeometry": [
+              1280,
+              720
+            ],
+            "productionResample": "Lanczos to native 16-sample preview dimensions",
+            "mae8Bit": 0.62489,
+            "rmse8Bit": 1.21934,
+            "p95AbsChannelDelta": 2,
+            "maxAbsChannelDelta": 53,
+            "changedChannelRatio": 0.45335
+          }
+        },
+        {
+          "frame": 126,
+          "normalizedProgress": 0.464684,
+          "preview16": {
+            "filename": "phase3-desktop-0126.png",
+            "bytes": 711733,
+            "sha256": "a21adf36f016c14379527099bd11be669f74f18f656a90e1eeec3f1ef2435440",
+            "width": 1280,
+            "height": 720
+          },
+          "production48": {
+            "filename": "phase3-desktop-0126.png",
+            "bytes": 1500103,
+            "sha256": "8895a43525a0307bb44c059a87c5bc67d3490662e0caea551b42d1473a098cb4",
+            "width": 1920,
+            "height": 1080
+          },
+          "decodedComparison": {
+            "comparisonGeometry": [
+              1280,
+              720
+            ],
+            "productionResample": "Lanczos to native 16-sample preview dimensions",
+            "mae8Bit": 0.648394,
+            "rmse8Bit": 1.276853,
+            "p95AbsChannelDelta": 2,
+            "maxAbsChannelDelta": 50,
+            "changedChannelRatio": 0.457445
+          }
+        },
+        {
+          "frame": 154,
+          "normalizedProgress": 0.568773,
+          "preview16": {
+            "filename": "phase3-desktop-0154.png",
+            "bytes": 757529,
+            "sha256": "0edbe79061c7e3fc917e7c8242ccefbb6eb096cbfcba2d46c56e29f5cce35fc5",
+            "width": 1280,
+            "height": 720
+          },
+          "production48": {
+            "filename": "phase3-desktop-0154.png",
+            "bytes": 1583535,
+            "sha256": "09246011c42ff28ee39e60e287c50df84a1b1a8f19e824159b6744c9e7a914b3",
+            "width": 1920,
+            "height": 1080
+          },
+          "decodedComparison": {
+            "comparisonGeometry": [
+              1280,
+              720
+            ],
+            "productionResample": "Lanczos to native 16-sample preview dimensions",
+            "mae8Bit": 0.920534,
+            "rmse8Bit": 1.874337,
+            "p95AbsChannelDelta": 3,
+            "maxAbsChannelDelta": 78,
+            "changedChannelRatio": 0.520429
+          }
+        },
+        {
+          "frame": 196,
+          "normalizedProgress": 0.724907,
+          "preview16": {
+            "filename": "phase3-desktop-0196.png",
+            "bytes": 779112,
+            "sha256": "244914e629400592d635386fa7475b191fe3722872c620c4a64808492180ba2f",
+            "width": 1280,
+            "height": 720
+          },
+          "production48": {
+            "filename": "phase3-desktop-0196.png",
+            "bytes": 1661684,
+            "sha256": "62d694c446c6a0cf358950f57eabcaaabe44a2976e82e0a8a2fd5a80048ce6a6",
+            "width": 1920,
+            "height": 1080
+          },
+          "decodedComparison": {
+            "comparisonGeometry": [
+              1280,
+              720
+            ],
+            "productionResample": "Lanczos to native 16-sample preview dimensions",
+            "mae8Bit": 0.917648,
+            "rmse8Bit": 1.963524,
+            "p95AbsChannelDelta": 3,
+            "maxAbsChannelDelta": 79,
+            "changedChannelRatio": 0.547818
+          }
+        },
+        {
+          "frame": 246,
+          "normalizedProgress": 0.910781,
+          "preview16": {
+            "filename": "phase3-desktop-0246.png",
+            "bytes": 633643,
+            "sha256": "ec8688454921c530201c027bb283f5227d9b879bed520cc9fea8740b85efc871",
+            "width": 1280,
+            "height": 720
+          },
+          "production48": {
+            "filename": "phase3-desktop-0246.png",
+            "bytes": 1395320,
+            "sha256": "e38e24da2574a2e342027399b1506483c942cf5ae35684fc9a4d15792c4c5cb2",
+            "width": 1920,
+            "height": 1080
+          },
+          "decodedComparison": {
+            "comparisonGeometry": [
+              1280,
+              720
+            ],
+            "productionResample": "Lanczos to native 16-sample preview dimensions",
+            "mae8Bit": 0.562764,
+            "rmse8Bit": 0.880977,
+            "p95AbsChannelDelta": 2,
+            "maxAbsChannelDelta": 8,
+            "changedChannelRatio": 0.474165
+          }
+        },
+        {
+          "frame": 270,
+          "normalizedProgress": 1.0,
+          "preview16": {
+            "filename": "phase3-desktop-0270.png",
+            "bytes": 357297,
+            "sha256": "f3d3d1abb3ebbd320ec9b720d2efe3fdfe34aa451ce13fc754fb395814e537bd",
+            "width": 1280,
+            "height": 720
+          },
+          "production48": {
+            "filename": "phase3-desktop-0270.png",
+            "bytes": 782797,
+            "sha256": "fac5a6cc388eadcb38a90d94dd9c13ace62d09e4f6a8250f94328ec15023921e",
+            "width": 1920,
+            "height": 1080
+          },
+          "decodedComparison": {
+            "comparisonGeometry": [
+              1280,
+              720
+            ],
+            "productionResample": "Lanczos to native 16-sample preview dimensions",
+            "mae8Bit": 0.307058,
+            "rmse8Bit": 0.581023,
+            "p95AbsChannelDelta": 1,
+            "maxAbsChannelDelta": 6,
+            "changedChannelRatio": 0.292943
+          }
+        }
+      ],
+      "comparisonSheet": {
+        "repositoryRelativePath": "artifacts/evidence/phase-3/render-quality/phase-3-desktop-sample-quality-comparison.png",
+        "bytes": 1047392,
+        "sha256": "9d6224bec502836aec8aef482054b355231febfda6f4815cb798651ce103d052",
+        "sourceFrames": [
+          1,
+          72,
+          154,
+          196,
+          270
+        ]
+      }
+    },
+    "mobile": {
+      "status": "PASS",
+      "preview": {
+        "samples": 16,
+        "resolution": [
+          540,
+          960
+        ]
+      },
+      "production": {
+        "samples": 48,
+        "resolution": [
+          720,
+          1280
+        ]
+      },
+      "rawSequencePaths": "OUTSIDE_GIT_AND_INTENTIONALLY_OMITTED",
+      "records": [
+        {
+          "frame": 1,
+          "normalizedProgress": 0.0,
+          "preview16": {
+            "filename": "phase3-mobile-0001.png",
+            "bytes": 408664,
+            "sha256": "15f4b49be8d051ff4f2d6c178e57bf2621c7075377c59c6d848b5690dc107d22",
+            "width": 540,
+            "height": 960
+          },
+          "production48": {
+            "filename": "phase3-mobile-0001.png",
+            "bytes": 687384,
+            "sha256": "3ec03ca412da91de4bb0b23620fcd88352957529f4e13bf34d7618a8583adbb8",
+            "width": 720,
+            "height": 1280
+          },
+          "decodedComparison": {
+            "comparisonGeometry": [
+              540,
+              960
+            ],
+            "productionResample": "Lanczos to native 16-sample preview dimensions",
+            "mae8Bit": 0.569311,
+            "rmse8Bit": 0.953189,
+            "p95AbsChannelDelta": 2,
+            "maxAbsChannelDelta": 30,
+            "changedChannelRatio": 0.471119
+          }
+        },
+        {
+          "frame": 72,
+          "normalizedProgress": 0.263941,
+          "preview16": {
+            "filename": "phase3-mobile-0072.png",
+            "bytes": 410178,
+            "sha256": "9b966ff2dbb9c9794ec74df02af779af973eb0ef7b7cdb94c28006dee94fdd18",
+            "width": 540,
+            "height": 960
+          },
+          "production48": {
+            "filename": "phase3-mobile-0072.png",
+            "bytes": 687567,
+            "sha256": "355f18f0e828a1bc34705d1c3e75d1481f5c1a6268329e884b2d8cf56ea9bd0e",
+            "width": 720,
+            "height": 1280
+          },
+          "decodedComparison": {
+            "comparisonGeometry": [
+              540,
+              960
+            ],
+            "productionResample": "Lanczos to native 16-sample preview dimensions",
+            "mae8Bit": 0.590356,
+            "rmse8Bit": 0.995618,
+            "p95AbsChannelDelta": 2,
+            "maxAbsChannelDelta": 25,
+            "changedChannelRatio": 0.477834
+          }
+        },
+        {
+          "frame": 126,
+          "normalizedProgress": 0.464684,
+          "preview16": {
+            "filename": "phase3-mobile-0126.png",
+            "bytes": 402415,
+            "sha256": "c6ee69d3ae8330b4bfd1b7d1df79f9233a321d0c12f355bb170a97e8fb55512e",
+            "width": 540,
+            "height": 960
+          },
+          "production48": {
+            "filename": "phase3-mobile-0126.png",
+            "bytes": 678564,
+            "sha256": "4db0a986196da4319142164d03934aebc045dc2b026f31fa7d9ddce94674d5ef",
+            "width": 720,
+            "height": 1280
+          },
+          "decodedComparison": {
+            "comparisonGeometry": [
+              540,
+              960
+            ],
+            "productionResample": "Lanczos to native 16-sample preview dimensions",
+            "mae8Bit": 0.590626,
+            "rmse8Bit": 1.009279,
+            "p95AbsChannelDelta": 2,
+            "maxAbsChannelDelta": 19,
+            "changedChannelRatio": 0.473628
+          }
+        },
+        {
+          "frame": 154,
+          "normalizedProgress": 0.568773,
+          "preview16": {
+            "filename": "phase3-mobile-0154.png",
+            "bytes": 420859,
+            "sha256": "26c5cdcf5ff515eb0cebe3217a326d74409bfbd5203d16d5d821193ef0093680",
+            "width": 540,
+            "height": 960
+          },
+          "production48": {
+            "filename": "phase3-mobile-0154.png",
+            "bytes": 703811,
+            "sha256": "78cb02d41890f9aba745f50f10999e1b39e302341db977cccf7ddf4023728a94",
+            "width": 720,
+            "height": 1280
+          },
+          "decodedComparison": {
+            "comparisonGeometry": [
+              540,
+              960
+            ],
+            "productionResample": "Lanczos to native 16-sample preview dimensions",
+            "mae8Bit": 0.957825,
+            "rmse8Bit": 1.759989,
+            "p95AbsChannelDelta": 4,
+            "maxAbsChannelDelta": 50,
+            "changedChannelRatio": 0.551024
+          }
+        },
+        {
+          "frame": 196,
+          "normalizedProgress": 0.724907,
+          "preview16": {
+            "filename": "phase3-mobile-0196.png",
+            "bytes": 385388,
+            "sha256": "28a8e83541cb1607f0164e0679a2c37efc01a016af410af08ccfd3dfc00a5225",
+            "width": 540,
+            "height": 960
+          },
+          "production48": {
+            "filename": "phase3-mobile-0196.png",
+            "bytes": 652010,
+            "sha256": "bed67bfc6ab10d2ed1c35ad37c7e402054f7d2e91dd61730f433aad011c37661",
+            "width": 720,
+            "height": 1280
+          },
+          "decodedComparison": {
+            "comparisonGeometry": [
+              540,
+              960
+            ],
+            "productionResample": "Lanczos to native 16-sample preview dimensions",
+            "mae8Bit": 0.939835,
+            "rmse8Bit": 1.802819,
+            "p95AbsChannelDelta": 3,
+            "maxAbsChannelDelta": 44,
+            "changedChannelRatio": 0.563938
+          }
+        },
+        {
+          "frame": 222,
+          "normalizedProgress": 0.821561,
+          "preview16": {
+            "filename": "phase3-mobile-0222.png",
+            "bytes": 359788,
+            "sha256": "18cdf02daf2663aa709f9e94e5e73368cff325f5507361f4ece71c2608f23dc2",
+            "width": 540,
+            "height": 960
+          },
+          "production48": {
+            "filename": "phase3-mobile-0222.png",
+            "bytes": 615980,
+            "sha256": "5ed6dd30f02260414385d1af145e4ae4033399f6bcceb59dad41306b6e6162aa",
+            "width": 720,
+            "height": 1280
+          },
+          "decodedComparison": {
+            "comparisonGeometry": [
+              540,
+              960
+            ],
+            "productionResample": "Lanczos to native 16-sample preview dimensions",
+            "mae8Bit": 0.743584,
+            "rmse8Bit": 1.163742,
+            "p95AbsChannelDelta": 2,
+            "maxAbsChannelDelta": 16,
+            "changedChannelRatio": 0.547333
+          }
+        },
+        {
+          "frame": 270,
+          "normalizedProgress": 1.0,
+          "preview16": {
+            "filename": "phase3-mobile-0270.png",
+            "bytes": 201223,
+            "sha256": "bfa07676da0791d6c9e723c3812d880dbebfe1899e7af51a7886678d325ce72f",
+            "width": 540,
+            "height": 960
+          },
+          "production48": {
+            "filename": "phase3-mobile-0270.png",
+            "bytes": 351106,
+            "sha256": "3eefa296089a8f0231a2de93f6b3ecf8d6b66295d57f7d63abe641084e794199",
+            "width": 720,
+            "height": 1280
+          },
+          "decodedComparison": {
+            "comparisonGeometry": [
+              540,
+              960
+            ],
+            "productionResample": "Lanczos to native 16-sample preview dimensions",
+            "mae8Bit": 0.328205,
+            "rmse8Bit": 0.593989,
+            "p95AbsChannelDelta": 1,
+            "maxAbsChannelDelta": 4,
+            "changedChannelRatio": 0.31637
+          }
+        }
+      ],
+      "comparisonSheet": {
+        "repositoryRelativePath": "artifacts/evidence/phase-3/render-quality/phase-3-mobile-sample-quality-comparison.png",
+        "bytes": 1241573,
+        "sha256": "16c106941b097787607885de2445e0809c45f01dced7cb365933bb155607e4be",
+        "sourceFrames": [
+          1,
+          72,
+          154,
+          196,
+          270
+        ]
+      }
+    }
+  },
+  "reviewArtifacts": [
+    {
+      "repositoryRelativePath": "artifacts/evidence/phase-3/render-quality/phase-3-desktop-sample-quality-comparison.png",
+      "bytes": 1047392,
+      "sha256": "9d6224bec502836aec8aef482054b355231febfda6f4815cb798651ce103d052",
+      "sourceFrames": [
+        1,
+        72,
+        154,
+        196,
+        270
+      ]
+    },
+    {
+      "repositoryRelativePath": "artifacts/evidence/phase-3/render-quality/phase-3-mobile-sample-quality-comparison.png",
+      "bytes": 1241573,
+      "sha256": "16c106941b097787607885de2445e0809c45f01dced7cb365933bb155607e4be",
+      "sourceFrames": [
+        1,
+        72,
+        154,
+        196,
+        270
+      ]
+    }
+  ],
+  "generator": {
+    "repositoryRelativePath": "scripts/create-phase3-render-quality-evidence.py",
+    "bytes": 11190,
+    "sha256": "f4aa379c0f722aab630bae357ff6acfb1795c827ef2adcf05072f6f5f76fc57c",
+    "pillow": "12.3.0"
+  }
+}
