@@ -1,4 +1,4 @@
-r"""Deterministic Phase 3 delivery, evidence, and review-ZIP packager.
+r"""Fixed-protocol Phase 3 delivery, evidence, and review-ZIP packager.
 
 The production PNG sequences are deliberately consumed from outside the Git
 worktree.  Only compressed delivery candidates and compact review evidence are
@@ -23,6 +23,10 @@ review identity without touching tracked files::
 
 Requires Pillow.  The expected input names are ``phase3-desktop-%04d.png`` and
 ``phase3-mobile-%04d.png`` for frames 1 through 270 inclusive.
+
+Reproducibility is scoped to identical source bytes, settings, toolchain/font
+inputs, and this execution protocol.  Fixed names, atomic replacement, and ZIP
+metadata make reruns auditable; cross-host encoder bit identity is not claimed.
 """
 
 from __future__ import annotations
@@ -41,6 +45,7 @@ import textwrap
 import zipfile
 from dataclasses import dataclass
 from fractions import Fraction
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Iterable, Sequence
 
@@ -125,6 +130,41 @@ MOBILE_FRAMES = (1, 72, 126, 222, 270)
 MOBILE_HIGH_RISK_FRAMES = (1, 126, 270)
 DESKTOP_FULL_RES_FRAMES = (1, 42, 72, 104, 116, 126, 144, 162, 182, 196, 218, 236, 250, 262, 270)
 MOBILE_FULL_RES_FRAMES = (1, 72, 126, 222, 270)
+
+EXPECTED_MEDIA_OUTPUTS = frozenset(
+    {
+        "phase-3-crt-opening-desktop-h264.mp4",
+        "phase-3-crt-opening-desktop-vp9.webm",
+        "phase-3-crt-opening-mobile-h264.mp4",
+        "phase-3-crt-opening-mobile-vp9.webm",
+    }
+)
+EXPECTED_REVIEW_ROOT_OUTPUTS = frozenset(
+    {
+        "README.md",
+        "phase-3-desktop-codec-comparison-contact-sheet.png",
+        "phase-3-mobile-codec-comparison-contact-sheet.png",
+        "phase-3-desktop-conduction-contact-sheet.png",
+        "phase-3-crt-startup-contact-sheet.png",
+        "phase-3-camera-portal-contact-sheet.png",
+        "phase-3-portal-alignment-contact-sheet.png",
+        "phase-3-portal-safe-zone-matrix.png",
+        "phase-3-to-phase-2b-handoff-comparison.png",
+        "phase-3-mobile-contact-sheet.png",
+        "phase-3-mobile-320-contact-sheet.png",
+        "phase-3-mobile-360-contact-sheet.png",
+        "phase-3-mobile-landscape-844x390-contact-sheet.png",
+        "phase-3-reduced-motion-desktop-1440x900.png",
+        "phase-3-reduced-motion-mobile-390x844.png",
+        "phase-3-reduced-motion-mobile-320x800.png",
+        "phase-3-desktop-forward-review.mp4",
+        "phase-3-desktop-reverse-review.mp4",
+        "phase-3-mobile-forward-review.mp4",
+        "phase-3-mobile-reverse-review.mp4",
+        "phase-3-desktop-scrub-simulation-review.mp4",
+    }
+)
+OPTIONAL_REVIEW_OUTPUTS = frozenset({"phase-3-media-lab-scrub-evidence.webm"})
 
 CODEC_RISK_FRAMES: dict[str, tuple[tuple[int, str], ...]] = {
     "desktop": (
@@ -232,6 +272,25 @@ def normalized_progress(frame: int) -> float:
     return round((frame - FRAME_START) / (FRAME_END - FRAME_START), 6)
 
 
+def full_resolution_still_relative_path(variant: str, frame: int) -> str:
+    return (
+        "full-resolution-stills/"
+        f"phase-3-{variant}-f{frame:03d}-p{normalized_progress(frame):.4f}-full-resolution.png"
+    )
+
+
+def expected_review_outputs() -> frozenset[str]:
+    full_resolution = {
+        full_resolution_still_relative_path("desktop", frame)
+        for frame in DESKTOP_FULL_RES_FRAMES
+    }
+    full_resolution.update(
+        full_resolution_still_relative_path("mobile", frame)
+        for frame in MOBILE_FULL_RES_FRAMES
+    )
+    return frozenset(set(EXPECTED_REVIEW_ROOT_OUTPUTS) | full_resolution)
+
+
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:
@@ -263,6 +322,38 @@ def atomic_save_png(image: Image.Image, path: Path) -> None:
     temporary = path.with_name(f"{path.stem}.phase3-tmp.png")
     image.convert("RGB").save(temporary, "PNG", compress_level=9, optimize=False)
     os.replace(temporary, path)
+
+
+def validate_output_inventory(
+    root: Path,
+    required: frozenset[str],
+    optional: frozenset[str] = frozenset(),
+    *,
+    require_complete: bool,
+) -> frozenset[str]:
+    """Reject stale generated files and optionally require the complete output set."""
+    if not root.exists():
+        actual: set[str] = set()
+    elif not root.is_dir():
+        raise ValueError(f"Generated output root is not a directory: {root}")
+    else:
+        actual = {
+            path.relative_to(root).as_posix()
+            for path in root.rglob("*")
+            if path.is_file() or path.is_symlink()
+        }
+
+    unexpected = sorted(actual - required - optional)
+    if unexpected:
+        raise ValueError(
+            f"Unexpected/stale generated outputs under {root}: {unexpected}. "
+            "Remove or archive them outside the Phase 3 package before rerunning."
+        )
+    if require_complete:
+        missing = sorted(required - actual)
+        if missing:
+            raise ValueError(f"Missing expected generated outputs under {root}: {missing}")
+    return frozenset(actual)
 
 
 def run(command: Sequence[str], cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
@@ -574,15 +665,45 @@ def verify_candidate(
     }
 
 
-def load_font(size: int, bold: bool = False) -> ImageFont.ImageFont:
+@lru_cache(maxsize=2)
+def selected_font_path(bold: bool = False) -> Path | None:
     candidates = [
         Path(os.environ.get("WINDIR", "C:/Windows")) / "Fonts" / ("arialbd.ttf" if bold else "arial.ttf"),
         Path("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
     ]
     for candidate in candidates:
         if candidate.is_file():
-            return ImageFont.truetype(str(candidate), size=size)
+            return candidate.resolve()
+    return None
+
+
+def load_font(size: int, bold: bool = False) -> ImageFont.ImageFont:
+    selected = selected_font_path(bold)
+    if selected is not None:
+        return ImageFont.truetype(str(selected), size=size)
     return ImageFont.load_default()
+
+
+def font_provenance() -> dict[str, Any]:
+    records: dict[str, Any] = {}
+    for role, bold in (("regular", False), ("bold", True)):
+        selected = selected_font_path(bold)
+        if selected is None:
+            records[role] = {
+                "selection": "PILLOW_BUILTIN_DEFAULT",
+                "filename": None,
+                "bytes": None,
+                "sha256": None,
+            }
+        else:
+            records[role] = {
+                "selection": "SYSTEM_FONT_FILE",
+                # Deliberately omit the absolute host path from tracked provenance.
+                "filename": selected.name,
+                "bytes": selected.stat().st_size,
+                "sha256": sha256_file(selected),
+            }
+    return records
 
 
 def cover(image: Image.Image, size: tuple[int, int], centering: tuple[float, float] = (0.5, 0.5)) -> Image.Image:
@@ -738,6 +859,41 @@ def add_viewport_guides(image: Image.Image, authority: dict[str, Any]) -> Image.
     return Image.alpha_composite(target.convert("RGBA"), overlay).convert("RGB")
 
 
+def viewport_authority_record(authority: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "width": authority["size"][0],
+        "height": authority["size"][1],
+        "sourceVariant": authority["variant"],
+        "headerExclusionY": authority["header"],
+        "h1RectXYWH": list(authority["h1"]),
+        "routeRectXYWH": list(authority["routes"]),
+        "guideProjection": {
+            "method": (
+                "DIRECT_PROJECTION_OF_FROZEN_PHASE_2B_CSS_RECTS_AT_IDENTICAL_"
+                "VIEWPORT_DIMENSIONS_SCROLLY_0"
+            ),
+            "signedDeltasCssPx": {
+                "header": {"x": 0, "y": 0},
+                "h1": {"x": 0, "y": 0},
+                "routes": {"x": 0, "y": 0},
+            },
+            "maxAbsDeltaCssPx": 0,
+            "toleranceCssPx": 3,
+            "status": "PASS",
+        },
+        "physicalKeepout": {
+            "status": "notApplicable",
+            "applicable": False,
+            "minimumRequirementCssPx": 16,
+            "reason": (
+                "F270 is the validated text-free full raster; cabinet, bezel, and "
+                "cable geometry has exited or been retired before portal handoff"
+            ),
+        },
+        "claimScope": "REVIEW_METADATA_NOT_A_PRODUCTION_CLAIM",
+    }
+
+
 def percentile_from_histogram(histogram: Sequence[int], quantile: float) -> int:
     target = sum(histogram) * quantile
     running = 0
@@ -748,13 +904,36 @@ def percentile_from_histogram(histogram: Sequence[int], quantile: float) -> int:
     return len(histogram) - 1
 
 
+def maximum_tile_ratio(
+    image: Image.Image,
+    threshold: int,
+    *,
+    columns: int = 8,
+    rows: int = 6,
+) -> float:
+    """Measure localized signal so small interface glyphs cannot hide in global ratios."""
+    maximum = 0.0
+    for row in range(rows):
+        top = round(row * image.height / rows)
+        bottom = round((row + 1) * image.height / rows)
+        for column in range(columns):
+            left = round(column * image.width / columns)
+            right = round((column + 1) * image.width / columns)
+            tile_histogram = image.crop((left, top, right, bottom)).histogram()
+            tile_count = max(1, sum(tile_histogram))
+            maximum = max(maximum, sum(tile_histogram[threshold:]) / tile_count)
+    return maximum
+
+
 def validate_dormant_screen(source: Path, variant: str) -> dict[str, Any]:
     # Interior-only regions avoid the bezel. A bright/high-frequency interior at
     # frame 1 indicates ghosted physical copy or a powered phosphor layer and is
     # not acceptable as a reduced-motion source.
     relative_roi = {
         "desktop": (0.49, 0.28, 0.69, 0.58),
-        "mobile": (0.355, 0.415, 0.915, 0.59),
+        # The authored mobile camera places the glass below the earlier draft ROI.
+        # This measured region stays strictly inside the final screen aperture.
+        "mobile": (0.46, 0.58, 0.86, 0.72),
     }[variant]
     with Image.open(source) as raw:
         grayscale = raw.convert("L")
@@ -765,21 +944,39 @@ def validate_dormant_screen(source: Path, variant: str) -> dict[str, Any]:
             round(relative_roi[3] * grayscale.height),
         )
         interior = grayscale.crop(box)
-    p95 = percentile_from_histogram(interior.histogram(), 0.95)
+    histogram = interior.histogram()
+    p95 = percentile_from_histogram(histogram, 0.95)
+    pixel_count = max(1, sum(histogram))
+    bright_ratio = sum(histogram[24:]) / pixel_count
+    maximum_bright_tile_ratio = maximum_tile_ratio(interior, 24)
     edges = interior.filter(ImageFilter.FIND_EDGES)
     edge_histogram = edges.histogram()
     edge_ratio = sum(edge_histogram[12:]) / max(1, sum(edge_histogram))
-    if p95 > 18 or edge_ratio > 0.025:
+    maximum_edge_tile_ratio = maximum_tile_ratio(edges, 12)
+    if (
+        p95 > 18
+        or bright_ratio > 0.002
+        or maximum_bright_tile_ratio > 0.005
+        or edge_ratio > 0.003
+        or maximum_edge_tile_ratio > 0.005
+    ):
         raise ValueError(
             f"Dormant {variant} frame has a bright/textured screen interior "
-            f"(p95={p95}, edgeRatio={edge_ratio:.6f}); hide physical CRT interface "
+            f"(p95={p95}, brightRatioAt24={bright_ratio:.6f}, "
+            f"maxBrightTileRatioAt24={maximum_bright_tile_ratio:.6f}, "
+            f"edgeRatio={edge_ratio:.6f}, "
+            f"maxEdgeTileRatioAt12={maximum_edge_tile_ratio:.6f}); hide physical CRT interface "
             "layers at frame 1 before packaging reduced-motion posters."
         )
     return {
         "relativeInteriorROI": list(relative_roi),
         "luminanceP95": p95,
+        "brightPixelRatioAt24": round(bright_ratio, 9),
+        "maximumBrightTileRatioAt24": round(maximum_bright_tile_ratio, 9),
         "edgePixelRatioAt12": round(edge_ratio, 9),
-        "interfaceGhostingGate": "PASS",
+        "maximumEdgeTileRatioAt12": round(maximum_edge_tile_ratio, 9),
+        "tileGrid": {"columns": 8, "rows": 6},
+        "visibleInterfaceAndScanlineGate": "PASS_METRIC_VERIFIED",
     }
 
 
@@ -828,9 +1025,7 @@ def copy_full_resolution_stills(
     outputs = []
     for frame in frames:
         source = frame_path(root, variant, frame)
-        output = destination / (
-            f"phase-3-{variant}-f{frame:03d}-p{normalized_progress(frame):.4f}-full-resolution.png"
-        )
+        output = destination / Path(full_resolution_still_relative_path(variant, frame)).name
         temporary = output.with_name(f"{output.stem}.phase3-tmp.png")
         shutil.copyfile(source, temporary)
         os.replace(temporary, output)
@@ -1215,7 +1410,44 @@ def verify_recorded_file(path: Path, record: dict[str, Any], label: str) -> dict
     return {"bytes": actual_bytes, "sha256": actual_hash}
 
 
-def final_push_identity(repository: Path, declared_sha: str | None) -> dict[str, str]:
+def verify_tracked_in_head(repository: Path, path: Path, label: str) -> str:
+    repository_resolved = repository.resolve()
+    resolved = path.resolve()
+    try:
+        relative = resolved.relative_to(repository_resolved).as_posix()
+    except ValueError as exc:
+        raise ValueError(f"{label} is outside the repository: {path}") from exc
+    try:
+        run(["git", "ls-files", "--error-unmatch", "--", relative], cwd=repository)
+        object_type = run(["git", "cat-file", "-t", f"HEAD:{relative}"], cwd=repository).stdout.strip()
+    except RuntimeError as exc:
+        raise ValueError(
+            f"{label} is not tracked in the current HEAD: {relative}. "
+            "Add, commit, and push every generated Phase 3 package file before finalization."
+        ) from exc
+    if object_type != "blob":
+        raise ValueError(f"{label} is not a file blob in the current HEAD: {relative}")
+    return relative
+
+
+def untracked_package_paths(repository: Path, package_root: Path) -> list[str]:
+    relative_root = package_root.resolve().relative_to(repository.resolve()).as_posix()
+    ordinary = run(
+        ["git", "ls-files", "--others", "--exclude-standard", "--", relative_root],
+        cwd=repository,
+    ).stdout.splitlines()
+    ignored = run(
+        ["git", "ls-files", "--others", "--ignored", "--exclude-standard", "--", relative_root],
+        cwd=repository,
+    ).stdout.splitlines()
+    return sorted(set(ordinary) | set(ignored))
+
+
+def final_push_identity(
+    repository: Path,
+    declared_sha: str | None,
+    package_root: Path,
+) -> dict[str, str]:
     tracked_status = run(
         ["git", "status", "--porcelain=v1", "--untracked-files=no"], cwd=repository
     ).stdout.strip()
@@ -1223,6 +1455,13 @@ def final_push_identity(repository: Path, declared_sha: str | None) -> dict[str,
         raise ValueError(
             "External-only finalization requires a clean tracked worktree. Commit and push "
             f"the generated Phase 3 artifacts first. Tracked status:\n{tracked_status}"
+        )
+
+    untracked = untracked_package_paths(repository, package_root)
+    if untracked:
+        raise ValueError(
+            "External-only finalization rejects untracked files anywhere in the Phase 3 "
+            f"package. Add and commit or remove these paths: {untracked[:25]}"
         )
 
     branch = run(["git", "branch", "--show-current"], cwd=repository).stdout.strip()
@@ -1255,7 +1494,28 @@ def final_push_identity(repository: Path, declared_sha: str | None) -> dict[str,
         "upstreamRef": upstream_ref,
         "upstreamSha": upstream_sha,
         "trackedWorktree": "CLEAN",
+        "phase3PackageUntrackedPaths": "NONE",
     }
+
+
+def verify_recorded_packaging_branch(
+    identity: dict[str, str],
+    tracked_manifest: dict[str, Any],
+) -> str:
+    recorded_repository = tracked_manifest.get("repository")
+    recorded_branch = (
+        str(recorded_repository.get("branch", ""))
+        if isinstance(recorded_repository, dict)
+        else ""
+    )
+    if not recorded_branch:
+        raise ValueError("Tracked post-production manifest does not record its packaging branch")
+    if identity["branch"] != recorded_branch:
+        raise ValueError(
+            f"Current branch {identity['branch']!r} does not equal the tracked packaging "
+            f"branch {recorded_branch!r}"
+        )
+    return recorded_branch
 
 
 def finalize_external_review(
@@ -1266,6 +1526,7 @@ def finalize_external_review(
     package_root = repository / "artifacts/original/phase-3-crt-opening"
     media_root = package_root / "media"
     review_root = package_root / "review"
+    source_root = package_root / "source"
     manifest_path = package_root / "manifests/phase-3-post-production-manifest.json"
     if not manifest_path.is_file():
         raise FileNotFoundError(
@@ -1281,7 +1542,35 @@ def finalize_external_review(
     if policy.get("rawFramesCommitted") is not False:
         raise ValueError("Tracked post-production manifest does not prove rawFramesCommitted=false")
 
-    identity = final_push_identity(repository, declared_sha)
+    media_inventory = validate_output_inventory(
+        media_root,
+        EXPECTED_MEDIA_OUTPUTS,
+        require_complete=True,
+    )
+    review_inventory = validate_output_inventory(
+        review_root,
+        expected_review_outputs(),
+        OPTIONAL_REVIEW_OUTPUTS,
+        require_complete=True,
+    )
+    identity = final_push_identity(repository, declared_sha, package_root)
+    verify_recorded_packaging_branch(identity, tracked_manifest)
+    verify_tracked_in_head(repository, manifest_path, "post-production manifest")
+    tracked_packager_record = tracked_manifest.get("packager", {})
+    tracked_packager_path = resolve_recorded_path(
+        repository,
+        str(tracked_packager_record.get("repositoryRelativePath", "")),
+        source_root,
+        "tracked packager",
+    )
+    executed_packager_path = Path(__file__).resolve()
+    if tracked_packager_path != executed_packager_path:
+        raise ValueError(
+            "External-only finalization must be executed by the exact packager recorded in "
+            f"the manifest: executed={executed_packager_path}, recorded={tracked_packager_path}"
+        )
+    verify_recorded_file(tracked_packager_path, tracked_packager_record, "tracked packager")
+    verify_tracked_in_head(repository, tracked_packager_path, "tracked packager")
     tracked_manifest_record = {
         "repositoryRelativePath": manifest_path.relative_to(repository).as_posix(),
         "bytes": manifest_path.stat().st_size,
@@ -1291,6 +1580,7 @@ def finalize_external_review(
 
     archive_files: list[tuple[Path, str]] = []
     verified_review: list[dict[str, Any]] = []
+    recorded_review_inventory: set[str] = set()
     archive_names: set[str] = set()
     reserved_archive_names = {
         "README.md",
@@ -1309,16 +1599,24 @@ def finalize_external_review(
             raise ValueError(f"Review artifact collides with a reserved ZIP path: {relative_to_review}")
         if relative_to_review in archive_names:
             raise ValueError(f"Duplicate review ZIP archive name: {relative_to_review}")
+        verify_tracked_in_head(repository, path, "review artifact")
         archive_names.add(relative_to_review)
+        recorded_review_inventory.add(relative_to_review)
         archive_files.append((path, relative_to_review))
         verified_review.append({**record, "externalFinalizationVerification": verification})
     if not verified_review:
         raise ValueError("Tracked manifest contains no review artifacts")
 
     verified_candidates: list[dict[str, Any]] = []
+    recorded_media_inventory: set[str] = set()
     for candidate in tracked_manifest.get("deliveryCandidates", []):
         relative_text = str(candidate.get("repositoryRelativePath", ""))
         path = resolve_recorded_path(repository, relative_text, media_root, "delivery candidate")
+        relative_to_media = path.relative_to(media_root).as_posix()
+        if relative_to_media in recorded_media_inventory:
+            raise ValueError(f"Duplicate delivery candidate path: {relative_to_media}")
+        verify_tracked_in_head(repository, path, "delivery candidate")
+        recorded_media_inventory.add(relative_to_media)
         verification_record = candidate.get("verification", {})
         verification = verify_recorded_file(path, verification_record, "delivery candidate")
         verified_candidates.append(
@@ -1345,6 +1643,12 @@ def finalize_external_review(
         raise ValueError(
             f"Expected four selected delivery candidates, found {len(verified_candidates)}"
         )
+    if recorded_media_inventory != set(media_inventory):
+        raise ValueError(
+            "Tracked delivery-candidate records do not exactly match the generated media "
+            f"inventory: recorded={sorted(recorded_media_inventory)}, "
+            f"actual={sorted(media_inventory)}"
+        )
 
     tracked_readme_record = tracked_manifest.get("reviewReadme", {})
     tracked_readme_path = resolve_recorded_path(
@@ -1354,6 +1658,15 @@ def finalize_external_review(
         "tracked review README",
     )
     verify_recorded_file(tracked_readme_path, tracked_readme_record, "tracked review README")
+    verify_tracked_in_head(repository, tracked_readme_path, "tracked review README")
+    readme_relative = tracked_readme_path.relative_to(review_root).as_posix()
+    complete_recorded_review_inventory = recorded_review_inventory | {readme_relative}
+    if complete_recorded_review_inventory != set(review_inventory):
+        raise ValueError(
+            "Tracked review records do not exactly match the generated review inventory: "
+            f"recorded={sorted(complete_recorded_review_inventory)}, "
+            f"actual={sorted(review_inventory)}"
+        )
 
     external_manifest_path = review_zip.with_name(f"{review_zip.stem}.manifest.json")
     ensure_outside_repository(external_manifest_path, repository, "External review manifest")
@@ -1481,15 +1794,18 @@ def parse_args() -> argparse.Namespace:
     script = Path(__file__).resolve()
     default_repository = script.parents[4]
     parser = argparse.ArgumentParser(
-        description="Encode Phase 3 delivery candidates and create deterministic compact review evidence."
+        description=(
+            "Encode Phase 3 delivery candidates and create fixed-protocol compact review evidence."
+        )
     )
     parser.add_argument(
         "--finalize-external-only",
         action="store_true",
         help=(
             "After commit/push, verify tracked Phase 3 evidence and rebuild only the external "
-            "manifest/ZIP. Requires a clean branch whose HEAD equals its upstream; does not "
-            "read raw sequences or write tracked files."
+            "manifest/ZIP. Requires a clean branch whose HEAD equals its upstream, every "
+            "package file tracked in HEAD, and no untracked package paths; does not read raw "
+            "sequences or write tracked files."
         ),
     )
     parser.add_argument(
@@ -1573,6 +1889,20 @@ def main() -> None:
     manifest_path = manifest_root / "phase-3-post-production-manifest.json"
     readme_path = review_root / "README.md"
 
+    # Idempotent reruns may overwrite current protocol outputs, but never silently
+    # retain files from an older/different output selection.
+    validate_output_inventory(
+        media_root,
+        EXPECTED_MEDIA_OUTPUTS,
+        require_complete=False,
+    )
+    validate_output_inventory(
+        review_root,
+        expected_review_outputs(),
+        OPTIONAL_REVIEW_OUTPUTS,
+        require_complete=False,
+    )
+
     phase2b_reference = repository / PHASE2B_ENTRY_SHEET_RELATIVE
     accepted_crt = repository / ACCEPTED_CRT_RELATIVE
     derivative_crt = repository / DERIVATIVE_CRT_RELATIVE
@@ -1602,8 +1932,12 @@ def main() -> None:
             **screen_gate,
             "magentaDominantPixelRatio": round(magenta_ratio, 9),
             "magentaGate": "PASS",
-            "physicalInterfaceTextVisible": False,
-            "scanlinesVisible": False,
+            "physicalInterfaceTextGate": "PASS_NONE_DETECTED_ABOVE_RECORDED_THRESHOLDS",
+            "scanlineGate": "PASS_NONE_DETECTED_ABOVE_RECORDED_THRESHOLDS",
+            "visibilityDeterminationMethod": (
+                "SCREEN_INTERIOR_LUMINANCE_GLOBAL_AND_LOCALIZED_TILE_BRIGHT_PIXEL_EDGE_METRICS"
+            ),
+            "humanVisualDormancyReviewStillRequired": True,
         }
     identity = repository_identity(repository, args.branch_sha)
     ffmpeg_build = ffmpeg_version(ffmpeg)
@@ -1845,6 +2179,10 @@ def main() -> None:
         acceptedPhase2BReference={
             "path": PHASE2B_ENTRY_SHEET_RELATIVE.as_posix(),
             "sha256": PHASE2B_ENTRY_SHEET_SHA256,
+            "entryEvidenceProvenance": (
+                "REPRODUCTION_CROP_FROM_FROZEN_ACCEPTED_PHASE_2B_EVIDENCE_SHEET"
+            ),
+            "newHeadedCapture": False,
         },
     )
 
@@ -1875,17 +2213,7 @@ def main() -> None:
         "responsive portal safe-zone matrix with exact frozen DOM rectangles",
         "desktop + mobile",
         (270,),
-        viewportAuthorities=[
-            {
-                "width": authority["size"][0],
-                "height": authority["size"][1],
-                "sourceVariant": authority["variant"],
-                "headerExclusionY": authority["header"],
-                "h1RectXYWH": list(authority["h1"]),
-                "routeRectXYWH": list(authority["routes"]),
-            }
-            for authority in VIEWPORT_ZONES
-        ],
+        viewportAuthorities=[viewport_authority_record(authority) for authority in VIEWPORT_ZONES],
     )
 
     comparison_panels = []
@@ -1910,6 +2238,10 @@ def main() -> None:
         acceptedPhase2BReference={
             "path": PHASE2B_ENTRY_SHEET_RELATIVE.as_posix(),
             "sha256": PHASE2B_ENTRY_SHEET_SHA256,
+            "entryEvidenceProvenance": (
+                "REPRODUCTION_CROP_FROM_FROZEN_ACCEPTED_PHASE_2B_EVIDENCE_SHEET"
+            ),
+            "newHeadedCapture": False,
         },
     )
 
@@ -2221,8 +2553,9 @@ desktop or mobile PNG sequences and it is not a Phase 4 integration.
 {media_lab_readme_line}
 
 The portal guides exist only in evidence. They are not baked into production
-media. The Phase 2B ENTRY panel is cropped from the frozen accepted evidence
-sheet with SHA-256 `{PHASE2B_ENTRY_SHEET_SHA256}`.
+media. Each Phase 2B ENTRY panel is a reproduction crop from the frozen
+accepted evidence sheet—not a new headed capture—with SHA-256
+`{PHASE2B_ENTRY_SHEET_SHA256}`.
 
 ## Identity
 
@@ -2231,6 +2564,10 @@ sheet with SHA-256 `{PHASE2B_ENTRY_SHEET_SHA256}`.
 - Accepted CRT source SHA-256: `{ACCEPTED_CRT_SHA256}`
 - Review branch: `{identity['branch']}`
 - Review SHA: `{identity['branchShaDeclaredForReview']}`
+- Reproducibility scope: fixed source selection, settings, output names, atomic
+  replacement, and ZIP metadata for the recorded toolchain/font inputs.
+- Cross-host encoder bit identity is not claimed; trust the recorded artifact
+  hashes and rerun comparisons rather than assuming different hosts encode identically.
 - Exact file dimensions, byte sizes, hashes, source frames, normalized progress,
   and production-candidate hashes: `phase-3-review-manifest.json`
 
@@ -2239,7 +2576,9 @@ sheet with SHA-256 `{PHASE2B_ENTRY_SHEET_SHA256}`.
 The full packaging pass necessarily precedes the commit that contains its
 tracked outputs. After that commit is pushed, rerun this same script with only
 `--finalize-external-only` and the outside-Git `--review-zip` path. That mode
-requires `HEAD == upstream`, writes no tracked files, and emits exactly:
+requires `HEAD == upstream`, the same branch recorded during packaging, every
+package file tracked in `HEAD`, and no untracked Phase 3 package paths. It writes
+no tracked files and emits exactly:
 
 - `phase-3-crt-opening-human-review.zip`
 - `phase-3-crt-opening-human-review.manifest.json`
@@ -2254,11 +2593,49 @@ Phase 3 if the handoff does not feel inevitable.
 """
     atomic_text(readme_path, readme)
 
+    media_inventory = validate_output_inventory(
+        media_root,
+        EXPECTED_MEDIA_OUTPUTS,
+        require_complete=True,
+    )
+    review_inventory = validate_output_inventory(
+        review_root,
+        expected_review_outputs(),
+        OPTIONAL_REVIEW_OUTPUTS,
+        require_complete=True,
+    )
+    registered_review_inventory = {
+        (repository / record["repositoryRelativePath"]).relative_to(review_root).as_posix()
+        for record in review_outputs
+    } | {readme_path.relative_to(review_root).as_posix()}
+    if registered_review_inventory != set(review_inventory):
+        raise ValueError(
+            "Registered review records do not exactly match the generated output inventory: "
+            f"registered={sorted(registered_review_inventory)}, "
+            f"actual={sorted(review_inventory)}"
+        )
+    registered_media_inventory = {
+        (repository / candidate["repositoryRelativePath"]).relative_to(media_root).as_posix()
+        for candidate in candidates
+    }
+    if registered_media_inventory != set(media_inventory):
+        raise ValueError(
+            "Registered delivery candidates do not exactly match the generated media inventory: "
+            f"registered={sorted(registered_media_inventory)}, actual={sorted(media_inventory)}"
+        )
+
     script_path = Path(__file__).resolve()
     manifest = {
         "schema": "quantum-hub.phase-3-crt-opening.post-production.v1",
         "status": "PASS",
-        "deterministic": True,
+        "reproducibility": {
+            "scope": "IDENTICAL_SOURCE_BYTES_SETTINGS_TOOLCHAIN_FONT_AND_EXECUTION_PROTOCOL",
+            "fixedOutputNames": True,
+            "atomicOverwrite": True,
+            "fixedZipOrderingAndMetadata": True,
+            "crossHostEncoderBitIdentityClaimed": False,
+            "crossHostFontBitIdentityClaimed": False,
+        },
         "repository": identity,
         "timeline": {
             "fps": FPS,
@@ -2286,9 +2663,18 @@ Phase 3 if the handoff does not feel inevitable.
                 "bytes": phase2b_reference.stat().st_size,
                 "sha256": PHASE2B_ENTRY_SHEET_SHA256,
                 "entryCrop": {"left": 24, "top": 116, "width": 720, "height": 450},
+                "entryEvidenceProvenance": (
+                    "REPRODUCTION_CROP_FROM_FROZEN_ACCEPTED_PHASE_2B_EVIDENCE_SHEET"
+                ),
+                "newHeadedCapture": False,
             },
         },
-        "toolchain": {"ffmpeg": ffmpeg_build, "ffprobe": ffprobe_build, "pillow": Image.__version__},
+        "toolchain": {
+            "ffmpeg": ffmpeg_build,
+            "ffprobe": ffprobe_build,
+            "pillow": Image.__version__,
+            "reviewTypography": font_provenance(),
+        },
         "packager": {
             "repositoryRelativePath": script_path.relative_to(repository).as_posix(),
             "bytes": script_path.stat().st_size,
