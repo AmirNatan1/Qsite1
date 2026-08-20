@@ -63,7 +63,7 @@ The derivative contract is:
 ### Blender
 
 ```text
-C:\Users\amir\AppData\Local\QuantumHubTools\blender-5.2.0\blender-5.2.0-windows-x64\blender.exe
+<blender>
 ```
 
 - Version: Blender `5.2.0 LTS`
@@ -74,8 +74,8 @@ C:\Users\amir\AppData\Local\QuantumHubTools\blender-5.2.0\blender-5.2.0-windows-
 ### FFmpeg and ffprobe
 
 ```text
-C:\Users\amir\AppData\Local\QuantumHubTools\ffmpeg-9.0.1\ffmpeg-9.0.1-essentials_build\bin\ffmpeg.exe
-C:\Users\amir\AppData\Local\QuantumHubTools\ffmpeg-9.0.1\ffmpeg-9.0.1-essentials_build\bin\ffprobe.exe
+<ffmpeg>
+<ffprobe>
 ```
 
 - Version: FFmpeg/ffprobe `9.0.1-essentials_build-www.gyan.dev`
@@ -88,8 +88,8 @@ These tools are intentionally outside Git and are not on the user `PATH`. Reprod
 ### Evidence packager and browser QA runtimes
 
 ```text
-C:\Users\amir\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe
-C:\Users\amir\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe
+<python>
+<node>
 ```
 
 - Python: `3.12.13`; executable SHA-256 `d8e3f0adf246db00358c0c4ed349cf714898178f9558fb0e944f79f5c07f8eaa`
@@ -170,10 +170,10 @@ If a project-owned font is temporarily used while authoring raster content, conv
 
 ## Outside-Git workspace
 
-All heavy work products for the current local production run live under the task-scoped absolute directory below, outside the repository.
+All heavy work products for a local production run live under a task-scoped absolute directory outside the repository.
 
 ```text
-C:\Users\amir\AppData\Local\Temp\quantum_phase3_render\
+<outside-git-render-root>/
   frames/
     desktop-master/
     mobile-master/
@@ -237,20 +237,20 @@ Record dimensions, fps, nominal duration, frame count, average bitrate, bytes, G
 
 ## Reproducible command templates
 
-The following PowerShell commands match the implemented scripts and current local toolchain. They contain no production placeholders. Raw frame roots and the external review ZIP resolve outside Git.
+The following PowerShell commands match the implemented script interfaces and frozen settings. Bind each documented placeholder to the verified local executable or directory before running them. Raw frame roots and the external review ZIP must resolve outside Git.
 
 ### Task-scoped paths
 
 ```powershell
-$Phase3RepoRoot = 'C:\Users\amir\OneDrive\Documents\Quantum-Hub\Qsite1'
-$Phase3WorkRoot = 'C:\Users\amir\AppData\Local\Temp\quantum_phase3_render'
+$Phase3RepoRoot = '<repo>'
+$Phase3WorkRoot = '<outside-git-render-root>'
 $Phase3SourceDir = Join-Path $Phase3RepoRoot 'artifacts\original\phase-3-crt-opening\source'
-$Phase3BlenderExe = 'C:\Users\amir\AppData\Local\QuantumHubTools\blender-5.2.0\blender-5.2.0-windows-x64\blender.exe'
-$Phase3FfmpegExe = 'C:\Users\amir\AppData\Local\QuantumHubTools\ffmpeg-9.0.1\ffmpeg-9.0.1-essentials_build\bin\ffmpeg.exe'
-$Phase3FfprobeExe = 'C:\Users\amir\AppData\Local\QuantumHubTools\ffmpeg-9.0.1\ffmpeg-9.0.1-essentials_build\bin\ffprobe.exe'
-$Phase3PythonExe = 'C:\Users\amir\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe'
-$Phase3NodeExe = 'C:\Users\amir\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe'
-$Phase3ChromeExe = 'C:\Program Files\Google\Chrome\Application\chrome.exe'
+$Phase3BlenderExe = '<blender>'
+$Phase3FfmpegExe = '<ffmpeg>'
+$Phase3FfprobeExe = '<ffprobe>'
+$Phase3PythonExe = '<python>'
+$Phase3NodeExe = '<node>'
+$Phase3ChromeExe = '<chromium>'
 $Phase3AcceptedBlend = Join-Path $Phase3RepoRoot 'artifacts\original\phase-0-4-crt-television\source\quantum-signal-television-v1.blend'
 $Phase3DerivativeBlend = Join-Path $Phase3SourceDir 'quantum-signal-television-phase3-opening.blend'
 $Phase3Builder = Join-Path $Phase3SourceDir 'build_phase3_crt_opening.py'
