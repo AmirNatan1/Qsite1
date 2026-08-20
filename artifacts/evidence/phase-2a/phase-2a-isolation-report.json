@@ -1,0 +1,88 @@
+{
+  "schema": "quantum-hub.phase-2a.production-isolation.v1",
+  "generatedAt": "2026-08-20T07:17:52.415Z",
+  "status": "PASS",
+  "baselineSha": "c37eff7da9ada99e4d65e2a76f89871b9a706db0",
+  "labRoot": "prototypes/phase-2-interior-spectacle",
+  "distRoot": "dist",
+  "reportPath": "artifacts/evidence/phase-2a/phase-2a-isolation-report.json",
+  "checks": [
+    {
+      "id": "frozen-production-and-governance-boundary",
+      "status": "PASS",
+      "baselineSha": "c37eff7da9ada99e4d65e2a76f89871b9a706db0",
+      "roots": [
+        "src",
+        "public",
+        ".nvmrc",
+        "astro.config.mjs",
+        "tsconfig.json",
+        "package.json",
+        "package-lock.json",
+        "scripts/phase1-qa-config.mjs",
+        "scripts/qa-phase1-browser.mjs",
+        "scripts/verify-phase1-output.mjs",
+        "scripts/verify-phase1-source.mjs",
+        "tests/phase1-publication.test.mjs"
+      ],
+      "expectedFiles": 60,
+      "currentFiles": 60,
+      "baselineAggregateSha256": "a953c7cd8721ff572cd129dcb597cb9ded3ff1f739538bb9a399d5aa26214dad",
+      "currentAggregateSha256": "a953c7cd8721ff572cd129dcb597cb9ded3ff1f739538bb9a399d5aa26214dad"
+    },
+    {
+      "id": "lab-containment-and-asset-policy",
+      "status": "PASS",
+      "root": "prototypes/phase-2-interior-spectacle",
+      "canary": "QH_PHASE2A_LAB_ONLY",
+      "files": 6,
+      "bytes": 117153,
+      "aggregateSha256": "468ecab8b6281ec24ce8bc66f5efa2928ba2809751adcd019426a197122c5e8c",
+      "symlinksAllowed": false,
+      "copiedMediaOrFontsAllowed": false
+    },
+    {
+      "id": "production-input-reference-scan",
+      "status": "PASS",
+      "productionFilesScanned": 54,
+      "governanceFilesScanned": 4,
+      "forbiddenTokens": [
+        "phase2a-canary",
+        "phase2a-lab-name",
+        "prototype-reference",
+        "phase2a-evidence-reference"
+      ],
+      "findings": 0
+    },
+    {
+      "id": "dist-canary-reference-and-hash-scan",
+      "status": "PASS",
+      "files": 29,
+      "bytes": 9537980,
+      "aggregateSha256": "e4fd6b6fcf6c15553a00eeca207017af264f7129ede4dcf753de77383edbee56",
+      "labFilesCompared": 6,
+      "identicalLabFiles": 0
+    },
+    {
+      "id": "phase1-output-contract-no-write",
+      "status": "PASS",
+      "script": "scripts/verify-phase1-output.mjs",
+      "mode": "--no-write",
+      "exitCode": 0
+    }
+  ],
+  "summary": {
+    "frozenFilesExpected": 60,
+    "frozenFilesVerified": 60,
+    "labFiles": 6,
+    "distFiles": 29,
+    "phase1OutputContract": "PASS",
+    "failures": 0
+  },
+  "policy": {
+    "productionBoundary": "Frozen production inputs and Phase 1 governance files must match the accepted Phase 1 baseline byte-for-byte, including path topology.",
+    "labBoundary": "The Phase 2A lab must remain a regular-file-only subtree outside src/public and must reference, not copy, governed media and fonts.",
+    "outputBoundary": "Dist must pass the frozen Phase 1 output contract and contain no Phase 2A canary, lab/evidence reference, or byte-identical lab file."
+  },
+  "failures": []
+}
