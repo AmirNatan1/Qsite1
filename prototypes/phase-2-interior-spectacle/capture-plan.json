@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "authority": "QH_PHASE2A_LAB_ONLY",
+  "primaryViewports": {
+    "desktop": { "width": 1440, "height": 900 },
+    "mobile": { "width": 390, "height": 844 }
+  },
+  "validationViewports": {
+    "shortDesktop": { "width": 1366, "height": 650 },
+    "narrowMobile": { "width": 320, "height": 800 },
+    "mobileLandscape": { "width": 844, "height": 390 }
+  },
+  "desktopFrames": [
+    { "id": "d01-handoff", "label": "First native DOM frame after portal" },
+    { "id": "d02-entry", "label": "ENTRY — tensile threshold" },
+    { "id": "d03-industry", "label": "BUILT WITH INDUSTRY — institutional plane" },
+    { "id": "d04-method-frame", "label": "METHOD — FRAME" },
+    { "id": "d05-method-test", "label": "METHOD — TEST" },
+    { "id": "d06-method-decide", "label": "METHOD — DECIDE" },
+    { "id": "d07-industries-first", "label": "INDUSTRIES — first territory" },
+    { "id": "d08-industries-transition", "label": "INDUSTRIES — alternate territory" },
+    { "id": "d09-proof-opening", "label": "PROOF — opening aperture" },
+    { "id": "d10-proof-climax", "label": "PROOF — documentary climax" },
+    { "id": "d11-programmes", "label": "PROGRAMMES — quiet fork" },
+    { "id": "d12-conversion", "label": "CONVERSION — convergence" }
+  ],
+  "mobileFrames": [
+    { "id": "m01-entry", "label": "Portal handoff / ENTRY" },
+    { "id": "m02-industry", "label": "BUILT WITH INDUSTRY" },
+    { "id": "m03-method", "label": "METHOD" },
+    { "id": "m04-industries", "label": "INDUSTRIES" },
+    { "id": "m05-proof", "label": "PROOF" },
+    { "id": "m06-programmes", "label": "PROGRAMMES" },
+    { "id": "m07-conversion", "label": "CONVERSION" }
+  ],
+  "transitions": [
+    { "id": "raster-entry", "from": "physical raster", "to": "ENTRY", "verbs": ["Focus", "Resolve"], "frames": 3 },
+    { "id": "entry-industry", "from": "ENTRY", "to": "BUILT WITH INDUSTRY", "verbs": ["Resolve", "Release"], "frames": 3 },
+    { "id": "industry-method", "from": "BUILT WITH INDUSTRY", "to": "METHOD", "verbs": ["Focus"], "frames": 3 },
+    { "id": "method-industries", "from": "METHOD", "to": "INDUSTRIES", "verbs": ["Resolve", "Release"], "frames": 3 },
+    { "id": "industries-proof", "from": "INDUSTRIES", "to": "PROOF", "verbs": ["Focus", "Cross"], "frames": 3 },
+    { "id": "proof-programmes", "from": "PROOF", "to": "PROGRAMMES", "verbs": ["Resolve", "Release"], "frames": 3 },
+    { "id": "programmes-conversion", "from": "PROGRAMMES", "to": "CONVERSION", "verbs": ["Focus", "Resolve"], "frames": 3 }
+  ],
+  "reducedMotionChecks": ["d02-entry", "d05-method-test", "d10-proof-climax", "m05-proof"],
+  "retainedFullResolution": ["d01-handoff", "d05-method-test", "d10-proof-climax"],
+  "retainedOutputs": [
+    "artifacts/evidence/phase-2a/review/phase-2a-desktop-keyframes.png",
+    "artifacts/evidence/phase-2a/review/phase-2a-mobile-keyframes.png",
+    "artifacts/evidence/phase-2a/review/phase-2a-transition-storyboard.png",
+    "artifacts/evidence/phase-2a/review/phase-2a-portal-handoff--desktop-1440x900.png",
+    "artifacts/evidence/phase-2a/review/phase-2a-method-test--desktop-1440x900.png",
+    "artifacts/evidence/phase-2a/review/phase-2a-proof-climax--desktop-1440x900.png",
+    "artifacts/evidence/phase-2a/review/phase-2a-visual-evidence-manifest.json"
+  ]
+}
