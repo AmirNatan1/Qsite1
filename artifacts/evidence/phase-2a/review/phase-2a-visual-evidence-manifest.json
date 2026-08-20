@@ -2,6 +2,12 @@
   "schemaVersion": 1,
   "authority": "phase-2a-operating-field-storyboard",
   "generatedAt": "2026-08-20T07:18:44.686Z",
+  "metadataReconciliation": {
+    "updatedAt": "2026-08-20T07:39:59.689Z",
+    "reason": "Human-approved planning clarifications were recorded without changing the isolated prototype or retained visual bytes.",
+    "previousPhase2aHead": "73a30db68ca21aba06ee03f4500caf5e1aadf2a2",
+    "retainedVisualsRegenerated": false
+  },
   "status": "PASS",
   "productionAuthority": {
     "acceptedParent": "c37eff7da9ada99e4d65e2a76f89871b9a706db0",
@@ -2439,18 +2445,18 @@
   "sources": [
     {
       "path": "docs/planning/PHASE_2_CREATIVE_THESIS.md",
-      "bytes": 5636,
-      "sha256": "4fe4a039ef2f3dfa5b1c6616c18085bdfbd615544662d3fe7b97c068c87269ba"
+      "bytes": 6873,
+      "sha256": "2643f40e3f8df173db10227c3da4ee7fe3ef11dc4b9606319232b3c6ee643d82"
     },
     {
       "path": "docs/planning/PHASE_2_INTERIOR_VISUAL_SYSTEM_GOAL.md",
-      "bytes": 6323,
-      "sha256": "e1184609ce336edb88e71e0bbbe636e7e7735af5c2980f472ef7204f14e12e0c"
+      "bytes": 7522,
+      "sha256": "a961cde63b6d2271e430b2a5dde9dd11d3363ec0c49e7926e940ddd993f78bb6"
     },
     {
       "path": "docs/planning/PHASE_2_MEDIA_REQUIREMENTS.md",
-      "bytes": 4508,
-      "sha256": "75114c8c6576d46f6342abb977c3e50992887769be34532331cb24f3b8d5dc1f"
+      "bytes": 5136,
+      "sha256": "5a743c0948c85637bcbd06255e8caa559eeb1bb3c5a42f4b00b34533569ca490"
     },
     {
       "path": "docs/planning/PHASE_2_MOTION_SYSTEM.md",
@@ -2459,8 +2465,8 @@
     },
     {
       "path": "docs/planning/PHASE_2_STORYBOARD.md",
-      "bytes": 18921,
-      "sha256": "193221a32d6d40257ce4353d4b687e364b1412d46bb40a75b14065f9e1f9b037"
+      "bytes": 20031,
+      "sha256": "22bd105d62e5e9d1666be136a9414b7ee5d966c29470257ca4895135397b32e1"
     },
     {
       "path": "docs/planning/PHASE_2_SUPPORTING_ROUTE_STRATEGY.md",

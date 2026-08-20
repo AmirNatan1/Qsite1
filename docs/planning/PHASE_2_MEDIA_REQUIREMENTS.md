@@ -1,6 +1,6 @@
 # Phase 2 Media Requirements
 
-Status: Phase 2A search brief; asset discovery does not grant publication permission
+Status: Phase 2A later-search decision recorded; sourcing is not authorized in this repair and discovery never grants publication permission
 
 ## Rules
 
@@ -10,6 +10,7 @@ Status: Phase 2A search brief; asset discovery does not grant publication permis
 - Media must not imply procurement, production deployment, commercial success or scale beyond approved copy.
 - The storyboard remains coherent without unapproved media. Missing media is represented by real material composition, never a labelled placeholder.
 - Audio is not required for any homepage slot.
+- In PROOF, approved documentary evidence and factual copy are the protagonist. The conductive datum may open the aperture but must not overlay, bisect, outline or compete with the Maradin media.
 
 ## Existing approved Qsite1 assets
 
@@ -23,9 +24,9 @@ These five Maradin assets are already governed for the sole public proof record.
 | `maradin-prove-field-frame-approved.jpg` | Image, 1920×1080 | Evidence-climax detail showing projected road communication | Avoid KPI or success overlays; people/branding are contextual, not endorsements |
 | `maradin-real-field-still-approved.jpg` | Image, 3840×2160 portrait-oriented source | Wide documentary release or vertical mobile crop | Visible vehicle/brand context does not authorize a broader partnership claim |
 
-## Quantum Google Drive search requirements
+## Human-approved later Quantum Google Drive search requirement
 
-These are shot requirements for later search and publication review. They are not placeholders and are not authorized assets.
+The sole later search priority is one exceptional genuine Quantum operating-context asset for BUILT WITH INDUSTRY. Use it only if it is publication-approved and materially stronger than the complete abstract graphite plane; otherwise retain the abstract composition. This decision authorizes a future search brief, not a Drive search or publication in this repair.
 
 | ID | Chapter | Creative purpose | Ideal content | Shot type / orientation | Duration | People | Branding / logos | Audio | Minimum useful resolution | Publication-risk considerations |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -38,7 +39,7 @@ These are shot requirements for later search and publication review. They are no
 - Preserve negative space for editorial composition without directing a staged reshoot around typography.
 - Favor surfaces, thresholds, distance and environmental consequence over close-ups of generic technology.
 - Reject imagery that feels like stock even if internally owned.
-- A single excellent still is preferable to a weak loop.
+- Do not accept mediocre footage merely because it is real. One exceptional still or restrained loop is preferable; if neither exists, use the abstract material composition.
 
 ## Concepts requiring no media
 

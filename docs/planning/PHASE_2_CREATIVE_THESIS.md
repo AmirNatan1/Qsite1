@@ -1,12 +1,14 @@
 # Phase 2 Creative Thesis
 
-Status: Phase 2A candidate; pending human review
+Status: Phase 2A creative thesis accepted; storyboard/spatial and mobile/accessible continuity awaiting human visual inspection
 
 # The Operating Field
 
 The CRT is an aperture into Quantum's operating field. On entry, its physical cable does not disappear: it resolves into a **conductive datum**, a restrained line that carries causality through the entire homepage.
 
-The datum is the strongest connective idea in the system. It is never a decorative progress bar and never a fake system readout. It changes purpose in every chapter:
+The datum is connective tissue, not the protagonist. It supplies causal continuity only where a chapter needs it: it may become an edge, seam, crop, aperture boundary, material join, route, implied alignment or buried structural detail, and at times it may almost disappear. It is never a decorative progress bar, fake system readout or mandatory visible line. Each chapter's own material idea—and ultimately Quantum's real work—leads the composition.
+
+The datum can change purpose across the journey without becoming a continuous “line website”:
 
 ```text
 CRT current
@@ -33,6 +35,8 @@ The handoff begins with recognizable 4:3 raster ancestry: a bounded field, soft 
 - the cable's current becomes the conductive datum.
 
 The 4:3 shape is used only where ancestry or evidence makes it useful. It is prominent at the handoff, latent in the METHOD calibration plate and transformed into a documentary aperture in PROOF. It does not frame every chapter.
+
+`WHERE DO YOU ENTER?` is the first settled native semantic DOM state after the CRT. The raster resolving and the settled ENTRY composition are two keyframes of one physical-to-digital threshold, not two consecutive full-screen heroes. `Prove it where it has to work.` does not sit between them as another overture; it remains secondary early-Operating-Field language and is not placed by this repair.
 
 ## Material vocabulary
 
@@ -63,8 +67,7 @@ The homepage follows a score rather than a uniform animation density:
 
 | Chapter | Intensity | Role in the score |
 | --- | ---: | --- |
-| Portal handoff | 4/5 | Physical energy becomes semantic structure |
-| ENTRY | 4/5 | Two real trajectories pull one field apart |
+| Portal handoff / ENTRY | 4/5 | Physical energy becomes the first settled semantic threshold |
 | BUILT WITH INDUSTRY | 2/5 | Institutional weight and a long visual breath |
 | METHOD | 5/5 | Signature transformation of one operating object |
 | INDUSTRIES | 4/5 | Movement through four materially distinct territories |
@@ -77,10 +80,10 @@ Silence is part of the spectacle. BUILT WITH INDUSTRY and PROGRAMMES are intenti
 ## Chapter identities
 
 - **ENTRY — tensile threshold:** one bounded field is pulled by two accessible trajectories.
-- **BUILT WITH INDUSTRY — institutional plane:** a vast matte plane and horizon give the proposition weight without unapproved logos or imagery.
+- **BUILT WITH INDUSTRY — institutional plane:** a vast matte plane and horizon give the proposition weight. One exceptional, genuine and separately approved operating-context asset will be sought later to occupy a face only if it strengthens the composition; the authored plane is the fallback.
 - **METHOD — calibration plate:** one operating surface transforms through Frame, Source, Assess, Test and Decide.
 - **INDUSTRIES — territorial crossing:** the datum becomes a seam through four changing material environments.
-- **PROOF — documentary breach:** the abstract plane opens and real approved Maradin evidence occupies the field.
+- **PROOF — documentary breach:** the abstract plane opens and real approved Maradin evidence occupies the field. Documentary reality and factual copy become the protagonist; the datum recedes into an edge or disappears rather than competing with the image.
 - **PROGRAMMES — quiet fork:** one route separates into SPARK and CHAMP without becoming two cards.
 - **CONVERSION — convergence:** all surviving structure resolves into a small number of native next-step links and a quiet footer edge.
 
@@ -91,6 +94,7 @@ Spectacle comes from consequence rather than constant motion. A boundary should 
 The system deliberately avoids:
 
 - one reusable animation treatment across all chapters;
+- a continuous line motif that reduces every scene to dark ground, pale rule, magenta segment and heading;
 - continuous ambient motion;
 - decorative particles, radar rings, scanning circles or neon tubes;
 - fake values, coordinates, statuses, timelines or system telemetry;

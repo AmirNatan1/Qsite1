@@ -1,8 +1,8 @@
 # Phase 2 Homepage Storyboard
 
-Status: Phase 2A visual-development candidate; pending human review
+Status: creative direction retained; storyboard/spatial and mobile/accessible continuity awaiting human visual inspection
 
-Creative system: **The Operating Field / Conductive Datum**
+Creative system: **The Operating Field**. Continuity device: **the Conductive Datum**.
 
 ## Continuous spatial score
 
@@ -17,9 +17,11 @@ physical raster
   -> final convergence
 ```
 
-The conductive datum survives every handoff but changes function. The chapters are not isolated microsites; each closing geometry becomes the opening condition of the next.
+The conductive datum provides causal continuity across the handoffs, but it does not need to survive as a continuously visible line. It may be absorbed into an edge, seam, crop, aperture boundary, material join, route, implied alignment or buried detail—and may almost disappear when a chapter's own material idea takes over. The chapters are not isolated microsites; each closing condition still causes the next.
 
-## Portal handoff — first native DOM frame
+## Portal handoff into Act I — two keyframes of one threshold
+
+The portal-handoff and settled-ENTRY frames are review states within one continuous first act, not two consecutive full-screen semantic heroes. `WHERE DO YOU ENTER?` is the first settled native semantic DOM after the CRT. `Prove it where it has to work.` does not interrupt the handoff; it remains secondary early-field language and is not placed by this repair.
 
 - **Opening visual state:** the CRT cabinet has left the frame, but a crisp 4:3 raster boundary still occupies the centre. Residual horizontal traces are visible only inside it.
 - **Semantic content:** `WHERE DO YOU ENTER?`, `For industry`, `For startups`.
@@ -36,7 +38,7 @@ The conductive datum survives every handoff but changes function. The chapters a
 - **Mobile:** the raster occupies the upper field and releases downward into a vertical route spine; it is not a crop of the desktop composition.
 - **Reduced motion:** a fully static crisp frame with no scanline animation; the already-resolved semantic state is shown immediately.
 
-## Act I — ENTRY / tensile threshold
+## Act I — ENTRY / settled tensile threshold
 
 - **Opening visual state:** the opened screen edge spans the viewport as one precise datum.
 - **Semantic content:** `WHERE DO YOU ENTER?`; `For industry`; `Bring us an operational challenge.`; `For startups`; `Bring us a technology ready to be tested.`
@@ -57,7 +59,7 @@ The conductive datum survives every handoff but changes function. The chapters a
 
 - **Opening visual state:** the two ENTRY routes have settled into one long horizon.
 - **Semantic content:** `BUILT WITH INDUSTRY`; `Start with the operating reality.` and the approved Phase 1 supporting copy.
-- **Spatial composition:** an enormous load-bearing graphite plane crosses the viewport below the horizon. Deep joints, stepped faces and one structural rail make its mass legible without resembling an empty media aperture. The proposition is fixed by composition, not sticky runtime; separately approved field media could later displace one face, but the authored plane is complete without it.
+- **Spatial composition:** an enormous load-bearing graphite plane crosses the viewport below the horizon. Deep joints, stepped faces and one structural rail make its mass legible without resembling an empty media aperture. The proposition is fixed by composition, not sticky runtime. A later, separately authorized search will actively seek exactly one exceptional genuine Quantum operating-context asset that may displace one face only if it is both publication-safe and materially stronger; the authored plane is the complete fallback.
 - **Foreground:** restrained editorial copy aligned to the horizon; one small chapter label.
 - **Background:** a near-black architectural plane with controlled reflection, structural divisions and real apparent thickness.
 - **Persistent elements:** the datum is now the horizon; a subtle 4:3 ratio informs one division but is not outlined as a screen.
@@ -65,7 +67,7 @@ The conductive datum survives every handoff but changes function. The chapters a
 - **Transition in:** ENTRY trajectories **Resolve** into institutional structure.
 - **Transition out:** the plane **Focuses** into a bounded operating surface.
 - **Expected emotional effect:** gravity, scale and access to real operating context.
-- **Likely primitive:** DOM/CSS; optional approved still or short muted video when separately supplied.
+- **Likely primitive:** DOM/CSS; one exceptional approved still or short muted video only if the later search succeeds.
 - **Desktop:** a very wide plane creates weight through scale and stillness.
 - **Mobile:** a tall jointed monolith replaces lateral scale; the proposition sits at its base like an architectural inscription, with no empty placeholder opening.
 - **Reduced motion:** the same static plane and composition; any future video becomes an approved poster.
@@ -154,7 +156,7 @@ The five stages are states of one object, never five cards.
 - **Spatial composition:** an approved Maradin night-road still appears as a narrow physical cut in a vast graphite surface. The media is part of the architecture, not a card.
 - **Foreground:** title and factual summary sit directly on the matte field.
 - **Background:** approved documentary image, initially constrained by the aperture.
-- **Persistent elements:** the datum becomes the lower media edge and conducts attention toward the real scene.
+- **Persistent elements:** the datum is absorbed into a quiet aperture edge long enough to open the evidence, then may disappear. It must never bisect, outline, overlay or compete with the Maradin scene.
 - **Transformation:** abstract surface opens to documentary evidence.
 - **Transition in:** INDUSTRIES territory seam **Focuses** into an evidence aperture.
 - **Transition out:** the aperture expands and the matte surface retreats.
@@ -168,7 +170,7 @@ The five stages are states of one object, never five cards.
 - **Spatial composition:** documentary light breaks the dark system. A controlled black editorial plane preserves readable context while the image remains dominant.
 - **Foreground:** concise evidence language and one native route to the Maradin field record.
 - **Background:** approved Maradin still or muted video; no overlay dashboard.
-- **Persistent elements:** the aperture edge remains as a fine rule and becomes the programme fork after release.
+- **Persistent elements:** documentary media and factual copy dominate. Any surviving aperture edge remains peripheral and quiet, returning only after the evidence settles so it can become the programme fork.
 - **Transformation:** the field image reaches maximum scale, then settles into an evidence record.
 - **Transition in:** aperture **Crosses** from abstraction into reality.
 - **Transition out:** evidence **Resolves** into two operating routes.
@@ -203,7 +205,7 @@ The five stages are states of one object, never five cards.
 - **Spatial composition:** the full field narrows around one convergence point. Three native text routes occupy the structural edge: industrial challenge, startup technology and general/ecosystem. They are not giant buttons.
 - **Foreground:** one decisive statement and the small set of next-step links.
 - **Background:** near-black space with a restrained warm shadow and a single active magenta convergence.
-- **Persistent elements:** every surviving line ends here; the footer begins as the final quiet structural rule.
+- **Persistent elements:** every surviving route ends here; the footer begins as the final quiet structural rule.
 - **Transformation:** multiple routes resolve into a clear choice without inventing a contact destination.
 - **Transition in:** programme paths **Focus + Resolve**.
 - **Transition out:** the active current releases into a still footer edge; no abrupt design stop.
@@ -217,8 +219,8 @@ The five stages are states of one object, never five cards.
 
 | ID | Required view |
 | --- | --- |
-| `d01-handoff` | First native DOM frame after portal |
-| `d02-entry` | ENTRY tensile threshold |
+| `d01-handoff` | Raster-to-ENTRY handoff state within the first act |
+| `d02-entry` | First settled native DOM state: ENTRY tensile threshold |
 | `d03-industry` | BUILT WITH INDUSTRY institutional plane |
 | `d04-method-frame` | METHOD / FRAME |
 | `d05-method-test` | METHOD / TEST crossing |

@@ -1,6 +1,6 @@
 # Phase 2 Interior Visual System Goal
 
-Status: Phase 2A creative-preproduction candidate; pending human review
+Status: post-portal creative thesis accepted; storyboard/spatial and mobile/accessible continuity awaiting human visual inspection
 
 Authority: additive to the accepted Phase 1 baseline; does not authorize Phase 2B
 
@@ -87,11 +87,18 @@ Phase 2A ends at three explicit human decisions:
 
 No implementation gate is implied by producing the package. Any production choreography requires a separate Phase 2B authorization.
 
+## Resolved human decisions
+
+- `WHERE DO YOU ENTER?` is the first settled native semantic DOM state after the CRT. The raster-to-ENTRY transformation and the settled ENTRY composition are two review keyframes of one threshold, not two consecutive full-screen heroes.
+- `Prove it where it has to work.` does not interrupt that handoff as a separate overture. It remains valuable only as secondary language within the early Operating Field; this repair does not place it.
+- A later, separately authorized media-sourcing step will actively seek one exceptional genuine Quantum operating-context asset for BUILT WITH INDUSTRY. The complete abstract graphite plane remains the fallback if no asset is both excellent and publication-safe.
+- The conductive datum is subordinate connective tissue, not the protagonist or a mandatory visible line. Quantum, each chapter's distinct material idea and the real work lead the experience.
+
 ## Binding constraints
 
 ### Continuity
 
-- The physical raster yields to crisp semantic HTML without doubled text or a blank bridge.
+- The physical raster yields directly to crisp semantic HTML, with `WHERE DO YOU ENTER?` as the first settled native state and no doubled text, blank bridge or intervening full-screen proposition.
 - A persistent visual cause travels from one chapter into the next.
 - The 4:3 boundary is an origin, not a repeated badge or universal container.
 - The design alternates peaks, editorial restraint and breathing space.
@@ -108,7 +115,7 @@ No implementation gate is implied by producing the package. Any production chore
 - Exactly four industries, two programmes and one public proof remain visible.
 - Maradin is the only approved documentary proof.
 - Empty public partner, team, metric and update collections remain absent.
-- Missing media is expressed as an authored material aperture plus a documented shot requirement, never a fake image or visible placeholder.
+- BUILT WITH INDUSTRY uses its complete abstract material plane unless the one exceptional genuine operating-context asset sought later is separately publication-approved and materially stronger; neither state is a fake image or visible placeholder.
 - Magenta is reserved for live conduction, active routing and consequential state.
 
 ### Accessibility and typography
