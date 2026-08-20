@@ -1,4 +1,4 @@
-// QH_PHASE2A_LAB_ONLY
+// QH_PHASE2A_LAB_ONLY · Phase 2A-R evidence pipeline
 import { createHash } from "node:crypto";
 import { copyFile, mkdir, mkdtemp, readFile, readdir, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -17,13 +17,21 @@ const ISOLATION_REPORT = path.join(ROOT, "artifacts", "evidence", "phase-2a", "p
 const ACCEPTED_PARENT = "c37eff7da9ada99e4d65e2a76f89871b9a706db0";
 
 const OUTPUTS = {
-  desktop: "phase-2a-desktop-keyframes.png",
-  mobile: "phase-2a-mobile-keyframes.png",
-  transitions: "phase-2a-transition-storyboard.png",
-  handoff: "phase-2a-portal-handoff--desktop-1440x900.png",
-  method: "phase-2a-method-test--desktop-1440x900.png",
-  proof: "phase-2a-proof-climax--desktop-1440x900.png",
-  manifest: "phase-2a-visual-evidence-manifest.json",
+  desktop: "phase-2a-r-desktop-keyframes.png",
+  mobile: "phase-2a-r-mobile-keyframes--390x844.png",
+  narrow: "phase-2a-r-mobile-narrow--320x800.png",
+  transitions: "phase-2a-r-transition-storyboard.png",
+  reduced: "phase-2a-r-reduced-motion-keyframes.png",
+  comparison: "phase-2a-r-spectacle-comparison.png",
+  manifest: "phase-2a-r-visual-evidence-manifest.json",
+};
+
+const CONTACT_SHEET_STYLE = {
+  background: "#05070a",
+  panel: "#0b0e12",
+  border: "#343a42",
+  ink: "#f0eee8",
+  muted: "#969da5",
 };
 
 function sha256(bytes) {
@@ -41,6 +49,105 @@ function aggregateDigest(records) {
     digest.update("\n");
   }
   return digest.digest("hex");
+}
+
+function escapeXml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&apos;");
+}
+
+function svgBuffer(width, height, body) {
+  return Buffer.from(`
+    <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+      ${body}
+    </svg>
+  `);
+}
+
+async function composeContactSheet({
+  destination,
+  title,
+  subtitle,
+  panels,
+  columns,
+  panelWidth,
+  panelHeight,
+  labelHeight = 44,
+}) {
+  if (!panels.length) throw new Error(`No panels supplied for ${title}`);
+  const margin = 24;
+  const gap = 16;
+  const headerHeight = 84;
+  const tileHeight = labelHeight + panelHeight;
+  const rows = Math.ceil(panels.length / columns);
+  const width = margin * 2 + columns * panelWidth + (columns - 1) * gap;
+  const height = margin + headerHeight + rows * tileHeight + (rows - 1) * gap + margin;
+  const titleWidth = width - margin * 2;
+  const titleSvg = svgBuffer(titleWidth, headerHeight, `
+    <rect width="${titleWidth}" height="${headerHeight}" fill="${CONTACT_SHEET_STYLE.background}"/>
+    <text x="0" y="31" fill="${CONTACT_SHEET_STYLE.ink}" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" letter-spacing="1.2">${escapeXml(title)}</text>
+    <text x="0" y="59" fill="${CONTACT_SHEET_STYLE.muted}" font-family="Arial, Helvetica, sans-serif" font-size="15" letter-spacing="0.5">${escapeXml(subtitle)}</text>
+  `);
+  const composites = [{ input: titleSvg, left: margin, top: margin }];
+
+  for (let index = 0; index < panels.length; index += 1) {
+    const panel = panels[index];
+    const frame = await sharp(panel.capture.rawPath)
+      .resize(panelWidth, panelHeight, { fit: "contain", background: CONTACT_SHEET_STYLE.panel })
+      .png({ compressionLevel: 9, adaptiveFiltering: true })
+      .toBuffer();
+    const tileOverlay = svgBuffer(panelWidth, tileHeight, `
+      <rect x="0.5" y="0.5" width="${panelWidth - 1}" height="${tileHeight - 1}" rx="2" fill="none" stroke="${CONTACT_SHEET_STYLE.border}"/>
+      <rect x="0.5" y="0.5" width="${panelWidth - 1}" height="${labelHeight}" rx="2" fill="${CONTACT_SHEET_STYLE.panel}"/>
+      <line x1="0" y1="${labelHeight}" x2="${panelWidth}" y2="${labelHeight}" stroke="${CONTACT_SHEET_STYLE.border}"/>
+      <text x="15" y="${Math.round(labelHeight * 0.67)}" fill="${CONTACT_SHEET_STYLE.ink}" font-family="Arial, Helvetica, sans-serif" font-size="${Math.max(15, Math.round(labelHeight * 0.42))}" font-weight="700" letter-spacing="0.4">${escapeXml(panel.label)}</text>
+    `);
+    const tile = await sharp({
+      create: { width: panelWidth, height: tileHeight, channels: 4, background: CONTACT_SHEET_STYLE.panel },
+    })
+      .composite([
+        { input: frame, left: 0, top: labelHeight },
+        { input: tileOverlay, left: 0, top: 0 },
+      ])
+      .png({ compressionLevel: 9, adaptiveFiltering: true })
+      .toBuffer();
+    const column = index % columns;
+    const row = Math.floor(index / columns);
+    composites.push({
+      input: tile,
+      left: margin + column * (panelWidth + gap),
+      top: margin + headerHeight + row * (tileHeight + gap),
+    });
+  }
+
+  await sharp({
+    create: { width, height, channels: 4, background: CONTACT_SHEET_STYLE.background },
+  })
+    .composite(composites)
+    .png({ compressionLevel: 9, adaptiveFiltering: true })
+    .toFile(destination);
+}
+
+function findCapture(reports, frame, viewport, motion = "full") {
+  const capture = reports.find((report) => (
+    report.frame === frame
+    && report.viewport.width === viewport.width
+    && report.viewport.height === viewport.height
+    && report.motion === motion
+  ));
+  if (!capture) throw new Error(`Missing ${motion} capture for ${frame} at ${viewport.width}×${viewport.height}`);
+  return capture;
+}
+
+function panelsFromRoster(reports, roster, viewport, motion = "full") {
+  return roster.map(({ id, label }) => ({
+    label,
+    capture: findCapture(reports, id, viewport, motion),
+  }));
 }
 
 async function fileRecord(filename, base = ROOT) {
@@ -249,6 +356,7 @@ async function captureCase(browser, specification, rawRoot, sequence) {
   await context.close();
   return {
     id: specification.id,
+    group: specification.group,
     frame: specification.frame,
     motion: specification.motion,
     viewport: specification.viewport,
@@ -261,8 +369,8 @@ async function captureCase(browser, specification, rawRoot, sequence) {
   };
 }
 
-async function captureSheet(browser, sheet, viewport, destination) {
-  const context = await browser.newContext({ viewport, colorScheme: "dark", reducedMotion: "reduce", serviceWorkers: "block" });
+async function captureSheet(browser, sheet, viewport, destination, expectation = {}) {
+  const context = await browser.newContext({ viewport, colorScheme: "dark", reducedMotion: "no-preference", serviceWorkers: "block" });
   const page = await context.newPage();
   const errors = [];
   page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
@@ -271,9 +379,44 @@ async function captureSheet(browser, sheet, viewport, destination) {
   url.searchParams.set("sheet", sheet);
   const response = await page.goto(url.toString(), { waitUntil: "domcontentloaded", timeout: 30_000 });
   await page.waitForFunction(() => document.documentElement.dataset.captureReady === "true", null, { timeout: 30_000 });
+  const audit = await page.evaluate(() => ({
+    captureReady: document.documentElement.dataset.captureReady,
+    fontStatus: document.fonts.status,
+    transitionRows: [...document.querySelectorAll(".transition-row")].map((row) => ({
+      label: row.getAttribute("data-label"),
+      frames: row.querySelectorAll(".transition-frame").length,
+    })),
+    imageFailures: [...document.querySelectorAll("img")]
+      .filter((image) => !image.complete || image.naturalWidth === 0)
+      .map((image) => image.getAttribute("src")),
+    dimensions: {
+      width: document.documentElement.scrollWidth,
+      height: document.documentElement.scrollHeight,
+    },
+  }));
   await page.screenshot({ path: destination, type: "png", fullPage: true, animations: "disabled", caret: "hide" });
   await context.close();
-  if (!response || response.status() >= 400 || errors.length) throw new Error(`${sheet} sheet failed: status ${response?.status() ?? "none"}; ${errors.join(" | ")}`);
+  const failures = [];
+  if (!response || response.status() >= 400) failures.push(`route status ${response?.status() ?? "none"}`);
+  if (errors.length) failures.push(...errors);
+  if (audit.captureReady !== "true") failures.push(`capture readiness ${audit.captureReady}`);
+  if (audit.fontStatus !== "loaded") failures.push(`font status ${audit.fontStatus}`);
+  if (audit.imageFailures.length) failures.push(`${audit.imageFailures.length} failed images`);
+  if (expectation.rows !== undefined && audit.transitionRows.length !== expectation.rows) {
+    failures.push(`expected ${expectation.rows} transition rows; observed ${audit.transitionRows.length}`);
+  }
+  if (expectation.framesPerRow !== undefined && audit.transitionRows.some(({ frames }) => frames !== expectation.framesPerRow)) {
+    failures.push(`one or more transition rows did not contain ${expectation.framesPerRow} frames`);
+  }
+  if (expectation.routes) {
+    for (let index = 0; index < expectation.routes.length; index += 1) {
+      const observed = audit.transitionRows[index]?.label?.toLocaleUpperCase("en-US") ?? "";
+      const expected = expectation.routes[index].toLocaleUpperCase("en-US");
+      if (!observed.includes(expected)) failures.push(`transition row ${index + 1} does not identify ${expectation.routes[index]}`);
+    }
+  }
+  if (failures.length) throw new Error(`${sheet} sheet failed: ${failures.join(" | ")}`);
+  return audit;
 }
 
 function buildCases(plan) {
@@ -288,9 +431,9 @@ function buildCases(plan) {
     cases.push({ id: `${frame.id}--landscape-844x390`, frame: frame.id, viewport: plan.validationViewports.mobileLandscape, motion: "full", group: "mobile-landscape" });
   }
   const primaryByFrame = new Map(cases.filter(({ group }) => group === "desktop-primary" || group === "mobile-primary").map((entry) => [entry.frame, entry]));
-  for (const frame of plan.reducedMotionChecks) {
-    const primary = primaryByFrame.get(frame);
-    if (!primary) throw new Error(`Reduced-motion frame is not in a primary roster: ${frame}`);
+  for (const { id } of plan.reducedMotionChecks) {
+    const primary = primaryByFrame.get(id);
+    if (!primary) throw new Error(`Reduced-motion frame is not in a primary roster: ${id}`);
     cases.push({ ...primary, id: `${primary.id}--reduced`, motion: "reduced", group: "reduced-motion" });
   }
   return cases;
@@ -307,33 +450,88 @@ async function main() {
   const browserVersion = browser.version();
   const cases = buildCases(plan);
   const reports = [];
+  let transitionSheetAudit;
   try {
     for (let index = 0; index < cases.length; index += 1) {
       console.log(`[${index + 1}/${cases.length}] ${cases[index].id}`);
       reports.push(await captureCase(browser, cases[index], rawRoot, index + 1));
     }
-
-    await captureSheet(browser, "desktop", { width: 1920, height: 1080 }, path.join(OUTPUT_ROOT, OUTPUTS.desktop));
-    await captureSheet(browser, "mobile", { width: 2160, height: 1080 }, path.join(OUTPUT_ROOT, OUTPUTS.mobile));
-    await captureSheet(browser, "transitions", { width: 1920, height: 1080 }, path.join(OUTPUT_ROOT, OUTPUTS.transitions));
+    transitionSheetAudit = await captureSheet(
+      browser,
+      "transitions",
+      { width: 1920, height: 1080 },
+      path.join(OUTPUT_ROOT, OUTPUTS.transitions),
+      {
+        rows: plan.transitions.length,
+        framesPerRow: 3,
+        routes: plan.transitions.map(({ from, to }) => `${from} → ${to}`),
+      },
+    );
   } finally {
     await browser.close();
   }
 
-  const retainedMap = new Map([
-    ["d01-handoff", OUTPUTS.handoff],
-    ["d05-method-test", OUTPUTS.method],
-    ["d10-proof-climax", OUTPUTS.proof],
-  ]);
-  for (const [frame, filename] of retainedMap) {
-    const capture = reports.find((report) => report.frame === frame && report.viewport.width === 1440 && report.viewport.height === 900 && report.motion === "full");
-    if (!capture) throw new Error(`Missing retained source capture for ${frame}`);
+  await composeContactSheet({
+    destination: path.join(OUTPUT_ROOT, OUTPUTS.desktop),
+    title: "PHASE 2A-R · DESKTOP SPATIAL ARCHITECTURE",
+    subtitle: "15 retained states · authored at 1440×900 · source frames shown at 60% scale",
+    panels: panelsFromRoster(reports, plan.desktopFrames, plan.primaryViewports.desktop),
+    columns: 2,
+    panelWidth: 864,
+    panelHeight: 540,
+    labelHeight: 48,
+  });
+  await composeContactSheet({
+    destination: path.join(OUTPUT_ROOT, OUTPUTS.mobile),
+    title: "PHASE 2A-R · MOBILE SPATIAL JOURNEY",
+    subtitle: "8 authored states · exact 390×844 source frames",
+    panels: panelsFromRoster(reports, plan.mobileFrames, plan.primaryViewports.mobile),
+    columns: 4,
+    panelWidth: 390,
+    panelHeight: 844,
+    labelHeight: 44,
+  });
+  await composeContactSheet({
+    destination: path.join(OUTPUT_ROOT, OUTPUTS.narrow),
+    title: "PHASE 2A-R · 320PX HARD GATE",
+    subtitle: "METHOD · INDUSTRIES · PROGRAMMES · CONVERSION · exact 320×800 source frames",
+    panels: panelsFromRoster(reports, plan.narrowMobileChecks, plan.validationViewports.narrowMobile),
+    columns: 4,
+    panelWidth: 320,
+    panelHeight: 800,
+    labelHeight: 44,
+  });
+  await composeContactSheet({
+    destination: path.join(OUTPUT_ROOT, OUTPUTS.reduced),
+    title: "PHASE 2A-R · REDUCED-MOTION SPATIAL STATES",
+    subtitle: "Static depth and occlusion · native document flow · desktop 1440×900 captures at 50% scale",
+    panels: panelsFromRoster(reports, plan.reducedMotionChecks, plan.primaryViewports.desktop, "reduced"),
+    columns: 3,
+    panelWidth: 720,
+    panelHeight: 450,
+    labelHeight: 44,
+  });
+  await composeContactSheet({
+    destination: path.join(OUTPUT_ROOT, OUTPUTS.comparison),
+    title: "PHASE 2A-R · SPECTACLE CONSEQUENCE COMPARISON",
+    subtitle: "Repaired environments beside the accepted PROOF benchmark · desktop 1440×900 captures at 50% scale",
+    panels: panelsFromRoster(reports, plan.spectacleComparison, plan.primaryViewports.desktop),
+    columns: 5,
+    panelWidth: 720,
+    panelHeight: 450,
+    labelHeight: 44,
+  });
+
+  for (const { id, filename } of plan.retainedFullResolution) {
+    const capture = findCapture(reports, id, plan.primaryViewports.desktop);
     await copyFile(capture.rawPath, path.join(OUTPUT_ROOT, filename));
   }
 
-  const outputRecords = await Promise.all(Object.values(OUTPUTS)
-    .filter((filename) => filename !== OUTPUTS.manifest)
-    .map((filename) => fileRecord(path.join(OUTPUT_ROOT, filename))));
+  const intendedOutputPaths = plan.retainedOutputs
+    .filter((relativePath) => !relativePath.endsWith(`/${OUTPUTS.manifest}`))
+    .map((relativePath) => path.join(ROOT, relativePath));
+  const outputRecords = (await Promise.all(intendedOutputPaths.map((filename) => fileRecord(filename))))
+    .sort((left, right) => left.path.localeCompare(right.path));
   const buildReport = await stat(BUILD_REPORT).then(() => fileRecord(BUILD_REPORT)).catch(() => null);
   const failures = reports.flatMap((report) => report.failures.map((failure) => ({
     case: report.id,
@@ -341,10 +539,15 @@ async function main() {
     clippedText: report.audit.clippedText,
     textOverlaps: report.audit.textOverlaps,
   })));
+  const sources = await sourceRecords(labRecords);
+  const rawRecords = reports.map((report) => ({
+    path: report.raw.basename,
+    bytes: report.raw.bytes,
+    sha256: report.raw.sha256,
+  }));
   const manifest = {
-    schemaVersion: 1,
-    authority: "phase-2a-operating-field-storyboard",
-    generatedAt: new Date().toISOString(),
+    schemaVersion: 2,
+    authority: "phase-2a-r-cinematic-spatial-architecture-review",
     status: failures.length ? "FAIL" : "PASS",
     productionAuthority: {
       acceptedParent: ACCEPTED_PARENT,
@@ -360,15 +563,29 @@ async function main() {
     capturePlan: { path: path.relative(ROOT, PLAN_PATH).replaceAll("\\", "/"), bytes: planBytes.length, sha256: sha256(planBytes) },
     browser: { name: "Google Chrome", version: browserVersion },
     rawPolicy: "Raw browser captures remain in a unique OS-temporary directory; only portable basenames, dimensions, byte sizes and hashes are retained.",
-    rawCaptureSession: path.basename(rawRoot),
     cases: reports.map(({ rawPath, ...report }) => report),
-    sources: await sourceRecords(labRecords),
+    visualRoster: {
+      desktop: plan.desktopFrames,
+      mobile: plan.mobileFrames,
+      narrowMobile: plan.narrowMobileChecks,
+      reducedMotion: plan.reducedMotionChecks,
+      transitions: plan.transitions,
+      transitionSheetAudit,
+      spectacleComparison: plan.spectacleComparison,
+      fullResolution: plan.retainedFullResolution,
+    },
+    sources,
     retainedOutputs: outputRecords,
+    bindings: {
+      sourceAggregateSha256: aggregateDigest(sources),
+      rawCaptureAggregateSha256: aggregateDigest(rawRecords),
+      retainedOutputAggregateSha256: aggregateDigest(outputRecords),
+    },
     summary: {
       cases: reports.length,
       passing: reports.filter(({ status }) => status === "PASS").length,
       failing: reports.filter(({ status }) => status === "FAIL").length,
-      groups: Object.fromEntries([...new Set(cases.map(({ group }) => group))].map((group) => [group, reports.filter((_, index) => cases[index].group === group).length])),
+      groups: Object.fromEntries([...new Set(cases.map(({ group }) => group))].map((group) => [group, reports.filter((report) => report.group === group).length])),
       transitionSequences: plan.transitions.length,
       transitionFrames: plan.transitions.reduce((sum, transition) => sum + transition.frames, 0),
       retainedEvidenceBytes: outputRecords.reduce((sum, output) => sum + output.bytes, 0),

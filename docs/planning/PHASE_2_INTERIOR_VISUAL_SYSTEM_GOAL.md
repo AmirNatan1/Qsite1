@@ -71,11 +71,15 @@ Planning authority:
 
 Visual authority:
 
-- one desktop keyframe contact sheet with the twelve required 1440×900 frames;
-- one mobile keyframe contact sheet with the seven required 390×844 frames;
-- one transition contact sheet covering all seven chapter handoffs in three frames each;
-- a small retained set of full-resolution frames where scale materially affects review;
-- a portable manifest with dimensions, byte sizes and SHA-256 hashes.
+- one desktop contact sheet with exactly fifteen required 1440×900 frames: portal handoff, ENTRY, BUILT WITH INDUSTRY, METHOD / FRAME, METHOD / SOURCE → ASSESS, METHOD / TEST, METHOD / DECIDE, all four named INDUSTRIES territories, PROOF opening, PROOF climax, PROGRAMMES and CONVERSION;
+- one mobile contact sheet with exactly eight required 390×844 frames: ENTRY, BUILT WITH INDUSTRY, METHOD, Automotive, Manufacturing, PROOF, PROGRAMMES and CONVERSION;
+- one 320×800 hard-gate contact sheet with exactly four required frames: METHOD, INDUSTRIES, PROGRAMMES and CONVERSION;
+- one reduced-motion contact sheet with exactly five required static frames: METHOD / TEST, INDUSTRIES / Energy, PROOF climax, PROGRAMMES and CONVERSION;
+- one transition contact sheet covering exactly seven causal chapter handoffs in three frames each;
+- one spectacle-comparison sheet containing METHOD / TEST, INDUSTRIES / Energy, PROOF climax, PROGRAMMES and CONVERSION;
+- exactly nine retained full-resolution 1440×900 frames: BUILT WITH INDUSTRY, METHOD / FRAME, METHOD / TEST, METHOD / DECIDE, Automotive, Energy, PROOF climax, PROGRAMMES and CONVERSION;
+- a portable visual-evidence manifest with dimensions, byte sizes and SHA-256 hashes for every retained output;
+- an external reviewer ZIP named `phase-2a-r-human-visual-review.zip`, stored outside the repository and containing the contact sheets, nine retained full-resolution frames and manifest.
 
 ## Human gates
 

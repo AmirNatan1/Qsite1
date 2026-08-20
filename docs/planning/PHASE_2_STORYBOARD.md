@@ -9,12 +9,12 @@ Creative system: **The Operating Field**. Continuity device: **the Conductive Da
 ```text
 physical raster
   -> tensile threshold
-  -> institutional horizon
+  -> institutional cavity
   -> calibration plate
   -> territorial seam
   -> evidence aperture
-  -> programme fork
-  -> final convergence
+  -> programme depth fields
+  -> final arrival
 ```
 
 The conductive datum provides causal continuity across the handoffs, but it does not need to survive as a continuously visible line. It may be absorbed into an edge, seam, crop, aperture boundary, material join, route, implied alignment or buried detail—and may almost disappear when a chapter's own material idea takes over. The chapters are not isolated microsites; each closing condition still causes the next.
@@ -55,22 +55,22 @@ The portal-handoff and settled-ENTRY frames are review states within one continu
 - **Mobile:** the routes become two vertically sequenced thresholds on one spine, each with generous touch area and no hover dependency.
 - **Reduced motion:** the same resolved split composition in normal flow; focus changes only color and outline.
 
-## Act II — BUILT WITH INDUSTRY / institutional plane
+## Act II — BUILT WITH INDUSTRY / institutional cavity
 
 - **Opening visual state:** the two ENTRY routes have settled into one long horizon.
 - **Semantic content:** `BUILT WITH INDUSTRY`; `Start with the operating reality.` and the approved Phase 1 supporting copy.
-- **Spatial composition:** an enormous load-bearing graphite plane crosses the viewport below the horizon. Deep joints, stepped faces and one structural rail make its mass legible without resembling an empty media aperture. The proposition is fixed by composition, not sticky runtime. A later, separately authorized search will actively seek exactly one exceptional genuine Quantum operating-context asset that may displace one face only if it is both publication-safe and materially stronger; the authored plane is the complete fallback.
+- **Spatial composition:** an asymmetric load-bearing graphite assembly crosses the viewport below the horizon. A recessed central cavity, rear plane, foreground slab, deep joints and one structural beam make its mass and inhabitable depth legible. The cavity is an authored part of the abstract architecture, not an empty placeholder. A later, separately authorized search may supply exactly one exceptional genuine Quantum operating-context asset for that wide cavity only if it is publication-approved and materially stronger; the complete abstract cavity remains the fallback.
 - **Foreground:** restrained editorial copy aligned to the horizon; one small chapter label.
-- **Background:** a near-black architectural plane with controlled reflection, structural divisions and real apparent thickness.
+- **Background:** a near-black rear plane behind the cavity, with controlled reflection, structural divisions and real apparent thickness.
 - **Persistent elements:** the datum is now the horizon; a subtle 4:3 ratio informs one division but is not outlined as a screen.
-- **Transformation:** the horizon descends and its leading edge thickens into the METHOD calibration plate.
+- **Transformation:** the cavity's front slab advances while its side masses close around one bounded workpiece, becoming the METHOD fixture.
 - **Transition in:** ENTRY trajectories **Resolve** into institutional structure.
-- **Transition out:** the plane **Focuses** into a bounded operating surface.
+- **Transition out:** the cavity and foreground slab **Focus** into fixture jaws and a bounded operating surface.
 - **Expected emotional effect:** gravity, scale and access to real operating context.
 - **Likely primitive:** DOM/CSS; one exceptional approved still or short muted video only if the later search succeeds.
 - **Desktop:** a very wide plane creates weight through scale and stillness.
-- **Mobile:** a tall jointed monolith replaces lateral scale; the proposition sits at its base like an architectural inscription, with no empty placeholder opening.
-- **Reduced motion:** the same static plane and composition; any future video becomes an approved poster.
+- **Mobile:** layered rear and foreground plates enclose a deep vertical cavity; the proposition sits against the mass like an architectural inscription, with no empty placeholder opening.
+- **Reduced motion:** the same static cavity, occlusion and foreground/background separation; any future video becomes an approved poster.
 
 ## Act III — METHOD / calibration plate
 
@@ -78,34 +78,40 @@ The five stages are states of one object, never five cards.
 
 ### FRAME
 
-- **Opening visual state:** a broad ambiguous graphite field occupies most of the viewport.
+- **Opening visual state:** BUILT WITH INDUSTRY's cavity has tightened around one ambiguous graphite workpiece.
 - **Semantic content:** `FRAME`; `Define the operational problem, owner and success criteria.`
-- **Spatial composition:** four structural edges move inward to establish a single bounded plate. Criteria copy sits outside the object, keeping the plate visual rather than dashboard-like.
+- **Spatial composition:** left and right fixture jaws constrain a central workpiece against a deeper plate. The boundaries are unmistakably physical, while criteria copy sits outside the object so the workpiece remains visual rather than dashboard-like.
 - **Foreground:** stage name and restrained explanatory copy.
-- **Background:** unresolved tonal field with no particles or invented data.
+- **Background:** unresolved rear plate and shadowed fixture depth with no particles or invented data.
 - **Persistent elements:** the conductive datum enters the plate from ENTRY's horizon.
-- **Transformation:** an unbounded plane gains limits, ownership and criteria.
-- **Transition in:** BUILT WITH INDUSTRY plane **Focuses** into the calibration plate.
-- **Transition out:** one edge opens and the datum branches outward toward SOURCE.
+- **Transformation:** an ambiguous object is physically constrained by boundaries, ownership and criteria.
+- **Transition in:** BUILT WITH INDUSTRY's foreground slab and cavity walls **Focus** into the workpiece and fixture jaws.
+- **Transition out:** hidden channels open behind the fixed workpiece and reveal layered candidates for SOURCE.
 - **Expected emotional effect:** ambiguity becomes tractable.
 - **Likely primitive:** DOM/CSS + transform/mask; no canvas.
 
 ### SOURCE
 
-- The plate opens through several clean structural cuts. Multiple routes extend beyond its boundary as physical paths, not particles. The available field broadens while the original problem boundary remains visible.
+- **Semantic content:** `SOURCE`; `Find technologies relevant to the real operating context.`
+- **Spatial composition:** the fixture holds while hidden channels and layered candidate planes emerge from behind the workpiece. They extend beyond its boundary as physical layers, not particles or a list of suppliers. The original problem boundary remains visible.
+- **Transformation:** latent possibilities become inspectable without changing the problem definition.
+- **Transition out:** the emerging layers move into a common plane and tolerance register for ASSESS.
 
 ### ASSESS
 
-- The routes are brought into one shared comparison plane. Alignment, spacing and weight change; some routes recede to graphite while viable relationships meet the central datum. No scores or fake metrics appear.
+- **Semantic content:** `ASSESS`; `Evaluate technical, commercial and implementation fit.`
+- **Spatial composition:** the candidate layers align into one shared comparison plane against a clear tolerance register. Alignment, spacing and depth change; out-of-register relationships recede into graphite while relevant layers remain physically comparable. No scores or fake metrics appear.
+- **Transformation:** a layered field becomes a comparable operating surface without inventing a ranking.
+- **Transition out:** one aligned layer advances toward the material threshold for TEST.
 
 ### TEST
 
 - **Opening visual state:** one aligned route reaches a dense vertical threshold.
 - **Semantic content:** `TEST`; `Run a structured POC in a real environment.`
-- **Spatial composition:** the selected route crosses a heavy material gate into a visibly different operating surface. The crossing is the chapter's most consequential movement.
+- **Spatial composition:** the selected workpiece crosses a heavy vertical material gate. Beyond it, a denser gridded operating surface is revealed through the material rather than drawn on top of it. The crossing is the chapter's most consequential movement.
 - **Foreground:** the route, gate and short semantic statement.
 - **Background:** the bounded plate gains physical depth beyond the threshold.
-- **Persistent elements:** the original problem boundary remains faintly visible, preserving why the test exists.
+- **Persistent elements:** the original fixture boundary remains faintly visible, preserving why the test exists; magenta appears only at the live crossing.
 - **Transformation:** selection becomes contact with an operating environment.
 - **Transition in:** aligned possibilities **Focus**, then the selected route **Crosses**.
 - **Transition out:** the crossed route carries the plate into an ordered evidence state.
@@ -114,38 +120,38 @@ The five stages are states of one object, never five cards.
 
 ### DECIDE
 
-- **Opening visual state:** dispersed structural pieces occupy the plate after the test crossing.
+- **Opening visual state:** tested layers occupy different depths after the threshold crossing.
 - **Semantic content:** `DECIDE`; `Use evidence to determine the next step.`
-- **Spatial composition:** pieces align into one ordered plane and one clear outgoing route. Other routes remain legible as completed context rather than disappearing as failures.
+- **Spatial composition:** three tested layers align toward one vertical register and resolve through a single ordered aperture. The outgoing state is one wide material edge; other layers remain legible as completed context rather than disappearing as failures.
 - **Foreground:** the resolved stage statement and ordered evidence boundary.
 - **Background:** quiet matte field.
-- **Persistent elements:** the datum now exits as an industry territory seam.
+- **Persistent elements:** the datum is absorbed into the register and exits only as the edge alignment of the first industry territory.
 - **Transformation:** evidence becomes hierarchy without implying procurement or deployment.
 - **Transition in:** dispersed evidence **Resolves**.
-- **Transition out:** the evidence edge lengthens and **Releases** into the INDUSTRIES horizon.
+- **Transition out:** the ordered aperture flattens and its outgoing material edge lengthens, **Releasing** into the first INDUSTRIES horizon.
 - **Expected emotional effect:** calm confidence in a responsible next-step decision.
 - **Likely primitive:** DOM/CSS + deterministic transform/opacity mapping.
 
 - **Desktop behavior:** METHOD is the primary candidate for one bounded sticky sequence in a later phase. Five named normal-flow anchors would control one visual plate; entry and exit remain visible.
-- **Mobile adaptation:** no sticky stage lock. The plate becomes one continuous vertical machined workpiece; the five stages are engraved along its depth and TEST creates the one decisive crossing, rather than five bordered rows.
-- **Reduced-motion adaptation:** five intentionally composed static subsections in normal flow, connected by one quiet rule.
+- **Mobile adaptation:** no sticky stage lock. Five chamfered workpiece states form one continuous vertical spatial journey: fixture, emerging layers, tolerance alignment, material crossing and ordered aperture. Depth, overlap and occlusion connect them; they are not five bordered rows.
+- **Reduced-motion adaptation:** five intentionally composed static workpiece states in normal flow, with depth and occlusion carrying the sequence without animated line drawing.
 
 ## Act IV — INDUSTRIES / territorial crossing
 
 - **Opening visual state:** the METHOD evidence edge has become a long territory seam.
 - **Semantic content:** exactly `Automotive & Mobility`, `Logistics & Supply Chain`, `Industry 4.0 / Advanced Manufacturing`, and `Energy & Infrastructure`; approved technology categories remain visually subordinate and cross-industry.
-- **Spatial composition:** four continuous material territories occupy one world. Each changes plane angle, depth, crop and tonal grain; the visitor crosses them through vertical document scroll. The active territory receives monumental type and space, not a card or tab.
+- **Spatial composition:** four continuous material territories occupy one world, each with a specific field logic rather than a recolored panel: `Automotive & Mobility` uses velocity, a low wide horizon and long perspective planes; `Logistics & Supply Chain` uses stacking, routing and a deep transfer corridor; `Industry 4.0 / Advanced Manufacturing` uses tooling, tolerances and a rigid fixture; `Energy & Infrastructure` uses scale, load and tall vertical spans. The active territory receives monumental type and space, not a card or tab.
 - **Foreground:** one current territory title and a restrained inline record of all four domains.
 - **Background:** abstract material fields that can later accept separately approved documentary fragments.
-- **Persistent elements:** the datum acts as the shared seam; the outgoing edge always predicts the next territory.
-- **Transformation:** a road-like datum broadens to a logistics plane, compresses into a manufacturing threshold and deepens into an infrastructure horizon.
+- **Persistent elements:** the datum recedes into local edges, gaps and alignments. It is connective tissue, never a continuous line across all four territories.
+- **Transformation:** long low velocity planes compress into stacked logistics modules; those modules lock into manufacturing tolerances and tooling; the rigid tolerances elongate and rise into load-bearing energy spans.
 - **Transition in:** METHOD's ordered edge **Releases** into spatial breadth.
 - **Transition out:** the final horizon folds upward and **Focuses** into the PROOF aperture.
 - **Expected emotional effect:** contextual range without a taxonomy grid or claims of scale.
 - **Likely primitive:** DOM/CSS + optional approved stills; lightweight scripted background transforms only if later justified.
 - **Desktop:** lateral visual travel may be suggested by transform and crop while vertical scroll remains the only input; no horizontal scroller.
-- **Mobile:** four full-width vertical environments appear sequentially, with shorter transitions and no sideways imitation.
-- **Reduced motion:** four static full-width territory passages in normal flow.
+- **Mobile:** four separate full-width vertical environments appear sequentially, with locally authored depth and no sideways imitation. Automotive and Manufacturing are explicit review states.
+- **Reduced motion:** four static full-width territory passages in normal flow; field identity remains legible from geometry without travel.
 
 ## Act V — PROOF / documentary breach
 
@@ -170,10 +176,10 @@ The five stages are states of one object, never five cards.
 - **Spatial composition:** documentary light breaks the dark system. A controlled black editorial plane preserves readable context while the image remains dominant.
 - **Foreground:** concise evidence language and one native route to the Maradin field record.
 - **Background:** approved Maradin still or muted video; no overlay dashboard.
-- **Persistent elements:** documentary media and factual copy dominate. Any surviving aperture edge remains peripheral and quiet, returning only after the evidence settles so it can become the programme fork.
+- **Persistent elements:** documentary media and factual copy dominate. Any surviving aperture edge remains peripheral and quiet, returning only after the evidence settles so it can become the boundary between two programme depth fields.
 - **Transformation:** the field image reaches maximum scale, then settles into an evidence record.
 - **Transition in:** aperture **Crosses** from abstraction into reality.
-- **Transition out:** evidence **Resolves** into two operating routes.
+- **Transition out:** the documentary crop **Resolves** into two overlapping programme planes at different depths.
 - **Expected emotional effect:** documentary conviction without inflated scale.
 - **Likely primitive:** image/video + DOM/CSS; no continuous playback requirement.
 
@@ -181,69 +187,106 @@ The five stages are states of one object, never five cards.
 - **Mobile adaptation:** a full-width vertical crop followed by a normal-flow evidence statement; no sticky expansion and no autoplay burden.
 - **Reduced-motion adaptation:** approved poster/still at a composed crop with normal-flow copy.
 
-## Act VI — PROGRAMMES / quiet fork
+## Act VI — PROGRAMMES / quiet divergence
 
-- **Opening visual state:** PROOF's lower aperture edge exits the documentary scene as one quiet graphite route.
-- **Semantic content:** `PROGRAMMES`; `SPARK`; `Applications closed`; approved SPARK summary; `CHAMP`; `An industry-side programme context.`
-- **Spatial composition:** one route separates gradually into two paths across large negative space. Each programme sits on a path as editorial copy, not inside a container.
+- **Opening visual state:** PROOF's settled documentary crop becomes the shared edge of two quiet graphite planes.
+- **Semantic content:** `PROGRAMMES`; `SPARK`; `A pathway for MVP+ technologies to develop relevant opportunities and structured POCs in real operating contexts.`; `Applications closed`; `CHAMP`; `An industry-side programme context.`
+- **Spatial composition:** two large planes overlap, then diverge through depth and diagonal offset to create distinct operating fields. SPARK occupies the lower/near field and CHAMP the upper/far field; both remain editorial copy on architecture, not inside containers. They are not connected by a route diagram.
 - **Foreground:** two programme names, their approved descriptions and SPARK status.
-- **Background:** the quietest matte field in the sequence.
-- **Persistent elements:** the origin point remains shared, preventing the paths from reading as unrelated cards.
+- **Background:** the quietest matte field in the sequence, with one deep corridor between the planes.
+- **Persistent elements:** the shared crop edge and overlap preserve a common origin without turning the datum into a visible route.
 - **Transformation:** documentary evidence becomes two possible operating contexts.
-- **Transition in:** evidence edge **Resolves** into a single route, then **Releases** into two.
-- **Transition out:** both paths curve back toward one decision point.
+- **Transition in:** the proof crop **Resolves** into the overlapping planes, which **Release** apart in depth.
+- **Transition out:** the two planes rotate and converge into the tall enclosing walls of CONVERSION.
 - **Expected emotional effect:** breathing space, clarity and structure.
 - **Likely primitive:** DOM/CSS only.
-- **Desktop:** generous diagonal separation without horizontal interaction.
-- **Mobile:** a vertical Y-junction; SPARK and CHAMP follow in sequence with clear touch targets and no side-by-side compression.
-- **Reduced motion:** the static fork remains visible in normal flow.
+- **Desktop:** generous diagonal and depth separation without horizontal interaction.
+- **Mobile:** vertically offset planes create a deep corridor; SPARK and CHAMP follow in sequence with clear touch targets and no side-by-side compression or route-diagram motif.
+- **Reduced motion:** the static overlapping depth fields remain visible in normal flow.
 
-## Act VII — CONVERSION / convergence
+## Act VII — CONVERSION / arrival
 
-- **Opening visual state:** the SPARK and CHAMP routes approach one another from opposite edges.
-- **Semantic content:** `Start with the challenge.`; `Choose the route that matches where you are entering the work.`; existing internal contact-route links only.
-- **Spatial composition:** the full field narrows around one convergence point. Three native text routes occupy the structural edge: industrial challenge, startup technology and general/ecosystem. They are not giant buttons.
+- **Opening visual state:** the SPARK and CHAMP planes approach from opposite depths and become tall enclosing walls.
+- **Semantic content:** `Start with the challenge.`; `Choose the route that matches where you are entering the work.`; `/contact/#for-industry` with `Bring us an industrial challenge` / `Industry challenge`; `/contact/#for-startups` with `Introduce your technology` / `Startup technology`; and `/contact/#general` with `General or ecosystem` / `General contact`. These accepted full/compact label pairs and internal destinations are exhaustive.
+- **Spatial composition:** tall material walls converge around a quiet central arrival void. The statement and three native text routes—industrial challenge, startup technology and general/ecosystem—occupy a contained action plane near the arrival, not giant buttons.
 - **Foreground:** one decisive statement and the small set of next-step links.
-- **Background:** near-black space with a restrained warm shadow and a single active magenta convergence.
+- **Background:** near-black spatial depth with restrained warm shadow; magenta is limited to live link state rather than a decorative convergence line.
 - **Persistent elements:** every surviving route ends here; the footer begins as the final quiet structural rule.
-- **Transformation:** multiple routes resolve into a clear choice without inventing a contact destination.
-- **Transition in:** programme paths **Focus + Resolve**.
+- **Transformation:** programme depth fields become an enclosing arrival architecture and a clear choice without inventing a contact destination.
+- **Transition in:** programme planes **Focus + Resolve** into the arrival walls and central void.
 - **Transition out:** the active current releases into a still footer edge; no abrupt design stop.
 - **Expected emotional effect:** completion, orientation and calm agency.
 - **Likely primitive:** semantic DOM/CSS.
-- **Desktop:** the convergence uses width and negative space; links remain native and keyboard visible.
-- **Mobile:** the convergence becomes a vertical funnel ending above three full-width text links and a quiet footer.
-- **Reduced motion:** a static final composition; no animated line drawing.
+- **Desktop:** the arrival uses enclosure, depth and negative space; links remain native and keyboard visible.
+- **Mobile:** tall walls frame a central arrival void above a contained vertical link plane and quiet footer.
+- **Reduced motion:** a static arrival composition with foreground/background separation; no animated line drawing.
 
-## Desktop keyframe roster
+## Causal transition score
+
+Each review strip contains three states—outgoing cause, transformation and incoming consequence. The datum may be absorbed into material geometry; it is never required to remain visible as a line.
+
+| ID | Handoff | Verbs | Material cause and consequence |
+| --- | --- | --- | --- |
+| `raster-entry` | physical raster → ENTRY | **Focus + Resolve** | Residual CRT traces sharpen into editorial rules; the 4:3 boundary opens around the first settled `WHERE DO YOU ENTER?` DOM. |
+| `entry-industry` | ENTRY → BUILT WITH INDUSTRY | **Resolve + Release** | Opposing route fields flatten into one horizon, then thicken into the rear plane, foreground slab and central cavity. |
+| `industry-method` | BUILT WITH INDUSTRY → METHOD | **Focus** | The cavity walls close into fixture jaws while the foreground slab becomes the bounded workpiece. |
+| `method-industries` | METHOD → INDUSTRIES | **Resolve + Release** | DECIDE's aligned layers pass through one aperture; its outgoing material edge lengthens into Automotive's low velocity horizon. |
+| `industries-proof` | INDUSTRIES → PROOF | **Focus + Cross** | Energy's vertical load-bearing spans close around one dark gap; that gap becomes the documentary aperture and crosses into Maradin. |
+| `proof-programmes` | PROOF → PROGRAMMES | **Resolve + Release** | The settled Maradin crop becomes two overlapping graphite planes, which separate through depth and diagonal offset. |
+| `programmes-conversion` | PROGRAMMES → CONVERSION | **Focus + Resolve** | The two programme planes rotate and converge into tall arrival walls enclosing one quiet central void. |
+
+## Desktop 1440×900 keyframe roster
 
 | ID | Required view |
 | --- | --- |
-| `d01-handoff` | Raster-to-ENTRY handoff state within the first act |
-| `d02-entry` | First settled native DOM state: ENTRY tensile threshold |
-| `d03-industry` | BUILT WITH INDUSTRY institutional plane |
-| `d04-method-frame` | METHOD / FRAME |
-| `d05-method-test` | METHOD / TEST crossing |
-| `d06-method-decide` | METHOD / DECIDE resolution |
-| `d07-industries-first` | INDUSTRIES first territory |
-| `d08-industries-transition` | INDUSTRIES alternate-territory crossing |
+| `d01-handoff` | Portal handoff |
+| `d02-entry` | ENTRY; first settled native DOM |
+| `d03-industry` | BUILT WITH INDUSTRY cavity |
+| `d04-method-frame` | METHOD / FRAME fixture and workpiece |
+| `d04b-method-source-assess` | METHOD / SOURCE → ASSESS layered comparison |
+| `d05-method-test` | METHOD / TEST material crossing |
+| `d06-method-decide` | METHOD / DECIDE ordered aperture |
+| `d07-industries-first` | INDUSTRIES / Automotive & Mobility |
+| `d07b-industries-logistics` | INDUSTRIES / Logistics & Supply Chain |
+| `d07c-industries-manufacturing` | INDUSTRIES / Industry 4.0 / Advanced Manufacturing |
+| `d08-industries-transition` | INDUSTRIES / Energy & Infrastructure |
 | `d09-proof-opening` | PROOF aperture opening |
 | `d10-proof-climax` | PROOF documentary climax |
-| `d11-programmes` | PROGRAMMES quiet fork |
-| `d12-conversion` | CONVERSION convergence |
+| `d11-programmes` | PROGRAMMES depth divergence |
+| `d12-conversion` | CONVERSION arrival |
 
 Primary frame: 1440×900. The short-height 1366×650 interpretation reduces decorative depth and negative-space travel before it reduces semantic copy; it never scales the full desktop frame as one image.
 
-## Mobile keyframe roster
+## Mobile 390×844 keyframe roster
 
 | ID | Required view |
 | --- | --- |
-| `m01-entry` | Portal handoff / ENTRY vertical release |
-| `m02-industry` | BUILT WITH INDUSTRY monolith |
-| `m03-method` | METHOD pressure column |
-| `m04-industries` | INDUSTRIES vertical territory sequence |
+| `m01-entry` | ENTRY vertical release |
+| `m02-industry` | BUILT WITH INDUSTRY layered cavity |
+| `m03-method` | METHOD vertical workpiece journey |
+| `m04-industries` | INDUSTRIES / Automotive & Mobility |
+| `m04b-industries-manufacturing` | INDUSTRIES / Industry 4.0 / Advanced Manufacturing |
 | `m05-proof` | PROOF documentary aperture |
-| `m06-programmes` | PROGRAMMES vertical fork |
-| `m07-conversion` | CONVERSION vertical funnel |
+| `m06-programmes` | PROGRAMMES vertically offset depth fields |
+| `m07-conversion` | CONVERSION arrival walls and void |
 
-Primary frame: 390×844. At 320×800, all semantic copy remains content-height-driven; decorative planes simplify, margins reduce and line lengths reflow. The 844×390 landscape treatment uses a compact two-zone composition rather than rotating or cropping the portrait frame.
+## Mobile 320×800 hard-gate roster
+
+| ID | Required view |
+| --- | --- |
+| `m03-method` | METHOD; five readable workpiece states with no collision or clipping |
+| `m04-industries` | INDUSTRIES; territory identity and copy remain readable |
+| `m06-programmes` | PROGRAMMES; SPARK and CHAMP remain distinct without route-diagram geometry |
+| `m07-conversion` | CONVERSION; statement, all three links and footer remain reachable |
+
+## Reduced-motion keyframe roster
+
+| ID | Required static view |
+| --- | --- |
+| `d05-method-test` | METHOD / TEST crossing expressed through static threshold depth |
+| `d08-industries-transition` | INDUSTRIES / Energy expressed through scale, load and vertical spans |
+| `d10-proof-climax` | PROOF / Maradin documentary climax at a composed static crop |
+| `d11-programmes` | PROGRAMMES static overlapping depth fields |
+| `d12-conversion` | CONVERSION static arrival walls and central void |
+
+At 320×800, all semantic copy remains content-height-driven; decorative planes simplify, margins reduce and line lengths reflow. The 844×390 landscape treatment uses a compact two-zone composition rather than rotating or cropping the portrait frame. Reduced motion preserves depth, occlusion, semantic order and normal-flow reachability without relying on animated drawing or sticky state.

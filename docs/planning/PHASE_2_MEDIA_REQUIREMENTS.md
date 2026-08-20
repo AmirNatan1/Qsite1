@@ -26,11 +26,11 @@ These five Maradin assets are already governed for the sole public proof record.
 
 ## Human-approved later Quantum Google Drive search requirement
 
-The sole later search priority is one exceptional genuine Quantum operating-context asset for BUILT WITH INDUSTRY. Use it only if it is publication-approved and materially stronger than the complete abstract graphite plane; otherwise retain the abstract composition. This decision authorizes a future search brief, not a Drive search or publication in this repair.
+The sole later search priority is one exceptional genuine Quantum operating-context asset for the wide recessed cavity within BUILT WITH INDUSTRY. This is one optional future slot, not a requirement or placeholder: use the asset only if it is publication-approved and materially stronger than the complete abstract graphite cavity; otherwise retain the authored rear plane, cavity, foreground slab and structural mass. This decision authorizes a future search brief, not a Drive search or publication in this repair.
 
 | ID | Chapter | Creative purpose | Ideal content | Shot type / orientation | Duration | People | Branding / logos | Audio | Minimum useful resolution | Publication-risk considerations |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `P2-MEDIA-INDUSTRY-01` | BUILT WITH INDUSTRY | Give the institutional plane real operating weight without a sponsor wall | A genuine Quantum-relevant industrial environment that shows scale, constraints and material reality; no staged handshake | Very wide establishing shot; landscape 2.0:1 to 2.4:1; locked or very slow camera | Still or 10–15 s observational shot | Optional; small in frame, naturally working | Logos may appear incidentally only after identity and relationship review | No | Still 2560×1440 minimum; video 3840×2160 preferred | Confirm ownership, location security, current relationship, PPE, confidential equipment, screens, badges and vehicle plates |
+| `P2-MEDIA-INDUSTRY-01` | BUILT WITH INDUSTRY | Optionally give the recessed wide cavity real operating weight without becoming a sponsor wall | A genuine Quantum-relevant industrial environment that shows scale, constraints and material reality; no staged handshake | Very wide establishing shot for the cavity; landscape 2.0:1 to 2.4:1; locked or very slow camera | Still or 10–15 s observational shot | Optional; small in frame, naturally working | Logos may appear incidentally only after identity and relationship review | No | Still 2560×1440 minimum; video 3840×2160 preferred | Confirm ownership, location security, current relationship, PPE, confidential equipment, screens, badges and vehicle plates |
 
 ## Shot-selection guidance
 
@@ -48,8 +48,8 @@ The sole later search priority is one exceptional genuine Quantum operating-cont
 | Portal handoff / ENTRY | Crisp former-raster boundary, conductive datum, semantic typography and two native route trajectories |
 | METHOD | One graphite calibration plate transforming through structural edges, routes, threshold and resolution |
 | INDUSTRIES | Four materially distinct abstract territories crossed by one seam; reserving documentary media for PROOF protects the abstraction-to-reality climax |
-| PROGRAMMES | A quiet route that forks into SPARK and CHAMP across negative space |
-| CONVERSION | Converging route geometry, native internal links and a quiet structural footer edge |
+| PROGRAMMES | Two quiet overlapping planes that diverge through depth into SPARK and CHAMP fields across negative space |
+| CONVERSION | Programme planes converging into tall arrival walls, a central void, native internal links and a quiet structural footer edge |
 
 ## Deferred supporting-route needs
 
