@@ -1,0 +1,1483 @@
+{
+  "schemaVersion": 1,
+  "phase": "2B",
+  "status": "PASS",
+  "acceptedParent": "4121e009b970cce480c4220c964cbc218e35d73c",
+  "repositoryHeadAtCapture": "6032f71e53fb62aa9fb0e455d377225e70ae5611",
+  "branchAtCapture": "feature/phase-2b-operating-field-production",
+  "productionAuthority": "actual Astro static build served through astro preview",
+  "rawCapturePolicy": "OS-temporary only; raw browser frames are not retained in the repository",
+  "captureCounts": {
+    "desktop1440x900": 14,
+    "short1366x650": 7,
+    "mobile390x844": 8,
+    "mobile320x800": 4,
+    "reducedMotion": 6,
+    "motionScrollSequence": 15,
+    "totalRawTemporaryFrames": 54,
+    "retainedOutputs": 7
+  },
+  "scrollAuthority": {
+    "nativeDocumentPosition": true,
+    "forwardSequenceCaptured": true,
+    "fastJumpCaptured": true,
+    "reverseSequenceCaptured": true,
+    "queuedTimeline": false,
+    "scrollPositionWritesByRuntime": false
+  },
+  "sourceRecords": [
+    {
+      "path": "package.json",
+      "bytes": 2606,
+      "sha256": "8d41466b3f9104f1392d1bb82380e9977d93c34db474771ec3f19f1b11a325d1"
+    },
+    {
+      "path": "src/pages/index.astro",
+      "bytes": 2340,
+      "sha256": "5527c63c3bea0e9fdf5b0b413e79d094a8766b4b9960b28dbbcb8f7fbb743ade"
+    },
+    {
+      "path": "src/components/home/EntryField.astro",
+      "bytes": 1402,
+      "sha256": "f67d5107308d54ec90698559f96afa4627d75c18d1fa30967d996ae1a57c1ccc"
+    },
+    {
+      "path": "src/components/home/BuiltWithIndustry.astro",
+      "bytes": 1554,
+      "sha256": "27180c61032c0caedaae9ba16bae852b60fdc7725d67bfeb2250f724764c623f"
+    },
+    {
+      "path": "src/components/home/MethodField.astro",
+      "bytes": 2420,
+      "sha256": "21e56470d4e2dc43dc3baa454cb14dc02d440889170e05df4bf352627d549179"
+    },
+    {
+      "path": "src/components/home/IndustryTerritories.astro",
+      "bytes": 1668,
+      "sha256": "fe26974b6423ad3b6a6c714fc2a87ffcd6fb092734197cbbeb94ceab2ba42349"
+    },
+    {
+      "path": "src/components/home/ProofField.astro",
+      "bytes": 1467,
+      "sha256": "4b3c6756d6830aca890de7c55e3c83f292ac4197013cef220f98307bca427f41"
+    },
+    {
+      "path": "src/components/home/ProgrammesField.astro",
+      "bytes": 1921,
+      "sha256": "7806a926d8a1ff0701f42445ccc98773eb2af853160be54241598e04cebdaef3"
+    },
+    {
+      "path": "src/components/home/ConversionField.astro",
+      "bytes": 2055,
+      "sha256": "5a1855b13b2dec8cd8cba76286e055f3d91f85b19ae498f4c2387b93a276f95f"
+    },
+    {
+      "path": "src/styles/routes/home.css",
+      "bytes": 19108,
+      "sha256": "b1bc41afb426598f60cd49031ea81af5b38a1bc58b264a85a5976e0691eec86b"
+    },
+    {
+      "path": "src/styles/routes/home-method.css",
+      "bytes": 7037,
+      "sha256": "172bfb5b5217b820d84c702d5fec053a2fa8846eba4ece57de012e272b20385b"
+    },
+    {
+      "path": "src/styles/routes/home-responsive.css",
+      "bytes": 11930,
+      "sha256": "83036bf8ae1a2cfdbb42117c6c64206ac3b2e0e05eeac9f89fd1dba501d4d391"
+    },
+    {
+      "path": "src/scripts/home-operating-field.ts",
+      "bytes": 6621,
+      "sha256": "b8a3af5dc4f5ad24ad2eb1e8c2c800385da718ae439133efc6a652bd5fdf84a2"
+    },
+    {
+      "path": "scripts/verify-phase2b-source.mjs",
+      "bytes": 14627,
+      "sha256": "b0a23a6bdfe350cc27fe01f44900a07d339aaee3e60c1a629177accaed510572"
+    },
+    {
+      "path": "scripts/verify-phase2b-output.mjs",
+      "bytes": 16748,
+      "sha256": "0607e6528d0e53b8b971d9eaa7fa61307d262379cfee98929da5e41244800ef4"
+    },
+    {
+      "path": "scripts/qa-phase2b-browser.mjs",
+      "bytes": 29205,
+      "sha256": "af7a4af4139b1eaacbe9c70909f43faa204cd570358a7ae92aed15692dd7f76d"
+    },
+    {
+      "path": "scripts/capture-phase2b-evidence.mjs",
+      "bytes": 20098,
+      "sha256": "69d42e13938b0753f8601fac7003838322de80b24d63f3dc50f43c91259ef8a1"
+    }
+  ],
+  "authorityRecords": [
+    {
+      "path": "artifacts/evidence/phase-2b/phase-2b-build-report.json",
+      "bytes": 4046,
+      "sha256": "d86b1da7497906ec1a4c8ddab7e9e36f8917a741b8121d97b43ac33f5890dfa4"
+    },
+    {
+      "path": "artifacts/evidence/phase-2b/phase-2b-browser-report.json",
+      "bytes": 37961,
+      "sha256": "954dd60344734c73d0cb4bebcc20aa6ff0ed9a465189af55a0e2a68964a57fa2"
+    }
+  ],
+  "retainedOutputs": [
+    {
+      "path": "artifacts/evidence/phase-2b/review/phase-2b-desktop-production-keyframes.png",
+      "bytes": 627598,
+      "sha256": "a3a1d38a88771d31c03839c82cf5f9e6163057925ed7f5cbe5dc5cdc70bce2bd",
+      "width": 1504,
+      "height": 3680,
+      "format": "png"
+    },
+    {
+      "path": "artifacts/evidence/phase-2b/review/phase-2b-short-height-keyframes.png",
+      "bytes": 576482,
+      "sha256": "aa401ab0cb24f4523cdcfa6802857e7fe54a8039f41f936d1bf1d489148f696b",
+      "width": 1073,
+      "height": 3946,
+      "format": "png"
+    },
+    {
+      "path": "artifacts/evidence/phase-2b/review/phase-2b-mobile-390-keyframes.png",
+      "bytes": 373290,
+      "sha256": "2ad0d2f95a1a03563c9d0f4974a5ce143f3e79f0915e21b56b2af11994304f4f",
+      "width": 844,
+      "height": 3732,
+      "format": "png"
+    },
+    {
+      "path": "artifacts/evidence/phase-2b/review/phase-2b-mobile-320-keyframes.png",
+      "bytes": 141306,
+      "sha256": "63719a79a0a541ba30f39d1dd4ecd55690a3868e9e8c7d763dc0471e5f5c87e2",
+      "width": 704,
+      "height": 1840,
+      "format": "png"
+    },
+    {
+      "path": "artifacts/evidence/phase-2b/review/phase-2b-reduced-motion-keyframes.png",
+      "bytes": 380341,
+      "sha256": "ddf9c0d995629eeac321547071f4c324374603dee6826860141883aa18f1cf0c",
+      "width": 1504,
+      "height": 1648,
+      "format": "png"
+    },
+    {
+      "path": "artifacts/evidence/phase-2b/review/phase-2b-static-poster-comparison.png",
+      "bytes": 195512,
+      "sha256": "ba3314d5183fcb90e7f8476a9821c639de2681e0a9245c8b2697d36f0b856c48",
+      "width": 1504,
+      "height": 2156,
+      "format": "png"
+    },
+    {
+      "path": "artifacts/evidence/phase-2b/review/phase-2b-motion-scroll-sequence.png",
+      "bytes": 340008,
+      "sha256": "b7802798204f8c8396b3ff09ebdcee3729f2147c1e2bdafb9bb934e49618e9f4",
+      "width": 1520,
+      "height": 1914,
+      "format": "png"
+    }
+  ],
+  "cases": [
+    {
+      "id": "desktop-entry",
+      "label": "01 · ENTRY",
+      "selector": "#entry",
+      "anchor": 0,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": -329,
+        "boundedY": 0,
+        "actualY": 0,
+        "methodSticky": "true",
+        "methodProgress": "0.0000",
+        "methodFrame": "0.0000",
+        "methodSource": "0.0000",
+        "methodAssess": "0.0000",
+        "methodTest": "0.0000",
+        "methodDecide": "0.0000"
+      }
+    },
+    {
+      "id": "desktop-industry",
+      "label": "02 · BUILT WITH INDUSTRY",
+      "selector": "#built-with-industry",
+      "anchor": 0.48,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 967,
+        "boundedY": 967,
+        "actualY": 967,
+        "methodSticky": "true",
+        "methodProgress": "0.0000",
+        "methodFrame": "0.0000",
+        "methodSource": "0.0000",
+        "methodAssess": "0.0000",
+        "methodTest": "0.0000",
+        "methodDecide": "0.0000"
+      }
+    },
+    {
+      "id": "desktop-method-frame",
+      "label": "03 · METHOD / FRAME",
+      "selector": "#method-frame",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 2521,
+        "boundedY": 2521,
+        "actualY": 2521,
+        "methodSticky": "true",
+        "methodProgress": "0.1242",
+        "methodFrame": "0.9595",
+        "methodSource": "0.0000",
+        "methodAssess": "0.0000",
+        "methodTest": "0.0000",
+        "methodDecide": "0.0000"
+      }
+    },
+    {
+      "id": "desktop-method-assess",
+      "label": "04 · METHOD / ASSESS",
+      "selector": "#method-assess",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 3655,
+        "boundedY": 3655,
+        "actualY": 3655,
+        "methodSticky": "true",
+        "methodProgress": "0.5908",
+        "methodFrame": "1.0000",
+        "methodSource": "1.0000",
+        "methodAssess": "0.9595",
+        "methodTest": "0.0000",
+        "methodDecide": "0.0000"
+      }
+    },
+    {
+      "id": "desktop-method-test",
+      "label": "05 · METHOD / TEST",
+      "selector": "#method-test",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 4222,
+        "boundedY": 4222,
+        "actualY": 4222,
+        "methodSticky": "true",
+        "methodProgress": "0.8242",
+        "methodFrame": "1.0000",
+        "methodSource": "1.0000",
+        "methodAssess": "1.0000",
+        "methodTest": "0.9595",
+        "methodDecide": "0.0000"
+      }
+    },
+    {
+      "id": "desktop-method-decide",
+      "label": "06 · METHOD / DECIDE",
+      "selector": "#method-decide",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 4789,
+        "boundedY": 4789,
+        "actualY": 4789,
+        "methodSticky": "true",
+        "methodProgress": "1.0000",
+        "methodFrame": "1.0000",
+        "methodSource": "1.0000",
+        "methodAssess": "1.0000",
+        "methodTest": "1.0000",
+        "methodDecide": "0.9595"
+      }
+    },
+    {
+      "id": "desktop-auto",
+      "label": "07 · AUTOMOTIVE",
+      "selector": "[data-territory='automotive']",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 6331,
+        "boundedY": 6331,
+        "actualY": 6331,
+        "methodSticky": "true",
+        "methodProgress": "1.0000",
+        "methodFrame": "1.0000",
+        "methodSource": "1.0000",
+        "methodAssess": "1.0000",
+        "methodTest": "1.0000",
+        "methodDecide": "1.0000"
+      }
+    },
+    {
+      "id": "desktop-logistics",
+      "label": "08 · LOGISTICS",
+      "selector": "[data-territory='logistics']",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 7177,
+        "boundedY": 7177,
+        "actualY": 7177,
+        "methodSticky": "true",
+        "methodProgress": "1.0000",
+        "methodFrame": "1.0000",
+        "methodSource": "1.0000",
+        "methodAssess": "1.0000",
+        "methodTest": "1.0000",
+        "methodDecide": "1.0000"
+      }
+    },
+    {
+      "id": "desktop-manufacturing",
+      "label": "09 · MANUFACTURING",
+      "selector": "[data-territory='manufacturing']",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 8023,
+        "boundedY": 8023,
+        "actualY": 8023,
+        "methodSticky": "true",
+        "methodProgress": "1.0000",
+        "methodFrame": "1.0000",
+        "methodSource": "1.0000",
+        "methodAssess": "1.0000",
+        "methodTest": "1.0000",
+        "methodDecide": "1.0000"
+      }
+    },
+    {
+      "id": "desktop-energy",
+      "label": "10 · ENERGY",
+      "selector": "[data-territory='energy']",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 8869,
+        "boundedY": 8869,
+        "actualY": 8869,
+        "methodSticky": "true",
+        "methodProgress": "1.0000",
+        "methodFrame": "1.0000",
+        "methodSource": "1.0000",
+        "methodAssess": "1.0000",
+        "methodTest": "1.0000",
+        "methodDecide": "1.0000"
+      }
+    },
+    {
+      "id": "desktop-proof-opening",
+      "label": "11 · PROOF / OPENING",
+      "selector": ".proof-opening",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 9930,
+        "boundedY": 9930,
+        "actualY": 9930,
+        "methodSticky": "true",
+        "methodProgress": "1.0000",
+        "methodFrame": "1.0000",
+        "methodSource": "1.0000",
+        "methodAssess": "1.0000",
+        "methodTest": "1.0000",
+        "methodDecide": "1.0000"
+      }
+    },
+    {
+      "id": "desktop-proof-climax",
+      "label": "12 · PROOF / CLIMAX",
+      "selector": ".proof-climax",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 10884,
+        "boundedY": 10884,
+        "actualY": 10884,
+        "methodSticky": "true",
+        "methodProgress": "1.0000",
+        "methodFrame": "1.0000",
+        "methodSource": "1.0000",
+        "methodAssess": "1.0000",
+        "methodTest": "1.0000",
+        "methodDecide": "1.0000"
+      }
+    },
+    {
+      "id": "desktop-programmes",
+      "label": "13 · PROGRAMMES",
+      "selector": "#programmes",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 11856,
+        "boundedY": 11856,
+        "actualY": 11856,
+        "methodSticky": "true",
+        "methodProgress": "1.0000",
+        "methodFrame": "1.0000",
+        "methodSource": "1.0000",
+        "methodAssess": "1.0000",
+        "methodTest": "1.0000",
+        "methodDecide": "1.0000"
+      }
+    },
+    {
+      "id": "desktop-conversion",
+      "label": "14 · CONVERSION",
+      "selector": "#conversion",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 12810,
+        "boundedY": 12810,
+        "actualY": 12810,
+        "methodSticky": "true",
+        "methodProgress": "1.0000",
+        "methodFrame": "1.0000",
+        "methodSource": "1.0000",
+        "methodAssess": "1.0000",
+        "methodTest": "1.0000",
+        "methodDecide": "1.0000"
+      }
+    },
+    {
+      "id": "short-entry",
+      "label": "01 · ENTRY",
+      "selector": "#entry",
+      "anchor": 0,
+      "viewport": {
+        "width": 1366,
+        "height": 650
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": -204,
+        "boundedY": 0,
+        "actualY": 0,
+        "methodSticky": "false",
+        "methodProgress": null,
+        "methodFrame": "1",
+        "methodSource": "1",
+        "methodAssess": "1",
+        "methodTest": "1",
+        "methodDecide": "0"
+      }
+    },
+    {
+      "id": "short-method-frame",
+      "label": "02 · METHOD / FRAME · STATIC FLOW",
+      "selector": "#method-frame",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1366,
+        "height": 650
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 1996,
+        "boundedY": 1996,
+        "actualY": 1996,
+        "methodSticky": "false",
+        "methodProgress": null,
+        "methodFrame": "1",
+        "methodSource": "1",
+        "methodAssess": "1",
+        "methodTest": "1",
+        "methodDecide": "0"
+      }
+    },
+    {
+      "id": "short-method-test",
+      "label": "03 · METHOD / TEST · STATIC FLOW",
+      "selector": "#method-test",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1366,
+        "height": 650
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 2529,
+        "boundedY": 2529,
+        "actualY": 2529,
+        "methodSticky": "false",
+        "methodProgress": null,
+        "methodFrame": "1",
+        "methodSource": "1",
+        "methodAssess": "1",
+        "methodTest": "1",
+        "methodDecide": "0"
+      }
+    },
+    {
+      "id": "short-method-decide",
+      "label": "04 · METHOD / DECIDE · STATIC FLOW",
+      "selector": "#method-decide",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1366,
+        "height": 650
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 2697,
+        "boundedY": 2697,
+        "actualY": 2697,
+        "methodSticky": "false",
+        "methodProgress": null,
+        "methodFrame": "1",
+        "methodSource": "1",
+        "methodAssess": "1",
+        "methodTest": "1",
+        "methodDecide": "0"
+      }
+    },
+    {
+      "id": "short-industry",
+      "label": "05 · MANUFACTURING",
+      "selector": "[data-territory='manufacturing']",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1366,
+        "height": 650
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 5139,
+        "boundedY": 5139,
+        "actualY": 5139,
+        "methodSticky": "false",
+        "methodProgress": null,
+        "methodFrame": "1",
+        "methodSource": "1",
+        "methodAssess": "1",
+        "methodTest": "1",
+        "methodDecide": "0"
+      }
+    },
+    {
+      "id": "short-proof",
+      "label": "06 · PROOF",
+      "selector": ".proof-climax",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1366,
+        "height": 650
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 7199,
+        "boundedY": 7199,
+        "actualY": 7199,
+        "methodSticky": "false",
+        "methodProgress": null,
+        "methodFrame": "1",
+        "methodSource": "1",
+        "methodAssess": "1",
+        "methodTest": "1",
+        "methodDecide": "0"
+      }
+    },
+    {
+      "id": "short-conversion",
+      "label": "07 · CONVERSION",
+      "selector": "#conversion",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1366,
+        "height": 650
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 8651,
+        "boundedY": 8651,
+        "actualY": 8651,
+        "methodSticky": "false",
+        "methodProgress": null,
+        "methodFrame": "1",
+        "methodSource": "1",
+        "methodAssess": "1",
+        "methodTest": "1",
+        "methodDecide": "0"
+      }
+    },
+    {
+      "id": "mobile390-entry",
+      "label": "01 · ENTRY",
+      "selector": "#entry",
+      "anchor": 0,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": -322,
+        "boundedY": 0,
+        "actualY": 0,
+        "methodSticky": "false",
+        "methodProgress": null,
+        "methodFrame": "1",
+        "methodSource": "1",
+        "methodAssess": "1",
+        "methodTest": "1",
+        "methodDecide": "0"
+      }
+    },
+    {
+      "id": "mobile390-industry",
+      "label": "02 · BUILT WITH INDUSTRY",
+      "selector": "#built-with-industry",
+      "anchor": 0.43,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 906,
+        "boundedY": 906,
+        "actualY": 906,
+        "methodSticky": "false",
+        "methodProgress": null,
+        "methodFrame": "1",
+        "methodSource": "1",
+        "methodAssess": "1",
+        "methodTest": "1",
+        "methodDecide": "0"
+      }
+    },
+    {
+      "id": "mobile390-method",
+      "label": "03 · METHOD · AUTHORED NORMAL FLOW",
+      "selector": "#method-test",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 2610,
+        "boundedY": 2610,
+        "actualY": 2610,
+        "methodSticky": "false",
+        "methodProgress": null,
+        "methodFrame": "1",
+        "methodSource": "1",
+        "methodAssess": "1",
+        "methodTest": "1",
+        "methodDecide": "0"
+      }
+    },
+    {
+      "id": "mobile390-auto",
+      "label": "04 · AUTOMOTIVE",
+      "selector": "[data-territory='automotive']",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 3781,
+        "boundedY": 3781,
+        "actualY": 3781,
+        "methodSticky": "false",
+        "methodProgress": null,
+        "methodFrame": "1",
+        "methodSource": "1",
+        "methodAssess": "1",
+        "methodTest": "1",
+        "methodDecide": "0"
+      }
+    },
+    {
+      "id": "mobile390-energy",
+      "label": "05 · ENERGY",
+      "selector": "[data-territory='energy']",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 5882,
+        "boundedY": 5882,
+        "actualY": 5882,
+        "methodSticky": "false",
+        "methodProgress": null,
+        "methodFrame": "1",
+        "methodSource": "1",
+        "methodAssess": "1",
+        "methodTest": "1",
+        "methodDecide": "0"
+      }
+    },
+    {
+      "id": "mobile390-proof",
+      "label": "06 · PROOF",
+      "selector": ".proof-climax",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 7678,
+        "boundedY": 7678,
+        "actualY": 7678,
+        "methodSticky": "false",
+        "methodProgress": null,
+        "methodFrame": "1",
+        "methodSource": "1",
+        "methodAssess": "1",
+        "methodTest": "1",
+        "methodDecide": "0"
+      }
+    },
+    {
+      "id": "mobile390-programmes",
+      "label": "07 · PROGRAMMES",
+      "selector": "#programmes",
+      "anchor": 0.55,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 8856,
+        "boundedY": 8856,
+        "actualY": 8856,
+        "methodSticky": "false",
+        "methodProgress": null,
+        "methodFrame": "1",
+        "methodSource": "1",
+        "methodAssess": "1",
+        "methodTest": "1",
+        "methodDecide": "0"
+      }
+    },
+    {
+      "id": "mobile390-conversion",
+      "label": "08 · CONVERSION",
+      "selector": "#conversion",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 9814,
+        "boundedY": 9814,
+        "actualY": 9814,
+        "methodSticky": "false",
+        "methodProgress": null,
+        "methodFrame": "1",
+        "methodSource": "1",
+        "methodAssess": "1",
+        "methodTest": "1",
+        "methodDecide": "0"
+      }
+    },
+    {
+      "id": "mobile320-method",
+      "label": "01 · METHOD",
+      "selector": "#method-test",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 320,
+        "height": 800
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 2632,
+        "boundedY": 2632,
+        "actualY": 2632,
+        "methodSticky": "false",
+        "methodProgress": null,
+        "methodFrame": "1",
+        "methodSource": "1",
+        "methodAssess": "1",
+        "methodTest": "1",
+        "methodDecide": "0"
+      }
+    },
+    {
+      "id": "mobile320-industries",
+      "label": "02 · INDUSTRIES / MANUFACTURING",
+      "selector": "[data-territory='manufacturing']",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 320,
+        "height": 800
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 5099,
+        "boundedY": 5099,
+        "actualY": 5099,
+        "methodSticky": "false",
+        "methodProgress": null,
+        "methodFrame": "1",
+        "methodSource": "1",
+        "methodAssess": "1",
+        "methodTest": "1",
+        "methodDecide": "0"
+      }
+    },
+    {
+      "id": "mobile320-programmes",
+      "label": "03 · PROGRAMMES",
+      "selector": "#programmes",
+      "anchor": 0.55,
+      "viewport": {
+        "width": 320,
+        "height": 800
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 8715,
+        "boundedY": 8715,
+        "actualY": 8715,
+        "methodSticky": "false",
+        "methodProgress": null,
+        "methodFrame": "1",
+        "methodSource": "1",
+        "methodAssess": "1",
+        "methodTest": "1",
+        "methodDecide": "0"
+      }
+    },
+    {
+      "id": "mobile320-conversion",
+      "label": "04 · CONVERSION",
+      "selector": "#conversion",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 320,
+        "height": 800
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal",
+      "state": {
+        "requestedY": 9658,
+        "boundedY": 9658,
+        "actualY": 9658,
+        "methodSticky": "false",
+        "methodProgress": null,
+        "methodFrame": "1",
+        "methodSource": "1",
+        "methodAssess": "1",
+        "methodTest": "1",
+        "methodDecide": "0"
+      }
+    },
+    {
+      "id": "reduced-entry",
+      "label": "01 · ENTRY · REDUCED",
+      "selector": "#entry",
+      "anchor": 0,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "reduce",
+      "sequence": "reduced-static",
+      "state": {
+        "requestedY": -329,
+        "boundedY": 0,
+        "actualY": 0,
+        "methodSticky": null,
+        "methodProgress": null,
+        "methodFrame": "1",
+        "methodSource": "1",
+        "methodAssess": "1",
+        "methodTest": "1",
+        "methodDecide": "1"
+      }
+    },
+    {
+      "id": "reduced-method",
+      "label": "02 · METHOD · STATIC WORKPIECE",
+      "selector": "#method-test",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "reduce",
+      "sequence": "reduced-static",
+      "state": {
+        "requestedY": 3021,
+        "boundedY": 3021,
+        "actualY": 3021,
+        "methodSticky": null,
+        "methodProgress": null,
+        "methodFrame": "1",
+        "methodSource": "1",
+        "methodAssess": "1",
+        "methodTest": "1",
+        "methodDecide": "1"
+      }
+    },
+    {
+      "id": "reduced-industries",
+      "label": "03 · INDUSTRIES · STATIC TERRITORY",
+      "selector": "[data-territory='manufacturing']",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "reduce",
+      "sequence": "reduced-static",
+      "state": {
+        "requestedY": 6308,
+        "boundedY": 6308,
+        "actualY": 6308,
+        "methodSticky": null,
+        "methodProgress": null,
+        "methodFrame": "1",
+        "methodSource": "1",
+        "methodAssess": "1",
+        "methodTest": "1",
+        "methodDecide": "1"
+      }
+    },
+    {
+      "id": "reduced-proof",
+      "label": "04 · PROOF · STILL",
+      "selector": ".proof-climax",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "reduce",
+      "sequence": "reduced-static",
+      "state": {
+        "requestedY": 9169,
+        "boundedY": 9169,
+        "actualY": 9169,
+        "methodSticky": null,
+        "methodProgress": null,
+        "methodFrame": "1",
+        "methodSource": "1",
+        "methodAssess": "1",
+        "methodTest": "1",
+        "methodDecide": "1"
+      }
+    },
+    {
+      "id": "reduced-programmes",
+      "label": "05 · PROGRAMMES · STATIC",
+      "selector": "#programmes",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "reduce",
+      "sequence": "reduced-static",
+      "state": {
+        "requestedY": 10141,
+        "boundedY": 10141,
+        "actualY": 10141,
+        "methodSticky": null,
+        "methodProgress": null,
+        "methodFrame": "1",
+        "methodSource": "1",
+        "methodAssess": "1",
+        "methodTest": "1",
+        "methodDecide": "1"
+      }
+    },
+    {
+      "id": "reduced-conversion",
+      "label": "06 · CONVERSION · STATIC",
+      "selector": "#conversion",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "reduce",
+      "sequence": "reduced-static",
+      "state": {
+        "requestedY": 11095,
+        "boundedY": 11095,
+        "actualY": 11095,
+        "methodSticky": null,
+        "methodProgress": null,
+        "methodFrame": "1",
+        "methodSource": "1",
+        "methodAssess": "1",
+        "methodTest": "1",
+        "methodDecide": "1"
+      }
+    },
+    {
+      "id": "motion-01-entry",
+      "label": "01 · NORMAL FORWARD · ENTRY",
+      "selector": "#entry",
+      "anchor": 0,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal-fast-reverse",
+      "state": {
+        "requestedY": -329,
+        "boundedY": 0,
+        "actualY": 0,
+        "methodSticky": "true",
+        "methodProgress": "0.0000",
+        "methodFrame": "0.0000",
+        "methodSource": "0.0000",
+        "methodAssess": "0.0000",
+        "methodTest": "0.0000",
+        "methodDecide": "0.0000"
+      }
+    },
+    {
+      "id": "motion-02-industry",
+      "label": "02 · NORMAL FORWARD · STRUCTURAL INHERITANCE",
+      "selector": "#built-with-industry",
+      "anchor": 0.48,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal-fast-reverse",
+      "state": {
+        "requestedY": 967,
+        "boundedY": 967,
+        "actualY": 967,
+        "methodSticky": "true",
+        "methodProgress": "0.0000",
+        "methodFrame": "0.0000",
+        "methodSource": "0.0000",
+        "methodAssess": "0.0000",
+        "methodTest": "0.0000",
+        "methodDecide": "0.0000"
+      }
+    },
+    {
+      "id": "motion-03-frame",
+      "label": "03 · METHOD ENTER · FRAME",
+      "selector": "#method-frame",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal-fast-reverse",
+      "state": {
+        "requestedY": 2521,
+        "boundedY": 2521,
+        "actualY": 2521,
+        "methodSticky": "true",
+        "methodProgress": "0.1242",
+        "methodFrame": "0.9595",
+        "methodSource": "0.0000",
+        "methodAssess": "0.0000",
+        "methodTest": "0.0000",
+        "methodDecide": "0.0000"
+      }
+    },
+    {
+      "id": "motion-04-source",
+      "label": "04 · METHOD FORWARD · SOURCE",
+      "selector": "#method-source",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal-fast-reverse",
+      "state": {
+        "requestedY": 3088,
+        "boundedY": 3088,
+        "actualY": 3088,
+        "methodSticky": "true",
+        "methodProgress": "0.3575",
+        "methodFrame": "1.0000",
+        "methodSource": "0.9595",
+        "methodAssess": "0.0000",
+        "methodTest": "0.0000",
+        "methodDecide": "0.0000"
+      }
+    },
+    {
+      "id": "motion-05-decide-jump",
+      "label": "05 · FAST JUMP · DECIDE IS CURRENT",
+      "selector": "#method-decide",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal-fast-reverse",
+      "state": {
+        "requestedY": 4789,
+        "boundedY": 4789,
+        "actualY": 4789,
+        "methodSticky": "true",
+        "methodProgress": "1.0000",
+        "methodFrame": "1.0000",
+        "methodSource": "1.0000",
+        "methodAssess": "1.0000",
+        "methodTest": "1.0000",
+        "methodDecide": "0.9595"
+      }
+    },
+    {
+      "id": "motion-06-test-reverse",
+      "label": "06 · REVERSE · TEST RECONSTRUCTED",
+      "selector": "#method-test",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal-fast-reverse",
+      "state": {
+        "requestedY": 4222,
+        "boundedY": 4222,
+        "actualY": 4222,
+        "methodSticky": "true",
+        "methodProgress": "0.8242",
+        "methodFrame": "1.0000",
+        "methodSource": "1.0000",
+        "methodAssess": "1.0000",
+        "methodTest": "0.9595",
+        "methodDecide": "0.0000"
+      }
+    },
+    {
+      "id": "motion-07-frame-reverse",
+      "label": "07 · REVERSE · FRAME RECONSTRUCTED",
+      "selector": "#method-frame",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal-fast-reverse",
+      "state": {
+        "requestedY": 2521,
+        "boundedY": 2521,
+        "actualY": 2521,
+        "methodSticky": "true",
+        "methodProgress": "0.1242",
+        "methodFrame": "0.9595",
+        "methodSource": "0.0000",
+        "methodAssess": "0.0000",
+        "methodTest": "0.0000",
+        "methodDecide": "0.0000"
+      }
+    },
+    {
+      "id": "motion-08-method-exit",
+      "label": "08 · FORWARD · METHOD EXIT / AUTOMOTIVE",
+      "selector": "[data-territory='automotive']",
+      "anchor": 0.42,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal-fast-reverse",
+      "state": {
+        "requestedY": 6264,
+        "boundedY": 6264,
+        "actualY": 6264,
+        "methodSticky": "true",
+        "methodProgress": "1.0000",
+        "methodFrame": "1.0000",
+        "methodSource": "1.0000",
+        "methodAssess": "1.0000",
+        "methodTest": "1.0000",
+        "methodDecide": "1.0000"
+      }
+    },
+    {
+      "id": "motion-09-logistics",
+      "label": "09 · TERRITORY TRANSFORM · LOGISTICS",
+      "selector": "[data-territory='logistics']",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal-fast-reverse",
+      "state": {
+        "requestedY": 7177,
+        "boundedY": 7177,
+        "actualY": 7177,
+        "methodSticky": "true",
+        "methodProgress": "1.0000",
+        "methodFrame": "1.0000",
+        "methodSource": "1.0000",
+        "methodAssess": "1.0000",
+        "methodTest": "1.0000",
+        "methodDecide": "1.0000"
+      }
+    },
+    {
+      "id": "motion-10-energy-jump",
+      "label": "10 · FAST JUMP · ENERGY IS CURRENT",
+      "selector": "[data-territory='energy']",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal-fast-reverse",
+      "state": {
+        "requestedY": 8869,
+        "boundedY": 8869,
+        "actualY": 8869,
+        "methodSticky": "true",
+        "methodProgress": "1.0000",
+        "methodFrame": "1.0000",
+        "methodSource": "1.0000",
+        "methodAssess": "1.0000",
+        "methodTest": "1.0000",
+        "methodDecide": "1.0000"
+      }
+    },
+    {
+      "id": "motion-11-manufacturing-reverse",
+      "label": "11 · REVERSE · MANUFACTURING",
+      "selector": "[data-territory='manufacturing']",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal-fast-reverse",
+      "state": {
+        "requestedY": 8023,
+        "boundedY": 8023,
+        "actualY": 8023,
+        "methodSticky": "true",
+        "methodProgress": "1.0000",
+        "methodFrame": "1.0000",
+        "methodSource": "1.0000",
+        "methodAssess": "1.0000",
+        "methodTest": "1.0000",
+        "methodDecide": "1.0000"
+      }
+    },
+    {
+      "id": "motion-12-proof-open",
+      "label": "12 · PROOF ENTRY · DOCUMENTARY APERTURE",
+      "selector": ".proof-opening",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal-fast-reverse",
+      "state": {
+        "requestedY": 9930,
+        "boundedY": 9930,
+        "actualY": 9930,
+        "methodSticky": "true",
+        "methodProgress": "1.0000",
+        "methodFrame": "1.0000",
+        "methodSource": "1.0000",
+        "methodAssess": "1.0000",
+        "methodTest": "1.0000",
+        "methodDecide": "1.0000"
+      }
+    },
+    {
+      "id": "motion-13-proof-climax",
+      "label": "13 · PROOF CLIMAX · DATUM ABSENT",
+      "selector": ".proof-climax",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal-fast-reverse",
+      "state": {
+        "requestedY": 10884,
+        "boundedY": 10884,
+        "actualY": 10884,
+        "methodSticky": "true",
+        "methodProgress": "1.0000",
+        "methodFrame": "1.0000",
+        "methodSource": "1.0000",
+        "methodAssess": "1.0000",
+        "methodTest": "1.0000",
+        "methodDecide": "1.0000"
+      }
+    },
+    {
+      "id": "motion-14-programmes",
+      "label": "14 · PROGRAMMES · PROOF REFRAMED",
+      "selector": "#programmes",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal-fast-reverse",
+      "state": {
+        "requestedY": 11856,
+        "boundedY": 11856,
+        "actualY": 11856,
+        "methodSticky": "true",
+        "methodProgress": "1.0000",
+        "methodFrame": "1.0000",
+        "methodSource": "1.0000",
+        "methodAssess": "1.0000",
+        "methodTest": "1.0000",
+        "methodDecide": "1.0000"
+      }
+    },
+    {
+      "id": "motion-15-conversion",
+      "label": "15 · CONVERSION · ARRIVAL",
+      "selector": "#conversion",
+      "anchor": 0.5,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "reducedMotion": "no-preference",
+      "sequence": "normal-fast-reverse",
+      "state": {
+        "requestedY": 12810,
+        "boundedY": 12810,
+        "actualY": 12810,
+        "methodSticky": "true",
+        "methodProgress": "1.0000",
+        "methodFrame": "1.0000",
+        "methodSource": "1.0000",
+        "methodAssess": "1.0000",
+        "methodTest": "1.0000",
+        "methodDecide": "1.0000"
+      }
+    }
+  ]
+}
