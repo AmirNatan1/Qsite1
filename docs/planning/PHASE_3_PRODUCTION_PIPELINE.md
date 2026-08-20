@@ -1,6 +1,6 @@
 # Phase 3 CRT Production Pipeline
 
-Status: validated Phase 3 Blender derivative and implemented offline pipeline; final production media is pending generation and review
+Status: production rendering, packaging, visual self-review, and isolated browser QA complete; direct human review pending
 Branch: `feature/phase-3-crt-opening-production`
 Accepted parent: `b54f3a83b6180466127589a8d028f94dab892d17`
 
@@ -250,7 +250,6 @@ $Phase3FfmpegExe = '<ffmpeg>'
 $Phase3FfprobeExe = '<ffprobe>'
 $Phase3PythonExe = '<python>'
 $Phase3NodeExe = '<node>'
-$Phase3ChromeExe = '<chromium>'
 $Phase3AcceptedBlend = Join-Path $Phase3RepoRoot 'artifacts\original\phase-0-4-crt-television\source\quantum-signal-television-v1.blend'
 $Phase3DerivativeBlend = Join-Path $Phase3SourceDir 'quantum-signal-television-phase3-opening.blend'
 $Phase3Builder = Join-Path $Phase3SourceDir 'build_phase3_crt_opening.py'
@@ -263,6 +262,7 @@ $Phase3MobileFrames = Join-Path $Phase3WorkRoot 'frames\mobile-master'
 $Phase3ReviewZip = Join-Path $Phase3WorkRoot 'review-transfer\phase-3-crt-opening-human-review.zip'
 $Phase3QaReport = Join-Path $Phase3RepoRoot 'artifacts\evidence\phase-3\reports\phase-3-media-qa.json'
 $Phase3MediaRoot = Join-Path $Phase3RepoRoot 'artifacts\original\phase-3-crt-opening\media'
+$Phase3ReviewRecording = Join-Path $Phase3RepoRoot 'artifacts\original\phase-3-crt-opening\review\phase-3-media-lab-scrub-evidence.webm'
 ```
 
 ### Source and tool verification
@@ -320,13 +320,24 @@ The packager verifies both 270-frame sequences, encodes desktop H.264 CRF 18 and
   --desktop-webm (Join-Path $Phase3MediaRoot 'phase-3-crt-opening-desktop-vp9.webm') `
   --mobile-mp4 (Join-Path $Phase3MediaRoot 'phase-3-crt-opening-mobile-h264.mp4') `
   --mobile-webm (Join-Path $Phase3MediaRoot 'phase-3-crt-opening-mobile-vp9.webm') `
-  --browser-executable $Phase3ChromeExe `
   --headed `
+  --record-candidate desktop-webm `
+  --record-video $Phase3ReviewRecording `
   --require-browser `
   --expected-gop 12
 ```
 
-The QA harness serves only the supplied media through an in-memory loopback server, rejects candidate/report paths inside `src`, `public`, or `dist`, and covers deterministic probe gates, start/end/random/nearby/forward/reverse/rapid seeks, linear playback, and real hidden-tab resume. A headless hidden-tab result is intentionally incomplete; final evidence uses `--headed --require-browser`.
+The QA harness serves only the supplied media through an in-memory loopback server, rejects candidate/report paths inside `src`, `public`, or `dist`, and covers deterministic probe gates, start/end/random/nearby/forward/reverse/rapid seeks, linear playback, and real hidden-tab resume. Final evidence uses three explicitly separated authorities: managed Chromium for deterministic seek/decode measurements, normal non-debugged system Chrome for genuine Page Visibility transitions and focused displayed playback, and a dedicated headed Chromium context for the actual media-lab interaction recording. A headless hidden-tab result is intentionally incomplete; final evidence uses `--headed --require-browser`.
+
+The final run passed all four candidates and all 160 measured seeks. Each candidate reached `HAVE_ENOUGH_DATA`, produced a genuine visible-to-hidden-to-visible transition, displayed at least 90% of the authored 30 fps in the focused native window, and reported zero corrupted frames. The recorded media-lab exercises passed first/final frame, 10 random seeks, 10 rapid alternating seeks, and 11 forward/reverse measurements with zero dropped or corrupted frames across 252 presented-frame deltas. Exact candidate identities, latencies, browser versions, and the recording identity are in `artifacts/evidence/phase-3/reports/phase-3-media-qa.json`.
+
+### Post-QA evidence refresh without re-encoding
+
+```powershell
+& $Phase3PythonExe $Phase3Packager --reuse-existing-candidates --desktop-frames $Phase3DesktopFrames --mobile-frames $Phase3MobileFrames --ffmpeg $Phase3FfmpegExe --ffprobe $Phase3FfprobeExe --review-zip $Phase3ReviewZip --repo-root $Phase3RepoRoot
+```
+
+Run this full-mode refresh once after the final QA recording. It re-verifies the frozen four delivery candidates, rebuilds codec-comparison and compact review evidence, registers the exact QA recording, and recreates the prefinal outside-Git ZIP without invoking either production-candidate encoder. This closes the encode/QA/manifest identity loop even when a codec implementation does not promise repeatable bitstreams across separate invocations.
 
 ### Post-push external review identity
 
@@ -364,22 +375,24 @@ Run this finalization only after the generated isolated artifacts are committed 
 - ffprobe reports exactly one video stream and zero audio/subtitle/data/attachment streams.
 - Dimensions, 30 fps cadence, 270 frames, duration, pixel format, codec, GOP, bitrate, bytes, and hashes match the manifest.
 - Browser tests cover first frame, final frame, 10 random seeks, nearby seeks, repeated forward/reverse seeks, rapid alternating seeks, and hidden-tab resume.
+- Focused native playback presents at least 90% of the authored frame rate and records zero corrupted frames; decoder drop counters remain evidence rather than an impossible zero-drop machine claim.
 - Dark gradients, scanlines, phosphor, thin type, and final black level survive compression.
-- Isolated candidates may be committed only with manifest status `PRODUCTION CANDIDATE — visual/browser acceptance pending`; human acceptance is still required before selection or integration.
+- The final report passes all four candidates, and its file hashes match both the post-production manifest and the actual media bytes.
+- Isolated candidates retain the manifest label `PRODUCTION CANDIDATE — visual/browser acceptance pending` to reserve direct human acceptance; no candidate is selected for integration in Phase 3.
 
-## Required later records
+## Completed production records
 
-The derivative build and validation ledgers already exist and bind the current source authority. Production must still add or complete, without retroactively changing accepted Phase 0.4 evidence:
+The derivative build and validation ledgers bind the current source authority. The isolated Phase 3 package now includes, without retroactively changing accepted Phase 0.4 evidence:
 
-- `docs/planning/PHASE_3_MEDIA_MANIFEST.md` with actual values rather than placeholders;
-- render configuration and frame inventory;
-- FFmpeg command and ffprobe records;
-- isolated Chromium/media-lab measurements;
-- reverse-review evidence;
-- Phase 3-to-Phase 2B handoff comparison;
-- compact outside-Git human-review transfer manifest and post-push SHA-bound ZIP sidecar.
+- `docs/planning/PHASE_3_MEDIA_MANIFEST.md` with measured production values;
+- render configuration, full frame inventories, and sparse fresh-process determinism evidence;
+- exact candidate settings, ffprobe records, sizes, and SHA-256 identities;
+- isolated Chromium, native Page Visibility, focused playback, and real media-lab measurements;
+- forward and reverse review evidence;
+- codec-decoded comparisons and the Phase 3-to-Phase 2B handoff comparison;
+- a compact outside-Git human-review transfer package that excludes raw frames and delivery candidates.
 
-No production candidate is accepted until those records and direct human visual review are complete.
+After the artifact commit is pushed, the external-only finalizer must bind the review ZIP manifest and hash sidecar to that exact upstream SHA. This operational step writes no tracked files. Direct human visual review remains required; none of these machine or self-review records authorizes integration or Phase 4.
 
 ## Required final human-gate wording
 

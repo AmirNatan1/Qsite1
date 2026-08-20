@@ -1,0 +1,3508 @@
+{
+  "schema": "quantum-hub.phase-3-crt-opening.post-production.v1",
+  "status": "PASS",
+  "reproducibility": {
+    "scope": "IDENTICAL_SOURCE_BYTES_SETTINGS_TOOLCHAIN_FONT_AND_EXECUTION_PROTOCOL",
+    "fixedOutputNames": true,
+    "atomicOverwrite": true,
+    "existingDeliveryCandidatesReusedWithoutEncoding": true,
+    "fixedZipOrderingAndMetadata": true,
+    "crossHostEncoderBitIdentityClaimed": false,
+    "crossHostFontBitIdentityClaimed": false
+  },
+  "repository": {
+    "branch": "feature/phase-3-crt-opening-production",
+    "repositoryHeadAtPackaging": "193a2fb993bc119d2e0dcb5817ae62f1afa3d55f",
+    "branchShaDeclaredForReview": "193a2fb993bc119d2e0dcb5817ae62f1afa3d55f"
+  },
+  "timeline": {
+    "fps": 30,
+    "frameStart": 1,
+    "frameEnd": 270,
+    "frameCount": 270,
+    "durationSeconds": 9.0,
+    "normalizedProgressFormula": "(frame - 1) / 269"
+  },
+  "sourceMasters": {
+    "acceptedCRT": {
+      "repositoryRelativePath": "artifacts/original/phase-0-4-crt-television/source/quantum-signal-television-v1.blend",
+      "bytes": 1516222,
+      "sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7"
+    },
+    "phase3DerivativeCRT": {
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/source/quantum-signal-television-phase3-opening.blend",
+      "bytes": 2182647,
+      "sha256": "bbde82220f500c6f047c2e2d33a8580c08a40e65800615dd7256bebc2f4472ba"
+    },
+    "desktopPNGSequence": {
+      "storagePolicy": "OUTSIDE_GIT_LOCAL_PATH_INTENTIONALLY_OMITTED",
+      "filenamePattern": "phase3-desktop-%04d.png",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "fps": 30,
+      "frameStart": 1,
+      "frameEnd": 270,
+      "frameCount": 270,
+      "totalBytes": 403349433,
+      "sequenceSha256": "c7031afd60e8cdef4526cf7058511bd3d295efdc86c459f2efdc9425e3e79085",
+      "boundaryFrames": {
+        "1": {
+          "filename": "phase3-desktop-0001.png",
+          "bytes": 1462293,
+          "sha256": "12718d7662ff8a13953b30fe0966312ff1862561bce8e7e1c3657f1ae865fb69"
+        },
+        "270": {
+          "filename": "phase3-desktop-0270.png",
+          "bytes": 782797,
+          "sha256": "fac5a6cc388eadcb38a90d94dd9c13ace62d09e4f6a8250f94328ec15023921e"
+        }
+      },
+      "dormancyGate": {
+        "relativeInteriorROI": [
+          0.49,
+          0.28,
+          0.69,
+          0.58
+        ],
+        "luminanceP95": 6,
+        "brightPixelRatioAt24": 0.0,
+        "maximumBrightTileRatioAt24": 0.0,
+        "edgePixelRatioAt12": 9.6451e-05,
+        "maximumEdgeTileRatioAt12": 0.000771605,
+        "tileGrid": {
+          "columns": 8,
+          "rows": 6
+        },
+        "visibleInterfaceAndScanlineGate": "PASS_METRIC_VERIFIED",
+        "magentaDominantPixelRatio": 0.0,
+        "magentaGate": "PASS",
+        "physicalInterfaceTextGate": "PASS_NONE_DETECTED_ABOVE_RECORDED_THRESHOLDS",
+        "scanlineGate": "PASS_NONE_DETECTED_ABOVE_RECORDED_THRESHOLDS",
+        "visibilityDeterminationMethod": "SCREEN_INTERIOR_LUMINANCE_GLOBAL_AND_LOCALIZED_TILE_BRIGHT_PIXEL_EDGE_METRICS",
+        "humanVisualDormancyReviewStillRequired": true
+      }
+    },
+    "mobilePNGSequence": {
+      "storagePolicy": "OUTSIDE_GIT_LOCAL_PATH_INTENTIONALLY_OMITTED",
+      "filenamePattern": "phase3-mobile-%04d.png",
+      "dimensions": {
+        "width": 720,
+        "height": 1280
+      },
+      "fps": 30,
+      "frameStart": 1,
+      "frameEnd": 270,
+      "frameCount": 270,
+      "totalBytes": 178301384,
+      "sequenceSha256": "cac98645bbb12d39048cd700982007c0f5df11c150b4b443247ac72b47221545",
+      "boundaryFrames": {
+        "1": {
+          "filename": "phase3-mobile-0001.png",
+          "bytes": 687384,
+          "sha256": "3ec03ca412da91de4bb0b23620fcd88352957529f4e13bf34d7618a8583adbb8"
+        },
+        "270": {
+          "filename": "phase3-mobile-0270.png",
+          "bytes": 351106,
+          "sha256": "3eefa296089a8f0231a2de93f6b3ecf8d6b66295d57f7d63abe641084e794199"
+        }
+      },
+      "dormancyGate": {
+        "relativeInteriorROI": [
+          0.46,
+          0.58,
+          0.86,
+          0.72
+        ],
+        "luminanceP95": 6,
+        "brightPixelRatioAt24": 0.0,
+        "maximumBrightTileRatioAt24": 0.0,
+        "edgePixelRatioAt12": 0.000135031,
+        "maximumEdgeTileRatioAt12": 0.001851852,
+        "tileGrid": {
+          "columns": 8,
+          "rows": 6
+        },
+        "visibleInterfaceAndScanlineGate": "PASS_METRIC_VERIFIED",
+        "magentaDominantPixelRatio": 0.0,
+        "magentaGate": "PASS",
+        "physicalInterfaceTextGate": "PASS_NONE_DETECTED_ABOVE_RECORDED_THRESHOLDS",
+        "scanlineGate": "PASS_NONE_DETECTED_ABOVE_RECORDED_THRESHOLDS",
+        "visibilityDeterminationMethod": "SCREEN_INTERIOR_LUMINANCE_GLOBAL_AND_LOCALIZED_TILE_BRIGHT_PIXEL_EDGE_METRICS",
+        "humanVisualDormancyReviewStillRequired": true
+      }
+    },
+    "acceptedPhase2BEntryEvidence": {
+      "repositoryRelativePath": "artifacts/evidence/phase-2b/review/phase-2b-desktop-production-keyframes.png",
+      "bytes": 627598,
+      "sha256": "a3a1d38a88771d31c03839c82cf5f9e6163057925ed7f5cbe5dc5cdc70bce2bd",
+      "entryCrop": {
+        "left": 24,
+        "top": 116,
+        "width": 720,
+        "height": 450
+      },
+      "entryEvidenceProvenance": "REPRODUCTION_CROP_FROM_FROZEN_ACCEPTED_PHASE_2B_EVIDENCE_SHEET",
+      "newHeadedCapture": false
+    }
+  },
+  "toolchain": {
+    "ffmpeg": "ffmpeg version 9.0.1-essentials_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers",
+    "ffprobe": "ffprobe version 9.0.1-essentials_build-www.gyan.dev Copyright (c) 2007-2026 the FFmpeg developers",
+    "pillow": "12.3.0",
+    "reviewTypography": {
+      "regular": {
+        "selection": "SYSTEM_FONT_FILE",
+        "filename": "arial.ttf",
+        "bytes": 1045720,
+        "sha256": "b3658eadae55e682b5f69eb64c439c1ecc8f196c0bb8d4756d145d13bc86476a"
+      },
+      "bold": {
+        "selection": "SYSTEM_FONT_FILE",
+        "filename": "arialbd.ttf",
+        "bytes": 989780,
+        "sha256": "e8f4e3baf6cc35fed6fcce3a540e8b39e8f6cda1d22a28f2ec8f526fef7a43f5"
+      }
+    }
+  },
+  "packager": {
+    "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/source/package_phase3_media.py",
+    "bytes": 110538,
+    "sha256": "ccc5b41cca247e2a02e1deb3e77d8e1c892c7f52dc804eca29ce27200ea3e2b6"
+  },
+  "deliveryCandidates": [
+    {
+      "id": "desktop-h264",
+      "variant": "desktop",
+      "codec": "h264",
+      "settings": {
+        "encoder": "libx264",
+        "crf": 18,
+        "preset": "slow",
+        "selectedGopFrames": 12,
+        "selectedGopMilliseconds": 400
+      },
+      "verification": {
+        "codec": "h264",
+        "width": 1920,
+        "height": 1080,
+        "pixelFormat": "yuv420p",
+        "averageFrameRate": "30/1",
+        "reportedFrameRate": "30/1",
+        "frameCount": 270,
+        "durationSeconds": 9.0,
+        "bitrateBitsPerSecond": 3321669,
+        "containerFormats": "mov,mp4,m4a,3gp,3g2,mj2",
+        "audioStreamCount": 0,
+        "keyframeFrames": [
+          1,
+          13,
+          25,
+          37,
+          49,
+          61,
+          73,
+          85,
+          97,
+          109,
+          121,
+          133,
+          145,
+          157,
+          169,
+          181,
+          193,
+          205,
+          217,
+          229,
+          241,
+          253,
+          265
+        ],
+        "keyframeIntervals": [
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12
+        ],
+        "maximumKeyframeInterval": 12,
+        "bytes": 3740952,
+        "sha256": "7a8598ba53becd7e8fc5e3773979a19f6b7f872f421c60d29f7c29021439d29d",
+        "decodedFrameBytesRGBA": 8294400
+      },
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/media/phase-3-crt-opening-desktop-h264.mp4",
+      "status": "PRODUCTION CANDIDATE — visual/browser acceptance pending",
+      "sourceSequenceSha256": "c7031afd60e8cdef4526cf7058511bd3d295efdc86c459f2efdc9425e3e79085",
+      "sourceFrameRange": {
+        "frameStart": 1,
+        "frameEnd": 270,
+        "normalizedProgressStart": 0.0,
+        "normalizedProgressEnd": 1.0
+      },
+      "gopStrategy": "12-frame (400 ms) closed GOP; fixed scene-cut-free keyframes; no audio"
+    },
+    {
+      "id": "desktop-vp9",
+      "variant": "desktop",
+      "codec": "vp9",
+      "settings": {
+        "encoder": "libvpx-vp9",
+        "crf": 27,
+        "deadline": "good",
+        "cpuUsed": 2,
+        "selectedGopFrames": 12,
+        "selectedGopMilliseconds": 400
+      },
+      "verification": {
+        "codec": "vp9",
+        "width": 1920,
+        "height": 1080,
+        "pixelFormat": "yuv420p",
+        "averageFrameRate": "30/1",
+        "reportedFrameRate": "30/1",
+        "frameCount": 270,
+        "durationSeconds": 9.0,
+        "bitrateBitsPerSecond": 1932072,
+        "containerFormats": "matroska,webm",
+        "audioStreamCount": 0,
+        "keyframeFrames": [
+          1,
+          13,
+          25,
+          37,
+          49,
+          61,
+          73,
+          85,
+          97,
+          109,
+          121,
+          133,
+          145,
+          157,
+          169,
+          181,
+          193,
+          205,
+          217,
+          229,
+          241,
+          253,
+          265
+        ],
+        "keyframeIntervals": [
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12
+        ],
+        "maximumKeyframeInterval": 12,
+        "bytes": 2173582,
+        "sha256": "2128aba7909818ed0b25ee032930ba7b0bd8a04a153540ff1b660b5e041fc376",
+        "decodedFrameBytesRGBA": 8294400
+      },
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/media/phase-3-crt-opening-desktop-vp9.webm",
+      "status": "PRODUCTION CANDIDATE — visual/browser acceptance pending",
+      "sourceSequenceSha256": "c7031afd60e8cdef4526cf7058511bd3d295efdc86c459f2efdc9425e3e79085",
+      "sourceFrameRange": {
+        "frameStart": 1,
+        "frameEnd": 270,
+        "normalizedProgressStart": 0.0,
+        "normalizedProgressEnd": 1.0
+      },
+      "gopStrategy": "12-frame (400 ms) independent keyframe cadence; alt-ref/lag disabled; no audio"
+    },
+    {
+      "id": "mobile-h264",
+      "variant": "mobile",
+      "codec": "h264",
+      "settings": {
+        "encoder": "libx264",
+        "crf": 19,
+        "preset": "slow",
+        "selectedGopFrames": 12,
+        "selectedGopMilliseconds": 400
+      },
+      "verification": {
+        "codec": "h264",
+        "width": 720,
+        "height": 1280,
+        "pixelFormat": "yuv420p",
+        "averageFrameRate": "30/1",
+        "reportedFrameRate": "30/1",
+        "frameCount": 270,
+        "durationSeconds": 9.0,
+        "bitrateBitsPerSecond": 1307906,
+        "containerFormats": "mov,mp4,m4a,3gp,3g2,mj2",
+        "audioStreamCount": 0,
+        "keyframeFrames": [
+          1,
+          13,
+          25,
+          37,
+          49,
+          61,
+          73,
+          85,
+          97,
+          109,
+          121,
+          133,
+          145,
+          157,
+          169,
+          181,
+          193,
+          205,
+          217,
+          229,
+          241,
+          253,
+          265
+        ],
+        "keyframeIntervals": [
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12
+        ],
+        "maximumKeyframeInterval": 12,
+        "bytes": 1475411,
+        "sha256": "8bdc3163cef7c8f1e32f6e1a1637cfd7e0758279672eb5d373ccac63dd5e9590",
+        "decodedFrameBytesRGBA": 3686400
+      },
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/media/phase-3-crt-opening-mobile-h264.mp4",
+      "status": "PRODUCTION CANDIDATE — visual/browser acceptance pending",
+      "sourceSequenceSha256": "cac98645bbb12d39048cd700982007c0f5df11c150b4b443247ac72b47221545",
+      "sourceFrameRange": {
+        "frameStart": 1,
+        "frameEnd": 270,
+        "normalizedProgressStart": 0.0,
+        "normalizedProgressEnd": 1.0
+      },
+      "gopStrategy": "12-frame (400 ms) closed GOP; fixed scene-cut-free keyframes; no audio"
+    },
+    {
+      "id": "mobile-vp9",
+      "variant": "mobile",
+      "codec": "vp9",
+      "settings": {
+        "encoder": "libvpx-vp9",
+        "crf": 28,
+        "deadline": "good",
+        "cpuUsed": 2,
+        "selectedGopFrames": 12,
+        "selectedGopMilliseconds": 400
+      },
+      "verification": {
+        "codec": "vp9",
+        "width": 720,
+        "height": 1280,
+        "pixelFormat": "yuv420p",
+        "averageFrameRate": "30/1",
+        "reportedFrameRate": "30/1",
+        "frameCount": 270,
+        "durationSeconds": 9.0,
+        "bitrateBitsPerSecond": 897266,
+        "containerFormats": "matroska,webm",
+        "audioStreamCount": 0,
+        "keyframeFrames": [
+          1,
+          13,
+          25,
+          37,
+          49,
+          61,
+          73,
+          85,
+          97,
+          109,
+          121,
+          133,
+          145,
+          157,
+          169,
+          181,
+          193,
+          205,
+          217,
+          229,
+          241,
+          253,
+          265
+        ],
+        "keyframeIntervals": [
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12
+        ],
+        "maximumKeyframeInterval": 12,
+        "bytes": 1009425,
+        "sha256": "7b5a96f7771824c3db182727188fe77da3c242ab9b8d0c829c47501265896aca",
+        "decodedFrameBytesRGBA": 3686400
+      },
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/media/phase-3-crt-opening-mobile-vp9.webm",
+      "status": "PRODUCTION CANDIDATE — visual/browser acceptance pending",
+      "sourceSequenceSha256": "cac98645bbb12d39048cd700982007c0f5df11c150b4b443247ac72b47221545",
+      "sourceFrameRange": {
+        "frameStart": 1,
+        "frameEnd": 270,
+        "normalizedProgressStart": 0.0,
+        "normalizedProgressEnd": 1.0
+      },
+      "gopStrategy": "12-frame (400 ms) independent keyframe cadence; alt-ref/lag disabled; no audio"
+    }
+  ],
+  "deliveryPolicy": {
+    "integrationStatus": "ISOLATED — not copied into public/ and not connected to production routes",
+    "selectionStatus": "Human visual, seek, and browser acceptance required before Phase 4 recommendation",
+    "rawFramesCommitted": false,
+    "audioTracks": 0,
+    "selectedGopFrames": 12,
+    "selectedGopMilliseconds": 400
+  },
+  "mediaLabEvidence": {
+    "optionalRepositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/phase-3-media-lab-scrub-evidence.webm",
+    "registered": true,
+    "syntheticHeadedInteractionSubstituteCreated": false
+  },
+  "reviewArtifacts": [
+    {
+      "filename": "phase-3-media-lab-scrub-evidence.webm",
+      "bytes": 2373551,
+      "sha256": "b7e362a5accd9999615774229afb468b2222f57348e6fd7bf350557a3a66ac80",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/phase-3-media-lab-scrub-evidence.webm",
+      "role": "actual isolated media-lab interaction recording",
+      "sourceVariant": "isolated-media-lab",
+      "sourceFrames": {
+        "captureType": "headed browser interaction recording",
+        "testedBehaviors": [
+          "forward scrub",
+          "fast forward jump",
+          "reverse scrub",
+          "rapid alternating seek",
+          "direct portal jump",
+          "return to conduction"
+        ]
+      },
+      "sourceNormalizedProgress": "non-linear user/media timeline interaction; visual source progress is shown in capture",
+      "mediaProbe": {
+        "codec": "vp8",
+        "width": 1280,
+        "height": 720,
+        "pixelFormat": "yuv420p",
+        "averageFrameRate": "25/1",
+        "reportedFrameRate": "25/1",
+        "frameCount": 1163,
+        "durationSeconds": 46.52,
+        "bitrateBitsPerSecond": 408177,
+        "containerFormats": "matroska,webm",
+        "audioStreamCount": 0,
+        "keyframeFrames": [
+          1,
+          155,
+          308,
+          462,
+          615,
+          769,
+          923,
+          1076,
+          1230,
+          1383
+        ],
+        "keyframeIntervals": [
+          154,
+          153,
+          154,
+          153,
+          154,
+          154,
+          153,
+          154,
+          153
+        ],
+        "maximumKeyframeInterval": 154
+      }
+    },
+    {
+      "filename": "phase-3-desktop-codec-comparison-contact-sheet.png",
+      "dimensions": {
+        "width": 1376,
+        "height": 1721
+      },
+      "format": "PNG",
+      "bytes": 767405,
+      "sha256": "04ac538cd63ea14c796dcd85197ca5bcbd0d81cc9a59c4b23d85e11ce80176f0",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/phase-3-desktop-codec-comparison-contact-sheet.png",
+      "role": "desktop source-vs-H.264-vs-VP9 decoded risk comparison",
+      "sourceVariant": "desktop",
+      "sourceFrames": [
+        {
+          "frame": 1,
+          "normalizedProgress": 0.0
+        },
+        {
+          "frame": 72,
+          "normalizedProgress": 0.263941
+        },
+        {
+          "frame": 196,
+          "normalizedProgress": 0.724907
+        },
+        {
+          "frame": 236,
+          "normalizedProgress": 0.873606
+        },
+        {
+          "frame": 270,
+          "normalizedProgress": 1.0
+        }
+      ],
+      "codecComparison": {
+        "decodeTool": "ffmpeg version 9.0.1-essentials_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers",
+        "decodeSelection": "zero-based exact decoded frame index via FFmpeg select filter",
+        "columnOrder": [
+          "source PNG",
+          "decoded H.264",
+          "decoded VP9"
+        ],
+        "riskStates": [
+          {
+            "risk": "DORMANT / DARK GRADIENT",
+            "sourceFrame": 1,
+            "normalizedProgress": 0.0,
+            "sourcePNG": {
+              "filename": "phase3-desktop-0001.png",
+              "bytes": 1462293,
+              "sha256": "12718d7662ff8a13953b30fe0966312ff1862561bce8e7e1c3657f1ae865fb69"
+            },
+            "h264": {
+              "candidateId": "desktop-h264",
+              "candidateSha256": "7a8598ba53becd7e8fc5e3773979a19f6b7f872f421c60d29f7c29021439d29d",
+              "decodedPNGBytes": 479646,
+              "decodedPNGSha256": "2a321d6f11c96425e04fc44a18f69408f0379266466205b43661476758c21dc0",
+              "metrics": {
+                "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
+                "pixelCount": 2073600,
+                "meanAbsoluteError8bit": 0.853078,
+                "meanAbsoluteErrorPerChannelRGB": [
+                  0.969132,
+                  0.727461,
+                  0.86264
+                ],
+                "rootMeanSquareError8bit": 1.247913,
+                "rootMeanSquareErrorPerChannelRGB": [
+                  1.394009,
+                  1.088173,
+                  1.24277
+                ],
+                "peakSignalToNoiseRatioDb": 46.207118,
+                "absoluteDifferenceP95": 3,
+                "absoluteDifferenceP95PerChannelRGB": [
+                  3,
+                  2,
+                  2
+                ],
+                "maximumAbsoluteDifference8bit": 16,
+                "pixelsWithAnyChannelDeltaOver12Ratio": 6.752e-06,
+                "lumaMeanAbsoluteError8bit": 0.963727,
+                "lumaRootMeanSquareError8bit": 1.317612,
+                "darkSourcePixelRatio": 0.530721933,
+                "darkSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.664477,
+                  0.546729,
+                  0.62367
+                ],
+                "magentaSourcePixelRatio": 0.0,
+                "magentaSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "edgeMapMeanAbsoluteError8bit": 2.079522
+              }
+            },
+            "vp9": {
+              "candidateId": "desktop-vp9",
+              "candidateSha256": "2128aba7909818ed0b25ee032930ba7b0bd8a04a153540ff1b660b5e041fc376",
+              "decodedPNGBytes": 369253,
+              "decodedPNGSha256": "8c33df946456ad314c412164e5da98ca5d8df22ec9bb23e5b3977d65d9d61aee",
+              "metrics": {
+                "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
+                "pixelCount": 2073600,
+                "meanAbsoluteError8bit": 0.809202,
+                "meanAbsoluteErrorPerChannelRGB": [
+                  0.927079,
+                  0.67942,
+                  0.821106
+                ],
+                "rootMeanSquareError8bit": 1.176123,
+                "rootMeanSquareErrorPerChannelRGB": [
+                  1.326944,
+                  1.004955,
+                  1.174342
+                ],
+                "peakSignalToNoiseRatioDb": 46.721751,
+                "absoluteDifferenceP95": 2,
+                "absoluteDifferenceP95PerChannelRGB": [
+                  3,
+                  2,
+                  2
+                ],
+                "maximumAbsoluteDifference8bit": 12,
+                "pixelsWithAnyChannelDeltaOver12Ratio": 0.0,
+                "lumaMeanAbsoluteError8bit": 0.936956,
+                "lumaRootMeanSquareError8bit": 1.257213,
+                "darkSourcePixelRatio": 0.530721933,
+                "darkSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.63243,
+                  0.518278,
+                  0.593456
+                ],
+                "magentaSourcePixelRatio": 0.0,
+                "magentaSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "edgeMapMeanAbsoluteError8bit": 1.877623
+              }
+            }
+          },
+          {
+            "risk": "CONDUCTION / MAGENTA",
+            "sourceFrame": 72,
+            "normalizedProgress": 0.263941,
+            "sourcePNG": {
+              "filename": "phase3-desktop-0072.png",
+              "bytes": 1460777,
+              "sha256": "17424e17b5b3fbd1e1aba2e7a8f96f55edf1a1c02be86af0e716ffd6c6ba8542"
+            },
+            "h264": {
+              "candidateId": "desktop-h264",
+              "candidateSha256": "7a8598ba53becd7e8fc5e3773979a19f6b7f872f421c60d29f7c29021439d29d",
+              "decodedPNGBytes": 596961,
+              "decodedPNGSha256": "63b9655a9233f77515ed0a20c8c2bee8dc753ea13dc326f387cea0041f478ba6",
+              "metrics": {
+                "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
+                "pixelCount": 2073600,
+                "meanAbsoluteError8bit": 0.869701,
+                "meanAbsoluteErrorPerChannelRGB": [
+                  0.971927,
+                  0.765823,
+                  0.871354
+                ],
+                "rootMeanSquareError8bit": 1.326238,
+                "rootMeanSquareErrorPerChannelRGB": [
+                  1.446652,
+                  1.202836,
+                  1.317993
+                ],
+                "peakSignalToNoiseRatioDb": 45.678374,
+                "absoluteDifferenceP95": 3,
+                "absoluteDifferenceP95PerChannelRGB": [
+                  3,
+                  2,
+                  3
+                ],
+                "maximumAbsoluteDifference8bit": 30,
+                "pixelsWithAnyChannelDeltaOver12Ratio": 0.000165895,
+                "lumaMeanAbsoluteError8bit": 0.940345,
+                "lumaRootMeanSquareError8bit": 1.362461,
+                "darkSourcePixelRatio": 0.540426312,
+                "darkSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.632639,
+                  0.564368,
+                  0.624147
+                ],
+                "magentaSourcePixelRatio": 0.000567612,
+                "magentaSourceMeanAbsoluteErrorPerChannelRGB": [
+                  3.06627,
+                  1.868309,
+                  1.567545
+                ],
+                "edgeMapMeanAbsoluteError8bit": 2.171413
+              }
+            },
+            "vp9": {
+              "candidateId": "desktop-vp9",
+              "candidateSha256": "2128aba7909818ed0b25ee032930ba7b0bd8a04a153540ff1b660b5e041fc376",
+              "decodedPNGBytes": 366761,
+              "decodedPNGSha256": "afdf238490da168b383f30f0dd4e2a5b225845c8c2a6ad38ac45cb5fab2d3286",
+              "metrics": {
+                "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
+                "pixelCount": 2073600,
+                "meanAbsoluteError8bit": 0.871785,
+                "meanAbsoluteErrorPerChannelRGB": [
+                  0.969931,
+                  0.773986,
+                  0.871438
+                ],
+                "rootMeanSquareError8bit": 1.314001,
+                "rootMeanSquareErrorPerChannelRGB": [
+                  1.439711,
+                  1.190312,
+                  1.30007
+                ],
+                "peakSignalToNoiseRatioDb": 45.758891,
+                "absoluteDifferenceP95": 3,
+                "absoluteDifferenceP95PerChannelRGB": [
+                  3,
+                  2,
+                  3
+                ],
+                "maximumAbsoluteDifference8bit": 27,
+                "pixelsWithAnyChannelDeltaOver12Ratio": 0.000153839,
+                "lumaMeanAbsoluteError8bit": 0.967679,
+                "lumaRootMeanSquareError8bit": 1.370086,
+                "darkSourcePixelRatio": 0.540426312,
+                "darkSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.630603,
+                  0.577643,
+                  0.641107
+                ],
+                "magentaSourcePixelRatio": 0.000567612,
+                "magentaSourceMeanAbsoluteErrorPerChannelRGB": [
+                  4.501274,
+                  1.967715,
+                  1.893798
+                ],
+                "edgeMapMeanAbsoluteError8bit": 2.060437
+              }
+            }
+          },
+          {
+            "risk": "SCANLINE / TYPE",
+            "sourceFrame": 196,
+            "normalizedProgress": 0.724907,
+            "sourcePNG": {
+              "filename": "phase3-desktop-0196.png",
+              "bytes": 1661684,
+              "sha256": "62d694c446c6a0cf358950f57eabcaaabe44a2976e82e0a8a2fd5a80048ce6a6"
+            },
+            "h264": {
+              "candidateId": "desktop-h264",
+              "candidateSha256": "7a8598ba53becd7e8fc5e3773979a19f6b7f872f421c60d29f7c29021439d29d",
+              "decodedPNGBytes": 493137,
+              "decodedPNGSha256": "fb3086251f32b9325373402cc581000dc9c4d79a5aaab67f35f1cc4c614c2c25",
+              "metrics": {
+                "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
+                "pixelCount": 2073600,
+                "meanAbsoluteError8bit": 1.069874,
+                "meanAbsoluteErrorPerChannelRGB": [
+                  1.172153,
+                  0.935285,
+                  1.102184
+                ],
+                "rootMeanSquareError8bit": 1.61226,
+                "rootMeanSquareErrorPerChannelRGB": [
+                  1.757543,
+                  1.445412,
+                  1.618633
+                ],
+                "peakSignalToNoiseRatioDb": 43.982102,
+                "absoluteDifferenceP95": 3,
+                "absoluteDifferenceP95PerChannelRGB": [
+                  3,
+                  3,
+                  3
+                ],
+                "maximumAbsoluteDifference8bit": 35,
+                "pixelsWithAnyChannelDeltaOver12Ratio": 0.000927855,
+                "lumaMeanAbsoluteError8bit": 1.013231,
+                "lumaRootMeanSquareError8bit": 1.514275,
+                "darkSourcePixelRatio": 0.558334298,
+                "darkSourceMeanAbsoluteErrorPerChannelRGB": [
+                  1.019842,
+                  0.786445,
+                  0.998385
+                ],
+                "magentaSourcePixelRatio": 0.000128279,
+                "magentaSourceMeanAbsoluteErrorPerChannelRGB": [
+                  3.180451,
+                  1.744361,
+                  1.578947
+                ],
+                "edgeMapMeanAbsoluteError8bit": 2.826253
+              }
+            },
+            "vp9": {
+              "candidateId": "desktop-vp9",
+              "candidateSha256": "2128aba7909818ed0b25ee032930ba7b0bd8a04a153540ff1b660b5e041fc376",
+              "decodedPNGBytes": 359748,
+              "decodedPNGSha256": "693a1862778f2f8b585e372277a0db5e387bf2d9170da8a904ec5b85d241d779",
+              "metrics": {
+                "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
+                "pixelCount": 2073600,
+                "meanAbsoluteError8bit": 1.075854,
+                "meanAbsoluteErrorPerChannelRGB": [
+                  1.174009,
+                  0.930444,
+                  1.12311
+                ],
+                "rootMeanSquareError8bit": 1.610613,
+                "rootMeanSquareErrorPerChannelRGB": [
+                  1.750609,
+                  1.430577,
+                  1.634333
+                ],
+                "peakSignalToNoiseRatioDb": 43.990977,
+                "absoluteDifferenceP95": 3,
+                "absoluteDifferenceP95PerChannelRGB": [
+                  3,
+                  3,
+                  3
+                ],
+                "maximumAbsoluteDifference8bit": 42,
+                "pixelsWithAnyChannelDeltaOver12Ratio": 0.000771605,
+                "lumaMeanAbsoluteError8bit": 1.019316,
+                "lumaRootMeanSquareError8bit": 1.514005,
+                "darkSourcePixelRatio": 0.558334298,
+                "darkSourceMeanAbsoluteErrorPerChannelRGB": [
+                  1.029342,
+                  0.791759,
+                  1.039575
+                ],
+                "magentaSourcePixelRatio": 0.000128279,
+                "magentaSourceMeanAbsoluteErrorPerChannelRGB": [
+                  3.548872,
+                  1.992481,
+                  1.593985
+                ],
+                "edgeMapMeanAbsoluteError8bit": 2.613931
+              }
+            }
+          },
+          {
+            "risk": "CLOSE APPROACH",
+            "sourceFrame": 236,
+            "normalizedProgress": 0.873606,
+            "sourcePNG": {
+              "filename": "phase3-desktop-0236.png",
+              "bytes": 1525918,
+              "sha256": "aea694bfeda639c93d4bcce42131f17f3938601ce10e08bddc983942beff52d7"
+            },
+            "h264": {
+              "candidateId": "desktop-h264",
+              "candidateSha256": "7a8598ba53becd7e8fc5e3773979a19f6b7f872f421c60d29f7c29021439d29d",
+              "decodedPNGBytes": 320320,
+              "decodedPNGSha256": "8f80d0baf14cc7edb2cf846b48b256d2e03bc09bf7f957c54240946d0cd19e55",
+              "metrics": {
+                "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
+                "pixelCount": 2073600,
+                "meanAbsoluteError8bit": 1.112384,
+                "meanAbsoluteErrorPerChannelRGB": [
+                  1.274855,
+                  0.830858,
+                  1.23144
+                ],
+                "rootMeanSquareError8bit": 1.536604,
+                "rootMeanSquareErrorPerChannelRGB": [
+                  1.682957,
+                  1.258605,
+                  1.633105
+                ],
+                "peakSignalToNoiseRatioDb": 44.399562,
+                "absoluteDifferenceP95": 3,
+                "absoluteDifferenceP95PerChannelRGB": [
+                  3,
+                  2,
+                  3
+                ],
+                "maximumAbsoluteDifference8bit": 15,
+                "pixelsWithAnyChannelDeltaOver12Ratio": 1.0127e-05,
+                "lumaMeanAbsoluteError8bit": 1.163453,
+                "lumaRootMeanSquareError8bit": 1.495846,
+                "darkSourcePixelRatio": 0.762708333,
+                "darkSourceMeanAbsoluteErrorPerChannelRGB": [
+                  1.265793,
+                  0.767009,
+                  1.245109
+                ],
+                "magentaSourcePixelRatio": 0.0,
+                "magentaSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "edgeMapMeanAbsoluteError8bit": 2.730942
+              }
+            },
+            "vp9": {
+              "candidateId": "desktop-vp9",
+              "candidateSha256": "2128aba7909818ed0b25ee032930ba7b0bd8a04a153540ff1b660b5e041fc376",
+              "decodedPNGBytes": 184427,
+              "decodedPNGSha256": "a3830bb9e6dfac3121b87a0106ae04080b7812bc576740006fb26133212d7156",
+              "metrics": {
+                "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
+                "pixelCount": 2073600,
+                "meanAbsoluteError8bit": 1.086836,
+                "meanAbsoluteErrorPerChannelRGB": [
+                  1.260489,
+                  0.790767,
+                  1.209252
+                ],
+                "rootMeanSquareError8bit": 1.508893,
+                "rootMeanSquareErrorPerChannelRGB": [
+                  1.684022,
+                  1.197012,
+                  1.60047
+                ],
+                "peakSignalToNoiseRatioDb": 44.557635,
+                "absoluteDifferenceP95": 3,
+                "absoluteDifferenceP95PerChannelRGB": [
+                  3,
+                  2,
+                  3
+                ],
+                "maximumAbsoluteDifference8bit": 22,
+                "pixelsWithAnyChannelDeltaOver12Ratio": 2.4113e-05,
+                "lumaMeanAbsoluteError8bit": 1.115044,
+                "lumaRootMeanSquareError8bit": 1.45146,
+                "darkSourcePixelRatio": 0.762708333,
+                "darkSourceMeanAbsoluteErrorPerChannelRGB": [
+                  1.260499,
+                  0.737008,
+                  1.239991
+                ],
+                "magentaSourcePixelRatio": 0.0,
+                "magentaSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "edgeMapMeanAbsoluteError8bit": 2.431222
+              }
+            }
+          },
+          {
+            "risk": "HANDOFF",
+            "sourceFrame": 270,
+            "normalizedProgress": 1.0,
+            "sourcePNG": {
+              "filename": "phase3-desktop-0270.png",
+              "bytes": 782797,
+              "sha256": "fac5a6cc388eadcb38a90d94dd9c13ace62d09e4f6a8250f94328ec15023921e"
+            },
+            "h264": {
+              "candidateId": "desktop-h264",
+              "candidateSha256": "7a8598ba53becd7e8fc5e3773979a19f6b7f872f421c60d29f7c29021439d29d",
+              "decodedPNGBytes": 91772,
+              "decodedPNGSha256": "2e66c953b6dcaf095a146e3a0c098ab25aa4d4bc1f6f3fd2682fa4636431d6a3",
+              "metrics": {
+                "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
+                "pixelCount": 2073600,
+                "meanAbsoluteError8bit": 0.393082,
+                "meanAbsoluteErrorPerChannelRGB": [
+                  0.445151,
+                  0.35222,
+                  0.381875
+                ],
+                "rootMeanSquareError8bit": 0.763223,
+                "rootMeanSquareErrorPerChannelRGB": [
+                  0.859498,
+                  0.679663,
+                  0.739493
+                ],
+                "peakSignalToNoiseRatioDb": 50.477777,
+                "absoluteDifferenceP95": 2,
+                "absoluteDifferenceP95PerChannelRGB": [
+                  2,
+                  1,
+                  2
+                ],
+                "maximumAbsoluteDifference8bit": 7,
+                "pixelsWithAnyChannelDeltaOver12Ratio": 0.0,
+                "lumaMeanAbsoluteError8bit": 0.354978,
+                "lumaRootMeanSquareError8bit": 0.686491,
+                "darkSourcePixelRatio": 1.0,
+                "darkSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.445151,
+                  0.35222,
+                  0.381875
+                ],
+                "magentaSourcePixelRatio": 0.0,
+                "magentaSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "edgeMapMeanAbsoluteError8bit": 1.387734
+              }
+            },
+            "vp9": {
+              "candidateId": "desktop-vp9",
+              "candidateSha256": "2128aba7909818ed0b25ee032930ba7b0bd8a04a153540ff1b660b5e041fc376",
+              "decodedPNGBytes": 51888,
+              "decodedPNGSha256": "f186dc32a83a22e7a0d592a0871befce11a3b10f50f184a80dd208a4c8df9f40",
+              "metrics": {
+                "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
+                "pixelCount": 2073600,
+                "meanAbsoluteError8bit": 0.376567,
+                "meanAbsoluteErrorPerChannelRGB": [
+                  0.401072,
+                  0.366928,
+                  0.361703
+                ],
+                "rootMeanSquareError8bit": 0.739337,
+                "rootMeanSquareErrorPerChannelRGB": [
+                  0.795846,
+                  0.706655,
+                  0.712129
+                ],
+                "peakSignalToNoiseRatioDb": 50.753951,
+                "absoluteDifferenceP95": 2,
+                "absoluteDifferenceP95PerChannelRGB": [
+                  2,
+                  1,
+                  1
+                ],
+                "maximumAbsoluteDifference8bit": 8,
+                "pixelsWithAnyChannelDeltaOver12Ratio": 0.0,
+                "lumaMeanAbsoluteError8bit": 0.366034,
+                "lumaRootMeanSquareError8bit": 0.706424,
+                "darkSourcePixelRatio": 1.0,
+                "darkSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.401072,
+                  0.366928,
+                  0.361703
+                ],
+                "magentaSourcePixelRatio": 0.0,
+                "magentaSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "edgeMapMeanAbsoluteError8bit": 1.38973
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "filename": "phase-3-mobile-codec-comparison-contact-sheet.png",
+      "dimensions": {
+        "width": 770,
+        "height": 2551
+      },
+      "format": "PNG",
+      "bytes": 650136,
+      "sha256": "c2bb62f7aa80f23c43bf636e261d28b4e186e8412545311e06b2cd57770b3d16",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/phase-3-mobile-codec-comparison-contact-sheet.png",
+      "role": "mobile source-vs-H.264-vs-VP9 decoded risk comparison",
+      "sourceVariant": "mobile",
+      "sourceFrames": [
+        {
+          "frame": 1,
+          "normalizedProgress": 0.0
+        },
+        {
+          "frame": 72,
+          "normalizedProgress": 0.263941
+        },
+        {
+          "frame": 196,
+          "normalizedProgress": 0.724907
+        },
+        {
+          "frame": 222,
+          "normalizedProgress": 0.821561
+        },
+        {
+          "frame": 270,
+          "normalizedProgress": 1.0
+        }
+      ],
+      "codecComparison": {
+        "decodeTool": "ffmpeg version 9.0.1-essentials_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers",
+        "decodeSelection": "zero-based exact decoded frame index via FFmpeg select filter",
+        "columnOrder": [
+          "source PNG",
+          "decoded H.264",
+          "decoded VP9"
+        ],
+        "riskStates": [
+          {
+            "risk": "DORMANT / DARK GRADIENT",
+            "sourceFrame": 1,
+            "normalizedProgress": 0.0,
+            "sourcePNG": {
+              "filename": "phase3-mobile-0001.png",
+              "bytes": 687384,
+              "sha256": "3ec03ca412da91de4bb0b23620fcd88352957529f4e13bf34d7618a8583adbb8"
+            },
+            "h264": {
+              "candidateId": "mobile-h264",
+              "candidateSha256": "8bdc3163cef7c8f1e32f6e1a1637cfd7e0758279672eb5d373ccac63dd5e9590",
+              "decodedPNGBytes": 235374,
+              "decodedPNGSha256": "30e17c114330d04bd0804554769fb95d02fce081dfa7659b8329afce87cbc52e",
+              "metrics": {
+                "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
+                "pixelCount": 921600,
+                "meanAbsoluteError8bit": 0.981354,
+                "meanAbsoluteErrorPerChannelRGB": [
+                  1.15931,
+                  0.761679,
+                  1.023074
+                ],
+                "rootMeanSquareError8bit": 1.356641,
+                "rootMeanSquareErrorPerChannelRGB": [
+                  1.554767,
+                  1.118807,
+                  1.361029
+                ],
+                "peakSignalToNoiseRatioDb": 45.481502,
+                "absoluteDifferenceP95": 3,
+                "absoluteDifferenceP95PerChannelRGB": [
+                  3,
+                  2,
+                  3
+                ],
+                "maximumAbsoluteDifference8bit": 15,
+                "pixelsWithAnyChannelDeltaOver12Ratio": 2.17e-06,
+                "lumaMeanAbsoluteError8bit": 1.131893,
+                "lumaRootMeanSquareError8bit": 1.453881,
+                "darkSourcePixelRatio": 0.513849826,
+                "darkSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.985852,
+                  0.651424,
+                  0.854983
+                ],
+                "magentaSourcePixelRatio": 0.0,
+                "magentaSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "edgeMapMeanAbsoluteError8bit": 2.186095
+              }
+            },
+            "vp9": {
+              "candidateId": "mobile-vp9",
+              "candidateSha256": "7b5a96f7771824c3db182727188fe77da3c242ab9b8d0c829c47501265896aca",
+              "decodedPNGBytes": 177095,
+              "decodedPNGSha256": "019156c2ebc02390fde3d5f8de140494748e27d92593f935e97bc1ee4da4c0ea",
+              "metrics": {
+                "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
+                "pixelCount": 921600,
+                "meanAbsoluteError8bit": 0.94252,
+                "meanAbsoluteErrorPerChannelRGB": [
+                  1.127146,
+                  0.713122,
+                  0.987293
+                ],
+                "rootMeanSquareError8bit": 1.29405,
+                "rootMeanSquareErrorPerChannelRGB": [
+                  1.501846,
+                  1.03669,
+                  1.301317
+                ],
+                "peakSignalToNoiseRatioDb": 45.891785,
+                "absoluteDifferenceP95": 3,
+                "absoluteDifferenceP95PerChannelRGB": [
+                  3,
+                  2,
+                  2
+                ],
+                "maximumAbsoluteDifference8bit": 11,
+                "pixelsWithAnyChannelDeltaOver12Ratio": 0.0,
+                "lumaMeanAbsoluteError8bit": 1.108474,
+                "lumaRootMeanSquareError8bit": 1.400624,
+                "darkSourcePixelRatio": 0.513849826,
+                "darkSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.966796,
+                  0.617997,
+                  0.829548
+                ],
+                "magentaSourcePixelRatio": 0.0,
+                "magentaSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "edgeMapMeanAbsoluteError8bit": 1.960946
+              }
+            }
+          },
+          {
+            "risk": "CONDUCTION / MAGENTA",
+            "sourceFrame": 72,
+            "normalizedProgress": 0.263941,
+            "sourcePNG": {
+              "filename": "phase3-mobile-0072.png",
+              "bytes": 687567,
+              "sha256": "355f18f0e828a1bc34705d1c3e75d1481f5c1a6268329e884b2d8cf56ea9bd0e"
+            },
+            "h264": {
+              "candidateId": "mobile-h264",
+              "candidateSha256": "8bdc3163cef7c8f1e32f6e1a1637cfd7e0758279672eb5d373ccac63dd5e9590",
+              "decodedPNGBytes": 261718,
+              "decodedPNGSha256": "e7400a9d180e8ad507e946cc7d809bf7f7eff353320ed8072bb2b7503c9e1a97",
+              "metrics": {
+                "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
+                "pixelCount": 921600,
+                "meanAbsoluteError8bit": 1.001728,
+                "meanAbsoluteErrorPerChannelRGB": [
+                  1.171088,
+                  0.803205,
+                  1.03089
+                ],
+                "rootMeanSquareError8bit": 1.409018,
+                "rootMeanSquareErrorPerChannelRGB": [
+                  1.589526,
+                  1.201454,
+                  1.409223
+                ],
+                "peakSignalToNoiseRatioDb": 45.152474,
+                "absoluteDifferenceP95": 3,
+                "absoluteDifferenceP95PerChannelRGB": [
+                  3,
+                  2,
+                  3
+                ],
+                "maximumAbsoluteDifference8bit": 21,
+                "pixelsWithAnyChannelDeltaOver12Ratio": 3.7977e-05,
+                "lumaMeanAbsoluteError8bit": 1.112513,
+                "lumaRootMeanSquareError8bit": 1.475194,
+                "darkSourcePixelRatio": 0.512049696,
+                "darkSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.957152,
+                  0.689355,
+                  0.865789
+                ],
+                "magentaSourcePixelRatio": 0.0,
+                "magentaSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "edgeMapMeanAbsoluteError8bit": 2.301634
+              }
+            },
+            "vp9": {
+              "candidateId": "mobile-vp9",
+              "candidateSha256": "7b5a96f7771824c3db182727188fe77da3c242ab9b8d0c829c47501265896aca",
+              "decodedPNGBytes": 172756,
+              "decodedPNGSha256": "7777e01a7c6756a7ca1ec0c541bd075f07b1f56a62c03fe3d3283bd13543ef08",
+              "metrics": {
+                "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
+                "pixelCount": 921600,
+                "meanAbsoluteError8bit": 0.991313,
+                "meanAbsoluteErrorPerChannelRGB": [
+                  1.152602,
+                  0.797745,
+                  1.023593
+                ],
+                "rootMeanSquareError8bit": 1.394201,
+                "rootMeanSquareErrorPerChannelRGB": [
+                  1.570346,
+                  1.195016,
+                  1.391883
+                ],
+                "peakSignalToNoiseRatioDb": 45.244297,
+                "absoluteDifferenceP95": 3,
+                "absoluteDifferenceP95PerChannelRGB": [
+                  3,
+                  2,
+                  3
+                ],
+                "maximumAbsoluteDifference8bit": 30,
+                "pixelsWithAnyChannelDeltaOver12Ratio": 5.4253e-05,
+                "lumaMeanAbsoluteError8bit": 1.104154,
+                "lumaRootMeanSquareError8bit": 1.460303,
+                "darkSourcePixelRatio": 0.512049696,
+                "darkSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.941912,
+                  0.703502,
+                  0.873941
+                ],
+                "magentaSourcePixelRatio": 0.0,
+                "magentaSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "edgeMapMeanAbsoluteError8bit": 2.158392
+              }
+            }
+          },
+          {
+            "risk": "SCANLINE / TYPE",
+            "sourceFrame": 196,
+            "normalizedProgress": 0.724907,
+            "sourcePNG": {
+              "filename": "phase3-mobile-0196.png",
+              "bytes": 652010,
+              "sha256": "bed67bfc6ab10d2ed1c35ad37c7e402054f7d2e91dd61730f433aad011c37661"
+            },
+            "h264": {
+              "candidateId": "mobile-h264",
+              "candidateSha256": "8bdc3163cef7c8f1e32f6e1a1637cfd7e0758279672eb5d373ccac63dd5e9590",
+              "decodedPNGBytes": 185575,
+              "decodedPNGSha256": "683b078146dbf3020a1c8c4e70ccf12d33f98c369ffd37d02ff087a00dd38995",
+              "metrics": {
+                "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
+                "pixelCount": 921600,
+                "meanAbsoluteError8bit": 1.089817,
+                "meanAbsoluteErrorPerChannelRGB": [
+                  1.18891,
+                  0.95373,
+                  1.126811
+                ],
+                "rootMeanSquareError8bit": 1.74569,
+                "rootMeanSquareErrorPerChannelRGB": [
+                  1.927833,
+                  1.549623,
+                  1.739088
+                ],
+                "peakSignalToNoiseRatioDb": 43.291461,
+                "absoluteDifferenceP95": 3,
+                "absoluteDifferenceP95PerChannelRGB": [
+                  4,
+                  3,
+                  3
+                ],
+                "maximumAbsoluteDifference8bit": 38,
+                "pixelsWithAnyChannelDeltaOver12Ratio": 0.001474609,
+                "lumaMeanAbsoluteError8bit": 0.957311,
+                "lumaRootMeanSquareError8bit": 1.573489,
+                "darkSourcePixelRatio": 0.689881727,
+                "darkSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.928587,
+                  0.744507,
+                  0.992858
+                ],
+                "magentaSourcePixelRatio": 0.0,
+                "magentaSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "edgeMapMeanAbsoluteError8bit": 3.109798
+              }
+            },
+            "vp9": {
+              "candidateId": "mobile-vp9",
+              "candidateSha256": "7b5a96f7771824c3db182727188fe77da3c242ab9b8d0c829c47501265896aca",
+              "decodedPNGBytes": 130888,
+              "decodedPNGSha256": "941be254567aca5abc3b143737effb48b0d6e079fb2a6ce187a7e6fb46d71a1e",
+              "metrics": {
+                "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
+                "pixelCount": 921600,
+                "meanAbsoluteError8bit": 1.093966,
+                "meanAbsoluteErrorPerChannelRGB": [
+                  1.178364,
+                  0.947806,
+                  1.155729
+                ],
+                "rootMeanSquareError8bit": 1.733172,
+                "rootMeanSquareErrorPerChannelRGB": [
+                  1.882433,
+                  1.534252,
+                  1.764702
+                ],
+                "peakSignalToNoiseRatioDb": 43.35397,
+                "absoluteDifferenceP95": 3,
+                "absoluteDifferenceP95PerChannelRGB": [
+                  4,
+                  3,
+                  3
+                ],
+                "maximumAbsoluteDifference8bit": 33,
+                "pixelsWithAnyChannelDeltaOver12Ratio": 0.001185981,
+                "lumaMeanAbsoluteError8bit": 0.957322,
+                "lumaRootMeanSquareError8bit": 1.563682,
+                "darkSourcePixelRatio": 0.689881727,
+                "darkSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.918612,
+                  0.758395,
+                  1.042773
+                ],
+                "magentaSourcePixelRatio": 0.0,
+                "magentaSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "edgeMapMeanAbsoluteError8bit": 2.818502
+              }
+            }
+          },
+          {
+            "risk": "CLOSE APPROACH",
+            "sourceFrame": 222,
+            "normalizedProgress": 0.821561,
+            "sourcePNG": {
+              "filename": "phase3-mobile-0222.png",
+              "bytes": 615980,
+              "sha256": "5ed6dd30f02260414385d1af145e4ae4033399f6bcceb59dad41306b6e6162aa"
+            },
+            "h264": {
+              "candidateId": "mobile-h264",
+              "candidateSha256": "8bdc3163cef7c8f1e32f6e1a1637cfd7e0758279672eb5d373ccac63dd5e9590",
+              "decodedPNGBytes": 106673,
+              "decodedPNGSha256": "9b2952328e21ed4e9221c9f0fba58ed76220c9d05375ed2795dc5253ca5057c9",
+              "metrics": {
+                "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
+                "pixelCount": 921600,
+                "meanAbsoluteError8bit": 1.208451,
+                "meanAbsoluteErrorPerChannelRGB": [
+                  1.398662,
+                  0.927028,
+                  1.299661
+                ],
+                "rootMeanSquareError8bit": 1.649387,
+                "rootMeanSquareErrorPerChannelRGB": [
+                  1.834762,
+                  1.377427,
+                  1.702286
+                ],
+                "peakSignalToNoiseRatioDb": 43.78435,
+                "absoluteDifferenceP95": 3,
+                "absoluteDifferenceP95PerChannelRGB": [
+                  4,
+                  3,
+                  3
+                ],
+                "maximumAbsoluteDifference8bit": 12,
+                "pixelsWithAnyChannelDeltaOver12Ratio": 0.0,
+                "lumaMeanAbsoluteError8bit": 1.243634,
+                "lumaRootMeanSquareError8bit": 1.576652,
+                "darkSourcePixelRatio": 0.759057075,
+                "darkSourceMeanAbsoluteErrorPerChannelRGB": [
+                  1.242836,
+                  0.786529,
+                  1.270441
+                ],
+                "magentaSourcePixelRatio": 0.0,
+                "magentaSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "edgeMapMeanAbsoluteError8bit": 2.960607
+              }
+            },
+            "vp9": {
+              "candidateId": "mobile-vp9",
+              "candidateSha256": "7b5a96f7771824c3db182727188fe77da3c242ab9b8d0c829c47501265896aca",
+              "decodedPNGBytes": 74365,
+              "decodedPNGSha256": "3b984473c9f2a68306f7eb5550328027ee310a7930e6425df823437bb539192a",
+              "metrics": {
+                "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
+                "pixelCount": 921600,
+                "meanAbsoluteError8bit": 1.254313,
+                "meanAbsoluteErrorPerChannelRGB": [
+                  1.479735,
+                  0.925254,
+                  1.35795
+                ],
+                "rootMeanSquareError8bit": 1.740619,
+                "rootMeanSquareErrorPerChannelRGB": [
+                  1.99048,
+                  1.391989,
+                  1.78595
+                ],
+                "peakSignalToNoiseRatioDb": 43.31673,
+                "absoluteDifferenceP95": 3,
+                "absoluteDifferenceP95PerChannelRGB": [
+                  4,
+                  3,
+                  3
+                ],
+                "maximumAbsoluteDifference8bit": 15,
+                "pixelsWithAnyChannelDeltaOver12Ratio": 3.0382e-05,
+                "lumaMeanAbsoluteError8bit": 1.280696,
+                "lumaRootMeanSquareError8bit": 1.645998,
+                "darkSourcePixelRatio": 0.759057075,
+                "darkSourceMeanAbsoluteErrorPerChannelRGB": [
+                  1.294228,
+                  0.817448,
+                  1.367454
+                ],
+                "magentaSourcePixelRatio": 0.0,
+                "magentaSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "edgeMapMeanAbsoluteError8bit": 2.842331
+              }
+            }
+          },
+          {
+            "risk": "HANDOFF",
+            "sourceFrame": 270,
+            "normalizedProgress": 1.0,
+            "sourcePNG": {
+              "filename": "phase3-mobile-0270.png",
+              "bytes": 351106,
+              "sha256": "3eefa296089a8f0231a2de93f6b3ecf8d6b66295d57f7d63abe641084e794199"
+            },
+            "h264": {
+              "candidateId": "mobile-h264",
+              "candidateSha256": "8bdc3163cef7c8f1e32f6e1a1637cfd7e0758279672eb5d373ccac63dd5e9590",
+              "decodedPNGBytes": 26946,
+              "decodedPNGSha256": "9bec1a566a6bde907f3f863ad78bb42f925e2ee67e08562e76e78527023a78ec",
+              "metrics": {
+                "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
+                "pixelCount": 921600,
+                "meanAbsoluteError8bit": 0.406043,
+                "meanAbsoluteErrorPerChannelRGB": [
+                  0.443103,
+                  0.374213,
+                  0.400812
+                ],
+                "rootMeanSquareError8bit": 0.772852,
+                "rootMeanSquareErrorPerChannelRGB": [
+                  0.856619,
+                  0.697585,
+                  0.755964
+                ],
+                "peakSignalToNoiseRatioDb": 50.368873,
+                "absoluteDifferenceP95": 2,
+                "absoluteDifferenceP95PerChannelRGB": [
+                  2,
+                  1,
+                  2
+                ],
+                "maximumAbsoluteDifference8bit": 6,
+                "pixelsWithAnyChannelDeltaOver12Ratio": 0.0,
+                "lumaMeanAbsoluteError8bit": 0.376166,
+                "lumaRootMeanSquareError8bit": 0.704041,
+                "darkSourcePixelRatio": 1.0,
+                "darkSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.443103,
+                  0.374213,
+                  0.400812
+                ],
+                "magentaSourcePixelRatio": 0.0,
+                "magentaSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "edgeMapMeanAbsoluteError8bit": 1.320994
+              }
+            },
+            "vp9": {
+              "candidateId": "mobile-vp9",
+              "candidateSha256": "7b5a96f7771824c3db182727188fe77da3c242ab9b8d0c829c47501265896aca",
+              "decodedPNGBytes": 19588,
+              "decodedPNGSha256": "e3405bbc3adf22954ea91acf97743c7e6a8efde64bc38cee103c11d8d634a09b",
+              "metrics": {
+                "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
+                "pixelCount": 921600,
+                "meanAbsoluteError8bit": 0.391503,
+                "meanAbsoluteErrorPerChannelRGB": [
+                  0.405603,
+                  0.386104,
+                  0.382802
+                ],
+                "rootMeanSquareError8bit": 0.750909,
+                "rootMeanSquareErrorPerChannelRGB": [
+                  0.79497,
+                  0.723906,
+                  0.73183
+                ],
+                "peakSignalToNoiseRatioDb": 50.61906,
+                "absoluteDifferenceP95": 2,
+                "absoluteDifferenceP95PerChannelRGB": [
+                  2,
+                  2,
+                  2
+                ],
+                "maximumAbsoluteDifference8bit": 6,
+                "pixelsWithAnyChannelDeltaOver12Ratio": 0.0,
+                "lumaMeanAbsoluteError8bit": 0.38343,
+                "lumaRootMeanSquareError8bit": 0.721662,
+                "darkSourcePixelRatio": 1.0,
+                "darkSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.405603,
+                  0.386104,
+                  0.382802
+                ],
+                "magentaSourcePixelRatio": 0.0,
+                "magentaSourceMeanAbsoluteErrorPerChannelRGB": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "edgeMapMeanAbsoluteError8bit": 1.344363
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "filename": "phase-3-desktop-conduction-contact-sheet.png",
+      "dimensions": {
+        "width": 1824,
+        "height": 770
+      },
+      "format": "PNG",
+      "bytes": 554928,
+      "sha256": "2a5a3c7a08d68653113c6ac9d170d5316dbf33aa76420d9a0447e40e7e51feea",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/phase-3-desktop-conduction-contact-sheet.png",
+      "role": "desktop conduction contact sheet",
+      "sourceVariant": "desktop",
+      "sourceFrames": [
+        {
+          "frame": 1,
+          "normalizedProgress": 0.0
+        },
+        {
+          "frame": 31,
+          "normalizedProgress": 0.111524
+        },
+        {
+          "frame": 42,
+          "normalizedProgress": 0.152416
+        },
+        {
+          "frame": 60,
+          "normalizedProgress": 0.219331
+        },
+        {
+          "frame": 72,
+          "normalizedProgress": 0.263941
+        },
+        {
+          "frame": 90,
+          "normalizedProgress": 0.330855
+        },
+        {
+          "frame": 104,
+          "normalizedProgress": 0.3829
+        },
+        {
+          "frame": 112,
+          "normalizedProgress": 0.412639
+        }
+      ]
+    },
+    {
+      "filename": "phase-3-crt-startup-contact-sheet.png",
+      "dimensions": {
+        "width": 1824,
+        "height": 770
+      },
+      "format": "PNG",
+      "bytes": 587878,
+      "sha256": "3b9b2e0f9a166788e061d6317465eac32470dc5c7ef4134fff126b935ae06621",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/phase-3-crt-startup-contact-sheet.png",
+      "role": "eight-step CRT startup contact sheet",
+      "sourceVariant": "desktop",
+      "sourceFrames": [
+        {
+          "frame": 112,
+          "normalizedProgress": 0.412639
+        },
+        {
+          "frame": 116,
+          "normalizedProgress": 0.427509
+        },
+        {
+          "frame": 126,
+          "normalizedProgress": 0.464684
+        },
+        {
+          "frame": 144,
+          "normalizedProgress": 0.531599
+        },
+        {
+          "frame": 162,
+          "normalizedProgress": 0.598513
+        },
+        {
+          "frame": 167,
+          "normalizedProgress": 0.6171
+        },
+        {
+          "frame": 176,
+          "normalizedProgress": 0.650558
+        },
+        {
+          "frame": 182,
+          "normalizedProgress": 0.672862
+        }
+      ]
+    },
+    {
+      "filename": "phase-3-camera-portal-contact-sheet.png",
+      "dimensions": {
+        "width": 1824,
+        "height": 770
+      },
+      "format": "PNG",
+      "bytes": 425286,
+      "sha256": "60d0cf4dc9424a529086b451f5d8899894640b32d1e7ebd68da51ecc44c0cad4",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/phase-3-camera-portal-contact-sheet.png",
+      "role": "camera and portal contact sheet",
+      "sourceVariant": "desktop",
+      "sourceFrames": [
+        {
+          "frame": 201,
+          "normalizedProgress": 0.743494
+        },
+        {
+          "frame": 210,
+          "normalizedProgress": 0.776952
+        },
+        {
+          "frame": 218,
+          "normalizedProgress": 0.806691
+        },
+        {
+          "frame": 232,
+          "normalizedProgress": 0.858736
+        },
+        {
+          "frame": 246,
+          "normalizedProgress": 0.910781
+        },
+        {
+          "frame": 252,
+          "normalizedProgress": 0.933086
+        },
+        {
+          "frame": 262,
+          "normalizedProgress": 0.97026
+        },
+        {
+          "frame": 270,
+          "normalizedProgress": 1.0
+        }
+      ]
+    },
+    {
+      "filename": "phase-3-portal-alignment-contact-sheet.png",
+      "dimensions": {
+        "width": 1520,
+        "height": 884
+      },
+      "format": "PNG",
+      "bytes": 451217,
+      "sha256": "952a6d77918020be217143771c001eefdcb29b72767e071b35b164adf562d1df",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/phase-3-portal-alignment-contact-sheet.png",
+      "role": "portal alignment contact sheet with review-only guides",
+      "sourceVariant": "desktop + accepted Phase 2B",
+      "sourceFrames": [
+        {
+          "frame": 218,
+          "normalizedProgress": 0.806691
+        },
+        {
+          "frame": 232,
+          "normalizedProgress": 0.858736
+        },
+        {
+          "frame": 246,
+          "normalizedProgress": 0.910781
+        },
+        {
+          "frame": 258,
+          "normalizedProgress": 0.95539
+        },
+        {
+          "frame": 270,
+          "normalizedProgress": 1.0
+        }
+      ],
+      "acceptedPhase2BReference": {
+        "path": "artifacts/evidence/phase-2b/review/phase-2b-desktop-production-keyframes.png",
+        "sha256": "a3a1d38a88771d31c03839c82cf5f9e6163057925ed7f5cbe5dc5cdc70bce2bd",
+        "entryEvidenceProvenance": "REPRODUCTION_CROP_FROM_FROZEN_ACCEPTED_PHASE_2B_EVIDENCE_SHEET",
+        "newHeadedCapture": false
+      }
+    },
+    {
+      "filename": "phase-3-portal-safe-zone-matrix.png",
+      "dimensions": {
+        "width": 1536,
+        "height": 1124
+      },
+      "format": "PNG",
+      "bytes": 227389,
+      "sha256": "565b9f55ec06a3f70442085599fe65eacf8e3b15e07ba101ddf3b3d050ba1c9b",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/phase-3-portal-safe-zone-matrix.png",
+      "role": "responsive portal safe-zone matrix with exact frozen DOM rectangles",
+      "sourceVariant": "desktop + mobile",
+      "sourceFrames": [
+        {
+          "frame": 270,
+          "normalizedProgress": 1.0
+        }
+      ],
+      "viewportAuthorities": [
+        {
+          "width": 1440,
+          "height": 900,
+          "sourceVariant": "desktop",
+          "headerExclusionY": 121.31,
+          "h1RectXYWH": [
+            48.0,
+            347.41,
+            1344.0,
+            316.73
+          ],
+          "routeRectXYWH": [
+            48.0,
+            802.13,
+            1344.0,
+            86.19
+          ],
+          "guideProjection": {
+            "method": "DIRECT_PROJECTION_OF_FROZEN_PHASE_2B_CSS_RECTS_AT_IDENTICAL_VIEWPORT_DIMENSIONS_SCROLLY_0",
+            "signedDeltasCssPx": {
+              "header": {
+                "x": 0,
+                "y": 0
+              },
+              "h1": {
+                "x": 0,
+                "y": 0
+              },
+              "routes": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            "maxAbsDeltaCssPx": 0,
+            "toleranceCssPx": 3,
+            "status": "PASS"
+          },
+          "physicalKeepout": {
+            "status": "notApplicable",
+            "applicable": false,
+            "minimumRequirementCssPx": 16,
+            "reason": "F270 is the validated text-free full raster; cabinet, bezel, and cable geometry has exited or been retired before portal handoff"
+          },
+          "claimScope": "REVIEW_METADATA_NOT_A_PRODUCTION_CLAIM"
+        },
+        {
+          "width": 1366,
+          "height": 650,
+          "sourceVariant": "desktop",
+          "headerExclusionY": 121.31,
+          "h1RectXYWH": [
+            48.0,
+            327.39,
+            1270.0,
+            149.75
+          ],
+          "routeRectXYWH": [
+            48.0,
+            627.13,
+            1270.0,
+            86.19
+          ],
+          "guideProjection": {
+            "method": "DIRECT_PROJECTION_OF_FROZEN_PHASE_2B_CSS_RECTS_AT_IDENTICAL_VIEWPORT_DIMENSIONS_SCROLLY_0",
+            "signedDeltasCssPx": {
+              "header": {
+                "x": 0,
+                "y": 0
+              },
+              "h1": {
+                "x": 0,
+                "y": 0
+              },
+              "routes": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            "maxAbsDeltaCssPx": 0,
+            "toleranceCssPx": 3,
+            "status": "PASS"
+          },
+          "physicalKeepout": {
+            "status": "notApplicable",
+            "applicable": false,
+            "minimumRequirementCssPx": 16,
+            "reason": "F270 is the validated text-free full raster; cabinet, bezel, and cable geometry has exited or been retired before portal handoff"
+          },
+          "claimScope": "REVIEW_METADATA_NOT_A_PRODUCTION_CLAIM"
+        },
+        {
+          "width": 1280,
+          "height": 800,
+          "sourceVariant": "desktop",
+          "headerExclusionY": 116.48,
+          "h1RectXYWH": [
+            48.0,
+            308.67,
+            1184.0,
+            281.53
+          ],
+          "routeRectXYWH": [
+            48.0,
+            702.3,
+            1184.0,
+            86.19
+          ],
+          "guideProjection": {
+            "method": "DIRECT_PROJECTION_OF_FROZEN_PHASE_2B_CSS_RECTS_AT_IDENTICAL_VIEWPORT_DIMENSIONS_SCROLLY_0",
+            "signedDeltasCssPx": {
+              "header": {
+                "x": 0,
+                "y": 0
+              },
+              "h1": {
+                "x": 0,
+                "y": 0
+              },
+              "routes": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            "maxAbsDeltaCssPx": 0,
+            "toleranceCssPx": 3,
+            "status": "PASS"
+          },
+          "physicalKeepout": {
+            "status": "notApplicable",
+            "applicable": false,
+            "minimumRequirementCssPx": 16,
+            "reason": "F270 is the validated text-free full raster; cabinet, bezel, and cable geometry has exited or been retired before portal handoff"
+          },
+          "claimScope": "REVIEW_METADATA_NOT_A_PRODUCTION_CLAIM"
+        },
+        {
+          "width": 1024,
+          "height": 768,
+          "sourceVariant": "desktop",
+          "headerExclusionY": 100.25,
+          "h1RectXYWH": [
+            40.95,
+            241.02,
+            942.08,
+            351.44
+          ],
+          "routeRectXYWH": [
+            40.95,
+            655.67,
+            942.08,
+            86.19
+          ],
+          "guideProjection": {
+            "method": "DIRECT_PROJECTION_OF_FROZEN_PHASE_2B_CSS_RECTS_AT_IDENTICAL_VIEWPORT_DIMENSIONS_SCROLLY_0",
+            "signedDeltasCssPx": {
+              "header": {
+                "x": 0,
+                "y": 0
+              },
+              "h1": {
+                "x": 0,
+                "y": 0
+              },
+              "routes": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            "maxAbsDeltaCssPx": 0,
+            "toleranceCssPx": 3,
+            "status": "PASS"
+          },
+          "physicalKeepout": {
+            "status": "notApplicable",
+            "applicable": false,
+            "minimumRequirementCssPx": 16,
+            "reason": "F270 is the validated text-free full raster; cabinet, bezel, and cable geometry has exited or been retired before portal handoff"
+          },
+          "claimScope": "REVIEW_METADATA_NOT_A_PRODUCTION_CLAIM"
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "sourceVariant": "mobile",
+          "headerExclusionY": 100.25,
+          "h1RectXYWH": [
+            16.0,
+            315.23,
+            370.08,
+            184.81
+          ],
+          "routeRectXYWH": [
+            16.0,
+            661.88,
+            370.08,
+            182.38
+          ],
+          "guideProjection": {
+            "method": "DIRECT_PROJECTION_OF_FROZEN_PHASE_2B_CSS_RECTS_AT_IDENTICAL_VIEWPORT_DIMENSIONS_SCROLLY_0",
+            "signedDeltasCssPx": {
+              "header": {
+                "x": 0,
+                "y": 0
+              },
+              "h1": {
+                "x": 0,
+                "y": 0
+              },
+              "routes": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            "maxAbsDeltaCssPx": 0,
+            "toleranceCssPx": 3,
+            "status": "PASS"
+          },
+          "physicalKeepout": {
+            "status": "notApplicable",
+            "applicable": false,
+            "minimumRequirementCssPx": 16,
+            "reason": "F270 is the validated text-free full raster; cabinet, bezel, and cable geometry has exited or been retired before portal handoff"
+          },
+          "claimScope": "REVIEW_METADATA_NOT_A_PRODUCTION_CLAIM"
+        },
+        {
+          "width": 360,
+          "height": 800,
+          "sourceVariant": "mobile",
+          "headerExclusionY": 100.25,
+          "h1RectXYWH": [
+            16.0,
+            290.44,
+            341.61,
+            170.63
+          ],
+          "routeRectXYWH": [
+            16.0,
+            598.09,
+            341.61,
+            202.16
+          ],
+          "guideProjection": {
+            "method": "DIRECT_PROJECTION_OF_FROZEN_PHASE_2B_CSS_RECTS_AT_IDENTICAL_VIEWPORT_DIMENSIONS_SCROLLY_0",
+            "signedDeltasCssPx": {
+              "header": {
+                "x": 0,
+                "y": 0
+              },
+              "h1": {
+                "x": 0,
+                "y": 0
+              },
+              "routes": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            "maxAbsDeltaCssPx": 0,
+            "toleranceCssPx": 3,
+            "status": "PASS"
+          },
+          "physicalKeepout": {
+            "status": "notApplicable",
+            "applicable": false,
+            "minimumRequirementCssPx": 16,
+            "reason": "F270 is the validated text-free full raster; cabinet, bezel, and cable geometry has exited or been retired before portal handoff"
+          },
+          "claimScope": "REVIEW_METADATA_NOT_A_PRODUCTION_CLAIM"
+        },
+        {
+          "width": 320,
+          "height": 800,
+          "sourceVariant": "mobile",
+          "headerExclusionY": 100.25,
+          "h1RectXYWH": [
+            16.0,
+            303.22,
+            295.56,
+            147.63
+          ],
+          "routeRectXYWH": [
+            16.0,
+            600.66,
+            295.56,
+            199.59
+          ],
+          "guideProjection": {
+            "method": "DIRECT_PROJECTION_OF_FROZEN_PHASE_2B_CSS_RECTS_AT_IDENTICAL_VIEWPORT_DIMENSIONS_SCROLLY_0",
+            "signedDeltasCssPx": {
+              "header": {
+                "x": 0,
+                "y": 0
+              },
+              "h1": {
+                "x": 0,
+                "y": 0
+              },
+              "routes": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            "maxAbsDeltaCssPx": 0,
+            "toleranceCssPx": 3,
+            "status": "PASS"
+          },
+          "physicalKeepout": {
+            "status": "notApplicable",
+            "applicable": false,
+            "minimumRequirementCssPx": 16,
+            "reason": "F270 is the validated text-free full raster; cabinet, bezel, and cable geometry has exited or been retired before portal handoff"
+          },
+          "claimScope": "REVIEW_METADATA_NOT_A_PRODUCTION_CLAIM"
+        },
+        {
+          "width": 844,
+          "height": 390,
+          "sourceVariant": "mobile",
+          "headerExclusionY": 100.25,
+          "h1RectXYWH": [
+            33.77,
+            272.14,
+            373.75,
+            184.31
+          ],
+          "routeRectXYWH": [
+            455.52,
+            277.42,
+            354.72,
+            173.77
+          ],
+          "guideProjection": {
+            "method": "DIRECT_PROJECTION_OF_FROZEN_PHASE_2B_CSS_RECTS_AT_IDENTICAL_VIEWPORT_DIMENSIONS_SCROLLY_0",
+            "signedDeltasCssPx": {
+              "header": {
+                "x": 0,
+                "y": 0
+              },
+              "h1": {
+                "x": 0,
+                "y": 0
+              },
+              "routes": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            "maxAbsDeltaCssPx": 0,
+            "toleranceCssPx": 3,
+            "status": "PASS"
+          },
+          "physicalKeepout": {
+            "status": "notApplicable",
+            "applicable": false,
+            "minimumRequirementCssPx": 16,
+            "reason": "F270 is the validated text-free full raster; cabinet, bezel, and cable geometry has exited or been retired before portal handoff"
+          },
+          "claimScope": "REVIEW_METADATA_NOT_A_PRODUCTION_CLAIM"
+        }
+      ]
+    },
+    {
+      "filename": "phase-3-to-phase-2b-handoff-comparison.png",
+      "dimensions": {
+        "width": 1520,
+        "height": 510
+      },
+      "format": "PNG",
+      "bytes": 193562,
+      "sha256": "1c996a8568aa9b30c215795bed41889ff2f39de6089076da1f85fead7fd56866",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/phase-3-to-phase-2b-handoff-comparison.png",
+      "role": "Phase 3 to accepted Phase 2B handoff comparison",
+      "sourceVariant": "desktop + accepted Phase 2B",
+      "sourceFrames": [
+        {
+          "frame": 258,
+          "normalizedProgress": 0.95539
+        },
+        {
+          "frame": 262,
+          "normalizedProgress": 0.97026
+        },
+        {
+          "frame": 270,
+          "normalizedProgress": 1.0
+        }
+      ],
+      "acceptedPhase2BReference": {
+        "path": "artifacts/evidence/phase-2b/review/phase-2b-desktop-production-keyframes.png",
+        "sha256": "a3a1d38a88771d31c03839c82cf5f9e6163057925ed7f5cbe5dc5cdc70bce2bd",
+        "entryEvidenceProvenance": "REPRODUCTION_CROP_FROM_FROZEN_ACCEPTED_PHASE_2B_EVIDENCE_SHEET",
+        "newHeadedCapture": false
+      }
+    },
+    {
+      "filename": "phase-3-mobile-contact-sheet.png",
+      "dimensions": {
+        "width": 1412,
+        "height": 773
+      },
+      "format": "PNG",
+      "bytes": 536700,
+      "sha256": "9ec20f0b7917e9aa9c2a45424988a823f16b39298e18835c552484ca9dc07c38",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/phase-3-mobile-contact-sheet.png",
+      "role": "mobile 390x844 contact sheet",
+      "sourceVariant": "mobile",
+      "sourceFrames": [
+        {
+          "frame": 1,
+          "normalizedProgress": 0.0
+        },
+        {
+          "frame": 72,
+          "normalizedProgress": 0.263941
+        },
+        {
+          "frame": 126,
+          "normalizedProgress": 0.464684
+        },
+        {
+          "frame": 222,
+          "normalizedProgress": 0.821561
+        },
+        {
+          "frame": 270,
+          "normalizedProgress": 1.0
+        }
+      ]
+    },
+    {
+      "filename": "phase-3-mobile-320-contact-sheet.png",
+      "dimensions": {
+        "width": 800,
+        "height": 810
+      },
+      "format": "PNG",
+      "bytes": 325545,
+      "sha256": "8ad081e3dab2e8bc7824240e36be9ea4b7d93a90ba86764bc15f36d1da275b7e",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/phase-3-mobile-320-contact-sheet.png",
+      "role": "narrow mobile 320x800 contact sheet",
+      "sourceVariant": "mobile",
+      "sourceFrames": [
+        {
+          "frame": 1,
+          "normalizedProgress": 0.0
+        },
+        {
+          "frame": 126,
+          "normalizedProgress": 0.464684
+        },
+        {
+          "frame": 270,
+          "normalizedProgress": 1.0
+        }
+      ]
+    },
+    {
+      "filename": "phase-3-mobile-360-contact-sheet.png",
+      "dimensions": {
+        "width": 890,
+        "height": 810
+      },
+      "format": "PNG",
+      "bytes": 365018,
+      "sha256": "9af9c8ad9a890fba4d0560cd648121af0854faede5d50b7173118b0d1e2d7001",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/phase-3-mobile-360-contact-sheet.png",
+      "role": "mobile 360x800 contact sheet",
+      "sourceVariant": "mobile",
+      "sourceFrames": [
+        {
+          "frame": 1,
+          "normalizedProgress": 0.0
+        },
+        {
+          "frame": 126,
+          "normalizedProgress": 0.464684
+        },
+        {
+          "frame": 270,
+          "normalizedProgress": 1.0
+        }
+      ]
+    },
+    {
+      "filename": "phase-3-mobile-landscape-844x390-contact-sheet.png",
+      "dimensions": {
+        "width": 1346,
+        "height": 405
+      },
+      "format": "PNG",
+      "bytes": 160449,
+      "sha256": "9e51b25e506888942049b42120767e216c3a50acc0194b59f12db9a947c17f7a",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/phase-3-mobile-landscape-844x390-contact-sheet.png",
+      "role": "mobile landscape 844x390 contact sheet",
+      "sourceVariant": "mobile",
+      "sourceFrames": [
+        {
+          "frame": 1,
+          "normalizedProgress": 0.0
+        },
+        {
+          "frame": 126,
+          "normalizedProgress": 0.464684
+        },
+        {
+          "frame": 270,
+          "normalizedProgress": 1.0
+        }
+      ]
+    },
+    {
+      "filename": "phase-3-reduced-motion-desktop-1440x900.png",
+      "dimensions": {
+        "width": 1440,
+        "height": 900
+      },
+      "format": "PNG",
+      "bytes": 726026,
+      "sha256": "03f5490ab11a628eb00c20fa6fc96f72a72593b9ca9da0e8735e55f1c5ffe465",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/phase-3-reduced-motion-desktop-1440x900.png",
+      "role": "purpose-built reduced-motion dormant poster",
+      "sourceVariant": "desktop",
+      "sourceFrames": [
+        {
+          "frame": 1,
+          "normalizedProgress": 0.0
+        }
+      ],
+      "artDirection": {
+        "exactViewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "directionalNeutralScrim": "left",
+        "magentaAdded": false,
+        "magentaDominantPixelRatio": 0.0,
+        "validatedDormantSourceGate": {
+          "relativeInteriorROI": [
+            0.49,
+            0.28,
+            0.69,
+            0.58
+          ],
+          "luminanceP95": 6,
+          "brightPixelRatioAt24": 0.0,
+          "maximumBrightTileRatioAt24": 0.0,
+          "edgePixelRatioAt12": 9.6451e-05,
+          "maximumEdgeTileRatioAt12": 0.000771605,
+          "tileGrid": {
+            "columns": 8,
+            "rows": 6
+          },
+          "visibleInterfaceAndScanlineGate": "PASS_METRIC_VERIFIED",
+          "magentaDominantPixelRatio": 0.0,
+          "magentaGate": "PASS",
+          "physicalInterfaceTextGate": "PASS_NONE_DETECTED_ABOVE_RECORDED_THRESHOLDS",
+          "scanlineGate": "PASS_NONE_DETECTED_ABOVE_RECORDED_THRESHOLDS",
+          "visibilityDeterminationMethod": "SCREEN_INTERIOR_LUMINANCE_GLOBAL_AND_LOCALIZED_TILE_BRIGHT_PIXEL_EDGE_METRICS",
+          "humanVisualDormancyReviewStillRequired": true
+        },
+        "poweredScreen": false,
+        "conduction": false,
+        "interfaceOrScanlineDetailAddedByPosterTransform": false
+      }
+    },
+    {
+      "filename": "phase-3-reduced-motion-mobile-390x844.png",
+      "dimensions": {
+        "width": 390,
+        "height": 844
+      },
+      "format": "PNG",
+      "bytes": 209543,
+      "sha256": "9d5c19b1a5e294bc82822f44a11b94940829e67162c55783bb55bc5f5c02caad",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/phase-3-reduced-motion-mobile-390x844.png",
+      "role": "purpose-built reduced-motion dormant poster",
+      "sourceVariant": "mobile",
+      "sourceFrames": [
+        {
+          "frame": 1,
+          "normalizedProgress": 0.0
+        }
+      ],
+      "artDirection": {
+        "exactViewport": {
+          "width": 390,
+          "height": 844
+        },
+        "directionalNeutralScrim": "left",
+        "magentaAdded": false,
+        "magentaDominantPixelRatio": 0.0,
+        "validatedDormantSourceGate": {
+          "relativeInteriorROI": [
+            0.46,
+            0.58,
+            0.86,
+            0.72
+          ],
+          "luminanceP95": 6,
+          "brightPixelRatioAt24": 0.0,
+          "maximumBrightTileRatioAt24": 0.0,
+          "edgePixelRatioAt12": 0.000135031,
+          "maximumEdgeTileRatioAt12": 0.001851852,
+          "tileGrid": {
+            "columns": 8,
+            "rows": 6
+          },
+          "visibleInterfaceAndScanlineGate": "PASS_METRIC_VERIFIED",
+          "magentaDominantPixelRatio": 0.0,
+          "magentaGate": "PASS",
+          "physicalInterfaceTextGate": "PASS_NONE_DETECTED_ABOVE_RECORDED_THRESHOLDS",
+          "scanlineGate": "PASS_NONE_DETECTED_ABOVE_RECORDED_THRESHOLDS",
+          "visibilityDeterminationMethod": "SCREEN_INTERIOR_LUMINANCE_GLOBAL_AND_LOCALIZED_TILE_BRIGHT_PIXEL_EDGE_METRICS",
+          "humanVisualDormancyReviewStillRequired": true
+        },
+        "poweredScreen": false,
+        "conduction": false,
+        "interfaceOrScanlineDetailAddedByPosterTransform": false
+      }
+    },
+    {
+      "filename": "phase-3-reduced-motion-mobile-320x800.png",
+      "dimensions": {
+        "width": 320,
+        "height": 800
+      },
+      "format": "PNG",
+      "bytes": 162832,
+      "sha256": "451d05bcc3d53a8c451e01751bdbb5dc3ddd7d68d9cd6e208a69dc58e4684366",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/phase-3-reduced-motion-mobile-320x800.png",
+      "role": "purpose-built reduced-motion dormant poster",
+      "sourceVariant": "mobile",
+      "sourceFrames": [
+        {
+          "frame": 1,
+          "normalizedProgress": 0.0
+        }
+      ],
+      "artDirection": {
+        "exactViewport": {
+          "width": 320,
+          "height": 800
+        },
+        "directionalNeutralScrim": "left",
+        "magentaAdded": false,
+        "magentaDominantPixelRatio": 0.0,
+        "validatedDormantSourceGate": {
+          "relativeInteriorROI": [
+            0.46,
+            0.58,
+            0.86,
+            0.72
+          ],
+          "luminanceP95": 6,
+          "brightPixelRatioAt24": 0.0,
+          "maximumBrightTileRatioAt24": 0.0,
+          "edgePixelRatioAt12": 0.000135031,
+          "maximumEdgeTileRatioAt12": 0.001851852,
+          "tileGrid": {
+            "columns": 8,
+            "rows": 6
+          },
+          "visibleInterfaceAndScanlineGate": "PASS_METRIC_VERIFIED",
+          "magentaDominantPixelRatio": 0.0,
+          "magentaGate": "PASS",
+          "physicalInterfaceTextGate": "PASS_NONE_DETECTED_ABOVE_RECORDED_THRESHOLDS",
+          "scanlineGate": "PASS_NONE_DETECTED_ABOVE_RECORDED_THRESHOLDS",
+          "visibilityDeterminationMethod": "SCREEN_INTERIOR_LUMINANCE_GLOBAL_AND_LOCALIZED_TILE_BRIGHT_PIXEL_EDGE_METRICS",
+          "humanVisualDormancyReviewStillRequired": true
+        },
+        "poweredScreen": false,
+        "conduction": false,
+        "interfaceOrScanlineDetailAddedByPosterTransform": false
+      }
+    },
+    {
+      "filename": "phase-3-desktop-f001-p0.0000-full-resolution.png",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "format": "PNG",
+      "bytes": 1462293,
+      "sha256": "12718d7662ff8a13953b30fe0966312ff1862561bce8e7e1c3657f1ae865fb69",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/full-resolution-stills/phase-3-desktop-f001-p0.0000-full-resolution.png",
+      "role": "selected full-resolution still",
+      "sourceVariant": "desktop",
+      "sourceFrames": [
+        {
+          "frame": 1,
+          "normalizedProgress": 0.0
+        }
+      ]
+    },
+    {
+      "filename": "phase-3-desktop-f042-p0.1524-full-resolution.png",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "format": "PNG",
+      "bytes": 1460128,
+      "sha256": "21af493e44d652bd237b3b13860835dae07444fd0e9b7f3430c9e3482fa83c76",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/full-resolution-stills/phase-3-desktop-f042-p0.1524-full-resolution.png",
+      "role": "selected full-resolution still",
+      "sourceVariant": "desktop",
+      "sourceFrames": [
+        {
+          "frame": 42,
+          "normalizedProgress": 0.152416
+        }
+      ]
+    },
+    {
+      "filename": "phase-3-desktop-f072-p0.2639-full-resolution.png",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "format": "PNG",
+      "bytes": 1460777,
+      "sha256": "17424e17b5b3fbd1e1aba2e7a8f96f55edf1a1c02be86af0e716ffd6c6ba8542",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/full-resolution-stills/phase-3-desktop-f072-p0.2639-full-resolution.png",
+      "role": "selected full-resolution still",
+      "sourceVariant": "desktop",
+      "sourceFrames": [
+        {
+          "frame": 72,
+          "normalizedProgress": 0.263941
+        }
+      ]
+    },
+    {
+      "filename": "phase-3-desktop-f104-p0.3829-full-resolution.png",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "format": "PNG",
+      "bytes": 1496782,
+      "sha256": "99b71203b39283c22e2b1c2f643406b4d676a34c024d62772ef4a5d2433c4c1f",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/full-resolution-stills/phase-3-desktop-f104-p0.3829-full-resolution.png",
+      "role": "selected full-resolution still",
+      "sourceVariant": "desktop",
+      "sourceFrames": [
+        {
+          "frame": 104,
+          "normalizedProgress": 0.3829
+        }
+      ]
+    },
+    {
+      "filename": "phase-3-desktop-f116-p0.4275-full-resolution.png",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "format": "PNG",
+      "bytes": 1497545,
+      "sha256": "b65f12fa4430eb827a1db70f0a497ac24e4e97691f70c654c748b811f6e35107",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/full-resolution-stills/phase-3-desktop-f116-p0.4275-full-resolution.png",
+      "role": "selected full-resolution still",
+      "sourceVariant": "desktop",
+      "sourceFrames": [
+        {
+          "frame": 116,
+          "normalizedProgress": 0.427509
+        }
+      ]
+    },
+    {
+      "filename": "phase-3-desktop-f126-p0.4647-full-resolution.png",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "format": "PNG",
+      "bytes": 1500103,
+      "sha256": "8895a43525a0307bb44c059a87c5bc67d3490662e0caea551b42d1473a098cb4",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/full-resolution-stills/phase-3-desktop-f126-p0.4647-full-resolution.png",
+      "role": "selected full-resolution still",
+      "sourceVariant": "desktop",
+      "sourceFrames": [
+        {
+          "frame": 126,
+          "normalizedProgress": 0.464684
+        }
+      ]
+    },
+    {
+      "filename": "phase-3-desktop-f144-p0.5316-full-resolution.png",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "format": "PNG",
+      "bytes": 1551894,
+      "sha256": "91865d1d89b76923e40bbb4c2744396148ecf145e8c4817227cd3eba10992a19",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/full-resolution-stills/phase-3-desktop-f144-p0.5316-full-resolution.png",
+      "role": "selected full-resolution still",
+      "sourceVariant": "desktop",
+      "sourceFrames": [
+        {
+          "frame": 144,
+          "normalizedProgress": 0.531599
+        }
+      ]
+    },
+    {
+      "filename": "phase-3-desktop-f162-p0.5985-full-resolution.png",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "format": "PNG",
+      "bytes": 1549378,
+      "sha256": "ff8a70631514f0edb87d18e64e6b108d21c1a4e99ef204c96d87cb3cdb97135f",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/full-resolution-stills/phase-3-desktop-f162-p0.5985-full-resolution.png",
+      "role": "selected full-resolution still",
+      "sourceVariant": "desktop",
+      "sourceFrames": [
+        {
+          "frame": 162,
+          "normalizedProgress": 0.598513
+        }
+      ]
+    },
+    {
+      "filename": "phase-3-desktop-f182-p0.6729-full-resolution.png",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "format": "PNG",
+      "bytes": 1607412,
+      "sha256": "fc51e5d46222f5d1211a5ac71d28df11bad61cac6ddaa256dbd829e81fcbd9ab",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/full-resolution-stills/phase-3-desktop-f182-p0.6729-full-resolution.png",
+      "role": "selected full-resolution still",
+      "sourceVariant": "desktop",
+      "sourceFrames": [
+        {
+          "frame": 182,
+          "normalizedProgress": 0.672862
+        }
+      ]
+    },
+    {
+      "filename": "phase-3-desktop-f196-p0.7249-full-resolution.png",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "format": "PNG",
+      "bytes": 1661684,
+      "sha256": "62d694c446c6a0cf358950f57eabcaaabe44a2976e82e0a8a2fd5a80048ce6a6",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/full-resolution-stills/phase-3-desktop-f196-p0.7249-full-resolution.png",
+      "role": "selected full-resolution still",
+      "sourceVariant": "desktop",
+      "sourceFrames": [
+        {
+          "frame": 196,
+          "normalizedProgress": 0.724907
+        }
+      ]
+    },
+    {
+      "filename": "phase-3-desktop-f218-p0.8067-full-resolution.png",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "format": "PNG",
+      "bytes": 1619055,
+      "sha256": "ceaa63cf9ad6d9a0b0dfab4dd2d256912c5923b4c83716d49408f39a033823fb",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/full-resolution-stills/phase-3-desktop-f218-p0.8067-full-resolution.png",
+      "role": "selected full-resolution still",
+      "sourceVariant": "desktop",
+      "sourceFrames": [
+        {
+          "frame": 218,
+          "normalizedProgress": 0.806691
+        }
+      ]
+    },
+    {
+      "filename": "phase-3-desktop-f236-p0.8736-full-resolution.png",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "format": "PNG",
+      "bytes": 1525918,
+      "sha256": "aea694bfeda639c93d4bcce42131f17f3938601ce10e08bddc983942beff52d7",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/full-resolution-stills/phase-3-desktop-f236-p0.8736-full-resolution.png",
+      "role": "selected full-resolution still",
+      "sourceVariant": "desktop",
+      "sourceFrames": [
+        {
+          "frame": 236,
+          "normalizedProgress": 0.873606
+        }
+      ]
+    },
+    {
+      "filename": "phase-3-desktop-f250-p0.9257-full-resolution.png",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "format": "PNG",
+      "bytes": 1402308,
+      "sha256": "8b22dea85a614779cfa8900957106d80abe2b70db8cb222205aff50ca6f92122",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/full-resolution-stills/phase-3-desktop-f250-p0.9257-full-resolution.png",
+      "role": "selected full-resolution still",
+      "sourceVariant": "desktop",
+      "sourceFrames": [
+        {
+          "frame": 250,
+          "normalizedProgress": 0.925651
+        }
+      ]
+    },
+    {
+      "filename": "phase-3-desktop-f262-p0.9703-full-resolution.png",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "format": "PNG",
+      "bytes": 1052496,
+      "sha256": "8abf914a34d26048e3c646c36261fcc6c771669f4162712ae79c5276f1e5df6c",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/full-resolution-stills/phase-3-desktop-f262-p0.9703-full-resolution.png",
+      "role": "selected full-resolution still",
+      "sourceVariant": "desktop",
+      "sourceFrames": [
+        {
+          "frame": 262,
+          "normalizedProgress": 0.97026
+        }
+      ]
+    },
+    {
+      "filename": "phase-3-desktop-f270-p1.0000-full-resolution.png",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "format": "PNG",
+      "bytes": 782797,
+      "sha256": "fac5a6cc388eadcb38a90d94dd9c13ace62d09e4f6a8250f94328ec15023921e",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/full-resolution-stills/phase-3-desktop-f270-p1.0000-full-resolution.png",
+      "role": "selected full-resolution still",
+      "sourceVariant": "desktop",
+      "sourceFrames": [
+        {
+          "frame": 270,
+          "normalizedProgress": 1.0
+        }
+      ]
+    },
+    {
+      "filename": "phase-3-mobile-f001-p0.0000-full-resolution.png",
+      "dimensions": {
+        "width": 720,
+        "height": 1280
+      },
+      "format": "PNG",
+      "bytes": 687384,
+      "sha256": "3ec03ca412da91de4bb0b23620fcd88352957529f4e13bf34d7618a8583adbb8",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/full-resolution-stills/phase-3-mobile-f001-p0.0000-full-resolution.png",
+      "role": "selected full-resolution still",
+      "sourceVariant": "mobile",
+      "sourceFrames": [
+        {
+          "frame": 1,
+          "normalizedProgress": 0.0
+        }
+      ]
+    },
+    {
+      "filename": "phase-3-mobile-f072-p0.2639-full-resolution.png",
+      "dimensions": {
+        "width": 720,
+        "height": 1280
+      },
+      "format": "PNG",
+      "bytes": 687567,
+      "sha256": "355f18f0e828a1bc34705d1c3e75d1481f5c1a6268329e884b2d8cf56ea9bd0e",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/full-resolution-stills/phase-3-mobile-f072-p0.2639-full-resolution.png",
+      "role": "selected full-resolution still",
+      "sourceVariant": "mobile",
+      "sourceFrames": [
+        {
+          "frame": 72,
+          "normalizedProgress": 0.263941
+        }
+      ]
+    },
+    {
+      "filename": "phase-3-mobile-f126-p0.4647-full-resolution.png",
+      "dimensions": {
+        "width": 720,
+        "height": 1280
+      },
+      "format": "PNG",
+      "bytes": 678564,
+      "sha256": "4db0a986196da4319142164d03934aebc045dc2b026f31fa7d9ddce94674d5ef",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/full-resolution-stills/phase-3-mobile-f126-p0.4647-full-resolution.png",
+      "role": "selected full-resolution still",
+      "sourceVariant": "mobile",
+      "sourceFrames": [
+        {
+          "frame": 126,
+          "normalizedProgress": 0.464684
+        }
+      ]
+    },
+    {
+      "filename": "phase-3-mobile-f222-p0.8216-full-resolution.png",
+      "dimensions": {
+        "width": 720,
+        "height": 1280
+      },
+      "format": "PNG",
+      "bytes": 615980,
+      "sha256": "5ed6dd30f02260414385d1af145e4ae4033399f6bcceb59dad41306b6e6162aa",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/full-resolution-stills/phase-3-mobile-f222-p0.8216-full-resolution.png",
+      "role": "selected full-resolution still",
+      "sourceVariant": "mobile",
+      "sourceFrames": [
+        {
+          "frame": 222,
+          "normalizedProgress": 0.821561
+        }
+      ]
+    },
+    {
+      "filename": "phase-3-mobile-f270-p1.0000-full-resolution.png",
+      "dimensions": {
+        "width": 720,
+        "height": 1280
+      },
+      "format": "PNG",
+      "bytes": 351106,
+      "sha256": "3eefa296089a8f0231a2de93f6b3ecf8d6b66295d57f7d63abe641084e794199",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/full-resolution-stills/phase-3-mobile-f270-p1.0000-full-resolution.png",
+      "role": "selected full-resolution still",
+      "sourceVariant": "mobile",
+      "sourceFrames": [
+        {
+          "frame": 270,
+          "normalizedProgress": 1.0
+        }
+      ]
+    },
+    {
+      "filename": "phase-3-desktop-forward-review.mp4",
+      "bytes": 1080474,
+      "sha256": "45f5a37844e938e1951c023ab372e1d2cf4ce3c21f35d0976e308f94ffcad97f",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/phase-3-desktop-forward-review.mp4",
+      "role": "complete compact forward desktop review",
+      "sourceVariant": "desktop",
+      "sourceFrames": {
+        "order": "forward",
+        "frameStart": 1,
+        "frameEnd": 270
+      },
+      "sourceNormalizedProgress": {
+        "start": 0.0,
+        "end": 1.0
+      },
+      "mediaProbe": {
+        "codec": "h264",
+        "width": 1280,
+        "height": 720,
+        "pixelFormat": "yuv420p",
+        "averageFrameRate": "30/1",
+        "reportedFrameRate": "30/1",
+        "frameCount": 270,
+        "durationSeconds": 9.0,
+        "bitrateBitsPerSecond": 956823,
+        "containerFormats": "mov,mp4,m4a,3gp,3g2,mj2",
+        "audioStreamCount": 0,
+        "keyframeFrames": [
+          1,
+          13,
+          25,
+          37,
+          49,
+          61,
+          73,
+          85,
+          97,
+          109,
+          121,
+          133,
+          145,
+          157,
+          169,
+          181,
+          193,
+          205,
+          217,
+          229,
+          241,
+          253,
+          265
+        ],
+        "keyframeIntervals": [
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12
+        ],
+        "maximumKeyframeInterval": 12,
+        "bytes": 1080474,
+        "sha256": "45f5a37844e938e1951c023ab372e1d2cf4ce3c21f35d0976e308f94ffcad97f",
+        "decodedFrameBytesRGBA": 3686400
+      }
+    },
+    {
+      "filename": "phase-3-desktop-reverse-review.mp4",
+      "bytes": 999375,
+      "sha256": "ca1473fc06a565c5110623b952c6ad0489a51b1941c1a40c348c8eec134a2d49",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/phase-3-desktop-reverse-review.mp4",
+      "role": "complete compact reverse desktop review",
+      "sourceVariant": "desktop",
+      "sourceFrames": {
+        "order": "reverse",
+        "frameStart": 270,
+        "frameEnd": 1
+      },
+      "sourceNormalizedProgress": {
+        "start": 1.0,
+        "end": 0.0
+      },
+      "mediaProbe": {
+        "codec": "h264",
+        "width": 1280,
+        "height": 720,
+        "pixelFormat": "yuv420p",
+        "averageFrameRate": "30/1",
+        "reportedFrameRate": "30/1",
+        "frameCount": 270,
+        "durationSeconds": 9.0,
+        "bitrateBitsPerSecond": 884749,
+        "containerFormats": "mov,mp4,m4a,3gp,3g2,mj2",
+        "audioStreamCount": 0,
+        "keyframeFrames": [
+          1,
+          13,
+          25,
+          37,
+          49,
+          61,
+          73,
+          85,
+          97,
+          109,
+          121,
+          133,
+          145,
+          157,
+          169,
+          181,
+          193,
+          205,
+          217,
+          229,
+          241,
+          253,
+          265
+        ],
+        "keyframeIntervals": [
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12
+        ],
+        "maximumKeyframeInterval": 12,
+        "bytes": 999375,
+        "sha256": "ca1473fc06a565c5110623b952c6ad0489a51b1941c1a40c348c8eec134a2d49",
+        "decodedFrameBytesRGBA": 3686400
+      }
+    },
+    {
+      "filename": "phase-3-mobile-forward-review.mp4",
+      "bytes": 325610,
+      "sha256": "9f62851adafbc13c218c22fade72b7ed63ba0be842a429bef7c48264405ba4a1",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/phase-3-mobile-forward-review.mp4",
+      "role": "complete transferable forward mobile review derived from the authored 720x1280 source",
+      "sourceVariant": "mobile",
+      "sourceFrames": {
+        "order": "forward",
+        "frameStart": 1,
+        "frameEnd": 270,
+        "frameCount": 270,
+        "sourceDimensions": {
+          "width": 720,
+          "height": 1280
+        }
+      },
+      "sourceNormalizedProgress": {
+        "start": 0.0,
+        "end": 1.0,
+        "formula": "(frame - 1) / 269"
+      },
+      "mediaProbe": {
+        "codec": "h264",
+        "width": 360,
+        "height": 640,
+        "pixelFormat": "yuv420p",
+        "averageFrameRate": "30/1",
+        "reportedFrameRate": "30/1",
+        "frameCount": 270,
+        "durationSeconds": 9.0,
+        "bitrateBitsPerSecond": 285902,
+        "containerFormats": "mov,mp4,m4a,3gp,3g2,mj2",
+        "audioStreamCount": 0,
+        "keyframeFrames": [
+          1,
+          13,
+          25,
+          37,
+          49,
+          61,
+          73,
+          85,
+          97,
+          109,
+          121,
+          133,
+          145,
+          157,
+          169,
+          181,
+          193,
+          205,
+          217,
+          229,
+          241,
+          253,
+          265
+        ],
+        "keyframeIntervals": [
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12
+        ],
+        "maximumKeyframeInterval": 12,
+        "bytes": 325610,
+        "sha256": "9f62851adafbc13c218c22fade72b7ed63ba0be842a429bef7c48264405ba4a1",
+        "decodedFrameBytesRGBA": 921600
+      }
+    },
+    {
+      "filename": "phase-3-mobile-reverse-review.mp4",
+      "bytes": 301593,
+      "sha256": "5bd37df7dfcee83e8a56c8946ffe1c5aa61043ab2bcc25ae2d30eb18e9bf45db",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/phase-3-mobile-reverse-review.mp4",
+      "role": "complete transferable reverse mobile review derived from the authored 720x1280 source",
+      "sourceVariant": "mobile",
+      "sourceFrames": {
+        "order": "reverse",
+        "frameStart": 270,
+        "frameEnd": 1,
+        "frameCount": 270,
+        "sourceDimensions": {
+          "width": 720,
+          "height": 1280
+        }
+      },
+      "sourceNormalizedProgress": {
+        "start": 1.0,
+        "end": 0.0,
+        "formula": "(frame - 1) / 269"
+      },
+      "mediaProbe": {
+        "codec": "h264",
+        "width": 360,
+        "height": 640,
+        "pixelFormat": "yuv420p",
+        "averageFrameRate": "30/1",
+        "reportedFrameRate": "30/1",
+        "frameCount": 270,
+        "durationSeconds": 9.0,
+        "bitrateBitsPerSecond": 264560,
+        "containerFormats": "mov,mp4,m4a,3gp,3g2,mj2",
+        "audioStreamCount": 0,
+        "keyframeFrames": [
+          1,
+          13,
+          25,
+          37,
+          49,
+          61,
+          73,
+          85,
+          97,
+          109,
+          121,
+          133,
+          145,
+          157,
+          169,
+          181,
+          193,
+          205,
+          217,
+          229,
+          241,
+          253,
+          265
+        ],
+        "keyframeIntervals": [
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12
+        ],
+        "maximumKeyframeInterval": 12,
+        "bytes": 301593,
+        "sha256": "5bd37df7dfcee83e8a56c8946ffe1c5aa61043ab2bcc25ae2d30eb18e9bf45db",
+        "decodedFrameBytesRGBA": 921600
+      }
+    },
+    {
+      "filename": "phase-3-desktop-scrub-simulation-review.mp4",
+      "bytes": 661563,
+      "sha256": "380df4d79cc89cc495593a277302c77a706c06b378848e878ab22920fff94071",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/phase-3-desktop-scrub-simulation-review.mp4",
+      "role": "deterministic scrub simulation: forward/jump/reverse/alternating/portal/conduction",
+      "sourceVariant": "desktop",
+      "sourceFrames": [
+        {
+          "label": "FORWARD SCRUB",
+          "frames": [
+            1,
+            31,
+            61,
+            91,
+            121,
+            151,
+            181,
+            211,
+            241,
+            270
+          ],
+          "normalizedProgress": [
+            0.0,
+            0.111524,
+            0.223048,
+            0.334572,
+            0.446097,
+            0.557621,
+            0.669145,
+            0.780669,
+            0.892193,
+            1.0
+          ]
+        },
+        {
+          "label": "FAST FORWARD JUMP",
+          "frames": [
+            1,
+            90,
+            180,
+            270
+          ],
+          "normalizedProgress": [
+            0.0,
+            0.330855,
+            0.665428,
+            1.0
+          ]
+        },
+        {
+          "label": "REVERSE SCRUB",
+          "frames": [
+            270,
+            240,
+            210,
+            180,
+            150,
+            120,
+            90,
+            60,
+            31,
+            1
+          ],
+          "normalizedProgress": [
+            1.0,
+            0.888476,
+            0.776952,
+            0.665428,
+            0.553903,
+            0.442379,
+            0.330855,
+            0.219331,
+            0.111524,
+            0.0
+          ]
+        },
+        {
+          "label": "RAPID ALTERNATING SEEK",
+          "frames": [
+            31,
+            240,
+            60,
+            262,
+            104,
+            218,
+            42,
+            270
+          ],
+          "normalizedProgress": [
+            0.111524,
+            0.888476,
+            0.219331,
+            0.97026,
+            0.3829,
+            0.806691,
+            0.152416,
+            1.0
+          ]
+        },
+        {
+          "label": "JUMP DIRECTLY TO PORTAL",
+          "frames": [
+            270
+          ],
+          "normalizedProgress": [
+            1.0
+          ]
+        },
+        {
+          "label": "JUMP BACK TO CONDUCTION",
+          "frames": [
+            72
+          ],
+          "normalizedProgress": [
+            0.263941
+          ]
+        }
+      ],
+      "sourceNormalizedProgress": "non-linear authored seek pattern; exact values recorded with each segment",
+      "mediaProbe": {
+        "codec": "h264",
+        "width": 1280,
+        "height": 720,
+        "pixelFormat": "yuv420p",
+        "averageFrameRate": "30/1",
+        "reportedFrameRate": "30/1",
+        "frameCount": 204,
+        "durationSeconds": 6.8,
+        "bitrateBitsPerSecond": 774502,
+        "containerFormats": "mov,mp4,m4a,3gp,3g2,mj2",
+        "audioStreamCount": 0,
+        "keyframeFrames": [
+          1,
+          13,
+          25,
+          37,
+          49,
+          61,
+          73,
+          85,
+          97,
+          109,
+          121,
+          133,
+          145,
+          157,
+          169,
+          181,
+          193
+        ],
+        "keyframeIntervals": [
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12
+        ],
+        "maximumKeyframeInterval": 12
+      }
+    }
+  ],
+  "reviewReadme": {
+    "filename": "README.md",
+    "bytes": 3000,
+    "sha256": "fd0a8c8f3afcf70cf414ce72cdb49934ca6dff5ca6947d938484763a6a10260f",
+    "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/README.md"
+  },
+  "externalReviewPackage": {
+    "filename": "phase-3-crt-opening-human-review.zip",
+    "containsRawFrameSequences": false,
+    "containsProductionDeliveryCandidates": false,
+    "productionCandidateHashesAreRecorded": true,
+    "shaBindingAtFullPackaging": "REVIEW CAPTURE HEAD — not the later evidence commit",
+    "postPushExternalFinalizationRequired": true,
+    "postPushFinalizationWritesTrackedFiles": false,
+    "postPushOutputNames": [
+      "phase-3-crt-opening-human-review.zip",
+      "phase-3-crt-opening-human-review.manifest.json",
+      "phase-3-crt-opening-human-review.zip.sha256"
+    ]
+  }
+}
