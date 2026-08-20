@@ -45,7 +45,16 @@ from pathlib import Path
 from typing import Any, Iterable, Sequence
 
 try:
-    from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont, ImageOps
+    from PIL import (
+        Image,
+        ImageChops,
+        ImageDraw,
+        ImageEnhance,
+        ImageFilter,
+        ImageFont,
+        ImageOps,
+        ImageStat,
+    )
 except ImportError as exc:  # pragma: no cover - environment guidance
     raise SystemExit(
         "Pillow is required to build Phase 3 review evidence. Install Pillow "
@@ -115,6 +124,23 @@ MOBILE_FRAMES = (1, 72, 126, 222, 270)
 MOBILE_HIGH_RISK_FRAMES = (1, 126, 270)
 DESKTOP_FULL_RES_FRAMES = (1, 42, 72, 104, 116, 126, 144, 162, 182, 196, 218, 236, 250, 262, 270)
 MOBILE_FULL_RES_FRAMES = (1, 72, 126, 222, 270)
+
+CODEC_RISK_FRAMES: dict[str, tuple[tuple[int, str], ...]] = {
+    "desktop": (
+        (1, "DORMANT / DARK GRADIENT"),
+        (72, "CONDUCTION / MAGENTA"),
+        (196, "SCANLINE / TYPE"),
+        (236, "CLOSE APPROACH"),
+        (270, "HANDOFF"),
+    ),
+    "mobile": (
+        (1, "DORMANT / DARK GRADIENT"),
+        (72, "CONDUCTION / MAGENTA"),
+        (196, "SCANLINE / TYPE"),
+        (222, "CLOSE APPROACH"),
+        (270, "HANDOFF"),
+    ),
+}
 
 SCRUB_SEGMENTS: tuple[tuple[str, tuple[int, ...]], ...] = (
     ("FORWARD SCRUB", (1, 31, 61, 91, 121, 151, 181, 211, 241, 270)),
@@ -850,6 +876,253 @@ def build_scrub_sequence(desktop_root: Path, destination: Path) -> int:
     return (output_index - 1) * hold
 
 
+def decode_selected_frames(
+    ffmpeg: Path,
+    candidate: Path,
+    frames: Sequence[int],
+    destination: Path,
+    prefix: str,
+) -> list[Path]:
+    destination.mkdir(parents=True, exist_ok=True)
+    select_expression = "+".join(f"eq(n\\,{frame - FRAME_START})" for frame in frames)
+    output_pattern = destination / f"{prefix}-%02d.png"
+    run(
+        [
+            str(ffmpeg),
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-y",
+            "-i",
+            str(candidate),
+            "-map",
+            "0:v:0",
+            "-vf",
+            f"select={select_expression}",
+            "-frames:v",
+            str(len(frames)),
+            "-fps_mode",
+            "vfr",
+            "-an",
+            "-sn",
+            "-dn",
+            "-map_metadata",
+            "-1",
+            "-pix_fmt",
+            "rgb24",
+            "-compression_level",
+            "9",
+            "-threads",
+            "1",
+            "-start_number",
+            "1",
+            str(output_pattern),
+        ]
+    )
+    outputs = [destination / f"{prefix}-{index:02d}.png" for index in range(1, len(frames) + 1)]
+    missing = [path for path in outputs if not path.is_file()]
+    extras = sorted(
+        path for path in destination.glob(f"{prefix}-*.png") if path not in set(outputs)
+    )
+    if missing or extras:
+        raise ValueError(
+            f"Decoded risk-frame set is incomplete or ambiguous for {candidate}: "
+            f"missing={[path.name for path in missing]}, extras={[path.name for path in extras]}"
+        )
+    return outputs
+
+
+def pixel_difference_metrics(source: Image.Image, decoded: Image.Image) -> dict[str, Any]:
+    source_rgb = source.convert("RGB")
+    decoded_rgb = decoded.convert("RGB")
+    if source_rgb.size != decoded_rgb.size:
+        raise ValueError(
+            f"Codec decode dimensions {decoded_rgb.size} do not match source {source_rgb.size}"
+        )
+    pixel_count = source_rgb.width * source_rgb.height
+    difference = ImageChops.difference(source_rgb, decoded_rgb)
+    statistics = ImageStat.Stat(difference)
+    channel_means = [float(value) for value in statistics.mean]
+    channel_rms = [float(value) for value in statistics.rms]
+    overall_mae = sum(channel_means) / 3.0
+    overall_rmse = math.sqrt(sum(value * value for value in channel_rms) / 3.0)
+    psnr = None if overall_rmse == 0 else 20.0 * math.log10(255.0 / overall_rmse)
+
+    channel_histograms = [channel.histogram() for channel in difference.split()]
+    combined_histogram = [
+        sum(histogram[value] for histogram in channel_histograms) for value in range(256)
+    ]
+    p95_channels = [
+        percentile_from_histogram(histogram, 0.95) for histogram in channel_histograms
+    ]
+    threshold_lut = [0 if value <= 12 else 255 for value in range(256)]
+    threshold_masks = [channel.point(threshold_lut) for channel in difference.split()]
+    any_over_12 = ImageChops.lighter(
+        ImageChops.lighter(threshold_masks[0], threshold_masks[1]), threshold_masks[2]
+    )
+    any_over_histogram = any_over_12.histogram()
+    pixels_over_12 = sum(any_over_histogram[1:])
+
+    source_luma = source_rgb.convert("L")
+    decoded_luma = decoded_rgb.convert("L")
+    luma_difference = ImageChops.difference(source_luma, decoded_luma)
+    luma_statistics = ImageStat.Stat(luma_difference)
+    dark_mask = source_luma.point([255 if value < 32 else 0 for value in range(256)])
+    dark_statistics = ImageStat.Stat(difference, mask=dark_mask)
+    dark_count = int(dark_statistics.count[0]) if dark_statistics.count else 0
+
+    source_red, source_green, source_blue = source_rgb.split()
+    red_floor_mask = source_red.point([255 if value >= 80 else 0 for value in range(256)])
+    red_over_green = ImageChops.subtract(source_red, source_green).point(
+        [255 if value >= 32 else 0 for value in range(256)]
+    )
+    blue_over_green = ImageChops.subtract(source_blue, source_green).point(
+        [255 if value >= 8 else 0 for value in range(256)]
+    )
+    magenta_mask = ImageChops.multiply(
+        ImageChops.multiply(red_floor_mask, red_over_green), blue_over_green
+    )
+    magenta_statistics = ImageStat.Stat(difference, mask=magenta_mask)
+    magenta_count = int(magenta_statistics.count[0]) if magenta_statistics.count else 0
+
+    source_edges = source_luma.filter(ImageFilter.FIND_EDGES)
+    decoded_edges = decoded_luma.filter(ImageFilter.FIND_EDGES)
+    edge_difference = ImageChops.difference(source_edges, decoded_edges)
+    edge_statistics = ImageStat.Stat(edge_difference)
+
+    return {
+        "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
+        "pixelCount": pixel_count,
+        "meanAbsoluteError8bit": round(overall_mae, 6),
+        "meanAbsoluteErrorPerChannelRGB": [round(value, 6) for value in channel_means],
+        "rootMeanSquareError8bit": round(overall_rmse, 6),
+        "rootMeanSquareErrorPerChannelRGB": [round(value, 6) for value in channel_rms],
+        "peakSignalToNoiseRatioDb": round(psnr, 6) if psnr is not None else None,
+        "absoluteDifferenceP95": percentile_from_histogram(combined_histogram, 0.95),
+        "absoluteDifferenceP95PerChannelRGB": p95_channels,
+        "maximumAbsoluteDifference8bit": max(
+            maximum for _minimum, maximum in statistics.extrema
+        ),
+        "pixelsWithAnyChannelDeltaOver12Ratio": round(pixels_over_12 / pixel_count, 9),
+        "lumaMeanAbsoluteError8bit": round(float(luma_statistics.mean[0]), 6),
+        "lumaRootMeanSquareError8bit": round(float(luma_statistics.rms[0]), 6),
+        "darkSourcePixelRatio": round(dark_count / pixel_count, 9),
+        "darkSourceMeanAbsoluteErrorPerChannelRGB": [
+            round(float(value), 6) for value in dark_statistics.mean
+        ],
+        "magentaSourcePixelRatio": round(magenta_count / pixel_count, 9),
+        "magentaSourceMeanAbsoluteErrorPerChannelRGB": [
+            round(float(value), 6) for value in magenta_statistics.mean
+        ],
+        "edgeMapMeanAbsoluteError8bit": round(float(edge_statistics.mean[0]), 6),
+    }
+
+
+def build_codec_comparison_evidence(
+    ffmpeg: Path,
+    repository: Path,
+    source_root: Path,
+    variant: str,
+    candidate_records: dict[str, dict[str, Any]],
+    destination: Path,
+) -> tuple[tuple[int, ...], list[dict[str, Any]]]:
+    risk_states = CODEC_RISK_FRAMES[variant]
+    frames = tuple(frame for frame, _risk in risk_states)
+    h264_record = candidate_records[f"{variant}-h264"]
+    vp9_record = candidate_records[f"{variant}-vp9"]
+    h264_path = repository / h264_record["repositoryRelativePath"]
+    vp9_path = repository / vp9_record["repositoryRelativePath"]
+    panels: list[Panel] = []
+    metric_records: list[dict[str, Any]] = []
+
+    with tempfile.TemporaryDirectory(prefix=f"phase3-{variant}-codec-risk-") as temporary_text:
+        temporary_root = Path(temporary_text)
+        h264_decoded = decode_selected_frames(
+            ffmpeg, h264_path, frames, temporary_root / "h264", "h264"
+        )
+        vp9_decoded = decode_selected_frames(
+            ffmpeg, vp9_path, frames, temporary_root / "vp9", "vp9"
+        )
+        for index, (frame, risk) in enumerate(risk_states):
+            source_path = frame_path(source_root, variant, frame)
+            with (
+                Image.open(source_path) as source_image,
+                Image.open(h264_decoded[index]) as h264_image,
+                Image.open(vp9_decoded[index]) as vp9_image,
+            ):
+                source_rgb = source_image.convert("RGB")
+                h264_rgb = h264_image.convert("RGB")
+                vp9_rgb = vp9_image.convert("RGB")
+                h264_metrics = pixel_difference_metrics(source_rgb, h264_rgb)
+                vp9_metrics = pixel_difference_metrics(source_rgb, vp9_rgb)
+                h264_psnr = h264_metrics["peakSignalToNoiseRatioDb"]
+                vp9_psnr = vp9_metrics["peakSignalToNoiseRatioDb"]
+                h264_psnr_label = "LOSSLESS" if h264_psnr is None else f"{h264_psnr:.2f} dB"
+                vp9_psnr_label = "LOSSLESS" if vp9_psnr is None else f"{vp9_psnr:.2f} dB"
+                panels.extend(
+                    [
+                        Panel(
+                            source_rgb,
+                            f"{risk} · F{frame:03d} P{normalized_progress(frame):.4f} · SOURCE PNG",
+                        ),
+                        Panel(
+                            h264_rgb,
+                            f"{risk} · H.264 · MAE {h264_metrics['meanAbsoluteError8bit']:.2f} · "
+                            f"PSNR {h264_psnr_label}",
+                        ),
+                        Panel(
+                            vp9_rgb,
+                            f"{risk} · VP9 · MAE {vp9_metrics['meanAbsoluteError8bit']:.2f} · "
+                            f"PSNR {vp9_psnr_label}",
+                        ),
+                    ]
+                )
+            metric_records.append(
+                {
+                    "risk": risk,
+                    "sourceFrame": frame,
+                    "normalizedProgress": normalized_progress(frame),
+                    "sourcePNG": {
+                        "filename": source_path.name,
+                        "bytes": source_path.stat().st_size,
+                        "sha256": sha256_file(source_path),
+                    },
+                    "h264": {
+                        "candidateId": h264_record["id"],
+                        "candidateSha256": h264_record["verification"]["sha256"],
+                        "decodedPNGBytes": h264_decoded[index].stat().st_size,
+                        "decodedPNGSha256": sha256_file(h264_decoded[index]),
+                        "metrics": h264_metrics,
+                    },
+                    "vp9": {
+                        "candidateId": vp9_record["id"],
+                        "candidateSha256": vp9_record["verification"]["sha256"],
+                        "decodedPNGBytes": vp9_decoded[index].stat().st_size,
+                        "decodedPNGSha256": sha256_file(vp9_decoded[index]),
+                        "metrics": vp9_metrics,
+                    },
+                }
+            )
+
+        if variant == "desktop":
+            panel_size = (432, 243)
+            title = "PHASE 3 · DESKTOP CODEC RISK COMPARISON"
+            subtitle = "Source PNG vs decoded H.264 vs decoded VP9 · five high-risk production states"
+        else:
+            panel_size = (230, 409)
+            title = "PHASE 3 · MOBILE CODEC RISK COMPARISON"
+            subtitle = "Authored portrait source vs decoded H.264 vs decoded VP9 · five high-risk states"
+        compose_sheet(
+            destination,
+            title,
+            subtitle,
+            panels,
+            columns=3,
+            panel_size=panel_size,
+        )
+    return frames, metric_records
+
+
 def image_record(path: Path) -> dict[str, Any]:
     with Image.open(path) as image:
         return {
@@ -1442,6 +1715,33 @@ def main() -> None:
         review_outputs.append(record)
         review_zip_files.append((path, path.relative_to(review_root).as_posix()))
 
+    candidate_records = {candidate["id"]: candidate for candidate in candidates}
+    for variant, source_sequence_root in (
+        ("desktop", desktop_root),
+        ("mobile", mobile_root),
+    ):
+        codec_sheet = review_root / f"phase-3-{variant}-codec-comparison-contact-sheet.png"
+        codec_frames, codec_metrics = build_codec_comparison_evidence(
+            ffmpeg,
+            repository,
+            source_sequence_root,
+            variant,
+            candidate_records,
+            codec_sheet,
+        )
+        register_image(
+            codec_sheet,
+            f"{variant} source-vs-H.264-vs-VP9 decoded risk comparison",
+            variant,
+            codec_frames,
+            codecComparison={
+                "decodeTool": ffmpeg_build,
+                "decodeSelection": "zero-based exact decoded frame index via FFmpeg select filter",
+                "columnOrder": ["source PNG", "decoded H.264", "decoded VP9"],
+                "riskStates": codec_metrics,
+            },
+        )
+
     conduction_sheet = review_root / "phase-3-desktop-conduction-contact-sheet.png"
     compose_sheet(
         conduction_sheet,
@@ -1779,13 +2079,15 @@ desktop or mobile PNG sequences and it is not a Phase 4 integration.
 
 1. `phase-3-desktop-conduction-contact-sheet.png`
 2. `phase-3-crt-startup-contact-sheet.png`
-3. `phase-3-camera-portal-contact-sheet.png`
-4. `phase-3-portal-alignment-contact-sheet.png`
-5. `phase-3-portal-safe-zone-matrix.png`
-6. `phase-3-to-phase-2b-handoff-comparison.png`
-7. mobile 390/360/320 px, landscape, and reduced-motion evidence
-8. selected full-resolution stills
-9. forward, reverse, then scrub-simulation desktop review videos
+3. `phase-3-desktop-codec-comparison-contact-sheet.png`
+4. `phase-3-mobile-codec-comparison-contact-sheet.png`
+5. `phase-3-camera-portal-contact-sheet.png`
+6. `phase-3-portal-alignment-contact-sheet.png`
+7. `phase-3-portal-safe-zone-matrix.png`
+8. `phase-3-to-phase-2b-handoff-comparison.png`
+9. mobile 390/360/320 px, landscape, and reduced-motion evidence
+10. selected full-resolution stills
+11. forward, reverse, then scrub-simulation desktop review videos
 
 The portal guides exist only in evidence. They are not baked into production
 media. The Phase 2B ENTRY panel is cropped from the frozen accepted evidence
