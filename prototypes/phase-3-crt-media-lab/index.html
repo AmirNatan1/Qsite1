@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta
+      name="description"
+      content="Isolated Phase 3 browser lab for inspecting and measuring local CRT cinematic media."
+    />
+    <title>Phase 3 · CRT media lab</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <!-- QH_PHASE3_MEDIA_LAB_ONLY -->
+    <a class="skip-link" href="#media-source">Skip to media source controls</a>
+
+    <main>
+      <header class="intro" aria-labelledby="page-title">
+        <p class="eyebrow">Quantum‑Hub · Phase 3 · isolated evidence surface</p>
+        <h1 id="page-title">CRT media lab</h1>
+        <p class="lede">
+          Load a local production candidate, inspect any normalized point, and run repeatable browser seek exercises.
+          Measurements stay in this page until you export them as JSON.
+        </p>
+        <p class="boundary">
+          Lab only. This directory is not an Astro route, is not copied into <code>public</code>, and does not import
+          the accepted Phase 2B homepage.
+        </p>
+      </header>
+
+      <section class="panel" aria-labelledby="source-title">
+        <div class="section-heading">
+          <div>
+            <p class="kicker">Input</p>
+            <h2 id="source-title">Media source</h2>
+          </div>
+          <p id="capability-status" class="capability-status">Checking browser capabilities…</p>
+        </div>
+
+        <form id="media-source" class="source-grid">
+          <div class="field field-wide">
+            <label for="media-file">Local video file</label>
+            <input id="media-file" name="media-file" type="file" accept="video/*,.mp4,.webm,.mov,.m4v" />
+            <p class="field-note">The selected file remains local to this browser tab.</p>
+          </div>
+
+          <div class="field field-wide">
+            <label for="source-url">Source URL or repository-relative path</label>
+            <input
+              id="source-url"
+              name="source-url"
+              type="text"
+              inputmode="url"
+              autocomplete="off"
+              spellcheck="false"
+              placeholder="?src=… also loads automatically"
+            />
+          </div>
+
+          <div class="field field-compact">
+            <label for="frame-rate">Frame rate</label>
+            <input id="frame-rate" name="frame-rate" type="number" min="1" max="240" step="0.001" value="24" />
+          </div>
+
+          <button id="load-url" type="submit">Load URL</button>
+          <button id="clear-source" type="button" class="secondary">Clear</button>
+        </form>
+
+        <p id="run-status" class="run-status" role="status" aria-live="polite">Choose a media source to begin.</p>
+      </section>
+
+      <section class="panel stage-panel" aria-labelledby="timeline-title">
+        <div class="section-heading">
+          <div>
+            <p class="kicker">Normalized timeline</p>
+            <h2 id="timeline-title">Frame inspection</h2>
+          </div>
+          <p id="source-name" class="source-name">No source loaded</p>
+        </div>
+
+        <figure class="media-stage">
+          <video id="media" controls muted playsinline preload="metadata" aria-describedby="media-caption">
+            Your browser does not support HTML video.
+          </video>
+          <figcaption id="media-caption">
+            Native playback controls remain available. The lab slider uses normalized progress from 0.0000 to 1.0000.
+          </figcaption>
+        </figure>
+
+        <div class="timeline-control">
+          <label for="timeline">Cinematic progress</label>
+          <input
+            id="timeline"
+            type="range"
+            min="0"
+            max="1"
+            step="0.0001"
+            value="0"
+            aria-describedby="timeline-help"
+            disabled
+          />
+          <p id="timeline-help" class="field-note">
+            Arrow keys make native range steps; Page Up/Down make larger steps; Home and End jump to the bounds.
+          </p>
+        </div>
+
+        <dl class="readout" aria-label="Current media position">
+          <div>
+            <dt>Progress</dt>
+            <dd><output id="progress-display" for="timeline">0.0000 · 0.00%</output></dd>
+          </div>
+          <div>
+            <dt>Time</dt>
+            <dd><output id="time-display" for="timeline">00:00.000 / —</output></dd>
+          </div>
+          <div>
+            <dt>Estimated frame</dt>
+            <dd><output id="frame-display" for="timeline frame-rate">0 / — @ 24 fps</output></dd>
+          </div>
+          <div>
+            <dt>Dimensions</dt>
+            <dd id="dimension-display">—</dd>
+          </div>
+          <div>
+            <dt>Ready state</dt>
+            <dd id="ready-display">No media</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="panel" aria-labelledby="exercise-title">
+        <div class="section-heading">
+          <div>
+            <p class="kicker">Decoder exercises</p>
+            <h2 id="exercise-title">Seek and jump tests</h2>
+          </div>
+          <button id="cancel-run" type="button" class="quiet" disabled>Cancel active run</button>
+        </div>
+
+        <div class="action-grid" role="group" aria-label="Media seek exercises">
+          <button type="button" data-exercise="first-frame" disabled>Jump to first frame</button>
+          <button type="button" data-exercise="final-frame" disabled>Jump to final frame</button>
+          <button type="button" data-exercise="random-10" disabled>Run 10 random seeks</button>
+          <button type="button" data-exercise="rapid-alternating" disabled>Run rapid alternating seeks</button>
+          <button type="button" data-exercise="forward-reverse" disabled>Run forward + reverse sequence</button>
+        </div>
+
+        <p class="shortcut-note">
+          Inspection shortcuts outside form controls: <kbd>[</kbd> previous frame, <kbd>]</kbd> next frame,
+          <kbd>0</kbd> first frame, <kbd>9</kbd> final frame.
+        </p>
+
+        <div class="table-wrap" tabindex="0" aria-label="Scrollable seek result table">
+          <table>
+            <caption>
+              Each completed exercise records target time, seek latency, presented-frame latency when available, and
+              playback-quality counters.
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Exercise</th>
+                <th scope="col">Status</th>
+                <th scope="col">Seeks</th>
+                <th scope="col">Median</th>
+                <th scope="col">p95</th>
+                <th scope="col">Max</th>
+                <th scope="col">Dropped Δ</th>
+              </tr>
+            </thead>
+            <tbody id="result-rows">
+              <tr class="empty-row">
+                <td colspan="7">No exercises have run.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel telemetry-panel" aria-labelledby="telemetry-title">
+        <div class="section-heading">
+          <div>
+            <p class="kicker">Lifecycle evidence</p>
+            <h2 id="telemetry-title">Hidden-tab telemetry</h2>
+          </div>
+          <button id="reset-visibility" type="button" class="secondary">Reset telemetry</button>
+        </div>
+        <p>
+          Start playback, move to another tab, then return. The report records visibility transitions, hidden duration,
+          media-time advance, and whether playback was active before and after the transition.
+        </p>
+        <dl class="telemetry-readout">
+          <div>
+            <dt>Current state</dt>
+            <dd id="visibility-state">visible</dd>
+          </div>
+          <div>
+            <dt>Transitions</dt>
+            <dd id="visibility-count">0</dd>
+          </div>
+          <div>
+            <dt>Total hidden</dt>
+            <dd id="hidden-duration">0 ms</dd>
+          </div>
+          <div>
+            <dt>Last media advance</dt>
+            <dd id="hidden-media-advance">—</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="panel" aria-labelledby="report-title">
+        <div class="section-heading">
+          <div>
+            <p class="kicker">Portable result</p>
+            <h2 id="report-title">JSON report</h2>
+          </div>
+          <button id="export-report" type="button" class="secondary">Export results JSON</button>
+        </div>
+        <p>
+          The current report is also exposed as <code>window.phase3MediaLabReport</code> for local automation.
+        </p>
+        <pre id="report-preview" tabindex="0" aria-label="Phase 3 media lab report JSON"></pre>
+      </section>
+    </main>
+
+    <noscript>This isolated lab requires JavaScript for media loading, frame readouts, and seek measurements.</noscript>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
