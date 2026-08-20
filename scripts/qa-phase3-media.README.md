@@ -44,7 +44,7 @@ The JSON report has schema quantum-hub.phase-3-media-qa.v1. Each candidate conta
 
 ## Optional recorded media-lab evidence
 
-Supplying --record-video creates a second, dedicated Playwright context that opens the real files in prototypes/phase-3-crt-media-lab. It loads the selected delivery candidate through the lab query-source control, operates the visible timeline with Home and End, clicks all five lab exercise buttons, performs a real tab focus switch, and scrolls through the resulting evidence table and JSON preview. The recording does not replay the verifier's programmatic seek targets and does not enter the production site.
+Supplying --record-video creates a dedicated headed Playwright process that opens the real files in prototypes/phase-3-crt-media-lab. It loads the selected delivery candidate through the lab query-source control, operates the visible timeline with Home and End, clicks all five lab exercise buttons, starts playback through the focused native video control, and scrolls through the resulting evidence table and JSON preview. The recording does not replay the verifier's programmatic seek targets, impersonate the separate Page Visibility proof, or enter the production site.
 
 Playwright records this interaction as WebM at the exact --record-video path. The path must end in .webm, must differ from the JSON report and all four candidate files, and must remain outside src, public, and dist. The report records the video's exact byte size and SHA-256 under browser.reviewVideo.output.
 
@@ -52,7 +52,15 @@ Recording requires --headed so the review artifact represents a visible-browser 
 
 The seeded targets and field ordering are deterministic. Wall-clock latencies, playback counters, browser versions, and rendered fingerprints are measurements and will naturally vary by machine.
 
-A headless run may be unable to create a genuine hidden document. That result is explicitly partial-hidden-tab-inconclusive at candidate level and partial-browser-evidence-incomplete in the report summary; it can never become a full browser pass. Use --headed for the final focus/visibility evidence when the environment permits a visible Chromium window. If even a headed session cannot expose hidden state, the report requests a manual visible-browser focus-switch trace.
+Seek success is governed by target-time exactness, absence of a media error, and a ready state of HAVE_CURRENT_DATA or better. requestVideoFrameCallback presentation remains reported as telemetry, but a missing callback does not fail an otherwise exact, usable seek.
+
+Final evidence deliberately separates three browser roles. Each candidate receives its own fresh headless managed-Chromium process for deterministic load, seek, rendered-frame, and linear-playback measurement without offscreen-window compositor artifacts. A separate temporary, normal, non-debugged Google Chrome profile is the natural Page Visibility authority: a loopback target and cover tab are switched with PID-scoped native Ctrl+Tab input, and the server must receive a visible-to-hidden-to-visible target lifecycle without a media error. A third headed managed-Chromium process records the actual media-lab UI interaction after candidate measurement is complete. The JSON launch policy names all three roles.
+
+Headless `getVideoPlaybackQuality()` dropped-frame deltas remain reported as compositor telemetry but are not the displayed acceptance authority because no displayed surface exists in that role. The normal non-debugged Chrome target is explicitly foregrounded, records a one-second visible decoder warm-up, and then measures a second visible playback window before the tab switch. Warm-up and measured drops remain reported; the measured window must advance, present at least 90% of the authored 30 fps, and report zero corrupted frames. The selected recording candidate receives an additional headed control-driven quality record from the real media lab.
+
+The --headed flag authorizes the normal visible Chrome lifecycle proof and is required for final Page Visibility evidence and recording. Without it, Page Visibility remains explicitly partial-hidden-tab-inconclusive and the report cannot become a full browser pass. The native proof runs against every supplied candidate. A requested recording passes its visibility field only by referencing the separate successful native proof for the same selected candidate; it never claims that Playwright's recording page became naturally hidden.
+
+The loopback media server supports exact byte ranges, including suffix ranges, and destroys abandoned file reads when Chromium cancels a request during rapid scrubbing. This prevents canceled transfers from contaminating later seek measurements. Candidate decoder state is also process-isolated across the four formats.
 
 If Chromium is unavailable, the report is still written as a partial ffprobe result. Partial browser evidence exits successfully by default so probe-only automation remains usable, but --require-browser makes missing or inconclusive browser evidence return a nonzero exit code.
 

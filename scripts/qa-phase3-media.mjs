@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { execFile } from "node:child_process";
-import { createHash } from "node:crypto";
+import { execFile, spawn } from "node:child_process";
+import { createHash, randomBytes } from "node:crypto";
 import { createReadStream } from "node:fs";
 import { access, mkdir, mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { createServer } from "node:http";
@@ -172,6 +172,21 @@ function parseArguments(argv) {
   };
 
   return options;
+}
+
+function chromiumLaunchPolicy(headed) {
+  return {
+    name: "stable-playwright-media-qa",
+    measurementExecutionMode: "headless",
+    nativeVisibilityExecutionMode: headed ? "headed" : "not-executed",
+    recordingExecutionMode: headed ? "headed-when-requested" : "not-executed",
+    playwrightDefaultArguments: "retained",
+    ignoredPlaywrightDefaultArguments: [],
+    candidateBrowserProcessIsolation: "one fresh browser process per candidate",
+    recordingBrowserProcessIsolation: "separate from candidate measurement processes",
+    purpose:
+      "Preserve Playwright's stable load, seek, decode, and playback behavior; Page Visibility acceptance comes from a separate non-debugged native Chrome profile.",
+  };
 }
 
 function isWithin(parent, candidate) {
@@ -521,6 +536,7 @@ async function probeCandidate(options, candidate) {
     try {
       const keyframeJson = JSON.parse(keyframeRun.stdout);
       keyframes = (Array.isArray(keyframeJson.frames) ? keyframeJson.frames : [])
+        .filter((frame) => numeric(frame.key_frame) === 1)
         .map((frame) => {
           const seconds =
             numeric(frame.best_effort_timestamp_time) ?? numeric(frame.pkt_dts_time);
@@ -779,6 +795,20 @@ function mimeFor(candidate) {
   return candidate.container === "mp4" ? "video/mp4" : "video/webm";
 }
 
+function pipeMediaRange(response, absolutePath, start, end) {
+  const stream = createReadStream(absolutePath, { start, end });
+  const stopAbandonedRead = () => {
+    if (!stream.destroyed) stream.destroy();
+  };
+  response.once("close", stopAbandonedRead);
+  stream.once("end", () => response.removeListener("close", stopAbandonedRead));
+  stream.once("error", (error) => {
+    response.removeListener("close", stopAbandonedRead);
+    if (!response.destroyed) response.destroy(error);
+  });
+  stream.pipe(response);
+}
+
 function pageHtml(candidate) {
   const safeId = JSON.stringify(candidate.id);
   const source = "/media/" + encodeURIComponent(candidate.id);
@@ -810,8 +840,51 @@ function pageHtml(candidate) {
   ].join("");
 }
 
+function nativeVisibilityTargetHtml(candidate, token) {
+  const source = "/media/" + encodeURIComponent(candidate.id);
+  const endpoint = "/native-visibility/event?token=" + encodeURIComponent(token);
+  return [
+    "<!doctype html>",
+    '<html lang="en"><head><meta charset="utf-8">',
+    '<meta name="viewport" content="width=device-width,initial-scale=1">',
+    "<title>Phase 3 native visibility target</title>",
+    "<style>html,body{margin:0;width:100%;height:100%;background:#080b0c;color:#fff}video{display:block;width:100%;height:100%;object-fit:contain}</style>",
+    "</head><body>",
+    '<video id="candidate" muted autoplay playsinline preload="auto"></video>',
+    "<script>",
+    "const video=document.getElementById('candidate');",
+    "const endpoint=" + JSON.stringify(endpoint) + ";",
+    "let sequence=0;",
+    "const send=(type)=>{const quality=typeof video.getVideoPlaybackQuality==='function'?video.getVideoPlaybackQuality():null;return fetch(endpoint,{method:'POST',headers:{'content-type':'application/json'},keepalive:true,body:JSON.stringify({role:'target',type,sequence:sequence++,clientTimeMs:performance.now(),visibilityState:document.visibilityState,hidden:document.hidden,focus:document.hasFocus(),mediaTime:video.currentTime,paused:video.paused,ended:video.ended,readyState:video.readyState,networkState:video.networkState,errorCode:video.error?video.error.code:null,totalVideoFrames:quality?quality.totalVideoFrames:null,droppedVideoFrames:quality?quality.droppedVideoFrames:null,corruptedVideoFrames:quality?quality.corruptedVideoFrames:null})}).catch(()=>{});};",
+    "for(const type of ['visibilitychange','focus','blur','pageshow','pagehide'])addEventListener(type,()=>send(type));",
+    "for(const type of ['loadedmetadata','loadeddata','canplay','playing','pause','ended','error'])video.addEventListener(type,()=>send('media-'+type));",
+    "video.src=" + JSON.stringify(source) + ";video.load();",
+    "send('initial');video.play().catch(()=>send('media-play-rejected'));",
+    "setInterval(()=>send('heartbeat'),400);",
+    "</script></body></html>",
+  ].join("");
+}
+
+function nativeVisibilityCoverHtml(token) {
+  const endpoint = "/native-visibility/event?token=" + encodeURIComponent(token);
+  return [
+    "<!doctype html>",
+    '<html lang="en"><head><meta charset="utf-8">',
+    "<title>Phase 3 native visibility cover</title>",
+    "<style>html,body{margin:0;width:100%;height:100%;display:grid;place-items:center;background:#080b0c;color:#fff;font:700 42px system-ui}</style>",
+    "</head><body>PHASE 3 VISIBILITY COVER<script>",
+    "const endpoint=" + JSON.stringify(endpoint) + ";",
+    "let sequence=0;",
+    "const send=(type)=>fetch(endpoint,{method:'POST',headers:{'content-type':'application/json'},keepalive:true,body:JSON.stringify({role:'cover',type,sequence:sequence++,clientTimeMs:performance.now(),visibilityState:document.visibilityState,hidden:document.hidden,focus:document.hasFocus()})}).catch(()=>{});",
+    "for(const type of ['visibilitychange','focus','blur','pageshow','pagehide'])addEventListener(type,()=>send(type));",
+    "send('initial');setInterval(()=>send('heartbeat'),400);",
+    "</script></body></html>",
+  ].join("");
+}
+
 async function createHarnessServer(candidates) {
   const candidateMap = new Map(candidates.map((candidate) => [candidate.id, candidate]));
+  const nativeVisibilitySessions = new Map();
   const server = createServer(async (request, response) => {
     try {
       const url = new URL(request.url || "/", "http://127.0.0.1");
@@ -820,9 +893,90 @@ async function createHarnessServer(candidates) {
         "Cross-Origin-Resource-Policy": "same-origin",
         "X-Content-Type-Options": "nosniff",
       };
+      if (url.pathname === "/favicon.ico") {
+        response.writeHead(204, headers);
+        response.end();
+        return;
+      }
       if (url.pathname === "/health") {
         response.writeHead(200, { ...headers, "Content-Type": "text/plain; charset=utf-8" });
         response.end("phase-3-media-qa\n");
+        return;
+      }
+      if (request.method === "POST" && url.pathname === "/native-visibility/event") {
+        const token = url.searchParams.get("token") || "";
+        const session = nativeVisibilitySessions.get(token);
+        if (!session) {
+          response.writeHead(404, headers);
+          response.end();
+          return;
+        }
+        let body = "";
+        for await (const chunk of request) {
+          body += chunk;
+          if (body.length > 32_768) throw new Error("Native visibility telemetry exceeded 32 KiB.");
+        }
+        const payload = JSON.parse(body);
+        const role = payload.role === "target" || payload.role === "cover" ? payload.role : null;
+        if (!role) throw new Error("Native visibility telemetry has an invalid role.");
+        session.events.push({
+          serverElapsedMs: Date.now() - session.startedAt,
+          role,
+          type: String(payload.type || "unknown").slice(0, 64),
+          sequence: numeric(payload.sequence),
+          clientTimeMs: round(numeric(payload.clientTimeMs)),
+          visibilityState: payload.visibilityState === "hidden" ? "hidden" : "visible",
+          hidden: payload.hidden === true,
+          focus: payload.focus === true,
+          mediaTime: round(numeric(payload.mediaTime), 6),
+          paused: typeof payload.paused === "boolean" ? payload.paused : null,
+          ended: typeof payload.ended === "boolean" ? payload.ended : null,
+          readyState: numeric(payload.readyState),
+          networkState: numeric(payload.networkState),
+          errorCode:
+            payload.errorCode === null || payload.errorCode === undefined
+              ? null
+              : numeric(payload.errorCode),
+          totalVideoFrames: numeric(payload.totalVideoFrames),
+          droppedVideoFrames: numeric(payload.droppedVideoFrames),
+          corruptedVideoFrames: numeric(payload.corruptedVideoFrames),
+        });
+        response.writeHead(204, headers);
+        response.end();
+        return;
+      }
+      if (url.pathname === "/native-visibility/target") {
+        const token = url.searchParams.get("token") || "";
+        const session = nativeVisibilitySessions.get(token);
+        const candidate = session ? candidateMap.get(session.candidateId) : null;
+        if (!candidate) {
+          response.writeHead(404, headers);
+          response.end();
+          return;
+        }
+        response.writeHead(200, {
+          ...headers,
+          "Content-Type": "text/html; charset=utf-8",
+          "Content-Security-Policy":
+            "default-src 'self'; base-uri 'none'; connect-src 'self'; media-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; object-src 'none'; frame-ancestors 'none'",
+        });
+        response.end(nativeVisibilityTargetHtml(candidate, token));
+        return;
+      }
+      if (url.pathname === "/native-visibility/cover") {
+        const token = url.searchParams.get("token") || "";
+        if (!nativeVisibilitySessions.has(token)) {
+          response.writeHead(404, headers);
+          response.end();
+          return;
+        }
+        response.writeHead(200, {
+          ...headers,
+          "Content-Type": "text/html; charset=utf-8",
+          "Content-Security-Policy":
+            "default-src 'self'; base-uri 'none'; connect-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; object-src 'none'; frame-ancestors 'none'",
+        });
+        response.end(nativeVisibilityCoverHtml(token));
         return;
       }
       if (url.pathname === "/lab") {
@@ -889,11 +1043,20 @@ async function createHarnessServer(candidates) {
             response.end();
             return;
           }
-          const start = match[1] === "" ? 0 : Number(match[1]);
-          const end = match[2] === "" ? fileStat.size - 1 : Number(match[2]);
+          const suffixRequest = match[1] === "";
+          const suffixLength = suffixRequest ? Number(match[2]) : null;
+          const start = suffixRequest
+            ? Math.max(0, fileStat.size - suffixLength)
+            : Number(match[1]);
+          const end = suffixRequest
+            ? fileStat.size - 1
+            : match[2] === ""
+              ? fileStat.size - 1
+              : Number(match[2]);
           if (
             !Number.isInteger(start) ||
             !Number.isInteger(end) ||
+            (suffixRequest && (!Number.isInteger(suffixLength) || suffixLength <= 0)) ||
             start < 0 ||
             end < start ||
             start >= fileStat.size
@@ -913,7 +1076,7 @@ async function createHarnessServer(candidates) {
             "Content-Length": boundedEnd - start + 1,
             "Content-Range": "bytes " + start + "-" + boundedEnd + "/" + fileStat.size,
           });
-          createReadStream(candidate.absolutePath, { start, end: boundedEnd }).pipe(response);
+          pipeMediaRange(response, candidate.absolutePath, start, boundedEnd);
           return;
         }
         response.writeHead(200, {
@@ -925,7 +1088,7 @@ async function createHarnessServer(candidates) {
         if (request.method === "HEAD") {
           response.end();
         } else {
-          createReadStream(candidate.absolutePath).pipe(response);
+          pipeMediaRange(response, candidate.absolutePath, 0, fileStat.size - 1);
         }
         return;
       }
@@ -942,10 +1105,538 @@ async function createHarnessServer(candidates) {
     server.listen(0, "127.0.0.1", resolve);
   });
   const address = server.address();
+  const origin = "http://127.0.0.1:" + address.port;
   return {
     server,
-    origin: "http://127.0.0.1:" + address.port,
+    origin,
+    createNativeVisibilitySession(candidateId) {
+      if (!candidateMap.has(candidateId)) throw new Error("Unknown native visibility candidate.");
+      const token = randomBytes(24).toString("hex");
+      nativeVisibilitySessions.set(token, {
+        candidateId,
+        startedAt: Date.now(),
+        events: [],
+      });
+      return {
+        token,
+        targetUrl:
+          origin + "/native-visibility/target?token=" + encodeURIComponent(token),
+        coverUrl:
+          origin + "/native-visibility/cover?token=" + encodeURIComponent(token),
+      };
+    },
+    readNativeVisibilitySession(token) {
+      const session = nativeVisibilitySessions.get(token);
+      return session
+        ? {
+            candidateId: session.candidateId,
+            events: session.events.map((event) => ({ ...event })),
+          }
+        : null;
+    },
+    deleteNativeVisibilitySession(token) {
+      nativeVisibilitySessions.delete(token);
+    },
   };
+}
+
+const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+
+function nativeVisibilityLaunchPolicy() {
+  return {
+    name: "native-non-debugged-page-visibility",
+    browserControl: "PID-scoped WScript.Shell AppActivate plus Ctrl+Tab",
+    remoteDebugging: false,
+    playwrightAttached: false,
+    temporaryProfile: true,
+    arguments: [
+      "--user-data-dir=<task-temp-profile>",
+      "--no-first-run",
+      "--no-default-browser-check",
+      "--disable-search-engine-choice-screen",
+      "--autoplay-policy=no-user-gesture-required",
+      "--force-color-profile=srgb",
+      "--new-window",
+      "<isolated-target-url>",
+      "<isolated-cover-url>",
+    ],
+    acceptanceAuthority:
+      "loopback server telemetry showing target visible-to-hidden-to-visible transitions",
+  };
+}
+
+async function resolveNativeChrome(explicitExecutable) {
+  if (process.platform !== "win32") {
+    return {
+      available: false,
+      reason: "The non-debugged native visibility profile currently requires headed Windows.",
+    };
+  }
+  const candidates = [];
+  if (explicitExecutable && path.basename(explicitExecutable).toLowerCase() === "chrome.exe") {
+    candidates.push({ path: explicitExecutable, source: "cli" });
+  }
+  for (const root of [
+    process.env.PROGRAMFILES,
+    process.env["PROGRAMFILES(X86)"],
+    process.env.LOCALAPPDATA,
+  ].filter(Boolean)) {
+    candidates.push({
+      path: path.join(root, "Google", "Chrome", "Application", "chrome.exe"),
+      source: "system-google-chrome",
+    });
+  }
+  const seen = new Set();
+  for (const candidate of candidates) {
+    const absolute = path.resolve(candidate.path);
+    const key = absolute.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    if (await exists(absolute)) {
+      return {
+        available: true,
+        executablePath: absolute,
+        executableSource: candidate.source,
+      };
+    }
+  }
+  return {
+    available: false,
+    reason:
+      "A normal Google Chrome executable was not found for non-debugged Page Visibility evidence.",
+  };
+}
+
+async function switchNativeChromeTab(processId) {
+  const script = [
+    "$shell = New-Object -ComObject WScript.Shell",
+    "$activated = $shell.AppActivate(" + processId + ")",
+    "Start-Sleep -Milliseconds 300",
+    "$shell.SendKeys('^{TAB}')",
+    "Start-Sleep -Milliseconds 300",
+    "Write-Output $activated",
+  ].join("; ");
+  const run = await execFileAsync(
+    "powershell.exe",
+    ["-NoProfile", "-NonInteractive", "-Command", script],
+    { windowsHide: true, timeout: 10_000 },
+  );
+  return {
+    method: "pid-scoped-wscript-appactivate-ctrl-tab",
+    activated: String(run.stdout || "").trim().toLowerCase() === "true",
+  };
+}
+
+async function activateNativeChrome(processId) {
+  const script = [
+    "$shell = New-Object -ComObject WScript.Shell",
+    "$activated = $shell.AppActivate(" + processId + ")",
+    "Start-Sleep -Milliseconds 400",
+    "Write-Output $activated",
+  ].join("; ");
+  const run = await execFileAsync(
+    "powershell.exe",
+    ["-NoProfile", "-NonInteractive", "-Command", script],
+    { windowsHide: true, timeout: 10_000 },
+  );
+  return {
+    method: "pid-scoped-wscript-appactivate",
+    activated: String(run.stdout || "").trim().toLowerCase() === "true",
+  };
+}
+
+async function waitForNativeTelemetry(harness, token, predicate, timeoutMs) {
+  const started = Date.now();
+  while (Date.now() - started < timeoutMs) {
+    const snapshot = harness.readNativeVisibilitySession(token);
+    if (snapshot && predicate(snapshot.events)) return snapshot.events;
+    await delay(100);
+  }
+  return harness.readNativeVisibilitySession(token)?.events || [];
+}
+
+async function removeNativeProfile(profilePath) {
+  const resolvedProfile = path.resolve(profilePath);
+  const resolvedTemp = path.resolve(tmpdir());
+  if (!isWithin(resolvedTemp, resolvedProfile)) {
+    throw new Error("Refusing to remove a native Chrome profile outside the task temp directory.");
+  }
+  let lastError = null;
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    try {
+      await rm(resolvedProfile, { recursive: true, force: true });
+      return null;
+    } catch (error) {
+      lastError = error;
+      await delay(400 * (attempt + 1));
+    }
+  }
+  return lastError ? String(lastError.message || lastError) : null;
+}
+
+async function runNativeVisibilityProbe(harness, candidate, resolution, options) {
+  const launchPolicy = nativeVisibilityLaunchPolicy();
+  const base = {
+    tested: false,
+    status: "partial-inconclusive",
+    passed: false,
+    candidateId: candidate.id,
+    authority: "native-non-debugged-chrome-loopback-telemetry",
+    executionMode: options.headed ? "headed" : "headless",
+    launchPolicy,
+    executablePath: resolution.available ? portablePath(resolution.executablePath) : null,
+    executableScope: resolution.available ? portablePathScope(resolution.executablePath) : null,
+    executableSource: resolution.executableSource || null,
+    method: "pid-scoped-wscript-appactivate-ctrl-tab",
+    initialVisible: false,
+    hiddenObserved: false,
+    visibleAfterReturn: false,
+    mediaErrorObserved: false,
+    mediaAdvanceWhileHiddenSeconds: null,
+    pausedWhenHidden: null,
+    pausedAfterReturn: null,
+    foregroundActivation: null,
+    visiblePlaybackWarmup: {
+      tested: false,
+      sampleTargetSeconds: 1,
+      mediaAdvanceSeconds: null,
+      totalFramesDelta: null,
+      droppedFramesDelta: null,
+      corruptedFramesDelta: null,
+    },
+    visiblePlayback: {
+      tested: false,
+      sampleTargetSeconds: 1,
+      mediaAdvanceSeconds: null,
+      totalFramesDelta: null,
+      droppedFramesDelta: null,
+      corruptedFramesDelta: null,
+      presentedFramesDelta: null,
+      presentedFramesPerSecond: null,
+      minimumPresentedFramesPerSecond: round(options.expectedFps * 0.9, 3),
+      droppedFramePolicy: "minimum 90 percent of authored FPS in focused displayed Chrome",
+      passed: false,
+    },
+    switchResults: [],
+    telemetry: [],
+    reason: null,
+  };
+  if (!options.headed) {
+    base.reason = "Native Page Visibility evidence requires --headed.";
+    return base;
+  }
+  if (!resolution.available) {
+    base.reason = resolution.reason;
+    return base;
+  }
+
+  const profile = await mkdtemp(path.join(tmpdir(), "phase3-native-visibility-"));
+  const session = harness.createNativeVisibilitySession(candidate.id);
+  const chromeArguments = [
+    "--user-data-dir=" + profile,
+    "--no-first-run",
+    "--no-default-browser-check",
+    "--disable-search-engine-choice-screen",
+    "--autoplay-policy=no-user-gesture-required",
+    "--force-color-profile=srgb",
+    "--new-window",
+    session.targetUrl,
+    session.coverUrl,
+  ];
+  let child = null;
+  let cleanupError = null;
+  try {
+    child = spawn(resolution.executablePath, chromeArguments, {
+      stdio: "ignore",
+      windowsHide: false,
+    });
+    const spawnFailure = new Promise((_, reject) => {
+      child.once("error", reject);
+      child.once("exit", (code) => {
+        if (code !== null && code !== 0) reject(new Error("Native Chrome exited with code " + code));
+      });
+    });
+    const readyEvents = await Promise.race([
+      waitForNativeTelemetry(
+        harness,
+        session.token,
+        (events) =>
+          events.some(
+            (event) =>
+              event.role === "target" &&
+              event.hidden === false &&
+              event.readyState >= 2 &&
+              event.errorCode === null,
+          ),
+        options.metadataTimeoutMs,
+      ),
+      spawnFailure,
+    ]);
+    base.tested = readyEvents.some((event) => event.role === "target");
+    base.foregroundActivation = await activateNativeChrome(child.pid);
+    const focusedEvents = await waitForNativeTelemetry(
+      harness,
+      session.token,
+      (events) =>
+        events.some(
+          (event) =>
+            event.role === "target" &&
+            event.hidden === false &&
+            event.focus === true &&
+            event.readyState >= 2 &&
+            event.errorCode === null,
+        ),
+      2_000,
+    );
+    const focusBaseline = [...focusedEvents]
+      .reverse()
+      .find(
+        (event) =>
+          event.role === "target" &&
+          event.hidden === false &&
+          event.focus === true &&
+          event.readyState >= 2 &&
+          event.errorCode === null,
+      );
+    const warmupEvents = await waitForNativeTelemetry(
+      harness,
+      session.token,
+      (events) =>
+        events.some(
+          (event) =>
+            event.role === "target" &&
+            event.hidden === false &&
+            event.focus === true &&
+            event.paused === false &&
+            focusBaseline &&
+            event.mediaTime !== null &&
+            focusBaseline.mediaTime !== null &&
+            event.mediaTime - focusBaseline.mediaTime >= 1 &&
+            event.errorCode === null,
+        ),
+      4_000,
+    );
+    const warmupEnd = [...warmupEvents]
+      .reverse()
+      .find(
+        (event) =>
+          event.role === "target" &&
+          event.hidden === false &&
+          event.focus === true &&
+          event.paused === false &&
+          focusBaseline &&
+          event.mediaTime !== null &&
+          focusBaseline.mediaTime !== null &&
+          event.mediaTime - focusBaseline.mediaTime >= 1,
+      );
+    const deltaBetween = (start, end, field) =>
+      start && end && start[field] !== null && end[field] !== null
+        ? end[field] - start[field]
+        : null;
+    base.visiblePlaybackWarmup = {
+      tested: Boolean(focusBaseline && warmupEnd),
+      sampleTargetSeconds: 1,
+      mediaAdvanceSeconds:
+        focusBaseline && warmupEnd
+          ? round(warmupEnd.mediaTime - focusBaseline.mediaTime, 6)
+          : null,
+      totalFramesDelta: deltaBetween(focusBaseline, warmupEnd, "totalVideoFrames"),
+      droppedFramesDelta: deltaBetween(focusBaseline, warmupEnd, "droppedVideoFrames"),
+      corruptedFramesDelta: deltaBetween(
+        focusBaseline,
+        warmupEnd,
+        "corruptedVideoFrames",
+      ),
+    };
+    const playbackStart = warmupEnd;
+    const playbackEvents = await waitForNativeTelemetry(
+      harness,
+      session.token,
+      (events) =>
+        events.some(
+          (event) =>
+            event.role === "target" &&
+            event.hidden === false &&
+            event.focus === true &&
+            event.paused === false &&
+            playbackStart &&
+            event.mediaTime !== null &&
+            playbackStart.mediaTime !== null &&
+            event.mediaTime - playbackStart.mediaTime >= 1 &&
+            event.errorCode === null,
+        ),
+      4_000,
+    );
+    const playbackEnd = [...playbackEvents]
+      .reverse()
+      .find(
+        (event) =>
+          event.role === "target" &&
+          event.hidden === false &&
+          event.focus === true &&
+          event.paused === false &&
+          playbackStart &&
+          event.mediaTime !== null &&
+          playbackStart.mediaTime !== null &&
+          event.mediaTime - playbackStart.mediaTime >= 1,
+      );
+    const frameDelta = (field) =>
+      playbackStart &&
+      playbackEnd &&
+      playbackStart[field] !== null &&
+      playbackEnd[field] !== null
+        ? playbackEnd[field] - playbackStart[field]
+        : null;
+    base.visiblePlayback = {
+      tested: Boolean(playbackStart && playbackEnd),
+      sampleTargetSeconds: 1,
+      mediaAdvanceSeconds:
+        playbackStart && playbackEnd
+          ? round(playbackEnd.mediaTime - playbackStart.mediaTime, 6)
+          : null,
+      totalFramesDelta: frameDelta("totalVideoFrames"),
+      droppedFramesDelta: frameDelta("droppedVideoFrames"),
+      corruptedFramesDelta: frameDelta("corruptedVideoFrames"),
+      presentedFramesDelta: null,
+      presentedFramesPerSecond: null,
+      minimumPresentedFramesPerSecond: round(options.expectedFps * 0.9, 3),
+      droppedFramePolicy: "minimum 90 percent of authored FPS in focused displayed Chrome",
+      passed: false,
+    };
+    base.visiblePlayback.presentedFramesDelta =
+      base.visiblePlayback.totalFramesDelta !== null &&
+      base.visiblePlayback.droppedFramesDelta !== null
+        ? base.visiblePlayback.totalFramesDelta - base.visiblePlayback.droppedFramesDelta
+        : null;
+    base.visiblePlayback.presentedFramesPerSecond =
+      base.visiblePlayback.presentedFramesDelta !== null &&
+      base.visiblePlayback.mediaAdvanceSeconds > 0
+        ? round(
+            base.visiblePlayback.presentedFramesDelta /
+              base.visiblePlayback.mediaAdvanceSeconds,
+            3,
+          )
+        : null;
+    base.visiblePlayback.passed =
+      base.visiblePlayback.tested &&
+      base.visiblePlayback.mediaAdvanceSeconds >= 1 &&
+      base.visiblePlayback.totalFramesDelta > 0 &&
+      base.visiblePlayback.presentedFramesPerSecond >=
+        base.visiblePlayback.minimumPresentedFramesPerSecond &&
+      base.visiblePlayback.corruptedFramesDelta === 0;
+    const beforeFirstSwitch = playbackEvents.length;
+    base.switchResults.push(await switchNativeChromeTab(child.pid));
+    const hiddenEvents = await waitForNativeTelemetry(
+      harness,
+      session.token,
+      (events) =>
+        events
+          .slice(beforeFirstSwitch)
+          .some(
+            (event) =>
+              event.role === "target" &&
+              event.type === "visibilitychange" &&
+              event.hidden === true,
+          ),
+      3_500,
+    );
+    const hiddenIndex = hiddenEvents.findIndex(
+      (event, index) =>
+        index >= beforeFirstSwitch &&
+        event.role === "target" &&
+        event.type === "visibilitychange" &&
+        event.hidden === true,
+    );
+    const beforeSecondSwitch = hiddenEvents.length;
+    base.switchResults.push(await switchNativeChromeTab(child.pid));
+    const finalEvents = await waitForNativeTelemetry(
+      harness,
+      session.token,
+      (events) =>
+        events
+          .slice(beforeSecondSwitch)
+          .some(
+            (event) =>
+              event.role === "target" &&
+              event.type === "visibilitychange" &&
+              event.hidden === false,
+          ),
+      3_500,
+    );
+    const visibleIndex = finalEvents.findIndex(
+      (event, index) =>
+        index >= beforeSecondSwitch &&
+        event.role === "target" &&
+        event.type === "visibilitychange" &&
+        event.hidden === false,
+    );
+    const initial = finalEvents.find(
+      (event) => event.role === "target" && event.hidden === false && event.readyState >= 2,
+    );
+    const hidden = hiddenIndex >= 0 ? finalEvents[hiddenIndex] : null;
+    const visible = visibleIndex >= 0 ? finalEvents[visibleIndex] : null;
+    const mediaError = finalEvents.find(
+      (event) => event.role === "target" && event.errorCode !== null,
+    );
+    base.initialVisible = Boolean(initial);
+    base.hiddenObserved = Boolean(hidden);
+    base.visibleAfterReturn = Boolean(visible);
+    base.mediaErrorObserved = Boolean(mediaError);
+    base.mediaAdvanceWhileHiddenSeconds =
+      hidden && visible && hidden.mediaTime !== null && visible.mediaTime !== null
+        ? round(visible.mediaTime - hidden.mediaTime, 6)
+        : null;
+    base.pausedWhenHidden = hidden?.paused ?? null;
+    base.pausedAfterReturn = visible?.paused ?? null;
+    base.telemetry = finalEvents.filter(
+      (event) =>
+        event.type !== "heartbeat" ||
+        event.sequence === focusBaseline?.sequence ||
+        event.sequence === warmupEnd?.sequence ||
+        event.sequence === playbackStart?.sequence ||
+        event.sequence === playbackEnd?.sequence ||
+        event === initial ||
+        event === hidden ||
+        event === visible,
+    );
+    base.passed =
+      base.initialVisible &&
+      base.visiblePlayback.passed &&
+      base.foregroundActivation?.activated === true &&
+      base.hiddenObserved &&
+      base.visibleAfterReturn &&
+      !base.mediaErrorObserved &&
+      base.switchResults.every((entry) => entry.activated);
+    base.status = base.passed
+      ? "complete-pass"
+      : base.mediaErrorObserved
+        ? "complete-fail"
+        : "partial-inconclusive";
+    base.reason = base.passed
+      ? null
+      : base.mediaErrorObserved
+        ? "The native target reported a media error."
+        : !base.visiblePlayback.passed
+          ? "The native visible-playback window did not meet the displayed-rate and zero-corruption gate."
+        : "The native target did not report a complete visible-hidden-visible cycle.";
+    return base;
+  } catch (error) {
+    base.reason = sanitizeTrackedString(String(error.message || error), [
+      profile,
+      resolution.executablePath,
+    ]);
+    return base;
+  } finally {
+    if (child && child.exitCode === null) child.kill();
+    await delay(700);
+    cleanupError = await removeNativeProfile(profile);
+    harness.deleteNativeVisibilitySession(session.token);
+    if (cleanupError && !base.reason) {
+      base.reason = sanitizeTrackedString(cleanupError, [profile]);
+      base.status = "partial-inconclusive";
+      base.passed = false;
+    }
+  }
 }
 
 async function waitForMetadata(page, timeoutMs) {
@@ -954,7 +1645,7 @@ async function waitForMetadata(page, timeoutMs) {
     await page.waitForFunction(
       () => {
         const video = document.getElementById("candidate");
-        return video && (video.readyState >= 1 || video.error);
+        return video && (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA || video.error);
       },
       null,
       { timeout: timeoutMs },
@@ -970,7 +1661,9 @@ async function waitForMetadata(page, timeoutMs) {
     const loadedMetadata = event("loadedmetadata");
     const loadedData = event("loadeddata");
     return {
-      ok: Boolean(video && video.readyState >= 1 && !video.error),
+      ok: Boolean(
+        video && video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && !video.error,
+      ),
       wallLatencyMs,
       metadataLatencyMs: loadedMetadata ? loadedMetadata.time - createdAt : null,
       firstUsableFrameLatencyMs: loadedData ? loadedData.time - createdAt : null,
@@ -1011,6 +1704,11 @@ async function seekOnce(page, targetSeconds, label, timeoutMs, fps) {
           video.removeEventListener("seeked", onSeeked);
           const actual = video.currentTime;
           const tolerance = Math.max(0.06, 1.5 / fps);
+          const seekExact = Math.abs(actual - target) <= tolerance;
+          const readyStateSufficient =
+            video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA;
+          const timeoutStateAccepted =
+            Boolean(details.timedOut) && !video.error && seekExact && readyStateSufficient;
           resolve({
             label,
             targetSeconds: target,
@@ -1026,12 +1724,20 @@ async function seekOnce(page, targetSeconds, label, timeoutMs, fps) {
             mediaTime: details.mediaTime ?? null,
             presentationTime: details.presentationTime ?? null,
             timedOut: Boolean(details.timedOut),
+            timeoutStateAccepted,
+            completionAuthority: details.timedOut
+              ? timeoutStateAccepted
+                ? "exact-usable-media-state-at-overall-timeout"
+                : "overall-timeout-failure"
+              : "seeked-or-frame-presentation",
             note: details.note || null,
+            seekExact,
+            readyStateSufficient,
             ok:
-              !details.timedOut &&
+              (!details.timedOut || timeoutStateAccepted) &&
               !video.error &&
-              Math.abs(actual - target) <= tolerance &&
-              (details.framePresented || !("requestVideoFrameCallback" in video)),
+              seekExact &&
+              readyStateSufficient,
             errorCode: video.error?.code ?? null,
           });
         };
@@ -1067,7 +1773,12 @@ async function seekOnce(page, targetSeconds, label, timeoutMs, fps) {
         }
 
         timeoutId = setTimeout(
-          () => finish({ framePresented: false, timedOut: true, note: "seek timed out" }),
+          () =>
+            finish({
+              framePresented: false,
+              timedOut: true,
+              note: "seek event timed out; final media state was evaluated",
+            }),
           timeoutMs,
         );
         video.pause();
@@ -1105,10 +1816,12 @@ async function rapidBurst(page, targets, timeoutMs, fps) {
         const finalTarget = bounded.at(-1);
         let completed = false;
         let timeoutId;
-        const finish = (framePresented, timedOut) => {
+        let frameFallbackId;
+        const finish = (framePresented, timedOut, note = null) => {
           if (completed) return;
           completed = true;
           clearTimeout(timeoutId);
+          clearTimeout(frameFallbackId);
           const actual = video.currentTime;
           const tolerance = Math.max(0.06, 1.5 / fps);
           resolve({
@@ -1119,23 +1832,37 @@ async function rapidBurst(page, targets, timeoutMs, fps) {
             toleranceSeconds: tolerance,
             latencyMs: performance.now() - start,
             framePresented,
+            requestVideoFrameCallback: "requestVideoFrameCallback" in video,
             timedOut,
+            note,
+            readyState: video.readyState,
+            networkState: video.networkState,
+            seekExact: Math.abs(actual - finalTarget) <= tolerance,
+            readyStateSufficient: video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA,
             ok:
               !timedOut &&
               !video.error &&
               Math.abs(actual - finalTarget) <= tolerance &&
-              (framePresented || !("requestVideoFrameCallback" in video)),
+              video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA,
             errorCode: video.error?.code ?? null,
           });
         };
         const onSeeked = () => {
           if ("requestVideoFrameCallback" in video) {
             video.requestVideoFrameCallback(() => finish(true, false));
+            frameFallbackId = setTimeout(
+              () => finish(false, false, "seeked but no video-frame callback arrived"),
+              Math.min(1000, timeoutMs / 2),
+            );
           } else {
-            finish(false, false);
+            finish(
+              false,
+              false,
+              "requestVideoFrameCallback unavailable; seeked event is the display proxy",
+            );
           }
         };
-        timeoutId = setTimeout(() => finish(false, true), timeoutMs);
+        timeoutId = setTimeout(() => finish(false, true, "rapid burst seek timed out"), timeoutMs);
         video.pause();
         video.addEventListener("seeked", onSeeked, { once: true });
         for (const target of bounded) video.currentTime = target;
@@ -1200,7 +1927,13 @@ async function playbackQuality(page, sampleMs) {
     Number.isFinite(before.droppedVideoFrames) && Number.isFinite(after.droppedVideoFrames)
       ? after.droppedVideoFrames - before.droppedVideoFrames
       : null;
+  const corruptedDelta =
+    Number.isFinite(before.corruptedVideoFrames) && Number.isFinite(after.corruptedVideoFrames)
+      ? after.corruptedVideoFrames - before.corruptedVideoFrames
+      : null;
   return {
+    measurementRole: "headless-decoder-and-media-timeline-telemetry",
+    displayedZeroDropAuthority: "native-non-debugged-visible-playback-window",
     sampleDurationMs: sampleMs,
     playError: before.playError,
     mediaAdvanceSeconds: round(after.currentTime - before.currentTime, 6),
@@ -1210,6 +1943,7 @@ async function playbackQuality(page, sampleMs) {
       decodedDelta && droppedDelta !== null ? round(droppedDelta / decodedDelta, 6) : null,
     corruptedFrames:
       Number.isFinite(after.corruptedVideoFrames) ? after.corruptedVideoFrames : null,
+    corruptedFramesDelta: corruptedDelta,
     readyState: after.readyState,
     networkState: after.networkState,
     errorCode: after.errorCode,
@@ -1217,8 +1951,104 @@ async function playbackQuality(page, sampleMs) {
       before.playError === null &&
       after.errorCode === null &&
       after.currentTime > before.currentTime &&
-      (droppedDelta === null || droppedDelta === 0),
+      decodedDelta > 0 &&
+      after.readyState >= 2 &&
+      (corruptedDelta === null || corruptedDelta === 0),
   };
+}
+
+async function mediaVisibilitySnapshot(page) {
+  return page.evaluate(() => {
+    const video = document.querySelector("#candidate, #media");
+    return {
+      time: video instanceof HTMLVideoElement ? video.currentTime : null,
+      visibilityState: document.visibilityState,
+      hidden: document.hidden,
+      paused: video instanceof HTMLVideoElement ? video.paused : null,
+      ended: video instanceof HTMLVideoElement ? video.ended : null,
+      errorCode:
+        video instanceof HTMLVideoElement ? video.error?.code ?? null : null,
+    };
+  });
+}
+
+async function minimizeRestoreVisibility(context, page) {
+  let session = null;
+  let windowId = null;
+  let originalBounds = null;
+  let windowMinimized = false;
+  try {
+    session = await context.newCDPSession(page);
+    const windowInfo = await session.send("Browser.getWindowForTarget");
+    windowId = windowInfo.windowId;
+    originalBounds = windowInfo.bounds || {};
+    await session.send("Browser.setWindowBounds", {
+      windowId,
+      bounds: { windowState: "minimized" },
+    });
+    windowMinimized = true;
+    await page.waitForTimeout(900);
+    const hiddenSnapshot = await mediaVisibilitySnapshot(page);
+
+    const originalState =
+      originalBounds.windowState && originalBounds.windowState !== "minimized"
+        ? originalBounds.windowState
+        : "normal";
+    const restoredBounds = { windowState: originalState };
+    if (originalState === "normal") {
+      for (const key of ["left", "top", "width", "height"]) {
+        if (Number.isFinite(originalBounds[key])) restoredBounds[key] = originalBounds[key];
+      }
+    }
+    await session.send("Browser.setWindowBounds", {
+      windowId,
+      bounds: restoredBounds,
+    });
+    windowMinimized = false;
+    await page.bringToFront();
+    await page.waitForTimeout(500);
+    const resumedSnapshot = await mediaVisibilitySnapshot(page);
+    return {
+      attempted: true,
+      method: "cdp-os-window-minimize-restore",
+      hiddenObserved:
+        hiddenSnapshot.hidden === true || hiddenSnapshot.visibilityState === "hidden",
+      visibleAfterRestore:
+        resumedSnapshot.hidden === false && resumedSnapshot.visibilityState === "visible",
+      hiddenSnapshot,
+      resumedSnapshot,
+      error: null,
+    };
+  } catch (error) {
+    return {
+      attempted: true,
+      method: "cdp-os-window-minimize-restore",
+      hiddenObserved: false,
+      visibleAfterRestore: false,
+      hiddenSnapshot: null,
+      resumedSnapshot: null,
+      error: String(error.message || error),
+    };
+  } finally {
+    if (session && windowMinimized && windowId !== null) {
+      try {
+        await session.send("Browser.setWindowBounds", {
+          windowId,
+          bounds: { windowState: "normal" },
+        });
+        await page.bringToFront();
+      } catch {
+        // Keep the primary CDP result while making a best-effort restore.
+      }
+    }
+    if (session) {
+      try {
+        await session.detach();
+      } catch {
+        // The browser may already have detached the target session.
+      }
+    }
+  }
 }
 
 async function hiddenTabBehavior(context, page, origin, executionMode) {
@@ -1241,41 +2071,43 @@ async function hiddenTabBehavior(context, page, origin, executionMode) {
   await cover.goto(origin + "/health");
   await cover.bringToFront();
   await page.waitForTimeout(700);
-  const background = await page.evaluate(() => {
-    const video = document.getElementById("candidate");
-    return {
-      time: video.currentTime,
-      visibilityState: document.visibilityState,
-      hidden: document.hidden,
-      paused: video.paused,
-      ended: video.ended,
-      errorCode: video.error?.code ?? null,
-    };
-  });
+  let background = await mediaVisibilitySnapshot(page);
   await page.bringToFront();
   await page.waitForTimeout(300);
-  const resumed = await page.evaluate(() => {
-    const video = document.getElementById("candidate");
-    const snapshot = {
-      time: video.currentTime,
-      visibilityState: document.visibilityState,
-      hidden: document.hidden,
-      paused: video.paused,
-      ended: video.ended,
-      errorCode: video.error?.code ?? null,
-    };
-    video.pause();
-    return snapshot;
-  });
+  let resumed = await mediaVisibilitySnapshot(page);
   await cover.close();
-  const visibilityWasActuallyHidden =
+  let visibilityWasActuallyHidden =
     background.hidden === true || background.visibilityState === "hidden";
+  let method = "cover-tab-focus";
+  let osWindowFallback = {
+    attempted: false,
+    method: "cdp-os-window-minimize-restore",
+    reason:
+      executionMode === "headed"
+        ? "cover-tab focus produced hidden visibility; fallback not needed"
+        : "OS-window fallback requires headed Chromium",
+  };
+  if (!visibilityWasActuallyHidden && executionMode === "headed") {
+    osWindowFallback = await minimizeRestoreVisibility(context, page);
+    if (osWindowFallback.hiddenObserved && osWindowFallback.visibleAfterRestore) {
+      background = osWindowFallback.hiddenSnapshot;
+      resumed = osWindowFallback.resumedSnapshot;
+      visibilityWasActuallyHidden = true;
+      method = "cdp-os-window-minimize-restore";
+    } else {
+      method = "cover-tab-focus-then-cdp-os-window-minimize-restore";
+    }
+  }
   const behaviorPassed =
     visibilityWasActuallyHidden &&
     before.playError === null &&
     background.errorCode === null &&
     resumed.errorCode === null &&
     resumed.hidden === false;
+  await page.evaluate(() => {
+    const video = document.getElementById("candidate");
+    if (video instanceof HTMLVideoElement) video.pause();
+  });
   return {
     tested: visibilityWasActuallyHidden,
     status: visibilityWasActuallyHidden
@@ -1283,17 +2115,21 @@ async function hiddenTabBehavior(context, page, origin, executionMode) {
         ? "complete-pass"
         : "complete-fail"
       : "partial-inconclusive",
+    method,
+    osWindowFallback,
     executionMode,
     conclusion: visibilityWasActuallyHidden ? (behaviorPassed ? "pass" : "fail") : "inconclusive",
     requiresFollowUp: !visibilityWasActuallyHidden,
     reason: visibilityWasActuallyHidden
       ? null
-      : "Opening and focusing a second page did not expose a real hidden document state in this browser session.",
+      : executionMode === "headless"
+        ? "Opening and focusing a second page did not expose a real hidden document state in this headless browser session."
+        : "Neither cover-tab focus nor the Chromium OS-window minimize/restore fallback exposed a real hidden document state.",
     followUp: visibilityWasActuallyHidden
       ? null
       : executionMode === "headless"
         ? "Rerun with --headed in an environment that permits a visible Chromium window, then verify hidden and foreground visibility states."
-        : "The headed session still did not expose hidden state; collect a manual visible-browser focus-switch trace.",
+        : "Cover-tab focus and the headed Chromium OS-window minimize/restore fallback did not expose hidden state; collect a manual visible-browser trace.",
     startingVisibility: before.visibilityState,
     hiddenVisibility: background.visibilityState,
     resumedVisibility: resumed.visibilityState,
@@ -1348,6 +2184,8 @@ async function testCandidateInBrowser(context, origin, options, candidate, rando
     await page.close();
     return {
       tested: true,
+      status: "failed",
+      partial: false,
       passed: false,
       supported: false,
       error: "navigation failed: " + String(error.message || error),
@@ -1369,6 +2207,8 @@ async function testCandidateInBrowser(context, origin, options, candidate, rando
     await page.close();
     return {
       tested: true,
+      status: "failed",
+      partial: false,
       passed: false,
       supported: false,
       metadata,
@@ -1425,6 +2265,13 @@ async function testCandidateInBrowser(context, origin, options, candidate, rando
       ),
     );
   }
+  const burstSetup = await seekOnce(
+    page,
+    duration * 0.5,
+    "rapid-burst-setup",
+    options.seekTimeoutMs,
+    fps,
+  );
   const burst = await rapidBurst(
     page,
     alternatingFractions.map((fraction) => fraction * duration),
@@ -1473,13 +2320,24 @@ async function testCandidateInBrowser(context, origin, options, candidate, rando
 
   await seekOnce(page, duration * 0.2, "linear-playback-setup", options.seekTimeoutMs, fps);
   const linearPlayback = await playbackQuality(page, options.linearSampleMs);
-  const hiddenTab = await hiddenTabBehavior(
-    context,
-    page,
-    origin,
-    options.headed ? "headed" : "headless",
-  );
-  const allSeeks = [first, final, ...random, ...alternating, ...nearby, ...forward, ...reverse];
+  const hiddenTab = {
+    tested: false,
+    status: "pending-native-non-debugged-profile",
+    passed: false,
+    authority: "separate-native-non-debugged-chrome-loopback-telemetry",
+    reason:
+      "The stable Playwright media profile does not provide Page Visibility acceptance evidence.",
+  };
+  const allSeeks = [
+    first,
+    final,
+    ...random,
+    ...alternating,
+    burstSetup,
+    ...nearby,
+    ...forward,
+    ...reverse,
+  ];
   const failedSeeks = allSeeks.filter((entry) => !entry.ok);
   const visibleFailures = [];
   if (!first.ok) visibleFailures.push("first-frame-seek-failed");
@@ -1495,16 +2353,11 @@ async function testCandidateInBrowser(context, origin, options, candidate, rando
   }
   if (!burst.ok) visibleFailures.push("rapid-burst-final-frame-failed");
   if (!linearPlayback.passed) visibleFailures.push("linear-playback-quality-failed");
-  if (hiddenTab.tested && !hiddenTab.passed) visibleFailures.push("hidden-tab-behavior-failed");
   if (consoleErrors.length) visibleFailures.push("browser-console-errors");
   if (pageErrors.length) visibleFailures.push("browser-page-errors");
 
   const hardChecksPassed = failedSeeks.length === 0 && visibleFailures.length === 0;
-  const status = !hardChecksPassed
-    ? "failed"
-    : hiddenTab.tested
-      ? "passed"
-      : "partial-hidden-tab-inconclusive";
+  const status = !hardChecksPassed ? "failed" : "partial-hidden-tab-inconclusive";
   const result = {
     tested: true,
     status,
@@ -1527,6 +2380,7 @@ async function testCandidateInBrowser(context, origin, options, candidate, rando
       final,
       random,
       rapidAlternating: alternating,
+      rapidBurstSetup: burstSetup,
       rapidBurst: burst,
       nearby,
       forward,
@@ -1553,6 +2407,38 @@ async function testCandidateInBrowser(context, origin, options, candidate, rando
   };
   await page.close();
   return result;
+}
+
+function mergeNativeVisibilityEvidence(mediaResult, nativeEvidence) {
+  const merged = {
+    ...mediaResult,
+    hiddenTab: nativeEvidence,
+    visibleFailures: [...(mediaResult.visibleFailures || [])],
+  };
+  if (mediaResult.status === "failed") {
+    merged.passed = false;
+    merged.partial = false;
+    return merged;
+  }
+  if (nativeEvidence?.status === "complete-pass" && nativeEvidence.passed) {
+    merged.status = "passed";
+    merged.passed = true;
+    merged.partial = false;
+    return merged;
+  }
+  if (nativeEvidence?.status === "complete-fail") {
+    if (!merged.visibleFailures.includes("hidden-tab-behavior-failed")) {
+      merged.visibleFailures.push("hidden-tab-behavior-failed");
+    }
+    merged.status = "failed";
+    merged.passed = false;
+    merged.partial = false;
+    return merged;
+  }
+  merged.status = "partial-hidden-tab-inconclusive";
+  merged.passed = false;
+  merged.partial = true;
+  return merged;
 }
 
 async function runRecordedLabExercise(page, exerciseId, timeoutMs) {
@@ -1590,7 +2476,13 @@ async function runRecordedLabExercise(page, exerciseId, timeoutMs) {
   }, exerciseId);
 }
 
-async function recordMediaLabEvidence(browser, origin, options, candidate) {
+async function recordMediaLabEvidence(
+  browser,
+  origin,
+  options,
+  candidate,
+  nativeVisibilityEvidence,
+) {
   const requestedPath = options.recordVideo;
   const result = {
     requested: true,
@@ -1610,6 +2502,8 @@ async function recordMediaLabEvidence(browser, origin, options, candidate) {
       syntheticSeekScript: false,
       headed: options.headed,
       viewport: { width: 1280, height: 720 },
+      pageVisibilityAcceptanceAuthority:
+        "separate-native-non-debugged-chrome-loopback-telemetry",
     },
     interactions: [],
     hiddenTab: null,
@@ -1742,30 +2636,46 @@ async function recordMediaLabEvidence(browser, origin, options, candidate) {
       // Native video keyboard behavior can vary; record the observed result.
     }
 
-    const visibilityBefore = await page.evaluate(
-      () => window.phase3MediaLabReport?.visibility?.transitions || 0,
-    );
-    const cover = await context.newPage();
-    await cover.goto(origin + "/health");
-    await cover.bringToFront();
-    await page.waitForTimeout(900);
-    await page.bringToFront();
-    await page.waitForTimeout(500);
-    await cover.close();
-    const visibilityAfter = await page.evaluate(
+    const recordingPageVisibility = await page.evaluate(
       () => window.phase3MediaLabReport?.visibility || null,
     );
     result.hiddenTab = {
-      playbackStartedThroughFocusedNativeControl: playbackStarted,
-      transitionsBefore: visibilityBefore,
-      transitionsAfter: visibilityAfter?.transitions ?? null,
-      completedHiddenSessions: visibilityAfter?.completedHiddenSessions ?? null,
-      totalHiddenMs: visibilityAfter?.totalHiddenMs ?? null,
-      status:
-        visibilityAfter?.completedHiddenSessions > 0
-          ? "recorded"
-          : "inconclusive-no-hidden-state",
+      status: nativeVisibilityEvidence?.status === "complete-pass" ? "recorded" : "inconclusive-no-hidden-state",
+      acceptanceAuthority: "separate-native-non-debugged-chrome-loopback-telemetry",
+      candidateId: candidate.id,
+      nativeEvidence: nativeVisibilityEvidence
+        ? {
+            status: nativeVisibilityEvidence.status,
+            passed: nativeVisibilityEvidence.passed,
+            authority: nativeVisibilityEvidence.authority,
+            method: nativeVisibilityEvidence.method,
+            initialVisible: nativeVisibilityEvidence.initialVisible,
+            hiddenObserved: nativeVisibilityEvidence.hiddenObserved,
+            visibleAfterReturn: nativeVisibilityEvidence.visibleAfterReturn,
+            mediaErrorObserved: nativeVisibilityEvidence.mediaErrorObserved,
+            mediaAdvanceWhileHiddenSeconds:
+              nativeVisibilityEvidence.mediaAdvanceWhileHiddenSeconds,
+            pausedWhenHidden: nativeVisibilityEvidence.pausedWhenHidden,
+            pausedAfterReturn: nativeVisibilityEvidence.pausedAfterReturn,
+            visiblePlaybackWarmup: nativeVisibilityEvidence.visiblePlaybackWarmup,
+            visiblePlayback: nativeVisibilityEvidence.visiblePlayback,
+          }
+        : null,
+      recordingPageObservation: {
+        acceptanceAuthority: false,
+        playbackStartedThroughFocusedNativeControl: playbackStarted,
+        transitions: recordingPageVisibility?.transitions ?? null,
+        completedHiddenSessions: recordingPageVisibility?.completedHiddenSessions ?? null,
+        totalHiddenMs: recordingPageVisibility?.totalHiddenMs ?? null,
+        note:
+          "The Playwright-recorded page is not the Page Visibility authority; the same selected media was verified separately in native non-debugged Chrome.",
+      },
     };
+    if (result.hiddenTab.status !== "recorded") {
+      result.errors.push(
+        "Recorded media-lab evidence requires a completed hidden-tab session.",
+      );
+    }
 
     await page.locator("#result-rows").scrollIntoViewIfNeeded();
     await page.waitForTimeout(650);
@@ -1805,7 +2715,10 @@ async function recordMediaLabEvidence(browser, origin, options, candidate) {
     result.output.sha256 = await sha256(requestedPath);
     result.status =
       result.errors.length === 0 &&
-      result.interactions.every((entry) => entry.status === "completed" || entry.status === "passed")
+      result.interactions.every(
+        (entry) => entry.status === "completed" || entry.status === "passed",
+      ) &&
+      result.hiddenTab?.status === "recorded"
         ? "passed"
         : "failed";
     return result;
@@ -1825,6 +2738,7 @@ async function recordMediaLabEvidence(browser, origin, options, candidate) {
 }
 
 async function runBrowserQa(options, probeRecords) {
+  const launchPolicy = chromiumLaunchPolicy(options.headed);
   const resolution = await resolveChromium(options.browserExecutable);
   if (!resolution.available) {
     return {
@@ -1832,6 +2746,7 @@ async function runBrowserQa(options, probeRecords) {
       status: "not-executed",
       reason: resolution.reason,
       required: options.requireBrowser,
+      launchPolicy,
       reviewVideo: {
         requested: options.recordVideo !== null,
         status: options.recordVideo ? "not-executed" : "not-requested",
@@ -1852,19 +2767,38 @@ async function runBrowserQa(options, probeRecords) {
     ),
   );
   const harness = await createHarnessServer(candidatePaths);
+  const nativeVisibilityResults = {};
+  const nativeVisibilityResolution = await resolveNativeChrome(options.browserExecutable);
+  for (const candidate of candidatePaths) {
+    nativeVisibilityResults[candidate.id] = await runNativeVisibilityProbe(
+      harness,
+      candidate,
+      nativeVisibilityResolution,
+      options,
+    );
+  }
+  const browserArguments = [
+    "--autoplay-policy=no-user-gesture-required",
+    "--disable-background-networking",
+    "--disable-component-update",
+    "--disable-default-apps",
+    "--no-first-run",
+  ];
+  const launchMeasurementBrowser = () =>
+    resolution.chromium.launch({
+      executablePath: resolution.executablePath,
+      headless: true,
+      args: browserArguments,
+    });
+  const launchRecordingBrowser = () =>
+    resolution.chromium.launch({
+      executablePath: resolution.executablePath,
+      headless: false,
+      args: browserArguments,
+    });
   let browser;
   try {
-    browser = await resolution.chromium.launch({
-      executablePath: resolution.executablePath,
-      headless: !options.headed,
-      args: [
-        "--autoplay-policy=no-user-gesture-required",
-        "--disable-background-networking",
-        "--disable-component-update",
-        "--disable-default-apps",
-        "--no-first-run",
-      ],
-    });
+    browser = await launchMeasurementBrowser();
   } catch (error) {
     await new Promise((resolve) => harness.server.close(resolve));
     return {
@@ -1874,6 +2808,7 @@ async function runBrowserQa(options, probeRecords) {
         resolution.executablePath,
       ]),
       required: options.requireBrowser,
+      launchPolicy,
       executablePath: portablePath(resolution.executablePath),
       executableScope: portablePathScope(resolution.executablePath),
       executableSource: resolution.executableSource,
@@ -1905,34 +2840,54 @@ async function runBrowserQa(options, probeRecords) {
   let version = null;
   try {
     version = browser.version();
-    const context = await browser.newContext({
-      serviceWorkers: "block",
-      colorScheme: "dark",
-    });
+    await browser.close();
+    browser = null;
     const randomFractions = seededFractions(options.seed, 10);
     for (const candidate of candidatePaths) {
-      candidateResults[candidate.id] = await testCandidateInBrowser(
-        context,
-        harness.origin,
-        options,
-        candidate,
-        randomFractions,
+      const candidateBrowser = await launchMeasurementBrowser();
+      try {
+        const candidateContext = await candidateBrowser.newContext({
+          serviceWorkers: "block",
+          colorScheme: "dark",
+        });
+        try {
+          candidateResults[candidate.id] = await testCandidateInBrowser(
+            candidateContext,
+            harness.origin,
+            options,
+            candidate,
+            randomFractions,
+          );
+        } finally {
+          await candidateContext.close();
+        }
+      } finally {
+        await candidateBrowser.close();
+      }
+    }
+    for (const candidate of candidatePaths) {
+      candidateResults[candidate.id] = mergeNativeVisibilityEvidence(
+        candidateResults[candidate.id],
+        nativeVisibilityResults[candidate.id],
       );
     }
-    await context.close();
     if (options.recordVideo) {
       const recordingCandidate = candidatePaths.find(
         (candidate) => candidate.id === options.recordCandidate,
       );
+      browser = await launchRecordingBrowser();
       reviewVideo = await recordMediaLabEvidence(
         browser,
         harness.origin,
         options,
         recordingCandidate,
+        nativeVisibilityResults[options.recordCandidate] || null,
       );
+      await browser.close();
+      browser = null;
     }
   } finally {
-    await browser.close();
+    if (browser) await browser.close();
     await new Promise((resolve) => harness.server.close(resolve));
   }
 
@@ -1947,8 +2902,35 @@ async function runBrowserQa(options, probeRecords) {
     tested: true,
     status: browserStatus,
     complete: browserStatus === "passed",
-    executionMode: options.headed ? "headed" : "headless",
+    executionMode: options.headed
+      ? "headless-measurement+headed-native-visibility+headed-recording"
+      : "headless-measurement",
     required: options.requireBrowser,
+    launchPolicy,
+    nativeVisibilityProfile: {
+      tested: Object.values(nativeVisibilityResults).some((entry) => entry.tested),
+      status: Object.values(nativeVisibilityResults).some(
+        (entry) => entry.status === "complete-fail",
+      )
+        ? "failed"
+        : Object.values(nativeVisibilityResults).every(
+              (entry) => entry.status === "complete-pass",
+            ) && Object.values(nativeVisibilityResults).length > 0
+          ? "passed"
+          : "partial-inconclusive",
+      launchPolicy: nativeVisibilityLaunchPolicy(),
+      executablePath: nativeVisibilityResolution.available
+        ? portablePath(nativeVisibilityResolution.executablePath)
+        : null,
+      executableScope: nativeVisibilityResolution.available
+        ? portablePathScope(nativeVisibilityResolution.executablePath)
+        : null,
+      executableSource: nativeVisibilityResolution.executableSource || null,
+      reason: nativeVisibilityResolution.available ? null : nativeVisibilityResolution.reason,
+      candidateStatuses: Object.fromEntries(
+        Object.entries(nativeVisibilityResults).map(([id, entry]) => [id, entry.status]),
+      ),
+    },
     product: "Chromium",
     version,
     automation: "playwright-core",
@@ -2140,6 +3122,7 @@ async function main() {
       randomSeekCount: 10,
       randomNormalizedTargets: seededFractions(options.seed, 10),
       rapidAlternatingNormalizedTargets: [0.12, 0.88, 0.16, 0.84, 0.2, 0.8, 0.24, 0.76],
+      rapidBurstSetupNormalizedTarget: 0.5,
       nearbyFrameOffsets: [-3, -2, -1, 0, 1, 2, 3],
       forwardSeekCount: 6,
       reverseSeekCount: 6,
