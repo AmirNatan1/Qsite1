@@ -2,6 +2,18 @@
   "schema": "quantum-hub.phase-3-entry-responsive-evidence.v1",
   "status": "PASS",
   "authority": "actual-frozen-phase-2b-homepage-at-scrollY-0",
+  "evidenceClassification": "REPRODUCTION_FROM_FROZEN_PHASE2B_PRODUCTION_BYTES",
+  "repository": {
+    "captureHead": "26f20b2f46af1f620b1427caca5cfb9b5617d773",
+    "frozenPhase2BParent": "b54f3a83b6180466127589a8d028f94dab892d17",
+    "frozenPhase2BParentIsAncestor": true,
+    "productionState": "frozen Phase 2B source reproduced from the Phase 3 branch without modification",
+    "visualHashAuthority": {
+      "repositoryRelativePath": "artifacts/evidence/phase-2b/review/phase-2b-visual-evidence-manifest.json",
+      "bytes": 39640,
+      "sha256": "b3c88d9ffa53592cec812a2a37a382d2899f28a0971cb1ff4c4c4022021f56a6"
+    }
+  },
   "url": "http://127.0.0.1:4321/",
   "browser": {
     "product": "Chromium",
@@ -29,6 +41,7 @@
   "captures": [
     {
       "id": "desktop-1440x900",
+      "evidenceClassification": "REPRODUCTION",
       "viewport": {
         "width": 1440,
         "height": 900
@@ -494,6 +507,7 @@
     },
     {
       "id": "short-desktop-1366x650",
+      "evidenceClassification": "REPRODUCTION",
       "viewport": {
         "width": 1366,
         "height": 650
@@ -959,6 +973,7 @@
     },
     {
       "id": "desktop-1280x800",
+      "evidenceClassification": "REPRODUCTION",
       "viewport": {
         "width": 1280,
         "height": 800
@@ -1424,6 +1439,7 @@
     },
     {
       "id": "tablet-landscape-1024x768",
+      "evidenceClassification": "REPRODUCTION",
       "viewport": {
         "width": 1024,
         "height": 768
@@ -1889,6 +1905,7 @@
     },
     {
       "id": "mobile-390x844",
+      "evidenceClassification": "REPRODUCTION",
       "viewport": {
         "width": 390,
         "height": 844
@@ -2354,6 +2371,7 @@
     },
     {
       "id": "mobile-360x800",
+      "evidenceClassification": "REPRODUCTION",
       "viewport": {
         "width": 360,
         "height": 800
@@ -2819,6 +2837,7 @@
     },
     {
       "id": "narrow-320x800",
+      "evidenceClassification": "REPRODUCTION",
       "viewport": {
         "width": 320,
         "height": 800
@@ -3284,6 +3303,7 @@
     },
     {
       "id": "mobile-landscape-844x390",
+      "evidenceClassification": "REPRODUCTION",
       "viewport": {
         "width": 844,
         "height": 390

@@ -1,16 +1,28 @@
 #!/usr/bin/env node
 
+import { execFile } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
 import { constants as fsConstants } from "node:fs";
-import { access, mkdir, rename, stat, unlink, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, rename, stat, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
+import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright-core";
 
+const execFileAsync = promisify(execFile);
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const REPORT_FILENAME = "phase-3-entry-capture-report.json";
 const HORIZONTAL_OVERFLOW_TOLERANCE_CSS_PX = 1;
+const FROZEN_PHASE2B_PARENT = "b54f3a83b6180466127589a8d028f94dab892d17";
+const PHASE2B_VISUAL_AUTHORITY = path.join(
+  ROOT,
+  "artifacts",
+  "evidence",
+  "phase-2b",
+  "review",
+  "phase-2b-visual-evidence-manifest.json",
+);
 
 const VIEWPORTS = Object.freeze([
   { id: "desktop-1440x900", width: 1440, height: 900 },
@@ -217,6 +229,28 @@ async function validateChromium(executable) {
 
 function sha256(buffer) {
   return createHash("sha256").update(buffer).digest("hex");
+}
+
+async function repositoryProvenance() {
+  const git = async (args) =>
+    (await execFileAsync("git", args, { cwd: ROOT, windowsHide: true })).stdout.trim();
+  const captureHead = await git(["rev-parse", "HEAD"]);
+  await execFileAsync("git", ["merge-base", "--is-ancestor", FROZEN_PHASE2B_PARENT, captureHead], {
+    cwd: ROOT,
+    windowsHide: true,
+  });
+  const visualAuthorityBytes = await readFile(PHASE2B_VISUAL_AUTHORITY);
+  return {
+    captureHead,
+    frozenPhase2BParent: FROZEN_PHASE2B_PARENT,
+    frozenPhase2BParentIsAncestor: true,
+    productionState: "frozen Phase 2B source reproduced from the Phase 3 branch without modification",
+    visualHashAuthority: {
+      repositoryRelativePath: path.relative(ROOT, PHASE2B_VISUAL_AUTHORITY).replaceAll("\\", "/"),
+      bytes: visualAuthorityBytes.length,
+      sha256: sha256(visualAuthorityBytes),
+    },
+  };
 }
 
 function pngDimensions(buffer) {
@@ -500,6 +534,7 @@ async function captureViewport(browser, options, viewport) {
     ];
     return {
       id: viewport.id,
+      evidenceClassification: "REPRODUCTION",
       viewport: { width: viewport.width, height: viewport.height },
       dpr: measurement.devicePixelRatio,
       fonts: measurement.fonts,
@@ -552,10 +587,13 @@ async function main() {
   }
 
   const failures = captures.flatMap((capture) => capture.failures);
+  const repository = await repositoryProvenance();
   const report = {
     schema: "quantum-hub.phase-3-entry-responsive-evidence.v1",
     status: failures.length === 0 ? "PASS" : "FAIL",
     authority: "actual-frozen-phase-2b-homepage-at-scrollY-0",
+    evidenceClassification: "REPRODUCTION_FROM_FROZEN_PHASE2B_PRODUCTION_BYTES",
+    repository,
     url: options.url,
     browser: { product: "Chromium", version: browserVersion },
     capturePolicy: {
