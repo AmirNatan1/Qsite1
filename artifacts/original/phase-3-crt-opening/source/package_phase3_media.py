@@ -339,7 +339,7 @@ def validate_sequence(
         )
 
     return {
-        "externalRoot": str(root.resolve()),
+        "storagePolicy": "OUTSIDE_GIT_LOCAL_PATH_INTENTIONALLY_OMITTED",
         "filenamePattern": f"phase3-{variant}-%04d.png",
         "dimensions": {"width": expected_size[0], "height": expected_size[1]},
         "fps": FPS,
