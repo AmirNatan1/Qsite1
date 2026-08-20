@@ -1809,6 +1809,16 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--reuse-existing-candidates",
+        action="store_true",
+        help=(
+            "Full mode only: verify and package the four existing delivery candidates "
+            "without encoding them again. Intended for the post-browser-QA manifest/ZIP "
+            "refresh so the tested candidate bytes remain frozen. Raw sequences and "
+            "ffmpeg/ffprobe are still required to rebuild all comparison evidence."
+        ),
+    )
+    parser.add_argument(
         "--desktop-frames",
         type=Path,
         help="Outside-Git desktop PNG sequence root; required for full packaging mode.",
@@ -1853,6 +1863,10 @@ def main() -> None:
             "The external review ZIP must be named phase-3-crt-opening-human-review.zip"
         )
     if args.finalize_external_only:
+        if args.reuse_existing_candidates:
+            raise ValueError(
+                "--reuse-existing-candidates cannot be combined with --finalize-external-only"
+            )
         finalize_external_review(repository, review_zip, args.branch_sha)
         return
 
@@ -1986,7 +2000,14 @@ def main() -> None:
             if candidate["codec"] == "h264"
             else vp9_arguments(candidate["settings"]["crf"])
         )
-        encode_atomic(ffmpeg, [*input_args, *codec_args], candidate["path"])
+        if args.reuse_existing_candidates:
+            if not candidate["path"].is_file():
+                raise FileNotFoundError(
+                    "Cannot reuse a missing delivery candidate: "
+                    f"{candidate['path'].relative_to(repository).as_posix()}"
+                )
+        else:
+            encode_atomic(ffmpeg, [*input_args, *codec_args], candidate["path"])
         candidate["verification"] = verify_candidate(
             ffprobe, candidate["path"], candidate["size"], candidate["codec"]
         )
@@ -2632,6 +2653,7 @@ Phase 3 if the handoff does not feel inevitable.
             "scope": "IDENTICAL_SOURCE_BYTES_SETTINGS_TOOLCHAIN_FONT_AND_EXECUTION_PROTOCOL",
             "fixedOutputNames": True,
             "atomicOverwrite": True,
+            "existingDeliveryCandidatesReusedWithoutEncoding": args.reuse_existing_candidates,
             "fixedZipOrderingAndMetadata": True,
             "crossHostEncoderBitIdentityClaimed": False,
             "crossHostFontBitIdentityClaimed": False,
