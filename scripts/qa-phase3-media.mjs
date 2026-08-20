@@ -3,8 +3,9 @@
 import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
 import { createReadStream } from "node:fs";
-import { access, mkdir, stat, writeFile } from "node:fs/promises";
+import { access, mkdir, mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { createServer } from "node:http";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import process from "node:process";
 import { promisify } from "node:util";
@@ -13,6 +14,7 @@ import { fileURLToPath } from "node:url";
 const execFileAsync = promisify(execFile);
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const productionRoots = ["src", "public", "dist"].map((entry) => path.join(repositoryRoot, entry));
+const mediaLabRoot = path.join(repositoryRoot, "prototypes", "phase-3-crt-media-lab");
 const candidateDefinitions = [
   {
     id: "desktop-mp4",
@@ -61,6 +63,8 @@ const HELP = [
   "  --browser-executable <file>   Explicit Chromium executable",
   "  --headed                      Run Chromium visibly for focus/visibility evidence",
   "  --require-browser             Fail unless browser evidence is complete",
+  "  --record-video <file.webm>    Record the actual isolated media-lab UI run",
+  "  --record-candidate <id>       Candidate shown in recording; default desktop-webm",
   "  --expected-fps <number>       Default: 30",
   "  --expected-duration <seconds> Default: 9",
   "  --expected-frames <integer>   Default: 270",
@@ -75,7 +79,8 @@ const HELP = [
   "  --linear-sample-ms <integer>  Default: 1200",
   "",
   "All media is served from an in-memory localhost harness. The script rejects",
-  "candidate and report paths inside src, public, or dist.",
+  "candidate, report, and recorded-video paths inside src, public, or dist.",
+  "Recording requires --headed and writes Playwright WebM to the exact path.",
 ].join("\n");
 
 function parseArguments(argv) {
@@ -119,14 +124,34 @@ function parseArguments(argv) {
     return parsed;
   };
 
+  const headed = values.get("headed") === true;
+  const recordVideo = values.has("record-video")
+    ? path.resolve(String(values.get("record-video")))
+    : null;
+  const recordCandidate = String(values.get("record-candidate") || "desktop-webm");
+  const knownCandidateIds = new Set(candidateDefinitions.map(({ id }) => id));
+  if (!knownCandidateIds.has(recordCandidate)) {
+    throw new Error(
+      "--record-candidate must be one of " + [...knownCandidateIds].join(", "),
+    );
+  }
+  if (recordVideo && path.extname(recordVideo).toLowerCase() !== ".webm") {
+    throw new Error("--record-video must use a .webm extension because Playwright records WebM");
+  }
+  if (recordVideo && !headed) {
+    throw new Error("--record-video requires --headed for visible review evidence");
+  }
+
   const options = {
     ffprobe: path.resolve(String(values.get("ffprobe"))),
     output: path.resolve(String(values.get("output"))),
     browserExecutable: values.has("browser-executable")
       ? path.resolve(String(values.get("browser-executable")))
       : null,
-    headed: values.get("headed") === true,
-    requireBrowser: values.get("require-browser") === true,
+    headed,
+    requireBrowser: values.get("require-browser") === true || recordVideo !== null,
+    recordVideo,
+    recordCandidate,
     expectedFps: numberOption("expected-fps", 30),
     expectedDuration: numberOption("expected-duration", 9),
     expectedFrames: numberOption("expected-frames", 270, true),
@@ -681,6 +706,32 @@ async function createHarnessServer(candidates) {
       if (url.pathname === "/health") {
         response.writeHead(200, { ...headers, "Content-Type": "text/plain; charset=utf-8" });
         response.end("phase-3-media-qa\n");
+        return;
+      }
+      if (url.pathname === "/lab") {
+        response.writeHead(308, { ...headers, Location: "/lab/" });
+        response.end();
+        return;
+      }
+      const labFiles = new Map([
+        ["/lab/", { name: "index.html", type: "text/html; charset=utf-8" }],
+        ["/lab/index.html", { name: "index.html", type: "text/html; charset=utf-8" }],
+        ["/lab/app.js", { name: "app.js", type: "text/javascript; charset=utf-8" }],
+        ["/lab/styles.css", { name: "styles.css", type: "text/css; charset=utf-8" }],
+      ]);
+      const labFile = labFiles.get(url.pathname);
+      if (labFile) {
+        const contents = await readFile(path.join(mediaLabRoot, labFile.name));
+        const labHeaders = {
+          ...headers,
+          "Content-Type": labFile.type,
+        };
+        if (labFile.name === "index.html") {
+          labHeaders["Content-Security-Policy"] =
+            "default-src 'self'; base-uri 'none'; connect-src 'self'; img-src 'self' data:; media-src 'self' blob:; object-src 'none'; script-src 'self'; style-src 'self'; frame-ancestors 'none'";
+        }
+        response.writeHead(200, labHeaders);
+        response.end(contents);
         return;
       }
       if (url.pathname === "/qa") {
@@ -1387,6 +1438,274 @@ async function testCandidateInBrowser(context, origin, options, candidate, rando
   return result;
 }
 
+async function runRecordedLabExercise(page, exerciseId, timeoutMs) {
+  const beforeCount = await page.evaluate(
+    () => window.phase3MediaLabReport?.runs?.length || 0,
+  );
+  await page.locator('[data-exercise="' + exerciseId + '"]').click();
+  await page.waitForFunction(
+    ({ beforeCount, exerciseId }) => {
+      const runs = window.phase3MediaLabReport?.runs || [];
+      const latest = runs.at(-1);
+      return (
+        runs.length > beforeCount &&
+        latest?.id === exerciseId &&
+        latest?.status !== "running"
+      );
+    },
+    { beforeCount, exerciseId },
+    { timeout: timeoutMs },
+  );
+  return page.evaluate((exerciseId) => {
+    const run = [...(window.phase3MediaLabReport?.runs || [])]
+      .reverse()
+      .find((entry) => entry.id === exerciseId);
+    return run
+      ? {
+          id: run.id,
+          label: run.label,
+          status: run.status,
+          measurements: run.measurements?.length || 0,
+          summary: run.summary || null,
+          error: run.error || null,
+        }
+      : null;
+  }, exerciseId);
+}
+
+async function recordMediaLabEvidence(browser, origin, options, candidate) {
+  const requestedPath = options.recordVideo;
+  const result = {
+    requested: true,
+    status: "failed",
+    candidateId: options.recordCandidate,
+    output: {
+      path: requestedPath,
+      container: "webm",
+      bytes: null,
+      sha256: null,
+    },
+    capture: {
+      authority: "playwright-video-of-actual-isolated-media-lab-ui",
+      surface: "prototypes/phase-3-crt-media-lab",
+      interactionMode: "visible DOM controls",
+      syntheticSeekScript: false,
+      headed: options.headed,
+      viewport: { width: 1280, height: 720 },
+    },
+    interactions: [],
+    hiddenTab: null,
+    labSummary: null,
+    errors: [],
+  };
+  if (!candidate) {
+    result.errors.push("The selected recording candidate is unavailable.");
+    return result;
+  }
+
+  const temporaryRoot = await mkdtemp(path.join(tmpdir(), "phase3-media-lab-video-"));
+  let context = null;
+  let page = null;
+  let video = null;
+  try {
+    await mkdir(path.dirname(requestedPath), { recursive: true });
+    context = await browser.newContext({
+      serviceWorkers: "block",
+      colorScheme: "dark",
+      viewport: { width: 1280, height: 720 },
+      recordVideo: {
+        dir: temporaryRoot,
+        size: { width: 1280, height: 720 },
+      },
+    });
+    page = await context.newPage();
+    video = page.video();
+    const consoleErrors = [];
+    const pageErrors = [];
+    page.on("console", (message) => {
+      if (message.type() === "error") consoleErrors.push(message.text());
+    });
+    page.on("pageerror", (error) => pageErrors.push(String(error.message || error)));
+
+    const sourcePath = "/media/" + encodeURIComponent(candidate.id);
+    const labUrl =
+      origin +
+      "/lab/?src=" +
+      encodeURIComponent(sourcePath) +
+      "&fps=" +
+      encodeURIComponent(String(options.expectedFps));
+    await page.goto(labUrl, {
+      waitUntil: "networkidle",
+      timeout: options.metadataTimeoutMs,
+    });
+    await page.waitForFunction(
+      () => {
+        const report = window.phase3MediaLabReport;
+        const timeline = document.querySelector("#timeline");
+        return (
+          report?.source?.durationSeconds > 0 &&
+          timeline instanceof HTMLInputElement &&
+          !timeline.disabled
+        );
+      },
+      null,
+      { timeout: options.metadataTimeoutMs },
+    );
+
+    const frameRate = options.expectedFps;
+    const timeline = page.locator("#timeline");
+    await page.locator(".stage-panel").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(450);
+    await timeline.focus();
+    await timeline.press("End");
+    await page.waitForFunction(
+      (frameRate) => {
+        const media = document.querySelector("#media");
+        return (
+          media instanceof HTMLVideoElement &&
+          Number.isFinite(media.duration) &&
+          media.currentTime >= media.duration - 2 / frameRate
+        );
+      },
+      frameRate,
+      { timeout: options.seekTimeoutMs },
+    );
+    result.interactions.push({ control: "timeline", action: "End", status: "completed" });
+    await page.waitForTimeout(350);
+    await timeline.press("Home");
+    await page.waitForFunction(
+      (frameRate) => {
+        const media = document.querySelector("#media");
+        return media instanceof HTMLVideoElement && media.currentTime <= 2 / frameRate;
+      },
+      frameRate,
+      { timeout: options.seekTimeoutMs },
+    );
+    result.interactions.push({ control: "timeline", action: "Home", status: "completed" });
+    await page.waitForTimeout(350);
+
+    await page.locator('[data-exercise="first-frame"]').scrollIntoViewIfNeeded();
+    const exerciseTimeout = Math.max(60_000, options.seekTimeoutMs * 40);
+    for (const exerciseId of [
+      "first-frame",
+      "final-frame",
+      "random-10",
+      "rapid-alternating",
+      "forward-reverse",
+    ]) {
+      const exercise = await runRecordedLabExercise(page, exerciseId, exerciseTimeout);
+      result.interactions.push({
+        control: "exercise-button",
+        action: exerciseId,
+        status: exercise?.status || "missing",
+        measurements: exercise?.measurements ?? null,
+      });
+      if (!exercise || exercise.status !== "passed") {
+        throw new Error("Recorded media-lab exercise did not pass: " + exerciseId);
+      }
+      await page.waitForTimeout(300);
+    }
+
+    await page.locator("#media").scrollIntoViewIfNeeded();
+    await page.locator("#media").focus();
+    await page.keyboard.press("Space");
+    let playbackStarted = false;
+    try {
+      await page.waitForFunction(
+        () => {
+          const media = document.querySelector("#media");
+          return media instanceof HTMLVideoElement && !media.paused && !media.ended;
+        },
+        null,
+        { timeout: 2500 },
+      );
+      playbackStarted = true;
+    } catch {
+      // Native video keyboard behavior can vary; record the observed result.
+    }
+
+    const visibilityBefore = await page.evaluate(
+      () => window.phase3MediaLabReport?.visibility?.transitions || 0,
+    );
+    const cover = await context.newPage();
+    await cover.goto(origin + "/health");
+    await cover.bringToFront();
+    await page.waitForTimeout(900);
+    await page.bringToFront();
+    await page.waitForTimeout(500);
+    await cover.close();
+    const visibilityAfter = await page.evaluate(
+      () => window.phase3MediaLabReport?.visibility || null,
+    );
+    result.hiddenTab = {
+      playbackStartedThroughFocusedNativeControl: playbackStarted,
+      transitionsBefore: visibilityBefore,
+      transitionsAfter: visibilityAfter?.transitions ?? null,
+      completedHiddenSessions: visibilityAfter?.completedHiddenSessions ?? null,
+      totalHiddenMs: visibilityAfter?.totalHiddenMs ?? null,
+      status:
+        visibilityAfter?.completedHiddenSessions > 0
+          ? "recorded"
+          : "inconclusive-no-hidden-state",
+    };
+
+    await page.locator("#result-rows").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(650);
+    await page.locator("#report-preview").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(850);
+    result.labSummary = await page.evaluate(() => {
+      const report = window.phase3MediaLabReport;
+      return {
+        schema: report?.schema || null,
+        canary: report?.canary || null,
+        source: report?.source
+          ? {
+              kind: report.source.kind,
+              name: report.source.name,
+              configuredFrameRate: report.source.configuredFrameRate,
+              durationSeconds: report.source.durationSeconds,
+              dimensions: report.source.dimensions,
+            }
+          : null,
+        runs: (report?.runs || []).map((run) => ({
+          id: run.id,
+          status: run.status,
+          measurements: run.measurements?.length || 0,
+          summary: run.summary || null,
+        })),
+        visibility: report?.visibility || null,
+      };
+    });
+    result.errors.push(...consoleErrors, ...pageErrors);
+
+    await context.close();
+    context = null;
+    if (!video) throw new Error("Playwright did not expose a video recording handle.");
+    await video.saveAs(requestedPath);
+    const outputStat = await stat(requestedPath);
+    result.output.bytes = outputStat.size;
+    result.output.sha256 = await sha256(requestedPath);
+    result.status =
+      result.errors.length === 0 &&
+      result.interactions.every((entry) => entry.status === "completed" || entry.status === "passed")
+        ? "passed"
+        : "failed";
+    return result;
+  } catch (error) {
+    result.errors.push(String(error.message || error));
+    if (context) {
+      try {
+        await context.close();
+      } catch {
+        // Preserve the primary recording failure.
+      }
+    }
+    return result;
+  } finally {
+    await rm(temporaryRoot, { recursive: true, force: true });
+  }
+}
+
 async function runBrowserQa(options, probeRecords) {
   const resolution = await resolveChromium(options.browserExecutable);
   if (!resolution.available) {
@@ -1395,6 +1714,11 @@ async function runBrowserQa(options, probeRecords) {
       status: "not-executed",
       reason: resolution.reason,
       required: options.requireBrowser,
+      reviewVideo: {
+        requested: options.recordVideo !== null,
+        status: options.recordVideo ? "not-executed" : "not-requested",
+        output: options.recordVideo ? { path: options.recordVideo } : null,
+      },
       candidateResults: {},
     };
   }
@@ -1427,11 +1751,21 @@ async function runBrowserQa(options, probeRecords) {
       required: options.requireBrowser,
       executablePath: resolution.executablePath,
       executableSource: resolution.executableSource,
+      reviewVideo: {
+        requested: options.recordVideo !== null,
+        status: options.recordVideo ? "not-executed" : "not-requested",
+        output: options.recordVideo ? { path: options.recordVideo } : null,
+      },
       candidateResults: {},
     };
   }
 
   const candidateResults = {};
+  let reviewVideo = {
+    requested: options.recordVideo !== null,
+    status: options.recordVideo ? "pending" : "not-requested",
+    output: options.recordVideo ? { path: options.recordVideo } : null,
+  };
   let version = null;
   try {
     version = browser.version();
@@ -1450,13 +1784,25 @@ async function runBrowserQa(options, probeRecords) {
       );
     }
     await context.close();
+    if (options.recordVideo) {
+      const recordingCandidate = candidatePaths.find(
+        (candidate) => candidate.id === options.recordCandidate,
+      );
+      reviewVideo = await recordMediaLabEvidence(
+        browser,
+        harness.origin,
+        options,
+        recordingCandidate,
+      );
+    }
   } finally {
     await browser.close();
     await new Promise((resolve) => harness.server.close(resolve));
   }
 
   const results = Object.values(candidateResults);
-  const browserStatus = results.some((entry) => entry.status === "failed")
+  const recordingFailed = reviewVideo.requested && reviewVideo.status !== "passed";
+  const browserStatus = results.some((entry) => entry.status === "failed") || recordingFailed
     ? "failed"
     : results.some((entry) => entry.status === "partial-hidden-tab-inconclusive")
       ? "partial-hidden-tab-inconclusive"
@@ -1477,7 +1823,10 @@ async function runBrowserQa(options, probeRecords) {
       productionDirectoriesServed: false,
       binding: "127.0.0.1 ephemeral port",
       mediaSources: "only the four explicit candidate files",
+      mediaLabSurfaceServed: true,
+      mediaLabSource: "prototypes/phase-3-crt-media-lab",
     },
+    reviewVideo,
     candidateResults,
   };
 }
@@ -1497,7 +1846,12 @@ function summarize(options, candidates, browser) {
         .map(([id]) => id)
     : [];
   const browserMissing = !browser.tested;
-  const hardFailed = probeFailures.length > 0 || browserFailures.length > 0;
+  const recordingFailure =
+    browser.tested &&
+    browser.reviewVideo?.requested === true &&
+    browser.reviewVideo.status !== "passed";
+  const hardFailed =
+    probeFailures.length > 0 || browserFailures.length > 0 || recordingFailure;
   const browserIncomplete = browserMissing || browserPartialIds.length > 0;
   const status = hardFailed
     ? "failed"
@@ -1516,6 +1870,8 @@ function summarize(options, candidates, browser) {
     chromiumExecuted: browser.tested,
     chromiumFailureIds: browserFailures,
     chromiumPartialIds: browserPartialIds,
+    recordedMediaLabVideoRequested: browser.reviewVideo?.requested === true,
+    recordedMediaLabVideoStatus: browser.reviewVideo?.status || "not-requested",
     expectedCompatibilityClaimsAreExecutionResults: false,
   };
 }
@@ -1525,6 +1881,21 @@ async function main() {
   assertIsolatedPath(options.output, "Report output");
   for (const candidate of options.candidates) {
     assertIsolatedPath(candidate.absolutePath, "Candidate " + candidate.id);
+  }
+  if (options.recordVideo) {
+    assertIsolatedPath(options.recordVideo, "Recorded media-lab video");
+    const comparable = (value) =>
+      process.platform === "win32" ? path.resolve(value).toLowerCase() : path.resolve(value);
+    if (comparable(options.recordVideo) === comparable(options.output)) {
+      throw new Error("--record-video and --output must be different files");
+    }
+    if (
+      options.candidates.some(
+        (candidate) => comparable(candidate.absolutePath) === comparable(options.recordVideo),
+      )
+    ) {
+      throw new Error("--record-video may not overwrite a media candidate");
+    }
   }
   if (!(await exists(options.ffprobe))) {
     throw new Error("ffprobe executable does not exist: " + options.ffprobe);
@@ -1585,13 +1956,14 @@ async function main() {
       seededSeekTargets: true,
       seed: options.seed,
       timingValuesAreMeasurements: true,
-      note: "The test order and target times are deterministic; measured latency and playback counters intentionally reflect the executing machine.",
+      note: "The verifier test order and target times are deterministic; measured latency and playback counters intentionally reflect the executing machine. An optional recorded media-lab run uses the lab's own live controls and remains separate from this seeded telemetry.",
     },
     isolation: {
       productionImports: [],
       productionRootsRejected: productionRoots,
       productionRoutesEntered: false,
       productionBuildRequired: false,
+      recordedMediaLabVideoPath: options.recordVideo,
     },
     expectations: {
       fps: options.expectedFps,
@@ -1630,6 +2002,18 @@ async function main() {
       forwardSeekCount: 6,
       reverseSeekCount: 6,
       latencyPercentiles: ["minimum", "median", "p90", "p95", "maximum", "mean"],
+      recordedMediaLabRun: options.recordVideo
+        ? {
+            requested: true,
+            candidateId: options.recordCandidate,
+            headedRequired: true,
+            controlAuthority: "actual isolated media-lab DOM controls",
+            syntheticSeekScript: false,
+            randomSeekAuthority: "the media lab's live random-10 control",
+          }
+        : {
+            requested: false,
+          },
     },
     candidates,
     browser,
