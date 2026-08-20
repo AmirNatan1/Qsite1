@@ -19,7 +19,8 @@ import {
 const root = process.cwd();
 const outputRoot = path.join(root, "dist");
 const reportPath = path.join(root, "artifacts", "evidence", "phase-1", "phase-1-build-report.json");
-const noWrite = process.argv.includes("--no-write");
+const supportingRoutesOnly = process.argv.includes("--supporting-routes-only");
+const noWrite = process.argv.includes("--no-write") || supportingRoutesOnly;
 const failures = [];
 
 function relativeToRoot(absolute) {
@@ -201,7 +202,9 @@ for (const route of ALL_HTML_ROUTES) {
   check(h1Count === 1, "h1-count", route.path, `expected one H1; observed ${h1Count}`);
   check(headingLevels[0] === 1, "heading-order", route.path, "the first document heading must be H1");
   check(headingJumps.length === 0, "heading-order", route.path, "heading levels must not skip downward", headingJumps);
-  check(tags(html, "header").length === 1, "header-count", route.path, "expected one semantic header");
+  if (!(supportingRoutesOnly && route.path === "/")) {
+    check(tags(html, "header").length === 1, "header-count", route.path, "expected one semantic header");
+  }
   check(tags(html, "footer").length === 1, "footer-count", route.path, "expected one semantic footer");
 
   const titleMatch = html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i);
@@ -293,9 +296,11 @@ for (const scene of homeSceneSections) {
   check(Boolean(scene.labelledBy) && homeIds.has(scene.labelledBy), "home-scene-label", "/", `Home scene ${scene.identity} has no valid accessible label target`);
 }
 check(new Set(homeSceneSections.map(({ id }) => id)).size === homeSceneSections.length, "home-scene-id", "/", "Home scene ids must be unique");
-check(/data-scene=["']threshold["']/i.test(homeHtml), "home-threshold", "/", "Home must expose the static threshold marker");
-check(/class=["'][^"']*\bfield-aperture\b/i.test(homeHtml), "home-static-aperture", "/", "Home must include the static rectangular field aperture");
-check(!/signal-field|current-signal|\bradar\b|\bscanner\b|\bconcentric\b/i.test(homeHtml), "home-rejected-visual", "/", "Home contains rejected or unapproved scene language");
+if (!supportingRoutesOnly) {
+  check(/data-scene=["']threshold["']/i.test(homeHtml), "home-threshold", "/", "Home must expose the static threshold marker");
+  check(/class=["'][^"']*\bfield-aperture\b/i.test(homeHtml), "home-static-aperture", "/", "Home must include the static rectangular field aperture");
+  check(!/signal-field|current-signal|\bradar\b|\bscanner\b|\bconcentric\b/i.test(homeHtml), "home-rejected-visual", "/", "Home contains rejected or unapproved scene language");
+}
 
 const editorialConcepts = [
   { id: "verification-caveat", pattern: /\b(?:unverified|non-public|provenance)\b/gi },
@@ -549,7 +554,7 @@ if (failures.length > 0) {
 } else {
   const formatBytes = (value) => `${value.toLocaleString("en-US")} B`;
   console.log(
-    `Verified Phase 1 output: ${PHASE1_ROUTES.length} routes + 404, ${fileRecords.length} files, ` +
+    `Verified Phase 1 ${supportingRoutesOnly ? "supporting-route " : ""}output: ${PHASE1_ROUTES.length} routes + 404, ${fileRecords.length} files, ` +
       `JS ${formatBytes(report.sizes.javascript.total.raw)} raw/${formatBytes(report.sizes.javascript.total.gzip)} gzip, ` +
       `CSS ${formatBytes(report.sizes.css.raw)} raw/${formatBytes(report.sizes.css.gzip)} gzip, ` +
       `output ${formatBytes(report.sizes.output.raw)} raw.`,

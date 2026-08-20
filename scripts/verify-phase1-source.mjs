@@ -13,6 +13,7 @@ import {
 
 const root = process.cwd();
 const failures = [];
+const supportingRoutesOnly = process.argv.includes("--supporting-routes-only");
 
 function relative(absolute) {
   return path.relative(root, absolute).replaceAll("\\", "/");
@@ -82,12 +83,6 @@ const pageHeroSource = await readFile(path.join(root, "src", "components", "Page
 check(matches(pageHeroSource, /<h1\b/g) === 1, "shared-h1-owner", "src/components/PageHero.astro", "PageHero must own exactly one H1");
 
 const homeSource = await readFile(path.join(root, "src", "pages", "index.astro"), "utf8");
-check(
-  /<h3\b[^>]*>\s*\{maradinProofRecord\.title\}\s*<\/h3>/i.test(homeSource),
-  "home-proof-title",
-  "src/pages/index.astro",
-  "Home must visibly render the exact approved Maradin proof title",
-);
 const homeStyles = await readFile(path.join(root, "src", "styles", "routes", "home.css"), "utf8");
 const portalContractPath = path.join(root, "docs", "planning", "PORTAL_TO_INTERIOR_CONTRACT.md");
 let portalContract = "";
@@ -96,27 +91,35 @@ try {
 } catch {
   check(false, "portal-contract", "docs/planning/PORTAL_TO_INTERIOR_CONTRACT.md", "portal-to-interior contract is missing");
 }
-for (const identifier of ["signal-field", "radar", "scanner", "concentric"]) {
+if (!supportingRoutesOnly) {
   check(
-    !new RegExp(identifier, "i").test(`${homeSource}\n${homeStyles}`),
-    "home-visual-language",
-    "src/pages/index.astro + src/styles/routes/home.css",
-    `rejected Home visual identifier remains: ${identifier}`,
-  );
-}
-check(/class=["']field-aperture["']/.test(homeSource), "home-static-aperture", "src/pages/index.astro", "Home must include the static field-aperture marker");
-check(/\.field-aperture\b/.test(homeStyles), "home-static-aperture", "src/styles/routes/home.css", "Home must style the static field aperture");
-check(!/border-radius\s*:\s*50%/i.test(homeStyles), "home-circular-geometry", "src/styles/routes/home.css", "Home route styles must not recreate circular target geometry");
-check(!/@keyframes\b|\banimation(?:-name)?\s*:/i.test(homeStyles), "home-motion", "src/styles/routes/home.css", "Phase 1 Home visual must remain static");
-for (const identity of ["entry", "built-with-industry", "method", "industries", "proof", "programmes", "conversion"]) {
-  check(
-    new RegExp(`identity:\\s*["']${identity}["']`).test(homeSource),
-    "home-scene-identity",
+    /<h3\b[^>]*>\s*\{maradinProofRecord\.title\}\s*<\/h3>/i.test(homeSource),
+    "home-proof-title",
     "src/pages/index.astro",
-    `Home scene registry is missing ${identity}`,
+    "Home must visibly render the exact approved Maradin proof title",
   );
+  for (const identifier of ["signal-field", "radar", "scanner", "concentric"]) {
+    check(
+      !new RegExp(identifier, "i").test(`${homeSource}\n${homeStyles}`),
+      "home-visual-language",
+      "src/pages/index.astro + src/styles/routes/home.css",
+      `rejected Home visual identifier remains: ${identifier}`,
+    );
+  }
+  check(/class=["']field-aperture["']/.test(homeSource), "home-static-aperture", "src/pages/index.astro", "Home must include the static field-aperture marker");
+  check(/\.field-aperture\b/.test(homeStyles), "home-static-aperture", "src/styles/routes/home.css", "Home must style the static field aperture");
+  check(!/border-radius\s*:\s*50%/i.test(homeStyles), "home-circular-geometry", "src/styles/routes/home.css", "Home route styles must not recreate circular target geometry");
+  check(!/@keyframes\b|\banimation(?:-name)?\s*:/i.test(homeStyles), "home-motion", "src/styles/routes/home.css", "Phase 1 Home visual must remain static");
+  for (const identity of ["entry", "built-with-industry", "method", "industries", "proof", "programmes", "conversion"]) {
+    check(
+      new RegExp(`identity:\\s*["']${identity}["']`).test(homeSource),
+      "home-scene-identity",
+      "src/pages/index.astro",
+      `Home scene registry is missing ${identity}`,
+    );
+  }
+  check(!/current-signal/i.test(homeSource), "home-current-signal", "src/pages/index.astro", "Current Signal must remain absent until approved content exists");
 }
-check(!/current-signal/i.test(homeSource), "home-current-signal", "src/pages/index.astro", "Current Signal must remain absent until approved content exists");
 if (portalContract) {
   check(/physical CRT glass fills (?:the )?viewport/i.test(portalContract), "portal-contract", "docs/planning/PORTAL_TO_INTERIOR_CONTRACT.md", "contract must define the physical CRT handoff");
   check(/native (?:browser )?scroll/i.test(portalContract), "portal-contract", "docs/planning/PORTAL_TO_INTERIOR_CONTRACT.md", "contract must preserve native scroll authority");
@@ -124,6 +127,7 @@ if (portalContract) {
 }
 
 for (const route of ALL_HTML_ROUTES) {
+  if (supportingRoutesOnly && route.path === "/") continue;
   let source;
   try {
     source = await readFile(path.join(root, route.source), "utf8");
@@ -187,7 +191,13 @@ for (const file of executableFiles) {
   check(!/<\s*form\b/i.test(source), "form-markup", filePath, "public forms are prohibited in Phase 1");
   check(!/<\s*(?:input|textarea|select)\b/i.test(source), "form-control-markup", filePath, "public form controls are prohibited in Phase 1");
   check(!/\b(?:fetch|XMLHttpRequest|WebSocket|EventSource)\s*\(/.test(source), "network-runtime", filePath, "client/server data fetching is outside the Phase 1 static contract");
-  check(!/<\s*canvas\b|\bWebGL(?:2)?RenderingContext\b|\brequestAnimationFrame\s*\(|\bScrollTrigger\b/.test(source), "cinematic-runtime", filePath, "cinematic or canvas runtime code is prohibited in Phase 1");
+  const isPhase2bHomeSurface =
+    filePath === "src/pages/index.astro" ||
+    filePath.startsWith("src/components/home/") ||
+    filePath.startsWith("src/scripts/home-operating-field");
+  if (!(supportingRoutesOnly && isPhase2bHomeSurface)) {
+    check(!/<\s*canvas\b|\bWebGL(?:2)?RenderingContext\b|\brequestAnimationFrame\s*\(|\bScrollTrigger\b/.test(source), "cinematic-runtime", filePath, "cinematic or canvas runtime code is prohibited in Phase 1");
+  }
   check(!/["']\/(?:api|functions)\//i.test(source), "api-route-reference", filePath, "API and function routes are prohibited in Phase 1");
   check(!/["']\/(?:artifacts|prototypes)\//i.test(source), "review-runtime-reference", filePath, "review/prototype material must not be referenced by production source");
 }
@@ -255,6 +265,6 @@ if (failures.length > 0) {
   process.exitCode = 1;
 } else {
   console.log(
-    `Verified Phase 1 source: ${PHASE1_ROUTES.length} launch routes + 404, ${NAVIGATION.length} navigation entries, ${REQUIRED_VIEWPORTS.length} viewports, ${publicFiles.length} governed public assets, ${privacyScanFiles.length} planning/evidence files private-path clean, no prohibited runtime surface.`,
+    `Verified Phase 1 ${supportingRoutesOnly ? "supporting-route " : ""}source: ${PHASE1_ROUTES.length} launch routes + 404, ${NAVIGATION.length} navigation entries, ${REQUIRED_VIEWPORTS.length} viewports, ${publicFiles.length} governed public assets, ${privacyScanFiles.length} planning/evidence files private-path clean, no prohibited runtime surface.`,
   );
 }

@@ -1,0 +1,1594 @@
+{
+  "schema": "quantum-hub.phase-2b.browser-qa.v1",
+  "generatedAt": "2026-08-20T11:52:01.217Z",
+  "baseUrl": "http://127.0.0.1:4322",
+  "passed": true,
+  "browser": "Chromium",
+  "viewports": [
+    {
+      "viewport": "desktop-1440x900",
+      "layout": {
+        "chapterOrder": [
+          "entry",
+          "built-with-industry",
+          "method",
+          "industries",
+          "proof",
+          "programmes",
+          "conversion"
+        ],
+        "chapters": [
+          {
+            "id": "entry",
+            "top": 121.3125,
+            "width": 1440,
+            "height": 812
+          },
+          {
+            "id": "built-with-industry",
+            "top": 933.3125,
+            "width": 1440,
+            "height": 1008
+          },
+          {
+            "id": "method",
+            "top": 1941.3125,
+            "width": 1440,
+            "height": 3739.375
+          },
+          {
+            "id": "industries",
+            "top": 5680.6875,
+            "width": 1440,
+            "height": 4249.796875
+          },
+          {
+            "id": "proof",
+            "top": 9930.484375,
+            "width": 1440,
+            "height": 1908
+          },
+          {
+            "id": "programmes",
+            "top": 11838.484375,
+            "width": 1440,
+            "height": 936
+          },
+          {
+            "id": "conversion",
+            "top": 12774.484375,
+            "width": 1440,
+            "height": 972
+          }
+        ],
+        "horizontalOverflow": 0,
+        "textOverhang": [],
+        "textClipping": [],
+        "nestedScroll": [],
+        "undersizedControls": [],
+        "h1FontSize": 135.36,
+        "methodStickyFlag": "true",
+        "workpiecePosition": "sticky",
+        "operatingMode": "enhanced"
+      },
+      "axeViolations": [],
+      "runtimeErrors": [],
+      "externalRequests": []
+    },
+    {
+      "viewport": "short-desktop-1366x650",
+      "layout": {
+        "chapterOrder": [
+          "entry",
+          "built-with-industry",
+          "method",
+          "industries",
+          "proof",
+          "programmes",
+          "conversion"
+        ],
+        "chapters": [
+          {
+            "id": "entry",
+            "top": 121.3125,
+            "width": 1366,
+            "height": 624
+          },
+          {
+            "id": "built-with-industry",
+            "top": 745.3125,
+            "width": 1366,
+            "height": 775.578125
+          },
+          {
+            "id": "method",
+            "top": 1520.890625,
+            "width": 1366,
+            "height": 1736.46875
+          },
+          {
+            "id": "industries",
+            "top": 3257.359375,
+            "width": 1366,
+            "height": 3331.03125
+          },
+          {
+            "id": "proof",
+            "top": 6588.390625,
+            "width": 1366,
+            "height": 1248
+          },
+          {
+            "id": "programmes",
+            "top": 7836.390625,
+            "width": 1366,
+            "height": 782.65625
+          },
+          {
+            "id": "conversion",
+            "top": 8619.046875,
+            "width": 1366,
+            "height": 713.765625
+          }
+        ],
+        "horizontalOverflow": 0,
+        "textOverhang": [],
+        "textClipping": [],
+        "nestedScroll": [],
+        "undersizedControls": [],
+        "h1FontSize": 96,
+        "methodStickyFlag": "false",
+        "workpiecePosition": "absolute",
+        "operatingMode": "enhanced"
+      },
+      "axeViolations": [],
+      "runtimeErrors": [],
+      "externalRequests": []
+    },
+    {
+      "viewport": "desktop-1280x800",
+      "layout": {
+        "chapterOrder": [
+          "entry",
+          "built-with-industry",
+          "method",
+          "industries",
+          "proof",
+          "programmes",
+          "conversion"
+        ],
+        "chapters": [
+          {
+            "id": "entry",
+            "top": 116.484375,
+            "width": 1280,
+            "height": 712
+          },
+          {
+            "id": "built-with-industry",
+            "top": 828.484375,
+            "width": 1280,
+            "height": 896
+          },
+          {
+            "id": "method",
+            "top": 1724.484375,
+            "width": 1280,
+            "height": 3327.375
+          },
+          {
+            "id": "industries",
+            "top": 5051.859375,
+            "width": 1280,
+            "height": 3807.296875
+          },
+          {
+            "id": "proof",
+            "top": 8859.15625,
+            "width": 1280,
+            "height": 1696
+          },
+          {
+            "id": "programmes",
+            "top": 10555.15625,
+            "width": 1280,
+            "height": 832
+          },
+          {
+            "id": "conversion",
+            "top": 11387.15625,
+            "width": 1280,
+            "height": 864
+          }
+        ],
+        "horizontalOverflow": 0,
+        "textOverhang": [],
+        "textClipping": [],
+        "nestedScroll": [],
+        "undersizedControls": [],
+        "h1FontSize": 120.32,
+        "methodStickyFlag": "true",
+        "workpiecePosition": "sticky",
+        "operatingMode": "enhanced"
+      },
+      "axeViolations": [],
+      "runtimeErrors": [],
+      "externalRequests": []
+    },
+    {
+      "viewport": "tablet-landscape-1024x768",
+      "layout": {
+        "chapterOrder": [
+          "entry",
+          "built-with-industry",
+          "method",
+          "industries",
+          "proof",
+          "programmes",
+          "conversion"
+        ],
+        "chapters": [
+          {
+            "id": "entry",
+            "top": 100.25,
+            "width": 1024,
+            "height": 680
+          },
+          {
+            "id": "built-with-industry",
+            "top": 780.25,
+            "width": 1024,
+            "height": 992
+          },
+          {
+            "id": "method",
+            "top": 1772.25,
+            "width": 1024,
+            "height": 1700.484375
+          },
+          {
+            "id": "industries",
+            "top": 3472.734375,
+            "width": 1024,
+            "height": 3580.421875
+          },
+          {
+            "id": "proof",
+            "top": 7053.15625,
+            "width": 1024,
+            "height": 1628.15625
+          },
+          {
+            "id": "programmes",
+            "top": 8681.3125,
+            "width": 1024,
+            "height": 928
+          },
+          {
+            "id": "conversion",
+            "top": 9609.3125,
+            "width": 1024,
+            "height": 829.4375
+          }
+        ],
+        "horizontalOverflow": 0,
+        "textOverhang": [],
+        "textClipping": [],
+        "nestedScroll": [],
+        "undersizedControls": [],
+        "h1FontSize": 112.64,
+        "methodStickyFlag": "false",
+        "workpiecePosition": "absolute",
+        "operatingMode": "enhanced"
+      },
+      "axeViolations": [],
+      "runtimeErrors": [],
+      "externalRequests": []
+    },
+    {
+      "viewport": "tablet-portrait-768x1024",
+      "layout": {
+        "chapterOrder": [
+          "entry",
+          "built-with-industry",
+          "method",
+          "industries",
+          "proof",
+          "programmes",
+          "conversion"
+        ],
+        "chapters": [
+          {
+            "id": "entry",
+            "top": 100.25,
+            "width": 768,
+            "height": 948
+          },
+          {
+            "id": "built-with-industry",
+            "top": 1048.25,
+            "width": 768,
+            "height": 1090.484375
+          },
+          {
+            "id": "method",
+            "top": 2138.734375,
+            "width": 768,
+            "height": 1504.375
+          },
+          {
+            "id": "industries",
+            "top": 3643.109375,
+            "width": 768,
+            "height": 4071.171875
+          },
+          {
+            "id": "proof",
+            "top": 7714.28125,
+            "width": 768,
+            "height": 1832.8125
+          },
+          {
+            "id": "programmes",
+            "top": 9547.09375,
+            "width": 768,
+            "height": 1261.9375
+          },
+          {
+            "id": "conversion",
+            "top": 10809.03125,
+            "width": 768,
+            "height": 1024
+          }
+        ],
+        "horizontalOverflow": 0,
+        "textOverhang": [],
+        "textClipping": [],
+        "nestedScroll": [],
+        "undersizedControls": [],
+        "h1FontSize": 77,
+        "methodStickyFlag": "false",
+        "workpiecePosition": "absolute",
+        "operatingMode": "enhanced"
+      },
+      "axeViolations": [],
+      "runtimeErrors": [],
+      "externalRequests": []
+    },
+    {
+      "viewport": "mobile-390x844",
+      "layout": {
+        "chapterOrder": [
+          "entry",
+          "built-with-industry",
+          "method",
+          "industries",
+          "proof",
+          "programmes",
+          "conversion"
+        ],
+        "chapters": [
+          {
+            "id": "entry",
+            "top": 100.25,
+            "width": 390,
+            "height": 768
+          },
+          {
+            "id": "built-with-industry",
+            "top": 868.25,
+            "width": 390,
+            "height": 1069.6875
+          },
+          {
+            "id": "method",
+            "top": 1937.9375,
+            "width": 390,
+            "height": 1476.25
+          },
+          {
+            "id": "industries",
+            "top": 3414.1875,
+            "width": 390,
+            "height": 3428.34375
+          },
+          {
+            "id": "proof",
+            "top": 6842.53125,
+            "width": 390,
+            "height": 1779.140625
+          },
+          {
+            "id": "programmes",
+            "top": 8621.671875,
+            "width": 390,
+            "height": 1192.796875
+          },
+          {
+            "id": "conversion",
+            "top": 9814.46875,
+            "width": 390,
+            "height": 844
+          }
+        ],
+        "horizontalOverflow": 0,
+        "textOverhang": [],
+        "textClipping": [],
+        "nestedScroll": [],
+        "undersizedControls": [],
+        "h1FontSize": 58.5,
+        "methodStickyFlag": "false",
+        "workpiecePosition": "absolute",
+        "operatingMode": null
+      },
+      "axeViolations": [],
+      "runtimeErrors": [],
+      "externalRequests": []
+    },
+    {
+      "viewport": "mobile-360x800",
+      "layout": {
+        "chapterOrder": [
+          "entry",
+          "built-with-industry",
+          "method",
+          "industries",
+          "proof",
+          "programmes",
+          "conversion"
+        ],
+        "chapters": [
+          {
+            "id": "entry",
+            "top": 100.25,
+            "width": 360,
+            "height": 724
+          },
+          {
+            "id": "built-with-industry",
+            "top": 824.25,
+            "width": 360,
+            "height": 1060.25
+          },
+          {
+            "id": "method",
+            "top": 1884.5,
+            "width": 360,
+            "height": 1466.25
+          },
+          {
+            "id": "industries",
+            "top": 3350.75,
+            "width": 360,
+            "height": 3273.328125
+          },
+          {
+            "id": "proof",
+            "top": 6624.078125,
+            "width": 360,
+            "height": 1768.890625
+          },
+          {
+            "id": "programmes",
+            "top": 8392.96875,
+            "width": 360,
+            "height": 1181.21875
+          },
+          {
+            "id": "conversion",
+            "top": 9574.1875,
+            "width": 360,
+            "height": 800
+          }
+        ],
+        "horizontalOverflow": 0,
+        "textOverhang": [],
+        "textClipping": [],
+        "nestedScroll": [],
+        "undersizedControls": [],
+        "h1FontSize": 54,
+        "methodStickyFlag": "false",
+        "workpiecePosition": "absolute",
+        "operatingMode": null
+      },
+      "axeViolations": [],
+      "runtimeErrors": [],
+      "externalRequests": []
+    },
+    {
+      "viewport": "narrow-320x800",
+      "layout": {
+        "chapterOrder": [
+          "entry",
+          "built-with-industry",
+          "method",
+          "industries",
+          "proof",
+          "programmes",
+          "conversion"
+        ],
+        "chapters": [
+          {
+            "id": "entry",
+            "top": 100.25,
+            "width": 320,
+            "height": 724
+          },
+          {
+            "id": "built-with-industry",
+            "top": 824.25,
+            "width": 320,
+            "height": 1098.671875
+          },
+          {
+            "id": "method",
+            "top": 1922.921875,
+            "width": 320,
+            "height": 1490.765625
+          },
+          {
+            "id": "industries",
+            "top": 3413.6875,
+            "width": 320,
+            "height": 3269.390625
+          },
+          {
+            "id": "proof",
+            "top": 6683.078125,
+            "width": 320,
+            "height": 1768.890625
+          },
+          {
+            "id": "programmes",
+            "top": 8451.96875,
+            "width": 320,
+            "height": 1205.859375
+          },
+          {
+            "id": "conversion",
+            "top": 9657.828125,
+            "width": 320,
+            "height": 800
+          }
+        ],
+        "horizontalOverflow": 0,
+        "textOverhang": [],
+        "textClipping": [],
+        "nestedScroll": [],
+        "undersizedControls": [],
+        "h1FontSize": 46.72,
+        "methodStickyFlag": "false",
+        "workpiecePosition": "absolute",
+        "operatingMode": null
+      },
+      "axeViolations": [],
+      "runtimeErrors": [],
+      "externalRequests": []
+    },
+    {
+      "viewport": "mobile-landscape-844x390",
+      "layout": {
+        "chapterOrder": [
+          "entry",
+          "built-with-industry",
+          "method",
+          "industries",
+          "proof",
+          "programmes",
+          "conversion"
+        ],
+        "chapters": [
+          {
+            "id": "entry",
+            "top": 100.25,
+            "width": 844,
+            "height": 496
+          },
+          {
+            "id": "built-with-industry",
+            "top": 596.25,
+            "width": 844,
+            "height": 672.765625
+          },
+          {
+            "id": "method",
+            "top": 1269.015625,
+            "width": 844,
+            "height": 1417.234375
+          },
+          {
+            "id": "industries",
+            "top": 2686.25,
+            "width": 844,
+            "height": 3126.390625
+          },
+          {
+            "id": "proof",
+            "top": 5812.640625,
+            "width": 844,
+            "height": 1248
+          },
+          {
+            "id": "programmes",
+            "top": 7060.640625,
+            "width": 844,
+            "height": 660.375
+          },
+          {
+            "id": "conversion",
+            "top": 7721.015625,
+            "width": 844,
+            "height": 645.265625
+          }
+        ],
+        "horizontalOverflow": 0,
+        "textOverhang": [
+          {
+            "tag": "A",
+            "text": "For industryBring us an operational challenge.Explore",
+            "scrollWidth": 153,
+            "clientWidth": 123,
+            "clippingAncestors": []
+          },
+          {
+            "tag": "A",
+            "text": "For startupsBring us a technology ready to be tested.Explore",
+            "scrollWidth": 150,
+            "clientWidth": 123,
+            "clippingAncestors": []
+          }
+        ],
+        "textClipping": [],
+        "nestedScroll": [],
+        "undersizedControls": [],
+        "h1FontSize": 59.08,
+        "methodStickyFlag": "false",
+        "workpiecePosition": "absolute",
+        "operatingMode": "enhanced"
+      },
+      "axeViolations": [],
+      "runtimeErrors": [],
+      "externalRequests": []
+    }
+  ],
+  "stress": [
+    {
+      "id": "reduced-motion",
+      "layout": {
+        "chapterOrder": [
+          "entry",
+          "built-with-industry",
+          "method",
+          "industries",
+          "proof",
+          "programmes",
+          "conversion"
+        ],
+        "chapters": [
+          {
+            "id": "entry",
+            "top": 100.25,
+            "width": 390,
+            "height": 768
+          },
+          {
+            "id": "built-with-industry",
+            "top": 868.25,
+            "width": 390,
+            "height": 1069.6875
+          },
+          {
+            "id": "method",
+            "top": 1937.9375,
+            "width": 390,
+            "height": 1476.25
+          },
+          {
+            "id": "industries",
+            "top": 3414.1875,
+            "width": 390,
+            "height": 3428.34375
+          },
+          {
+            "id": "proof",
+            "top": 6842.53125,
+            "width": 390,
+            "height": 1779.140625
+          },
+          {
+            "id": "programmes",
+            "top": 8621.671875,
+            "width": 390,
+            "height": 1192.796875
+          },
+          {
+            "id": "conversion",
+            "top": 9814.46875,
+            "width": 390,
+            "height": 844
+          }
+        ],
+        "horizontalOverflow": 0,
+        "textOverhang": [],
+        "textClipping": [],
+        "nestedScroll": [],
+        "undersizedControls": [],
+        "h1FontSize": 58.5,
+        "methodStickyFlag": null,
+        "workpiecePosition": "absolute",
+        "operatingMode": null
+      },
+      "semantic": {
+        "h1": "WHERE DO YOU ENTER?",
+        "chapters": [
+          "entry",
+          "built-with-industry",
+          "method",
+          "industries",
+          "proof",
+          "programmes",
+          "conversion"
+        ],
+        "visibleChapters": 7
+      }
+    },
+    {
+      "id": "no-js",
+      "layout": {
+        "chapterOrder": [
+          "entry",
+          "built-with-industry",
+          "method",
+          "industries",
+          "proof",
+          "programmes",
+          "conversion"
+        ],
+        "chapters": [
+          {
+            "id": "entry",
+            "top": 100.25,
+            "width": 390,
+            "height": 768
+          },
+          {
+            "id": "built-with-industry",
+            "top": 868.25,
+            "width": 390,
+            "height": 1069.6875
+          },
+          {
+            "id": "method",
+            "top": 1937.9375,
+            "width": 390,
+            "height": 1476.25
+          },
+          {
+            "id": "industries",
+            "top": 3414.1875,
+            "width": 390,
+            "height": 3428.34375
+          },
+          {
+            "id": "proof",
+            "top": 6842.53125,
+            "width": 390,
+            "height": 1779.140625
+          },
+          {
+            "id": "programmes",
+            "top": 8621.671875,
+            "width": 390,
+            "height": 1192.796875
+          },
+          {
+            "id": "conversion",
+            "top": 9814.46875,
+            "width": 390,
+            "height": 844
+          }
+        ],
+        "horizontalOverflow": 0,
+        "textOverhang": [],
+        "textClipping": [],
+        "nestedScroll": [],
+        "undersizedControls": [],
+        "h1FontSize": 58.5,
+        "methodStickyFlag": null,
+        "workpiecePosition": "absolute",
+        "operatingMode": null
+      },
+      "semantic": {
+        "h1": "WHERE DO YOU ENTER?",
+        "chapters": [
+          "entry",
+          "built-with-industry",
+          "method",
+          "industries",
+          "proof",
+          "programmes",
+          "conversion"
+        ],
+        "visibleChapters": 7
+      }
+    },
+    {
+      "id": "fallback-fonts",
+      "layout": {
+        "chapterOrder": [
+          "entry",
+          "built-with-industry",
+          "method",
+          "industries",
+          "proof",
+          "programmes",
+          "conversion"
+        ],
+        "chapters": [
+          {
+            "id": "entry",
+            "top": 100.25,
+            "width": 390,
+            "height": 768
+          },
+          {
+            "id": "built-with-industry",
+            "top": 868.25,
+            "width": 390,
+            "height": 1031.25
+          },
+          {
+            "id": "method",
+            "top": 1899.5,
+            "width": 390,
+            "height": 1443.765625
+          },
+          {
+            "id": "industries",
+            "top": 3343.265625,
+            "width": 390,
+            "height": 3428.34375
+          },
+          {
+            "id": "proof",
+            "top": 6771.609375,
+            "width": 390,
+            "height": 1779.140625
+          },
+          {
+            "id": "programmes",
+            "top": 8550.75,
+            "width": 390,
+            "height": 1192.796875
+          },
+          {
+            "id": "conversion",
+            "top": 9743.546875,
+            "width": 390,
+            "height": 844
+          }
+        ],
+        "horizontalOverflow": 0,
+        "textOverhang": [],
+        "textClipping": [],
+        "nestedScroll": [],
+        "undersizedControls": [],
+        "h1FontSize": 58.5,
+        "methodStickyFlag": "false",
+        "workpiecePosition": "absolute",
+        "operatingMode": null
+      },
+      "semantic": {
+        "h1": "WHERE DO YOU ENTER?",
+        "chapters": [
+          "entry",
+          "built-with-industry",
+          "method",
+          "industries",
+          "proof",
+          "programmes",
+          "conversion"
+        ],
+        "visibleChapters": 7
+      }
+    },
+    {
+      "id": "text-200",
+      "layout": {
+        "chapterOrder": [
+          "entry",
+          "built-with-industry",
+          "method",
+          "industries",
+          "proof",
+          "programmes",
+          "conversion"
+        ],
+        "chapters": [
+          {
+            "id": "entry",
+            "top": 100.25,
+            "width": 390,
+            "height": 1344
+          },
+          {
+            "id": "built-with-industry",
+            "top": 1444.25,
+            "width": 390,
+            "height": 2415.546875
+          },
+          {
+            "id": "method",
+            "top": 3859.796875,
+            "width": 390,
+            "height": 2924.1875
+          },
+          {
+            "id": "industries",
+            "top": 6783.984375,
+            "width": 390,
+            "height": 6292.9375
+          },
+          {
+            "id": "proof",
+            "top": 13076.921875,
+            "width": 390,
+            "height": 3006.109375
+          },
+          {
+            "id": "programmes",
+            "top": 16083.03125,
+            "width": 390,
+            "height": 2459.296875
+          },
+          {
+            "id": "conversion",
+            "top": 18542.328125,
+            "width": 390,
+            "height": 1440
+          }
+        ],
+        "horizontalOverflow": 0,
+        "textOverhang": [],
+        "textClipping": [],
+        "nestedScroll": [],
+        "undersizedControls": [],
+        "h1FontSize": 58.5,
+        "methodStickyFlag": "false",
+        "workpiecePosition": "absolute",
+        "operatingMode": null
+      },
+      "semantic": {
+        "h1": "WHERE DO YOU ENTER?",
+        "chapters": [
+          "entry",
+          "built-with-industry",
+          "method",
+          "industries",
+          "proof",
+          "programmes",
+          "conversion"
+        ],
+        "visibleChapters": 7
+      }
+    }
+  ],
+  "keyboard": {
+    "firstFocus": {
+      "text": "Skip to content",
+      "className": "skip-link"
+    },
+    "mainFocused": true,
+    "visibleLinks": 8,
+    "menuState": {
+      "open": false,
+      "focused": true
+    }
+  },
+  "scroll": {
+    "geometry": {
+      "methodTop": 1941.3125,
+      "methodBottom": 5680.6875,
+      "stageTops": [
+        2687.296875,
+        3254.296875,
+        3821.296875,
+        4388.296875,
+        4955.296875
+      ],
+      "chapters": {
+        "entry": 121.3125,
+        "built-with-industry": 933.3125,
+        "method": 1941.3125,
+        "industries": 5680.6875,
+        "proof": 9930.484375,
+        "programmes": 11838.484375,
+        "conversion": 12774.484375
+      },
+      "max": 13215
+    },
+    "slow": [
+      {
+        "y": 0,
+        "mode": "enhanced",
+        "sticky": "true",
+        "methodProgress": 0,
+        "stageProgress": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "nestedScrollbars": 0,
+        "workpiecePosition": "sticky"
+      },
+      {
+        "y": 1652,
+        "mode": "enhanced",
+        "sticky": "true",
+        "methodProgress": 0,
+        "stageProgress": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "nestedScrollbars": 0,
+        "workpiecePosition": "sticky"
+      },
+      {
+        "y": 3304,
+        "mode": "enhanced",
+        "sticky": "true",
+        "methodProgress": 0.4464,
+        "stageProgress": [
+          1,
+          1,
+          0.0997,
+          0,
+          0
+        ],
+        "nestedScrollbars": 0,
+        "workpiecePosition": "sticky"
+      },
+      {
+        "y": 4956,
+        "mode": "enhanced",
+        "sticky": "true",
+        "methodProgress": 1,
+        "stageProgress": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "nestedScrollbars": 0,
+        "workpiecePosition": "sticky"
+      },
+      {
+        "y": 6608,
+        "mode": "enhanced",
+        "sticky": "true",
+        "methodProgress": 1,
+        "stageProgress": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "nestedScrollbars": 0,
+        "workpiecePosition": "sticky"
+      },
+      {
+        "y": 8259,
+        "mode": "enhanced",
+        "sticky": "true",
+        "methodProgress": 1,
+        "stageProgress": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "nestedScrollbars": 0,
+        "workpiecePosition": "sticky"
+      },
+      {
+        "y": 9911,
+        "mode": "enhanced",
+        "sticky": "true",
+        "methodProgress": 1,
+        "stageProgress": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "nestedScrollbars": 0,
+        "workpiecePosition": "sticky"
+      },
+      {
+        "y": 11563,
+        "mode": "enhanced",
+        "sticky": "true",
+        "methodProgress": 1,
+        "stageProgress": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "nestedScrollbars": 0,
+        "workpiecePosition": "sticky"
+      },
+      {
+        "y": 13215,
+        "mode": "enhanced",
+        "sticky": "true",
+        "methodProgress": 1,
+        "stageProgress": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "nestedScrollbars": 0,
+        "workpiecePosition": "sticky"
+      }
+    ],
+    "fast": {
+      "y": 5781,
+      "mode": "enhanced",
+      "sticky": "true",
+      "methodProgress": 1,
+      "stageProgress": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "nestedScrollbars": 0,
+      "workpiecePosition": "sticky"
+    },
+    "reverse": [
+      {
+        "id": "conversion",
+        "state": {
+          "y": 12794,
+          "mode": "enhanced",
+          "sticky": "true",
+          "methodProgress": 1,
+          "stageProgress": [
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "nestedScrollbars": 0,
+          "workpiecePosition": "sticky"
+        }
+      },
+      {
+        "id": "programmes",
+        "state": {
+          "y": 11858,
+          "mode": "enhanced",
+          "sticky": "true",
+          "methodProgress": 1,
+          "stageProgress": [
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "nestedScrollbars": 0,
+          "workpiecePosition": "sticky"
+        }
+      },
+      {
+        "id": "proof",
+        "state": {
+          "y": 9950,
+          "mode": "enhanced",
+          "sticky": "true",
+          "methodProgress": 1,
+          "stageProgress": [
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "nestedScrollbars": 0,
+          "workpiecePosition": "sticky"
+        }
+      },
+      {
+        "id": "industries",
+        "state": {
+          "y": 5701,
+          "mode": "enhanced",
+          "sticky": "true",
+          "methodProgress": 1,
+          "stageProgress": [
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "nestedScrollbars": 0,
+          "workpiecePosition": "sticky"
+        }
+      },
+      {
+        "id": "method",
+        "state": {
+          "y": 1961,
+          "mode": "enhanced",
+          "sticky": "true",
+          "methodProgress": 0,
+          "stageProgress": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "nestedScrollbars": 0,
+          "workpiecePosition": "sticky"
+        }
+      }
+    ],
+    "largeJump": {
+      "y": 11629,
+      "mode": "enhanced",
+      "sticky": "true",
+      "methodProgress": 1,
+      "stageProgress": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "nestedScrollbars": 0,
+      "workpiecePosition": "sticky"
+    },
+    "alternating": [
+      {
+        "y": 1943,
+        "mode": "enhanced",
+        "sticky": "true",
+        "methodProgress": 0,
+        "stageProgress": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "nestedScrollbars": 0,
+        "workpiecePosition": "sticky"
+      },
+      {
+        "y": 5679,
+        "mode": "enhanced",
+        "sticky": "true",
+        "methodProgress": 1,
+        "stageProgress": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "nestedScrollbars": 0,
+        "workpiecePosition": "sticky"
+      },
+      {
+        "y": 1961,
+        "mode": "enhanced",
+        "sticky": "true",
+        "methodProgress": 0,
+        "stageProgress": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "nestedScrollbars": 0,
+        "workpiecePosition": "sticky"
+      },
+      {
+        "y": 5661,
+        "mode": "enhanced",
+        "sticky": "true",
+        "methodProgress": 1,
+        "stageProgress": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "nestedScrollbars": 0,
+        "workpiecePosition": "sticky"
+      },
+      {
+        "y": 1981,
+        "mode": "enhanced",
+        "sticky": "true",
+        "methodProgress": 0,
+        "stageProgress": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "nestedScrollbars": 0,
+        "workpiecePosition": "sticky"
+      }
+    ],
+    "methodStates": [
+      {
+        "y": 1741,
+        "mode": "enhanced",
+        "sticky": "true",
+        "methodProgress": 0,
+        "stageProgress": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "nestedScrollbars": 0,
+        "workpiecePosition": "sticky"
+      },
+      {
+        "y": 2487,
+        "mode": "enhanced",
+        "sticky": "true",
+        "methodProgress": 0.1102,
+        "stageProgress": [
+          0.8762,
+          0,
+          0,
+          0,
+          0
+        ],
+        "nestedScrollbars": 0,
+        "workpiecePosition": "sticky"
+      },
+      {
+        "y": 3054,
+        "mode": "enhanced",
+        "sticky": "true",
+        "methodProgress": 0.3435,
+        "stageProgress": [
+          1,
+          0.8762,
+          0,
+          0,
+          0
+        ],
+        "nestedScrollbars": 0,
+        "workpiecePosition": "sticky"
+      },
+      {
+        "y": 3621,
+        "mode": "enhanced",
+        "sticky": "true",
+        "methodProgress": 0.5768,
+        "stageProgress": [
+          1,
+          1,
+          0.8762,
+          0,
+          0
+        ],
+        "nestedScrollbars": 0,
+        "workpiecePosition": "sticky"
+      },
+      {
+        "y": 4188,
+        "mode": "enhanced",
+        "sticky": "true",
+        "methodProgress": 0.8102,
+        "stageProgress": [
+          1,
+          1,
+          1,
+          0.8762,
+          0
+        ],
+        "nestedScrollbars": 0,
+        "workpiecePosition": "sticky"
+      },
+      {
+        "y": 4755,
+        "mode": "enhanced",
+        "sticky": "true",
+        "methodProgress": 1,
+        "stageProgress": [
+          1,
+          1,
+          1,
+          1,
+          0.8762
+        ],
+        "nestedScrollbars": 0,
+        "workpiecePosition": "sticky"
+      },
+      {
+        "y": 5481,
+        "mode": "enhanced",
+        "sticky": "true",
+        "methodProgress": 1,
+        "stageProgress": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "nestedScrollbars": 0,
+        "workpiecePosition": "sticky"
+      }
+    ],
+    "longTasks": []
+  },
+  "backForwardCache": {
+    "restored": {
+      "path": "/",
+      "h1": "WHERE DO YOU ENTER?",
+      "mode": "enhanced",
+      "sticky": "true",
+      "pageShows": [
+        {
+          "persisted": false,
+          "at": 66.7999999821186
+        }
+      ],
+      "y": 2341
+    },
+    "beforeProgress": {
+      "y": 2341,
+      "mode": "enhanced",
+      "sticky": "true",
+      "methodProgress": 0.0501,
+      "stageProgress": [
+        0.5186,
+        0,
+        0,
+        0,
+        0
+      ],
+      "nestedScrollbars": 0,
+      "workpiecePosition": "sticky"
+    },
+    "afterProgress": {
+      "y": 2941,
+      "mode": "enhanced",
+      "sticky": "true",
+      "methodProgress": 0.297,
+      "stageProgress": [
+        1,
+        0.5994,
+        0,
+        0,
+        0
+      ],
+      "nestedScrollbars": 0,
+      "workpiecePosition": "sticky"
+    },
+    "persisted": false
+  },
+  "supportingRoutes": [
+    {
+      "route": "/for-partners/",
+      "requestPath": "/for-partners/",
+      "status": 200,
+      "h1": 1,
+      "homeHooks": 0,
+      "mode": null,
+      "horizontalOverflow": 0,
+      "runtimeErrors": []
+    },
+    {
+      "route": "/for-startups/",
+      "requestPath": "/for-startups/",
+      "status": 200,
+      "h1": 1,
+      "homeHooks": 0,
+      "mode": null,
+      "horizontalOverflow": 0,
+      "runtimeErrors": []
+    },
+    {
+      "route": "/industries/",
+      "requestPath": "/industries/",
+      "status": 200,
+      "h1": 1,
+      "homeHooks": 0,
+      "mode": null,
+      "horizontalOverflow": 0,
+      "runtimeErrors": []
+    },
+    {
+      "route": "/pocs/",
+      "requestPath": "/pocs/",
+      "status": 200,
+      "h1": 1,
+      "homeHooks": 0,
+      "mode": null,
+      "horizontalOverflow": 0,
+      "runtimeErrors": []
+    },
+    {
+      "route": "/pocs/maradin/",
+      "requestPath": "/pocs/maradin/",
+      "status": 200,
+      "h1": 1,
+      "homeHooks": 0,
+      "mode": null,
+      "horizontalOverflow": 0,
+      "runtimeErrors": []
+    },
+    {
+      "route": "/spark/",
+      "requestPath": "/spark/",
+      "status": 200,
+      "h1": 1,
+      "homeHooks": 0,
+      "mode": null,
+      "horizontalOverflow": 0,
+      "runtimeErrors": []
+    },
+    {
+      "route": "/about/",
+      "requestPath": "/about/",
+      "status": 200,
+      "h1": 1,
+      "homeHooks": 0,
+      "mode": null,
+      "horizontalOverflow": 0,
+      "runtimeErrors": []
+    },
+    {
+      "route": "/contact/",
+      "requestPath": "/contact/",
+      "status": 200,
+      "h1": 1,
+      "homeHooks": 0,
+      "mode": null,
+      "horizontalOverflow": 0,
+      "runtimeErrors": []
+    },
+    {
+      "route": "/404/",
+      "requestPath": "/phase-2b-404-smoke",
+      "status": 404,
+      "h1": 1,
+      "homeHooks": 0,
+      "mode": null,
+      "horizontalOverflow": 0,
+      "runtimeErrors": []
+    }
+  ],
+  "failures": []
+}
