@@ -1,16 +1,18 @@
-# Phase 3 CRT Production Pipeline
+# Phase 3-R CRT Authenticity Production Pipeline
 
-Status: production rendering, packaging, visual self-review, and isolated browser QA complete; direct human review pending
+Status: screen-only repair rendering, two-stage packaging, full-size visual self-review, fresh-process determinism, and retry-hardened isolated browser QA complete; direct human review pending
 Branch: `feature/phase-3-crt-opening-production`
-Accepted parent: `b54f3a83b6180466127589a8d028f94dab892d17`
+Accepted Phase 2B parent: `b54f3a83b6180466127589a8d028f94dab892d17`
+Phase 3-R repair parent: `ae6cd4c0c664a275c077bd37207efde01e9caa29`
 
 ## Purpose and production boundary
 
-This document defines the reproducible offline pipeline for the isolated Phase 3 physical cinematic. It covers source verification, derivative preparation, deterministic rendering, outside-Git intermediates, web encoding, probing, and evidence identity.
+This document defines the reproducible offline pipeline for the isolated Phase 3-R CRT-screen repair. It covers accepted-derivative verification, screen-only repair authoring, deterministic rendering, outside-Git intermediates, hash-bound encoding and browser QA, compact evidence replacement, and external review identity. The accepted Phase 3 physical cinematic remains the environmental authority.
 
 It does not authorize:
 
 - modifying the accepted CRT master;
+- modifying the accepted Phase 3 derivative in place;
 - changing Phase 2B production choreography;
 - adding runtime Blender, WebGL, Three.js, React Three Fiber, or another 3D runtime;
 - connecting the cinematic to live scroll;
@@ -24,6 +26,7 @@ It does not authorize:
 | Bytes | `1,516,222` |
 | SHA-256 | `3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7` |
 | Git introduction | `9aec62c1d89ebb2095bbc8903a718f77bbb6dbda` |
+| Accepted Phase 3 derivative | `artifacts/original/phase-3-crt-opening/source/quantum-signal-television-phase3-opening.blend` — 2,182,647 bytes, SHA-256 `bbde82220f500c6f047c2e2d33a8580c08a40e65800615dd7256bebc2f4472ba` |
 | Accepted Phase 2B tree | `b54f3a83b6180466127589a8d028f94dab892d17` |
 | Validation authority | `artifacts/original/phase-0-4-crt-television/manifests/blender-source-validation.json` — PASS 49/49 |
 | Blender source version | Blender `5.2.0 LTS` |
@@ -35,28 +38,29 @@ The accepted master is immutable. Existing Phase 0.4 scripts also target frozen 
 
 ## Derivative-source contract and current authority
 
-Phase 3 begins by opening the exact accepted master on Blender's command line. `build_phase3_crt_opening.py` verifies its SHA-256 and filepath before making any in-memory change, rejects an output path equal to the master, and writes only a new derivative with `save_as_mainfile`. It does not remodel the accepted television or write back to the Phase 0.4 package.
+Phase 3-R begins by opening the exact accepted Phase 3 derivative on Blender's command line. `repair_phase3r_crt_authenticity.py` verifies its SHA-256 and filepath before making any in-memory change, rejects either historical authority as an output, and writes only a new Phase 3-R derivative with `save_as_mainfile`. It does not rebuild the environment, remodel the television, or write back to the Phase 0 or accepted Phase 3 sources.
 
 The current validated derivative is:
 
 | Field | Current value |
 | --- | --- |
-| Repository path | `artifacts/original/phase-3-crt-opening/source/quantum-signal-television-phase3-opening.blend` |
-| Bytes | `2,182,647` |
-| SHA-256 | `bbde82220f500c6f047c2e2d33a8580c08a40e65800615dd7256bebc2f4472ba` |
+| Repository path | `artifacts/original/phase-3-crt-opening/source/quantum-signal-television-phase3-r-crt-authenticity.blend` |
+| Bytes | `2,222,662` |
+| SHA-256 | `4341a3fb7ae29ef9be4472ea23ca9235e36f9609893bc2f37de32e5847d36f26` |
 | Blender | `5.2.0 LTS` |
-| Build ledger | `artifacts/original/phase-3-crt-opening/manifests/phase-3-source-build.json` |
-| Validation ledger | `artifacts/original/phase-3-crt-opening/manifests/phase-3-source-validation.json` — PASS 28/28 |
+| Build ledger | `artifacts/original/phase-3-crt-opening/manifests/phase-3-r-source-build.json` |
+| Validation ledger | `artifacts/original/phase-3-crt-opening/manifests/phase-3-r-source-validation.json` — PASS 51/51 |
 
 The derivative contract is:
 
-1. Verify the accepted master SHA-256 and opened filepath before authoring.
-2. Save all Phase 3 scene, environment, animation, camera, and render changes only into the derivative path above.
+1. Verify the accepted Phase 0 master, accepted Phase 3 derivative, repair parent, and opened filepath before authoring.
+2. Save only the allowlisted Phase 3-R screen repair into the distinct derivative path above.
 3. Maintain the machine-readable build and validation ledgers after every derivative rebuild.
 4. Do not change recognizable CRT proportions, cabinet identity, material identity, glass construction, controls, speaker region, rear connection, or strain relief without human approval.
 5. Keep the derivative self-contained: zero linked libraries, external images, movie clips, fonts, sequence-editor strips, cache files, absolute external file paths, or missing dependencies.
 6. Preserve the accepted master byte-for-byte and never run the Phase 0.4 scripts with their in-place output defaults.
-7. Commit only the selected reproducibility derivative; raw frame sequences and render caches remain outside Git.
+7. Require exact before/after frozen-scene and independent accepted-Phase-3 snapshot matches.
+8. Commit only the selected reproducibility derivative; raw frame sequences and render caches remain outside Git.
 
 ## Authorized local toolchain
 
@@ -92,9 +96,9 @@ These tools are intentionally outside Git and are not on the user `PATH`. Reprod
 <node>
 ```
 
-- Python: `3.12.13`; executable SHA-256 `d8e3f0adf246db00358c0c4ed349cf714898178f9558fb0e944f79f5c07f8eaa`
+- Python: `3.12.13`; executable identity is verified locally before packaging
 - Pillow: `12.3.0`
-- Node.js: `v24.19.0`; executable SHA-256 `3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237`
+- Node.js: `v24.18.0` in the final browser-QA report; executable identity is verified locally before QA
 - Roles: deterministic encoding/evidence/ZIP packaging and isolated ffprobe/Chromium media QA; neither runtime enters the production site or `dist`
 
 ## Render profile
@@ -143,6 +147,20 @@ The historical 64-sample CPU setting is a still-evidence reference, not an autom
 - representative dormant, conductor, phosphor, cabinet-close, and final-handoff frames.
 
 Freeze the smallest profile that clears the visual bar. Record the final samples, adaptive threshold, resolution, render device, and comparison evidence in `docs/planning/PHASE_3_MEDIA_MANIFEST.md`. Do not call an untested provisional value the production master.
+
+### Phase 3-R screen-render delta
+
+The repair does not change the renderer, cameras, environment, cable, conduction, portal geometry, or accepted timeline. It changes only the following render-facing screen properties:
+
+- a neutral warm-white, three-layer phosphor wake behind the convex glass;
+- one continuously illuminated picture field with 160 desktop raster bands and 112 mobile bands;
+- maximum settled desktop raster contrast `0.085`, with mobile at 72% of desktop;
+- deterministic, reversible settling without random or temporal noise;
+- accepted Quantum typography conformed to phosphor depth with variant-specific low-bloom materials;
+- late raster contrast suppression from `0.030` at frame 247 to `0.001` at frame 270;
+- neutral screen-output compensation through `Phase3_ScreenSpill` only.
+
+`phase3r_config.py`, the source-build ledger, and `PHASE_3_R_CRT_AUTHENTICITY_REPAIR.md` are the exact property authorities. The timeline and portal-alignment contracts remain byte-unchanged.
 
 ## Deterministic scene requirements
 
@@ -196,9 +214,9 @@ Never commit:
 - redundant codec experiments;
 - OptiX preview/production comparison frames beyond compact, explicitly selected review evidence.
 
-Candidate production encodes may enter the isolated artifact package only after deterministic encode, ffprobe, transfer-size, seek, browser, visual-self-review, and publication-boundary gates. Their manifest status remains `PRODUCTION CANDIDATE — visual/browser acceptance pending`; no candidate is selected for integration until direct human acceptance. The outside-Git human-review ZIP must not contain raw render sequences or production delivery candidates.
+Candidate production encodes may enter the isolated artifact package only after deterministic encode, ffprobe, transfer-size, seek, browser, visual-self-review, and publication-boundary gates. Their manifest status remains `PHASE 3-R PRODUCTION CANDIDATE — HUMAN REVIEW REQUIRED`; no candidate is selected for integration until direct human acceptance. The outside-Git human-review ZIP includes the exact four hash-bound candidates as motion evidence but must not contain raw render sequences, raw masters, or redundant experiments.
 
-The selected `.blend` derivative is the small repository authority named above; it is not a raw render intermediate. `render_phase3_frames.py` also places its OptiX cache under the system temporary directory as `QuantumPhase3OptixCache`, never under the worktree.
+The selected `.blend` derivative is the small repository authority named above; it is not a raw render intermediate. `render_phase3r_frames.py` also places its OptiX cache under the system temporary directory as `QuantumPhase3ROptixCache`, never under the worktree.
 
 ## Frame-render strategy
 
@@ -207,7 +225,7 @@ The selected `.blend` derivative is the small repository authority named above; 
 3. Validate dependencies, frame range, fps, camera, color management, deterministic seeds, and exact timeline markers.
 4. Run the OptiX checkpoint and 16-versus-48-sample quality gate.
 5. Run the sample/resolution quality gate.
-6. Freeze the render profile in a Phase 3 configuration authority.
+6. Freeze the inherited render profile and repaired screen parameters in the Phase 3-R configuration authority.
 7. Render frames 1–270 to a fresh outside-Git directory. An 8-bit RGB PNG sequence is the selected display-referred web master because the final delivery is 8-bit `yuv420p`; the deterministic AgX transform is applied once in Blender. EXR may be used only for a separately documented grading experiment and remains outside Git.
 8. Re-render a deterministic non-sequential sample after the full render and verify visual/state identity.
 9. Encode every delivery candidate from the same approved frame sequence.
@@ -233,140 +251,182 @@ Seekability is more important than linear streaming efficiency. The production c
 - dark gradients without objectionable banding or blocking;
 - stable scanlines, phosphor softness, and thin typography without shimmer or moiré.
 
-Record dimensions, fps, nominal duration, frame count, average bitrate, bytes, GOP strategy, codec profile, pixel format, SHA-256, first-usable-frame latency, seek measurements, and browser results in the Phase 3 media manifest. No output may contain audio, subtitle, data, or attachment streams.
+Record dimensions, fps, nominal duration, frame count, stream bitrate, bytes, GOP strategy, codec profile, pixel format, SHA-256, first-usable-frame latency, seek measurements, and browser results in the Phase 3-R media manifest. No output may contain audio, subtitle, data, or attachment streams.
 
 ## Reproducible command templates
 
-The following PowerShell commands match the implemented script interfaces and frozen settings. Bind each documented placeholder to the verified local executable or directory before running them. Raw frame roots and the external review ZIP must resolve outside Git.
+The following PowerShell templates match the implemented Phase 3-R interfaces. Bind every angle-bracket placeholder locally. Raw frames, QA intermediates, determinism rerenders, and the external ZIP must resolve outside Git; host-specific absolute paths must never enter tracked evidence.
 
 ### Task-scoped paths
 
 ```powershell
-$Phase3RepoRoot = '<repo>'
-$Phase3WorkRoot = '<outside-git-render-root>'
-$Phase3SourceDir = Join-Path $Phase3RepoRoot 'artifacts\original\phase-3-crt-opening\source'
-$Phase3BlenderExe = '<blender>'
-$Phase3FfmpegExe = '<ffmpeg>'
-$Phase3FfprobeExe = '<ffprobe>'
-$Phase3PythonExe = '<python>'
-$Phase3NodeExe = '<node>'
-$Phase3AcceptedBlend = Join-Path $Phase3RepoRoot 'artifacts\original\phase-0-4-crt-television\source\quantum-signal-television-v1.blend'
-$Phase3DerivativeBlend = Join-Path $Phase3SourceDir 'quantum-signal-television-phase3-opening.blend'
-$Phase3Builder = Join-Path $Phase3SourceDir 'build_phase3_crt_opening.py'
-$Phase3Validator = Join-Path $Phase3SourceDir 'validate_phase3_source.py'
-$Phase3Renderer = Join-Path $Phase3SourceDir 'render_phase3_frames.py'
-$Phase3Packager = Join-Path $Phase3SourceDir 'package_phase3_media.py'
-$Phase3QaScript = Join-Path $Phase3RepoRoot 'scripts\qa-phase3-media.mjs'
-$Phase3DesktopFrames = Join-Path $Phase3WorkRoot 'frames\desktop-master'
-$Phase3MobileFrames = Join-Path $Phase3WorkRoot 'frames\mobile-master'
-$Phase3ReviewZip = Join-Path $Phase3WorkRoot 'review-transfer\phase-3-crt-opening-human-review.zip'
-$Phase3QaReport = Join-Path $Phase3RepoRoot 'artifacts\evidence\phase-3\reports\phase-3-media-qa.json'
-$Phase3MediaRoot = Join-Path $Phase3RepoRoot 'artifacts\original\phase-3-crt-opening\media'
-$Phase3ReviewRecording = Join-Path $Phase3RepoRoot 'artifacts\original\phase-3-crt-opening\review\phase-3-media-lab-scrub-evidence.webm'
+$Phase3RRepoRoot = '<repository-root>'
+$Phase3RWorkRoot = '<outside-git-work-root>'
+$Phase3RSourceDir = Join-Path $Phase3RRepoRoot 'artifacts\original\phase-3-crt-opening\source'
+$Phase3RMediaRoot = Join-Path $Phase3RRepoRoot 'artifacts\original\phase-3-crt-opening\media'
+$Phase3RManifestRoot = Join-Path $Phase3RRepoRoot 'artifacts\original\phase-3-crt-opening\manifests'
+$Phase3RBlenderExe = '<blender-executable>'
+$Phase3RFfmpegExe = '<ffmpeg-executable>'
+$Phase3RFfprobeExe = '<ffprobe-executable>'
+$Phase3RPythonExe = '<python-executable>'
+$Phase3RNodeExe = '<node-executable>'
+$Phase3RAcceptedPhase3 = Join-Path $Phase3RSourceDir 'quantum-signal-television-phase3-opening.blend'
+$Phase3RDerivative = Join-Path $Phase3RSourceDir 'quantum-signal-television-phase3-r-crt-authenticity.blend'
+$Phase3RRepair = Join-Path $Phase3RSourceDir 'repair_phase3r_crt_authenticity.py'
+$Phase3RValidator = Join-Path $Phase3RSourceDir 'validate_phase3r_source.py'
+$Phase3RRenderer = Join-Path $Phase3RSourceDir 'render_phase3r_frames.py'
+$Phase3RPackager = Join-Path $Phase3RSourceDir 'package_phase3r_media.py'
+$Phase3RQaScript = Join-Path $Phase3RRepoRoot 'scripts\qa-phase3-media.mjs'
+$Phase3RDeterminismScript = Join-Path $Phase3RRepoRoot 'scripts\verify-phase3r-render-determinism.mjs'
+$Phase3RDesktopFrames = Join-Path $Phase3RWorkRoot 'desktop-production-final'
+$Phase3RMobileFrames = Join-Path $Phase3RWorkRoot 'mobile-production-final'
+$Phase3RQaReport = Join-Path $Phase3RWorkRoot 'phase-3-r-media-qa-report.json'
+$Phase3RLabRecording = Join-Path $Phase3RWorkRoot 'phase-3-r-media-lab-scrub-evidence.webm'
+$Phase3RDeterminismReport = Join-Path $Phase3RWorkRoot 'phase-3-r-render-determinism.json'
+$Phase3RReviewZip = Join-Path $Phase3RWorkRoot 'phase-3-r-crt-authenticity-human-review.zip'
+$Phase3RCandidateAuthority = Join-Path $Phase3RManifestRoot 'phase-3-r-candidate-authority.json'
 ```
 
 ### Source and tool verification
 
 ```powershell
-(Get-FileHash -Algorithm SHA256 -LiteralPath $Phase3AcceptedBlend).Hash.ToLowerInvariant()
-(Get-FileHash -Algorithm SHA256 -LiteralPath $Phase3DerivativeBlend).Hash.ToLowerInvariant()
-(Get-FileHash -Algorithm SHA256 -LiteralPath $Phase3BlenderExe).Hash.ToLowerInvariant()
-(Get-FileHash -Algorithm SHA256 -LiteralPath $Phase3FfmpegExe).Hash.ToLowerInvariant()
-(Get-FileHash -Algorithm SHA256 -LiteralPath $Phase3FfprobeExe).Hash.ToLowerInvariant()
-(Get-FileHash -Algorithm SHA256 -LiteralPath $Phase3PythonExe).Hash.ToLowerInvariant()
-(Get-FileHash -Algorithm SHA256 -LiteralPath $Phase3NodeExe).Hash.ToLowerInvariant()
-& $Phase3BlenderExe --version
-& $Phase3FfmpegExe -version
-& $Phase3FfprobeExe -version
-& $Phase3PythonExe --version
-& $Phase3NodeExe --version
+(Get-FileHash -Algorithm SHA256 -LiteralPath $Phase3RAcceptedPhase3).Hash.ToLowerInvariant()
+(Get-FileHash -Algorithm SHA256 -LiteralPath $Phase3RBlenderExe).Hash.ToLowerInvariant()
+(Get-FileHash -Algorithm SHA256 -LiteralPath $Phase3RFfmpegExe).Hash.ToLowerInvariant()
+(Get-FileHash -Algorithm SHA256 -LiteralPath $Phase3RFfprobeExe).Hash.ToLowerInvariant()
+(Get-FileHash -Algorithm SHA256 -LiteralPath $Phase3RPythonExe).Hash.ToLowerInvariant()
+(Get-FileHash -Algorithm SHA256 -LiteralPath $Phase3RNodeExe).Hash.ToLowerInvariant()
+& $Phase3RBlenderExe --version
+& $Phase3RFfmpegExe -version
+& $Phase3RFfprobeExe -version
+& $Phase3RPythonExe --version
+& $Phase3RNodeExe --version
 ```
 
-The accepted source command must return `3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7` before derivative work begins. After a build and validation pass, the current derivative command must return `bbde82220f500c6f047c2e2d33a8580c08a40e65800615dd7256bebc2f4472ba`; if the derivative is intentionally rebuilt, the build ledger, validation ledger, and this authority must be updated together.
+The accepted Phase 3 source must return `bbde82220f500c6f047c2e2d33a8580c08a40e65800615dd7256bebc2f4472ba`. After repair and validation, the Phase 3-R derivative must return `4341a3fb7ae29ef9be4472ea23ca9235e36f9609893bc2f37de32e5847d36f26`. Any intentional source rebuild requires the build ledger, validation ledger, derivative authority, and every downstream candidate binding to advance together.
 
-### Scene preparation and validation
+### Screen repair and source validation
 
 ```powershell
-& $Phase3BlenderExe --background $Phase3AcceptedBlend --python $Phase3Builder
-& $Phase3BlenderExe --background $Phase3DerivativeBlend --python $Phase3Validator
+& $Phase3RBlenderExe --background $Phase3RAcceptedPhase3 --python $Phase3RRepair
+& $Phase3RBlenderExe --background $Phase3RDerivative --python $Phase3RValidator
 ```
 
-The builder verifies the accepted source hash and exact opened filepath before changing the in-memory scene, then saves only the configured derivative. The validator is the fail-closed source prerequisite: it checks the accepted and derivative identities, timeline, cameras, self-containment, dormancy, text retirement, review-guide exclusion, and other authored-state invariants, and writes the tracked validation ledger.
+The repair script verifies the exact accepted source and writes only the configured Phase 3-R derivative. The validator is fail-closed: all 51 screen and frozen-area checks must pass, both frozen signatures must match exactly, the 270-frame/30-fps timeline must remain unchanged, and all dependency counts must be zero.
 
-### Desktop and mobile master frame rendering
+### Desktop and mobile production rendering
 
 ```powershell
-& $Phase3BlenderExe --background $Phase3DerivativeBlend --python $Phase3Renderer -- --variant desktop --quality production --frames all --output $Phase3DesktopFrames --samples 48
-& $Phase3BlenderExe --background $Phase3DerivativeBlend --python $Phase3Renderer -- --variant mobile --quality production --frames all --output $Phase3MobileFrames --samples 48
+& $Phase3RBlenderExe --background $Phase3RDerivative --python $Phase3RRenderer -- --variant desktop --quality production --frames all --output $Phase3RDesktopFrames --samples 48
+& $Phase3RBlenderExe --background $Phase3RDerivative --python $Phase3RRenderer -- --variant mobile --quality production --frames all --output $Phase3RMobileFrames --samples 48
 ```
 
-`render_phase3_frames.py` accepts only `desktop|mobile`, `preview|production`, explicit frames, an output path, and an optional sample override. It applies the frozen render configuration and variant-specific camera in memory, rejects repository destinations for sequences longer than 20 frames, and records the actual device/settings in a render report. It attempts OptiX and falls back to CUDA only when OptiX is unavailable. It does not replace the validator's source-identity and dependency checks, so a PASS validation ledger is required before these commands run.
+`render_phase3r_frames.py` accepts `desktop|mobile`, `preview|production`, explicit frames, an output path, and an optional sample override. It rejects an in-repository destination for sequences longer than 20 frames, applies the frozen camera and render settings in memory, selects the correct desktop/mobile raster material, and records the actual device and settings.
 
-### Deterministic encoding and compact evidence packaging
+### Fresh-process determinism
 
 ```powershell
-& $Phase3PythonExe $Phase3Packager --desktop-frames $Phase3DesktopFrames --mobile-frames $Phase3MobileFrames --ffmpeg $Phase3FfmpegExe --ffprobe $Phase3FfprobeExe --review-zip $Phase3ReviewZip --repo-root $Phase3RepoRoot
+& $Phase3RNodeExe $Phase3RDeterminismScript `
+  --blender $Phase3RBlenderExe `
+  --desktop-reference $Phase3RDesktopFrames `
+  --mobile-reference $Phase3RMobileFrames `
+  --work-root (Join-Path $Phase3RWorkRoot 'determinism-work') `
+  --output $Phase3RDeterminismReport
 ```
 
-The packager verifies both 270-frame sequences, encodes desktop H.264 CRF 18 and VP9 CRF 27 plus mobile H.264 CRF 19 and VP9 CRF 28, enforces 30 fps/9 seconds/8-bit `yuv420p`/BT.709/no audio and a fixed 12-frame cadence, writes the isolated candidate media and compact tracked review evidence, and creates the outside-Git ZIP without raw frames or delivery media.
+Desktop and mobile use separate fresh Blender processes and frames `1,126,144,162,196,250,262,270`. PASS requires exact dimensions, decoded p95 channel delta `0`, maximum delta at most `1/255`, and changed-channel ratio at most `0.0001` for every comparison.
 
-### Isolated ffprobe and Chromium QA
+### Stage 1 — encode and freeze candidate authority
 
 ```powershell
-& $Phase3NodeExe $Phase3QaScript `
-  --ffprobe $Phase3FfprobeExe `
-  --output $Phase3QaReport `
-  --desktop-mp4 (Join-Path $Phase3MediaRoot 'phase-3-crt-opening-desktop-h264.mp4') `
-  --desktop-webm (Join-Path $Phase3MediaRoot 'phase-3-crt-opening-desktop-vp9.webm') `
-  --mobile-mp4 (Join-Path $Phase3MediaRoot 'phase-3-crt-opening-mobile-h264.mp4') `
-  --mobile-webm (Join-Path $Phase3MediaRoot 'phase-3-crt-opening-mobile-vp9.webm') `
+& $Phase3RPythonExe -B $Phase3RPackager `
+  --encode-only `
+  --desktop-frames $Phase3RDesktopFrames `
+  --mobile-frames $Phase3RMobileFrames `
+  --ffmpeg $Phase3RFfmpegExe `
+  --ffprobe $Phase3RFfprobeExe `
+  --repo-root $Phase3RRepoRoot
+
+$Phase3RCandidateAuthoritySha = (Get-FileHash -Algorithm SHA256 -LiteralPath $Phase3RCandidateAuthority).Hash.ToLowerInvariant()
+```
+
+Stage 1 verifies both exact 270-frame source sequences, encodes the four candidates once, probes every stream and keyframe, binds the source/config/renderer/tool hashes, and writes only `phase-3-r-candidate-authority.json` as the reuse authority. The selected authority for this run is SHA-256 `6e4795de2c232769e535931337fc4c3ebe4e84c7279559e6aec3c79cc9fe57ae`.
+
+### Hash-bound isolated browser QA
+
+```powershell
+& $Phase3RNodeExe $Phase3RQaScript `
+  --ffprobe $Phase3RFfprobeExe `
+  --output $Phase3RQaReport `
+  --desktop-mp4 (Join-Path $Phase3RMediaRoot 'phase-3-crt-opening-desktop-h264.mp4') `
+  --desktop-webm (Join-Path $Phase3RMediaRoot 'phase-3-crt-opening-desktop-vp9.webm') `
+  --mobile-mp4 (Join-Path $Phase3RMediaRoot 'phase-3-crt-opening-mobile-h264.mp4') `
+  --mobile-webm (Join-Path $Phase3RMediaRoot 'phase-3-crt-opening-mobile-vp9.webm') `
   --headed `
   --record-candidate desktop-webm `
-  --record-video $Phase3ReviewRecording `
+  --record-video $Phase3RLabRecording `
   --require-browser `
   --expected-gop 12
 ```
 
-The QA harness serves only the supplied media through an in-memory loopback server, rejects candidate/report paths inside `src`, `public`, or `dist`, and covers deterministic probe gates, start/end/random/nearby/forward/reverse/rapid seeks, linear playback, and real hidden-tab resume. Final evidence uses three explicitly separated authorities: managed Chromium for deterministic seek/decode measurements, normal non-debugged system Chrome for genuine Page Visibility transitions and focused displayed playback, and a dedicated headed Chromium context for the actual media-lab interaction recording. A headless hidden-tab result is intentionally incomplete; final evidence uses `--headed --require-browser`.
+The harness serves only the supplied media through an in-memory loopback server and separates three authorities: managed Chromium for deterministic seek/decode measurements, normal non-debugged Chrome for Page Visibility and focused playback, and a headed Chromium context for the recorded media-lab controls. Native visibility is retry-hardened: at most three attempts, retry only after partial-inconclusive telemetry, and a fresh temporary profile for every attempt.
 
-The final run passed all four candidates and all 160 measured seeks. Each candidate reached `HAVE_ENOUGH_DATA`, produced a genuine visible-to-hidden-to-visible transition, displayed at least 90% of the authored 30 fps in the focused native window, and reported zero corrupted frames. The recorded media-lab exercises passed first/final frame, 10 random seeks, 10 rapid alternating seeks, and 11 forward/reverse measurements with zero dropped or corrupted frames across 252 presented-frame deltas. Exact candidate identities, latencies, browser versions, and the recording identity are in `artifacts/evidence/phase-3/reports/phase-3-media-qa.json`.
+The final report is a complete PASS: 4/4 probes, 4/4 Chromium candidates, 160/160 measured seeks, four genuine visible → hidden → visible transitions, focused presentation of 29.977–30.266 fps, and zero displayed dropped or corrupted frames. The actual media-lab run passes 33 measurements and 284 presented-frame deltas with zero drops or corruption.
 
-### Post-QA evidence refresh without re-encoding
-
-```powershell
-& $Phase3PythonExe $Phase3Packager --reuse-existing-candidates --desktop-frames $Phase3DesktopFrames --mobile-frames $Phase3MobileFrames --ffmpeg $Phase3FfmpegExe --ffprobe $Phase3FfprobeExe --review-zip $Phase3ReviewZip --repo-root $Phase3RepoRoot
-```
-
-Run this full-mode refresh once after the final QA recording. It re-verifies the frozen four delivery candidates, rebuilds codec-comparison and compact review evidence, registers the exact QA recording, and recreates the prefinal outside-Git ZIP without invoking either production-candidate encoder. This closes the encode/QA/manifest identity loop even when a codec implementation does not promise repeatable bitstreams across separate invocations.
-
-### Post-push external review identity
+### Stage 2 — safe reuse and compact final packaging
 
 ```powershell
-$Phase3FinalPushedSha = (& git -C $Phase3RepoRoot rev-parse HEAD).Trim()
-& $Phase3PythonExe $Phase3Packager --finalize-external-only --review-zip $Phase3ReviewZip --repo-root $Phase3RepoRoot --branch-sha $Phase3FinalPushedSha
+& $Phase3RPythonExe -B $Phase3RPackager `
+  --desktop-frames $Phase3RDesktopFrames `
+  --mobile-frames $Phase3RMobileFrames `
+  --ffmpeg $Phase3RFfmpegExe `
+  --ffprobe $Phase3RFfprobeExe `
+  --candidate-authority-sha256 $Phase3RCandidateAuthoritySha `
+  --media-qa-report $Phase3RQaReport `
+  --media-lab-recording $Phase3RLabRecording `
+  --render-determinism-report $Phase3RDeterminismReport `
+  --review-zip $Phase3RReviewZip `
+  --repo-root $Phase3RRepoRoot
 ```
 
-Run this finalization only after the generated isolated artifacts are committed and the branch is pushed with an upstream. It requires a clean tracked worktree, verifies that local `HEAD` equals the upstream SHA, re-verifies every recorded tracked file, and rewrites only the external ZIP, manifest, and hash sidecar. Finalized commands, stdout summaries, probes, hashes, actual encoder/browser versions, and the pushed branch SHA belong in the production evidence, not only in shell history.
+Stage 2 never silently re-encodes. It re-verifies the raw sequences, exact four candidates, Stage-1 authority, source/protocol hashes, QA report, headed recording, and determinism report. It replaces obsolete CRT-specific evidence, retains only the accepted conduction sheet and three posters, builds the 29-file tracked review tree, writes the post-production manifest, and creates a 35-entry outside-Git ZIP containing all four candidates but no raw sequence.
+
+### Stage 3 — post-push external review identity
+
+```powershell
+$Phase3RFinalPushedSha = (& git -C $Phase3RRepoRoot rev-parse HEAD).Trim()
+& $Phase3RPythonExe -B $Phase3RPackager `
+  --finalize-external-only `
+  --review-zip $Phase3RReviewZip `
+  --repo-root $Phase3RRepoRoot `
+  --branch-sha $Phase3RFinalPushedSha
+```
+
+Run Stage 3 only after the artifact commit is pushed with an upstream. It requires a clean tracked worktree, local/upstream/remote SHA parity, exact tracked-file identity, and the exact Stage-2 source/candidate/review inventory. It rewrites only the external ZIP, external manifest, and SHA-256 sidecar, and cannot change a tracked file.
 
 ## Validation gates
 
 ### Before full rendering
 
-- Accepted source hash matches exactly.
-- Derivative change ledger exists and contains no silent CRT redesign.
+- Accepted Phase 0 and Phase 3 source hashes match exactly.
+- Phase 3-R change ledger exists, stays inside the screen allowlist, and contains no silent CRT or cinematic redesign.
 - Blender version/build and selected device are recorded.
 - Cycles, OIDN, AgX, look, seed, samples, bounces, fps, frames, and resolution are exact.
 - External libraries, images, paths, missing files, third-party assets, private references, and cache dependencies are zero.
-- OptiX 16/48 checkpoint and sample/resolution gates pass.
-- Frames 1, 30, 31, 72, 112, 113, 116, 120, 121, 126, 132, 133, 154, 155, 167, 176, 177, 190, 201, 210, 211, 232, 252, 255, 269, and 270 match the timeline contract.
+- The validator passes 51/51, the canonical frozen signature is exact before/after, and the independent accepted-Phase-3 snapshot matches exactly.
+- Frames 1, 116, 121, 126, 132, 144, 154, 162, 182, 196, 218, 250, 262, 265, and 270 match the unchanged timeline contract.
 
 ### After rendering
 
 - Exactly 270 contiguous frames exist; no duplicate, missing, or zero-byte frame is present.
-- Random isolated frames match sequential renders in authored state.
+- Fresh-process frames `1,126,144,162,196,250,262,270` match each master in authored state for both variants.
 - Forward and reverse reviews are coherent.
 - Frame 1 has zero environmental magenta.
-- Frame 270 matches the Phase 3 portal-alignment contract and contains no blank bridge or duplicate semantic text.
+- Frame 126 reads as neutral physical phosphor rather than a pink vector line.
+- Frame 144 reads as a filled picture field rather than separate glowing bars.
+- Frames 182/196 integrate readable Quantum content within the phosphor and glass.
+- Frame 250 retains faint but receding CRT texture; frame 270 is nearly digital, text-free black with barely perceptible scan structure.
+- Frame 270 matches the byte-unchanged Phase 3 portal-alignment contract and contains no blank bridge or duplicate semantic text.
 - Frame dimensions, color transform, byte sizes, and hashes are recorded.
 
 ### After encoding
@@ -375,14 +435,15 @@ Run this finalization only after the generated isolated artifacts are committed 
 - ffprobe reports exactly one video stream and zero audio/subtitle/data/attachment streams.
 - Dimensions, 30 fps cadence, 270 frames, duration, pixel format, codec, GOP, bitrate, bytes, and hashes match the manifest.
 - Browser tests cover first frame, final frame, 10 random seeks, nearby seeks, repeated forward/reverse seeks, rapid alternating seeks, and hidden-tab resume.
+- Native-visibility retries occur only for partial-inconclusive telemetry, use a fresh profile, and stop after at most three attempts.
 - Focused native playback presents at least 90% of the authored frame rate and records zero corrupted frames; decoder drop counters remain evidence rather than an impossible zero-drop machine claim.
-- Dark gradients, scanlines, phosphor, thin type, and final black level survive compression.
+- Dark gradients, fine raster texture, phosphor softness, thin type, and final black level survive H.264 and VP9 without visible shimmer, moiré, ringing, or banding at normal size.
 - The final report passes all four candidates, and its file hashes match both the post-production manifest and the actual media bytes.
-- Isolated candidates retain the manifest label `PRODUCTION CANDIDATE — visual/browser acceptance pending` to reserve direct human acceptance; no candidate is selected for integration in Phase 3.
+- Isolated candidates retain the manifest label `PHASE 3-R PRODUCTION CANDIDATE — HUMAN REVIEW REQUIRED`; no candidate is selected for integration.
 
 ## Completed production records
 
-The derivative build and validation ledgers bind the current source authority. The isolated Phase 3 package now includes, without retroactively changing accepted Phase 0.4 evidence:
+The Phase 3-R build and validation ledgers bind the current repair authority. The isolated package now includes, without retroactively changing accepted Phase 0 or Phase 3 evidence:
 
 - `docs/planning/PHASE_3_MEDIA_MANIFEST.md` with measured production values;
 - render configuration, full frame inventories, and sparse fresh-process determinism evidence;
@@ -390,23 +451,23 @@ The derivative build and validation ledgers bind the current source authority. T
 - isolated Chromium, native Page Visibility, focused playback, and real media-lab measurements;
 - forward and reverse review evidence;
 - codec-decoded comparisons and the Phase 3-to-Phase 2B handoff comparison;
-- a compact outside-Git human-review transfer package that excludes raw frames and delivery candidates.
+- a compact outside-Git human-review transfer package with the exact four selected candidates and no raw frame sequence.
 
 After the artifact commit is pushed, the external-only finalizer must bind the review ZIP manifest and hash sidecar to that exact upstream SHA. This operational step writes no tracked files. Direct human visual review remains required; none of these machine or self-review records authorizes integration or Phase 4.
 
 ## Required final human-gate wording
 
-The Phase 3 handoff must end with the following lines exactly, with no self-authorization of Phase 4 and no text after the completion line:
+The Phase 3-R handoff must end with the following lines exactly, with no self-authorization of Phase 4 and no text after the completion line:
 
 ```text
 PROVING FIELD + SPIRAL CONDUCTION:
-ACCEPT / REPAIR / REDIRECT
+ACCEPT
 
 CRT POWER-ON + SCREEN AUTHENTICITY:
 ACCEPT / REPAIR / REDIRECT
 
 CAMERA + PORTAL ALIGNMENT:
-ACCEPT / REPAIR / REDIRECT
+ACCEPT
 
 MOBILE + REDUCED-MOTION CONTINUITY:
 ACCEPT / REPAIR / REDIRECT
@@ -414,5 +475,5 @@ ACCEPT / REPAIR / REDIRECT
 MEDIA PERFORMANCE + PRODUCTION SAFETY:
 ACCEPT / REPAIR / REDIRECT
 
-PHASE 3 PRODUCTION CRT OPENING COMPLETE — AWAITING HUMAN REVIEW
+PHASE 3-R CRT AUTHENTICITY REPAIR COMPLETE — AWAITING HUMAN REVIEW
 ```

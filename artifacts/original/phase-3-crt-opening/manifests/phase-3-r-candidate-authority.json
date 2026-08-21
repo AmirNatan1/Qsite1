@@ -1,0 +1,576 @@
+{
+  "schema": "quantum-hub.phase-3-r-crt-authenticity.candidate-authority.v1",
+  "status": "PASS",
+  "stage": "ENCODE_ONLY",
+  "repository": {
+    "branch": "feature/phase-3-crt-opening-production",
+    "headAtPackaging": "9141063e3418d13317d7498fb50c602ef5e0169c",
+    "repairParent": "ae6cd4c0c664a275c077bd37207efde01e9caa29"
+  },
+  "sourceAuthority": {
+    "acceptedPhase0": {
+      "repositoryRelativePath": "artifacts/original/phase-0-4-crt-television/source/quantum-signal-television-v1.blend",
+      "filename": "quantum-signal-television-v1.blend",
+      "bytes": 1516222,
+      "sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7"
+    },
+    "acceptedPhase3BeforeRepair": {
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/source/quantum-signal-television-phase3-opening.blend",
+      "filename": "quantum-signal-television-phase3-opening.blend",
+      "bytes": 2182647,
+      "sha256": "bbde82220f500c6f047c2e2d33a8580c08a40e65800615dd7256bebc2f4472ba"
+    },
+    "phase3rDerivative": {
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/source/quantum-signal-television-phase3-r-crt-authenticity.blend",
+      "filename": "quantum-signal-television-phase3-r-crt-authenticity.blend",
+      "bytes": 2222662,
+      "sha256": "4341a3fb7ae29ef9be4472ea23ca9235e36f9609893bc2f37de32e5847d36f26"
+    },
+    "sourceBuild": {
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/manifests/phase-3-r-source-build.json",
+      "filename": "phase-3-r-source-build.json",
+      "bytes": 2689,
+      "sha256": "3c9b3c7081d90b16c34ac2cc6e971027e46bb0dc729e67a887dc5226f104c4b6"
+    },
+    "sourceValidation": {
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/manifests/phase-3-r-source-validation.json",
+      "filename": "phase-3-r-source-validation.json",
+      "bytes": 24533,
+      "sha256": "03a9093a5fad1e340ac1fbe1a2df2109be238f7749ca3b9d2c1b471d0ce92cc9"
+    },
+    "phase2bEntryEvidence": {
+      "repositoryRelativePath": "artifacts/evidence/phase-2b/review/phase-2b-desktop-production-keyframes.png",
+      "filename": "phase-2b-desktop-production-keyframes.png",
+      "bytes": 627598,
+      "sha256": "a3a1d38a88771d31c03839c82cf5f9e6163057925ed7f5cbe5dc5cdc70bce2bd"
+    }
+  },
+  "protocolSources": {
+    "package_phase3r_media.py": {
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/source/package_phase3r_media.py",
+      "filename": "package_phase3r_media.py",
+      "bytes": 122461,
+      "sha256": "6977586a533e29c4c75595c762386f153b54140dd28f3dcbfc938dc60336ff95",
+      "pythonAstSha256": "1b625f3fcc0de16d03462d623bce7297aa17d9a9eb7a6002992eeff1d5ce8139"
+    },
+    "package_phase3_media.py": {
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/source/package_phase3_media.py",
+      "filename": "package_phase3_media.py",
+      "bytes": 110538,
+      "sha256": "ccc5b41cca247e2a02e1deb3e77d8e1c892c7f52dc804eca29ce27200ea3e2b6",
+      "pythonAstSha256": "03abad33ce96ef38f2b79a0a9e629ec030d7a1bde9fbcbaf4772219ca7d7d2b0"
+    },
+    "render_phase3r_frames.py": {
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/source/render_phase3r_frames.py",
+      "filename": "render_phase3r_frames.py",
+      "bytes": 10577,
+      "sha256": "d4324105f92e80c2c2097b1ab0ab3b30784e773378a8c6609968b6ad6158043d",
+      "pythonAstSha256": "fcb51f8294191f2c7f419494b6fba6cf7f258b2d02a44d809118c5940e8562fb"
+    },
+    "repair_phase3r_crt_authenticity.py": {
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/source/repair_phase3r_crt_authenticity.py",
+      "filename": "repair_phase3r_crt_authenticity.py",
+      "bytes": 37874,
+      "sha256": "af065d22c74a562b3f89a3bafab285cf5e6210957fc3ca335ac7ae51ad76c223",
+      "pythonAstSha256": "3a8c2067e4e924c9f7218131fc5c63a90f2c739e59502fa96ebb1d78bb745269"
+    },
+    "validate_phase3r_source.py": {
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/source/validate_phase3r_source.py",
+      "filename": "validate_phase3r_source.py",
+      "bytes": 35383,
+      "sha256": "def8989781385c8bc7481b23a59b2126abfc5a2a81733093c4ce1d8913b2a875",
+      "pythonAstSha256": "69d4be2f6942e6d42cf3a86ac70ca05882645a426c663eab9e05ac75299e96e1"
+    },
+    "phase3r_config.py": {
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/source/phase3r_config.py",
+      "filename": "phase3r_config.py",
+      "bytes": 2216,
+      "sha256": "8c5f265dedcf4ef9ccc5c4c5f93bc04a7926d633e5869f300a8960a7edb1fdc5",
+      "pythonAstSha256": "f12b21436804b34c0891247ce9cf6b3ed118bd04f2b3205edd2fd7bc72761c43"
+    },
+    "phase3_config.py": {
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/source/phase3_config.py",
+      "filename": "phase3_config.py",
+      "bytes": 4314,
+      "sha256": "e9212ee03658ac53b3f20505e80f23a11b43706309c9920a7210a50146902839",
+      "pythonAstSha256": "e210aca8815f00f29d5131109b21804376aefff7ab90e9f586c6e694c59173d6"
+    },
+    "verify-phase3r-render-determinism.mjs": {
+      "repositoryRelativePath": "scripts/verify-phase3r-render-determinism.mjs",
+      "filename": "verify-phase3r-render-determinism.mjs",
+      "bytes": 19631,
+      "sha256": "21e2a3068d4a4bf7b38c322e76761228e70d4e4a2f03267b82290d07e84aab26"
+    }
+  },
+  "rendererLaunchProvenance": {
+    "canonicalPythonAstSha256": "fcb51f8294191f2c7f419494b6fba6cf7f258b2d02a44d809118c5940e8562fb",
+    "currentFileSha256": "d4324105f92e80c2c2097b1ab0ab3b30784e773378a8c6609968b6ad6158043d",
+    "rawByteIdentityAtProductionLaunchClaimed": false,
+    "semanticIdentityAuthority": "CANONICAL_PYTHON_AST",
+    "derivativeAndConfigUnchangedDuringRender": true,
+    "note": "The authoritative render processes loaded the same canonical Python AST. The current raw file also records a trailing-whitespace-only post-render normalization; raw-byte identity at process launch is intentionally not claimed."
+  },
+  "rawProductionSequences": {
+    "desktop": {
+      "storagePolicy": "OUTSIDE_GIT_LOCAL_PATH_INTENTIONALLY_OMITTED",
+      "filenamePattern": "phase3r-desktop-%04d.png",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "fps": 30,
+      "frameStart": 1,
+      "frameEnd": 270,
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "totalBytes": 395176245,
+      "sequenceSha256": "c46099f11ee7e42b2b0e5476ff13afa90a449276aef1c949b89c8b2e2dc92160",
+      "boundaryFrames": {
+        "1": {
+          "filename": "phase3r-desktop-0001.png",
+          "bytes": 1462495,
+          "sha256": "5d8b6aa6553b20ee3668f3854da16fae627af3f6a73b68b808b6d61ee1fd244d"
+        },
+        "270": {
+          "filename": "phase3r-desktop-0270.png",
+          "bytes": 632497,
+          "sha256": "a1ae4645f633c07075d637749a30899c107e184915f3d2a395367c3fc4565f3f"
+        }
+      },
+      "renderReport": {
+        "repositoryPolicy": "OUTSIDE_GIT",
+        "requiredBasename": "phase3r-desktop-production-render-report.json",
+        "filename": "phase3r-desktop-production-render-report.json",
+        "bytes": 48236,
+        "sha256": "f31ef983cf01b762b986df4e0e367802875e21eb5adc572c25c0eff683dcee9e",
+        "configurationBinding": {
+          "configFilename": "phase3r_config.py",
+          "configSha256": "8c5f265dedcf4ef9ccc5c4c5f93bc04a7926d633e5869f300a8960a7edb1fdc5",
+          "derivativeFilename": "quantum-signal-television-phase3-r-crt-authenticity.blend",
+          "derivativeSha256": "4341a3fb7ae29ef9be4472ea23ca9235e36f9609893bc2f37de32e5847d36f26",
+          "rendererFilename": "render_phase3r_frames.py",
+          "rendererSha256": "d4324105f92e80c2c2097b1ab0ab3b30784e773378a8c6609968b6ad6158043d",
+          "rendererPythonAstSha256": "fcb51f8294191f2c7f419494b6fba6cf7f258b2d02a44d809118c5940e8562fb",
+          "rendererRawByteIdentityAtLaunchClaimed": false,
+          "rendererLaunchBinding": "CANONICAL_PYTHON_AST_PLUS_CURRENT_FILE_HASH; trailing-whitespace-only post-render normalization is semantics-neutral"
+        }
+      }
+    },
+    "mobile": {
+      "storagePolicy": "OUTSIDE_GIT_LOCAL_PATH_INTENTIONALLY_OMITTED",
+      "filenamePattern": "phase3r-mobile-%04d.png",
+      "dimensions": {
+        "width": 720,
+        "height": 1280
+      },
+      "fps": 30,
+      "frameStart": 1,
+      "frameEnd": 270,
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "totalBytes": 174339205,
+      "sequenceSha256": "511d325d98ae3a029d811cbc2a2d45c5acfa36df9346a6163f4de1be667be0ac",
+      "boundaryFrames": {
+        "1": {
+          "filename": "phase3r-mobile-0001.png",
+          "bytes": 687154,
+          "sha256": "9220e0bef5568182d34a0eb3908e87899fdef1fc6776a239f95ab66985920487"
+        },
+        "270": {
+          "filename": "phase3r-mobile-0270.png",
+          "bytes": 291315,
+          "sha256": "90d9ada5e4d4854d48e8821b0c6faedc7b148fea1348a32beeb65313ebf14ff4"
+        }
+      },
+      "renderReport": {
+        "repositoryPolicy": "OUTSIDE_GIT",
+        "requiredBasename": "phase3r-mobile-production-render-report.json",
+        "filename": "phase3r-mobile-production-render-report.json",
+        "bytes": 47506,
+        "sha256": "76539d2f9d6731412fbed5a850dfc241e497846ac46de9704001e21a9cd08535",
+        "configurationBinding": {
+          "configFilename": "phase3r_config.py",
+          "configSha256": "8c5f265dedcf4ef9ccc5c4c5f93bc04a7926d633e5869f300a8960a7edb1fdc5",
+          "derivativeFilename": "quantum-signal-television-phase3-r-crt-authenticity.blend",
+          "derivativeSha256": "4341a3fb7ae29ef9be4472ea23ca9235e36f9609893bc2f37de32e5847d36f26",
+          "rendererFilename": "render_phase3r_frames.py",
+          "rendererSha256": "d4324105f92e80c2c2097b1ab0ab3b30784e773378a8c6609968b6ad6158043d",
+          "rendererPythonAstSha256": "fcb51f8294191f2c7f419494b6fba6cf7f258b2d02a44d809118c5940e8562fb",
+          "rendererRawByteIdentityAtLaunchClaimed": false,
+          "rendererLaunchBinding": "CANONICAL_PYTHON_AST_PLUS_CURRENT_FILE_HASH; trailing-whitespace-only post-render normalization is semantics-neutral"
+        }
+      }
+    }
+  },
+  "encodingProtocol": {
+    "fps": 30,
+    "frameStart": 1,
+    "frameEnd": 270,
+    "frameCount": 270,
+    "durationSeconds": 9.0,
+    "gopFrames": 12,
+    "gopMilliseconds": 400,
+    "audioStreams": 0,
+    "pixelFormat": "yuv420p",
+    "colorMetadata": "BT.709 limited range",
+    "candidateIds": [
+      "desktop-h264",
+      "desktop-vp9",
+      "mobile-h264",
+      "mobile-vp9"
+    ]
+  },
+  "toolchain": {
+    "ffmpeg": "ffmpeg version 9.0.1-essentials_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers",
+    "ffprobe": "ffprobe version 9.0.1-essentials_build-www.gyan.dev Copyright (c) 2007-2026 the FFmpeg developers"
+  },
+  "deliveryCandidates": [
+    {
+      "id": "desktop-h264",
+      "variant": "desktop",
+      "codec": "h264",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/media/phase-3-crt-opening-desktop-h264.mp4",
+      "sourceSequenceSha256": "c46099f11ee7e42b2b0e5476ff13afa90a449276aef1c949b89c8b2e2dc92160",
+      "settings": {
+        "encoder": "libx264",
+        "crf": 18,
+        "preset": "slow",
+        "fps": 30,
+        "selectedGopFrames": 12,
+        "selectedGopMilliseconds": 400,
+        "pixelFormat": "yuv420p",
+        "audio": false,
+        "colorMetadata": "BT.709 limited range"
+      },
+      "verification": {
+        "codec": "h264",
+        "width": 1920,
+        "height": 1080,
+        "pixelFormat": "yuv420p",
+        "averageFrameRate": "30/1",
+        "reportedFrameRate": "30/1",
+        "frameCount": 270,
+        "durationSeconds": 9.0,
+        "bitrateBitsPerSecond": 3107080,
+        "containerFormats": "mov,mp4,m4a,3gp,3g2,mj2",
+        "audioStreamCount": 0,
+        "keyframeFrames": [
+          1,
+          13,
+          25,
+          37,
+          49,
+          61,
+          73,
+          85,
+          97,
+          109,
+          121,
+          133,
+          145,
+          157,
+          169,
+          181,
+          193,
+          205,
+          217,
+          229,
+          241,
+          253,
+          265
+        ],
+        "keyframeIntervals": [
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12
+        ],
+        "maximumKeyframeInterval": 12,
+        "bytes": 3499571,
+        "sha256": "a73be0bb989077551c0b3405cee2c3fa435b67049bf02b523df20baf0a4fb59e",
+        "decodedFrameBytesRGBA": 8294400
+      },
+      "status": "PHASE 3-R PRODUCTION CANDIDATE — HUMAN REVIEW REQUIRED"
+    },
+    {
+      "id": "desktop-vp9",
+      "variant": "desktop",
+      "codec": "vp9",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/media/phase-3-crt-opening-desktop-vp9.webm",
+      "sourceSequenceSha256": "c46099f11ee7e42b2b0e5476ff13afa90a449276aef1c949b89c8b2e2dc92160",
+      "settings": {
+        "encoder": "libvpx-vp9",
+        "crf": 27,
+        "cpuUsed": 2,
+        "fps": 30,
+        "selectedGopFrames": 12,
+        "selectedGopMilliseconds": 400,
+        "pixelFormat": "yuv420p",
+        "audio": false,
+        "colorMetadata": "BT.709 limited range"
+      },
+      "verification": {
+        "codec": "vp9",
+        "width": 1920,
+        "height": 1080,
+        "pixelFormat": "yuv420p",
+        "averageFrameRate": "30/1",
+        "reportedFrameRate": "30/1",
+        "frameCount": 270,
+        "durationSeconds": 9.0,
+        "bitrateBitsPerSecond": 1474039,
+        "containerFormats": "matroska,webm",
+        "audioStreamCount": 0,
+        "keyframeFrames": [
+          1,
+          13,
+          25,
+          37,
+          49,
+          61,
+          73,
+          85,
+          97,
+          109,
+          121,
+          133,
+          145,
+          157,
+          169,
+          181,
+          193,
+          205,
+          217,
+          229,
+          241,
+          253,
+          265
+        ],
+        "keyframeIntervals": [
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12
+        ],
+        "maximumKeyframeInterval": 12,
+        "bytes": 1658294,
+        "sha256": "ae83dc3207815696e1043423af325a64ca4633f7189a1180c5c35935d7596386",
+        "decodedFrameBytesRGBA": 8294400
+      },
+      "status": "PHASE 3-R PRODUCTION CANDIDATE — HUMAN REVIEW REQUIRED"
+    },
+    {
+      "id": "mobile-h264",
+      "variant": "mobile",
+      "codec": "h264",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/media/phase-3-crt-opening-mobile-h264.mp4",
+      "sourceSequenceSha256": "511d325d98ae3a029d811cbc2a2d45c5acfa36df9346a6163f4de1be667be0ac",
+      "settings": {
+        "encoder": "libx264",
+        "crf": 19,
+        "preset": "slow",
+        "fps": 30,
+        "selectedGopFrames": 12,
+        "selectedGopMilliseconds": 400,
+        "pixelFormat": "yuv420p",
+        "audio": false,
+        "colorMetadata": "BT.709 limited range"
+      },
+      "verification": {
+        "codec": "h264",
+        "width": 720,
+        "height": 1280,
+        "pixelFormat": "yuv420p",
+        "averageFrameRate": "30/1",
+        "reportedFrameRate": "30/1",
+        "frameCount": 270,
+        "durationSeconds": 9.0,
+        "bitrateBitsPerSecond": 1100632,
+        "containerFormats": "mov,mp4,m4a,3gp,3g2,mj2",
+        "audioStreamCount": 0,
+        "keyframeFrames": [
+          1,
+          13,
+          25,
+          37,
+          49,
+          61,
+          73,
+          85,
+          97,
+          109,
+          121,
+          133,
+          145,
+          157,
+          169,
+          181,
+          193,
+          205,
+          217,
+          229,
+          241,
+          253,
+          265
+        ],
+        "keyframeIntervals": [
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12
+        ],
+        "maximumKeyframeInterval": 12,
+        "bytes": 1242276,
+        "sha256": "34319f80ae397758a3f7d4f192c572cee76c11ba5118a6fadb65c0374b4c99b2",
+        "decodedFrameBytesRGBA": 3686400
+      },
+      "status": "PHASE 3-R PRODUCTION CANDIDATE — HUMAN REVIEW REQUIRED"
+    },
+    {
+      "id": "mobile-vp9",
+      "variant": "mobile",
+      "codec": "vp9",
+      "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/media/phase-3-crt-opening-mobile-vp9.webm",
+      "sourceSequenceSha256": "511d325d98ae3a029d811cbc2a2d45c5acfa36df9346a6163f4de1be667be0ac",
+      "settings": {
+        "encoder": "libvpx-vp9",
+        "crf": 28,
+        "cpuUsed": 2,
+        "fps": 30,
+        "selectedGopFrames": 12,
+        "selectedGopMilliseconds": 400,
+        "pixelFormat": "yuv420p",
+        "audio": false,
+        "colorMetadata": "BT.709 limited range"
+      },
+      "verification": {
+        "codec": "vp9",
+        "width": 720,
+        "height": 1280,
+        "pixelFormat": "yuv420p",
+        "averageFrameRate": "30/1",
+        "reportedFrameRate": "30/1",
+        "frameCount": 270,
+        "durationSeconds": 9.0,
+        "bitrateBitsPerSecond": 575787,
+        "containerFormats": "matroska,webm",
+        "audioStreamCount": 0,
+        "keyframeFrames": [
+          1,
+          13,
+          25,
+          37,
+          49,
+          61,
+          73,
+          85,
+          97,
+          109,
+          121,
+          133,
+          145,
+          157,
+          169,
+          181,
+          193,
+          205,
+          217,
+          229,
+          241,
+          253,
+          265
+        ],
+        "keyframeIntervals": [
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12
+        ],
+        "maximumKeyframeInterval": 12,
+        "bytes": 647761,
+        "sha256": "53760b5787421da6497aed7a1086efd5b2ad245207843b7f8524887918d510c9",
+        "decodedFrameBytesRGBA": 3686400
+      },
+      "status": "PHASE 3-R PRODUCTION CANDIDATE — HUMAN REVIEW REQUIRED"
+    }
+  ],
+  "candidateInventory": [
+    "artifacts/original/phase-3-crt-opening/media/phase-3-crt-opening-desktop-h264.mp4",
+    "artifacts/original/phase-3-crt-opening/media/phase-3-crt-opening-desktop-vp9.webm",
+    "artifacts/original/phase-3-crt-opening/media/phase-3-crt-opening-mobile-h264.mp4",
+    "artifacts/original/phase-3-crt-opening/media/phase-3-crt-opening-mobile-vp9.webm"
+  ],
+  "rawFramesCommitted": false
+}

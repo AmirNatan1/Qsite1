@@ -1141,6 +1141,7 @@ async function createHarnessServer(candidates) {
 }
 
 const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+const nativeVisibilityAttemptLimit = 3;
 
 function nativeVisibilityLaunchPolicy() {
   return {
@@ -1149,6 +1150,8 @@ function nativeVisibilityLaunchPolicy() {
     remoteDebugging: false,
     playwrightAttached: false,
     temporaryProfile: true,
+    candidateSessionAttemptLimit: nativeVisibilityAttemptLimit,
+    retryCondition: "partial-inconclusive only; every attempt uses a fresh Chrome profile",
     arguments: [
       "--user-data-dir=<task-temp-profile>",
       "--no-first-run",
@@ -1274,7 +1277,7 @@ async function removeNativeProfile(profilePath) {
   return lastError ? String(lastError.message || lastError) : null;
 }
 
-async function runNativeVisibilityProbe(harness, candidate, resolution, options) {
+async function runNativeVisibilityProbeAttempt(harness, candidate, resolution, options) {
   const launchPolicy = nativeVisibilityLaunchPolicy();
   const base = {
     tested: false,
@@ -1637,6 +1640,33 @@ async function runNativeVisibilityProbe(harness, candidate, resolution, options)
       base.passed = false;
     }
   }
+}
+
+async function runNativeVisibilityProbe(harness, candidate, resolution, options) {
+  if (!options.headed || !resolution.available) {
+    return runNativeVisibilityProbeAttempt(harness, candidate, resolution, options);
+  }
+
+  let lastPartial = null;
+  for (let attempt = 1; attempt <= nativeVisibilityAttemptLimit; attempt += 1) {
+    const evidence = await runNativeVisibilityProbeAttempt(
+      harness,
+      candidate,
+      resolution,
+      options,
+    );
+    if (evidence.status === "complete-pass" || evidence.status === "complete-fail") {
+      return evidence;
+    }
+    lastPartial = evidence;
+  }
+
+  lastPartial.reason =
+    (lastPartial.reason ? lastPartial.reason + " " : "") +
+    "The unchanged native visibility gate remained incomplete after " +
+    nativeVisibilityAttemptLimit +
+    " fresh Chrome sessions for this candidate.";
+  return lastPartial;
 }
 
 async function waitForMetadata(page, timeoutMs) {

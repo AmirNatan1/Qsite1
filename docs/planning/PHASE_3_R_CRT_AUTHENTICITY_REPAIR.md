@@ -1,6 +1,6 @@
 # Phase 3-R CRT Authenticity Repair
 
-Status: source-only narrow repair authored; final render, media, QA, and human review authorities pending
+Status: narrow repair source, production renders, delivery media, full-size self-review, fresh-process determinism, retry-hardened browser QA, and compact transfer package complete; direct human review pending
 Branch: `feature/phase-3-crt-opening-production`
 Repair parent: `ae6cd4c0c664a275c077bd37207efde01e9caa29`
 Scope: phosphor / raster / startup only
@@ -166,29 +166,31 @@ The new property keys listed above shape optical treatment inside those accepted
 
 ## Before/after human-review intent
 
-This table defines the visual gate; it does not pre-accept an unreviewed render.
+This table records production self-review against the visual gate; it does not pre-accept the direct human decision.
 
 | Frame | Phase 3 diagnosis | Phase 3-R review intent | Final review result |
 | ---: | --- | --- | --- |
-| ~126 | Clean, branded pink graphic line | Neutral, softly bowed phosphor wake with restrained body, core, bloom, falloff, variation, and glass depth | **[ROOT-FILL AFTER FINAL FULL-SIZE REVIEW]** |
-| ~144 | Separate luminous horizontal bars | One vertically expanding picture field; fine raster structure is present but not countable | **[ROOT-FILL AFTER FINAL FULL-SIZE REVIEW]** |
-| ~182 | Sharp white content over a graphic scanline layer | Quantum typography remains readable but shares glass curvature, phosphor softness, raster interaction, and restrained emission | **[ROOT-FILL AFTER FINAL FULL-SIZE REVIEW]** |
-| ~250 | Horizontal stripes remain visually assertive | CRT texture is faintly perceptible and clearly receding along a continuous flattening curve | **[ROOT-FILL AFTER FINAL FULL-SIZE REVIEW]** |
-| 270 | Surface still reads as a CRT shader | Nearly digital Phase 2B-aligned black; scan structure is barely perceptible and all physical text is absent | **[ROOT-FILL AFTER FINAL FULL-SIZE REVIEW]** |
+| ~126 | Clean, branded pink graphic line | Neutral, softly bowed phosphor wake with restrained body, core, bloom, falloff, variation, and glass depth | **SELF-REVIEW PASS** — neutral, soft, modestly bowed physical phosphor reads within the glass; no pink-vector or laser-line read remains. |
+| ~144 | Separate luminous horizontal bars | One vertically expanding picture field; fine raster structure is present but not countable | **SELF-REVIEW PASS** — one continuously filled field expands vertically; no separate glowing bars are perceived. |
+| ~182 / 196 | Sharp white content over a graphic scanline layer | Quantum typography remains readable but shares glass curvature, phosphor softness, raster interaction, and restrained emission | **SELF-REVIEW PASS** — content is readable and optically integrated behind the convex glass rather than pasted over a scanline layer. |
+| ~250 | Horizontal stripes remain visually assertive | CRT texture is faintly perceptible and clearly receding along a continuous flattening curve | **SELF-REVIEW PASS** — fine texture remains faintly perceptible and is clearly receding without a pop. |
+| 270 | Surface still reads as a CRT shader | Nearly digital Phase 2B-aligned black; scan structure is barely perceptible and all physical text is absent | **SELF-REVIEW PASS** — nearly digital, text-free black with barely perceptible scan structure and only the accepted ambiguous non-magenta depth. |
 
-Reverse review must confirm the same deterministic construction in reverse: stable picture → contraction → continuous field collapse → neutral horizontal line → dark glass.
+Reverse review confirms the same deterministic construction in reverse: stable picture → contraction → continuous field collapse → neutral horizontal line → dark glass.
+
+The final four-codec self-review accepts every candidate independently. Temporal-delta PSNR is `50.59 / 50.96 / 51.14 / 51.56 dB` for desktop H.264 / desktop VP9 / mobile H.264 / mobile VP9; worst transitions remain `47.33–47.88 dB` and the late window is approximately `56.5–56.7 dB`. Frame 144 row-profile correlation is at least `0.998995` and mobile is at least `0.999713`; frame 196 text-edge p99 error is 6–7 luma levels; frames 250/262/270 dark-field p99 error is at most 2. No shimmer, moiré, ringing, banding, or phosphor flicker is visible at normal size. Brightness stress exposes only expected minor smoothing/blocking, slightly stronger in VP9. These are production self-review facts, not direct human acceptance.
 
 ## Final-run fields
 
-These entries are deliberately unresolved until the authoritative selected renders, encodes, probes, browser seeking, scrub lab, reverse review, production regressions, and human-size inspection are complete.
+These records bind the completed production package. `PASS` and `SELF-REVIEW PASS` below are engineering and visual-self-review results; they do not pre-empt the direct human `ACCEPT / REPAIR / REDIRECT` decision.
 
 | Final authority | Result |
 | --- | --- |
-| Phase 3-R source validation | **[ROOT-FILL: check count, status, ledger path]** |
-| Desktop H.264 / VP9 | **[ROOT-FILL: selected files, hashes, sizes, probe and artifact review]** |
-| Mobile H.264 / VP9 | **[ROOT-FILL: selected files, hashes, sizes, portrait/landscape and moiré review]** |
-| Forward / reverse / deterministic render review | **[ROOT-FILL: status and evidence]** |
-| Scrub and browser seek lab | **[ROOT-FILL: result ledger and any genuine limitation]** |
-| Phase 2B integrity / build isolation | **[ROOT-FILL: hashes, checks, build, dist isolation]** |
-| Human-review ZIP | **[ROOT-FILL: absolute external path, bytes, SHA-256, inventory]** |
-| CRT authenticity gate | **PENDING HUMAN REVIEW — do not mark ACCEPT from source construction alone** |
+| Phase 3-R source validation | **PASS 51/51, zero failed** — `artifacts/original/phase-3-crt-opening/manifests/phase-3-r-source-validation.json`; derivative 2,222,662 bytes, SHA-256 `4341a3fb7ae29ef9be4472ea23ca9235e36f9609893bc2f37de32e5847d36f26`; zero external dependencies; canonical and independent frozen signatures exact. |
+| Desktop H.264 / VP9 | **PASS as human-review candidates** — H.264 3,499,571 bytes, 3,107,080 bps, SHA-256 `a73be0bb989077551c0b3405cee2c3fa435b67049bf02b523df20baf0a4fb59e`; VP9 1,658,294 bytes, 1,474,039 bps, SHA-256 `ae83dc3207815696e1043423af325a64ca4633f7189a1180c5c35935d7596386`. Both probe as 1920×1080, 270 frames, 30 fps, 9 s, silent `yuv420p`, GOP 12. Full-sequence SSIM/PSNR: `0.996172 / 51.53 dB` and `0.996497 / 51.80 dB`; no normal-size shimmer, ringing, banding, or phosphor flicker. |
+| Mobile H.264 / VP9 | **PASS as human-review candidates** — H.264 1,242,276 bytes, 1,100,632 bps, SHA-256 `34319f80ae397758a3f7d4f192c572cee76c11ba5118a6fadb65c0374b4c99b2`; VP9 647,761 bytes, 575,787 bps, SHA-256 `53760b5787421da6497aed7a1086efd5b2ad245207843b7f8524887918d510c9`. Both probe as 720×1280, 270 frames, 30 fps, 9 s, silent `yuv420p`, GOP 12. Full-sequence SSIM/PSNR: `0.996011 / 51.78 dB` and `0.996352 / 52.08 dB`; 390, 360, 320, and 844×390 inspection shows no normal-size shimmer or moiré. |
+| Forward / reverse / deterministic render review | **PASS** — desktop and mobile reverse reviews each contain all 270 authored states with no raster pop or phosphor discontinuity. Fresh separate Blender processes pass all 16 checkpoints with p95 channel delta `0`, maximum `1/255`, and changed-channel ratio below `0.0001`; tracked determinism report SHA-256 `450dc1e263434b4eaa37d4d968552d0cf2282964a393142b3c69a5237ef72df8`. |
+| Scrub and browser seek lab | **PASS, complete retry-hardened evidence** — report `artifacts/original/phase-3-crt-opening/review/phase-3-r-media-qa-report.json`, 285,925 bytes, SHA-256 `ba0ae4a503369641b9b125e1f19363ff2bdf8701614e20bcd387d65fe87462b6`; 4/4 probes, 4/4 browser candidates, 160/160 seeks, genuine visible → hidden → visible telemetry for every candidate, and zero displayed drops/corruption. The headed lab recording is 2,040,677 bytes, SHA-256 `8468a7554bce10b904d231066cbf2144d9a95213d524b49b4ca8ea22a834e072`, with 33 passing measurements and 284 presented-frame deltas. Safari/iOS and Firefox remain expected-not-executed. |
+| Phase 2B integrity / build isolation | **PASS at source and package boundary** — independent accepted-Phase-3 frozen snapshot `94f7bf5e2cf8b87b005fcf654b419bc9111504db9c0cf9f9d6d02def4bb1c61a` is exact; portal contract SHA-256 `8e744acdee49c2db29a2b0e9c3763980f7d51ee6dca2d2a22da0a6ad2ee8a2ec` is byte-unchanged; no Phase 2B source, production runtime, `public`, or `dist` integration is introduced. Final branch-level check/build/publication results remain handoff authorities. |
+| Human-review ZIP | **PREFINAL PASS** — `<outside-git-review-root>/phase-3-r-crt-authenticity-human-review.zip`, 37,446,823 bytes, SHA-256 `0b983030cb7f0ab021dca92a63775898327e3b5e36195fd3f12835b9e36d1bd7`, 35 portable entries. It includes four candidates, 12 full-resolution desktop stills, compact startup/before-after/handoff/mobile/codec evidence, forward/reverse/scrub reviews, actual browser evidence, determinism, retained conduction/posters, manifests, and README; no raw sequence. Post-push finalization regenerates only the external ZIP/manifest/sidecar against the pushed SHA. |
+| CRT authenticity gate | **READY FOR HUMAN REVIEW** — full-size and codec self-review pass; direct human `ACCEPT / REPAIR / REDIRECT` remains pending and Phase 4 remains unauthorized. |
