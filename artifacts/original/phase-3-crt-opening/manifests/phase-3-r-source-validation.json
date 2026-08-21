@@ -1,0 +1,839 @@
+{
+  "schema": "quantum-hub.phase-3-r-crt-authenticity.source-validation.v1",
+  "status": "PASS",
+  "blender_version": "5.2.0 LTS",
+  "repair_parent": "ae6cd4c0c664a275c077bd37207efde01e9caa29",
+  "source_build_manifest": {
+    "repository_relative_path": "artifacts/original/phase-3-crt-opening/manifests/phase-3-r-source-build.json",
+    "bytes": 2689,
+    "sha256": "3c9b3c7081d90b16c34ac2cc6e971027e46bb0dc729e67a887dc5226f104c4b6"
+  },
+  "accepted_phase0_source": {
+    "filename": "quantum-signal-television-v1.blend",
+    "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/quantum-signal-television-v1.blend",
+    "bytes": 1516222,
+    "sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7"
+  },
+  "accepted_phase3_derivative": {
+    "filename": "quantum-signal-television-phase3-opening.blend",
+    "repository_relative_path": "artifacts/original/phase-3-crt-opening/source/quantum-signal-television-phase3-opening.blend",
+    "bytes": 2182647,
+    "sha256": "bbde82220f500c6f047c2e2d33a8580c08a40e65800615dd7256bebc2f4472ba"
+  },
+  "phase3r_derivative": {
+    "filename": "quantum-signal-television-phase3-r-crt-authenticity.blend",
+    "repository_relative_path": "artifacts/original/phase-3-crt-opening/source/quantum-signal-television-phase3-r-crt-authenticity.blend",
+    "bytes": 2222662,
+    "sha256": "4341a3fb7ae29ef9be4472ea23ca9235e36f9609893bc2f37de32e5847d36f26"
+  },
+  "independent_frozen_snapshot": {
+    "accepted_phase3_sha256": "94f7bf5e2cf8b87b005fcf654b419bc9111504db9c0cf9f9d6d02def4bb1c61a",
+    "phase3r_sha256": "94f7bf5e2cf8b87b005fcf654b419bc9111504db9c0cf9f9d6d02def4bb1c61a",
+    "exact_match": true
+  },
+  "check_count": 51,
+  "failed_count": 0,
+  "checks": [
+    {
+      "id": "accepted_phase0_hash",
+      "status": "PASS",
+      "pass": true,
+      "actual": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7",
+      "expected": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7"
+    },
+    {
+      "id": "accepted_phase3_parent_hash",
+      "status": "PASS",
+      "pass": true,
+      "actual": "bbde82220f500c6f047c2e2d33a8580c08a40e65800615dd7256bebc2f4472ba",
+      "expected": "bbde82220f500c6f047c2e2d33a8580c08a40e65800615dd7256bebc2f4472ba"
+    },
+    {
+      "id": "config_phase3_parent_hash",
+      "status": "PASS",
+      "pass": true,
+      "actual": "bbde82220f500c6f047c2e2d33a8580c08a40e65800615dd7256bebc2f4472ba",
+      "expected": "bbde82220f500c6f047c2e2d33a8580c08a40e65800615dd7256bebc2f4472ba"
+    },
+    {
+      "id": "source_build_status",
+      "status": "PASS",
+      "pass": true,
+      "actual": "PASS",
+      "expected": "PASS"
+    },
+    {
+      "id": "source_build_derivative_path",
+      "status": "PASS",
+      "pass": true,
+      "actual": "source/quantum-signal-television-phase3-r-crt-authenticity.blend",
+      "expected": "source/quantum-signal-television-phase3-r-crt-authenticity.blend"
+    },
+    {
+      "id": "source_build_derivative_hash_bound",
+      "status": "PASS",
+      "pass": true,
+      "actual": "4341a3fb7ae29ef9be4472ea23ca9235e36f9609893bc2f37de32e5847d36f26",
+      "expected": "4341a3fb7ae29ef9be4472ea23ca9235e36f9609893bc2f37de32e5847d36f26"
+    },
+    {
+      "id": "source_build_derivative_bytes_bound",
+      "status": "PASS",
+      "pass": true,
+      "actual": 2222662,
+      "expected": 2222662
+    },
+    {
+      "id": "opened_phase3r_derivative",
+      "status": "PASS",
+      "pass": true,
+      "actual": "artifacts/original/phase-3-crt-opening/source/quantum-signal-television-phase3-r-crt-authenticity.blend",
+      "expected": "artifacts/original/phase-3-crt-opening/source/quantum-signal-television-phase3-r-crt-authenticity.blend"
+    },
+    {
+      "id": "historical_sources_not_overwritten",
+      "status": "PASS",
+      "pass": true,
+      "actual": [
+        "artifacts/original/phase-0-4-crt-television/source/quantum-signal-television-v1.blend",
+        "artifacts/original/phase-3-crt-opening/source/quantum-signal-television-phase3-opening.blend",
+        "artifacts/original/phase-3-crt-opening/source/quantum-signal-television-phase3-r-crt-authenticity.blend"
+      ],
+      "expected": "three distinct source authorities"
+    },
+    {
+      "id": "phase3r_schema",
+      "status": "PASS",
+      "pass": true,
+      "actual": "quantum-hub.phase-3-r-crt-authenticity.production-source.v1",
+      "expected": "quantum-hub.phase-3-r-crt-authenticity.production-source.v1"
+    },
+    {
+      "id": "repair_parent",
+      "status": "PASS",
+      "pass": true,
+      "actual": "ae6cd4c0c664a275c077bd37207efde01e9caa29",
+      "expected": "ae6cd4c0c664a275c077bd37207efde01e9caa29"
+    },
+    {
+      "id": "parent_derivative_property",
+      "status": "PASS",
+      "pass": true,
+      "actual": "bbde82220f500c6f047c2e2d33a8580c08a40e65800615dd7256bebc2f4472ba",
+      "expected": "bbde82220f500c6f047c2e2d33a8580c08a40e65800615dd7256bebc2f4472ba"
+    },
+    {
+      "id": "repair_scope",
+      "status": "PASS",
+      "pass": true,
+      "actual": "phosphor/raster/startup only",
+      "expected": "phosphor/raster/startup only"
+    },
+    {
+      "id": "timeline_changed_false",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "scene": false,
+        "manifest": false
+      },
+      "expected": {
+        "scene": false,
+        "manifest": false
+      }
+    },
+    {
+      "id": "timeline_fps",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "fps": 30,
+        "fps_base": 1.0
+      },
+      "expected": {
+        "fps": 30,
+        "fps_base": 1.0
+      }
+    },
+    {
+      "id": "timeline_frames",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "start": 1,
+        "end": 270
+      },
+      "expected": {
+        "start": 1,
+        "end": 270
+      }
+    },
+    {
+      "id": "deterministic_no_random_events",
+      "status": "PASS",
+      "pass": true,
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "id": "source_build_frozen_exact",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "before_sha256": "3294b48a0a8e36d07daffb511bf0a59ef8fe25969cd8db686a31c9b1b98658f1",
+        "after_sha256": "3294b48a0a8e36d07daffb511bf0a59ef8fe25969cd8db686a31c9b1b98658f1",
+        "exact_match": true
+      },
+      "expected": "non-empty before == after and exact_match true"
+    },
+    {
+      "id": "frozen_signature_derivative_property",
+      "status": "PASS",
+      "pass": true,
+      "actual": "3294b48a0a8e36d07daffb511bf0a59ef8fe25969cd8db686a31c9b1b98658f1",
+      "expected": "3294b48a0a8e36d07daffb511bf0a59ef8fe25969cd8db686a31c9b1b98658f1"
+    },
+    {
+      "id": "legacy_expansion_object_count",
+      "status": "PASS",
+      "pass": true,
+      "actual": 18,
+      "expected": 18
+    },
+    {
+      "id": "legacy_expansion_hidden_all_representative_frames",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "1": true,
+        "121": true,
+        "126": true,
+        "132": true,
+        "144": true,
+        "154": true,
+        "182": true,
+        "250": true,
+        "265": true,
+        "270": true
+      },
+      "expected": "all true"
+    },
+    {
+      "id": "legacy_expansion_animation_removed",
+      "status": "PASS",
+      "pass": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "id": "legacy_coarse_scanline_object_count",
+      "status": "PASS",
+      "pass": true,
+      "actual": 32,
+      "expected": 32
+    },
+    {
+      "id": "legacy_coarse_scanlines_hidden_all_representative_frames",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "1": true,
+        "121": true,
+        "126": true,
+        "132": true,
+        "144": true,
+        "154": true,
+        "182": true,
+        "250": true,
+        "265": true,
+        "270": true
+      },
+      "expected": "all true"
+    },
+    {
+      "id": "legacy_coarse_scanline_animation_removed",
+      "status": "PASS",
+      "pass": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "id": "legacy_magenta_wake_retired",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "frames": {
+          "1": true,
+          "121": true,
+          "126": true,
+          "132": true,
+          "144": true,
+          "154": true,
+          "182": true,
+          "250": true,
+          "265": true,
+          "270": true
+        },
+        "animation_removed": true
+      },
+      "expected": "hidden and unanimated"
+    },
+    {
+      "id": "neutral_wake_three_layer_geometry",
+      "status": "PASS",
+      "pass": true,
+      "actual": [
+        "Phase3R_WakePhosphorHalo",
+        "Phase3R_WakePhosphorBody",
+        "Phase3R_WakePhosphorCore"
+      ],
+      "expected": [
+        "Phase3R_WakePhosphorHalo",
+        "Phase3R_WakePhosphorBody",
+        "Phase3R_WakePhosphorCore"
+      ]
+    },
+    {
+      "id": "repair_collection_screen_only",
+      "status": "PASS",
+      "pass": true,
+      "actual": [
+        "Phase3R_WakePhosphorBody",
+        "Phase3R_WakePhosphorCore",
+        "Phase3R_WakePhosphorHalo"
+      ],
+      "expected": [
+        "Phase3R_WakePhosphorBody",
+        "Phase3R_WakePhosphorCore",
+        "Phase3R_WakePhosphorHalo"
+      ]
+    },
+    {
+      "id": "startup_line_neutral_warm_white",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "Phase3R_WakeHalo_Neutral": [
+          0.6938717365264893,
+          0.6795424818992615,
+          0.6307571530342102
+        ],
+        "Phase3R_WakeBody_Neutral": [
+          0.6938717365264893,
+          0.6795424818992615,
+          0.6307571530342102
+        ],
+        "Phase3R_WakeCore_Neutral": [
+          0.6938717365264893,
+          0.6795424818992615,
+          0.6307571530342102
+        ]
+      },
+      "expected": {
+        "Phase3R_WakeHalo_Neutral": [
+          0.693871761,
+          0.679542469,
+          0.630757137
+        ],
+        "Phase3R_WakeBody_Neutral": [
+          0.693871761,
+          0.679542469,
+          0.630757137
+        ],
+        "Phase3R_WakeCore_Neutral": [
+          0.693871761,
+          0.679542469,
+          0.630757137
+        ]
+      }
+    },
+    {
+      "id": "startup_line_not_magenta",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "Phase3R_WakeHalo_Neutral": [
+          0.6938717365264893,
+          0.6795424818992615,
+          0.6307571530342102
+        ],
+        "Phase3R_WakeBody_Neutral": [
+          0.6938717365264893,
+          0.6795424818992615,
+          0.6307571530342102
+        ],
+        "Phase3R_WakeCore_Neutral": [
+          0.6938717365264893,
+          0.6795424818992615,
+          0.6307571530342102
+        ]
+      },
+      "expected": "warm-neutral channel separation, not Quantum magenta"
+    },
+    {
+      "id": "startup_line_visibility_window",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "120": {
+          "Phase3R_WakePhosphorHalo": true,
+          "Phase3R_WakePhosphorBody": true,
+          "Phase3R_WakePhosphorCore": true
+        },
+        "121": {
+          "Phase3R_WakePhosphorHalo": false,
+          "Phase3R_WakePhosphorBody": false,
+          "Phase3R_WakePhosphorCore": false
+        },
+        "126": {
+          "Phase3R_WakePhosphorHalo": false,
+          "Phase3R_WakePhosphorBody": false,
+          "Phase3R_WakePhosphorCore": false
+        },
+        "132": {
+          "Phase3R_WakePhosphorHalo": false,
+          "Phase3R_WakePhosphorBody": false,
+          "Phase3R_WakePhosphorCore": false
+        },
+        "136": {
+          "Phase3R_WakePhosphorHalo": false,
+          "Phase3R_WakePhosphorBody": false,
+          "Phase3R_WakePhosphorCore": false
+        },
+        "137": {
+          "Phase3R_WakePhosphorHalo": true,
+          "Phase3R_WakePhosphorBody": true,
+          "Phase3R_WakePhosphorCore": true
+        },
+        "270": {
+          "Phase3R_WakePhosphorHalo": true,
+          "Phase3R_WakePhosphorBody": true,
+          "Phase3R_WakePhosphorCore": true
+        }
+      },
+      "expected": {
+        "120": {
+          "all_hidden": true
+        },
+        "121": {
+          "all_hidden": false
+        },
+        "126": {
+          "all_hidden": false
+        },
+        "132": {
+          "all_hidden": false
+        },
+        "136": {
+          "all_hidden": false
+        },
+        "137": {
+          "all_hidden": true
+        },
+        "270": {
+          "all_hidden": true
+        }
+      }
+    },
+    {
+      "id": "startup_line_restrained_layered_emission",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "Phase3R_WakeHalo_Neutral": 0.3199999928474426,
+        "Phase3R_WakeBody_Neutral": 0.6200000047683716,
+        "Phase3R_WakeCore_Neutral": 1.600000023841858
+      },
+      "expected": {
+        "Phase3R_WakeHalo_Neutral": 0.32,
+        "Phase3R_WakeBody_Neutral": 0.62,
+        "Phase3R_WakeCore_Neutral": 1.6
+      }
+    },
+    {
+      "id": "startup_line_modest_bow",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "Phase3R_WakePhosphorHalo": 0.004649132490158081,
+        "Phase3R_WakePhosphorBody": 0.004649132490158081,
+        "Phase3R_WakePhosphorCore": 0.004649132490158081
+      },
+      "expected": "0.0040 to 0.0055 metres"
+    },
+    {
+      "id": "startup_line_within_glass_depth",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "y_range": "-0.390 < y < -0.330",
+        "roles": [
+          "neutral maintained-phosphor wake behind accepted convex glass",
+          "neutral maintained-phosphor wake behind accepted convex glass",
+          "neutral maintained-phosphor wake behind accepted convex glass"
+        ]
+      },
+      "expected": "all points seated within accepted convex-glass depth"
+    },
+    {
+      "id": "startup_noise_static",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "Phase3R_WakeHalo_Neutral": false,
+        "Phase3R_WakeBody_Neutral": false,
+        "Phase3R_WakeCore_Neutral": false
+      },
+      "expected": {
+        "Phase3R_WakeHalo_Neutral": false,
+        "Phase3R_WakeBody_Neutral": false,
+        "Phase3R_WakeCore_Neutral": false
+      }
+    },
+    {
+      "id": "continuous_field_assigned",
+      "status": "PASS",
+      "pass": true,
+      "actual": "Phase3R_PhosphorField_Desktop",
+      "expected": "Phase3R_PhosphorField_Desktop"
+    },
+    {
+      "id": "continuous_picture_field_node_topology",
+      "status": "PASS",
+      "pass": true,
+      "actual": [
+        "Continuous Field First",
+        "Fine Physical Raster",
+        "Generated Screen Coordinates",
+        "Maintained Phosphor Variation",
+        "Material Output",
+        "Phase3R Phosphor Tone",
+        "Phase3R Physical Black",
+        "Phase3R Picture Field Half Height",
+        "Phase3R Raster Contrast",
+        "Physical Raster Modulation",
+        "Picture Field Absolute Distance",
+        "Picture Field Distance From Center",
+        "Picture Field Feather Inner",
+        "Picture Field Feather Outer",
+        "Picture Field Vertical Coordinate",
+        "Principled BSDF",
+        "Raster Contrast Product",
+        "Restrained Static Intensity Range",
+        "Soft Field With Internal Raster",
+        "Soft Vertical Picture Formation",
+        "Tone Through Phosphor Structure"
+      ],
+      "expected": [
+        "Continuous Field First",
+        "Fine Physical Raster",
+        "Phase3R Picture Field Half Height",
+        "Soft Field With Internal Raster",
+        "Soft Vertical Picture Formation"
+      ]
+    },
+    {
+      "id": "picture_field_first_properties",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "desktop": true,
+        "mobile": true
+      },
+      "expected": {
+        "desktop": true,
+        "mobile": true
+      }
+    },
+    {
+      "id": "variant_specific_raster_density",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "desktop": 160.0,
+        "mobile": 112.0
+      },
+      "expected": {
+        "desktop": 160.0,
+        "mobile": 112.0
+      }
+    },
+    {
+      "id": "mobile_field_persisted",
+      "status": "PASS",
+      "pass": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "id": "field_noise_static",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "desktop": false,
+        "mobile": false
+      },
+      "expected": {
+        "desktop": false,
+        "mobile": false
+      }
+    },
+    {
+      "id": "continuous_field_vertical_formation",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "1": {
+          "emission": 0.0,
+          "raster_contrast": 0.0,
+          "field_half_height": 0.0
+        },
+        "132": {
+          "emission": 0.03500000014901161,
+          "raster_contrast": 0.0,
+          "field_half_height": 0.006000000052154064
+        },
+        "144": {
+          "emission": 0.5199999809265137,
+          "raster_contrast": 0.009999999776482582,
+          "field_half_height": 0.2800000011920929
+        },
+        "154": {
+          "emission": 0.5600000023841858,
+          "raster_contrast": 0.07500000298023224,
+          "field_half_height": 0.5199999809265137
+        },
+        "162": {
+          "emission": 0.41999998688697815,
+          "raster_contrast": 0.08500000089406967,
+          "field_half_height": 0.5199999809265137
+        },
+        "176": {
+          "emission": 0.30000001192092896,
+          "raster_contrast": 0.08500000089406967,
+          "field_half_height": 0.5199999809265137
+        },
+        "210": {
+          "emission": 0.2800000011920929,
+          "raster_contrast": 0.07500000298023224,
+          "field_half_height": 0.5199999809265137
+        },
+        "247": {
+          "emission": 0.18000000715255737,
+          "raster_contrast": 0.029999999329447746,
+          "field_half_height": 0.5199999809265137
+        },
+        "255": {
+          "emission": 0.10000000149011612,
+          "raster_contrast": 0.009999999776482582,
+          "field_half_height": 0.5199999809265137
+        },
+        "262": {
+          "emission": 0.05000000074505806,
+          "raster_contrast": 0.004000000189989805,
+          "field_half_height": 0.5199999809265137
+        },
+        "270": {
+          "emission": 0.014999999664723873,
+          "raster_contrast": 0.0010000000474974513,
+          "field_half_height": 0.5199999809265137
+        }
+      },
+      "expected": "0.006 at 132, 0.280 at 144, 0.520 at 154 with continuous emission field"
+    },
+    {
+      "id": "raster_contrast_restrained",
+      "status": "PASS",
+      "pass": true,
+      "actual": [
+        0.07500000298023224,
+        0.08500000089406967,
+        0.08500000089406967,
+        0.07500000298023224
+      ],
+      "expected": "0.0 through 0.085"
+    },
+    {
+      "id": "late_raster_suppression_curve",
+      "status": "PASS",
+      "pass": true,
+      "actual": [
+        0.029999999329447746,
+        0.009999999776482582,
+        0.004000000189989805,
+        0.0010000000474974513
+      ],
+      "expected": [
+        0.03,
+        0.01,
+        0.004,
+        0.001
+      ]
+    },
+    {
+      "id": "mobile_raster_strength_scaled_for_compression",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "1": {
+          "desktop": 0.0,
+          "mobile": 0.0
+        },
+        "132": {
+          "desktop": 0.0,
+          "mobile": 0.0
+        },
+        "144": {
+          "desktop": 0.009999999776482582,
+          "mobile": 0.007199999876320362
+        },
+        "154": {
+          "desktop": 0.07500000298023224,
+          "mobile": 0.05400000140070915
+        },
+        "162": {
+          "desktop": 0.08500000089406967,
+          "mobile": 0.06120000034570694
+        },
+        "176": {
+          "desktop": 0.08500000089406967,
+          "mobile": 0.06120000034570694
+        },
+        "210": {
+          "desktop": 0.07500000298023224,
+          "mobile": 0.05400000140070915
+        },
+        "247": {
+          "desktop": 0.029999999329447746,
+          "mobile": 0.02160000056028366
+        },
+        "255": {
+          "desktop": 0.009999999776482582,
+          "mobile": 0.007199999876320362
+        },
+        "262": {
+          "desktop": 0.004000000189989805,
+          "mobile": 0.0028800000436604023
+        },
+        "270": {
+          "desktop": 0.0010000000474974513,
+          "mobile": 0.0007200000109151006
+        }
+      },
+      "expected": "mobile raster contrast == desktop * 0.72"
+    },
+    {
+      "id": "accepted_content_hierarchy_only",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "count": 3,
+        "stages": [
+          "brand",
+          "ready",
+          "route"
+        ]
+      },
+      "expected": {
+        "count": 3,
+        "stages": [
+          "brand",
+          "ready",
+          "route"
+        ]
+      }
+    },
+    {
+      "id": "handoff_frames_265_270_text_free",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "265": {
+          "CRT_InterfaceTitle": true,
+          "CRT_InterfaceStatus": true,
+          "CRT_InterfaceRouteCarrier": true
+        },
+        "266": {
+          "CRT_InterfaceTitle": true,
+          "CRT_InterfaceStatus": true,
+          "CRT_InterfaceRouteCarrier": true
+        },
+        "267": {
+          "CRT_InterfaceTitle": true,
+          "CRT_InterfaceStatus": true,
+          "CRT_InterfaceRouteCarrier": true
+        },
+        "268": {
+          "CRT_InterfaceTitle": true,
+          "CRT_InterfaceStatus": true,
+          "CRT_InterfaceRouteCarrier": true
+        },
+        "269": {
+          "CRT_InterfaceTitle": true,
+          "CRT_InterfaceStatus": true,
+          "CRT_InterfaceRouteCarrier": true
+        },
+        "270": {
+          "CRT_InterfaceTitle": true,
+          "CRT_InterfaceStatus": true,
+          "CRT_InterfaceRouteCarrier": true
+        }
+      },
+      "expected": "all three accepted interface stages hidden at every frame 265-270"
+    },
+    {
+      "id": "interface_variant_material_count",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "count": 6,
+        "materials": [
+          "Phase3R_Interface_Brand_Desktop",
+          "Phase3R_Interface_Brand_Mobile",
+          "Phase3R_Interface_Ready_Desktop",
+          "Phase3R_Interface_Ready_Mobile",
+          "Phase3R_Interface_Route_Desktop",
+          "Phase3R_Interface_Route_Mobile"
+        ]
+      },
+      "expected": "six deterministic phosphor-integrated desktop/mobile materials"
+    },
+    {
+      "id": "interface_optical_depth",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "CRT_InterfaceTitle": "curved 4.8 mm within accepted convex glass; never on outer face",
+        "CRT_InterfaceStatus": "curved 4.8 mm within accepted convex glass; never on outer face",
+        "CRT_InterfaceRouteCarrier": "curved 4.8 mm within accepted convex glass; never on outer face"
+      },
+      "expected": "all content curved within accepted glass"
+    },
+    {
+      "id": "no_external_assets",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "images": 0,
+        "libraries": 0,
+        "audio": 0,
+        "movie_clips": 0,
+        "cache_files": 0,
+        "external_fonts": [],
+        "external_paths": [],
+        "sequence_strips": []
+      },
+      "expected": "all counts zero and all path lists empty"
+    },
+    {
+      "id": "independent_source_only_frozen_snapshot",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "accepted_phase3": "94f7bf5e2cf8b87b005fcf654b419bc9111504db9c0cf9f9d6d02def4bb1c61a",
+        "phase3r": "94f7bf5e2cf8b87b005fcf654b419bc9111504db9c0cf9f9d6d02def4bb1c61a"
+      },
+      "expected": "exact match"
+    }
+  ]
+}

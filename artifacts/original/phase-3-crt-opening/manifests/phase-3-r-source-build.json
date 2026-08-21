@@ -1,0 +1,56 @@
+{
+  "schema": "quantum-hub.phase-3-r-crt-authenticity.source-build.v1",
+  "status": "PASS",
+  "repair_parent": "ae6cd4c0c664a275c077bd37207efde01e9caa29",
+  "blender_version": "5.2.0 LTS",
+  "accepted_phase0_source": {
+    "repository_relative_path": "artifacts/original/phase-0-4-crt-television/source/quantum-signal-television-v1.blend",
+    "bytes": 1516222,
+    "sha256": "3027c4c46e2b829fd97ee9a3a47558e43adda47abcc488420faa0f087bd720a7"
+  },
+  "accepted_phase3_derivative": {
+    "package_relative_path": "source/quantum-signal-television-phase3-opening.blend",
+    "bytes": 2182647,
+    "sha256": "bbde82220f500c6f047c2e2d33a8580c08a40e65800615dd7256bebc2f4472ba"
+  },
+  "phase3r_derivative": {
+    "package_relative_path": "source/quantum-signal-television-phase3-r-crt-authenticity.blend",
+    "bytes": 2222662,
+    "sha256": "4341a3fb7ae29ef9be4472ea23ca9235e36f9609893bc2f37de32e5847d36f26"
+  },
+  "timeline_changed": false,
+  "frozen_signature": {
+    "before_sha256": "3294b48a0a8e36d07daffb511bf0a59ef8fe25969cd8db686a31c9b1b98658f1",
+    "after_sha256": "3294b48a0a8e36d07daffb511bf0a59ef8fe25969cd8db686a31c9b1b98658f1",
+    "exact_match": true
+  },
+  "screen_content_xz_topology": {
+    "before": "dad608ff19b5daa6ae0d596169748db137e8b0c3dfc647b5e640334f31647da1",
+    "after": "dad608ff19b5daa6ae0d596169748db137e8b0c3dfc647b5e640334f31647da1",
+    "object_count": 3
+  },
+  "legacy_geometry": {
+    "startup_expansion_objects_hidden": 18,
+    "coarse_scanline_objects_hidden": 32
+  },
+  "repair": {
+    "startup_line": "neutral warm-white 0.50 mm core, 1.35 mm body, and 3.5 mm low-energy halo with static variation within glass",
+    "picture_field": "continuous vertically expanding phosphor surface; no separately revealed bars",
+    "desktop_raster_bands": 160.0,
+    "mobile_raster_bands": 112.0,
+    "raster_dark_gap_floor": "minimum modulation remains above 0.915 during stable picture",
+    "settling": "deterministic <=0.35 percent geometry breath; no random or temporal noise",
+    "content": "accepted typography/topology/schedules, curved to phosphor depth, reduced emission",
+    "late_suppression": "desktop raster contrast 0.030 at frame 247 to 0.001 at frame 270; mobile uses the documented 0.72 multiplier",
+    "screen_spill": "screen-only neutral-warm compensation; accepted lighting philosophy preserved",
+    "portal_cues": "accepted geometry unchanged; transparent carriers until frame 220, original late strengths retained"
+  },
+  "dependencies": {
+    "external_images": 0,
+    "linked_libraries": 0,
+    "audio": 0,
+    "movie_clips": 0,
+    "cache_files": 0,
+    "external_paths": []
+  }
+}
