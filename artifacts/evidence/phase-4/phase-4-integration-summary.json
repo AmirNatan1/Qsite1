@@ -1,6 +1,6 @@
 {
   "schema": "quantum-hub.phase-4.integration-summary.v1",
-  "generatedAt": "2026-08-22T15:28:48.460Z",
+  "generatedAt": "2026-08-22T15:44:01.591Z",
   "status": "PASS",
   "provenance": {
     "branch": "feature/phase-4-full-cinematic-integration",
@@ -110,8 +110,8 @@
   },
   "browserQa": {
     "report": "phase-4-browser-report.json",
-    "reportBytes": 1048134,
-    "reportSha256": "6180a28b71e94fa95dfa377186ccddfe956f7ed14349b8f5313e3d9a22a87756",
+    "reportBytes": 1044621,
+    "reportSha256": "8c755e0f2248278c07e9233603256f120fc72b8ada13d950c1fca02473dfcae6",
     "passed": true,
     "failures": 0,
     "referenceViewports": 9,
@@ -124,11 +124,11 @@
     "nativeScrollbar": { "executed": true, "passed": true, "widthCssPixels": 15, "forwardY": 2452, "reverseY": 0 },
     "coldLoad": {
       "cacheDisabled": true,
-      "firstContentfulPaintMs": 76,
-      "largestContentfulPaintMs": 76,
+      "firstContentfulPaintMs": 236,
+      "largestContentfulPaintMs": 236,
       "largestContentfulPaintCandidate": "/brand/quantum-full-logo-white.svg",
-      "domContentLoadedMs": 200.1,
-      "mediaReadyMs": 264.7,
+      "domContentLoadedMs": 234,
+      "mediaReadyMs": 319.5,
       "desktopPosterTransferBytesIncludingHeaders": 726326,
       "selectedVideoTransferBytesIncludingHeaders": 1658594,
       "selectedVideoInitiator": "fetch"
@@ -140,26 +140,26 @@
       "selectedVideoEncodedTransferBytes": 0,
       "selectedVideoPaths": 1,
       "loaderCount": 0,
-      "domContentLoadedMs": 88.2,
-      "mediaReadyMs": 197.5
+      "domContentLoadedMs": 73.5,
+      "mediaReadyMs": 190.5
     },
     "throttledConnection": {
       "profile": "CDP simulated 2 Mbps down / 750 Kbps up / 200 ms RTT",
       "isPhysicalNetworkTest": false,
-      "domContentLoadedMs": 1312.2,
-      "nativePageDownMs": 1615,
-      "mediaReadyMs": 10915.4,
-      "posterDecodedMs": 6222.7,
-      "completionMs": 10964,
+      "domContentLoadedMs": 1296,
+      "nativePageDownMs": 1598,
+      "mediaReadyMs": 10854.5,
+      "posterDecodedMs": 6278,
+      "completionMs": 10897,
       "outcome": "ready",
       "loaderCount": 0
     },
     "performance": {
-      "startupLongTasks": [{ "durationMs": 103, "attribution": "unknown" }],
+      "startupLongTasks": [{ "durationMs": 111, "attribution": "unknown" }],
       "scrollLongTasks": 0,
-      "totalCls": 0.000453112273862043,
+      "totalCls": 0,
       "scrollCls": 0,
-      "incrementalScrollMeasurementMs": 835.7,
+      "incrementalScrollMeasurementMs": 830.5,
       "externalRequests": 0
     },
     "accessibility": {

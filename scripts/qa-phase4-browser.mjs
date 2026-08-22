@@ -1549,6 +1549,8 @@ async function runStaticVariant(
   const page = await context.newPage();
   const observer = observePage(page, baseUrl);
   const response = await page.goto(baseUrl + "/", { waitUntil: "domcontentloaded" });
+  await page.waitForLoadState("networkidle");
+  await page.evaluate(() => document.fonts?.ready);
   if (javaScriptEnabled) await settle(page);
   else await page.waitForTimeout(100);
   const initial = await readHomeState(page);
@@ -5377,12 +5379,15 @@ async function runSupportingRoutes(browser, baseUrl, routes, failures) {
       state.nestedVerticalScrollers,
       [],
     );
-    const assertionNetwork = route === "/404/"
+    const expectedNavigationErrorIndex = route === "/404/"
+      ? network.runtimeErrors.findIndex(
+          (message) => /^Failed to load resource: the server responded with a status of 404 \((?:Not Found)?\)$/.test(message),
+        )
+      : -1;
+    const assertionNetwork = expectedNavigationErrorIndex >= 0
       ? {
           ...network,
-          runtimeErrors: network.runtimeErrors.filter(
-            (message) => message !== "Failed to load resource: the server responded with a status of 404 (Not Found)",
-          ),
+          runtimeErrors: network.runtimeErrors.filter((_, index) => index !== expectedNavigationErrorIndex),
         }
       : network;
     expectCleanRuntime(failures, scenario, assertionNetwork);
@@ -5393,10 +5398,8 @@ async function runSupportingRoutes(browser, baseUrl, routes, failures) {
       state,
       network,
       expectedNavigationErrors:
-        route === "/404/"
-          ? network.runtimeErrors.filter(
-              (message) => !assertionNetwork.runtimeErrors.includes(message),
-            )
+        expectedNavigationErrorIndex >= 0
+          ? [network.runtimeErrors[expectedNavigationErrorIndex]]
           : [],
     });
     await page.close();

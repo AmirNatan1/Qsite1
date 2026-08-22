@@ -1,6 +1,6 @@
 {
   "schema": "quantum-hub.phase-4.browser-qa.v1",
-  "generatedAt": "2026-08-22T15:28:48.460Z",
+  "generatedAt": "2026-08-22T15:44:01.591Z",
   "baseUrl": "http://127.0.0.1:4334",
   "serverMode": "astro-preview",
   "mode": "full",
@@ -87,8 +87,8 @@
           "contentOpacity": 0
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/7f9072d3-96f0-4cfa-8f9d-21ca21cfd3d6",
-          "currentSrc": "blob:http://127.0.0.1:4334/7f9072d3-96f0-4cfa-8f9d-21ca21cfd3d6",
+          "srcAttribute": "blob:http://127.0.0.1:4334/c7a2f906-cb1d-4fad-bb6d-cb25c376a65e",
+          "currentSrc": "blob:http://127.0.0.1:4334/c7a2f906-cb1d-4fad-bb6d-cb25c376a65e",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -223,8 +223,8 @@
           "contentOpacity": 0
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/241c4199-7ba6-460a-a92b-ef8e84c0b1ce",
-          "currentSrc": "blob:http://127.0.0.1:4334/241c4199-7ba6-460a-a92b-ef8e84c0b1ce",
+          "srcAttribute": "blob:http://127.0.0.1:4334/df4d22d7-ec5c-4416-8730-3ad59de66af3",
+          "currentSrc": "blob:http://127.0.0.1:4334/df4d22d7-ec5c-4416-8730-3ad59de66af3",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -359,8 +359,8 @@
           "contentOpacity": 0
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/26b43e4f-41ce-4399-96d5-295a52b5eafd",
-          "currentSrc": "blob:http://127.0.0.1:4334/26b43e4f-41ce-4399-96d5-295a52b5eafd",
+          "srcAttribute": "blob:http://127.0.0.1:4334/bf9522c8-348c-451b-bafa-78a91098c760",
+          "currentSrc": "blob:http://127.0.0.1:4334/bf9522c8-348c-451b-bafa-78a91098c760",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -495,8 +495,8 @@
           "contentOpacity": 0
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/63b6fd27-a638-4a19-9f59-f732111dd565",
-          "currentSrc": "blob:http://127.0.0.1:4334/63b6fd27-a638-4a19-9f59-f732111dd565",
+          "srcAttribute": "blob:http://127.0.0.1:4334/c8f30331-4e9a-4754-b647-a7a0777a043a",
+          "currentSrc": "blob:http://127.0.0.1:4334/c8f30331-4e9a-4754-b647-a7a0777a043a",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -631,8 +631,8 @@
           "contentOpacity": 0
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/1a3bd00c-7bd8-487f-aec5-d5145ba0a10f",
-          "currentSrc": "blob:http://127.0.0.1:4334/1a3bd00c-7bd8-487f-aec5-d5145ba0a10f",
+          "srcAttribute": "blob:http://127.0.0.1:4334/1fba2b39-2cc8-4cb7-8f3e-e4167fe96186",
+          "currentSrc": "blob:http://127.0.0.1:4334/1fba2b39-2cc8-4cb7-8f3e-e4167fe96186",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -767,8 +767,8 @@
           "contentOpacity": 0
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/59029dbd-be6f-45a4-9b71-9adad9ed65d5",
-          "currentSrc": "blob:http://127.0.0.1:4334/59029dbd-be6f-45a4-9b71-9adad9ed65d5",
+          "srcAttribute": "blob:http://127.0.0.1:4334/8249becd-e6fa-4e84-8f0d-8b97414fb3fe",
+          "currentSrc": "blob:http://127.0.0.1:4334/8249becd-e6fa-4e84-8f0d-8b97414fb3fe",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -903,8 +903,8 @@
           "contentOpacity": 0
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/a309cbde-45bf-4b09-9669-8f7f938922c4",
-          "currentSrc": "blob:http://127.0.0.1:4334/a309cbde-45bf-4b09-9669-8f7f938922c4",
+          "srcAttribute": "blob:http://127.0.0.1:4334/4b4ca469-f306-4794-8151-3bd1172633be",
+          "currentSrc": "blob:http://127.0.0.1:4334/4b4ca469-f306-4794-8151-3bd1172633be",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -1039,8 +1039,8 @@
           "contentOpacity": 0
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/2c4e9686-73e0-4d5b-8408-72d2f3cc6b34",
-          "currentSrc": "blob:http://127.0.0.1:4334/2c4e9686-73e0-4d5b-8408-72d2f3cc6b34",
+          "srcAttribute": "blob:http://127.0.0.1:4334/1aeade13-4960-461b-8174-8b96ef82194b",
+          "currentSrc": "blob:http://127.0.0.1:4334/1aeade13-4960-461b-8174-8b96ef82194b",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -1175,8 +1175,8 @@
           "contentOpacity": 0
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/d35c1436-618c-4a5d-91a4-2290352a9000",
-          "currentSrc": "blob:http://127.0.0.1:4334/d35c1436-618c-4a5d-91a4-2290352a9000",
+          "srcAttribute": "blob:http://127.0.0.1:4334/4820cb8d-c933-479d-9bba-7cf8e5af71c6",
+          "currentSrc": "blob:http://127.0.0.1:4334/4820cb8d-c933-479d-9bba-7cf8e5af71c6",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -1315,8 +1315,8 @@
           "contentOpacity": 0
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
-          "currentSrc": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
+          "srcAttribute": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
+          "currentSrc": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -1425,8 +1425,8 @@
           "contentOpacity": 0
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
-          "currentSrc": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
+          "srcAttribute": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
+          "currentSrc": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -1540,8 +1540,8 @@
               "contentOpacity": 0
             },
             "video": {
-              "srcAttribute": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
-              "currentSrc": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
+              "srcAttribute": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
+              "currentSrc": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
               "readyState": 4,
               "networkState": 1,
               "duration": 9,
@@ -1664,8 +1664,8 @@
               "contentOpacity": 0
             },
             "video": {
-              "srcAttribute": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
-              "currentSrc": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
+              "srcAttribute": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
+              "currentSrc": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
               "readyState": 4,
               "networkState": 1,
               "duration": 9,
@@ -1788,8 +1788,8 @@
               "contentOpacity": 0
             },
             "video": {
-              "srcAttribute": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
-              "currentSrc": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
+              "srcAttribute": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
+              "currentSrc": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
               "readyState": 4,
               "networkState": 1,
               "duration": 9,
@@ -1912,8 +1912,8 @@
               "contentOpacity": 0
             },
             "video": {
-              "srcAttribute": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
-              "currentSrc": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
+              "srcAttribute": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
+              "currentSrc": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
               "readyState": 4,
               "networkState": 1,
               "duration": 9,
@@ -2036,13 +2036,13 @@
               "contentOpacity": 0.3332
             },
             "video": {
-              "srcAttribute": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
-              "currentSrc": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
-              "readyState": 1,
+              "srcAttribute": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
+              "currentSrc": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
+              "readyState": 4,
               "networkState": 1,
               "duration": 9,
               "currentTime": 8.9,
-              "seeking": true,
+              "seeking": false,
               "paused": true,
               "muted": true,
               "defaultMuted": true,
@@ -2160,13 +2160,13 @@
               "contentOpacity": 1
             },
             "video": {
-              "srcAttribute": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
-              "currentSrc": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
-              "readyState": 4,
+              "srcAttribute": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
+              "currentSrc": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
+              "readyState": 1,
               "networkState": 1,
               "duration": 9,
               "currentTime": 8.966666,
-              "seeking": false,
+              "seeking": true,
               "paused": true,
               "muted": true,
               "defaultMuted": true,
@@ -2285,8 +2285,8 @@
               "contentOpacity": 0.3332
             },
             "video": {
-              "srcAttribute": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
-              "currentSrc": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
+              "srcAttribute": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
+              "currentSrc": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
               "readyState": 4,
               "networkState": 1,
               "duration": 9,
@@ -2408,8 +2408,8 @@
               "contentOpacity": 0
             },
             "video": {
-              "srcAttribute": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
-              "currentSrc": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
+              "srcAttribute": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
+              "currentSrc": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
               "readyState": 4,
               "networkState": 1,
               "duration": 9,
@@ -2531,8 +2531,8 @@
               "contentOpacity": 0
             },
             "video": {
-              "srcAttribute": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
-              "currentSrc": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
+              "srcAttribute": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
+              "currentSrc": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
               "readyState": 4,
               "networkState": 1,
               "duration": 9,
@@ -2654,8 +2654,8 @@
               "contentOpacity": 0
             },
             "video": {
-              "srcAttribute": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
-              "currentSrc": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
+              "srcAttribute": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
+              "currentSrc": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
               "readyState": 4,
               "networkState": 1,
               "duration": 9,
@@ -2776,8 +2776,8 @@
             "contentOpacity": 1
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
-            "currentSrc": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
+            "srcAttribute": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
+            "currentSrc": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -2897,8 +2897,8 @@
             "contentOpacity": 0
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
-            "currentSrc": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
+            "srcAttribute": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
+            "currentSrc": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -3017,8 +3017,8 @@
           "contentOpacity": 1
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
-          "currentSrc": "blob:http://127.0.0.1:4334/c37aff22-ec17-4267-ac87-05fb8c3eb8a0",
+          "srcAttribute": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
+          "currentSrc": "blob:http://127.0.0.1:4334/b0cbe6d9-3c2a-4100-ac35-0c27f714d13c",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -3155,8 +3155,8 @@
           "contentOpacity": 0
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
-          "currentSrc": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
+          "srcAttribute": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
+          "currentSrc": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -3265,8 +3265,8 @@
           "contentOpacity": 0
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
-          "currentSrc": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
+          "srcAttribute": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
+          "currentSrc": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -3380,8 +3380,8 @@
               "contentOpacity": 0
             },
             "video": {
-              "srcAttribute": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
-              "currentSrc": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
+              "srcAttribute": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
+              "currentSrc": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
               "readyState": 4,
               "networkState": 1,
               "duration": 9,
@@ -3504,8 +3504,8 @@
               "contentOpacity": 0
             },
             "video": {
-              "srcAttribute": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
-              "currentSrc": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
+              "srcAttribute": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
+              "currentSrc": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
               "readyState": 4,
               "networkState": 1,
               "duration": 9,
@@ -3628,8 +3628,8 @@
               "contentOpacity": 0
             },
             "video": {
-              "srcAttribute": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
-              "currentSrc": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
+              "srcAttribute": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
+              "currentSrc": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
               "readyState": 4,
               "networkState": 1,
               "duration": 9,
@@ -3752,8 +3752,8 @@
               "contentOpacity": 0
             },
             "video": {
-              "srcAttribute": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
-              "currentSrc": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
+              "srcAttribute": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
+              "currentSrc": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
               "readyState": 4,
               "networkState": 1,
               "duration": 9,
@@ -3876,8 +3876,8 @@
               "contentOpacity": 0.3842
             },
             "video": {
-              "srcAttribute": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
-              "currentSrc": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
+              "srcAttribute": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
+              "currentSrc": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
               "readyState": 4,
               "networkState": 1,
               "duration": 9,
@@ -4000,13 +4000,13 @@
               "contentOpacity": 1
             },
             "video": {
-              "srcAttribute": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
-              "currentSrc": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
-              "readyState": 1,
+              "srcAttribute": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
+              "currentSrc": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
+              "readyState": 4,
               "networkState": 1,
               "duration": 9,
               "currentTime": 8.966666,
-              "seeking": true,
+              "seeking": false,
               "paused": true,
               "muted": true,
               "defaultMuted": true,
@@ -4125,8 +4125,8 @@
               "contentOpacity": 0.3842
             },
             "video": {
-              "srcAttribute": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
-              "currentSrc": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
+              "srcAttribute": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
+              "currentSrc": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
               "readyState": 4,
               "networkState": 1,
               "duration": 9,
@@ -4248,8 +4248,8 @@
               "contentOpacity": 0
             },
             "video": {
-              "srcAttribute": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
-              "currentSrc": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
+              "srcAttribute": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
+              "currentSrc": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
               "readyState": 4,
               "networkState": 1,
               "duration": 9,
@@ -4371,8 +4371,8 @@
               "contentOpacity": 0
             },
             "video": {
-              "srcAttribute": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
-              "currentSrc": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
+              "srcAttribute": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
+              "currentSrc": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
               "readyState": 4,
               "networkState": 1,
               "duration": 9,
@@ -4494,8 +4494,8 @@
               "contentOpacity": 0
             },
             "video": {
-              "srcAttribute": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
-              "currentSrc": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
+              "srcAttribute": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
+              "currentSrc": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
               "readyState": 4,
               "networkState": 1,
               "duration": 9,
@@ -4616,8 +4616,8 @@
             "contentOpacity": 1
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
-            "currentSrc": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
+            "srcAttribute": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
+            "currentSrc": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -4737,8 +4737,8 @@
             "contentOpacity": 0
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
-            "currentSrc": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
+            "srcAttribute": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
+            "currentSrc": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
             "readyState": 1,
             "networkState": 1,
             "duration": 9,
@@ -4857,8 +4857,8 @@
           "contentOpacity": 1
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
-          "currentSrc": "blob:http://127.0.0.1:4334/537a24bd-d214-4691-b336-cca26e0142c1",
+          "srcAttribute": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
+          "currentSrc": "blob:http://127.0.0.1:4334/e876f93c-02ff-4d72-9577-ff2233a13654",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -5012,8 +5012,8 @@
         "contentOpacity": 0
       },
       "video": {
-        "srcAttribute": "blob:http://127.0.0.1:4334/21f9f616-878b-4717-a7f9-27bc6d3190fb",
-        "currentSrc": "blob:http://127.0.0.1:4334/21f9f616-878b-4717-a7f9-27bc6d3190fb",
+        "srcAttribute": "blob:http://127.0.0.1:4334/c6cff71a-9162-4fb7-9efe-243ebef68a48",
+        "currentSrc": "blob:http://127.0.0.1:4334/c6cff71a-9162-4fb7-9efe-243ebef68a48",
         "readyState": 4,
         "networkState": 1,
         "duration": 9,
@@ -5122,8 +5122,8 @@
         "contentOpacity": 0
       },
       "video": {
-        "srcAttribute": "blob:http://127.0.0.1:4334/21f9f616-878b-4717-a7f9-27bc6d3190fb",
-        "currentSrc": "blob:http://127.0.0.1:4334/21f9f616-878b-4717-a7f9-27bc6d3190fb",
+        "srcAttribute": "blob:http://127.0.0.1:4334/c6cff71a-9162-4fb7-9efe-243ebef68a48",
+        "currentSrc": "blob:http://127.0.0.1:4334/c6cff71a-9162-4fb7-9efe-243ebef68a48",
         "readyState": 4,
         "networkState": 1,
         "duration": 9,
@@ -5241,8 +5241,8 @@
         "contentOpacity": 0
       },
       "video": {
-        "srcAttribute": "blob:http://127.0.0.1:4334/21f9f616-878b-4717-a7f9-27bc6d3190fb",
-        "currentSrc": "blob:http://127.0.0.1:4334/21f9f616-878b-4717-a7f9-27bc6d3190fb",
+        "srcAttribute": "blob:http://127.0.0.1:4334/c6cff71a-9162-4fb7-9efe-243ebef68a48",
+        "currentSrc": "blob:http://127.0.0.1:4334/c6cff71a-9162-4fb7-9efe-243ebef68a48",
         "readyState": 4,
         "networkState": 1,
         "duration": 9,
@@ -5308,183 +5308,191 @@
       "scrollEvents": [
         {
           "y": 95,
-          "at": 524.1000000238419
+          "at": 496.5
+        },
+        {
+          "y": 196,
+          "at": 512.9000000357628
         },
         {
           "y": 297,
-          "at": 540.1999999880791
+          "at": 529.5
         },
         {
           "y": 397,
-          "at": 557.3999999761581
+          "at": 546.7000000476837
         },
         {
           "y": 498,
-          "at": 573.3999999761581
+          "at": 563.6000000238419
         },
         {
           "y": 599,
-          "at": 590
+          "at": 580
         },
         {
           "y": 700,
-          "at": 606.6999999880791
+          "at": 596.2000000476837
         },
         {
           "y": 820,
-          "at": 623.3999999761581
+          "at": 613.4000000357628
         },
         {
           "y": 921,
-          "at": 640
+          "at": 629.7000000476837
         },
         {
           "y": 1022,
-          "at": 657.5
+          "at": 646.7000000476837
         },
         {
           "y": 1123,
-          "at": 673.1999999880791
+          "at": 663
         },
         {
           "y": 1223,
-          "at": 689.6999999880791
+          "at": 679.7000000476837
         },
         {
           "y": 1324,
-          "at": 706.6000000238419
+          "at": 696.5
         },
         {
           "y": 1425,
-          "at": 723.1999999880791
+          "at": 713.1000000238419
         },
         {
           "y": 1526,
-          "at": 740
+          "at": 729.7000000476837
         },
         {
           "y": 1626,
-          "at": 756.1000000238419
+          "at": 745.8000000119209
         },
         {
           "y": 1727,
-          "at": 772.8999999761581
+          "at": 762.6000000238419
         },
         {
           "y": 1848,
-          "at": 790
+          "at": 779.5
         },
         {
           "y": 1949,
-          "at": 806.1999999880791
+          "at": 795.9000000357628
         },
         {
           "y": 2049,
-          "at": 823.3000000119209
+          "at": 813.3000000119209
         },
         {
           "y": 2150,
-          "at": 839.8000000119209
+          "at": 829.9000000357628
         },
         {
           "y": 2251,
-          "at": 856.1999999880791
+          "at": 846.2000000476837
         },
         {
           "y": 2352,
-          "at": 873.3999999761581
+          "at": 863.6000000238419
         },
         {
           "y": 2452,
-          "at": 889.5
+          "at": 879.4000000357628
         },
         {
           "y": 2329,
-          "at": 1157.199999988079
+          "at": 1147.300000011921
+        },
+        {
+          "y": 2229,
+          "at": 1163.800000011921
         },
         {
           "y": 2128,
-          "at": 1175
+          "at": 1179.9000000357628
         },
         {
           "y": 2007,
-          "at": 1190.199999988079
+          "at": 1196.9000000357628
         },
         {
           "y": 1906,
-          "at": 1207.300000011921
+          "at": 1212.7000000476837
         },
         {
           "y": 1806,
-          "at": 1222.8999999761581
+          "at": 1229.6000000238419
         },
         {
           "y": 1705,
-          "at": 1239.800000011921
+          "at": 1246.9000000357628
         },
         {
           "y": 1584,
-          "at": 1256.3999999761581
+          "at": 1263
         },
         {
           "y": 1483,
-          "at": 1273.800000011921
+          "at": 1279.9000000357628
         },
         {
           "y": 1382,
-          "at": 1289.5
+          "at": 1296.2000000476837
         },
         {
           "y": 1262,
-          "at": 1306.199999988079
+          "at": 1312.800000011921
         },
         {
           "y": 1161,
-          "at": 1323.5
+          "at": 1329.9000000357628
         },
         {
           "y": 1060,
-          "at": 1339.6000000238419
+          "at": 1346.1000000238419
         },
         {
           "y": 959,
-          "at": 1356.5
+          "at": 1363.5
         },
         {
           "y": 839,
-          "at": 1372.800000011921
+          "at": 1379.4000000357628
         },
         {
           "y": 738,
-          "at": 1389.800000011921
+          "at": 1396.9000000357628
         },
         {
           "y": 637,
-          "at": 1406.199999988079
+          "at": 1412.800000011921
         },
         {
           "y": 516,
-          "at": 1423.6000000238419
+          "at": 1430.300000011921
         },
         {
           "y": 415,
-          "at": 1439.8999999761581
+          "at": 1446.4000000357628
         },
         {
           "y": 315,
-          "at": 1456.6000000238419
+          "at": 1463.1000000238419
         },
         {
           "y": 214,
-          "at": 1473.5
+          "at": 1480.5
         },
         {
           "y": 93,
-          "at": 1489.5
+          "at": 1496.1000000238419
         },
         {
           "y": 0,
-          "at": 1506.5
+          "at": 1512.7000000476837
         }
       ]
     },
@@ -5578,8 +5586,8 @@
         "contentOpacity": 0
       },
       "video": {
-        "srcAttribute": "blob:http://127.0.0.1:4334/253437e4-f6e6-4eca-a33e-014b0a9f6647",
-        "currentSrc": "blob:http://127.0.0.1:4334/253437e4-f6e6-4eca-a33e-014b0a9f6647",
+        "srcAttribute": "blob:http://127.0.0.1:4334/b797a674-40b8-4bde-ab32-39b255df998b",
+        "currentSrc": "blob:http://127.0.0.1:4334/b797a674-40b8-4bde-ab32-39b255df998b",
         "readyState": 4,
         "networkState": 1,
         "duration": 9,
@@ -5688,8 +5696,8 @@
         "contentOpacity": 1
       },
       "video": {
-        "srcAttribute": "blob:http://127.0.0.1:4334/253437e4-f6e6-4eca-a33e-014b0a9f6647",
-        "currentSrc": "blob:http://127.0.0.1:4334/253437e4-f6e6-4eca-a33e-014b0a9f6647",
+        "srcAttribute": "blob:http://127.0.0.1:4334/b797a674-40b8-4bde-ab32-39b255df998b",
+        "currentSrc": "blob:http://127.0.0.1:4334/b797a674-40b8-4bde-ab32-39b255df998b",
         "readyState": 4,
         "networkState": 1,
         "duration": 9,
@@ -5825,8 +5833,8 @@
           "contentOpacity": 0
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/6b206fc9-c756-4c0a-8830-febc1d3ba43a",
-          "currentSrc": "blob:http://127.0.0.1:4334/6b206fc9-c756-4c0a-8830-febc1d3ba43a",
+          "srcAttribute": "blob:http://127.0.0.1:4334/6deca43a-ec45-46e0-acc5-b9129847ca88",
+          "currentSrc": "blob:http://127.0.0.1:4334/6deca43a-ec45-46e0-acc5-b9129847ca88",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -5935,8 +5943,8 @@
           "contentOpacity": 0
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/6b206fc9-c756-4c0a-8830-febc1d3ba43a",
-          "currentSrc": "blob:http://127.0.0.1:4334/6b206fc9-c756-4c0a-8830-febc1d3ba43a",
+          "srcAttribute": "blob:http://127.0.0.1:4334/6deca43a-ec45-46e0-acc5-b9129847ca88",
+          "currentSrc": "blob:http://127.0.0.1:4334/6deca43a-ec45-46e0-acc5-b9129847ca88",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -6045,8 +6053,8 @@
           "contentOpacity": 1
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/6b206fc9-c756-4c0a-8830-febc1d3ba43a",
-          "currentSrc": "blob:http://127.0.0.1:4334/6b206fc9-c756-4c0a-8830-febc1d3ba43a",
+          "srcAttribute": "blob:http://127.0.0.1:4334/6deca43a-ec45-46e0-acc5-b9129847ca88",
+          "currentSrc": "blob:http://127.0.0.1:4334/6deca43a-ec45-46e0-acc5-b9129847ca88",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -6181,8 +6189,8 @@
           "contentOpacity": 0
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/be369543-eed9-4325-815f-34f6d4a4b065",
-          "currentSrc": "blob:http://127.0.0.1:4334/be369543-eed9-4325-815f-34f6d4a4b065",
+          "srcAttribute": "blob:http://127.0.0.1:4334/55f2c1b4-b093-4b82-b01e-3d7b2716b8f8",
+          "currentSrc": "blob:http://127.0.0.1:4334/55f2c1b4-b093-4b82-b01e-3d7b2716b8f8",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -6291,8 +6299,8 @@
           "contentOpacity": 0
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/be369543-eed9-4325-815f-34f6d4a4b065",
-          "currentSrc": "blob:http://127.0.0.1:4334/be369543-eed9-4325-815f-34f6d4a4b065",
+          "srcAttribute": "blob:http://127.0.0.1:4334/55f2c1b4-b093-4b82-b01e-3d7b2716b8f8",
+          "currentSrc": "blob:http://127.0.0.1:4334/55f2c1b4-b093-4b82-b01e-3d7b2716b8f8",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -6401,8 +6409,8 @@
           "contentOpacity": 1
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/be369543-eed9-4325-815f-34f6d4a4b065",
-          "currentSrc": "blob:http://127.0.0.1:4334/be369543-eed9-4325-815f-34f6d4a4b065",
+          "srcAttribute": "blob:http://127.0.0.1:4334/55f2c1b4-b093-4b82-b01e-3d7b2716b8f8",
+          "currentSrc": "blob:http://127.0.0.1:4334/55f2c1b4-b093-4b82-b01e-3d7b2716b8f8",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -6537,8 +6545,8 @@
           "contentOpacity": 0
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/c160b9e0-9395-4bb2-aee3-84a32ef7e536",
-          "currentSrc": "blob:http://127.0.0.1:4334/c160b9e0-9395-4bb2-aee3-84a32ef7e536",
+          "srcAttribute": "blob:http://127.0.0.1:4334/6eb39c06-1ee3-476c-babd-066fce2947c9",
+          "currentSrc": "blob:http://127.0.0.1:4334/6eb39c06-1ee3-476c-babd-066fce2947c9",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -6647,8 +6655,8 @@
           "contentOpacity": 0
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/c160b9e0-9395-4bb2-aee3-84a32ef7e536",
-          "currentSrc": "blob:http://127.0.0.1:4334/c160b9e0-9395-4bb2-aee3-84a32ef7e536",
+          "srcAttribute": "blob:http://127.0.0.1:4334/6eb39c06-1ee3-476c-babd-066fce2947c9",
+          "currentSrc": "blob:http://127.0.0.1:4334/6eb39c06-1ee3-476c-babd-066fce2947c9",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -6757,8 +6765,8 @@
           "contentOpacity": 1
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/c160b9e0-9395-4bb2-aee3-84a32ef7e536",
-          "currentSrc": "blob:http://127.0.0.1:4334/c160b9e0-9395-4bb2-aee3-84a32ef7e536",
+          "srcAttribute": "blob:http://127.0.0.1:4334/6eb39c06-1ee3-476c-babd-066fce2947c9",
+          "currentSrc": "blob:http://127.0.0.1:4334/6eb39c06-1ee3-476c-babd-066fce2947c9",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -6893,8 +6901,8 @@
           "contentOpacity": 0
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/b8e38517-5027-4906-b048-4494d3fe1b44",
-          "currentSrc": "blob:http://127.0.0.1:4334/b8e38517-5027-4906-b048-4494d3fe1b44",
+          "srcAttribute": "blob:http://127.0.0.1:4334/4154bd39-883f-42a2-a9ea-5f79aab0f611",
+          "currentSrc": "blob:http://127.0.0.1:4334/4154bd39-883f-42a2-a9ea-5f79aab0f611",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -7003,8 +7011,8 @@
           "contentOpacity": 0
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/b8e38517-5027-4906-b048-4494d3fe1b44",
-          "currentSrc": "blob:http://127.0.0.1:4334/b8e38517-5027-4906-b048-4494d3fe1b44",
+          "srcAttribute": "blob:http://127.0.0.1:4334/4154bd39-883f-42a2-a9ea-5f79aab0f611",
+          "currentSrc": "blob:http://127.0.0.1:4334/4154bd39-883f-42a2-a9ea-5f79aab0f611",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -7113,8 +7121,8 @@
           "contentOpacity": 1
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/b8e38517-5027-4906-b048-4494d3fe1b44",
-          "currentSrc": "blob:http://127.0.0.1:4334/b8e38517-5027-4906-b048-4494d3fe1b44",
+          "srcAttribute": "blob:http://127.0.0.1:4334/4154bd39-883f-42a2-a9ea-5f79aab0f611",
+          "currentSrc": "blob:http://127.0.0.1:4334/4154bd39-883f-42a2-a9ea-5f79aab0f611",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -7417,7 +7425,7 @@
           "width": 1440,
           "height": 900
         },
-        "maxScroll": 12066,
+        "maxScroll": 12148,
         "horizontalOverflow": -15,
         "nestedVerticalScrollers": [],
         "h1Count": 1,
@@ -7516,7 +7524,7 @@
             "width": 1440,
             "height": 900
           },
-          "maxScroll": 12066,
+          "maxScroll": 12148,
           "horizontalOverflow": -15,
           "nestedVerticalScrollers": [],
           "h1Count": 1,
@@ -8098,8 +8106,8 @@
           "contentOpacity": 1
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/d5669aa6-5f90-4577-b858-547888347e87",
-          "currentSrc": "blob:http://127.0.0.1:4334/d5669aa6-5f90-4577-b858-547888347e87",
+          "srcAttribute": "blob:http://127.0.0.1:4334/7e2e3717-780c-4fad-9a1a-d4708154f290",
+          "currentSrc": "blob:http://127.0.0.1:4334/7e2e3717-780c-4fad-9a1a-d4708154f290",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -8246,8 +8254,8 @@
           "contentOpacity": 1
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/1d581ac4-bca2-4b7d-9ed2-04ec834a5d79",
-          "currentSrc": "blob:http://127.0.0.1:4334/1d581ac4-bca2-4b7d-9ed2-04ec834a5d79",
+          "srcAttribute": "blob:http://127.0.0.1:4334/e515478b-63d7-472d-b151-7009c982b61b",
+          "currentSrc": "blob:http://127.0.0.1:4334/e515478b-63d7-472d-b151-7009c982b61b",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -8393,8 +8401,8 @@
           "contentOpacity": 1
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/a59c8bec-8ad6-413f-9cd2-3e8e9ef1dd75",
-          "currentSrc": "blob:http://127.0.0.1:4334/a59c8bec-8ad6-413f-9cd2-3e8e9ef1dd75",
+          "srcAttribute": "blob:http://127.0.0.1:4334/74021880-9337-4a94-906c-cbf7b8eff48a",
+          "currentSrc": "blob:http://127.0.0.1:4334/74021880-9337-4a94-906c-cbf7b8eff48a",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -8503,8 +8511,8 @@
           "contentOpacity": 1
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/405fc7a4-833d-4e6d-9afd-9bc30b66cc10",
-          "currentSrc": "blob:http://127.0.0.1:4334/405fc7a4-833d-4e6d-9afd-9bc30b66cc10",
+          "srcAttribute": "blob:http://127.0.0.1:4334/2e463dac-f56b-4bb3-9592-fe24e17ee14b",
+          "currentSrc": "blob:http://127.0.0.1:4334/2e463dac-f56b-4bb3-9592-fe24e17ee14b",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -8614,8 +8622,8 @@
           "contentOpacity": 1
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/405fc7a4-833d-4e6d-9afd-9bc30b66cc10",
-          "currentSrc": "blob:http://127.0.0.1:4334/405fc7a4-833d-4e6d-9afd-9bc30b66cc10",
+          "srcAttribute": "blob:http://127.0.0.1:4334/2e463dac-f56b-4bb3-9592-fe24e17ee14b",
+          "currentSrc": "blob:http://127.0.0.1:4334/2e463dac-f56b-4bb3-9592-fe24e17ee14b",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -8724,8 +8732,8 @@
           "contentOpacity": 1
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/37b0f418-f48b-4024-b3ac-3acffa23e385",
-          "currentSrc": "blob:http://127.0.0.1:4334/37b0f418-f48b-4024-b3ac-3acffa23e385",
+          "srcAttribute": "blob:http://127.0.0.1:4334/7a81234d-d75f-49bc-a410-ac9a3a0e70bf",
+          "currentSrc": "blob:http://127.0.0.1:4334/7a81234d-d75f-49bc-a410-ac9a3a0e70bf",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -8761,7 +8769,7 @@
           "cinematicProgress": 1,
           "targetFrame": 270,
           "targetTime": 8.9667,
-          "actualTime": 8.9667,
+          "actualTime": 0,
           "takeoverProgress": 1,
           "mediaReady": false
         }
@@ -8770,7 +8778,7 @@
         "shows": [
           {
             "persisted": false,
-            "at": 106.80000001192093
+            "at": 119
           }
         ],
         "hides": []
@@ -8882,8 +8890,8 @@
           "contentOpacity": 1
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/de43908e-4776-4de6-8f5d-2f7b915dd4c0",
-          "currentSrc": "blob:http://127.0.0.1:4334/de43908e-4776-4de6-8f5d-2f7b915dd4c0",
+          "srcAttribute": "blob:http://127.0.0.1:4334/21d8b6d5-f426-4555-8317-a1b427aebcdf",
+          "currentSrc": "blob:http://127.0.0.1:4334/21d8b6d5-f426-4555-8317-a1b427aebcdf",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -9012,8 +9020,8 @@
           "contentOpacity": 1
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/51bcfe5b-ecb1-4405-a95b-b148c84c97cd",
-          "currentSrc": "blob:http://127.0.0.1:4334/51bcfe5b-ecb1-4405-a95b-b148c84c97cd",
+          "srcAttribute": "blob:http://127.0.0.1:4334/b6e3ea58-8a39-4480-891f-a3450791ab2c",
+          "currentSrc": "blob:http://127.0.0.1:4334/b6e3ea58-8a39-4480-891f-a3450791ab2c",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -9049,7 +9057,7 @@
           "cinematicProgress": 1,
           "targetFrame": 270,
           "targetTime": 8.9667,
-          "actualTime": 0,
+          "actualTime": 8.9667,
           "takeoverProgress": 1,
           "mediaReady": false
         }
@@ -9070,7 +9078,7 @@
         "shows": [
           {
             "persisted": false,
-            "at": 111.10000002384186
+            "at": 105
           }
         ],
         "hides": []
@@ -9187,8 +9195,8 @@
             "contentOpacity": 0
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/a04cd5a2-1ae7-4250-ad49-829a0fda04f8",
-            "currentSrc": "blob:http://127.0.0.1:4334/a04cd5a2-1ae7-4250-ad49-829a0fda04f8",
+            "srcAttribute": "blob:http://127.0.0.1:4334/e6863468-a82b-4b7f-9e7f-32586ac0abcb",
+            "currentSrc": "blob:http://127.0.0.1:4334/e6863468-a82b-4b7f-9e7f-32586ac0abcb",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -9297,8 +9305,8 @@
             "contentOpacity": 0
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/48fed0c4-ae38-4a75-9e49-89d839e379b1",
-            "currentSrc": "blob:http://127.0.0.1:4334/48fed0c4-ae38-4a75-9e49-89d839e379b1",
+            "srcAttribute": "blob:http://127.0.0.1:4334/0ca9988d-41fe-4ece-9a25-62fda2668739",
+            "currentSrc": "blob:http://127.0.0.1:4334/0ca9988d-41fe-4ece-9a25-62fda2668739",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -9414,8 +9422,8 @@
             "contentOpacity": 0
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/48fed0c4-ae38-4a75-9e49-89d839e379b1",
-            "currentSrc": "blob:http://127.0.0.1:4334/48fed0c4-ae38-4a75-9e49-89d839e379b1",
+            "srcAttribute": "blob:http://127.0.0.1:4334/0ca9988d-41fe-4ece-9a25-62fda2668739",
+            "currentSrc": "blob:http://127.0.0.1:4334/0ca9988d-41fe-4ece-9a25-62fda2668739",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -9524,8 +9532,8 @@
             "contentOpacity": 0
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/1837ad51-4bb3-4eca-b8ab-a6baaf59d331",
-            "currentSrc": "blob:http://127.0.0.1:4334/1837ad51-4bb3-4eca-b8ab-a6baaf59d331",
+            "srcAttribute": "blob:http://127.0.0.1:4334/a9d94ca3-b860-423b-898f-95949322cfc6",
+            "currentSrc": "blob:http://127.0.0.1:4334/a9d94ca3-b860-423b-898f-95949322cfc6",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -9641,8 +9649,8 @@
             "contentOpacity": 0
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/1837ad51-4bb3-4eca-b8ab-a6baaf59d331",
-            "currentSrc": "blob:http://127.0.0.1:4334/1837ad51-4bb3-4eca-b8ab-a6baaf59d331",
+            "srcAttribute": "blob:http://127.0.0.1:4334/a9d94ca3-b860-423b-898f-95949322cfc6",
+            "currentSrc": "blob:http://127.0.0.1:4334/a9d94ca3-b860-423b-898f-95949322cfc6",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -9751,8 +9759,8 @@
             "contentOpacity": 0
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/f6abb034-ea8f-4513-9b8d-01af1c17636d",
-            "currentSrc": "blob:http://127.0.0.1:4334/f6abb034-ea8f-4513-9b8d-01af1c17636d",
+            "srcAttribute": "blob:http://127.0.0.1:4334/3265628b-c88c-4145-9a1b-3ce18fb59e37",
+            "currentSrc": "blob:http://127.0.0.1:4334/3265628b-c88c-4145-9a1b-3ce18fb59e37",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -9868,8 +9876,8 @@
             "contentOpacity": 0
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/f6abb034-ea8f-4513-9b8d-01af1c17636d",
-            "currentSrc": "blob:http://127.0.0.1:4334/f6abb034-ea8f-4513-9b8d-01af1c17636d",
+            "srcAttribute": "blob:http://127.0.0.1:4334/3265628b-c88c-4145-9a1b-3ce18fb59e37",
+            "currentSrc": "blob:http://127.0.0.1:4334/3265628b-c88c-4145-9a1b-3ce18fb59e37",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -9978,8 +9986,8 @@
             "contentOpacity": 0
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/62663393-9006-48b9-9ec0-d82f42dc6cb7",
-            "currentSrc": "blob:http://127.0.0.1:4334/62663393-9006-48b9-9ec0-d82f42dc6cb7",
+            "srcAttribute": "blob:http://127.0.0.1:4334/d185256a-3203-4e6a-ac82-07d614846247",
+            "currentSrc": "blob:http://127.0.0.1:4334/d185256a-3203-4e6a-ac82-07d614846247",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -10095,8 +10103,8 @@
             "contentOpacity": 0.3332
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/62663393-9006-48b9-9ec0-d82f42dc6cb7",
-            "currentSrc": "blob:http://127.0.0.1:4334/62663393-9006-48b9-9ec0-d82f42dc6cb7",
+            "srcAttribute": "blob:http://127.0.0.1:4334/d185256a-3203-4e6a-ac82-07d614846247",
+            "currentSrc": "blob:http://127.0.0.1:4334/d185256a-3203-4e6a-ac82-07d614846247",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -10205,8 +10213,8 @@
             "contentOpacity": 0.3332
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/a736f3a3-518c-40fe-8940-de09bddf80b0",
-            "currentSrc": "blob:http://127.0.0.1:4334/a736f3a3-518c-40fe-8940-de09bddf80b0",
+            "srcAttribute": "blob:http://127.0.0.1:4334/aa0000fb-9d67-48d1-89a6-b51ca60274fc",
+            "currentSrc": "blob:http://127.0.0.1:4334/aa0000fb-9d67-48d1-89a6-b51ca60274fc",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -10322,8 +10330,8 @@
             "contentOpacity": 1
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/a736f3a3-518c-40fe-8940-de09bddf80b0",
-            "currentSrc": "blob:http://127.0.0.1:4334/a736f3a3-518c-40fe-8940-de09bddf80b0",
+            "srcAttribute": "blob:http://127.0.0.1:4334/aa0000fb-9d67-48d1-89a6-b51ca60274fc",
+            "currentSrc": "blob:http://127.0.0.1:4334/aa0000fb-9d67-48d1-89a6-b51ca60274fc",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -10432,8 +10440,8 @@
             "contentOpacity": 1
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/010509e4-2aa4-4189-a80c-86687232d39c",
-            "currentSrc": "blob:http://127.0.0.1:4334/010509e4-2aa4-4189-a80c-86687232d39c",
+            "srcAttribute": "blob:http://127.0.0.1:4334/011812d3-ca28-4a75-99b3-1e14ef852025",
+            "currentSrc": "blob:http://127.0.0.1:4334/011812d3-ca28-4a75-99b3-1e14ef852025",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -10549,8 +10557,8 @@
             "contentOpacity": 1
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/010509e4-2aa4-4189-a80c-86687232d39c",
-            "currentSrc": "blob:http://127.0.0.1:4334/010509e4-2aa4-4189-a80c-86687232d39c",
+            "srcAttribute": "blob:http://127.0.0.1:4334/011812d3-ca28-4a75-99b3-1e14ef852025",
+            "currentSrc": "blob:http://127.0.0.1:4334/011812d3-ca28-4a75-99b3-1e14ef852025",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -10659,8 +10667,8 @@
             "contentOpacity": 1
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/1c872cf5-e2f9-488e-a8bb-4136038b3a85",
-            "currentSrc": "blob:http://127.0.0.1:4334/1c872cf5-e2f9-488e-a8bb-4136038b3a85",
+            "srcAttribute": "blob:http://127.0.0.1:4334/a827fe66-acb6-43a4-8bca-e6cbc3125a29",
+            "currentSrc": "blob:http://127.0.0.1:4334/a827fe66-acb6-43a4-8bca-e6cbc3125a29",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -10776,8 +10784,8 @@
             "contentOpacity": 1
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/1c872cf5-e2f9-488e-a8bb-4136038b3a85",
-            "currentSrc": "blob:http://127.0.0.1:4334/1c872cf5-e2f9-488e-a8bb-4136038b3a85",
+            "srcAttribute": "blob:http://127.0.0.1:4334/a827fe66-acb6-43a4-8bca-e6cbc3125a29",
+            "currentSrc": "blob:http://127.0.0.1:4334/a827fe66-acb6-43a4-8bca-e6cbc3125a29",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -10886,8 +10894,8 @@
             "contentOpacity": 1
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/c2d5ab9b-e7d2-497a-9d97-9e5d712418ec",
-            "currentSrc": "blob:http://127.0.0.1:4334/c2d5ab9b-e7d2-497a-9d97-9e5d712418ec",
+            "srcAttribute": "blob:http://127.0.0.1:4334/b8aa4c81-9220-431d-b4ce-581fa1545110",
+            "currentSrc": "blob:http://127.0.0.1:4334/b8aa4c81-9220-431d-b4ce-581fa1545110",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -11090,13 +11098,13 @@
         "contentOpacity": 0
       },
       "video": {
-        "srcAttribute": "blob:http://127.0.0.1:4334/e2bb96ee-6e4b-42f0-8f90-4948a2353ac8",
-        "currentSrc": "blob:http://127.0.0.1:4334/e2bb96ee-6e4b-42f0-8f90-4948a2353ac8",
-        "readyState": 4,
+        "srcAttribute": "blob:http://127.0.0.1:4334/3004e324-0fd8-4539-9072-ce247b74556e",
+        "currentSrc": "blob:http://127.0.0.1:4334/3004e324-0fd8-4539-9072-ce247b74556e",
+        "readyState": 1,
         "networkState": 1,
         "duration": 9,
         "currentTime": 3.566666,
-        "seeking": false,
+        "seeking": true,
         "paused": true,
         "muted": true,
         "defaultMuted": true,
@@ -11200,8 +11208,8 @@
         "contentOpacity": 0
       },
       "video": {
-        "srcAttribute": "blob:http://127.0.0.1:4334/e2bb96ee-6e4b-42f0-8f90-4948a2353ac8",
-        "currentSrc": "blob:http://127.0.0.1:4334/e2bb96ee-6e4b-42f0-8f90-4948a2353ac8",
+        "srcAttribute": "blob:http://127.0.0.1:4334/3004e324-0fd8-4539-9072-ce247b74556e",
+        "currentSrc": "blob:http://127.0.0.1:4334/3004e324-0fd8-4539-9072-ce247b74556e",
         "readyState": 4,
         "networkState": 1,
         "duration": 9,
@@ -11333,8 +11341,8 @@
         "contentOpacity": 0
       },
       "video": {
-        "srcAttribute": "blob:http://127.0.0.1:4334/504fef06-609b-4fba-92d4-7da72b517fcf",
-        "currentSrc": "blob:http://127.0.0.1:4334/504fef06-609b-4fba-92d4-7da72b517fcf",
+        "srcAttribute": "blob:http://127.0.0.1:4334/1da70c75-d160-4c27-bc46-0333a8b75745",
+        "currentSrc": "blob:http://127.0.0.1:4334/1da70c75-d160-4c27-bc46-0333a8b75745",
         "readyState": 4,
         "networkState": 1,
         "duration": 9,
@@ -11448,8 +11456,8 @@
             "contentOpacity": 0
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/504fef06-609b-4fba-92d4-7da72b517fcf",
-            "currentSrc": "blob:http://127.0.0.1:4334/504fef06-609b-4fba-92d4-7da72b517fcf",
+            "srcAttribute": "blob:http://127.0.0.1:4334/1da70c75-d160-4c27-bc46-0333a8b75745",
+            "currentSrc": "blob:http://127.0.0.1:4334/1da70c75-d160-4c27-bc46-0333a8b75745",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -11567,8 +11575,8 @@
             "contentOpacity": 0
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/504fef06-609b-4fba-92d4-7da72b517fcf",
-            "currentSrc": "blob:http://127.0.0.1:4334/504fef06-609b-4fba-92d4-7da72b517fcf",
+            "srcAttribute": "blob:http://127.0.0.1:4334/1da70c75-d160-4c27-bc46-0333a8b75745",
+            "currentSrc": "blob:http://127.0.0.1:4334/1da70c75-d160-4c27-bc46-0333a8b75745",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -11686,8 +11694,8 @@
             "contentOpacity": 0
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/504fef06-609b-4fba-92d4-7da72b517fcf",
-            "currentSrc": "blob:http://127.0.0.1:4334/504fef06-609b-4fba-92d4-7da72b517fcf",
+            "srcAttribute": "blob:http://127.0.0.1:4334/1da70c75-d160-4c27-bc46-0333a8b75745",
+            "currentSrc": "blob:http://127.0.0.1:4334/1da70c75-d160-4c27-bc46-0333a8b75745",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -11810,8 +11818,8 @@
             "contentOpacity": 0.3842
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/504fef06-609b-4fba-92d4-7da72b517fcf",
-            "currentSrc": "blob:http://127.0.0.1:4334/504fef06-609b-4fba-92d4-7da72b517fcf",
+            "srcAttribute": "blob:http://127.0.0.1:4334/1da70c75-d160-4c27-bc46-0333a8b75745",
+            "currentSrc": "blob:http://127.0.0.1:4334/1da70c75-d160-4c27-bc46-0333a8b75745",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -11929,8 +11937,8 @@
             "contentOpacity": 0.3842
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/504fef06-609b-4fba-92d4-7da72b517fcf",
-            "currentSrc": "blob:http://127.0.0.1:4334/504fef06-609b-4fba-92d4-7da72b517fcf",
+            "srcAttribute": "blob:http://127.0.0.1:4334/1da70c75-d160-4c27-bc46-0333a8b75745",
+            "currentSrc": "blob:http://127.0.0.1:4334/1da70c75-d160-4c27-bc46-0333a8b75745",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -12048,8 +12056,8 @@
             "contentOpacity": 0.3842
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/504fef06-609b-4fba-92d4-7da72b517fcf",
-            "currentSrc": "blob:http://127.0.0.1:4334/504fef06-609b-4fba-92d4-7da72b517fcf",
+            "srcAttribute": "blob:http://127.0.0.1:4334/1da70c75-d160-4c27-bc46-0333a8b75745",
+            "currentSrc": "blob:http://127.0.0.1:4334/1da70c75-d160-4c27-bc46-0333a8b75745",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -12172,8 +12180,8 @@
             "contentOpacity": 1
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/504fef06-609b-4fba-92d4-7da72b517fcf",
-            "currentSrc": "blob:http://127.0.0.1:4334/504fef06-609b-4fba-92d4-7da72b517fcf",
+            "srcAttribute": "blob:http://127.0.0.1:4334/1da70c75-d160-4c27-bc46-0333a8b75745",
+            "currentSrc": "blob:http://127.0.0.1:4334/1da70c75-d160-4c27-bc46-0333a8b75745",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -12291,8 +12299,8 @@
             "contentOpacity": 1
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/504fef06-609b-4fba-92d4-7da72b517fcf",
-            "currentSrc": "blob:http://127.0.0.1:4334/504fef06-609b-4fba-92d4-7da72b517fcf",
+            "srcAttribute": "blob:http://127.0.0.1:4334/1da70c75-d160-4c27-bc46-0333a8b75745",
+            "currentSrc": "blob:http://127.0.0.1:4334/1da70c75-d160-4c27-bc46-0333a8b75745",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -12410,8 +12418,8 @@
             "contentOpacity": 1
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/504fef06-609b-4fba-92d4-7da72b517fcf",
-            "currentSrc": "blob:http://127.0.0.1:4334/504fef06-609b-4fba-92d4-7da72b517fcf",
+            "srcAttribute": "blob:http://127.0.0.1:4334/1da70c75-d160-4c27-bc46-0333a8b75745",
+            "currentSrc": "blob:http://127.0.0.1:4334/1da70c75-d160-4c27-bc46-0333a8b75745",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -12984,8 +12992,8 @@
         "contentOpacity": 0
       },
       "video": {
-        "srcAttribute": "blob:http://127.0.0.1:4334/c5f56c10-5d52-4f6f-86d1-b2250a74dbf8",
-        "currentSrc": "blob:http://127.0.0.1:4334/c5f56c10-5d52-4f6f-86d1-b2250a74dbf8",
+        "srcAttribute": "blob:http://127.0.0.1:4334/ace8a9d6-d480-406b-a66c-73d6a058c281",
+        "currentSrc": "blob:http://127.0.0.1:4334/ace8a9d6-d480-406b-a66c-73d6a058c281",
         "readyState": 4,
         "networkState": 1,
         "duration": 9,
@@ -13029,17 +13037,17 @@
     "evidence": {
       "timeline": {
         "domContentLoaded": {
-          "at": 200.0999999642372,
+          "at": 234,
           "h1Count": 1,
           "h1Text": "Where do you enter?",
           "mediaState": null
         },
-        "mediaReadyAt": 264.69999998807907,
+        "mediaReadyAt": 319.5,
         "largestContentfulPaint": [
           {
-            "startTime": 76,
-            "renderTime": 76,
-            "loadTime": 43.09999996423721,
+            "startTime": 236,
+            "renderTime": 236,
+            "loadTime": 110.69999998807907,
             "size": 19200,
             "url": "http://127.0.0.1:4334/brand/quantum-full-logo-white.svg",
             "element": "img",
@@ -13050,24 +13058,24 @@
       },
       "navigation": {
         "startTime": 0,
-        "responseStart": 3.699999988079071,
-        "responseEnd": 3.899999976158142,
-        "domInteractive": 150.39999997615814,
-        "domContentLoadedEventStart": 199.89999997615814,
-        "domContentLoadedEventEnd": 200.19999998807907,
-        "loadEventEnd": 200.39999997615814,
+        "responseStart": 7.300000011920929,
+        "responseEnd": 8,
+        "domInteractive": 66.19999998807907,
+        "domContentLoadedEventStart": 233.80000001192093,
+        "domContentLoadedEventEnd": 234.5,
+        "loadEventEnd": 236.80000001192093,
         "transferSize": 19033,
         "encodedBodySize": 18733
       },
       "paints": [
         {
           "name": "first-paint",
-          "startTime": 76,
+          "startTime": 236,
           "duration": 0
         },
         {
           "name": "first-contentful-paint",
-          "startTime": 76,
+          "startTime": 236,
           "duration": 0
         }
       ],
@@ -13075,9 +13083,9 @@
         {
           "name": "http://127.0.0.1:4334/_astro/BaseLayout.vQT1S7s7.css",
           "initiatorType": "link",
-          "startTime": 14.699999988079071,
-          "responseEnd": 22.899999976158142,
-          "duration": 8.199999988079071,
+          "startTime": 17.80000001192093,
+          "responseEnd": 32.10000002384186,
+          "duration": 14.300000011920929,
           "transferSize": 11899,
           "encodedBodySize": 11599,
           "decodedBodySize": 11599
@@ -13085,9 +13093,9 @@
         {
           "name": "http://127.0.0.1:4334/_astro/index.D3iJEvjf.css",
           "initiatorType": "link",
-          "startTime": 15.099999964237213,
-          "responseEnd": 26.599999964237213,
-          "duration": 11.5,
+          "startTime": 18.30000001192093,
+          "responseEnd": 36.10000002384186,
+          "duration": 17.80000001192093,
           "transferSize": 36941,
           "encodedBodySize": 36641,
           "decodedBodySize": 36641
@@ -13095,9 +13103,9 @@
         {
           "name": "http://127.0.0.1:4334/brand/quantum-full-logo-white.svg",
           "initiatorType": "img",
-          "startTime": 15.199999988079071,
-          "responseEnd": 25.899999976158142,
-          "duration": 10.699999988079071,
+          "startTime": 18.80000001192093,
+          "responseEnd": 40,
+          "duration": 21.19999998807907,
           "transferSize": 6134,
           "encodedBodySize": 5834,
           "decodedBodySize": 5834
@@ -13105,9 +13113,9 @@
         {
           "name": "http://127.0.0.1:4334/media/cinematic/phase-3-dormant-desktop-03f5490ab11a.png",
           "initiatorType": "img",
-          "startTime": 15.299999952316284,
-          "responseEnd": 37.19999998807907,
-          "duration": 21.900000035762787,
+          "startTime": 19,
+          "responseEnd": 47.5,
+          "duration": 28.5,
           "transferSize": 726326,
           "encodedBodySize": 726026,
           "decodedBodySize": 726026
@@ -13115,9 +13123,9 @@
         {
           "name": "http://127.0.0.1:4334/_astro/index.astro_astro_type_script_index_0_lang.QH2p9taa.js",
           "initiatorType": "script",
-          "startTime": 15.5,
-          "responseEnd": 30.19999998807907,
-          "duration": 14.699999988079071,
+          "startTime": 19.30000001192093,
+          "responseEnd": 42.69999998807907,
+          "duration": 23.399999976158142,
           "transferSize": 738,
           "encodedBodySize": 438,
           "decodedBodySize": 438
@@ -13125,59 +13133,59 @@
         {
           "name": "http://127.0.0.1:4334/_astro/ConversionField.astro_astro_type_script_index_0_lang.Fx-vYds3.js",
           "initiatorType": "script",
-          "startTime": 15.599999964237213,
-          "responseEnd": 31.69999998807907,
-          "duration": 16.100000023841858,
+          "startTime": 19.80000001192093,
+          "responseEnd": 43.80000001192093,
+          "duration": 24,
           "transferSize": 635,
           "encodedBodySize": 335,
           "decodedBodySize": 335
         },
         {
-          "name": "http://127.0.0.1:4334/fonts/inter-latin-400-600.woff2",
-          "initiatorType": "css",
-          "startTime": 42.89999997615814,
-          "responseEnd": 48.5,
-          "duration": 5.600000023841858,
-          "transferSize": 48556,
-          "encodedBodySize": 48256,
-          "decodedBodySize": 48256
-        },
-        {
-          "name": "http://127.0.0.1:4334/fonts/newsreader-latin-400.woff2",
-          "initiatorType": "css",
-          "startTime": 57.69999998807907,
-          "responseEnd": 62.5,
-          "duration": 4.800000011920929,
-          "transferSize": 22780,
-          "encodedBodySize": 22480,
-          "decodedBodySize": 22480
-        },
-        {
-          "name": "http://127.0.0.1:4334/fonts/syne-latin-800.woff2",
-          "initiatorType": "css",
-          "startTime": 76.29999995231628,
-          "responseEnd": 80.5,
-          "duration": 4.200000047683716,
-          "transferSize": 13984,
-          "encodedBodySize": 13684,
-          "decodedBodySize": 13684
-        },
-        {
           "name": "http://127.0.0.1:4334/_astro/preload-helper.CxFQXtKk.js",
           "initiatorType": "script",
-          "startTime": 150.19999998807907,
-          "responseEnd": 152.79999995231628,
-          "duration": 2.599999964237213,
+          "startTime": 66.10000002384186,
+          "responseEnd": 69.10000002384186,
+          "duration": 3,
           "transferSize": 1642,
           "encodedBodySize": 1342,
           "decodedBodySize": 1342
         },
         {
+          "name": "http://127.0.0.1:4334/fonts/syne-latin-800.woff2",
+          "initiatorType": "css",
+          "startTime": 82.39999997615814,
+          "responseEnd": 86.80000001192093,
+          "duration": 4.400000035762787,
+          "transferSize": 13984,
+          "encodedBodySize": 13684,
+          "decodedBodySize": 13684
+        },
+        {
+          "name": "http://127.0.0.1:4334/fonts/newsreader-latin-400.woff2",
+          "initiatorType": "css",
+          "startTime": 89.60000002384186,
+          "responseEnd": 94.39999997615814,
+          "duration": 4.799999952316284,
+          "transferSize": 22780,
+          "encodedBodySize": 22480,
+          "decodedBodySize": 22480
+        },
+        {
+          "name": "http://127.0.0.1:4334/fonts/inter-latin-400-600.woff2",
+          "initiatorType": "css",
+          "startTime": 105.5,
+          "responseEnd": 110.69999998807907,
+          "duration": 5.199999988079071,
+          "transferSize": 48556,
+          "encodedBodySize": 48256,
+          "decodedBodySize": 48256
+        },
+        {
           "name": "http://127.0.0.1:4334/_astro/home-cinematic-integration.s5Ot1zVO.js",
           "initiatorType": "script",
-          "startTime": 199.5,
-          "responseEnd": 202.79999995231628,
-          "duration": 3.299999952316284,
+          "startTime": 233.39999997615814,
+          "responseEnd": 238,
+          "duration": 4.600000023841858,
           "transferSize": 7819,
           "encodedBodySize": 7519,
           "decodedBodySize": 7519
@@ -13185,32 +13193,32 @@
         {
           "name": "http://127.0.0.1:4334/_astro/home-operating-field.DcvjkAwK.js",
           "initiatorType": "script",
-          "startTime": 199.89999997615814,
-          "responseEnd": 202.69999998807907,
-          "duration": 2.800000011920929,
+          "startTime": 233.80000001192093,
+          "responseEnd": 237.89999997615814,
+          "duration": 4.099999964237213,
           "transferSize": 3347,
           "encodedBodySize": 3047,
           "decodedBodySize": 3047
         },
         {
-          "name": "http://127.0.0.1:4334/brand/quantum-icon-color.svg",
-          "initiatorType": "other",
-          "startTime": 202.5,
-          "responseEnd": 205.5,
-          "duration": 3,
-          "transferSize": 1088,
-          "encodedBodySize": 788,
-          "decodedBodySize": 788
-        },
-        {
           "name": "http://127.0.0.1:4334/media/cinematic/phase-3-desktop-vp9-44a1d9facd43.webm",
           "initiatorType": "fetch",
-          "startTime": 214.29999995231628,
-          "responseEnd": 221.29999995231628,
-          "duration": 7,
+          "startTime": 265.5,
+          "responseEnd": 277.69999998807907,
+          "duration": 12.199999988079071,
           "transferSize": 1658594,
           "encodedBodySize": 1658294,
           "decodedBodySize": 1658294
+        },
+        {
+          "name": "http://127.0.0.1:4334/brand/quantum-icon-color.svg",
+          "initiatorType": "other",
+          "startTime": 270.69999998807907,
+          "responseEnd": 277.60000002384186,
+          "duration": 6.900000035762787,
+          "transferSize": 1088,
+          "encodedBodySize": 788,
+          "decodedBodySize": 788
         }
       ],
       "poster": {
@@ -13223,14 +13231,14 @@
     },
     "firstContentfulPaint": {
       "name": "first-contentful-paint",
-      "startTime": 76,
+      "startTime": 236,
       "duration": 0
     },
     "lcpCandidates": [
       {
-        "startTime": 76,
-        "renderTime": 76,
-        "loadTime": 43.09999996423721,
+        "startTime": 236,
+        "renderTime": 236,
+        "loadTime": 110.69999998807907,
         "size": 19200,
         "url": "http://127.0.0.1:4334/brand/quantum-full-logo-white.svg",
         "element": "img",
@@ -13240,9 +13248,9 @@
     "posterResource": {
       "name": "http://127.0.0.1:4334/media/cinematic/phase-3-dormant-desktop-03f5490ab11a.png",
       "initiatorType": "img",
-      "startTime": 15.299999952316284,
-      "responseEnd": 37.19999998807907,
-      "duration": 21.900000035762787,
+      "startTime": 19,
+      "responseEnd": 47.5,
+      "duration": 28.5,
       "transferSize": 726326,
       "encodedBodySize": 726026,
       "decodedBodySize": 726026
@@ -13251,9 +13259,9 @@
       {
         "name": "http://127.0.0.1:4334/media/cinematic/phase-3-desktop-vp9-44a1d9facd43.webm",
         "initiatorType": "fetch",
-        "startTime": 214.29999995231628,
-        "responseEnd": 221.29999995231628,
-        "duration": 7,
+        "startTime": 265.5,
+        "responseEnd": 277.69999998807907,
+        "duration": 12.199999988079071,
         "transferSize": 1658594,
         "encodedBodySize": 1658294,
         "decodedBodySize": 1658294
@@ -13359,8 +13367,8 @@
           "contentOpacity": 0
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/896fc22c-220c-4715-9ea2-e3e0f0f9a804",
-          "currentSrc": "blob:http://127.0.0.1:4334/896fc22c-220c-4715-9ea2-e3e0f0f9a804",
+          "srcAttribute": "blob:http://127.0.0.1:4334/c58955b6-dedc-41b8-891e-422eefb1ed4e",
+          "currentSrc": "blob:http://127.0.0.1:4334/c58955b6-dedc-41b8-891e-422eefb1ed4e",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -13403,7 +13411,7 @@
       },
       "snapshot": {
         "dcl": {
-          "at": 164.60000002384186,
+          "at": 205.30000001192093,
           "h1Count": 1,
           "h1Text": "Where do you enter?",
           "shellCount": 1,
@@ -13414,7 +13422,7 @@
         },
         "timeline": {
           "domContentLoaded": {
-            "at": 164.60000002384186,
+            "at": 205.30000001192093,
             "h1Count": 1,
             "h1Text": "Where do you enter?",
             "shellCount": 1,
@@ -13423,15 +13431,15 @@
             "loaderCount": 0,
             "mediaState": null
           },
-          "mediaReadyAt": 286.7000000476837
+          "mediaReadyAt": 267
         },
         "navigation": {
-          "responseStart": 8.200000047683716,
-          "responseEnd": 8.600000023841858,
-          "domInteractive": 157.80000001192093,
-          "domContentLoadedEventStart": 164.5,
-          "domContentLoadedEventEnd": 165.10000002384186,
-          "loadEventEnd": 188.70000004768372,
+          "responseStart": 4.199999988079071,
+          "responseEnd": 4.5,
+          "domInteractive": 143.5,
+          "domContentLoadedEventStart": 205.10000002384186,
+          "domContentLoadedEventEnd": 206,
+          "loadEventEnd": 206.19999998807907,
           "transferSize": 19033,
           "encodedBodySize": 18733
         },
@@ -13456,9 +13464,9 @@
           {
             "name": "http://127.0.0.1:4334/_astro/BaseLayout.vQT1S7s7.css",
             "initiatorType": "link",
-            "startTime": 17.700000047683716,
-            "responseEnd": 27.200000047683716,
-            "duration": 9.5,
+            "startTime": 10,
+            "responseEnd": 20.600000023841858,
+            "duration": 10.600000023841858,
             "transferSize": 11899,
             "encodedBodySize": 11599,
             "decodedBodySize": 11599
@@ -13466,9 +13474,9 @@
           {
             "name": "http://127.0.0.1:4334/_astro/index.D3iJEvjf.css",
             "initiatorType": "link",
-            "startTime": 17.900000035762787,
-            "responseEnd": 33,
-            "duration": 15.099999964237213,
+            "startTime": 10.199999988079071,
+            "responseEnd": 22.19999998807907,
+            "duration": 12,
             "transferSize": 36941,
             "encodedBodySize": 36641,
             "decodedBodySize": 36641
@@ -13476,39 +13484,39 @@
           {
             "name": "http://127.0.0.1:4334/brand/quantum-full-logo-white.svg",
             "initiatorType": "img",
-            "startTime": 18.100000023841858,
-            "responseEnd": 34.40000003576279,
-            "duration": 16.30000001192093,
+            "startTime": 10.199999988079071,
+            "responseEnd": 24.5,
+            "duration": 14.300000011920929,
             "transferSize": 6134,
             "encodedBodySize": 5834,
             "decodedBodySize": 5834
           },
           {
-            "name": "http://127.0.0.1:4334/media/cinematic/phase-3-dormant-desktop-03f5490ab11a.png",
-            "initiatorType": "img",
-            "startTime": 18.200000047683716,
-            "responseEnd": 35.90000003576279,
-            "duration": 17.69999998807907,
-            "transferSize": 726326,
-            "encodedBodySize": 726026,
-            "decodedBodySize": 726026
-          },
-          {
             "name": "http://127.0.0.1:4334/_astro/index.astro_astro_type_script_index_0_lang.QH2p9taa.js",
             "initiatorType": "script",
-            "startTime": 18.30000001192093,
-            "responseEnd": 33.60000002384186,
-            "duration": 15.300000011920929,
+            "startTime": 10.399999976158142,
+            "responseEnd": 21.899999976158142,
+            "duration": 11.5,
             "transferSize": 738,
             "encodedBodySize": 438,
             "decodedBodySize": 438
           },
           {
+            "name": "http://127.0.0.1:4334/media/cinematic/phase-3-dormant-desktop-03f5490ab11a.png",
+            "initiatorType": "img",
+            "startTime": 10.399999976158142,
+            "responseEnd": 27.19999998807907,
+            "duration": 16.80000001192093,
+            "transferSize": 726326,
+            "encodedBodySize": 726026,
+            "decodedBodySize": 726026
+          },
+          {
             "name": "http://127.0.0.1:4334/_astro/ConversionField.astro_astro_type_script_index_0_lang.Fx-vYds3.js",
             "initiatorType": "script",
-            "startTime": 18.30000001192093,
-            "responseEnd": 34,
-            "duration": 15.699999988079071,
+            "startTime": 10.5,
+            "responseEnd": 24.30000001192093,
+            "duration": 13.800000011920929,
             "transferSize": 635,
             "encodedBodySize": 335,
             "decodedBodySize": 335
@@ -13516,9 +13524,9 @@
           {
             "name": "http://127.0.0.1:4334/fonts/inter-latin-400-600.woff2",
             "initiatorType": "css",
-            "startTime": 44.40000003576279,
-            "responseEnd": 64.80000001192093,
-            "duration": 20.399999976158142,
+            "startTime": 32,
+            "responseEnd": 53,
+            "duration": 21,
             "transferSize": 48556,
             "encodedBodySize": 48256,
             "decodedBodySize": 48256
@@ -13526,9 +13534,9 @@
           {
             "name": "http://127.0.0.1:4334/fonts/newsreader-latin-400.woff2",
             "initiatorType": "css",
-            "startTime": 55.60000002384186,
-            "responseEnd": 65.20000004768372,
-            "duration": 9.600000023841858,
+            "startTime": 42.69999998807907,
+            "responseEnd": 52.60000002384186,
+            "duration": 9.900000035762787,
             "transferSize": 22780,
             "encodedBodySize": 22480,
             "decodedBodySize": 22480
@@ -13536,9 +13544,9 @@
           {
             "name": "http://127.0.0.1:4334/fonts/syne-latin-800.woff2",
             "initiatorType": "css",
-            "startTime": 70,
-            "responseEnd": 162.5,
-            "duration": 92.5,
+            "startTime": 57.60000002384186,
+            "responseEnd": 149.89999997615814,
+            "duration": 92.29999995231628,
             "transferSize": 13984,
             "encodedBodySize": 13684,
             "decodedBodySize": 13684
@@ -13546,9 +13554,9 @@
           {
             "name": "http://127.0.0.1:4334/_astro/preload-helper.CxFQXtKk.js",
             "initiatorType": "script",
-            "startTime": 157.70000004768372,
-            "responseEnd": 162,
-            "duration": 4.299999952316284,
+            "startTime": 143.30000001192093,
+            "responseEnd": 146.80000001192093,
+            "duration": 3.5,
             "transferSize": 1642,
             "encodedBodySize": 1342,
             "decodedBodySize": 1342
@@ -13556,9 +13564,9 @@
           {
             "name": "http://127.0.0.1:4334/_astro/home-cinematic-integration.s5Ot1zVO.js",
             "initiatorType": "script",
-            "startTime": 164.10000002384186,
-            "responseEnd": 167.30000001192093,
-            "duration": 3.199999988079071,
+            "startTime": 204.60000002384186,
+            "responseEnd": 208.5,
+            "duration": 3.899999976158142,
             "transferSize": 7819,
             "encodedBodySize": 7519,
             "decodedBodySize": 7519
@@ -13566,39 +13574,39 @@
           {
             "name": "http://127.0.0.1:4334/_astro/home-operating-field.DcvjkAwK.js",
             "initiatorType": "script",
-            "startTime": 164.4000000357628,
-            "responseEnd": 167.10000002384186,
-            "duration": 2.699999988079071,
+            "startTime": 205.10000002384186,
+            "responseEnd": 208.80000001192093,
+            "duration": 3.699999988079071,
             "transferSize": 3347,
             "encodedBodySize": 3047,
             "decodedBodySize": 3047
           },
           {
-            "name": "http://127.0.0.1:4334/media/cinematic/phase-3-desktop-vp9-44a1d9facd43.webm",
-            "initiatorType": "fetch",
-            "startTime": 238.80000001192093,
-            "responseEnd": 249.9000000357628,
-            "duration": 11.100000023841858,
-            "transferSize": 1658594,
-            "encodedBodySize": 1658294,
-            "decodedBodySize": 1658294
-          },
-          {
             "name": "http://127.0.0.1:4334/brand/quantum-icon-color.svg",
             "initiatorType": "other",
-            "startTime": 245.70000004768372,
-            "responseEnd": 249.60000002384186,
-            "duration": 3.899999976158142,
+            "startTime": 208.5,
+            "responseEnd": 212.10000002384186,
+            "duration": 3.600000023841858,
             "transferSize": 1088,
             "encodedBodySize": 788,
             "decodedBodySize": 788
+          },
+          {
+            "name": "http://127.0.0.1:4334/media/cinematic/phase-3-desktop-vp9-44a1d9facd43.webm",
+            "initiatorType": "fetch",
+            "startTime": 213.30000001192093,
+            "responseEnd": 220.19999998807907,
+            "duration": 6.899999976158142,
+            "transferSize": 1658594,
+            "encodedBodySize": 1658294,
+            "decodedBodySize": 1658294
           }
         ]
       },
       "deliveryRecords": [
         {
           "phase": "prime",
-          "requestId": "16000.5",
+          "requestId": "20976.5",
           "url": "http://127.0.0.1:4334/media/cinematic/phase-3-dormant-desktop-03f5490ab11a.png",
           "path": "/media/cinematic/phase-3-dormant-desktop-03f5490ab11a.png",
           "method": "GET",
@@ -13623,7 +13631,7 @@
         },
         {
           "phase": "prime",
-          "requestId": "16000.26",
+          "requestId": "20976.27",
           "url": "http://127.0.0.1:4334/media/cinematic/phase-3-desktop-vp9-44a1d9facd43.webm",
           "path": "/media/cinematic/phase-3-desktop-vp9-44a1d9facd43.webm",
           "method": "GET",
@@ -13653,7 +13661,7 @@
       "controllerCompleted": true,
       "immediate": {
         "dcl": {
-          "at": 87.59999996423721,
+          "at": 73.19999998807907,
           "h1Count": 1,
           "h1Text": "Where do you enter?",
           "shellCount": 1,
@@ -13664,7 +13672,7 @@
         },
         "timeline": {
           "domContentLoaded": {
-            "at": 87.59999996423721,
+            "at": 73.19999998807907,
             "h1Count": 1,
             "h1Text": "Where do you enter?",
             "shellCount": 1,
@@ -13676,12 +13684,12 @@
           "mediaReadyAt": null
         },
         "navigation": {
-          "responseStart": 9.300000011920929,
-          "responseEnd": 10,
-          "domInteractive": 78.19999998807907,
-          "domContentLoadedEventStart": 87.39999997615814,
-          "domContentLoadedEventEnd": 88.19999998807907,
-          "loadEventEnd": 128.30000001192093,
+          "responseStart": 6.599999964237213,
+          "responseEnd": 7.399999976158142,
+          "domInteractive": 64.89999997615814,
+          "domContentLoadedEventStart": 73.09999996423721,
+          "domContentLoadedEventEnd": 73.5,
+          "loadEventEnd": 117.19999998807907,
           "transferSize": 19033,
           "encodedBodySize": 18733
         },
@@ -13692,9 +13700,9 @@
         "shellCount": 1,
         "posterCount": 1,
         "videoCount": 1,
-        "mediaState": null,
-        "mediaSource": null,
-        "rootMode": "candidate",
+        "mediaState": "loading",
+        "mediaSource": "/media/cinematic/phase-3-desktop-vp9-44a1d9facd43.webm",
+        "rootMode": "enhanced",
         "rootFallback": null,
         "poster": {
           "complete": true,
@@ -13706,9 +13714,9 @@
           {
             "name": "http://127.0.0.1:4334/_astro/BaseLayout.vQT1S7s7.css",
             "initiatorType": "link",
-            "startTime": 36.30000001192093,
-            "responseEnd": 46.39999997615814,
-            "duration": 10.099999964237213,
+            "startTime": 31,
+            "responseEnd": 44.799999952316284,
+            "duration": 13.799999952316284,
             "transferSize": 11899,
             "encodedBodySize": 11599,
             "decodedBodySize": 11599
@@ -13716,9 +13724,9 @@
           {
             "name": "http://127.0.0.1:4334/_astro/index.D3iJEvjf.css",
             "initiatorType": "link",
-            "startTime": 36.69999998807907,
-            "responseEnd": 49.30000001192093,
-            "duration": 12.600000023841858,
+            "startTime": 31.69999998807907,
+            "responseEnd": 48.39999997615814,
+            "duration": 16.69999998807907,
             "transferSize": 36941,
             "encodedBodySize": 36641,
             "decodedBodySize": 36641
@@ -13726,9 +13734,9 @@
           {
             "name": "http://127.0.0.1:4334/brand/quantum-full-logo-white.svg",
             "initiatorType": "img",
-            "startTime": 36.89999997615814,
-            "responseEnd": 49.80000001192093,
-            "duration": 12.900000035762787,
+            "startTime": 31.799999952316284,
+            "responseEnd": 49.09999996423721,
+            "duration": 17.30000001192093,
             "transferSize": 6134,
             "encodedBodySize": 5834,
             "decodedBodySize": 5834
@@ -13736,8 +13744,8 @@
           {
             "name": "http://127.0.0.1:4334/media/cinematic/phase-3-dormant-desktop-03f5490ab11a.png",
             "initiatorType": "img",
-            "startTime": 37.19999998807907,
-            "responseEnd": 37.19999998807907,
+            "startTime": 32.09999996423721,
+            "responseEnd": 32.09999996423721,
             "duration": 0,
             "transferSize": 0,
             "encodedBodySize": 726026,
@@ -13746,9 +13754,9 @@
           {
             "name": "http://127.0.0.1:4334/_astro/index.astro_astro_type_script_index_0_lang.QH2p9taa.js",
             "initiatorType": "script",
-            "startTime": 37.39999997615814,
-            "responseEnd": 43.69999998807907,
-            "duration": 6.300000011920929,
+            "startTime": 32.299999952316284,
+            "responseEnd": 42.19999998807907,
+            "duration": 9.900000035762787,
             "transferSize": 738,
             "encodedBodySize": 438,
             "decodedBodySize": 438
@@ -13756,49 +13764,19 @@
           {
             "name": "http://127.0.0.1:4334/_astro/ConversionField.astro_astro_type_script_index_0_lang.Fx-vYds3.js",
             "initiatorType": "script",
-            "startTime": 37.5,
-            "responseEnd": 45.30000001192093,
-            "duration": 7.800000011920929,
+            "startTime": 32.5,
+            "responseEnd": 45.299999952316284,
+            "duration": 12.799999952316284,
             "transferSize": 635,
             "encodedBodySize": 335,
             "decodedBodySize": 335
           },
           {
-            "name": "http://127.0.0.1:4334/fonts/syne-latin-800.woff2",
-            "initiatorType": "css",
-            "startTime": 70,
-            "responseEnd": 86.19999998807907,
-            "duration": 16.19999998807907,
-            "transferSize": 13984,
-            "encodedBodySize": 13684,
-            "decodedBodySize": 13684
-          },
-          {
-            "name": "http://127.0.0.1:4334/fonts/newsreader-latin-400.woff2",
-            "initiatorType": "css",
-            "startTime": 70.09999996423721,
-            "responseEnd": 84.80000001192093,
-            "duration": 14.700000047683716,
-            "transferSize": 22780,
-            "encodedBodySize": 22480,
-            "decodedBodySize": 22480
-          },
-          {
-            "name": "http://127.0.0.1:4334/fonts/inter-latin-400-600.woff2",
-            "initiatorType": "css",
-            "startTime": 71.69999998807907,
-            "responseEnd": 87.09999996423721,
-            "duration": 15.399999976158142,
-            "transferSize": 48556,
-            "encodedBodySize": 48256,
-            "decodedBodySize": 48256
-          },
-          {
             "name": "http://127.0.0.1:4334/_astro/preload-helper.CxFQXtKk.js",
             "initiatorType": "script",
-            "startTime": 77.89999997615814,
-            "responseEnd": 82.5,
-            "duration": 4.600000023841858,
+            "startTime": 64.29999995231628,
+            "responseEnd": 70.69999998807907,
+            "duration": 6.400000035762787,
             "transferSize": 1642,
             "encodedBodySize": 1342,
             "decodedBodySize": 1342
@@ -13806,9 +13784,9 @@
           {
             "name": "http://127.0.0.1:4334/_astro/home-cinematic-integration.s5Ot1zVO.js",
             "initiatorType": "script",
-            "startTime": 86.19999998807907,
-            "responseEnd": 94.80000001192093,
-            "duration": 8.600000023841858,
+            "startTime": 72.59999996423721,
+            "responseEnd": 79,
+            "duration": 6.400000035762787,
             "transferSize": 7819,
             "encodedBodySize": 7519,
             "decodedBodySize": 7519
@@ -13816,12 +13794,42 @@
           {
             "name": "http://127.0.0.1:4334/_astro/home-operating-field.DcvjkAwK.js",
             "initiatorType": "script",
-            "startTime": 87.19999998807907,
-            "responseEnd": 94.5,
-            "duration": 7.300000011920929,
+            "startTime": 73,
+            "responseEnd": 78.79999995231628,
+            "duration": 5.799999952316284,
             "transferSize": 3347,
             "encodedBodySize": 3047,
             "decodedBodySize": 3047
+          },
+          {
+            "name": "http://127.0.0.1:4334/fonts/syne-latin-800.woff2",
+            "initiatorType": "css",
+            "startTime": 78.29999995231628,
+            "responseEnd": 87.39999997615814,
+            "duration": 9.100000023841858,
+            "transferSize": 13984,
+            "encodedBodySize": 13684,
+            "decodedBodySize": 13684
+          },
+          {
+            "name": "http://127.0.0.1:4334/fonts/newsreader-latin-400.woff2",
+            "initiatorType": "css",
+            "startTime": 78.69999998807907,
+            "responseEnd": 87.69999998807907,
+            "duration": 9,
+            "transferSize": 22780,
+            "encodedBodySize": 22480,
+            "decodedBodySize": 22480
+          },
+          {
+            "name": "http://127.0.0.1:4334/fonts/inter-latin-400-600.woff2",
+            "initiatorType": "css",
+            "startTime": 81.59999996423721,
+            "responseEnd": 88,
+            "duration": 6.400000035762787,
+            "transferSize": 48556,
+            "encodedBodySize": 48256,
+            "decodedBodySize": 48256
           }
         ]
       },
@@ -13893,8 +13901,8 @@
           "contentOpacity": 0
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/020301b5-8007-4892-9b8a-bdddf0812c90",
-          "currentSrc": "blob:http://127.0.0.1:4334/020301b5-8007-4892-9b8a-bdddf0812c90",
+          "srcAttribute": "blob:http://127.0.0.1:4334/81c7348e-a94b-470b-94cf-a06f18e7dad6",
+          "currentSrc": "blob:http://127.0.0.1:4334/81c7348e-a94b-470b-94cf-a06f18e7dad6",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -13937,7 +13945,7 @@
       },
       "snapshot": {
         "dcl": {
-          "at": 87.59999996423721,
+          "at": 73.19999998807907,
           "h1Count": 1,
           "h1Text": "Where do you enter?",
           "shellCount": 1,
@@ -13948,7 +13956,7 @@
         },
         "timeline": {
           "domContentLoaded": {
-            "at": 87.59999996423721,
+            "at": 73.19999998807907,
             "h1Count": 1,
             "h1Text": "Where do you enter?",
             "shellCount": 1,
@@ -13957,15 +13965,15 @@
             "loaderCount": 0,
             "mediaState": null
           },
-          "mediaReadyAt": 197.5
+          "mediaReadyAt": 190.5
         },
         "navigation": {
-          "responseStart": 9.300000011920929,
-          "responseEnd": 10,
-          "domInteractive": 78.19999998807907,
-          "domContentLoadedEventStart": 87.39999997615814,
-          "domContentLoadedEventEnd": 88.19999998807907,
-          "loadEventEnd": 128.30000001192093,
+          "responseStart": 6.599999964237213,
+          "responseEnd": 7.399999976158142,
+          "domInteractive": 64.89999997615814,
+          "domContentLoadedEventStart": 73.09999996423721,
+          "domContentLoadedEventEnd": 73.5,
+          "loadEventEnd": 117.19999998807907,
           "transferSize": 19033,
           "encodedBodySize": 18733
         },
@@ -13990,9 +13998,9 @@
           {
             "name": "http://127.0.0.1:4334/_astro/BaseLayout.vQT1S7s7.css",
             "initiatorType": "link",
-            "startTime": 36.30000001192093,
-            "responseEnd": 46.39999997615814,
-            "duration": 10.099999964237213,
+            "startTime": 31,
+            "responseEnd": 44.799999952316284,
+            "duration": 13.799999952316284,
             "transferSize": 11899,
             "encodedBodySize": 11599,
             "decodedBodySize": 11599
@@ -14000,9 +14008,9 @@
           {
             "name": "http://127.0.0.1:4334/_astro/index.D3iJEvjf.css",
             "initiatorType": "link",
-            "startTime": 36.69999998807907,
-            "responseEnd": 49.30000001192093,
-            "duration": 12.600000023841858,
+            "startTime": 31.69999998807907,
+            "responseEnd": 48.39999997615814,
+            "duration": 16.69999998807907,
             "transferSize": 36941,
             "encodedBodySize": 36641,
             "decodedBodySize": 36641
@@ -14010,9 +14018,9 @@
           {
             "name": "http://127.0.0.1:4334/brand/quantum-full-logo-white.svg",
             "initiatorType": "img",
-            "startTime": 36.89999997615814,
-            "responseEnd": 49.80000001192093,
-            "duration": 12.900000035762787,
+            "startTime": 31.799999952316284,
+            "responseEnd": 49.09999996423721,
+            "duration": 17.30000001192093,
             "transferSize": 6134,
             "encodedBodySize": 5834,
             "decodedBodySize": 5834
@@ -14020,8 +14028,8 @@
           {
             "name": "http://127.0.0.1:4334/media/cinematic/phase-3-dormant-desktop-03f5490ab11a.png",
             "initiatorType": "img",
-            "startTime": 37.19999998807907,
-            "responseEnd": 37.19999998807907,
+            "startTime": 32.09999996423721,
+            "responseEnd": 32.09999996423721,
             "duration": 0,
             "transferSize": 0,
             "encodedBodySize": 726026,
@@ -14030,9 +14038,9 @@
           {
             "name": "http://127.0.0.1:4334/_astro/index.astro_astro_type_script_index_0_lang.QH2p9taa.js",
             "initiatorType": "script",
-            "startTime": 37.39999997615814,
-            "responseEnd": 43.69999998807907,
-            "duration": 6.300000011920929,
+            "startTime": 32.299999952316284,
+            "responseEnd": 42.19999998807907,
+            "duration": 9.900000035762787,
             "transferSize": 738,
             "encodedBodySize": 438,
             "decodedBodySize": 438
@@ -14040,49 +14048,19 @@
           {
             "name": "http://127.0.0.1:4334/_astro/ConversionField.astro_astro_type_script_index_0_lang.Fx-vYds3.js",
             "initiatorType": "script",
-            "startTime": 37.5,
-            "responseEnd": 45.30000001192093,
-            "duration": 7.800000011920929,
+            "startTime": 32.5,
+            "responseEnd": 45.299999952316284,
+            "duration": 12.799999952316284,
             "transferSize": 635,
             "encodedBodySize": 335,
             "decodedBodySize": 335
           },
           {
-            "name": "http://127.0.0.1:4334/fonts/syne-latin-800.woff2",
-            "initiatorType": "css",
-            "startTime": 70,
-            "responseEnd": 86.19999998807907,
-            "duration": 16.19999998807907,
-            "transferSize": 13984,
-            "encodedBodySize": 13684,
-            "decodedBodySize": 13684
-          },
-          {
-            "name": "http://127.0.0.1:4334/fonts/newsreader-latin-400.woff2",
-            "initiatorType": "css",
-            "startTime": 70.09999996423721,
-            "responseEnd": 84.80000001192093,
-            "duration": 14.700000047683716,
-            "transferSize": 22780,
-            "encodedBodySize": 22480,
-            "decodedBodySize": 22480
-          },
-          {
-            "name": "http://127.0.0.1:4334/fonts/inter-latin-400-600.woff2",
-            "initiatorType": "css",
-            "startTime": 71.69999998807907,
-            "responseEnd": 87.09999996423721,
-            "duration": 15.399999976158142,
-            "transferSize": 48556,
-            "encodedBodySize": 48256,
-            "decodedBodySize": 48256
-          },
-          {
             "name": "http://127.0.0.1:4334/_astro/preload-helper.CxFQXtKk.js",
             "initiatorType": "script",
-            "startTime": 77.89999997615814,
-            "responseEnd": 82.5,
-            "duration": 4.600000023841858,
+            "startTime": 64.29999995231628,
+            "responseEnd": 70.69999998807907,
+            "duration": 6.400000035762787,
             "transferSize": 1642,
             "encodedBodySize": 1342,
             "decodedBodySize": 1342
@@ -14090,9 +14068,9 @@
           {
             "name": "http://127.0.0.1:4334/_astro/home-cinematic-integration.s5Ot1zVO.js",
             "initiatorType": "script",
-            "startTime": 86.19999998807907,
-            "responseEnd": 94.80000001192093,
-            "duration": 8.600000023841858,
+            "startTime": 72.59999996423721,
+            "responseEnd": 79,
+            "duration": 6.400000035762787,
             "transferSize": 7819,
             "encodedBodySize": 7519,
             "decodedBodySize": 7519
@@ -14100,19 +14078,49 @@
           {
             "name": "http://127.0.0.1:4334/_astro/home-operating-field.DcvjkAwK.js",
             "initiatorType": "script",
-            "startTime": 87.19999998807907,
-            "responseEnd": 94.5,
-            "duration": 7.300000011920929,
+            "startTime": 73,
+            "responseEnd": 78.79999995231628,
+            "duration": 5.799999952316284,
             "transferSize": 3347,
             "encodedBodySize": 3047,
             "decodedBodySize": 3047
           },
           {
+            "name": "http://127.0.0.1:4334/fonts/syne-latin-800.woff2",
+            "initiatorType": "css",
+            "startTime": 78.29999995231628,
+            "responseEnd": 87.39999997615814,
+            "duration": 9.100000023841858,
+            "transferSize": 13984,
+            "encodedBodySize": 13684,
+            "decodedBodySize": 13684
+          },
+          {
+            "name": "http://127.0.0.1:4334/fonts/newsreader-latin-400.woff2",
+            "initiatorType": "css",
+            "startTime": 78.69999998807907,
+            "responseEnd": 87.69999998807907,
+            "duration": 9,
+            "transferSize": 22780,
+            "encodedBodySize": 22480,
+            "decodedBodySize": 22480
+          },
+          {
+            "name": "http://127.0.0.1:4334/fonts/inter-latin-400-600.woff2",
+            "initiatorType": "css",
+            "startTime": 81.59999996423721,
+            "responseEnd": 88,
+            "duration": 6.400000035762787,
+            "transferSize": 48556,
+            "encodedBodySize": 48256,
+            "decodedBodySize": 48256
+          },
+          {
             "name": "http://127.0.0.1:4334/media/cinematic/phase-3-desktop-vp9-44a1d9facd43.webm",
             "initiatorType": "fetch",
-            "startTime": 144.80000001192093,
-            "responseEnd": 146.19999998807907,
-            "duration": 1.399999976158142,
+            "startTime": 138.19999998807907,
+            "responseEnd": 140.19999998807907,
+            "duration": 2,
             "transferSize": 0,
             "encodedBodySize": 1658294,
             "decodedBodySize": 1658294
@@ -14120,9 +14128,9 @@
           {
             "name": "http://127.0.0.1:4334/brand/quantum-icon-color.svg",
             "initiatorType": "other",
-            "startTime": 153.39999997615814,
-            "responseEnd": 157.0999999642372,
-            "duration": 3.699999988079071,
+            "startTime": 146.0999999642372,
+            "responseEnd": 149.39999997615814,
+            "duration": 3.300000011920929,
             "transferSize": 1088,
             "encodedBodySize": 788,
             "decodedBodySize": 788
@@ -14132,7 +14140,7 @@
       "deliveryRecords": [
         {
           "phase": "warm",
-          "requestId": "16000.33",
+          "requestId": "20976.33",
           "url": "http://127.0.0.1:4334/media/cinematic/phase-3-dormant-desktop-03f5490ab11a.png",
           "path": "/media/cinematic/phase-3-dormant-desktop-03f5490ab11a.png",
           "method": "GET",
@@ -14153,7 +14161,7 @@
         },
         {
           "phase": "warm",
-          "requestId": "16000.54",
+          "requestId": "20976.54",
           "url": "http://127.0.0.1:4334/media/cinematic/phase-3-desktop-vp9-44a1d9facd43.webm",
           "path": "/media/cinematic/phase-3-desktop-vp9-44a1d9facd43.webm",
           "method": "GET",
@@ -14181,7 +14189,7 @@
       "posterRecord": [
         {
           "phase": "warm",
-          "requestId": "16000.33",
+          "requestId": "20976.33",
           "url": "http://127.0.0.1:4334/media/cinematic/phase-3-dormant-desktop-03f5490ab11a.png",
           "path": "/media/cinematic/phase-3-dormant-desktop-03f5490ab11a.png",
           "method": "GET",
@@ -14204,8 +14212,8 @@
       "posterResource": {
         "name": "http://127.0.0.1:4334/media/cinematic/phase-3-dormant-desktop-03f5490ab11a.png",
         "initiatorType": "img",
-        "startTime": 37.19999998807907,
-        "responseEnd": 37.19999998807907,
+        "startTime": 32.09999996423721,
+        "responseEnd": 32.09999996423721,
         "duration": 0,
         "transferSize": 0,
         "encodedBodySize": 726026,
@@ -14217,7 +14225,7 @@
       "videoRecords": [
         {
           "phase": "warm",
-          "requestId": "16000.54",
+          "requestId": "20976.54",
           "url": "http://127.0.0.1:4334/media/cinematic/phase-3-desktop-vp9-44a1d9facd43.webm",
           "path": "/media/cinematic/phase-3-desktop-vp9-44a1d9facd43.webm",
           "method": "GET",
@@ -14245,9 +14253,9 @@
         {
           "name": "http://127.0.0.1:4334/media/cinematic/phase-3-desktop-vp9-44a1d9facd43.webm",
           "initiatorType": "fetch",
-          "startTime": 144.80000001192093,
-          "responseEnd": 146.19999998807907,
-          "duration": 1.399999976158142,
+          "startTime": 138.19999998807907,
+          "responseEnd": 140.19999998807907,
+          "duration": 2,
           "transferSize": 0,
           "encodedBodySize": 1658294,
           "decodedBodySize": 1658294
@@ -14310,17 +14318,17 @@
     },
     "status": 200,
     "timingsMs": {
-      "nativeScroll": 1615,
-      "posterReadyProbe": 6233,
-      "controllerCompletion": 10964,
-      "domContentLoaded": 1312.199999988079,
-      "posterReady": 6222.699999988079,
-      "mediaReady": 10915.399999976158,
+      "nativeScroll": 1598,
+      "posterReadyProbe": 6299,
+      "controllerCompletion": 10897,
+      "domContentLoaded": 1296,
+      "posterReady": 6278,
+      "mediaReady": 10854.5,
       "mediaFailed": null
     },
     "immediate": {
       "dcl": {
-        "at": 1312.199999988079,
+        "at": 1296,
         "h1Count": 1,
         "h1Text": "Where do you enter?",
         "shellCount": 1,
@@ -14330,9 +14338,9 @@
         "mediaState": null
       },
       "timeline": {
-        "navigationStart": 243.69999998807907,
+        "navigationStart": 241.5,
         "domContentLoaded": {
-          "at": 1312.199999988079,
+          "at": 1296,
           "h1Count": 1,
           "h1Text": "Where do you enter?",
           "shellCount": 1,
@@ -14347,11 +14355,11 @@
         "scrollEvents": []
       },
       "navigation": {
-        "responseStart": 3.699999988079071,
-        "responseEnd": 280.80000001192093,
-        "domInteractive": 1043.800000011921,
-        "domContentLoadedEventStart": 1311.8999999761581,
-        "domContentLoadedEventEnd": 1313.199999988079,
+        "responseStart": 4.299999952316284,
+        "responseEnd": 289.5,
+        "domInteractive": 1036.5,
+        "domContentLoadedEventStart": 1295.699999988079,
+        "domContentLoadedEventEnd": 1297,
         "loadEventEnd": 0,
         "transferSize": 19033,
         "encodedBodySize": 18733
@@ -14377,9 +14385,9 @@
         {
           "name": "http://127.0.0.1:4334/_astro/BaseLayout.vQT1S7s7.css",
           "initiatorType": "link",
-          "startTime": 236.39999997615814,
-          "responseEnd": 638.6999999880791,
-          "duration": 402.30000001192093,
+          "startTime": 234.89999997615814,
+          "responseEnd": 639.6999999880791,
+          "duration": 404.80000001192093,
           "transferSize": 11899,
           "encodedBodySize": 11599,
           "decodedBodySize": 11599
@@ -14387,9 +14395,9 @@
         {
           "name": "http://127.0.0.1:4334/_astro/index.D3iJEvjf.css",
           "initiatorType": "link",
-          "startTime": 236.89999997615814,
-          "responseEnd": 840,
-          "duration": 603.1000000238419,
+          "startTime": 235.39999997615814,
+          "responseEnd": 858,
+          "duration": 622.6000000238419,
           "transferSize": 36941,
           "encodedBodySize": 36641,
           "decodedBodySize": 36641
@@ -14397,9 +14405,9 @@
         {
           "name": "http://127.0.0.1:4334/brand/quantum-full-logo-white.svg",
           "initiatorType": "img",
-          "startTime": 237.10000002384186,
-          "responseEnd": 588.6000000238419,
-          "duration": 351.5,
+          "startTime": 235.69999998807907,
+          "responseEnd": 589.3999999761581,
+          "duration": 353.69999998807907,
           "transferSize": 6134,
           "encodedBodySize": 5834,
           "decodedBodySize": 5834
@@ -14407,9 +14415,9 @@
         {
           "name": "http://127.0.0.1:4334/_astro/index.astro_astro_type_script_index_0_lang.QH2p9taa.js",
           "initiatorType": "script",
-          "startTime": 237.5,
-          "responseEnd": 493.10000002384186,
-          "duration": 255.60000002384186,
+          "startTime": 247.19999998807907,
+          "responseEnd": 490.19999998807907,
+          "duration": 243,
           "transferSize": 738,
           "encodedBodySize": 438,
           "decodedBodySize": 438
@@ -14417,9 +14425,9 @@
         {
           "name": "http://127.0.0.1:4334/_astro/ConversionField.astro_astro_type_script_index_0_lang.Fx-vYds3.js",
           "initiatorType": "script",
-          "startTime": 281.80000001192093,
-          "responseEnd": 512.8999999761581,
-          "duration": 231.0999999642372,
+          "startTime": 290.7999999523163,
+          "responseEnd": 522.6999999880791,
+          "duration": 231.9000000357628,
           "transferSize": 635,
           "encodedBodySize": 335,
           "decodedBodySize": 335
@@ -14427,9 +14435,9 @@
         {
           "name": "http://127.0.0.1:4334/_astro/preload-helper.CxFQXtKk.js",
           "initiatorType": "script",
-          "startTime": 1043.699999988079,
-          "responseEnd": 1306.5,
-          "duration": 262.80000001192093,
+          "startTime": 1036.3999999761581,
+          "responseEnd": 1289.5999999642372,
+          "duration": 253.19999998807907,
           "transferSize": 1642,
           "encodedBodySize": 1342,
           "decodedBodySize": 1342
@@ -14634,7 +14642,7 @@
     },
     "deliveryAfterScroll": {
       "dcl": {
-        "at": 1312.199999988079,
+        "at": 1296,
         "h1Count": 1,
         "h1Text": "Where do you enter?",
         "shellCount": 1,
@@ -14644,9 +14652,9 @@
         "mediaState": null
       },
       "timeline": {
-        "navigationStart": 243.69999998807907,
+        "navigationStart": 241.5,
         "domContentLoaded": {
-          "at": 1312.199999988079,
+          "at": 1296,
           "h1Count": 1,
           "h1Text": "Where do you enter?",
           "shellCount": 1,
@@ -14660,41 +14668,41 @@
         "mediaFailedAt": null,
         "scrollEvents": [
           {
-            "y": 60,
-            "at": 1426.8999999761581
+            "y": 48,
+            "at": 1356.8999999761581
           },
           {
-            "y": 430,
-            "at": 1429.6000000238419
+            "y": 132,
+            "at": 1434.3999999761581
           },
           {
-            "y": 573,
-            "at": 1442.5
+            "y": 546,
+            "at": 1437.7999999523163
           },
           {
-            "y": 685,
-            "at": 1470.300000011921
+            "y": 666,
+            "at": 1440.7999999523163
           },
           {
-            "y": 756,
-            "at": 1472.800000011921
+            "y": 746,
+            "at": 1462.7999999523163
           },
           {
-            "y": 786,
-            "at": 1493.699999988079
+            "y": 783,
+            "at": 1473.8999999761581
           },
           {
             "y": 787,
-            "at": 1507.300000011921
+            "at": 1507.7999999523163
           }
         ]
       },
       "navigation": {
-        "responseStart": 3.699999988079071,
-        "responseEnd": 280.80000001192093,
-        "domInteractive": 1043.800000011921,
-        "domContentLoadedEventStart": 1311.8999999761581,
-        "domContentLoadedEventEnd": 1313.199999988079,
+        "responseStart": 4.299999952316284,
+        "responseEnd": 289.5,
+        "domInteractive": 1036.5,
+        "domContentLoadedEventStart": 1295.699999988079,
+        "domContentLoadedEventEnd": 1297,
         "loadEventEnd": 0,
         "transferSize": 19033,
         "encodedBodySize": 18733
@@ -14720,9 +14728,9 @@
         {
           "name": "http://127.0.0.1:4334/_astro/BaseLayout.vQT1S7s7.css",
           "initiatorType": "link",
-          "startTime": 236.39999997615814,
-          "responseEnd": 638.6999999880791,
-          "duration": 402.30000001192093,
+          "startTime": 234.89999997615814,
+          "responseEnd": 639.6999999880791,
+          "duration": 404.80000001192093,
           "transferSize": 11899,
           "encodedBodySize": 11599,
           "decodedBodySize": 11599
@@ -14730,9 +14738,9 @@
         {
           "name": "http://127.0.0.1:4334/_astro/index.D3iJEvjf.css",
           "initiatorType": "link",
-          "startTime": 236.89999997615814,
-          "responseEnd": 840,
-          "duration": 603.1000000238419,
+          "startTime": 235.39999997615814,
+          "responseEnd": 858,
+          "duration": 622.6000000238419,
           "transferSize": 36941,
           "encodedBodySize": 36641,
           "decodedBodySize": 36641
@@ -14740,9 +14748,9 @@
         {
           "name": "http://127.0.0.1:4334/brand/quantum-full-logo-white.svg",
           "initiatorType": "img",
-          "startTime": 237.10000002384186,
-          "responseEnd": 588.6000000238419,
-          "duration": 351.5,
+          "startTime": 235.69999998807907,
+          "responseEnd": 589.3999999761581,
+          "duration": 353.69999998807907,
           "transferSize": 6134,
           "encodedBodySize": 5834,
           "decodedBodySize": 5834
@@ -14750,9 +14758,9 @@
         {
           "name": "http://127.0.0.1:4334/_astro/index.astro_astro_type_script_index_0_lang.QH2p9taa.js",
           "initiatorType": "script",
-          "startTime": 237.5,
-          "responseEnd": 493.10000002384186,
-          "duration": 255.60000002384186,
+          "startTime": 247.19999998807907,
+          "responseEnd": 490.19999998807907,
+          "duration": 243,
           "transferSize": 738,
           "encodedBodySize": 438,
           "decodedBodySize": 438
@@ -14760,9 +14768,9 @@
         {
           "name": "http://127.0.0.1:4334/_astro/ConversionField.astro_astro_type_script_index_0_lang.Fx-vYds3.js",
           "initiatorType": "script",
-          "startTime": 281.80000001192093,
-          "responseEnd": 512.8999999761581,
-          "duration": 231.0999999642372,
+          "startTime": 290.7999999523163,
+          "responseEnd": 522.6999999880791,
+          "duration": 231.9000000357628,
           "transferSize": 635,
           "encodedBodySize": 335,
           "decodedBodySize": 335
@@ -14770,9 +14778,9 @@
         {
           "name": "http://127.0.0.1:4334/fonts/newsreader-latin-400.woff2",
           "initiatorType": "css",
-          "startTime": 877.8999999761581,
-          "responseEnd": 1442.6000000238419,
-          "duration": 564.7000000476837,
+          "startTime": 890.3999999761581,
+          "responseEnd": 1474.199999988079,
+          "duration": 583.8000000119209,
           "transferSize": 22780,
           "encodedBodySize": 22480,
           "decodedBodySize": 22480
@@ -14780,9 +14788,9 @@
         {
           "name": "http://127.0.0.1:4334/fonts/syne-latin-800.woff2",
           "initiatorType": "css",
-          "startTime": 912.1000000238419,
-          "responseEnd": 1356.6000000238419,
-          "duration": 444.5,
+          "startTime": 920.7999999523163,
+          "responseEnd": 1363.199999988079,
+          "duration": 442.4000000357628,
           "transferSize": 13984,
           "encodedBodySize": 13684,
           "decodedBodySize": 13684
@@ -14790,9 +14798,9 @@
         {
           "name": "http://127.0.0.1:4334/_astro/preload-helper.CxFQXtKk.js",
           "initiatorType": "script",
-          "startTime": 1043.699999988079,
-          "responseEnd": 1306.5,
-          "duration": 262.80000001192093,
+          "startTime": 1036.3999999761581,
+          "responseEnd": 1289.5999999642372,
+          "duration": 253.19999998807907,
           "transferSize": 1642,
           "encodedBodySize": 1342,
           "decodedBodySize": 1342
@@ -14800,9 +14808,9 @@
         {
           "name": "http://127.0.0.1:4334/_astro/home-operating-field.DcvjkAwK.js",
           "initiatorType": "script",
-          "startTime": 1311.800000011921,
-          "responseEnd": 1591.8999999761581,
-          "duration": 280.0999999642372,
+          "startTime": 1295.5999999642372,
+          "responseEnd": 1557.0999999642372,
+          "duration": 261.5,
           "transferSize": 3347,
           "encodedBodySize": 3047,
           "decodedBodySize": 3047
@@ -14811,7 +14819,7 @@
     },
     "posterReady": {
       "dcl": {
-        "at": 1312.199999988079,
+        "at": 1296,
         "h1Count": 1,
         "h1Text": "Where do you enter?",
         "shellCount": 1,
@@ -14821,9 +14829,9 @@
         "mediaState": null
       },
       "timeline": {
-        "navigationStart": 243.69999998807907,
+        "navigationStart": 241.5,
         "domContentLoaded": {
-          "at": 1312.199999988079,
+          "at": 1296,
           "h1Count": 1,
           "h1Text": "Where do you enter?",
           "shellCount": 1,
@@ -14832,47 +14840,47 @@
           "loaderCount": 0,
           "mediaState": null
         },
-        "posterReadyAt": 6222.699999988079,
+        "posterReadyAt": 6278,
         "mediaReadyAt": null,
         "mediaFailedAt": null,
         "scrollEvents": [
           {
-            "y": 60,
-            "at": 1426.8999999761581
+            "y": 48,
+            "at": 1356.8999999761581
           },
           {
-            "y": 430,
-            "at": 1429.6000000238419
+            "y": 132,
+            "at": 1434.3999999761581
           },
           {
-            "y": 573,
-            "at": 1442.5
+            "y": 546,
+            "at": 1437.7999999523163
           },
           {
-            "y": 685,
-            "at": 1470.300000011921
+            "y": 666,
+            "at": 1440.7999999523163
           },
           {
-            "y": 756,
-            "at": 1472.800000011921
+            "y": 746,
+            "at": 1462.7999999523163
           },
           {
-            "y": 786,
-            "at": 1493.699999988079
+            "y": 783,
+            "at": 1473.8999999761581
           },
           {
             "y": 787,
-            "at": 1507.300000011921
+            "at": 1507.7999999523163
           }
         ]
       },
       "navigation": {
-        "responseStart": 3.699999988079071,
-        "responseEnd": 280.80000001192093,
-        "domInteractive": 1043.800000011921,
-        "domContentLoadedEventStart": 1311.8999999761581,
-        "domContentLoadedEventEnd": 1313.199999988079,
-        "loadEventEnd": 6222.899999976158,
+        "responseStart": 4.299999952316284,
+        "responseEnd": 289.5,
+        "domInteractive": 1036.5,
+        "domContentLoadedEventStart": 1295.699999988079,
+        "domContentLoadedEventEnd": 1297,
+        "loadEventEnd": 6278.099999964237,
         "transferSize": 19033,
         "encodedBodySize": 18733
       },
@@ -14897,9 +14905,9 @@
         {
           "name": "http://127.0.0.1:4334/_astro/BaseLayout.vQT1S7s7.css",
           "initiatorType": "link",
-          "startTime": 236.39999997615814,
-          "responseEnd": 638.6999999880791,
-          "duration": 402.30000001192093,
+          "startTime": 234.89999997615814,
+          "responseEnd": 639.6999999880791,
+          "duration": 404.80000001192093,
           "transferSize": 11899,
           "encodedBodySize": 11599,
           "decodedBodySize": 11599
@@ -14907,9 +14915,9 @@
         {
           "name": "http://127.0.0.1:4334/_astro/index.D3iJEvjf.css",
           "initiatorType": "link",
-          "startTime": 236.89999997615814,
-          "responseEnd": 840,
-          "duration": 603.1000000238419,
+          "startTime": 235.39999997615814,
+          "responseEnd": 858,
+          "duration": 622.6000000238419,
           "transferSize": 36941,
           "encodedBodySize": 36641,
           "decodedBodySize": 36641
@@ -14917,9 +14925,9 @@
         {
           "name": "http://127.0.0.1:4334/brand/quantum-full-logo-white.svg",
           "initiatorType": "img",
-          "startTime": 237.10000002384186,
-          "responseEnd": 588.6000000238419,
-          "duration": 351.5,
+          "startTime": 235.69999998807907,
+          "responseEnd": 589.3999999761581,
+          "duration": 353.69999998807907,
           "transferSize": 6134,
           "encodedBodySize": 5834,
           "decodedBodySize": 5834
@@ -14927,9 +14935,9 @@
         {
           "name": "http://127.0.0.1:4334/media/cinematic/phase-3-dormant-desktop-03f5490ab11a.png",
           "initiatorType": "img",
-          "startTime": 237.30000001192093,
-          "responseEnd": 6218.600000023842,
-          "duration": 5981.300000011921,
+          "startTime": 235.79999995231628,
+          "responseEnd": 6274.399999976158,
+          "duration": 6038.600000023842,
           "transferSize": 726326,
           "encodedBodySize": 726026,
           "decodedBodySize": 726026
@@ -14937,9 +14945,9 @@
         {
           "name": "http://127.0.0.1:4334/_astro/index.astro_astro_type_script_index_0_lang.QH2p9taa.js",
           "initiatorType": "script",
-          "startTime": 237.5,
-          "responseEnd": 493.10000002384186,
-          "duration": 255.60000002384186,
+          "startTime": 247.19999998807907,
+          "responseEnd": 490.19999998807907,
+          "duration": 243,
           "transferSize": 738,
           "encodedBodySize": 438,
           "decodedBodySize": 438
@@ -14947,9 +14955,9 @@
         {
           "name": "http://127.0.0.1:4334/_astro/ConversionField.astro_astro_type_script_index_0_lang.Fx-vYds3.js",
           "initiatorType": "script",
-          "startTime": 281.80000001192093,
-          "responseEnd": 512.8999999761581,
-          "duration": 231.0999999642372,
+          "startTime": 290.7999999523163,
+          "responseEnd": 522.6999999880791,
+          "duration": 231.9000000357628,
           "transferSize": 635,
           "encodedBodySize": 335,
           "decodedBodySize": 335
@@ -14957,9 +14965,9 @@
         {
           "name": "http://127.0.0.1:4334/fonts/inter-latin-400-600.woff2",
           "initiatorType": "css",
-          "startTime": 849.5,
-          "responseEnd": 1667.8999999761581,
-          "duration": 818.3999999761581,
+          "startTime": 866.5999999642372,
+          "responseEnd": 1690.0999999642372,
+          "duration": 823.5,
           "transferSize": 48556,
           "encodedBodySize": 48256,
           "decodedBodySize": 48256
@@ -14967,9 +14975,9 @@
         {
           "name": "http://127.0.0.1:4334/fonts/newsreader-latin-400.woff2",
           "initiatorType": "css",
-          "startTime": 877.8999999761581,
-          "responseEnd": 1442.6000000238419,
-          "duration": 564.7000000476837,
+          "startTime": 890.3999999761581,
+          "responseEnd": 1474.199999988079,
+          "duration": 583.8000000119209,
           "transferSize": 22780,
           "encodedBodySize": 22480,
           "decodedBodySize": 22480
@@ -14977,9 +14985,9 @@
         {
           "name": "http://127.0.0.1:4334/fonts/syne-latin-800.woff2",
           "initiatorType": "css",
-          "startTime": 912.1000000238419,
-          "responseEnd": 1356.6000000238419,
-          "duration": 444.5,
+          "startTime": 920.7999999523163,
+          "responseEnd": 1363.199999988079,
+          "duration": 442.4000000357628,
           "transferSize": 13984,
           "encodedBodySize": 13684,
           "decodedBodySize": 13684
@@ -14987,9 +14995,9 @@
         {
           "name": "http://127.0.0.1:4334/_astro/preload-helper.CxFQXtKk.js",
           "initiatorType": "script",
-          "startTime": 1043.699999988079,
-          "responseEnd": 1306.5,
-          "duration": 262.80000001192093,
+          "startTime": 1036.3999999761581,
+          "responseEnd": 1289.5999999642372,
+          "duration": 253.19999998807907,
           "transferSize": 1642,
           "encodedBodySize": 1342,
           "decodedBodySize": 1342
@@ -14997,9 +15005,9 @@
         {
           "name": "http://127.0.0.1:4334/_astro/home-cinematic-integration.s5Ot1zVO.js",
           "initiatorType": "script",
-          "startTime": 1310.8999999761581,
-          "responseEnd": 1655.199999988079,
-          "duration": 344.30000001192093,
+          "startTime": 1294.8999999761581,
+          "responseEnd": 1623.199999988079,
+          "duration": 328.30000001192093,
           "transferSize": 7819,
           "encodedBodySize": 7519,
           "decodedBodySize": 7519
@@ -15007,9 +15015,9 @@
         {
           "name": "http://127.0.0.1:4334/_astro/home-operating-field.DcvjkAwK.js",
           "initiatorType": "script",
-          "startTime": 1311.800000011921,
-          "responseEnd": 1591.8999999761581,
-          "duration": 280.0999999642372,
+          "startTime": 1295.5999999642372,
+          "responseEnd": 1557.0999999642372,
+          "duration": 261.5,
           "transferSize": 3347,
           "encodedBodySize": 3047,
           "decodedBodySize": 3047
@@ -15086,8 +15094,8 @@
         "contentOpacity": 0
       },
       "video": {
-        "srcAttribute": "blob:http://127.0.0.1:4334/57bbb3f6-69e4-4bf6-b304-af386bf9054b",
-        "currentSrc": "blob:http://127.0.0.1:4334/57bbb3f6-69e4-4bf6-b304-af386bf9054b",
+        "srcAttribute": "blob:http://127.0.0.1:4334/6d8cfc76-e61a-4624-a644-fd751be1807c",
+        "currentSrc": "blob:http://127.0.0.1:4334/6d8cfc76-e61a-4624-a644-fd751be1807c",
         "readyState": 4,
         "networkState": 1,
         "duration": 9,
@@ -15131,7 +15139,7 @@
     "fallbackSkip": null,
     "finalSnapshot": {
       "dcl": {
-        "at": 1312.199999988079,
+        "at": 1296,
         "h1Count": 1,
         "h1Text": "Where do you enter?",
         "shellCount": 1,
@@ -15141,9 +15149,9 @@
         "mediaState": null
       },
       "timeline": {
-        "navigationStart": 243.69999998807907,
+        "navigationStart": 241.5,
         "domContentLoaded": {
-          "at": 1312.199999988079,
+          "at": 1296,
           "h1Count": 1,
           "h1Text": "Where do you enter?",
           "shellCount": 1,
@@ -15152,47 +15160,47 @@
           "loaderCount": 0,
           "mediaState": null
         },
-        "posterReadyAt": 6222.699999988079,
-        "mediaReadyAt": 10915.399999976158,
+        "posterReadyAt": 6278,
+        "mediaReadyAt": 10854.5,
         "mediaFailedAt": null,
         "scrollEvents": [
           {
-            "y": 60,
-            "at": 1426.8999999761581
+            "y": 48,
+            "at": 1356.8999999761581
           },
           {
-            "y": 430,
-            "at": 1429.6000000238419
+            "y": 132,
+            "at": 1434.3999999761581
           },
           {
-            "y": 573,
-            "at": 1442.5
+            "y": 546,
+            "at": 1437.7999999523163
           },
           {
-            "y": 685,
-            "at": 1470.300000011921
+            "y": 666,
+            "at": 1440.7999999523163
           },
           {
-            "y": 756,
-            "at": 1472.800000011921
+            "y": 746,
+            "at": 1462.7999999523163
           },
           {
-            "y": 786,
-            "at": 1493.699999988079
+            "y": 783,
+            "at": 1473.8999999761581
           },
           {
             "y": 787,
-            "at": 1507.300000011921
+            "at": 1507.7999999523163
           }
         ]
       },
       "navigation": {
-        "responseStart": 3.699999988079071,
-        "responseEnd": 280.80000001192093,
-        "domInteractive": 1043.800000011921,
-        "domContentLoadedEventStart": 1311.8999999761581,
-        "domContentLoadedEventEnd": 1313.199999988079,
-        "loadEventEnd": 6222.899999976158,
+        "responseStart": 4.299999952316284,
+        "responseEnd": 289.5,
+        "domInteractive": 1036.5,
+        "domContentLoadedEventStart": 1295.699999988079,
+        "domContentLoadedEventEnd": 1297,
+        "loadEventEnd": 6278.099999964237,
         "transferSize": 19033,
         "encodedBodySize": 18733
       },
@@ -15217,9 +15225,9 @@
         {
           "name": "http://127.0.0.1:4334/_astro/BaseLayout.vQT1S7s7.css",
           "initiatorType": "link",
-          "startTime": 236.39999997615814,
-          "responseEnd": 638.6999999880791,
-          "duration": 402.30000001192093,
+          "startTime": 234.89999997615814,
+          "responseEnd": 639.6999999880791,
+          "duration": 404.80000001192093,
           "transferSize": 11899,
           "encodedBodySize": 11599,
           "decodedBodySize": 11599
@@ -15227,9 +15235,9 @@
         {
           "name": "http://127.0.0.1:4334/_astro/index.D3iJEvjf.css",
           "initiatorType": "link",
-          "startTime": 236.89999997615814,
-          "responseEnd": 840,
-          "duration": 603.1000000238419,
+          "startTime": 235.39999997615814,
+          "responseEnd": 858,
+          "duration": 622.6000000238419,
           "transferSize": 36941,
           "encodedBodySize": 36641,
           "decodedBodySize": 36641
@@ -15237,9 +15245,9 @@
         {
           "name": "http://127.0.0.1:4334/brand/quantum-full-logo-white.svg",
           "initiatorType": "img",
-          "startTime": 237.10000002384186,
-          "responseEnd": 588.6000000238419,
-          "duration": 351.5,
+          "startTime": 235.69999998807907,
+          "responseEnd": 589.3999999761581,
+          "duration": 353.69999998807907,
           "transferSize": 6134,
           "encodedBodySize": 5834,
           "decodedBodySize": 5834
@@ -15247,9 +15255,9 @@
         {
           "name": "http://127.0.0.1:4334/media/cinematic/phase-3-dormant-desktop-03f5490ab11a.png",
           "initiatorType": "img",
-          "startTime": 237.30000001192093,
-          "responseEnd": 6218.600000023842,
-          "duration": 5981.300000011921,
+          "startTime": 235.79999995231628,
+          "responseEnd": 6274.399999976158,
+          "duration": 6038.600000023842,
           "transferSize": 726326,
           "encodedBodySize": 726026,
           "decodedBodySize": 726026
@@ -15257,9 +15265,9 @@
         {
           "name": "http://127.0.0.1:4334/_astro/index.astro_astro_type_script_index_0_lang.QH2p9taa.js",
           "initiatorType": "script",
-          "startTime": 237.5,
-          "responseEnd": 493.10000002384186,
-          "duration": 255.60000002384186,
+          "startTime": 247.19999998807907,
+          "responseEnd": 490.19999998807907,
+          "duration": 243,
           "transferSize": 738,
           "encodedBodySize": 438,
           "decodedBodySize": 438
@@ -15267,9 +15275,9 @@
         {
           "name": "http://127.0.0.1:4334/_astro/ConversionField.astro_astro_type_script_index_0_lang.Fx-vYds3.js",
           "initiatorType": "script",
-          "startTime": 281.80000001192093,
-          "responseEnd": 512.8999999761581,
-          "duration": 231.0999999642372,
+          "startTime": 290.7999999523163,
+          "responseEnd": 522.6999999880791,
+          "duration": 231.9000000357628,
           "transferSize": 635,
           "encodedBodySize": 335,
           "decodedBodySize": 335
@@ -15277,9 +15285,9 @@
         {
           "name": "http://127.0.0.1:4334/fonts/inter-latin-400-600.woff2",
           "initiatorType": "css",
-          "startTime": 849.5,
-          "responseEnd": 1667.8999999761581,
-          "duration": 818.3999999761581,
+          "startTime": 866.5999999642372,
+          "responseEnd": 1690.0999999642372,
+          "duration": 823.5,
           "transferSize": 48556,
           "encodedBodySize": 48256,
           "decodedBodySize": 48256
@@ -15287,9 +15295,9 @@
         {
           "name": "http://127.0.0.1:4334/fonts/newsreader-latin-400.woff2",
           "initiatorType": "css",
-          "startTime": 877.8999999761581,
-          "responseEnd": 1442.6000000238419,
-          "duration": 564.7000000476837,
+          "startTime": 890.3999999761581,
+          "responseEnd": 1474.199999988079,
+          "duration": 583.8000000119209,
           "transferSize": 22780,
           "encodedBodySize": 22480,
           "decodedBodySize": 22480
@@ -15297,9 +15305,9 @@
         {
           "name": "http://127.0.0.1:4334/fonts/syne-latin-800.woff2",
           "initiatorType": "css",
-          "startTime": 912.1000000238419,
-          "responseEnd": 1356.6000000238419,
-          "duration": 444.5,
+          "startTime": 920.7999999523163,
+          "responseEnd": 1363.199999988079,
+          "duration": 442.4000000357628,
           "transferSize": 13984,
           "encodedBodySize": 13684,
           "decodedBodySize": 13684
@@ -15307,9 +15315,9 @@
         {
           "name": "http://127.0.0.1:4334/_astro/preload-helper.CxFQXtKk.js",
           "initiatorType": "script",
-          "startTime": 1043.699999988079,
-          "responseEnd": 1306.5,
-          "duration": 262.80000001192093,
+          "startTime": 1036.3999999761581,
+          "responseEnd": 1289.5999999642372,
+          "duration": 253.19999998807907,
           "transferSize": 1642,
           "encodedBodySize": 1342,
           "decodedBodySize": 1342
@@ -15317,9 +15325,9 @@
         {
           "name": "http://127.0.0.1:4334/_astro/home-cinematic-integration.s5Ot1zVO.js",
           "initiatorType": "script",
-          "startTime": 1310.8999999761581,
-          "responseEnd": 1655.199999988079,
-          "duration": 344.30000001192093,
+          "startTime": 1294.8999999761581,
+          "responseEnd": 1623.199999988079,
+          "duration": 328.30000001192093,
           "transferSize": 7819,
           "encodedBodySize": 7519,
           "decodedBodySize": 7519
@@ -15327,9 +15335,9 @@
         {
           "name": "http://127.0.0.1:4334/_astro/home-operating-field.DcvjkAwK.js",
           "initiatorType": "script",
-          "startTime": 1311.800000011921,
-          "responseEnd": 1591.8999999761581,
-          "duration": 280.0999999642372,
+          "startTime": 1295.5999999642372,
+          "responseEnd": 1557.0999999642372,
+          "duration": 261.5,
           "transferSize": 3347,
           "encodedBodySize": 3047,
           "decodedBodySize": 3047
@@ -15337,9 +15345,9 @@
         {
           "name": "http://127.0.0.1:4334/media/cinematic/phase-3-desktop-vp9-44a1d9facd43.webm",
           "initiatorType": "fetch",
-          "startTime": 1661.8999999761581,
-          "responseEnd": 10822.5,
-          "duration": 9160.600000023842,
+          "startTime": 1645.3999999761581,
+          "responseEnd": 10789.799999952316,
+          "duration": 9144.399999976158,
           "transferSize": 1658594,
           "encodedBodySize": 1658294,
           "decodedBodySize": 1658294
@@ -15347,9 +15355,9 @@
         {
           "name": "http://127.0.0.1:4334/brand/quantum-icon-color.svg",
           "initiatorType": "other",
-          "startTime": 6226.5,
-          "responseEnd": 6459.800000011921,
-          "duration": 233.30000001192093,
+          "startTime": 6280.599999964237,
+          "responseEnd": 6503.699999988079,
+          "duration": 223.10000002384186,
           "transferSize": 1088,
           "encodedBodySize": 788,
           "decodedBodySize": 788
@@ -15359,9 +15367,9 @@
     "posterResource": {
       "name": "http://127.0.0.1:4334/media/cinematic/phase-3-dormant-desktop-03f5490ab11a.png",
       "initiatorType": "img",
-      "startTime": 237.30000001192093,
-      "responseEnd": 6218.600000023842,
-      "duration": 5981.300000011921,
+      "startTime": 235.79999995231628,
+      "responseEnd": 6274.399999976158,
+      "duration": 6038.600000023842,
       "transferSize": 726326,
       "encodedBodySize": 726026,
       "decodedBodySize": 726026
@@ -15370,9 +15378,9 @@
       {
         "name": "http://127.0.0.1:4334/media/cinematic/phase-3-desktop-vp9-44a1d9facd43.webm",
         "initiatorType": "fetch",
-        "startTime": 1661.8999999761581,
-        "responseEnd": 10822.5,
-        "duration": 9160.600000023842,
+        "startTime": 1645.3999999761581,
+        "responseEnd": 10789.799999952316,
+        "duration": 9144.399999976158,
         "transferSize": 1658594,
         "encodedBodySize": 1658294,
         "decodedBodySize": 1658294
@@ -15474,8 +15482,8 @@
           "contentOpacity": 1
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/be1a8d07-95d0-49c5-8a7f-932046864f82",
-          "currentSrc": "blob:http://127.0.0.1:4334/be1a8d07-95d0-49c5-8a7f-932046864f82",
+          "srcAttribute": "blob:http://127.0.0.1:4334/fb86a490-3a65-403d-8b19-56c15e93523f",
+          "currentSrc": "blob:http://127.0.0.1:4334/fb86a490-3a65-403d-8b19-56c15e93523f",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -15662,8 +15670,8 @@
           "contentOpacity": 1
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/52cf2032-02c4-43f7-b25d-89427e57988d",
-          "currentSrc": "blob:http://127.0.0.1:4334/52cf2032-02c4-43f7-b25d-89427e57988d",
+          "srcAttribute": "blob:http://127.0.0.1:4334/532c7abd-96ec-4efe-8f07-e4c31197a843",
+          "currentSrc": "blob:http://127.0.0.1:4334/532c7abd-96ec-4efe-8f07-e4c31197a843",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -15880,8 +15888,8 @@
           "contentOpacity": 0
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/f68c5985-9ed8-4ab1-a0a2-edfacd06dd00",
-          "currentSrc": "blob:http://127.0.0.1:4334/f68c5985-9ed8-4ab1-a0a2-edfacd06dd00",
+          "srcAttribute": "blob:http://127.0.0.1:4334/0c97cb24-87af-4e58-a323-ecf18ba1d985",
+          "currentSrc": "blob:http://127.0.0.1:4334/0c97cb24-87af-4e58-a323-ecf18ba1d985",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -15990,8 +15998,8 @@
           "contentOpacity": 1
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/f68c5985-9ed8-4ab1-a0a2-edfacd06dd00",
-          "currentSrc": "blob:http://127.0.0.1:4334/f68c5985-9ed8-4ab1-a0a2-edfacd06dd00",
+          "srcAttribute": "blob:http://127.0.0.1:4334/0c97cb24-87af-4e58-a323-ecf18ba1d985",
+          "currentSrc": "blob:http://127.0.0.1:4334/0c97cb24-87af-4e58-a323-ecf18ba1d985",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -16322,8 +16330,8 @@
           "contentOpacity": 0
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/b1c780ac-b1f1-4688-8166-7097a214d3dd",
-          "currentSrc": "blob:http://127.0.0.1:4334/b1c780ac-b1f1-4688-8166-7097a214d3dd",
+          "srcAttribute": "blob:http://127.0.0.1:4334/4bb303ea-817a-49ef-ae0c-a92e7947c487",
+          "currentSrc": "blob:http://127.0.0.1:4334/4bb303ea-817a-49ef-ae0c-a92e7947c487",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -16432,8 +16440,8 @@
           "contentOpacity": 1
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/b1c780ac-b1f1-4688-8166-7097a214d3dd",
-          "currentSrc": "blob:http://127.0.0.1:4334/b1c780ac-b1f1-4688-8166-7097a214d3dd",
+          "srcAttribute": "blob:http://127.0.0.1:4334/4bb303ea-817a-49ef-ae0c-a92e7947c487",
+          "currentSrc": "blob:http://127.0.0.1:4334/4bb303ea-817a-49ef-ae0c-a92e7947c487",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -16761,8 +16769,8 @@
         "contentOpacity": 0
       },
       "video": {
-        "srcAttribute": "blob:http://127.0.0.1:4334/70fcbd37-bd56-43b2-b945-297f49656952",
-        "currentSrc": "blob:http://127.0.0.1:4334/70fcbd37-bd56-43b2-b945-297f49656952",
+        "srcAttribute": "blob:http://127.0.0.1:4334/1844daa6-f0fe-48ee-b21d-46b59dfc7345",
+        "currentSrc": "blob:http://127.0.0.1:4334/1844daa6-f0fe-48ee-b21d-46b59dfc7345",
         "readyState": 4,
         "networkState": 1,
         "duration": 9,
@@ -16872,7 +16880,7 @@
       },
       "video": {
         "srcAttribute": null,
-        "currentSrc": "blob:http://127.0.0.1:4334/70fcbd37-bd56-43b2-b945-297f49656952",
+        "currentSrc": "blob:http://127.0.0.1:4334/1844daa6-f0fe-48ee-b21d-46b59dfc7345",
         "readyState": 0,
         "networkState": 0,
         "duration": null,
@@ -17063,8 +17071,8 @@
         "contentOpacity": 0
       },
       "video": {
-        "srcAttribute": "blob:http://127.0.0.1:4334/532baf14-5906-43bc-a878-d44490235de7",
-        "currentSrc": "blob:http://127.0.0.1:4334/532baf14-5906-43bc-a878-d44490235de7",
+        "srcAttribute": "blob:http://127.0.0.1:4334/a8af48a6-1e48-4744-b230-ae02b47b9ab5",
+        "currentSrc": "blob:http://127.0.0.1:4334/a8af48a6-1e48-4744-b230-ae02b47b9ab5",
         "readyState": 4,
         "networkState": 1,
         "duration": 9,
@@ -17789,8 +17797,8 @@
           "contentOpacity": 1
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/08265a4f-8ef8-43dc-8c20-a78b4aa71d15",
-          "currentSrc": "blob:http://127.0.0.1:4334/08265a4f-8ef8-43dc-8c20-a78b4aa71d15",
+          "srcAttribute": "blob:http://127.0.0.1:4334/f0cffb7a-7632-489a-a758-147cf6a8b6fc",
+          "currentSrc": "blob:http://127.0.0.1:4334/f0cffb7a-7632-489a-a758-147cf6a8b6fc",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -18240,8 +18248,8 @@
           "contentOpacity": 1
         },
         "video": {
-          "srcAttribute": "blob:http://127.0.0.1:4334/856e9824-c088-4153-85d1-3adb80611aa2",
-          "currentSrc": "blob:http://127.0.0.1:4334/856e9824-c088-4153-85d1-3adb80611aa2",
+          "srcAttribute": "blob:http://127.0.0.1:4334/f57aae7e-a2f4-486a-90bc-a915fb781150",
+          "currentSrc": "blob:http://127.0.0.1:4334/f57aae7e-a2f4-486a-90bc-a915fb781150",
           "readyState": 4,
           "networkState": 1,
           "duration": 9,
@@ -18378,8 +18386,8 @@
         "contentOpacity": 0
       },
       "video": {
-        "srcAttribute": "blob:http://127.0.0.1:4334/72d0f63d-3bb9-4eef-8bc6-a329ca002b17",
-        "currentSrc": "blob:http://127.0.0.1:4334/72d0f63d-3bb9-4eef-8bc6-a329ca002b17",
+        "srcAttribute": "blob:http://127.0.0.1:4334/d01239f5-179e-4c2d-ac0f-2a9b829f4d18",
+        "currentSrc": "blob:http://127.0.0.1:4334/d01239f5-179e-4c2d-ac0f-2a9b829f4d18",
         "readyState": 4,
         "networkState": 1,
         "duration": 9,
@@ -18488,8 +18496,8 @@
         "contentOpacity": 1
       },
       "video": {
-        "srcAttribute": "blob:http://127.0.0.1:4334/72d0f63d-3bb9-4eef-8bc6-a329ca002b17",
-        "currentSrc": "blob:http://127.0.0.1:4334/72d0f63d-3bb9-4eef-8bc6-a329ca002b17",
+        "srcAttribute": "blob:http://127.0.0.1:4334/d01239f5-179e-4c2d-ac0f-2a9b829f4d18",
+        "currentSrc": "blob:http://127.0.0.1:4334/d01239f5-179e-4c2d-ac0f-2a9b829f4d18",
         "readyState": 4,
         "networkState": 1,
         "duration": 9,
@@ -18537,8 +18545,8 @@
       },
       "longTasks": [
         {
-          "startTime": 72.5,
-          "duration": 103,
+          "startTime": 71,
+          "duration": 111,
           "name": "unknown",
           "attribution": [
             {
@@ -18552,38 +18560,15 @@
           ]
         }
       ],
-      "layoutShifts": [
-        {
-          "startTime": 221.70000004768372,
-          "value": 0.000453112273862043,
-          "hadRecentInput": false,
-          "sources": [
-            {
-              "node": "nav.desktop-nav",
-              "previousRect": {
-                "x": 741.5,
-                "y": 38.15625,
-                "width": 635.5,
-                "height": 44
-              },
-              "currentRect": {
-                "x": 713.15625,
-                "y": 38.15625,
-                "width": 663.84375,
-                "height": 44
-              }
-            }
-          ]
-        }
-      ],
+      "layoutShifts": [],
       "observerErrors": [],
-      "scrollStart": 358,
-      "scrollEnd": 1194.7000000476837,
-      "cls": 0.000453112273862043,
+      "scrollStart": 348.5,
+      "scrollEnd": 1179,
+      "cls": 0,
       "scrollCls": 0,
       "scrollShifts": [],
       "scrollLongTasks": [],
-      "incrementalScrollDuration": 836.7000000476837
+      "incrementalScrollDuration": 830.5
     },
     "network": {
       "runtimeErrors": [],
@@ -19084,8 +19069,8 @@
             "contentOpacity": 1
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/381d9c2b-ede8-4b07-8bb6-856925acbb4d",
-            "currentSrc": "blob:http://127.0.0.1:4334/381d9c2b-ede8-4b07-8bb6-856925acbb4d",
+            "srcAttribute": "blob:http://127.0.0.1:4334/8d65c152-e187-44eb-9618-6058fc95ebaa",
+            "currentSrc": "blob:http://127.0.0.1:4334/8d65c152-e187-44eb-9618-6058fc95ebaa",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -19206,8 +19191,8 @@
             "contentOpacity": 1
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/381d9c2b-ede8-4b07-8bb6-856925acbb4d",
-            "currentSrc": "blob:http://127.0.0.1:4334/381d9c2b-ede8-4b07-8bb6-856925acbb4d",
+            "srcAttribute": "blob:http://127.0.0.1:4334/8d65c152-e187-44eb-9618-6058fc95ebaa",
+            "currentSrc": "blob:http://127.0.0.1:4334/8d65c152-e187-44eb-9618-6058fc95ebaa",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -19418,8 +19403,8 @@
             "contentOpacity": 1
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/c0be8e3e-02bc-41a0-a07e-dd3c49da6db7",
-            "currentSrc": "blob:http://127.0.0.1:4334/c0be8e3e-02bc-41a0-a07e-dd3c49da6db7",
+            "srcAttribute": "blob:http://127.0.0.1:4334/5061391e-d793-4cbd-b234-2dd89ba02d8b",
+            "currentSrc": "blob:http://127.0.0.1:4334/5061391e-d793-4cbd-b234-2dd89ba02d8b",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -19540,8 +19525,8 @@
             "contentOpacity": 1
           },
           "video": {
-            "srcAttribute": "blob:http://127.0.0.1:4334/c0be8e3e-02bc-41a0-a07e-dd3c49da6db7",
-            "currentSrc": "blob:http://127.0.0.1:4334/c0be8e3e-02bc-41a0-a07e-dd3c49da6db7",
+            "srcAttribute": "blob:http://127.0.0.1:4334/5061391e-d793-4cbd-b234-2dd89ba02d8b",
+            "currentSrc": "blob:http://127.0.0.1:4334/5061391e-d793-4cbd-b234-2dd89ba02d8b",
             "readyState": 4,
             "networkState": 1,
             "duration": 9,
@@ -19628,14 +19613,14 @@
     "dispatchError": null,
     "limitation": null,
     "syntheticContinuation": {
-      "observed": true,
-      "observedContinuationPx": 365,
+      "observed": false,
+      "observedContinuationPx": 0,
       "note": "Any post-release movement is evidence from Chromium's synthetic CDP input path only."
     },
     "momentum": {
       "executed": false,
       "passed": null,
-      "observedSyntheticContinuationPx": 365,
+      "observedSyntheticContinuationPx": 0,
       "limitation": "Physical touch/trackpad kinetic momentum was not executed; synthetic CDP continuation is not treated as hardware momentum proof."
     },
     "before": {
@@ -19706,8 +19691,8 @@
         "contentOpacity": 0
       },
       "video": {
-        "srcAttribute": "blob:http://127.0.0.1:4334/f8437217-58d4-4911-b722-33429bf44354",
-        "currentSrc": "blob:http://127.0.0.1:4334/f8437217-58d4-4911-b722-33429bf44354",
+        "srcAttribute": "blob:http://127.0.0.1:4334/6c458a6d-f455-433d-8096-647884c56eab",
+        "currentSrc": "blob:http://127.0.0.1:4334/6c458a6d-f455-433d-8096-647884c56eab",
         "readyState": 4,
         "networkState": 1,
         "duration": 9,
@@ -19816,8 +19801,8 @@
         "contentOpacity": 0
       },
       "video": {
-        "srcAttribute": "blob:http://127.0.0.1:4334/f8437217-58d4-4911-b722-33429bf44354",
-        "currentSrc": "blob:http://127.0.0.1:4334/f8437217-58d4-4911-b722-33429bf44354",
+        "srcAttribute": "blob:http://127.0.0.1:4334/6c458a6d-f455-433d-8096-647884c56eab",
+        "currentSrc": "blob:http://127.0.0.1:4334/6c458a6d-f455-433d-8096-647884c56eab",
         "readyState": 4,
         "networkState": 1,
         "duration": 9,
@@ -19861,7 +19846,7 @@
     "after": {
       "path": "/",
       "hash": "",
-      "scrollY": 889,
+      "scrollY": 524,
       "viewport": {
         "width": 390,
         "height": 844
@@ -19901,13 +19886,13 @@
       "mediaSource": "/media/cinematic/phase-3-mobile-vp9-0ffcf12a431b.webm",
       "mediaDelivery": "blob",
       "mediaState": "ready",
-      "scrollProgress": 0.3511,
-      "cinematicProgress": 0.4507,
-      "targetFrame": 122,
-      "targetTime": 4.0333,
+      "scrollProgress": 0.207,
+      "cinematicProgress": 0.2863,
+      "targetFrame": 78,
+      "targetTime": 2.5667,
       "takeoverProgress": 0,
-      "cssScrollProgress": 0.3511,
-      "cssFilmProgress": 0.4507,
+      "cssScrollProgress": 0.207,
+      "cssFilmProgress": 0.2863,
       "cssTakeover": 0,
       "cssSemantic": 0,
       "stage": {
@@ -19926,12 +19911,12 @@
         "contentOpacity": 0
       },
       "video": {
-        "srcAttribute": "blob:http://127.0.0.1:4334/f8437217-58d4-4911-b722-33429bf44354",
-        "currentSrc": "blob:http://127.0.0.1:4334/f8437217-58d4-4911-b722-33429bf44354",
+        "srcAttribute": "blob:http://127.0.0.1:4334/6c458a6d-f455-433d-8096-647884c56eab",
+        "currentSrc": "blob:http://127.0.0.1:4334/6c458a6d-f455-433d-8096-647884c56eab",
         "readyState": 4,
         "networkState": 1,
         "duration": 9,
-        "currentTime": 4.033333,
+        "currentTime": 2.566666,
         "seeking": false,
         "paused": true,
         "muted": true,
@@ -19959,19 +19944,19 @@
         "mediaFamily": "mobile",
         "codec": "vp9",
         "delivery": "blob",
-        "scrollProgress": 0.3511,
-        "cinematicProgress": 0.4507,
-        "targetFrame": 122,
-        "targetTime": 4.0333,
-        "actualTime": 4.0333,
+        "scrollProgress": 0.207,
+        "cinematicProgress": 0.2863,
+        "targetFrame": 78,
+        "targetTime": 2.5667,
+        "actualTime": 2.5667,
         "takeoverProgress": 0,
         "mediaReady": true
       }
     },
     "media": {
-      "target": 4.0333,
-      "actual": 4.033333,
-      "difference": 0.00003300000000017178,
+      "target": 2.5667,
+      "actual": 2.566666,
+      "difference": 0.00003399999999986747,
       "seeking": false,
       "readyState": 4,
       "mediaState": "ready",
@@ -19982,183 +19967,47 @@
         "scrollEvents": [
           {
             "y": 34,
-            "at": 348.4000000357628
+            "at": 347.89999997615814
           },
           {
             "y": 83,
-            "at": 366.60000002384186
+            "at": 367.30000001192093
           },
           {
             "y": 132,
-            "at": 419.7000000476837
+            "at": 416.89999997615814
           },
           {
             "y": 181,
-            "at": 466.7000000476837
+            "at": 465.5
           },
           {
             "y": 230,
-            "at": 516.1000000238419
+            "at": 516.3999999761581
           },
           {
             "y": 279,
-            "at": 567.3000000119209
+            "at": 566.0999999642372
           },
           {
             "y": 328,
-            "at": 616.3000000119209
+            "at": 615.6999999880791
           },
           {
             "y": 377,
-            "at": 667.3000000119209
+            "at": 666.6999999880791
           },
           {
             "y": 426,
-            "at": 718.4000000357628
+            "at": 716.8000000119209
           },
           {
             "y": 475,
-            "at": 751.4000000357628
+            "at": 766.1999999880791
           },
           {
             "y": 524,
-            "at": 800.9000000357628
-          },
-          {
-            "y": 547,
-            "at": 850.3000000119209
-          },
-          {
-            "y": 566,
-            "at": 865.5
-          },
-          {
-            "y": 586,
-            "at": 882.4000000357628
-          },
-          {
-            "y": 606,
-            "at": 898.9000000357628
-          },
-          {
-            "y": 625,
-            "at": 915.2000000476837
-          },
-          {
-            "y": 643,
-            "at": 932.2000000476837
-          },
-          {
-            "y": 660,
-            "at": 948.5
-          },
-          {
-            "y": 677,
-            "at": 965.2000000476837
-          },
-          {
-            "y": 692,
-            "at": 982.3000000119209
-          },
-          {
-            "y": 707,
-            "at": 999
-          },
-          {
-            "y": 722,
-            "at": 1017.8000000119209
-          },
-          {
-            "y": 735,
-            "at": 1031.7000000476837
-          },
-          {
-            "y": 748,
-            "at": 1048.9000000357628
-          },
-          {
-            "y": 761,
-            "at": 1065.9000000357628
-          },
-          {
-            "y": 773,
-            "at": 1082
-          },
-          {
-            "y": 784,
-            "at": 1098.800000011921
-          },
-          {
-            "y": 794,
-            "at": 1116.1000000238419
-          },
-          {
-            "y": 804,
-            "at": 1131.9000000357628
-          },
-          {
-            "y": 814,
-            "at": 1148.6000000238419
-          },
-          {
-            "y": 823,
-            "at": 1165.7000000476837
-          },
-          {
-            "y": 831,
-            "at": 1182.300000011921
-          },
-          {
-            "y": 839,
-            "at": 1198.5
-          },
-          {
-            "y": 846,
-            "at": 1215.800000011921
-          },
-          {
-            "y": 853,
-            "at": 1232.4000000357628
-          },
-          {
-            "y": 859,
-            "at": 1248.5
-          },
-          {
-            "y": 864,
-            "at": 1265
-          },
-          {
-            "y": 869,
-            "at": 1282.6000000238419
-          },
-          {
-            "y": 874,
-            "at": 1298.5
-          },
-          {
-            "y": 878,
-            "at": 1315.4000000357628
-          },
-          {
-            "y": 882,
-            "at": 1331.9000000357628
-          },
-          {
-            "y": 885,
-            "at": 1349.5
-          },
-          {
-            "y": 887,
-            "at": 1365.6000000238419
-          },
-          {
-            "y": 889,
-            "at": 1382.2000000476837
-          },
-          {
-            "y": 892,
-            "at": 1431.6000000238419
+            "at": 815.5
           }
         ],
         "touchEvents": [
@@ -20166,25 +20015,25 @@
             "type": "touchstart",
             "touches": 1,
             "y": 0,
-            "at": 291.7000000476837
+            "at": 286
           },
           {
             "type": "touchmove",
             "touches": 1,
             "y": 0,
-            "at": 314.9000000357628
+            "at": 316.5
           },
           {
             "type": "touchmove",
             "touches": 1,
             "y": 83,
-            "at": 366.30000001192093
+            "at": 367.19999998807907
           },
           {
             "type": "touchmove",
             "touches": 1,
             "y": 132,
-            "at": 466.5
+            "at": 465.30000001192093
           },
           {
             "type": "touchmove",
@@ -20196,43 +20045,49 @@
             "type": "touchmove",
             "touches": 1,
             "y": 230,
-            "at": 566.4000000357628
+            "at": 565.3000000119209
           },
           {
             "type": "touchmove",
             "touches": 1,
             "y": 279,
-            "at": 567.3000000119209
+            "at": 566.0999999642372
           },
           {
             "type": "touchmove",
             "touches": 1,
             "y": 328,
-            "at": 667
+            "at": 665.8999999761581
           },
           {
             "type": "touchmove",
             "touches": 1,
             "y": 377,
-            "at": 717.9000000357628
+            "at": 716.0999999642372
           },
           {
             "type": "touchmove",
             "touches": 1,
             "y": 426,
-            "at": 751.1000000238419
+            "at": 765.5999999642372
+          },
+          {
+            "type": "touchmove",
+            "touches": 1,
+            "y": 475,
+            "at": 766.0999999642372
           },
           {
             "type": "touchmove",
             "touches": 1,
             "y": 524,
-            "at": 800.8000000119209
+            "at": 865.3999999761581
           },
           {
             "type": "touchend",
             "touches": 0,
             "y": 524,
-            "at": 850.1000000238419
+            "at": 865.5999999642372
           }
         ]
       },
