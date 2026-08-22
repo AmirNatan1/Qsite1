@@ -1,0 +1,1689 @@
+{
+  "schema": "quantum-hub.phase-4-r0-orbit-signal-threshold.source-validation.v1",
+  "status": "PASS",
+  "production_rendering": false,
+  "validation_scope": "read-only Blender 5.2 source validation; no frame or production rendering",
+  "blender_version": "5.2.0 LTS",
+  "accepted_phase4_parent": "ce7bd0cb61bf4b9abd81303d89c5ac1aef089e0c",
+  "source_build_report": {
+    "path": "artifacts/original/phase-4r0-orbit-signal-threshold/source/phase4r0-source-build.json",
+    "bytes": 59473,
+    "sha256": "6bff9e37d32cf1d416542c61887523d9acd5c0f26f00bc1db6780c7b0ff13626"
+  },
+  "accepted_phase3r_source": {
+    "path": "artifacts/original/phase-3-crt-opening/source/quantum-signal-television-phase3-r-crt-authenticity.blend",
+    "bytes": 2222662,
+    "sha256": "4341a3fb7ae29ef9be4472ea23ca9235e36f9609893bc2f37de32e5847d36f26"
+  },
+  "phase4r0_derivative": {
+    "path": "artifacts/original/phase-4r0-orbit-signal-threshold/source/quantum-signal-television-phase4r0-orbit-signal-threshold.blend",
+    "bytes": 2281435,
+    "sha256": "8653336b8a0b90a9898acd9a1f7b8bf10502cfde3000e9818da99b1e44cffcc2"
+  },
+  "quantum_q_authorities": {
+    "reversed": {
+      "path": "public/brand/quantum-icon-white.svg",
+      "bytes": 785,
+      "sha256": "c660ed87bc5293bfbffa662e523343a7e83bc86cb94848912494e85e0dc9d4ff"
+    },
+    "color": {
+      "path": "public/brand/quantum-icon-color.svg",
+      "bytes": 788,
+      "sha256": "04dc37965b33587fea5f4664660f8a7f9a81ec7904d39925b41c6826b80cded9"
+    },
+    "isolation": "exact two-path reversed SVG imported directly and independently geometry-matched; no font, redraw, path edit, or qFund source",
+    "color_constraints": {
+      "reversed_body": "#FFFFFF",
+      "color_master_body": "#515151",
+      "authored_accent": "#D82B72",
+      "geometry_recolor_or_redraw_permitted": false
+    }
+  },
+  "metrics": {
+    "derivative_object_count": 586,
+    "derivative_action_count": 795,
+    "inherited_actions": {
+      "source_action_count": 421,
+      "source_keyframe_count": 17266,
+      "reported_count_mismatches": {},
+      "derivative_nonempty": true,
+      "missing_or_empty_derivative_actions": [],
+      "matched_retimed_points": 17266,
+      "compared_values": 17232,
+      "missing_curves": [],
+      "missing_frames": [],
+      "value_mismatches": [],
+      "boost_curve_count": 384,
+      "boosted_positive_point_count": 1152
+    },
+    "camera_motion": {
+      "desktop": {
+        "structure": true,
+        "samples": 240,
+        "angle_start_degrees": -90.00000250447816,
+        "angle_end_degrees": 270.00000068324533,
+        "angular_travel_degrees": 360.0000031877235,
+        "angle_monotonic": true,
+        "radius_start": 12.000000000000012,
+        "radius_completion": 3.25,
+        "radius_monotonic": true,
+        "elevation_start": 4.800000381469727,
+        "elevation_completion": 0.7499999523162841,
+        "elevation_monotonic": true,
+        "lens_start_mm": 40.0,
+        "lens_completion_mm": 46.0,
+        "lens_monotonic": true,
+        "post_orbit_push": true,
+        "linear_keyframes": true,
+        "diagnostic_path_121_samples_hidden": true
+      },
+      "mobile": {
+        "structure": true,
+        "samples": 240,
+        "angle_start_degrees": -90.00000250447816,
+        "angle_end_degrees": 270.00000068324533,
+        "angular_travel_degrees": 360.0000031877235,
+        "angle_monotonic": true,
+        "radius_start": 8.000000000000009,
+        "radius_completion": 2.7000000476837163,
+        "radius_monotonic": true,
+        "elevation_start": 4.600000095367432,
+        "elevation_completion": 0.6800000190734863,
+        "elevation_monotonic": true,
+        "lens_start_mm": 50.0,
+        "lens_completion_mm": 56.0,
+        "lens_monotonic": true,
+        "post_orbit_push": true,
+        "linear_keyframes": true,
+        "diagnostic_path_121_samples_hidden": true
+      },
+      "landscape": {
+        "structure": true,
+        "samples": 240,
+        "angle_start_degrees": -90.00000250447816,
+        "angle_end_degrees": 270.00000068324533,
+        "angular_travel_degrees": 360.0000031877235,
+        "angle_monotonic": true,
+        "radius_start": 11.50000000000001,
+        "radius_completion": 3.450000047683716,
+        "radius_monotonic": true,
+        "elevation_start": 3.2,
+        "elevation_completion": 0.5500000238418579,
+        "elevation_monotonic": true,
+        "lens_start_mm": 36.0,
+        "lens_completion_mm": 42.0,
+        "lens_monotonic": true,
+        "post_orbit_push": true,
+        "linear_keyframes": true,
+        "diagnostic_path_121_samples_hidden": true
+      }
+    },
+    "conductor_visibility": {
+      "desktop": {
+        "active_segments": 180,
+        "entry_hidden_segments": 5,
+        "arrival_min": 46,
+        "arrival_max": 277,
+        "arrival_monotonic": true,
+        "arrival_errors": [],
+        "visible_counts_forward": {
+          "1": 0,
+          "45": 0,
+          "46": 1,
+          "106": 47,
+          "165": 93,
+          "225": 139,
+          "285": 180,
+          "335": 180,
+          "336": 0,
+          "355": 0,
+          "540": 0
+        },
+        "visible_counts_expected": {
+          "1": 0,
+          "45": 0,
+          "46": 1,
+          "106": 47,
+          "165": 93,
+          "225": 139,
+          "285": 180,
+          "335": 180,
+          "336": 0,
+          "355": 0,
+          "540": 0
+        },
+        "reverse_exact": true,
+        "entry_hidden_all_samples": {
+          "1": true,
+          "285": true,
+          "335": true,
+          "336": true,
+          "540": true
+        },
+        "workbench_materials_magenta": true
+      },
+      "mobile": {
+        "active_segments": 180,
+        "entry_hidden_segments": 5,
+        "arrival_min": 46,
+        "arrival_max": 277,
+        "arrival_monotonic": true,
+        "arrival_errors": [],
+        "visible_counts_forward": {
+          "1": 0,
+          "45": 0,
+          "46": 1,
+          "106": 47,
+          "165": 93,
+          "225": 139,
+          "285": 180,
+          "335": 180,
+          "336": 0,
+          "355": 0,
+          "540": 0
+        },
+        "visible_counts_expected": {
+          "1": 0,
+          "45": 0,
+          "46": 1,
+          "106": 47,
+          "165": 93,
+          "225": 139,
+          "285": 180,
+          "335": 180,
+          "336": 0,
+          "355": 0,
+          "540": 0
+        },
+        "reverse_exact": true,
+        "entry_hidden_all_samples": {
+          "1": true,
+          "285": true,
+          "335": true,
+          "336": true,
+          "540": true
+        },
+        "workbench_materials_magenta": true
+      }
+    },
+    "external_dependencies": {
+      "images": 0,
+      "libraries": 0,
+      "sounds": 0,
+      "speakers": 0,
+      "movie_clips": 0,
+      "cache_files": 0,
+      "external_fonts": [],
+      "external_volumes": [],
+      "external_paths": [],
+      "sequence_strips": []
+    }
+  },
+  "check_count": 54,
+  "failed_count": 0,
+  "checks": [
+    {
+      "id": "blender_5_2_runtime",
+      "status": "PASS",
+      "pass": true,
+      "actual": [
+        5,
+        2,
+        0
+      ],
+      "expected": [
+        5,
+        2,
+        "x"
+      ]
+    },
+    {
+      "id": "opened_exact_derivative",
+      "status": "PASS",
+      "pass": true,
+      "actual": "artifacts/original/phase-4r0-orbit-signal-threshold/source/quantum-signal-television-phase4r0-orbit-signal-threshold.blend",
+      "expected": "artifacts/original/phase-4r0-orbit-signal-threshold/source/quantum-signal-television-phase4r0-orbit-signal-threshold.blend"
+    },
+    {
+      "id": "accepted_source_hash",
+      "status": "PASS",
+      "pass": true,
+      "actual": "4341a3fb7ae29ef9be4472ea23ca9235e36f9609893bc2f37de32e5847d36f26",
+      "expected": "4341a3fb7ae29ef9be4472ea23ca9235e36f9609893bc2f37de32e5847d36f26"
+    },
+    {
+      "id": "accepted_source_distinct",
+      "status": "PASS",
+      "pass": true,
+      "actual": [
+        "artifacts/original/phase-3-crt-opening/source/quantum-signal-television-phase3-r-crt-authenticity.blend",
+        "artifacts/original/phase-4r0-orbit-signal-threshold/source/quantum-signal-television-phase4r0-orbit-signal-threshold.blend"
+      ],
+      "expected": "two distinct files"
+    },
+    {
+      "id": "q_color_authority_hash",
+      "status": "PASS",
+      "pass": true,
+      "actual": "04dc37965b33587fea5f4664660f8a7f9a81ec7904d39925b41c6826b80cded9",
+      "expected": "04dc37965b33587fea5f4664660f8a7f9a81ec7904d39925b41c6826b80cded9"
+    },
+    {
+      "id": "q_reversed_authority_hash",
+      "status": "PASS",
+      "pass": true,
+      "actual": "c660ed87bc5293bfbffa662e523343a7e83bc86cb94848912494e85e0dc9d4ff",
+      "expected": "c660ed87bc5293bfbffa662e523343a7e83bc86cb94848912494e85e0dc9d4ff"
+    },
+    {
+      "id": "build_schema_status",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "schema": "quantum-hub.phase-4-r0-orbit-signal-threshold.source-build.v1",
+        "status": "PASS"
+      },
+      "expected": {
+        "schema": "quantum-hub.phase-4-r0-orbit-signal-threshold.source-build.v1",
+        "status": "PASS"
+      }
+    },
+    {
+      "id": "build_parent_commit",
+      "status": "PASS",
+      "pass": true,
+      "actual": "ce7bd0cb61bf4b9abd81303d89c5ac1aef089e0c",
+      "expected": "ce7bd0cb61bf4b9abd81303d89c5ac1aef089e0c"
+    },
+    {
+      "id": "build_accepted_source_binding",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "path": "artifacts/original/phase-3-crt-opening/source/quantum-signal-television-phase3-r-crt-authenticity.blend",
+        "bytes": 2222662,
+        "sha256": "4341a3fb7ae29ef9be4472ea23ca9235e36f9609893bc2f37de32e5847d36f26"
+      },
+      "expected": {
+        "path": "artifacts/original/phase-3-crt-opening/source/quantum-signal-television-phase3-r-crt-authenticity.blend",
+        "bytes": 2222662,
+        "sha256": "4341a3fb7ae29ef9be4472ea23ca9235e36f9609893bc2f37de32e5847d36f26"
+      }
+    },
+    {
+      "id": "build_derivative_binding",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "path": "artifacts/original/phase-4r0-orbit-signal-threshold/source/quantum-signal-television-phase4r0-orbit-signal-threshold.blend",
+        "bytes": 2281435,
+        "sha256": "8653336b8a0b90a9898acd9a1f7b8bf10502cfde3000e9818da99b1e44cffcc2"
+      },
+      "expected": {
+        "path": "artifacts/original/phase-4r0-orbit-signal-threshold/source/quantum-signal-television-phase4r0-orbit-signal-threshold.blend",
+        "bytes": 2281435,
+        "sha256": "8653336b8a0b90a9898acd9a1f7b8bf10502cfde3000e9818da99b1e44cffcc2"
+      }
+    },
+    {
+      "id": "build_q_reversed_binding",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "path": "public/brand/quantum-icon-white.svg",
+        "bytes": 785,
+        "sha256": "c660ed87bc5293bfbffa662e523343a7e83bc86cb94848912494e85e0dc9d4ff"
+      },
+      "expected": {
+        "path": "public/brand/quantum-icon-white.svg",
+        "bytes": 785,
+        "sha256": "c660ed87bc5293bfbffa662e523343a7e83bc86cb94848912494e85e0dc9d4ff"
+      }
+    },
+    {
+      "id": "build_q_color_binding",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "path": "public/brand/quantum-icon-color.svg",
+        "bytes": 788,
+        "sha256": "04dc37965b33587fea5f4664660f8a7f9a81ec7904d39925b41c6826b80cded9"
+      },
+      "expected": {
+        "path": "public/brand/quantum-icon-color.svg",
+        "bytes": 788,
+        "sha256": "04dc37965b33587fea5f4664660f8a7f9a81ec7904d39925b41c6826b80cded9"
+      }
+    },
+    {
+      "id": "build_production_rendering_false",
+      "status": "PASS",
+      "pass": true,
+      "actual": false,
+      "expected": false
+    },
+    {
+      "id": "scene_schema",
+      "status": "PASS",
+      "pass": true,
+      "actual": "quantum-hub.phase-4-r0-orbit-signal-threshold.previsualization-source.v1",
+      "expected": "quantum-hub.phase-4-r0-orbit-signal-threshold.previsualization-source.v1"
+    },
+    {
+      "id": "scene_parent_commit",
+      "status": "PASS",
+      "pass": true,
+      "actual": "ce7bd0cb61bf4b9abd81303d89c5ac1aef089e0c",
+      "expected": "ce7bd0cb61bf4b9abd81303d89c5ac1aef089e0c"
+    },
+    {
+      "id": "scene_previsualization_only",
+      "status": "PASS",
+      "pass": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "id": "timeline_540f_30fps",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "start": 1,
+        "end": 540,
+        "fps": 30,
+        "fps_base": 1.0
+      },
+      "expected": {
+        "start": 1,
+        "end": 540,
+        "fps": 30,
+        "fps_base": 1.0
+      }
+    },
+    {
+      "id": "build_timeline_contract",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "fps": 30,
+        "frames": [
+          1,
+          540
+        ],
+        "events": {
+          "dormancy_start": 1,
+          "dormancy_hold_end": 45,
+          "conduction_start": 46,
+          "conduction_25": 106,
+          "conduction_50": 165,
+          "conduction_75": 225,
+          "orbit_complete_current_arrival": 285,
+          "indicator_response": 292,
+          "horizontal_line_start": 300,
+          "horizontal_line_peak": 308,
+          "horizontal_line_end": 315,
+          "raster_expansion_start": 316,
+          "raster_expansion_end": 335,
+          "settling_start": 336,
+          "black_stabilized": 355,
+          "q_first_readable": 356,
+          "q_stable": 370,
+          "q_hold_end": 405,
+          "frontal_push_start": 406,
+          "late_approach": 460,
+          "glass_fill": 480,
+          "threshold_crossing": 500,
+          "breathing_start": 501,
+          "breathing_middle": 510,
+          "semantic_geometry_start": 514,
+          "h1_first_readable": 525,
+          "semantic_half_reveal": 531,
+          "settled_entry": 540
+        }
+      },
+      "expected": {
+        "fps": 30,
+        "frames": [
+          1,
+          540
+        ],
+        "events": {
+          "dormancy_start": 1,
+          "dormancy_hold_end": 45,
+          "conduction_start": 46,
+          "conduction_25": 106,
+          "conduction_50": 165,
+          "conduction_75": 225,
+          "orbit_complete_current_arrival": 285,
+          "indicator_response": 292,
+          "horizontal_line_start": 300,
+          "horizontal_line_peak": 308,
+          "horizontal_line_end": 315,
+          "raster_expansion_start": 316,
+          "raster_expansion_end": 335,
+          "settling_start": 336,
+          "black_stabilized": 355,
+          "q_first_readable": 356,
+          "q_stable": 370,
+          "q_hold_end": 405,
+          "frontal_push_start": 406,
+          "late_approach": 460,
+          "glass_fill": 480,
+          "threshold_crossing": 500,
+          "breathing_start": 501,
+          "breathing_middle": 510,
+          "semantic_geometry_start": 514,
+          "h1_first_readable": 525,
+          "semantic_half_reveal": 531,
+          "settled_entry": 540
+        }
+      }
+    },
+    {
+      "id": "build_reports_421_inherited_actions",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "declared": 421,
+        "records": 421,
+        "unique": 421
+      },
+      "expected": 421
+    },
+    {
+      "id": "build_reports_inherited_keyframes",
+      "status": "PASS",
+      "pass": true,
+      "actual": 17266,
+      "expected": 17266
+    },
+    {
+      "id": "reported_inherited_actions_present_nonempty",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "present_nonempty": 421,
+        "reported": 421
+      },
+      "expected": {
+        "present_nonempty": 421,
+        "reported": 421
+      }
+    },
+    {
+      "id": "q_svg_two_path_geometry_authority",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "reversed": {
+          "viewBox": "0 0 109.09 109.09",
+          "path_count": 2,
+          "path_classes": [
+            "cls-1",
+            "cls-2"
+          ],
+          "path_geometry": [
+            "M54.55,0h0C24.47,0,0,24.47,0,54.54s24.47,54.54,54.54,54.54c9.16,0,17.78-2.29,25.37-6.3-3.55-3.32-5.79-8.03-5.79-13.28,0-10.04,8.14-18.18,18.18-18.18,4.75,0,9.06,1.84,12.3,4.82,2.87-6.63,4.48-13.93,4.48-21.6h0C109.08,24.47,84.62,0,54.55,0m0,78.32c-13.11,0-23.78-10.67-23.78-23.78s10.67-23.77,23.78-23.77,23.77,10.67,23.77,23.77-10.67,23.78-23.77,23.78",
+            "M97.42,75.95c-1.55-.52-3.12-.77-4.66-.77-6.08,0-11.76,3.84-13.81,9.92-2.58,7.63,1.52,15.9,9.15,18.48,7.63,2.58,15.9-1.52,18.48-9.15,2.57-7.63-1.52-15.9-9.15-18.48"
+          ],
+          "text_element_count": 0,
+          "transform_attributes": [],
+          "style": ".cls-1{fill:#fff;}.cls-2{fill:#d82b72;}"
+        },
+        "color": {
+          "viewBox": "0 0 109.09 109.09",
+          "path_count": 2,
+          "path_classes": [
+            "cls-2",
+            "cls-1"
+          ],
+          "path_geometry": [
+            "M54.55,0h0C24.47,0,0,24.47,0,54.54s24.47,54.54,54.54,54.54c9.16,0,17.78-2.29,25.37-6.3-3.55-3.32-5.79-8.03-5.79-13.28,0-10.04,8.14-18.18,18.18-18.18,4.75,0,9.06,1.84,12.3,4.82,2.87-6.63,4.48-13.93,4.48-21.6h0C109.08,24.47,84.62,0,54.55,0m0,78.32c-13.11,0-23.78-10.67-23.78-23.78s10.67-23.77,23.78-23.77,23.77,10.67,23.77,23.77-10.67,23.78-23.77,23.78",
+            "M97.42,75.95c-1.55-.52-3.12-.77-4.66-.77-6.08,0-11.76,3.84-13.81,9.92-2.58,7.63,1.52,15.9,9.15,18.48,7.63,2.58,15.9-1.52,18.48-9.15,2.57-7.63-1.52-15.9-9.15-18.48"
+          ],
+          "text_element_count": 0,
+          "transform_attributes": [],
+          "style": ".cls-1{fill:#d82b72;}.cls-2{fill:#515151;}"
+        }
+      },
+      "expected": "same exact two path d attributes, square viewBox, no text or transforms"
+    },
+    {
+      "id": "q_svg_authored_color_contract",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "reversed_style": ".cls-1{fill:#fff;}.cls-2{fill:#d82b72;}",
+        "reversed_classes": [
+          "cls-1",
+          "cls-2"
+        ],
+        "color_style": ".cls-1{fill:#d82b72;}.cls-2{fill:#515151;}",
+        "color_classes": [
+          "cls-2",
+          "cls-1"
+        ]
+      },
+      "expected": {
+        "reversed_body": "#FFFFFF",
+        "color_body": "#515151",
+        "accent_both": "#D82B72"
+      }
+    },
+    {
+      "id": "q_collection_exact_allowlist",
+      "status": "PASS",
+      "pass": true,
+      "actual": [
+        "Phase4R0_ApprovedQuantumQ_Root",
+        "Phase4R0_QuantumQ_Accent",
+        "Phase4R0_QuantumQ_Body"
+      ],
+      "expected": [
+        "Phase4R0_ApprovedQuantumQ_Root",
+        "Phase4R0_QuantumQ_Accent",
+        "Phase4R0_QuantumQ_Body"
+      ]
+    },
+    {
+      "id": "q_exactly_two_curve_objects",
+      "status": "PASS",
+      "pass": true,
+      "actual": [
+        {
+          "name": "Phase4R0_QuantumQ_Body",
+          "type": "CURVE"
+        },
+        {
+          "name": "Phase4R0_QuantumQ_Accent",
+          "type": "CURVE"
+        }
+      ],
+      "expected": [
+        "Phase4R0_QuantumQ_Body",
+        "Phase4R0_QuantumQ_Accent"
+      ]
+    },
+    {
+      "id": "q_root_exact_provenance",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "type": "EMPTY",
+        "source": "quantum-icon-white.svg",
+        "sha256": "c660ed87bc5293bfbffa662e523343a7e83bc86cb94848912494e85e0dc9d4ff"
+      },
+      "expected": {
+        "type": "EMPTY",
+        "source": "quantum-icon-white.svg",
+        "sha256": "c660ed87bc5293bfbffa662e523343a7e83bc86cb94848912494e85e0dc9d4ff"
+      }
+    },
+    {
+      "id": "q_objects_direct_import_provenance",
+      "status": "PASS",
+      "pass": true,
+      "actual": [
+        {
+          "parent": "Phase4R0_ApprovedQuantumQ_Root",
+          "geometry_edited": false,
+          "collections": [
+            "PHASE4R0_Q_SIGNAL"
+          ]
+        },
+        {
+          "parent": "Phase4R0_ApprovedQuantumQ_Root",
+          "geometry_edited": false,
+          "collections": [
+            "PHASE4R0_Q_SIGNAL"
+          ]
+        }
+      ],
+      "expected": "both parented to approved root, geometry_edited=false, exclusively in Q collection"
+    },
+    {
+      "id": "q_exact_authored_roles",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "Phase4R0_QuantumQ_Body": "main body",
+        "Phase4R0_QuantumQ_Accent": "authored lower-right accent"
+      },
+      "expected": {
+        "Phase4R0_QuantumQ_Body": "main body",
+        "Phase4R0_QuantumQ_Accent": "authored lower-right accent"
+      }
+    },
+    {
+      "id": "q_geometry_matches_fresh_blender52_import",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "current": [
+          "e6e460a052da7994818add244bedc938f3a1093f452ae70c024dce214e27f55c",
+          "d4267dcfa756bf76bbd238ed467564adf3ccf4fef1be54f9b96a57adf5c39523"
+        ],
+        "fresh": [
+          "e6e460a052da7994818add244bedc938f3a1093f452ae70c024dce214e27f55c",
+          "d4267dcfa756bf76bbd238ed467564adf3ccf4fef1be54f9b96a57adf5c39523"
+        ],
+        "fresh_objects": [
+          "Curve",
+          "Curve.001"
+        ]
+      },
+      "expected": "body and accent raw spline geometry exactly match fresh import of hashed reversed SVG"
+    },
+    {
+      "id": "q_exact_material_assignment",
+      "status": "PASS",
+      "pass": true,
+      "actual": [
+        [
+          "Phase4R0_Q_WhitePhosphor"
+        ],
+        [
+          "Phase4R0_Q_MagentaPhosphor"
+        ]
+      ],
+      "expected": [
+        [
+          "Phase4R0_Q_WhitePhosphor"
+        ],
+        [
+          "Phase4R0_Q_MagentaPhosphor"
+        ]
+      ]
+    },
+    {
+      "id": "q_no_recolor_authored_reversed_variant",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "body": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "accent": [
+          0.847058833,
+          0.168627456,
+          0.447058827,
+          1.0
+        ],
+        "body_property": "#FFFFFF",
+        "accent_property": "#D82B72"
+      },
+      "expected": {
+        "body": "#FFFFFF",
+        "accent": "#D82B72"
+      }
+    },
+    {
+      "id": "q_no_font_redraw_or_qfund",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "qfund_hits": [],
+        "phase4_font_objects": [],
+        "fresh_import_exact": true
+      },
+      "expected": {
+        "qfund_hits": [],
+        "phase4_font_objects": [],
+        "fresh_import_exact": true
+      }
+    },
+    {
+      "id": "camera_orbit_target_exact",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "type": "EMPTY",
+        "location": [
+          0.649999976,
+          0.0,
+          0.425000012
+        ],
+        "hide_render": true
+      },
+      "expected": {
+        "type": "EMPTY",
+        "location": [
+          0.65,
+          0.0,
+          0.425
+        ],
+        "hide_render": true
+      }
+    },
+    {
+      "id": "three_camera_rigs_360_monotonic",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "desktop": {
+          "structure": true,
+          "samples": 240,
+          "angle_start_degrees": -90.000002504,
+          "angle_end_degrees": 270.000000683,
+          "angular_travel_degrees": 360.000003188,
+          "angle_monotonic": true,
+          "radius_start": 12.0,
+          "radius_completion": 3.25,
+          "radius_monotonic": true,
+          "elevation_start": 4.800000381,
+          "elevation_completion": 0.749999952,
+          "elevation_monotonic": true,
+          "lens_start_mm": 40.0,
+          "lens_completion_mm": 46.0,
+          "lens_monotonic": true,
+          "post_orbit_push": true,
+          "linear_keyframes": true,
+          "diagnostic_path_121_samples_hidden": true
+        },
+        "mobile": {
+          "structure": true,
+          "samples": 240,
+          "angle_start_degrees": -90.000002504,
+          "angle_end_degrees": 270.000000683,
+          "angular_travel_degrees": 360.000003188,
+          "angle_monotonic": true,
+          "radius_start": 8.0,
+          "radius_completion": 2.700000048,
+          "radius_monotonic": true,
+          "elevation_start": 4.600000095,
+          "elevation_completion": 0.680000019,
+          "elevation_monotonic": true,
+          "lens_start_mm": 50.0,
+          "lens_completion_mm": 56.0,
+          "lens_monotonic": true,
+          "post_orbit_push": true,
+          "linear_keyframes": true,
+          "diagnostic_path_121_samples_hidden": true
+        },
+        "landscape": {
+          "structure": true,
+          "samples": 240,
+          "angle_start_degrees": -90.000002504,
+          "angle_end_degrees": 270.000000683,
+          "angular_travel_degrees": 360.000003188,
+          "angle_monotonic": true,
+          "radius_start": 11.5,
+          "radius_completion": 3.450000048,
+          "radius_monotonic": true,
+          "elevation_start": 3.2,
+          "elevation_completion": 0.550000024,
+          "elevation_monotonic": true,
+          "lens_start_mm": 36.0,
+          "lens_completion_mm": 42.0,
+          "lens_monotonic": true,
+          "post_orbit_push": true,
+          "linear_keyframes": true,
+          "diagnostic_path_121_samples_hidden": true
+        }
+      },
+      "expected": "three exact rigs; CCW 360 degrees; contracting radius/elevation; monotonic orbit lens; frontal push; hidden 121-point diagnostic paths"
+    },
+    {
+      "id": "desktop_camera_selected",
+      "status": "PASS",
+      "pass": true,
+      "actual": "Phase4R0_Camera_Desktop",
+      "expected": "Phase4R0_Camera_Desktop"
+    },
+    {
+      "id": "build_camera_report_matches_contract",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "desktop": {
+          "angle_start_degrees": -90.000003,
+          "angle_end_degrees": 270.000001,
+          "total_angular_travel_degrees": 360.000003,
+          "direction": "counter-clockwise viewed from +Z",
+          "radius_start": 12.0,
+          "radius_completion": 3.25,
+          "elevation_start": 4.8,
+          "elevation_completion": 0.75,
+          "distance_start": 12.924396,
+          "distance_completion": 3.335416,
+          "focal_length_start_mm": 40.0,
+          "focal_length_completion_mm": 46.0,
+          "monotonic_angle": true,
+          "monotonic_contracting_radius": true
+        },
+        "mobile": {
+          "angle_start_degrees": -90.000003,
+          "angle_end_degrees": 270.000001,
+          "total_angular_travel_degrees": 360.000003,
+          "direction": "counter-clockwise viewed from +Z",
+          "radius_start": 8.0,
+          "radius_completion": 2.7,
+          "elevation_start": 4.6,
+          "elevation_completion": 0.68,
+          "distance_start": 9.228218,
+          "distance_completion": 2.784313,
+          "focal_length_start_mm": 50.0,
+          "focal_length_completion_mm": 56.0,
+          "monotonic_angle": true,
+          "monotonic_contracting_radius": true
+        },
+        "landscape": {
+          "angle_start_degrees": -90.000003,
+          "angle_end_degrees": 270.000001,
+          "total_angular_travel_degrees": 360.000003,
+          "direction": "counter-clockwise viewed from +Z",
+          "radius_start": 11.5,
+          "radius_completion": 3.45,
+          "elevation_start": 3.2,
+          "elevation_completion": 0.55,
+          "distance_start": 11.936918,
+          "distance_completion": 3.493566,
+          "focal_length_start_mm": 36.0,
+          "focal_length_completion_mm": 42.0,
+          "monotonic_angle": true,
+          "monotonic_contracting_radius": true
+        }
+      },
+      "expected": {
+        "desktop": {
+          "structure": true,
+          "samples": 240,
+          "angle_start_degrees": -90.000002504,
+          "angle_end_degrees": 270.000000683,
+          "angular_travel_degrees": 360.000003188,
+          "angle_monotonic": true,
+          "radius_start": 12.0,
+          "radius_completion": 3.25,
+          "radius_monotonic": true,
+          "elevation_start": 4.800000381,
+          "elevation_completion": 0.749999952,
+          "elevation_monotonic": true,
+          "lens_start_mm": 40.0,
+          "lens_completion_mm": 46.0,
+          "lens_monotonic": true,
+          "post_orbit_push": true,
+          "linear_keyframes": true,
+          "diagnostic_path_121_samples_hidden": true
+        },
+        "mobile": {
+          "structure": true,
+          "samples": 240,
+          "angle_start_degrees": -90.000002504,
+          "angle_end_degrees": 270.000000683,
+          "angular_travel_degrees": 360.000003188,
+          "angle_monotonic": true,
+          "radius_start": 8.0,
+          "radius_completion": 2.700000048,
+          "radius_monotonic": true,
+          "elevation_start": 4.600000095,
+          "elevation_completion": 0.680000019,
+          "elevation_monotonic": true,
+          "lens_start_mm": 50.0,
+          "lens_completion_mm": 56.0,
+          "lens_monotonic": true,
+          "post_orbit_push": true,
+          "linear_keyframes": true,
+          "diagnostic_path_121_samples_hidden": true
+        },
+        "landscape": {
+          "structure": true,
+          "samples": 240,
+          "angle_start_degrees": -90.000002504,
+          "angle_end_degrees": 270.000000683,
+          "angular_travel_degrees": 360.000003188,
+          "angle_monotonic": true,
+          "radius_start": 11.5,
+          "radius_completion": 3.450000048,
+          "radius_monotonic": true,
+          "elevation_start": 3.2,
+          "elevation_completion": 0.550000024,
+          "elevation_monotonic": true,
+          "lens_start_mm": 36.0,
+          "lens_completion_mm": 42.0,
+          "lens_monotonic": true,
+          "post_orbit_push": true,
+          "linear_keyframes": true,
+          "diagnostic_path_121_samples_hidden": true
+        }
+      }
+    },
+    {
+      "id": "conductor_progression_and_reverse_visibility",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "desktop": {
+          "active_segments": 180,
+          "entry_hidden_segments": 5,
+          "arrival_min": 46,
+          "arrival_max": 277,
+          "arrival_monotonic": true,
+          "arrival_errors": [],
+          "visible_counts_forward": {
+            "1": 0,
+            "45": 0,
+            "46": 1,
+            "106": 47,
+            "165": 93,
+            "225": 139,
+            "285": 180,
+            "335": 180,
+            "336": 0,
+            "355": 0,
+            "540": 0
+          },
+          "visible_counts_expected": {
+            "1": 0,
+            "45": 0,
+            "46": 1,
+            "106": 47,
+            "165": 93,
+            "225": 139,
+            "285": 180,
+            "335": 180,
+            "336": 0,
+            "355": 0,
+            "540": 0
+          },
+          "reverse_exact": true,
+          "entry_hidden_all_samples": {
+            "1": true,
+            "285": true,
+            "335": true,
+            "336": true,
+            "540": true
+          },
+          "workbench_materials_magenta": true
+        },
+        "mobile": {
+          "active_segments": 180,
+          "entry_hidden_segments": 5,
+          "arrival_min": 46,
+          "arrival_max": 277,
+          "arrival_monotonic": true,
+          "arrival_errors": [],
+          "visible_counts_forward": {
+            "1": 0,
+            "45": 0,
+            "46": 1,
+            "106": 47,
+            "165": 93,
+            "225": 139,
+            "285": 180,
+            "335": 180,
+            "336": 0,
+            "355": 0,
+            "540": 0
+          },
+          "visible_counts_expected": {
+            "1": 0,
+            "45": 0,
+            "46": 1,
+            "106": 47,
+            "165": 93,
+            "225": 139,
+            "285": 180,
+            "335": 180,
+            "336": 0,
+            "355": 0,
+            "540": 0
+          },
+          "reverse_exact": true,
+          "entry_hidden_all_samples": {
+            "1": true,
+            "285": true,
+            "335": true,
+            "336": true,
+            "540": true
+          },
+          "workbench_materials_magenta": true
+        }
+      },
+      "expected": "desktop/mobile each 180 active + 5 entry-hidden; progress-derived arrival; exact forward/reverse visibility; hidden at settling; authored magenta signal"
+    },
+    {
+      "id": "indicator_response_and_reverse_visibility",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "forward": {
+          "1": true,
+          "285": true,
+          "291": true,
+          "292": false,
+          "540": false
+        },
+        "reverse": {
+          "540": false,
+          "292": false,
+          "291": true,
+          "285": true,
+          "1": true
+        }
+      },
+      "expected": {
+        "1": true,
+        "285": true,
+        "291": true,
+        "292": false,
+        "540": false
+      }
+    },
+    {
+      "id": "build_conductor_report_matches_scene",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "desktop": {
+          "active_segments": 180,
+          "entry_hidden_segments": 5
+        },
+        "mobile": {
+          "active_segments": 180,
+          "entry_hidden_segments": 5
+        },
+        "indicator": {
+          "object": "CRT_DormantPowerIndicator",
+          "response_frame": 292
+        }
+      },
+      "expected": {
+        "desktop": {
+          "active_segments": 180,
+          "entry_hidden_segments": 5
+        },
+        "mobile": {
+          "active_segments": 180,
+          "entry_hidden_segments": 5
+        },
+        "indicator_response": 292
+      }
+    },
+    {
+      "id": "raster_expansion_settling_events",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "desktop": {
+          "315": 0.0,
+          "316": 0.100000001,
+          "320": 0.460000008,
+          "325": 1.080000043,
+          "330": 1.340000033,
+          "335": 1.149999976,
+          "342": 0.720000029,
+          "350": 0.280000001,
+          "355": 0.099999994,
+          "356": 0.079999998,
+          "370": 0.059999999,
+          "405": 0.039999992,
+          "460": 0.02,
+          "480": 0.01,
+          "500": 0.0
+        },
+        "mobile": {
+          "315": 0.0,
+          "316": 0.093999997,
+          "320": 0.432399988,
+          "325": 1.015200019,
+          "330": 1.259600043,
+          "335": 1.08099997,
+          "342": 0.676800013,
+          "350": 0.263200015,
+          "355": 0.093999997,
+          "356": 0.075199999,
+          "370": 0.056400001,
+          "405": 0.037599996,
+          "460": 0.0188,
+          "480": 0.0094,
+          "500": 0.0
+        }
+      },
+      "expected": {
+        "desktop": {
+          "315": 0.0,
+          "316": 0.1,
+          "320": 0.46,
+          "325": 1.08,
+          "330": 1.34,
+          "335": 1.15,
+          "342": 0.72,
+          "350": 0.28,
+          "355": 0.1,
+          "356": 0.08,
+          "370": 0.06,
+          "405": 0.04,
+          "460": 0.02,
+          "480": 0.01,
+          "500": 0.0
+        },
+        "mobile": {
+          "315": 0.0,
+          "316": 0.094,
+          "320": 0.4324,
+          "325": 1.0152,
+          "330": 1.2596,
+          "335": 1.081,
+          "342": 0.6768,
+          "350": 0.2632,
+          "355": 0.094,
+          "356": 0.0752,
+          "370": 0.0564,
+          "405": 0.0376,
+          "460": 0.0188,
+          "480": 0.0094,
+          "500": 0.0
+        }
+      }
+    },
+    {
+      "id": "horizontal_line_to_raster_event",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "299": {
+          "hidden": [
+            true,
+            true,
+            true
+          ],
+          "strengths": [
+            0.011640569,
+            0.022553602,
+            0.058202837
+          ]
+        },
+        "300": {
+          "hidden": [
+            false,
+            false,
+            false
+          ],
+          "strengths": [
+            0.057599999,
+            0.111599997,
+            0.287999988
+          ]
+        },
+        "308": {
+          "hidden": [
+            false,
+            false,
+            false
+          ],
+          "strengths": [
+            0.319999993,
+            0.620000005,
+            1.600000024
+          ]
+        },
+        "315": {
+          "hidden": [
+            false,
+            false,
+            false
+          ],
+          "strengths": [
+            0.159999996,
+            0.310000002,
+            0.800000012
+          ]
+        },
+        "320": {
+          "hidden": [
+            true,
+            true,
+            true
+          ],
+          "strengths": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "expected": "hidden F299; visible F300; neutral three-layer peak F308; transition F315; zero and hidden by F320"
+    },
+    {
+      "id": "q_readable_hold_threshold_events",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "emission": {
+          "355": [
+            0.0,
+            0.0
+          ],
+          "356": [
+            0.850000024,
+            0.850000024
+          ],
+          "361": [
+            1.804628611,
+            1.804628611
+          ],
+          "370": [
+            2.150000095,
+            2.150000095
+          ],
+          "405": [
+            2.049999952,
+            2.049999952
+          ],
+          "460": [
+            1.450000048,
+            1.450000048
+          ],
+          "480": [
+            0.819999993,
+            0.819999993
+          ],
+          "500": [
+            0.200000003,
+            0.200000003
+          ],
+          "501": [
+            0.200000003,
+            0.200000003
+          ]
+        },
+        "visibility": {
+          "355": [
+            true,
+            true
+          ],
+          "356": [
+            false,
+            false
+          ],
+          "361": [
+            false,
+            false
+          ],
+          "370": [
+            false,
+            false
+          ],
+          "405": [
+            false,
+            false
+          ],
+          "460": [
+            false,
+            false
+          ],
+          "480": [
+            false,
+            false
+          ],
+          "500": [
+            false,
+            false
+          ],
+          "501": [
+            true,
+            true
+          ]
+        },
+        "root_scale": {
+          "355": [
+            11.569999695,
+            11.569999695,
+            11.569999695
+          ],
+          "356": [
+            11.569999695,
+            11.569999695,
+            11.569999695
+          ],
+          "361": [
+            11.779999733,
+            11.779999733,
+            11.779999733
+          ],
+          "370": [
+            11.699999809,
+            11.699999809,
+            11.699999809
+          ],
+          "405": [
+            11.699999809,
+            11.699999809,
+            11.699999809
+          ],
+          "460": [
+            11.699999809,
+            11.699999809,
+            11.699999809
+          ],
+          "480": [
+            11.699999809,
+            11.699999809,
+            11.699999809
+          ],
+          "500": [
+            11.699999809,
+            11.699999809,
+            11.699999809
+          ],
+          "501": [
+            11.699999809,
+            11.699999809,
+            11.699999809
+          ]
+        }
+      },
+      "expected": "hidden/zero F355; first readable F356; restrained settle by F370; hold through F405; attenuate to F500; hidden F501"
+    },
+    {
+      "id": "proving_extension_exact_allowlist",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "members": [
+          "P4R0_ProvingGround_FieldExtension"
+        ],
+        "children": [],
+        "material_slots": [
+          "P4R0_ProvingGround_DarkAggregateTerrain_Extension"
+        ],
+        "accepted_terrain_edited": false
+      },
+      "expected": {
+        "members": [
+          "P4R0_ProvingGround_FieldExtension"
+        ],
+        "children": [],
+        "material": "P4R0_ProvingGround_DarkAggregateTerrain_Extension",
+        "accepted_terrain_edited": false
+      }
+    },
+    {
+      "id": "proving_extension_exact_bounds_and_separation",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "accepted": {
+          "min": [
+            -5.0,
+            -5.0,
+            -0.059999999
+          ],
+          "max": [
+            5.0,
+            5.0,
+            0.0
+          ]
+        },
+        "extension": {
+          "min": [
+            -15.0,
+            -15.0,
+            -0.060999997
+          ],
+          "max": [
+            15.0,
+            15.0,
+            -0.001
+          ]
+        }
+      },
+      "expected": {
+        "accepted": {
+          "min": [
+            -5,
+            -5,
+            -0.06
+          ],
+          "max": [
+            5,
+            5,
+            0
+          ]
+        },
+        "extension": {
+          "min": [
+            -15,
+            -15,
+            -0.061
+          ],
+          "max": [
+            15,
+            15,
+            -0.001
+          ]
+        },
+        "bottom_separation_m": 0.001
+      }
+    },
+    {
+      "id": "proving_extension_exact_bevel",
+      "status": "PASS",
+      "pass": true,
+      "actual": [
+        {
+          "type": "BEVEL",
+          "width": 0.01,
+          "segments": 6,
+          "limit": "ANGLE"
+        }
+      ],
+      "expected": [
+        {
+          "type": "BEVEL",
+          "width": 0.01,
+          "segments": 6,
+          "limit": "ANGLE"
+        }
+      ]
+    },
+    {
+      "id": "proving_extension_material_exact_clone_override",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "normalized_clone_exact": true,
+        "values": {
+          "accepted_noise_scale": 240.0,
+          "extension_noise_scale": 720.0,
+          "base_color": [
+            0.014,
+            0.017000001,
+            0.017999999,
+            1.0
+          ],
+          "roughness": 0.819999993,
+          "bump_strength": 0.109999999,
+          "bump_distance": 0.00045
+        }
+      },
+      "expected": {
+        "normalized_clone_exact": true,
+        "accepted_noise_scale": 240,
+        "extension_noise_scale": 720,
+        "base_color": [
+          0.014,
+          0.017,
+          0.018
+        ],
+        "roughness": 0.82,
+        "bump_strength": 0.11,
+        "bump_distance": 0.00045,
+        "image_textures": 0
+      }
+    },
+    {
+      "id": "proving_extension_named_datablock_allowlist",
+      "status": "PASS",
+      "pass": true,
+      "actual": [
+        "P4R0_ProvingGround_DarkAggregateTerrain_Extension",
+        "P4R0_ProvingGround_FieldExtension",
+        "P4R0_ProvingGround_FieldExtension_Mesh"
+      ],
+      "expected": [
+        "P4R0_ProvingGround_DarkAggregateTerrain_Extension",
+        "P4R0_ProvingGround_FieldExtension",
+        "P4R0_ProvingGround_FieldExtension_Mesh"
+      ]
+    },
+    {
+      "id": "superseded_interface_portal_collections_hidden",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "CRT_PHYSICAL_SIGNAL_INTERFACE": {
+          "hide_render": true,
+          "hide_viewport": true,
+          "reason": "superseded screen-content/portal hierarchy hidden only in Phase 4-R0 derivative"
+        },
+        "CRT_PORTAL_TAKEOVER_CUES": {
+          "hide_render": true,
+          "hide_viewport": true,
+          "reason": "superseded screen-content/portal hierarchy hidden only in Phase 4-R0 derivative"
+        }
+      },
+      "expected": {
+        "CRT_PHYSICAL_SIGNAL_INTERFACE": {
+          "hide_render": true,
+          "hide_viewport": true,
+          "reason": "superseded screen-content/portal hierarchy hidden only in Phase 4-R0 derivative"
+        },
+        "CRT_PORTAL_TAKEOVER_CUES": {
+          "hide_render": true,
+          "hide_viewport": true,
+          "reason": "superseded screen-content/portal hierarchy hidden only in Phase 4-R0 derivative"
+        }
+      }
+    },
+    {
+      "id": "no_external_images_libraries_audio_or_cache",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "images": 0,
+        "libraries": 0,
+        "sounds": 0,
+        "speakers": 0,
+        "movie_clips": 0,
+        "cache_files": 0,
+        "external_fonts": [],
+        "external_volumes": [],
+        "external_paths": [],
+        "sequence_strips": []
+      },
+      "expected": "zero image/library/sound/speaker/movie-clip/cache datablocks; no external fonts/volumes/paths; no sequence strips"
+    },
+    {
+      "id": "production_rendering_false",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "validator_render_calls": 0,
+        "build_production_rendering_started": false,
+        "scene_not_production_render": true,
+        "engine": "BLENDER_EEVEE",
+        "resolution": [
+          960,
+          600,
+          100
+        ]
+      },
+      "expected": {
+        "validator_render_calls": 0,
+        "build_production_rendering_started": false,
+        "scene_not_production_render": true,
+        "engine": "EEVEE previsualization",
+        "resolution": [
+          960,
+          600,
+          100
+        ]
+      }
+    },
+    {
+      "id": "independent_421_layered_actions_retimed_nonempty",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "source_action_count": 421,
+        "source_keyframe_count": 17266,
+        "reported_count_mismatches": {},
+        "derivative_nonempty": true,
+        "missing_or_empty_derivative_actions": [],
+        "matched_retimed_points": 17266,
+        "compared_values": 17232,
+        "missing_curves": [],
+        "missing_frames": [],
+        "value_mismatches": [],
+        "boost_curve_count": 384,
+        "boosted_positive_point_count": 1152
+      },
+      "expected": {
+        "source_action_count": 421,
+        "source_keyframe_count": 17266,
+        "matched_retimed_points": 17266,
+        "missing_curves": [],
+        "missing_frames": [],
+        "value_mismatches": [],
+        "reported_count_mismatches": {},
+        "derivative_nonempty": true
+      }
+    },
+    {
+      "id": "independent_conduction_boost_scope",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "independent_curve_count": 384,
+        "independent_positive_points": 1152,
+        "build_report": {
+          "factor": 2.0,
+          "curve_count": 384,
+          "positive_keyframe_count": 1152,
+          "scope": "conductor emission strength and local contact-light energy only; geometry and authored color unchanged"
+        }
+      },
+      "expected": {
+        "factor": 2.0,
+        "curve_count": 384,
+        "positive_keyframes": 1152,
+        "scope": "conductor emission and local contact-light energy only"
+      }
+    },
+    {
+      "id": "accepted_proving_terrain_unchanged_from_hashed_source",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "derivative_signature_sha256": "963a5cadc9482e968a4347b3bd55fe57c0a687a7548b8435ec8315d0c3869175",
+        "accepted_source_signature_sha256": "963a5cadc9482e968a4347b3bd55fe57c0a687a7548b8435ec8315d0c3869175"
+      },
+      "expected": "exact object/mesh/modifier/material authority signature match"
+    },
+    {
+      "id": "build_preservation_counts_and_source_safety",
+      "status": "PASS",
+      "pass": true,
+      "actual": {
+        "build": {
+          "cabinet_and_cable_inherited_from_exact_hashed_source": true,
+          "object_count_before": 567,
+          "object_count_after": 586,
+          "accepted_source_overwritten": false
+        },
+        "accepted_objects": 567,
+        "derivative_objects": 586
+      },
+      "expected": {
+        "exact_hashed_source": true,
+        "object_count_before": 567,
+        "object_count_after": 586,
+        "accepted_source_overwritten": false
+      }
+    }
+  ]
+}

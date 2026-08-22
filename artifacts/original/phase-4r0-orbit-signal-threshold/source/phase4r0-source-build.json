@@ -1,0 +1,2294 @@
+{
+  "schema": "quantum-hub.phase-4-r0-orbit-signal-threshold.source-build.v1",
+  "status": "PASS",
+  "production_rendering_started": false,
+  "blender_version": "5.2.0 LTS",
+  "accepted_phase4_parent": "ce7bd0cb61bf4b9abd81303d89c5ac1aef089e0c",
+  "accepted_phase3r_source": {
+    "path": "artifacts/original/phase-3-crt-opening/source/quantum-signal-television-phase3-r-crt-authenticity.blend",
+    "bytes": 2222662,
+    "sha256": "4341a3fb7ae29ef9be4472ea23ca9235e36f9609893bc2f37de32e5847d36f26"
+  },
+  "phase4r0_derivative": {
+    "path": "artifacts/original/phase-4r0-orbit-signal-threshold/source/quantum-signal-television-phase4r0-orbit-signal-threshold.blend",
+    "bytes": 2281435,
+    "sha256": "8653336b8a0b90a9898acd9a1f7b8bf10502cfde3000e9818da99b1e44cffcc2"
+  },
+  "quantum_q": {
+    "source": {
+      "path": "public/brand/quantum-icon-white.svg",
+      "bytes": 785,
+      "sha256": "c660ed87bc5293bfbffa662e523343a7e83bc86cb94848912494e85e0dc9d4ff"
+    },
+    "color_authority": {
+      "path": "public/brand/quantum-icon-color.svg",
+      "bytes": 788,
+      "sha256": "04dc37965b33587fea5f4664660f8a7f9a81ec7904d39925b41c6826b80cded9"
+    },
+    "isolation": "approved isolated two-path SVG imported directly; no trace, font, redraw, path edit, or qFund asset",
+    "objects": [
+      {
+        "object": "Phase4R0_QuantumQ_Body",
+        "imported_dimensions_m": [
+          0.03078543,
+          0.030778928
+        ]
+      },
+      {
+        "object": "Phase4R0_QuantumQ_Accent",
+        "imported_dimensions_m": [
+          0.008219145,
+          0.00822462
+        ]
+      }
+    ]
+  },
+  "draft_raster_surface": {
+    "object": "Phase4R0_ConvexDraftRasterSurface",
+    "material": "Phase4R0_NeutralWarmDraftRaster",
+    "source_mesh": "CRT_InternalPhosphorLayer",
+    "source_mesh_edited": false,
+    "screen_depth_local_bounds_m": [
+      -0.394,
+      -0.388
+    ],
+    "screen_depth_world_bounds_m": [
+      -0.11399999999999999,
+      -0.10799999999999998
+    ],
+    "draft_only_front_of_glass_legibility_surface": true,
+    "raster_bands": 160.0,
+    "tone": "neutral warm-white #D8D2C6",
+    "scale_keys": [
+      {
+        "frame": 315,
+        "scale": [
+          0.88,
+          1.0,
+          0.002
+        ]
+      },
+      {
+        "frame": 316,
+        "scale": [
+          0.89,
+          1.0,
+          0.008
+        ]
+      },
+      {
+        "frame": 320,
+        "scale": [
+          0.92,
+          1.0,
+          0.15
+        ]
+      },
+      {
+        "frame": 325,
+        "scale": [
+          0.96,
+          1.0,
+          0.45
+        ]
+      },
+      {
+        "frame": 330,
+        "scale": [
+          0.99,
+          1.0,
+          0.75
+        ]
+      },
+      {
+        "frame": 335,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "frame": 355,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "frame": 500,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    ],
+    "visibility_keys": [
+      {
+        "frame": 1,
+        "hide_render": true
+      },
+      {
+        "frame": 315,
+        "hide_render": true
+      },
+      {
+        "frame": 316,
+        "hide_render": false
+      },
+      {
+        "frame": 355,
+        "hide_render": false
+      },
+      {
+        "frame": 356,
+        "hide_render": true
+      },
+      {
+        "frame": 500,
+        "hide_render": true
+      }
+    ],
+    "strength_keys": [
+      {
+        "frame": 315,
+        "strength": 0.0
+      },
+      {
+        "frame": 316,
+        "strength": 0.3
+      },
+      {
+        "frame": 320,
+        "strength": 1.0
+      },
+      {
+        "frame": 325,
+        "strength": 2.0
+      },
+      {
+        "frame": 330,
+        "strength": 2.6
+      },
+      {
+        "frame": 335,
+        "strength": 2.0
+      },
+      {
+        "frame": 342,
+        "strength": 1.2
+      },
+      {
+        "frame": 350,
+        "strength": 0.5
+      },
+      {
+        "frame": 355,
+        "strength": 0.15
+      },
+      {
+        "frame": 356,
+        "strength": 0.06
+      },
+      {
+        "frame": 370,
+        "strength": 0.04
+      },
+      {
+        "frame": 405,
+        "strength": 0.015
+      },
+      {
+        "frame": 460,
+        "strength": 0.008
+      },
+      {
+        "frame": 480,
+        "strength": 0.003
+      },
+      {
+        "frame": 500,
+        "strength": 0.0
+      }
+    ]
+  },
+  "timeline": {
+    "fps": 30,
+    "frames": [
+      1,
+      540
+    ],
+    "duration_seconds": 18.0,
+    "events": {
+      "dormancy_start": 1,
+      "dormancy_hold_end": 45,
+      "conduction_start": 46,
+      "conduction_25": 106,
+      "conduction_50": 165,
+      "conduction_75": 225,
+      "orbit_complete_current_arrival": 285,
+      "indicator_response": 292,
+      "horizontal_line_start": 300,
+      "horizontal_line_peak": 308,
+      "horizontal_line_end": 315,
+      "raster_expansion_start": 316,
+      "raster_expansion_end": 335,
+      "settling_start": 336,
+      "black_stabilized": 355,
+      "q_first_readable": 356,
+      "q_stable": 370,
+      "q_hold_end": 405,
+      "frontal_push_start": 406,
+      "late_approach": 460,
+      "glass_fill": 480,
+      "threshold_crossing": 500,
+      "breathing_start": 501,
+      "breathing_middle": 510,
+      "semantic_geometry_start": 514,
+      "h1_first_readable": 525,
+      "semantic_half_reveal": 531,
+      "settled_entry": 540
+    },
+    "retimed_inherited_actions": {
+      "actions": [
+        {
+          "action": "CRT_ConnectorArrivalResponseRingAction",
+          "keyframes": 2
+        },
+        {
+          "action": "CRT_InterfaceRouteCarrierAction",
+          "keyframes": 5
+        },
+        {
+          "action": "CRT_InterfaceStatusAction",
+          "keyframes": 5
+        },
+        {
+          "action": "CRT_InterfaceTitleAction",
+          "keyframes": 5
+        },
+        {
+          "action": "CRT_InternalPhosphorLayerAction.001",
+          "keyframes": 42
+        },
+        {
+          "action": "Phase3_AnimatedPhosphorAction",
+          "keyframes": 39
+        },
+        {
+          "action": "Phase3_AnimatedSmokedGlassAction",
+          "keyframes": 15
+        },
+        {
+          "action": "Phase3_Camera_DesktopAction",
+          "keyframes": 63
+        },
+        {
+          "action": "Phase3_Camera_MobileAction",
+          "keyframes": 63
+        },
+        {
+          "action": "Phase3_ConnectorArrivalResponseAction",
+          "keyframes": 28
+        },
+        {
+          "action": "Phase3_DesktopConductor_001Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_002Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_003Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_004Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_005Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_006Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_007Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_008Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_009Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_010Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_011Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_012Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_013Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_014Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_015Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_016Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_017Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_018Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_019Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_020Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_021Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_022Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_023Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_024Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_025Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_026Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_027Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_028Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_029Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_030Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_031Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_032Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_033Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_034Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_035Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_036Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_037Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_038Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_039Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_040Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_041Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_042Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_043Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_044Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_045Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_046Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_047Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_048Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_049Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_050Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_051Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_052Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_053Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_054Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_055Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_056Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_057Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_058Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_059Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_060Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_061Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_062Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_063Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_064Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_065Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_066Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_067Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_068Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_069Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_070Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_071Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_072Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_073Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_074Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_075Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_076Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_077Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_078Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_079Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_080Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_081Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_082Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_083Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_084Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_085Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_086Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_087Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_088Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_089Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_090Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_091Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_092Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_093Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_094Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_095Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_096Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_097Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_098Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_099Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_100Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_101Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_102Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_103Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_104Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_105Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_106Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_107Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_108Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_109Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_110Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_111Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_112Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_113Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_114Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_115Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_116Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_117Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_118Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_119Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_120Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_121Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_122Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_123Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_124Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_125Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_126Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_127Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_128Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_129Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_130Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_131Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_132Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_133Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_134Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_135Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_136Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_137Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_138Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_139Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_140Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_141Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_142Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_143Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_144Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_145Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_146Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_147Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_148Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_149Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_150Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_151Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_152Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_153Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_154Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_155Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_156Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_157Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_158Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_159Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_160Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_161Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_162Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_163Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_164Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_165Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_166Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_167Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_168Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_169Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_170Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_171Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_172Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_173Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_174Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_175Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_176Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_177Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_178Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_179Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopConductor_180Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_DesktopContactLight_01_DataAction",
+          "keyframes": 5
+        },
+        {
+          "action": "Phase3_DesktopContactLight_02_DataAction",
+          "keyframes": 5
+        },
+        {
+          "action": "Phase3_DesktopContactLight_03_DataAction",
+          "keyframes": 5
+        },
+        {
+          "action": "Phase3_DesktopContactLight_04_DataAction",
+          "keyframes": 5
+        },
+        {
+          "action": "Phase3_DesktopContactLight_05_DataAction",
+          "keyframes": 5
+        },
+        {
+          "action": "Phase3_DesktopContactLight_06_DataAction",
+          "keyframes": 5
+        },
+        {
+          "action": "Phase3_DesktopContactLight_07_DataAction",
+          "keyframes": 5
+        },
+        {
+          "action": "Phase3_DesktopContactLight_08_DataAction",
+          "keyframes": 5
+        },
+        {
+          "action": "Phase3_DesktopContactLight_09_DataAction",
+          "keyframes": 5
+        },
+        {
+          "action": "Phase3_DesktopContactLight_10_DataAction",
+          "keyframes": 5
+        },
+        {
+          "action": "Phase3_DesktopContactLight_11_DataAction",
+          "keyframes": 5
+        },
+        {
+          "action": "Phase3_DesktopContactLight_12_DataAction",
+          "keyframes": 5
+        },
+        {
+          "action": "Phase3_Interface_BrandAction",
+          "keyframes": 44
+        },
+        {
+          "action": "Phase3_Interface_ReadyAction",
+          "keyframes": 44
+        },
+        {
+          "action": "Phase3_Interface_RouteAction",
+          "keyframes": 44
+        },
+        {
+          "action": "Phase3_MobileConductor_001Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_002Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_003Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_004Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_005Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_006Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_007Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_008Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_009Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_010Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_011Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_012Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_013Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_014Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_015Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_016Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_017Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_018Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_019Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_020Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_021Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_022Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_023Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_024Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_025Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_026Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_027Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_028Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_029Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_030Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_031Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_032Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_033Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_034Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_035Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_036Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_037Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_038Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_039Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_040Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_041Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_042Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_043Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_044Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_045Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_046Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_047Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_048Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_049Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_050Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_051Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_052Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_053Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_054Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_055Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_056Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_057Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_058Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_059Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_060Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_061Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_062Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_063Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_064Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_065Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_066Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_067Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_068Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_069Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_070Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_071Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_072Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_073Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_074Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_075Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_076Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_077Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_078Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_079Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_080Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_081Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_082Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_083Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_084Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_085Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_086Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_087Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_088Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_089Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_090Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_091Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_092Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_093Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_094Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_095Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_096Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_097Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_098Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_099Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_100Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_101Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_102Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_103Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_104Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_105Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_106Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_107Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_108Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_109Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_110Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_111Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_112Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_113Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_114Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_115Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_116Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_117Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_118Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_119Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_120Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_121Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_122Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_123Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_124Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_125Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_126Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_127Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_128Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_129Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_130Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_131Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_132Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_133Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_134Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_135Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_136Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_137Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_138Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_139Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_140Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_141Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_142Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_143Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_144Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_145Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_146Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_147Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_148Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_149Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_150Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_151Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_152Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_153Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_154Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_155Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_156Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_157Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_158Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_159Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_160Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_161Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_162Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_163Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_164Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_165Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_166Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_167Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_168Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_169Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_170Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_171Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_172Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_173Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_174Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_175Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_176Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_177Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_178Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_179Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileConductor_180Action",
+          "keyframes": 45
+        },
+        {
+          "action": "Phase3_MobileContactLight_01_DataAction",
+          "keyframes": 5
+        },
+        {
+          "action": "Phase3_MobileContactLight_02_DataAction",
+          "keyframes": 5
+        },
+        {
+          "action": "Phase3_MobileContactLight_03_DataAction",
+          "keyframes": 5
+        },
+        {
+          "action": "Phase3_MobileContactLight_04_DataAction",
+          "keyframes": 5
+        },
+        {
+          "action": "Phase3_MobileContactLight_05_DataAction",
+          "keyframes": 5
+        },
+        {
+          "action": "Phase3_MobileContactLight_06_DataAction",
+          "keyframes": 5
+        },
+        {
+          "action": "Phase3_MobileContactLight_07_DataAction",
+          "keyframes": 5
+        },
+        {
+          "action": "Phase3_MobileContactLight_08_DataAction",
+          "keyframes": 5
+        },
+        {
+          "action": "Phase3_MobileContactLight_09_DataAction",
+          "keyframes": 5
+        },
+        {
+          "action": "Phase3_MobileContactLight_10_DataAction",
+          "keyframes": 5
+        },
+        {
+          "action": "Phase3_MobileContactLight_11_DataAction",
+          "keyframes": 5
+        },
+        {
+          "action": "Phase3_MobileContactLight_12_DataAction",
+          "keyframes": 5
+        },
+        {
+          "action": "Phase3_PortalDarkMagentaAction",
+          "keyframes": 4
+        },
+        {
+          "action": "Phase3_PortalDarkSlateAction",
+          "keyframes": 4
+        },
+        {
+          "action": "Phase3_PortalRouteAccentAction",
+          "keyframes": 4
+        },
+        {
+          "action": "Phase3_PowerIndicatorAction",
+          "keyframes": 36
+        },
+        {
+          "action": "Phase3_ScreenSpill_DataAction.001",
+          "keyframes": 7
+        },
+        {
+          "action": "Phase3_StartupRasterWarmingAction",
+          "keyframes": 4
+        },
+        {
+          "action": "Phase3_SubtleScanlineAction",
+          "keyframes": 30
+        },
+        {
+          "action": "Phase3_TextFreePortalContinuityCueAction",
+          "keyframes": 4
+        },
+        {
+          "action": "Phase3_WakeHorizontalPhosphorLineAction",
+          "keyframes": 28
+        },
+        {
+          "action": "Phase3R_Interface_Brand_DesktopAction",
+          "keyframes": 24
+        },
+        {
+          "action": "Phase3R_Interface_Brand_MobileAction",
+          "keyframes": 24
+        },
+        {
+          "action": "Phase3R_Interface_Ready_DesktopAction",
+          "keyframes": 24
+        },
+        {
+          "action": "Phase3R_Interface_Ready_MobileAction",
+          "keyframes": 24
+        },
+        {
+          "action": "Phase3R_Interface_Route_DesktopAction",
+          "keyframes": 24
+        },
+        {
+          "action": "Phase3R_Interface_Route_MobileAction",
+          "keyframes": 24
+        },
+        {
+          "action": "Phase3R_PhosphorField_DesktopAction",
+          "keyframes": 78
+        },
+        {
+          "action": "Phase3R_PhosphorField_MobileAction",
+          "keyframes": 78
+        },
+        {
+          "action": "Phase3R_TextFreePortalContinuityCueAction",
+          "keyframes": 9
+        },
+        {
+          "action": "Phase3R_WakeBody_NeutralAction",
+          "keyframes": 25
+        },
+        {
+          "action": "Phase3R_WakeCore_NeutralAction",
+          "keyframes": 25
+        },
+        {
+          "action": "Phase3R_WakeHalo_NeutralAction",
+          "keyframes": 25
+        },
+        {
+          "action": "Phase3R_WakePhosphorBodyAction",
+          "keyframes": 14
+        },
+        {
+          "action": "Phase3R_WakePhosphorCoreAction",
+          "keyframes": 14
+        },
+        {
+          "action": "Phase3R_WakePhosphorHaloAction",
+          "keyframes": 14
+        }
+      ],
+      "action_count": 421,
+      "keyframe_count": 17266
+    },
+    "previsualization_conduction_legibility": {
+      "factor": 2.0,
+      "curve_count": 384,
+      "positive_keyframe_count": 1152,
+      "scope": "conductor emission strength and local contact-light energy only; geometry and authored color unchanged"
+    },
+    "workbench_signal_visibility": {
+      "desktop": {
+        "active_segments": 180,
+        "entry_hidden_segments": 5
+      },
+      "mobile": {
+        "active_segments": 180,
+        "entry_hidden_segments": 5
+      },
+      "indicator": {
+        "object": "CRT_DormantPowerIndicator",
+        "response_frame": 292
+      }
+    },
+    "draft_raster_legibility": {
+      "materials": [
+        "Phase3R_PhosphorField_Desktop",
+        "Phase3R_PhosphorField_Mobile"
+      ],
+      "keys": [
+        {
+          "frame": 315,
+          "desktop_strength": 0.0,
+          "mobile_strength": 0.0
+        },
+        {
+          "frame": 316,
+          "desktop_strength": 0.1,
+          "mobile_strength": 0.094
+        },
+        {
+          "frame": 320,
+          "desktop_strength": 0.46,
+          "mobile_strength": 0.4324
+        },
+        {
+          "frame": 325,
+          "desktop_strength": 1.08,
+          "mobile_strength": 1.0152
+        },
+        {
+          "frame": 330,
+          "desktop_strength": 1.34,
+          "mobile_strength": 1.2596
+        },
+        {
+          "frame": 335,
+          "desktop_strength": 1.15,
+          "mobile_strength": 1.081
+        },
+        {
+          "frame": 342,
+          "desktop_strength": 0.72,
+          "mobile_strength": 0.6768
+        },
+        {
+          "frame": 350,
+          "desktop_strength": 0.28,
+          "mobile_strength": 0.2632
+        },
+        {
+          "frame": 355,
+          "desktop_strength": 0.1,
+          "mobile_strength": 0.094
+        },
+        {
+          "frame": 356,
+          "desktop_strength": 0.08,
+          "mobile_strength": 0.0752
+        },
+        {
+          "frame": 370,
+          "desktop_strength": 0.06,
+          "mobile_strength": 0.0564
+        },
+        {
+          "frame": 405,
+          "desktop_strength": 0.04,
+          "mobile_strength": 0.0376
+        },
+        {
+          "frame": 460,
+          "desktop_strength": 0.02,
+          "mobile_strength": 0.0188
+        },
+        {
+          "frame": 480,
+          "desktop_strength": 0.01,
+          "mobile_strength": 0.0094
+        },
+        {
+          "frame": 500,
+          "desktop_strength": 0.0,
+          "mobile_strength": 0.0
+        }
+      ],
+      "scope": "draft phosphor emission only; accepted screen/glass geometry, warm-neutral tone, raster modulation, and physical startup line remain unchanged"
+    }
+  },
+  "camera_motion": {
+    "desktop": {
+      "angle_start_degrees": -90.000003,
+      "angle_end_degrees": 270.000001,
+      "total_angular_travel_degrees": 360.000003,
+      "direction": "counter-clockwise viewed from +Z",
+      "radius_start": 12.0,
+      "radius_completion": 3.25,
+      "elevation_start": 4.8,
+      "elevation_completion": 0.75,
+      "distance_start": 12.924396,
+      "distance_completion": 3.335416,
+      "focal_length_start_mm": 40.0,
+      "focal_length_completion_mm": 46.0,
+      "monotonic_angle": true,
+      "monotonic_contracting_radius": true
+    },
+    "mobile": {
+      "angle_start_degrees": -90.000003,
+      "angle_end_degrees": 270.000001,
+      "total_angular_travel_degrees": 360.000003,
+      "direction": "counter-clockwise viewed from +Z",
+      "radius_start": 8.0,
+      "radius_completion": 2.7,
+      "elevation_start": 4.6,
+      "elevation_completion": 0.68,
+      "distance_start": 9.228218,
+      "distance_completion": 2.784313,
+      "focal_length_start_mm": 50.0,
+      "focal_length_completion_mm": 56.0,
+      "monotonic_angle": true,
+      "monotonic_contracting_radius": true
+    },
+    "landscape": {
+      "angle_start_degrees": -90.000003,
+      "angle_end_degrees": 270.000001,
+      "total_angular_travel_degrees": 360.000003,
+      "direction": "counter-clockwise viewed from +Z",
+      "radius_start": 11.5,
+      "radius_completion": 3.45,
+      "elevation_start": 3.2,
+      "elevation_completion": 0.55,
+      "distance_start": 11.936918,
+      "distance_completion": 3.493566,
+      "focal_length_start_mm": 36.0,
+      "focal_length_completion_mm": 42.0,
+      "monotonic_angle": true,
+      "monotonic_contracting_radius": true
+    }
+  },
+  "camera_path_objects": {
+    "desktop": {
+      "samples": 121,
+      "start": [
+        0.649999,
+        -12.0,
+        5.225
+      ],
+      "end": [
+        0.65,
+        -3.25,
+        1.175
+      ]
+    },
+    "mobile": {
+      "samples": 121,
+      "start": [
+        0.65,
+        -8.0,
+        5.025
+      ],
+      "end": [
+        0.65,
+        -2.7,
+        1.105
+      ]
+    },
+    "landscape": {
+      "samples": 121,
+      "start": [
+        0.649999,
+        -11.5,
+        3.625
+      ],
+      "end": [
+        0.65,
+        -3.45,
+        0.975
+      ]
+    }
+  },
+  "lighting": {
+    "environmental_magenta": 0,
+    "lights": [
+      {
+        "name": "Phase4R0_North_NeutralArea",
+        "energy_w": 460.0,
+        "color": [
+          1.0,
+          0.93,
+          0.84
+        ]
+      },
+      {
+        "name": "Phase4R0_South_NeutralArea",
+        "energy_w": 390.0,
+        "color": [
+          0.72,
+          0.8,
+          0.88
+        ]
+      },
+      {
+        "name": "Phase4R0_East_NeutralArea",
+        "energy_w": 330.0,
+        "color": [
+          0.88,
+          0.92,
+          1.0
+        ]
+      },
+      {
+        "name": "Phase4R0_West_NeutralArea",
+        "energy_w": 300.0,
+        "color": [
+          1.0,
+          0.86,
+          0.72
+        ]
+      }
+    ]
+  },
+  "proving_field_extension": {
+    "accepted_object": "ProvingGround_Terrain",
+    "accepted_object_edited": false,
+    "extension_collection": "PHASE4R0_PROVING_FIELD_EXTENSION",
+    "extension_object": "P4R0_ProvingGround_FieldExtension",
+    "extension_material": "P4R0_ProvingGround_DarkAggregateTerrain_Extension",
+    "accepted_bounds": [
+      [
+        -5.0,
+        -5.0,
+        -0.06
+      ],
+      [
+        -5.0,
+        -5.0,
+        0.0
+      ],
+      [
+        -5.0,
+        5.0,
+        0.0
+      ],
+      [
+        -5.0,
+        5.0,
+        -0.06
+      ],
+      [
+        5.0,
+        -5.0,
+        -0.06
+      ],
+      [
+        5.0,
+        -5.0,
+        0.0
+      ],
+      [
+        5.0,
+        5.0,
+        0.0
+      ],
+      [
+        5.0,
+        5.0,
+        -0.06
+      ]
+    ],
+    "extension_bounds": [
+      [
+        -15.0,
+        -15.0,
+        -0.061
+      ],
+      [
+        -15.0,
+        -15.0,
+        -0.001
+      ],
+      [
+        -15.0,
+        15.0,
+        -0.001
+      ],
+      [
+        -15.0,
+        15.0,
+        -0.061
+      ],
+      [
+        15.0,
+        -15.0,
+        -0.061
+      ],
+      [
+        15.0,
+        -15.0,
+        -0.001
+      ],
+      [
+        15.0,
+        15.0,
+        -0.001
+      ],
+      [
+        15.0,
+        15.0,
+        -0.061
+      ]
+    ],
+    "z_separation_m": 0.001,
+    "external_textures": 0
+  },
+  "preserved_authority": {
+    "cabinet_and_cable_inherited_from_exact_hashed_source": true,
+    "object_count_before": 567,
+    "object_count_after": 586,
+    "accepted_source_overwritten": false
+  },
+  "changed_categories": [
+    "camera rig and responsive camera family",
+    "timeline and inherited signal retiming",
+    "approved isolated Quantum Q screen content",
+    "neutral orbit-preview lighting",
+    "threshold preparation after physical frame 500"
+  ],
+  "unchanged_categories": [
+    "accepted CRT cabinet geometry and period identity",
+    "accepted cabinet materials, speaker and control band",
+    "accepted convex glass and phosphor structure",
+    "accepted desktop/mobile cable geometry and connection",
+    "Phase 2B Operating Field and supporting-route architecture"
+  ]
+}
