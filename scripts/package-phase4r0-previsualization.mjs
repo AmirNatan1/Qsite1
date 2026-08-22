@@ -14,6 +14,8 @@ import { execFile } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
 import {
   access,
+  copyFile,
+  link,
   mkdir,
   readFile,
   readdir,
@@ -56,6 +58,7 @@ const FROZEN_DERIVATIVE_SHA256 = "838f304a0f029f5570c1ede2b4ce20c7e7475571f1e7e4
 const FIXED_EPOCH = "1980-01-01T00:00:00.000Z";
 const IMAGE_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".webp", ".tif", ".tiff"]);
 const VIDEO_EXTENSIONS = new Set([".mp4", ".mov", ".mkv", ".webm", ".m4v"]);
+const HANDOFF_TEXT_EXTENSIONS = new Set([".json", ".md", ".py", ".txt", ".csv"]);
 const FAMILIES = Object.freeze(["desktop", "mobile", "landscape"]);
 
 const OUTPUT_DIRECTORIES = Object.freeze([
@@ -66,15 +69,15 @@ const OUTPUT_DIRECTORIES = Object.freeze([
 ]);
 
 const RESPONSIVE_VIEWPORTS = Object.freeze([
-  { id: "desktop-1440x900", width: 1440, height: 900, family: "desktop" },
-  { id: "short-desktop-1366x650", width: 1366, height: 650, family: "desktop" },
-  { id: "desktop-1280x800", width: 1280, height: 800, family: "desktop" },
-  { id: "tablet-landscape-1024x768", width: 1024, height: 768, family: "desktop" },
-  { id: "tablet-portrait-768x1024", width: 768, height: 1024, family: "mobile" },
-  { id: "phone-390x844", width: 390, height: 844, family: "mobile" },
-  { id: "phone-360x800", width: 360, height: 800, family: "mobile" },
-  { id: "phone-320x800", width: 320, height: 800, family: "mobile" },
-  { id: "short-landscape-844x390", width: 844, height: 390, family: "landscape" },
+  { id: "desktop-1440x900", plateId: "desktop-1440x900", width: 1440, height: 900, family: "desktop" },
+  { id: "short-desktop-1366x650", plateId: "short-height-1366x650", width: 1366, height: 650, family: "desktop" },
+  { id: "desktop-1280x800", plateId: "desktop-1280x800", width: 1280, height: 800, family: "desktop" },
+  { id: "tablet-landscape-1024x768", plateId: "tablet-landscape-1024x768", width: 1024, height: 768, family: "desktop" },
+  { id: "tablet-portrait-768x1024", plateId: "tablet-portrait-768x1024", width: 768, height: 1024, family: "mobile" },
+  { id: "phone-390x844", plateId: "mobile-390x844", width: 390, height: 844, family: "mobile" },
+  { id: "phone-360x800", plateId: "mobile-360x800", width: 360, height: 800, family: "mobile" },
+  { id: "phone-320x800", plateId: "narrow-320x800", width: 320, height: 800, family: "mobile" },
+  { id: "short-landscape-844x390", plateId: "mobile-landscape-844x390", width: 844, height: 390, family: "landscape" },
 ]);
 
 const SHORT_LANDSCAPE_NEIGHBORS = Object.freeze([
@@ -96,13 +99,13 @@ const DEFAULT_TIMELINE = Object.freeze({
     start: DEEP_BLACK_START,
     end: DEEP_BLACK_END,
     frames: DEEP_BLACK_END - DEEP_BLACK_START + 1,
-    rule: "bounded exact RGB 0/0/0; no semantic plate pixels",
+    rule: "pre-encode plates are exact RGB 0/0/0; encoded H.264 is decoded-gated as nominal black with no semantic plate pixels",
   }),
   semanticResolve: Object.freeze({
     start: SEMANTIC_START,
     end: FINAL_FRAME,
     frames: FINAL_FRAME - SEMANTIC_START + 1,
-    alpha: "smoothstep((frame-514)/26)",
+    alpha: "0.04 + 0.96 * smoothstep((frame-514)/26)",
     contrast: "0.88 + 0.12 * smoothstep",
     softnessSigma: "1.25 * (1 - smoothstep), disabled below 0.30",
     source: "actual supplied ENTRY plates only",
@@ -259,7 +262,8 @@ provenance. The ENTRY root must carry its PASS capture manifest.
 The opening-composition report must be the external PASS output of the frozen
 Blender geometry measurement script, bind its exact bytes/SHA-256, prove
 Blender 5.2.x, and bind all three real F001 cameras.
-The selected FFmpeg executable must expose the libx264 encoder.
+The selected FFmpeg executable must expose the libx264 encoder and have its
+matching FFprobe executable beside it.
 
 Output classification: ${CLASSIFICATION}
 `);
@@ -629,6 +633,17 @@ async function resolveEntryPlates(root) {
   if (new Set(Object.values(result).map(normalizedPath)).size !== FAMILIES.length) {
     throw new Error("desktop, mobile, and landscape ENTRY plates must be distinct files");
   }
+  const responsivePlates = {};
+  for (const viewport of RESPONSIVE_VIEWPORTS) {
+    responsivePlates[viewport.id] = await resolveCapture({
+      id: viewport.plateId,
+      width: viewport.width,
+      height: viewport.height,
+    });
+  }
+  if (new Set(Object.values(responsivePlates).map(normalizedPath)).size !== RESPONSIVE_VIEWPORTS.length) {
+    throw new Error("every required responsive viewport must bind its own exact ENTRY plate");
+  }
   const neighborPlates = {};
   for (const viewport of SHORT_LANDSCAPE_NEIGHBORS) {
     neighborPlates[viewport.id] = await resolveCapture({ id: viewport.plateId, width: viewport.width, height: viewport.height });
@@ -636,6 +651,7 @@ async function resolveEntryPlates(root) {
   const manifestBytes = await readFile(manifestPath);
   return {
     plates: result,
+    responsivePlates,
     neighborPlates,
     manifest,
     manifestPath,
@@ -1205,12 +1221,16 @@ async function createClassificationOverlay(width, height, destination) {
     <text x="${inset}" y="${Math.round(barHeight * 0.76)}" fill="#f06ba0" font-family="Arial,Helvetica,sans-serif" font-size="${Math.max(10, fontSize - 2)}" font-weight="700">HUMAN UNACCEPTED · PHASE 5 UNAUTHORIZED</text>
   `)).png({ compressionLevel: 9, adaptiveFiltering: true }).toBuffer();
   await atomicWrite(destination, buffer);
-  return { width, height, bytes: buffer.length, sha256: sha256(buffer) };
+  return { width, height, barHeight, bytes: buffer.length, sha256: sha256(buffer) };
 }
 
 function smoothstep(value) {
   const clamped = Math.max(0, Math.min(1, value));
   return clamped * clamped * (3 - 2 * clamped);
+}
+
+function semanticResolveAlpha(frame) {
+  return 0.04 + 0.96 * smoothstep((frame - SEMANTIC_START) / (FINAL_FRAME - SEMANTIC_START));
 }
 
 async function makeDeepBlackFrame(width, height, destination) {
@@ -1227,16 +1247,17 @@ async function alphaScaleRaw(buffer, alpha) {
 }
 
 async function makeSemanticResolveFrame(plate, width, height, frame, destination) {
-  const progress = smoothstep((frame - SEMANTIC_START) / (FINAL_FRAME - SEMANTIC_START));
-  const contrast = 0.88 + 0.12 * progress;
-  const softnessSigma = 1.25 * (1 - progress);
+  const curveProgress = smoothstep((frame - SEMANTIC_START) / (FINAL_FRAME - SEMANTIC_START));
+  const alpha = semanticResolveAlpha(frame);
+  const contrast = 0.88 + 0.12 * curveProgress;
+  const softnessSigma = 1.25 * (1 - curveProgress);
   let pipeline = sharp(plate)
     .resize(width, height, { fit: "cover", position: "centre" })
     .linear(contrast, 0)
     .ensureAlpha();
   if (softnessSigma >= 0.3) pipeline = pipeline.blur(softnessSigma);
   const processed = await pipeline.png({ compressionLevel: 9, adaptiveFiltering: true }).toBuffer();
-  const raw = await alphaScaleRaw(processed, progress);
+  const raw = await alphaScaleRaw(processed, alpha);
   const buffer = await sharp({ create: { width, height, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 1 } } })
     .composite([{
       input: raw.data,
@@ -1247,7 +1268,13 @@ async function makeSemanticResolveFrame(plate, width, height, frame, destination
     .png({ compressionLevel: 9, adaptiveFiltering: true })
     .toBuffer();
   await atomicWrite(destination, buffer);
-  return { frame, progress: round(progress, 6), contrast: round(contrast, 6), softnessSigma: round(softnessSigma, 6) };
+  return {
+    frame,
+    curveProgress: round(curveProgress, 6),
+    alpha: round(alpha, 6),
+    contrast: round(contrast, 6),
+    softnessSigma: round(softnessSigma, 6),
+  };
 }
 
 async function buildFamilySequence(sequence, entryPlate, workRoot) {
@@ -1545,7 +1572,7 @@ async function createTimelineDiagram(outputRoot, timeline) {
   const content = `${diagramHeader(width, "PHASE 4-R0 · TIMELINE PROPOSAL", "500 fresh physical frames → bounded deep-black beat → restrained actual-plate semantic resolve")}
     ${segmentSvg}${segmentLabels}${milestones}
     <text x="70" y="510" fill="#a8b3b2" font-family="Arial,sans-serif" font-size="14">30 fps · 540 frames · 18.000 seconds by frame count</text>
-    <text x="70" y="545" fill="#a8b3b2" font-family="Arial,sans-serif" font-size="14">F501–513 is exactly black. F514–540 is deterministic smoothstep alpha, 0.88→1.00 contrast, 1.25→0 softness.</text>
+    <text x="70" y="545" fill="#a8b3b2" font-family="Arial,sans-serif" font-size="14">F501–513 plates are exact RGB black; encoded frames are gated nominal black. F514–540 alpha resolves 0.04→1.00.</text>
     <text x="70" y="580" fill="#f06ba0" font-family="Arial,sans-serif" font-size="14" font-weight="700">PROPOSAL ONLY. HUMAN TIMING, ORBIT, SIGNAL, LOGO, PORTAL, AND PHASE 5 AUTHORIZATION ARE NOT CLAIMED.</text>`;
   const buffer = await sharp(svg(width, height, content)).png({ compressionLevel: 9, adaptiveFiltering: true }).toBuffer();
   const filename = "phase-4r0-timeline-proposal.png";
@@ -1553,19 +1580,159 @@ async function createTimelineDiagram(outputRoot, timeline) {
   return { path: `diagrams/${filename}`, bytes: buffer.length, sha256: sha256(buffer), width, height };
 }
 
-function ffconcatPath(filename) {
-  return path.resolve(filename).replaceAll("\\", "/").replaceAll("'", "'\\''");
+async function prepareImage2Sequence(workRoot, id, files) {
+  const directory = path.join(workRoot, `${id}-image2`);
+  await mkdir(directory);
+  let hardLinks = 0;
+  let fallbackCopies = 0;
+  for (const [index, source] of files.entries()) {
+    const destination = path.join(directory, `frame-${String(index + 1).padStart(6, "0")}.png`);
+    try {
+      await link(source, destination);
+      hardLinks += 1;
+    } catch (error) {
+      if (!["EXDEV", "EPERM", "EACCES", "ENOTSUP"].includes(error?.code)) throw error;
+      await copyFile(source, destination);
+      fallbackCopies += 1;
+    }
+  }
+  return {
+    pattern: path.join(directory, "frame-%06d.png"),
+    frameCount: files.length,
+    hardLinks,
+    fallbackCopies,
+    method: fallbackCopies ? "numbered image2 sequence; hard links with copy fallback" : "numbered image2 sequence; hard links",
+  };
 }
 
-async function writeConcatFile(destination, files) {
-  const duration = (1 / FRAME_RATE).toFixed(12);
-  const lines = ["ffconcat version 1.0"];
-  for (const filename of files) {
-    lines.push(`file '${ffconcatPath(filename)}'`);
-    lines.push(`duration ${duration}`);
+function rationalNumber(value) {
+  const [numerator, denominator = "1"] = String(value).split("/");
+  const result = Number(numerator) / Number(denominator);
+  return Number.isFinite(result) ? result : NaN;
+}
+
+async function probeEncodedVideo(ffmpegPath, destination, expectedFrames, width, height) {
+  const ffprobePath = path.join(path.dirname(ffmpegPath), process.platform === "win32" ? "ffprobe.exe" : "ffprobe");
+  await access(ffprobePath);
+  const result = await execFileAsync(ffprobePath, [
+    "-v", "error",
+    "-count_frames",
+    "-show_entries", "stream=codec_type,codec_name,width,height,pix_fmt,r_frame_rate,avg_frame_rate,nb_frames,nb_read_frames,duration:format=duration",
+    "-of", "json",
+    destination,
+  ], { windowsHide: true, maxBuffer: 2_000_000 });
+  const parsed = JSON.parse(result.stdout);
+  const videoStreams = (parsed?.streams ?? []).filter((stream) => stream.codec_type === "video");
+  const audioStreams = (parsed?.streams ?? []).filter((stream) => stream.codec_type === "audio");
+  if (videoStreams.length !== 1) throw new Error(`ffprobe found ${videoStreams.length} video streams in ${path.basename(destination)}`);
+  if (audioStreams.length !== 0) throw new Error(`ffprobe found audio in ${path.basename(destination)}`);
+  const stream = videoStreams[0];
+  const decodedFrames = Number(stream.nb_read_frames ?? stream.nb_frames);
+  const nominalRate = rationalNumber(stream.r_frame_rate);
+  const averageRate = rationalNumber(stream.avg_frame_rate);
+  const durationSeconds = Number(stream.duration ?? parsed?.format?.duration);
+  const expectedDurationSeconds = expectedFrames / FRAME_RATE;
+  if (stream.codec_name !== "h264") throw new Error(`${path.basename(destination)} is not H.264`);
+  if (stream.pix_fmt !== "yuv420p") throw new Error(`${path.basename(destination)} is not yuv420p`);
+  if (Number(stream.width) !== width || Number(stream.height) !== height) {
+    throw new Error(`${path.basename(destination)} dimensions do not match ${width}x${height}`);
   }
-  lines.push(`file '${ffconcatPath(files.at(-1))}'`);
-  await atomicWrite(destination, `${lines.join("\n")}\n`);
+  if (decodedFrames !== expectedFrames) {
+    throw new Error(`${path.basename(destination)} decodes to ${decodedFrames} frames; expected ${expectedFrames}`);
+  }
+  if (Math.abs(nominalRate - FRAME_RATE) > 1e-9 || Math.abs(averageRate - FRAME_RATE) > 1e-9) {
+    throw new Error(`${path.basename(destination)} is not exact ${FRAME_RATE} fps`);
+  }
+  if (!Number.isFinite(durationSeconds) || Math.abs(durationSeconds - expectedDurationSeconds) > 0.001) {
+    throw new Error(`${path.basename(destination)} duration ${durationSeconds} does not match ${expectedDurationSeconds}`);
+  }
+  return {
+    codec: stream.codec_name,
+    pixelFormat: stream.pix_fmt,
+    dimensions: [Number(stream.width), Number(stream.height)],
+    decodedFrames,
+    nominalFrameRate: nominalRate,
+    averageFrameRate: averageRate,
+    durationSeconds: round(durationSeconds, 6),
+    audioStreams: audioStreams.length,
+  };
+}
+
+async function decodedContentStats(filename, cropTop) {
+  const metadata = await sharp(filename).metadata();
+  if (!metadata.width || !metadata.height) throw new Error(`decoded gate could not read ${path.basename(filename)} dimensions`);
+  const top = Math.max(0, Math.min(Number(cropTop) || 0, metadata.height - 1));
+  const { data, info } = await sharp(filename)
+    .extract({ left: 0, top, width: metadata.width, height: metadata.height - top })
+    .removeAlpha()
+    .toColourspace("srgb")
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  let maximumChannel = 0;
+  let sum = 0;
+  for (const value of data) {
+    maximumChannel = Math.max(maximumChannel, value);
+    sum += value;
+  }
+  return {
+    cropTop: top,
+    dimensions: [info.width, info.height],
+    maximumChannel,
+    meanChannel: round(sum / data.length, 6),
+  };
+}
+
+async function assertForwardDecodedTimeline(ffmpegPath, destination, workRoot, id, overlayBarHeight) {
+  const decodedIndexes = [499, ...Array.from({ length: 13 }, (_, index) => 500 + index), 513, 539];
+  const directory = path.join(workRoot, `${id}-decoded-timeline`);
+  await mkdir(directory);
+  const expression = decodedIndexes.map((index) => `eq(n\\,${index})`).join("+");
+  await execFileAsync(ffmpegPath, [
+    "-hide_banner", "-loglevel", "error", "-nostdin", "-y",
+    "-i", destination,
+    "-vf", `select=${expression}`,
+    "-fps_mode", "passthrough",
+    "-frames:v", String(decodedIndexes.length),
+    path.join(directory, "decoded-%03d.png"),
+  ], { windowsHide: true, maxBuffer: 4_000_000 });
+  const decodedFiles = (await readdir(directory))
+    .filter((filename) => /^decoded-\d{3}\.png$/i.test(filename))
+    .sort(lexicalCompare);
+  if (decodedFiles.length !== decodedIndexes.length) {
+    throw new Error(`${id} decoded timeline gate extracted ${decodedFiles.length}/${decodedIndexes.length} frames`);
+  }
+  const frames = [];
+  for (const [position, decodedIndex] of decodedIndexes.entries()) {
+    const filename = path.join(directory, decodedFiles[position]);
+    frames.push({
+      decodedIndex,
+      displayFrame: decodedIndex + 1,
+      fullFrame: await decodedContentStats(filename, 0),
+      contentBelowOverlay: await decodedContentStats(filename, overlayBarHeight),
+    });
+  }
+  const physical = frames[0];
+  const black = frames.slice(1, 14);
+  const semanticStart = frames[14];
+  const settled = frames[15];
+  if (physical.contentBelowOverlay.maximumChannel <= 2) throw new Error(`${id} decoded F500 physical checkpoint is nominal black`);
+  if (black.some((frame) => frame.fullFrame.maximumChannel > 2)) {
+    throw new Error(`${id} decoded F501-F513 interval is not uniformly nominal black`);
+  }
+  if (semanticStart.contentBelowOverlay.maximumChannel <= 2) throw new Error(`${id} decoded F514 semantic geometry is not visible`);
+  if (settled.contentBelowOverlay.maximumChannel <= 32) throw new Error(`${id} decoded F540 settled ENTRY is not visible`);
+  return {
+    status: "PASS",
+    decodedIndexConvention: "zero-based; displayFrame = decodedIndex + 1",
+    requiredMapping: {
+      physical: "n499 / F500",
+      nominalBlack: "n500-n512 / F501-F513",
+      semanticStart: "n513 / F514",
+      settledEntry: "n539 / F540",
+    },
+    nominalBlackRule: "the complete decoded frame has maximum RGB channel <= 2 after CRF18 H.264, proving both nominal black and overlay suppression",
+    frames,
+  };
 }
 
 async function ffmpegVersion(ffmpegPath) {
@@ -1577,30 +1744,37 @@ async function encodeSequence({
   ffmpegPath,
   files,
   overlay,
+  overlayBarHeight,
+  width,
+  height,
   destination,
   expectedFrames,
   workRoot,
   id,
   preserveForwardBlackBeat = false,
 }) {
-  const concatFile = path.join(workRoot, `${id}.ffconcat`);
-  await writeConcatFile(concatFile, files);
+  if (files.length !== expectedFrames) throw new Error(`${id} received ${files.length}/${expectedFrames} source frames`);
+  const image2Sequence = await prepareImage2Sequence(workRoot, id, files);
   const overlayFilter = preserveForwardBlackBeat
     ? "[0:v][1:v]overlay=0:0:format=auto:enable='not(between(n,500,512))',format=yuv420p[v]"
     : "[0:v][1:v]overlay=0:0:format=auto,format=yuv420p[v]";
   await execFileAsync(ffmpegPath, [
     "-hide_banner", "-loglevel", "error", "-nostdin", "-y",
-    "-f", "concat", "-safe", "0", "-i", concatFile,
+    "-framerate", String(FRAME_RATE), "-start_number", "1", "-i", image2Sequence.pattern,
     "-loop", "1", "-framerate", String(FRAME_RATE), "-i", overlay,
     "-filter_complex", overlayFilter,
     "-map", "[v]", "-an",
-    "-r", String(FRAME_RATE), "-fps_mode", "cfr", "-frames:v", String(expectedFrames),
+    "-frames:v", String(expectedFrames),
     "-c:v", "libx264", "-preset", "slow", "-crf", "18", "-profile:v", "high", "-level", "4.2",
     "-pix_fmt", "yuv420p", "-movflags", "+faststart",
     "-map_metadata", "-1", "-metadata", "creation_time=1980-01-01T00:00:00Z",
     "-fflags", "+bitexact", "-flags:v", "+bitexact", "-threads", "1",
     destination,
   ], { windowsHide: true, maxBuffer: 8_000_000 });
+  const streamProbe = await probeEncodedVideo(ffmpegPath, destination, expectedFrames, width, height);
+  const decodedTimelineGate = preserveForwardBlackBeat
+    ? await assertForwardDecodedTimeline(ffmpegPath, destination, workRoot, id, overlayBarHeight)
+    : null;
   const data = await readFile(destination);
   return {
     id,
@@ -1611,9 +1785,17 @@ async function encodeSequence({
     frameRate: FRAME_RATE,
     frameCount: expectedFrames,
     durationSeconds: round(expectedFrames / FRAME_RATE, 3),
+    imageSequenceIngestion: {
+      method: image2Sequence.method,
+      frameCount: image2Sequence.frameCount,
+      hardLinks: image2Sequence.hardLinks,
+      fallbackCopies: image2Sequence.fallbackCopies,
+    },
+    streamProbe,
+    decodedTimelineGate,
     audioStreams: 0,
     classificationBurnedIn: preserveForwardBlackBeat
-      ? "yes, except F501–513 so the bounded beat remains exact RGB black"
+      ? "yes, except F501–513; pre-encode plates are exact RGB black and decoded H.264 is gated as nominal black"
       : true,
   };
 }
@@ -1627,6 +1809,9 @@ async function createAnimatics(outputRoot, workRoot, families, ffmpegPath) {
       ffmpegPath,
       files: sequence.files,
       overlay: sequence.overlay,
+      overlayBarHeight: sequence.overlayRecord.barHeight,
+      width: sequence.width,
+      height: sequence.height,
       destination,
       expectedFrames: FINAL_FRAME,
       workRoot,
@@ -1637,7 +1822,7 @@ async function createAnimatics(outputRoot, workRoot, families, ffmpegPath) {
       ...record,
       family,
       direction: "forward",
-      timeline: "physical F001–500; exact-black F501–513; actual-ENTRY resolve F514–540",
+      timeline: "physical F001–500; pre-encode exact RGB black / encoded nominal black F501–513; actual-ENTRY resolve F514–540",
     });
   }
   const desktop = families.desktop;
@@ -1645,6 +1830,9 @@ async function createAnimatics(outputRoot, workRoot, families, ffmpegPath) {
     ffmpegPath,
     files: [...desktop.files].reverse(),
     overlay: desktop.overlay,
+    overlayBarHeight: desktop.overlayRecord.barHeight,
+    width: desktop.width,
+    height: desktop.height,
     destination: path.join(outputRoot, "animatics", "phase-4r0-desktop-reverse-540f-30fps-h264.mp4"),
     expectedFrames: FINAL_FRAME,
     workRoot,
@@ -1662,6 +1850,9 @@ async function createAnimatics(outputRoot, workRoot, families, ffmpegPath) {
     ffmpegPath,
     files: repeated,
     overlay: desktop.overlay,
+    overlayBarHeight: desktop.overlayRecord.barHeight,
+    width: desktop.width,
+    height: desktop.height,
     destination: path.join(outputRoot, "animatics", "phase-4r0-desktop-fast-state-jump-30fps-h264.mp4"),
     expectedFrames: repeated.length,
     workRoot,
@@ -1751,7 +1942,7 @@ async function createNarrativeSheets(outputRoot, families) {
   const portal = await createSheet(outputRoot, {
     filename: "phase-4r0-portal-11-state-contact-sheet.png",
     title: "PHASE 4-R0 · 11-STATE PORTAL THRESHOLD",
-    subtitle: "Physical F≤500 · exact-black F501–513 · actual-plate semantic resolve F514–540",
+    subtitle: "Physical F≤500 · pre-encode exact / encoded nominal black F501–513 · actual-plate resolve F514–540",
     panels: DEFAULT_TIMELINE.portalFrames.map((frame, index) => ({
       input: desktop.files[frame - 1],
       title: frameTitle(frame, portalLabels[index]),
@@ -1759,22 +1950,25 @@ async function createNarrativeSheets(outputRoot, families) {
         ? ["fresh physical Eevee frame"]
         : frame <= 513
           ? ["exact deep black · RGB 0/0/0"]
-          : [`semantic smoothstep ${round(smoothstep((frame - 514) / 26), 4)}`, "actual ENTRY plate; no fabricated text"],
+          : [`semantic alpha ${round(semanticResolveAlpha(frame), 4)}`, "actual ENTRY plate; no fabricated text"],
     })),
     columns: 2,
   });
   return { conduction, crt, portal };
 }
 
-async function createResponsiveSheets(outputRoot, families) {
+async function createResponsiveSheets(outputRoot, families, responsiveEntryPlates) {
   const records = [];
   const stateLabels = ["DORMANT", "CONDUCTION 50%", "CRT-Q STABLE", "LATE FRONTAL APPROACH", "PHYSICAL THRESHOLD", "ENTRY"];
   for (const viewport of RESPONSIVE_VIEWPORTS) {
     const sequence = families[viewport.family];
     const panels = [];
     for (const [index, frame] of DEFAULT_TIMELINE.responsiveFrames.entries()) {
+      const input = frame === DEFAULT_TIMELINE.events.settledEntry
+        ? responsiveEntryPlates[viewport.id]
+        : await renderViewportFrame(sequence.files[frame - 1], viewport.width, viewport.height);
       panels.push({
-        input: await renderViewportFrame(sequence.files[frame - 1], viewport.width, viewport.height),
+        input,
         title: frameTitle(frame, stateLabels[index]),
         lines: [`${viewport.width}×${viewport.height} · ${viewport.family} family`, frame === 540 ? "actual ENTRY plate" : "fresh physical Eevee frame"],
         fit: "contain",
@@ -1933,7 +2127,6 @@ async function copyReports(
       sequences[family].renderReportPath,
       `phase-4r0-${family}-fresh-eevee-render-report.json`,
     ]),
-    ["semantic-entry-plates", entryManifestPath, "phase-4r0-semantic-entry-plates-manifest.json"],
   ];
   for (const [role, source, filename] of definitions) {
     const data = await readFile(source);
@@ -1941,7 +2134,58 @@ async function copyReports(
     await atomicWrite(destination, data);
     records.push({ role, path: `reports/${filename}`, bytes: data.length, sha256: sha256(data) });
   }
+  const sourceEntryManifestData = await readFile(entryManifestPath);
+  const publicEntryManifest = JSON.parse(sourceEntryManifestData.toString("utf8"));
+  if (publicEntryManifest.output && typeof publicEntryManifest.output === "object") {
+    delete publicEntryManifest.output.root;
+  }
+  if (publicEntryManifest.browser && typeof publicEntryManifest.browser === "object") {
+    delete publicEntryManifest.browser.executable;
+  }
+  publicEntryManifest.handoffRedactions = {
+    applied: true,
+    fields: ["output.root", "browser.executable"],
+    reason: "absolute host paths are excluded from the human-review handoff",
+  };
+  const publicEntryManifestData = Buffer.from(`${JSON.stringify(publicEntryManifest, null, 2)}\n`, "utf8");
+  const publicEntryManifestFilename = "phase-4r0-semantic-entry-plates-manifest.json";
+  await atomicWrite(path.join(outputRoot, "reports", publicEntryManifestFilename), publicEntryManifestData);
+  records.push({
+    role: "semantic-entry-plates",
+    path: `reports/${publicEntryManifestFilename}`,
+    bytes: publicEntryManifestData.length,
+    sha256: sha256(publicEntryManifestData),
+    sanitizedForHandoff: true,
+    sourceBytes: sourceEntryManifestData.length,
+    sourceSha256: sha256(sourceEntryManifestData),
+    redactedFields: ["output.root", "browser.executable"],
+  });
   return records;
+}
+
+async function assertNoPrivateHostPaths(root, files) {
+  const containsPrivateHostPath = (value) => [
+    /(?:^|[\s"'=(])[a-z]:[\\/](?:users|documents and settings|program files(?: \(x86\))?|programdata|windows)[\\/]/i,
+    /(?:^|[\s"'=(])\/(?:users|home)\/[^/\s"']+[\\/]/i,
+    /[\\/](?:appdata|onedrive)[\\/]/i,
+  ].some((pattern) => pattern.test(value));
+  for (const relativePath of files) {
+    const extension = path.extname(relativePath).toLowerCase();
+    if (!HANDOFF_TEXT_EXTENSIONS.has(extension)) continue;
+    const text = await readFile(path.join(root, ...relativePath.split("/")), "utf8");
+    if (extension === ".json") {
+      let leakTrail = null;
+      deepValues(JSON.parse(text), (value, trail) => {
+        if (leakTrail || typeof value !== "string") return;
+        if (containsPrivateHostPath(value)) leakTrail = trail.join(".") || "<root>";
+      });
+      if (leakTrail) {
+        throw new Error(`private host path leaked into packaged JSON: ${relativePath} at ${leakTrail}`);
+      }
+    } else if (containsPrivateHostPath(text)) {
+      throw new Error(`private host path leaked into packaged text: ${relativePath}`);
+    }
+  }
 }
 
 async function packageFileRecords(root, files) {
@@ -2064,8 +2308,10 @@ function readmeText({
 This is an automated previsualization package. It is not a production-media
 authority, a human acceptance, a Phase 4 completion, or authorization to begin
 Phase 5. Every physical pixel in F001–500 comes from the externally supplied
-fresh Eevee real-camera roots. F501–513 is a bounded exact-black beat.
-F514–540 resolves only from the externally supplied actual ENTRY plates.
+fresh Eevee real-camera roots. F501–513 uses bounded pre-encode exact RGB-black
+plates; the CRF18 H.264 result is decoded-gated as nominal black. F514–540
+resolves only from the externally supplied actual ENTRY plates, beginning with
+an intentional 4% geometry floor at F514 so the first semantic state is visible.
 
 ## Deterministic build
 
@@ -2076,9 +2322,11 @@ F514–540 resolves only from the externally supplied actual ENTRY plates.
 - Node / Sharp / libvips: \`${process.version}\` / \`${sharp.versions.sharp}\` / \`${sharp.versions.vips}\`
 - ZIP method: classic stored ZIP, UTF-8 paths, sorted entries, fixed UTC DOS timestamp
 - H.264: libx264, CRF 18, slow preset, yuv420p, one encoding thread, metadata stripped
+- Video ingestion: exact numbered image2 inputs at 30 fps; decoded-frame count,
+  boundary mapping, nominal-black interval, F514 geometry, and F540 ENTRY are gated.
 - Classification is burned into every animatic and printed on every sheet/diagram.
   The three forward animatics suppress only that overlay during F501–513 so
-  the bounded beat remains exact black; classification is visible before and after it.
+  the encoded beat remains nominal black; classification is visible before and after it.
 
 ## Source boundaries
 
@@ -2261,6 +2509,7 @@ async function main() {
   assertEeveeRealCamera(buildReport, validationReport, rawSequences);
   const entryPlateBundle = await resolveEntryPlates(externalRoots.entryPlates);
   const entryPlates = entryPlateBundle.plates;
+  const responsiveEntryPlates = entryPlateBundle.responsivePlates;
   const sourceReports = [
     buildReport,
     validationReport,
@@ -2301,7 +2550,10 @@ async function main() {
       openingCompositionAuthority,
       ...FAMILIES.map((family) => rawSequences[family].renderReportRecord),
       entryPlateBundle.manifestRecord,
-      ...await Promise.all(FAMILIES.map((family) => inputFileRecord(entryPlates[family], `${family}-entry-plate`))),
+      ...await Promise.all(RESPONSIVE_VIEWPORTS.map((viewport) => inputFileRecord(
+        responsiveEntryPlates[viewport.id],
+        `${viewport.id}-entry-plate`,
+      ))),
       ...await Promise.all(SHORT_LANDSCAPE_NEIGHBORS
         .filter((viewport) => viewport.id !== "844x390")
         .map((viewport) => inputFileRecord(entryPlateBundle.neighborPlates[viewport.id], `short-landscape-${viewport.id}-entry-plate`))),
@@ -2329,7 +2581,7 @@ async function main() {
 
     const milestoneSheets = await createMilestoneSheets(options.output, families, cameraPaths);
     const narrativeSheets = await createNarrativeSheets(options.output, families);
-    const responsiveSheets = await createResponsiveSheets(options.output, families);
+    const responsiveSheets = await createResponsiveSheets(options.output, families, responsiveEntryPlates);
     const neighborSheet = await createShortLandscapeNeighborSheet(options.output, families, entryPlateBundle.neighborPlates);
     const openingComparison = await createOpeningComparison(options.output, openingImage, families, openingComposition);
     await atomicJson(path.join(options.output, "reports", "phase-4r0-opening-comparison.json"), {
@@ -2373,8 +2625,8 @@ async function main() {
       },
       honesty: {
         physicalFrames: "fresh externally supplied Eevee real-camera F001–500 bound by PASS reports",
-        deepBlackFrames: "F501–513 pre-encode plates are exact RGB 0/0/0; forward review overlays are suppressed for this interval",
-        semanticFrames: "F514–540 deterministic resolve from actual supplied ENTRY plates",
+        deepBlackFrames: "F501–513 pre-encode plates are exact RGB 0/0/0; forward review overlays are suppressed and decoded H.264 is gated nominal black for this interval",
+        semanticFrames: "F514–540 deterministic resolve from actual supplied ENTRY plates; F514 begins at an intentional 0.04 alpha geometry floor",
         syntheticGeometryOrLogoGenerated: false,
         acceptedEvidenceMutated: false,
         rawFramesIncludedInZip: false,
@@ -2427,6 +2679,9 @@ async function main() {
           mobile: "mobile-390x844",
           landscape: "mobile-landscape-844x390",
         },
+        responsiveEntryPlateSelectors: Object.fromEntries(
+          RESPONSIVE_VIEWPORTS.map((viewport) => [viewport.id, viewport.plateId]),
+        ),
       },
       animatics,
       diagrams,
@@ -2467,6 +2722,7 @@ async function main() {
 
     const archiveFiles = (await listFiles(options.output))
       .filter((relativePath) => ![ARCHIVE_FILENAME, RESULT_FILENAME].includes(relativePath));
+    await assertNoPrivateHostPaths(options.output, archiveFiles);
     const archivePath = path.join(options.output, ARCHIVE_FILENAME);
     await createStoredZip(options.output, archiveFiles, archivePath, generatedAt);
     const archiveData = await readFile(archivePath);
