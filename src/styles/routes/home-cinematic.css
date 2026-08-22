@@ -1,0 +1,237 @@
+.cinematic-shell {
+  /* The accepted logo SVG is taller than its legacy HTML ratio. Reserve its
+     rendered header height before the controller measures to keep deep reloads stable. */
+  --cinematic-header-px: clamp(100.25px, calc(9.024vw + 1px), 121.32px);
+  --cinematic-progress: 0;
+  --cinematic-film-progress: 0;
+  --cinematic-takeover: 0;
+  --cinematic-semantic: 0;
+  --cinematic-media-ready: 0;
+  --cinematic-object-x: 48%;
+  --cinematic-object-y: 50%;
+  position: relative;
+  isolation: isolate;
+  background: var(--field-black);
+}
+
+.cinematic-runway {
+  position: relative;
+  z-index: 1;
+  height: min(72svh, 52rem);
+  overflow: clip;
+  background: #050708;
+}
+
+.cinematic-stage,
+.cinematic-poster,
+.cinematic-poster img,
+.cinematic-media,
+.cinematic-portal-surface {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.cinematic-stage {
+  overflow: hidden;
+  pointer-events: none;
+  background: #050708;
+  contain: layout paint;
+}
+
+.cinematic-poster,
+.cinematic-media {
+  object-fit: cover;
+  object-position: var(--cinematic-object-x, 50%) var(--cinematic-object-y, 50%);
+}
+
+.cinematic-poster img {
+  object-fit: cover;
+  object-position: inherit;
+}
+
+.cinematic-poster {
+  z-index: 1;
+  opacity: calc(1 - var(--cinematic-media-ready));
+}
+
+.cinematic-media {
+  z-index: 2;
+  max-width: none;
+  opacity: var(--cinematic-media-ready);
+  background: transparent;
+}
+
+.cinematic-portal-surface {
+  z-index: 3;
+  display: block;
+  background:
+    linear-gradient(114deg, rgba(30, 39, 40, 0.72) 0 35%, transparent 35% 65%, rgba(44, 10, 25, 0.48) 65%),
+    #090c0d;
+  opacity: var(--cinematic-takeover);
+}
+
+.cinematic-shell > .entry-field {
+  z-index: 3;
+  scroll-margin-top: var(--cinematic-header-px);
+}
+
+html[data-cinematic-mode="candidate"]:not([data-cinematic-header="released"]) .home-page .site-header,
+html[data-cinematic-mode="enhanced"]:not([data-cinematic-header="released"]) .home-page .site-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  border-color: rgba(255, 255, 255, calc(0.025 + var(--cinematic-semantic, 0) * 0.055));
+  background: rgba(9, 12, 13, calc(0.18 + var(--cinematic-semantic, 0) * 0.82));
+  backdrop-filter: blur(calc(3px + var(--cinematic-semantic, 0) * 15px));
+}
+
+html[data-cinematic-mode="candidate"]:not([data-cinematic-header="released"]) .home-page .site-header__inner,
+html[data-cinematic-mode="enhanced"]:not([data-cinematic-header="released"]) .home-page .site-header__inner {
+  opacity: calc(0.12 + var(--cinematic-semantic, 0) * 0.88);
+}
+
+html[data-cinematic-mode="candidate"]:not([data-cinematic-header="released"]) .home-page .site-header:focus-within .site-header__inner,
+html[data-cinematic-mode="enhanced"]:not([data-cinematic-header="released"]) .home-page .site-header:focus-within .site-header__inner,
+html[data-cinematic-focus="navigation"] .home-page .site-header__inner {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+html[data-cinematic-mode="candidate"][data-cinematic-header="concealed"] .home-page .site-header__inner,
+html[data-cinematic-mode="enhanced"][data-cinematic-header="concealed"] .home-page .site-header__inner {
+  pointer-events: none;
+}
+
+html[data-cinematic-mode="candidate"] .cinematic-shell,
+html[data-cinematic-mode="enhanced"] .cinematic-shell {
+  --cinematic-travel-px: 365svh;
+  margin-top: calc(-1 * var(--cinematic-header-px));
+  padding-top: calc(var(--cinematic-travel-px) + var(--cinematic-header-px));
+}
+
+html[data-cinematic-mode="candidate"] .cinematic-runway,
+html[data-cinematic-mode="enhanced"] .cinematic-runway {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: calc(var(--cinematic-travel-px) + 100svh);
+  overflow: visible;
+}
+
+html[data-cinematic-mode="candidate"] .cinematic-stage,
+html[data-cinematic-mode="enhanced"] .cinematic-stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+}
+
+html[data-cinematic-mode="candidate"] .cinematic-shell > .entry-field,
+html[data-cinematic-mode="enhanced"] .cinematic-shell > .entry-field {
+  background: transparent;
+  pointer-events: none;
+}
+
+html[data-cinematic-mode="candidate"] .cinematic-shell > .entry-field .entry-field__residual,
+html[data-cinematic-mode="enhanced"] .cinematic-shell > .entry-field .entry-field__residual {
+  opacity: 0;
+}
+
+html[data-cinematic-mode="candidate"] .cinematic-shell > .entry-field .entry-field__content,
+html[data-cinematic-mode="enhanced"] .cinematic-shell > .entry-field .entry-field__content {
+  opacity: var(--cinematic-semantic);
+}
+
+html[data-cinematic-mode="candidate"] .cinematic-shell[data-cinematic-interactive="true"] > .entry-field,
+html[data-cinematic-mode="enhanced"] .cinematic-shell[data-cinematic-interactive="true"] > .entry-field,
+html[data-cinematic-mode="candidate"] .cinematic-shell > .entry-field:focus-within,
+html[data-cinematic-mode="enhanced"] .cinematic-shell > .entry-field:focus-within {
+  pointer-events: auto;
+}
+
+html[data-cinematic-mode="candidate"] .cinematic-shell > .entry-field:focus-within .entry-field__residual,
+html[data-cinematic-mode="candidate"] .cinematic-shell > .entry-field:focus-within .entry-field__content,
+html[data-cinematic-mode="enhanced"] .cinematic-shell > .entry-field:focus-within .entry-field__residual,
+html[data-cinematic-mode="enhanced"] .cinematic-shell > .entry-field:focus-within .entry-field__content {
+  opacity: 1;
+}
+
+html[data-cinematic-focus="entry"] .cinematic-stage {
+  visibility: hidden;
+}
+
+.cinematic-shell[data-cinematic-phase="settled"] .cinematic-stage {
+  visibility: hidden;
+}
+
+.cinematic-shell[data-cinematic-phase="settled"] > .entry-field {
+  background: var(--field-black);
+}
+
+.cinematic-shell[data-cinematic-phase="settled"] > .entry-field .entry-field__residual {
+  opacity: 1;
+}
+
+html[data-cinematic-deep-link][data-cinematic-mode="candidate"] .cinematic-stage,
+html[data-cinematic-deep-link][data-cinematic-mode="enhanced"] .cinematic-stage {
+  visibility: hidden;
+}
+
+html[data-cinematic-deep-link][data-cinematic-mode="candidate"] .cinematic-shell > .entry-field,
+html[data-cinematic-deep-link][data-cinematic-mode="enhanced"] .cinematic-shell > .entry-field {
+  background: var(--field-black);
+}
+
+html[data-cinematic-deep-link][data-cinematic-mode="candidate"] .cinematic-shell > .entry-field .entry-field__residual,
+html[data-cinematic-deep-link][data-cinematic-mode="candidate"] .cinematic-shell > .entry-field .entry-field__content,
+html[data-cinematic-deep-link][data-cinematic-mode="enhanced"] .cinematic-shell > .entry-field .entry-field__residual,
+html[data-cinematic-deep-link][data-cinematic-mode="enhanced"] .cinematic-shell > .entry-field .entry-field__content {
+  opacity: 1;
+}
+
+@media (max-width: 50rem) and (orientation: portrait),
+  (max-width: 56.25rem) and (max-height: 30rem) {
+  .cinematic-shell {
+    --cinematic-object-x: 54%;
+    --cinematic-object-y: 50%;
+  }
+
+  html[data-cinematic-mode="candidate"] .cinematic-shell,
+  html[data-cinematic-mode="enhanced"] .cinematic-shell {
+    --cinematic-travel-px: 300svh;
+  }
+}
+
+@media (max-width: 21.875rem) and (orientation: portrait) {
+  .cinematic-shell {
+    --cinematic-object-x: 55%;
+  }
+}
+
+@media (max-width: 56.25rem) and (max-height: 30rem) {
+  .cinematic-shell {
+    --cinematic-object-x: 53%;
+    --cinematic-object-y: 48%;
+  }
+}
+
+@media (max-height: 43.999rem) and (min-width: 56.26rem) {
+  html[data-cinematic-mode="candidate"] .cinematic-shell,
+  html[data-cinematic-mode="enhanced"] .cinematic-shell {
+    --cinematic-travel-px: 335svh;
+  }
+}
+
+@media (max-width: 48rem) {
+  .cinematic-runway {
+    height: min(62svh, 34rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-media {
+    display: none;
+  }
+}

@@ -14,6 +14,7 @@ import {
   sparkProgramme,
 } from "../content";
 import "../styles/routes/home.css";
+import "../styles/routes/home-cinematic.css";
 import "../styles/routes/home-method.css";
 import "../styles/routes/home-responsive.css";
 
@@ -36,8 +37,86 @@ if (!maradinOpening || !maradinClimax) {
 }
 ---
 
-<BaseLayout {title} {description} bodyClass="home-page">
-  <EntryField />
+<BaseLayout
+  {title}
+  {description}
+  bodyClass="home-page"
+  skipHref="#entry"
+  skipLabel="Skip cinematic intro"
+>
+  <script is:inline>
+    (() => {
+      const root = document.documentElement;
+      const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? true;
+      const capable =
+        "HTMLVideoElement" in window &&
+        "ResizeObserver" in window &&
+        "requestAnimationFrame" in window;
+      const candidate = !reduced && capable;
+      root.dataset.cinematicMode = candidate ? "candidate" : "static";
+      if (!candidate) {
+        root.dataset.cinematicHeader = "released";
+      } else if (window.location.hash && window.location.hash !== "#main-content") {
+        root.dataset.cinematicDeepLink = "true";
+        root.dataset.cinematicHeader = "visible";
+      } else {
+        root.dataset.cinematicHeader = "concealed";
+      }
+    })();
+  </script>
+
+  <div class="cinematic-shell" data-cinematic-shell data-cinematic-interactive="false">
+    <div class="cinematic-runway" aria-hidden="true">
+      <div class="cinematic-stage" data-cinematic-stage>
+        <picture class="cinematic-poster" data-cinematic-poster>
+          <source
+            media="(max-width: 350px) and (orientation: portrait)"
+            srcset="/media/cinematic/phase-3-dormant-narrow-451d05bcc3d5.png"
+          />
+          <source
+            media="(max-width: 800px) and (orientation: portrait), (max-width: 900px) and (max-height: 480px)"
+            srcset="/media/cinematic/phase-3-dormant-mobile-9d5c19b1a5e2.png"
+          />
+          <img
+            src="/media/cinematic/phase-3-dormant-desktop-03f5490ab11a.png"
+            width="1440"
+            height="900"
+            alt=""
+            loading="eager"
+            decoding="sync"
+            fetchpriority="high"
+          />
+        </picture>
+        <video
+          class="cinematic-media"
+          data-cinematic-media
+          aria-hidden="true"
+          tabindex="-1"
+          muted
+          playsinline
+          preload="none"
+          disablepictureinpicture
+        ></video>
+        <span class="cinematic-portal-surface" data-cinematic-portal-surface></span>
+      </div>
+    </div>
+
+    <EntryField />
+
+    <script>
+      const root = document.documentElement;
+      if (root.dataset.cinematicMode === "candidate") {
+        void import("../scripts/home-cinematic-integration")
+          .then(({ initHomeCinematicIntegration }) => initHomeCinematicIntegration())
+          .catch(() => {
+            root.dataset.cinematicMode = "static";
+            root.dataset.cinematicFallback = "controller";
+            root.dataset.cinematicHeader = "released";
+          });
+      }
+    </script>
+  </div>
+
   <BuiltWithIndustry />
   <MethodField steps={processSteps} />
   <IndustryTerritories industries={PUBLIC_INDUSTRIES} />

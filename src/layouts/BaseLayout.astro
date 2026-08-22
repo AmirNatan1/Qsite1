@@ -14,6 +14,8 @@ interface Props {
   canonicalPath?: string;
   noindex?: boolean;
   bodyClass?: string;
+  skipHref?: string;
+  skipLabel?: string;
 }
 
 const {
@@ -22,6 +24,8 @@ const {
   canonicalPath = Astro.url.pathname,
   noindex = false,
   bodyClass = "",
+  skipHref = "#main-content",
+  skipLabel = "Skip to content",
 } = Astro.props;
 
 const siteName = "Quantum";
@@ -53,7 +57,7 @@ const canonical = !noindex && Astro.site
     <title>{documentTitle}</title>
   </head>
   <body class={bodyClass}>
-    <a class="skip-link" href="#main-content">Skip to content</a>
+    <a class="skip-link" href={skipHref}>{skipLabel}</a>
     <SiteHeader currentPath={Astro.url.pathname} />
     <main id="main-content" tabindex="-1">
       <slot />
