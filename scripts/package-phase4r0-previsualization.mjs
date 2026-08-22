@@ -32,6 +32,14 @@ import sharp from "sharp";
 
 const execFileAsync = promisify(execFile);
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const OPENING_COMPOSITION_SCRIPT_PATH = path.join(
+  ROOT,
+  "artifacts",
+  "original",
+  "phase-4r0-orbit-signal-threshold",
+  "source",
+  "measure_phase4r0_opening_composition.py",
+);
 const PHYSICAL_FRAME_START = 1;
 const PHYSICAL_FRAME_END = 500;
 const DEEP_BLACK_START = 501;
@@ -44,6 +52,7 @@ const MANIFEST_FILENAME = "phase-4r0-orbit-signal-threshold-previsualization-man
 const RESULT_FILENAME = "phase-4r0-orbit-signal-threshold-previsualization-result.json";
 const README_FILENAME = "README.md";
 const CLASSIFICATION = "PHASE 4-R0 PREVISUALIZATION · NOT PRODUCTION · HUMAN UNACCEPTED · PHASE 5 UNAUTHORIZED";
+const FROZEN_DERIVATIVE_SHA256 = "838f304a0f029f5570c1ede2b4ce20c7e7475571f1e7e4fb7d6286e5536e72d3";
 const FIXED_EPOCH = "1980-01-01T00:00:00.000Z";
 const IMAGE_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".webp", ".tif", ".tiff"]);
 const VIDEO_EXTENSIONS = new Set([".mp4", ".mov", ".mkv", ".webm", ".m4v"]);
@@ -176,6 +185,7 @@ function parseArguments(argv) {
     landscapeFrames: null,
     entryPlates: null,
     openingAuthority: null,
+    openingCompositionReport: null,
     sourceBuildReport: null,
     sourceValidationReport: null,
     output: null,
@@ -188,6 +198,7 @@ function parseArguments(argv) {
     ["--landscape-frames", "landscapeFrames"],
     ["--entry-plates", "entryPlates"],
     ["--opening-authority", "openingAuthority"],
+    ["--opening-composition-report", "openingCompositionReport"],
     ["--source-build-report", "sourceBuildReport"],
     ["--source-validation-report", "sourceValidationReport"],
     ["--output", "output"],
@@ -213,6 +224,7 @@ function parseArguments(argv) {
     ["landscapeFrames", "--landscape-frames"],
     ["entryPlates", "--entry-plates"],
     ["openingAuthority", "--opening-authority"],
+    ["openingCompositionReport", "--opening-composition-report"],
     ["sourceBuildReport", "--source-build-report"],
     ["sourceValidationReport", "--source-validation-report"],
     ["output", "--output"],
@@ -232,6 +244,7 @@ Usage:
     --landscape-frames <external-root-with-f001..f500> \\
     --entry-plates <external-root-with-desktop-mobile-landscape-plates> \\
     --opening-authority <current-opening-image-video-or-frame-root> \\
+    --opening-composition-report <external-Blender-F001-geometry-report.json> \\
     --source-build-report <phase4r0-source-build.json> \\
     --source-validation-report <phase4r0-source-validation.json> \\
     --output <fresh-external-phase4r0-root> [--ffmpeg <executable>]
@@ -243,6 +256,9 @@ as raw authorities. Each physical root must carry its PASS fresh-Eevee render
 report with exact F001–500 hashes and real-camera telemetry. Source reports
 must state PASS and bind the Blender derivative plus explicit Quantum-Q/logo
 provenance. The ENTRY root must carry its PASS capture manifest.
+The opening-composition report must be the external PASS output of the frozen
+Blender geometry measurement script, bind its exact bytes/SHA-256, prove
+Blender 5.2.x, and bind all three real F001 cameras.
 The selected FFmpeg executable must expose the libx264 encoder.
 
 Output classification: ${CLASSIFICATION}
@@ -660,6 +676,314 @@ function reportStatus(report, label) {
   if (status !== "PASS") throw new Error(`${label} must state status PASS; received ${status || "missing"}`);
 }
 
+function openingCompositionMeasurements(report, derivativeAuthority, measurementScriptAuthority) {
+  const derivativeSha256 = derivativeAuthority.sha256;
+  if (report.schema !== "quantum-hub.phase-4-r0.opening-composition-geometry.v1") {
+    throw new Error("opening composition report has an unsupported schema");
+  }
+  reportStatus(report, "opening composition report");
+  if (
+    report.classification !== CLASSIFICATION
+    || report.authorization?.productionAuthorized !== false
+    || report.authorization?.humanAccepted !== false
+    || report.authorization?.phase5Authorized !== false
+  ) {
+    throw new Error("opening composition report has invalid R0/no-production/human-unaccepted/Phase-5 authorization labels");
+  }
+  if (String(report.source?.sha256 ?? "").toLowerCase() !== derivativeSha256.toLowerCase()) {
+    throw new Error("opening composition report does not bind the exact PASS Phase 4-R0 derivative SHA-256");
+  }
+  if (numeric(report.source?.bytes) !== derivativeAuthority.bytes) {
+    throw new Error("opening composition report derivative byte count does not match the PASS source-build authority");
+  }
+  if (
+    report.script?.basename !== measurementScriptAuthority.basename
+    || numeric(report.script?.bytes) !== measurementScriptAuthority.bytes
+    || String(report.script?.sha256 ?? "").toLowerCase() !== measurementScriptAuthority.sha256
+  ) {
+    throw new Error("opening composition report does not bind the exact repository measurement script bytes/SHA-256");
+  }
+  if (
+    !Array.isArray(report.runtime?.blenderVersionTuple)
+    || numeric(report.runtime.blenderVersionTuple[0]) !== 5
+    || numeric(report.runtime.blenderVersionTuple[1]) !== 2
+    || !/^5\.2(?:\.|$)/.test(String(report.runtime?.blenderVersion ?? ""))
+    || numeric(report.runtime?.frame) !== 1
+  ) {
+    throw new Error("opening composition report must prove Blender 5.2.x at F001");
+  }
+  if (
+    report.measurementContract?.geometricProjectionOnly !== true
+    || report.measurementContract?.occlusionSegmentationPerformed !== false
+    || report.measurementContract?.pixelSegmentationPerformed !== false
+    || report.measurementContract?.humanVisibilityOrAcceptanceInferred !== false
+  ) {
+    throw new Error("opening composition report must declare geometric projection only, without pixel/occlusion segmentation or acceptance inference");
+  }
+  if (JSON.stringify(report.familyOrder) !== JSON.stringify(FAMILIES)) {
+    throw new Error("opening composition report familyOrder must be exactly desktop, mobile, landscape");
+  }
+  const contracts = {
+    desktop: {
+      camera: "Phase4R0_Camera_Desktop",
+      rig: "Phase4R0_OrbitRig_Desktop",
+      lensMm: 40,
+      cableCollection: "DESKTOP_2_5_TURN_SPIRAL_CABLE",
+      cableAuthorship: "desktop 2.5-turn accepted cable",
+      authoredRenderResolution: [960, 600],
+      viewport: [1440, 900],
+      segmentCount: 185,
+      entryHiddenSegmentCount: 5,
+    },
+    mobile: {
+      camera: "Phase4R0_Camera_Mobile",
+      rig: "Phase4R0_OrbitRig_Mobile",
+      lensMm: 50,
+      cableCollection: "MOBILE_2_25_TURN_SPIRAL_CABLE",
+      cableAuthorship: "mobile 2.25-turn accepted cable",
+      authoredRenderResolution: [390, 844],
+      viewport: [390, 844],
+      segmentCount: 185,
+      entryHiddenSegmentCount: 5,
+    },
+    landscape: {
+      camera: "Phase4R0_Camera_Landscape",
+      rig: "Phase4R0_OrbitRig_Landscape",
+      lensMm: 36,
+      cableCollection: "MOBILE_2_25_TURN_SPIRAL_CABLE",
+      cableAuthorship: "mobile 2.25-turn accepted cable, as selected by the landscape renderer",
+      authoredRenderResolution: [844, 390],
+      viewport: [844, 390],
+      segmentCount: 185,
+      entryHiddenSegmentCount: 5,
+    },
+  };
+  const SPIRAL_SOURCE = "accepted two-point recessed-conductor centreline curves with progress metadata";
+  const SPIRAL_METHOD = "world-length-weighted exact homogeneous frustum clipping of each straight accepted conductor segment; no render pixels, depth buffer, or occlusion test";
+  const SPIRAL_DENOMINATOR = "all accepted recessed-conductor centreline segments except the explicitly entry_hidden terminal segments";
+  const CRT_SOURCE = "all evaluated mesh-convertible objects in the accepted REFINED_CRT_ASSEMBLY collection";
+  const CRT_METHOD = "project all evaluated CRT geometry vertices through the real F001 camera, form a 2D convex hull, clip that hull to the viewport, then measure its vertical span and normalized area";
+  const CRT_AREA_DEFINITION = "viewport-clipped convex-hull area divided by normalized viewport area";
+  const TOLERANCE_PERCENT = 1e-4;
+  const LENGTH_TOLERANCE_M = 5e-8;
+  const percentage = (value, label) => {
+    const measured = numeric(value);
+    if (!Number.isFinite(measured) || measured < 0 || measured > 100) throw new Error(`${label} must be a finite percentage in [0,100]`);
+    return measured;
+  };
+  const finite = (value, label, minimum = 0) => {
+    const measured = numeric(value);
+    if (!Number.isFinite(measured) || measured < minimum) throw new Error(`${label} must be finite and >= ${minimum}`);
+    return measured;
+  };
+  const integer = (value, label, minimum = 0) => {
+    const measured = finite(value, label, minimum);
+    if (!Number.isInteger(measured)) throw new Error(`${label} must be an integer`);
+    return measured;
+  };
+  const recomputedPercentage = (reported, computed, label) => {
+    const measured = percentage(reported, label);
+    if (Math.abs(measured - computed) > TOLERANCE_PERCENT) {
+      throw new Error(`${label}=${measured} does not recompute from its supplied geometry values (${computed})`);
+    }
+    return measured;
+  };
+  const polygonArea = (polygon) => Math.abs(polygon.reduce((sum, left, index) => {
+    const right = polygon[(index + 1) % polygon.length];
+    return sum + left[0] * right[1] - right[0] * left[1];
+  }, 0)) / 2;
+  const families = {};
+  for (const family of FAMILIES) {
+    const value = report.families?.[family];
+    const contract = contracts[family];
+    if (!value || value.status !== "PASS" || value.family !== family || value.frame !== 1) {
+      throw new Error(`opening composition report lacks a PASS F001 ${family} measurement`);
+    }
+    if (
+      value.camera?.object !== contract.camera
+      || value.camera?.type !== "PERSP"
+      || value.camera?.rig !== contract.rig
+      || value.camera?.constraint !== "Phase4R0_AuditableLookAtCRT"
+      || value.camera?.target !== "Phase4R0_CRT_OrbitTarget"
+      || numeric(value.camera?.lensMm) !== contract.lensMm
+      || value.spiral?.collection !== contract.cableCollection
+      || value.cableAuthorship !== contract.cableAuthorship
+      || value.crt?.collection !== "REFINED_CRT_ASSEMBLY"
+      || JSON.stringify(value.authoredRenderResolution) !== JSON.stringify(contract.authoredRenderResolution)
+      || JSON.stringify(value.measurementViewport) !== JSON.stringify(contract.viewport)
+    ) {
+      throw new Error(`opening composition report ${family} camera/cable/CRT/viewport provenance is invalid`);
+    }
+    if (value.spiral?.occlusionSegmentationPerformed !== false || value.crt?.occlusionSegmentationPerformed !== false) {
+      throw new Error(`opening composition report ${family} must remain geometric-only`);
+    }
+    if (
+      value.spiral?.sourceGeometry !== SPIRAL_SOURCE
+      || value.spiral?.method !== SPIRAL_METHOD
+      || value.spiral?.spiralVisiblePercentDenominator !== SPIRAL_DENOMINATOR
+      || value.crt?.sourceGeometry !== CRT_SOURCE
+      || value.crt?.method !== CRT_METHOD
+      || value.crt?.areaDefinition !== CRT_AREA_DEFINITION
+    ) {
+      throw new Error(`opening composition report ${family} changes a required geometry measurement definition`);
+    }
+    const segmentCount = integer(value.spiral.segmentCount, `${family} segmentCount`, 1);
+    const entryHiddenSegmentCount = integer(
+      value.spiral.intentionallyEntryHiddenSegmentCount,
+      `${family} intentionallyEntryHiddenSegmentCount`,
+    );
+    const segmentsIntersectingFrustum = integer(
+      value.spiral.segmentsIntersectingFrustum,
+      `${family} segmentsIntersectingFrustum`,
+    );
+    if (
+      segmentCount !== contract.segmentCount
+      || entryHiddenSegmentCount !== contract.entryHiddenSegmentCount
+      || segmentsIntersectingFrustum > segmentCount
+    ) {
+      throw new Error(`opening composition report ${family} has invalid accepted conductor segment counts`);
+    }
+    const allConductorLengthM = finite(value.spiral.allConductorLengthM, `${family} allConductorLengthM`, Number.EPSILON);
+    const allConductorFrustumVisibleLengthM = finite(
+      value.spiral.allConductorFrustumVisibleLengthM,
+      `${family} allConductorFrustumVisibleLengthM`,
+    );
+    const reviewableSpiralLengthM = finite(value.spiral.reviewableSpiralLengthM, `${family} reviewableSpiralLengthM`, Number.EPSILON);
+    const reviewableSpiralFrustumVisibleLengthM = finite(
+      value.spiral.reviewableSpiralFrustumVisibleLengthM,
+      `${family} reviewableSpiralFrustumVisibleLengthM`,
+    );
+    if (
+      allConductorFrustumVisibleLengthM > allConductorLengthM + LENGTH_TOLERANCE_M
+      || reviewableSpiralLengthM >= allConductorLengthM
+      || reviewableSpiralFrustumVisibleLengthM > reviewableSpiralLengthM + LENGTH_TOLERANCE_M
+    ) {
+      throw new Error(`opening composition report ${family} has inconsistent cable length numerators/denominators`);
+    }
+    const hiddenConductorLengthM = allConductorLengthM - reviewableSpiralLengthM;
+    const hiddenConductorFrustumVisibleLengthM = allConductorFrustumVisibleLengthM - reviewableSpiralFrustumVisibleLengthM;
+    if (
+      reviewableSpiralFrustumVisibleLengthM > allConductorFrustumVisibleLengthM + LENGTH_TOLERANCE_M
+      || hiddenConductorFrustumVisibleLengthM < -LENGTH_TOLERANCE_M
+      || hiddenConductorFrustumVisibleLengthM > hiddenConductorLengthM + LENGTH_TOLERANCE_M
+    ) {
+      throw new Error(`opening composition report ${family} violates cable subset length invariants`);
+    }
+    const spiralVisiblePercent = recomputedPercentage(
+      value.spiral.spiralVisiblePercent,
+      100 * reviewableSpiralFrustumVisibleLengthM / reviewableSpiralLengthM,
+      `${family} spiralVisiblePercent`,
+    );
+    const allConductorFrustumVisiblePercent = recomputedPercentage(
+      value.spiral.allConductorFrustumVisiblePercent,
+      100 * allConductorFrustumVisibleLengthM / allConductorLengthM,
+      `${family} allConductorFrustumVisiblePercent`,
+    );
+    const clippedHull = value.crt?.viewportClippedConvexHullNormalized;
+    if (!Array.isArray(clippedHull) || clippedHull.length < 3) {
+      throw new Error(`opening composition report ${family} lacks its viewport-clipped CRT hull`);
+    }
+    const hull = clippedHull.map((point, index) => {
+      if (!Array.isArray(point) || point.length !== 2) throw new Error(`${family} CRT hull point ${index} is invalid`);
+      const normalized = point.map((component) => finite(component, `${family} CRT hull point ${index}`, -1e-8));
+      if (normalized.some((component) => component > 1 + 1e-8)) throw new Error(`${family} CRT hull point ${index} leaves the normalized viewport`);
+      return normalized;
+    });
+    const recomputedBounds = {
+      left: Math.min(...hull.map((point) => point[0])),
+      right: Math.max(...hull.map((point) => point[0])),
+      bottom: Math.min(...hull.map((point) => point[1])),
+      top: Math.max(...hull.map((point) => point[1])),
+    };
+    const reportedBounds = value.crt?.viewportClippedBoundsNormalized;
+    for (const key of ["left", "right", "bottom", "top"]) {
+      if (Math.abs(finite(reportedBounds?.[key], `${family} CRT ${key}`, -1e-8) - recomputedBounds[key]) > 1e-8) {
+        throw new Error(`opening composition report ${family} CRT ${key} bound does not recompute from its hull`);
+      }
+    }
+    const crtVerticalViewportOccupancyPercent = recomputedPercentage(
+      value.crt.crtVerticalViewportOccupancyPercent,
+      100 * (recomputedBounds.top - recomputedBounds.bottom),
+      `${family} crtVerticalViewportOccupancyPercent`,
+    );
+    const crtViewportAreaPercent = recomputedPercentage(
+      value.crt.crtViewportAreaPercent,
+      100 * polygonArea(hull),
+      `${family} crtViewportAreaPercent`,
+    );
+    const geometricObjectCount = integer(value.crt.geometricObjectCount, `${family} geometricObjectCount`, 1);
+    const evaluatedVertexCount = integer(value.crt.evaluatedVertexCount, `${family} evaluatedVertexCount`, 3);
+    const projectedVertexCount = integer(value.crt.projectedVertexCount, `${family} projectedVertexCount`, 3);
+    const projectedConvexHullVertexCount = integer(
+      value.crt.projectedConvexHullVertexCount,
+      `${family} projectedConvexHullVertexCount`,
+      3,
+    );
+    const viewportClippedHullVertexCount = integer(
+      value.crt.viewportClippedHullVertexCount,
+      `${family} viewportClippedHullVertexCount`,
+      3,
+    );
+    if (
+      projectedVertexCount > evaluatedVertexCount
+      || projectedConvexHullVertexCount > projectedVertexCount
+      || viewportClippedHullVertexCount !== hull.length
+      || projectedConvexHullVertexCount < 3
+    ) {
+      throw new Error(`opening composition report ${family} has inconsistent CRT geometry counts`);
+    }
+    families[family] = {
+      frame: 1,
+      camera: value.camera.object,
+      lensMm: numeric(value.camera.lensMm),
+      rig: value.camera.rig,
+      constraint: value.camera.constraint,
+      target: value.camera.target,
+      authoredRenderResolution: value.authoredRenderResolution,
+      measurementViewport: value.measurementViewport,
+      cableCollection: value.spiral.collection,
+      cableAuthorship: value.cableAuthorship,
+      cableSourceGeometry: SPIRAL_SOURCE,
+      cableMeasurementMethod: SPIRAL_METHOD,
+      segmentCount,
+      segmentsIntersectingFrustum,
+      intentionallyEntryHiddenSegmentCount: entryHiddenSegmentCount,
+      allConductorLengthM,
+      allConductorFrustumVisibleLengthM,
+      allConductorFrustumVisiblePercent,
+      reviewableSpiralLengthM,
+      reviewableSpiralFrustumVisibleLengthM,
+      spiralVisiblePercent,
+      spiralVisiblePercentDenominator: SPIRAL_DENOMINATOR,
+      crtCollection: value.crt.collection,
+      crtSourceGeometry: CRT_SOURCE,
+      crtMeasurementMethod: CRT_METHOD,
+      crtVerticalViewportOccupancyPercent,
+      crtViewportAreaPercent,
+      crtViewportAreaDefinition: CRT_AREA_DEFINITION,
+      crtViewportClippedBoundsNormalized: reportedBounds,
+      crtViewportClippedConvexHullNormalized: hull,
+      geometricObjectCount,
+      evaluatedVertexCount,
+      projectedVertexCount,
+      projectedConvexHullVertexCount,
+      viewportClippedHullVertexCount,
+    };
+  }
+  return {
+    schema: report.schema,
+    derivativeSha256,
+    derivativeBytes: derivativeAuthority.bytes,
+    measurementScript: measurementScriptAuthority,
+    blenderVersion: report.runtime.blenderVersion,
+    method: "frozen Blender F001 geometry projected through each real camera",
+    spiralDenominator: SPIRAL_DENOMINATOR,
+    limitation: "geometric frustum/convex-hull projection; five accepted entry_hidden terminal segments excluded from spiral denominator; not render-pixel or occlusion segmentation",
+    humanAccepted: false,
+    families,
+  };
+}
+
 function assertTimelineAuthority(buildReport) {
   const actual = buildReport.timeline?.events;
   if (!actual || typeof actual !== "object") throw new Error("source build report must expose the exact Phase 4-R0 event timeline");
@@ -821,36 +1145,6 @@ function cameraSamplesFromRenderSequence(sequence) {
   return {
     sourcePath: `${path.basename(sequence.renderReportPath)}.frames`,
     samples,
-  };
-}
-
-function extractFamilyComposition(reports, family, sequence) {
-  const candidates = [];
-  for (const report of reports) {
-    deepValues(report, (value, trail) => {
-      if (!value || typeof value !== "object" || Array.isArray(value)) return;
-      const trailText = trail.join(".").toLowerCase();
-      if (!trailText.includes(family)) return;
-      const serialized = JSON.stringify(value).toLowerCase();
-      if (!serialized.includes("spiral") && !serialized.includes("occup")) return;
-      const score = (/composition|occup|spiral|visibility/.test(trailText) ? 20 : 0) + Object.keys(value).length;
-      candidates.push({ score, trail: trail.join("."), value });
-    });
-  }
-  candidates.sort((left, right) => right.score - left.score || lexicalCompare(left.trail, right.trail));
-  const selected = candidates[0];
-  if (selected && /spiral/.test(JSON.stringify(selected.value).toLowerCase())) {
-    return { sourcePath: selected.trail, sourceReported: true, measurement: selected.value };
-  }
-  return {
-    sourcePath: `${path.basename(sequence.renderReportPath)}.frames[0]`,
-    sourceReported: false,
-    measurement: {
-      reviewFrame: 1,
-      dimensions: [sequence.width, sequence.height],
-      spiralVisibility: "shown directly in the fresh F001 plate; human review required; no object segmentation or acceptance inferred",
-      occupancy: "descriptive luma occupancy is computed by the packager and reported separately",
-    },
   };
 }
 
@@ -1526,37 +1820,48 @@ async function createShortLandscapeNeighborSheet(outputRoot, families, entryNeig
   });
 }
 
-async function createOpeningComparison(outputRoot, authorityImage, families, compositions) {
+async function createOpeningComparison(outputRoot, authorityImage, families, openingComposition) {
   const authorityOccupancy = await imagePixelOccupancy(authorityImage);
   const panels = [{
     input: authorityImage,
     title: "CURRENT OPENING AUTHORITY · FIRST VISUAL STATE",
     lines: [
-      `descriptive luma occupancy ${authorityOccupancy.occupiedPercent}%`,
+      `context-only luma occupancy ${authorityOccupancy.occupiedPercent}%`,
+      "no frozen 3D geometry contract is claimed for this comparison image",
       "read-only authority; not re-encoded into production",
     ],
   }];
-  const measurements = { authority: authorityOccupancy, families: {} };
+  const measurements = {
+    authorityContextOnly: authorityOccupancy,
+    method: openingComposition.method,
+    limitation: openingComposition.limitation,
+    derivativeSha256: openingComposition.derivativeSha256,
+    measurementScript: openingComposition.measurementScript,
+    blenderVersion: openingComposition.blenderVersion,
+    spiralDenominator: openingComposition.spiralDenominator,
+    humanAccepted: false,
+    families: {},
+  };
   for (const family of FAMILIES) {
-    const occupancy = await imagePixelOccupancy(families[family].files[0]);
-    measurements.families[family] = {
-      descriptivePixelOccupancy: occupancy,
-      sourceReportedComposition: compositions[family],
-    };
+    const geometry = openingComposition.families[family];
+    measurements.families[family] = geometry;
     panels.push({
       input: families[family].files[0],
       title: `${family.toUpperCase()} R0 · F001 · FULL-SPIRAL REVIEW GATE`,
       lines: [
-        `descriptive luma occupancy ${occupancy.occupiedPercent}%`,
-        `spiral/occupancy source: ${compositions[family].sourcePath}`,
-        JSON.stringify(compositions[family].measurement),
+        `spiral frustum-visible ${geometry.spiralVisiblePercent}% (reviewable path)`,
+        `denominator excludes ${geometry.intentionallyEntryHiddenSegmentCount} accepted entry_hidden terminal segments`,
+        `CRT vertical viewport occupancy ${geometry.crtVerticalViewportOccupancyPercent}%`,
+        `CRT projected convex-hull viewport area ${geometry.crtViewportAreaPercent}%`,
+        `${geometry.camera} · ${geometry.lensMm} mm · ${geometry.measurementViewport.join("×")}`,
+        "geometric projection only · no render-pixel/occlusion segmentation · human unaccepted",
       ],
     });
   }
   const sheet = await createSheet(outputRoot, {
     filename: "phase-4r0-opening-authority-comparison.png",
     title: "PHASE 4-R0 · OPENING COMPARISON",
-    subtitle: "Current opening authority vs three fresh Eevee real-camera F001 full-spiral review compositions",
+    subtitle: "Current opening authority vs frozen-derivative geometric F001 spiral and CRT occupancy measurements",
     panels,
     columns: 2,
   });
@@ -1608,11 +1913,21 @@ async function createLogoProvenance(outputRoot, families, logoProvenance) {
   return { sheet, report };
 }
 
-async function copyReports(outputRoot, sourceBuildReportPath, sourceValidationReportPath, sequences, entryManifestPath) {
+async function copyReports(
+  outputRoot,
+  sourceBuildReportPath,
+  sourceValidationReportPath,
+  openingCompositionScriptPath,
+  openingCompositionReportPath,
+  sequences,
+  entryManifestPath,
+) {
   const records = [];
   const definitions = [
     ["source-build", sourceBuildReportPath, "phase-4r0-source-build-report.json"],
     ["source-validation", sourceValidationReportPath, "phase-4r0-source-validation-report.json"],
+    ["opening-composition-measurement-script", openingCompositionScriptPath, "measure_phase4r0_opening_composition.py"],
+    ["opening-composition-geometry", openingCompositionReportPath, "phase-4r0-opening-composition-geometry-report.json"],
     ...FAMILIES.map((family) => [
       `${family}-fresh-eevee-render`,
       sequences[family].renderReportPath,
@@ -1738,6 +2053,10 @@ function readmeText({
   reportCopies,
 }) {
   const list = (records) => records.map((record) => `- \`${record.path}\` — ${record.sha256 ?? "recorded in manifest"}`).join("\n");
+  const openingCompositionSummary = FAMILIES.map((family) => {
+    const value = openingComparison.measurements.families[family];
+    return `- ${family}: spiral frustum-visible **${value.spiralVisiblePercent}%** of the reviewable path (denominator excludes **${value.intentionallyEntryHiddenSegmentCount}** accepted \`entry_hidden\` terminal segments); CRT vertical viewport occupancy **${value.crtVerticalViewportOccupancyPercent}%**; CRT projected convex-hull viewport area **${value.crtViewportAreaPercent}%**`;
+  }).join("\n");
   return `# Phase 4-R0 orbit / signal-threshold previsualization
 
 > **${CLASSIFICATION}**
@@ -1795,6 +2114,20 @@ Top/side paths and radius/relative-angle/aim-distance/lens graphs come from the
 camera samples in the supplied PASS reports. They are not estimated from image
 pixels. Milestone sheets explicitly show 0°/90°/180°/270°/360°/frontal/ENTRY.
 
+## F001 geometric opening composition
+
+${openingCompositionSummary}
+
+These values come from the separately supplied Blender PASS report bound to
+the exact derivative SHA-256, the copied measurement-script bytes/SHA-256, and
+Blender 5.2.x. Spiral percentage is world-length-weighted
+homogeneous-frustum clipping of actual accepted conductor centreline segments.
+Its denominator excludes exactly five accepted \`entry_hidden\` terminal
+segments; all-conductor lengths and percentages remain in the report/manifest.
+CRT vertical occupancy and area use the viewport-clipped convex hull of actual
+evaluated CRT assembly vertices. This is geometric projection, not render-pixel
+or occlusion segmentation, and it does not infer human visibility or acceptance.
+
 ## Signal, portal, and responsive evidence
 
 ${list(Object.values(narrativeSheets))}
@@ -1803,11 +2136,10 @@ ${list(responsiveSheets)}
 - \`${openingComparison.sheet.path}\`
 - \`${logoProvenance.sheet.path}\`
 
-The opening-comparison report distinguishes descriptive non-black pixel
-occupancy from provenance-tagged spiral visibility. When no source object-mask
-metric exists, it says so and leaves the full F001 plate as a human review
-gate; no segmentation or acceptance is invented. Nine responsive sheets use
-the documented desktop/mobile/landscape family map, each with exactly six states.
+The opening authority panel retains a context-only non-black luma measurement;
+it is not substituted for the exact R0 Blender geometry values above. Nine
+responsive sheets use the documented desktop/mobile/landscape family map, each
+with exactly six states.
 The short-landscape neighbor sheet pairs physical F500 with an actual captured
 ENTRY plate at 740×360, 800×360, 844×390, 896×414, and 900×480.
 
@@ -1861,8 +2193,25 @@ async function main() {
       throw new Error("--opening-authority must be independent of the fresh physical-frame and ENTRY roots");
     }
   }
+  options.openingCompositionReport = await assertFile(options.openingCompositionReport, "--opening-composition-report");
+  if (isWithin(ROOT, options.openingCompositionReport)) {
+    throw new Error("--opening-composition-report must be the external output of the frozen Blender measurement script");
+  }
+  for (const externalRoot of externalRootValues) {
+    if (isWithin(externalRoot, options.openingCompositionReport)) {
+      throw new Error("--opening-composition-report must remain independent of the physical-frame and ENTRY roots");
+    }
+  }
   options.sourceBuildReport = await assertFile(options.sourceBuildReport, "--source-build-report");
   options.sourceValidationReport = await assertFile(options.sourceValidationReport, "--source-validation-report");
+  const openingCompositionScriptPath = await assertFile(
+    OPENING_COMPOSITION_SCRIPT_PATH,
+    "repository opening-composition measurement script",
+  );
+  const openingCompositionScriptAuthority = await inputFileRecord(
+    openingCompositionScriptPath,
+    "opening-composition-measurement-script",
+  );
   await validateFreshExternalOutput(options.output, [
     ...externalRootValues,
     ...(openingAuthorityIsDirectory ? [options.openingAuthority] : []),
@@ -1872,6 +2221,7 @@ async function main() {
 
   const buildReport = await readJsonFile(options.sourceBuildReport, "source build report");
   const validationReport = await readJsonFile(options.sourceValidationReport, "source validation report");
+  const openingCompositionReport = await readJsonFile(options.openingCompositionReport, "opening composition report");
   reportStatus(buildReport, "source build report");
   reportStatus(validationReport, "source validation report");
   const sourceBuildHash = await sha256File(options.sourceBuildReport);
@@ -1881,6 +2231,19 @@ async function main() {
   if (String(validationReport.phase4r0_derivative?.sha256 ?? "").toLowerCase() !== String(buildReport.phase4r0_derivative?.sha256 ?? "").toLowerCase()) {
     throw new Error("source build and validation reports do not bind the same Phase 4-R0 derivative");
   }
+  const derivativeSha256 = String(buildReport.phase4r0_derivative?.sha256 ?? "").toLowerCase();
+  if (derivativeSha256 !== FROZEN_DERIVATIVE_SHA256) {
+    throw new Error(`source reports must bind frozen Phase 4-R0 derivative ${FROZEN_DERIVATIVE_SHA256}`);
+  }
+  const derivativeBytes = numeric(buildReport.phase4r0_derivative?.bytes);
+  if (!Number.isInteger(derivativeBytes) || derivativeBytes <= 0) {
+    throw new Error("source build report must bind the frozen Phase 4-R0 derivative byte count");
+  }
+  const openingComposition = openingCompositionMeasurements(
+    openingCompositionReport,
+    { sha256: derivativeSha256, bytes: derivativeBytes },
+    openingCompositionScriptAuthority,
+  );
   assertTimelineAuthority(buildReport);
 
   const openingAuthorityHash = (await stat(options.openingAuthority)).isFile()
@@ -1904,7 +2267,6 @@ async function main() {
     ...FAMILIES.map((family) => rawSequences[family].renderReport),
   ];
   const cameraPaths = Object.fromEntries(FAMILIES.map((family) => [family, cameraSamplesFromRenderSequence(rawSequences[family])]));
-  const compositions = Object.fromEntries(FAMILIES.map((family) => [family, extractFamilyComposition(sourceReports, family, rawSequences[family])]));
   const logoProvenanceDeclaration = extractLogoProvenance(sourceReports);
   const generatedAt = stableGeneratedAt();
 
@@ -1924,6 +2286,10 @@ async function main() {
     const openingImage = await authorityVisual(options.openingAuthority, ffmpegPath, workRoot);
     const sequenceAuthorities = [];
     for (const family of FAMILIES) sequenceAuthorities.push(await sequenceAuthority(rawSequences[family]));
+    const openingCompositionAuthority = await inputFileRecord(
+      options.openingCompositionReport,
+      "opening-composition-geometry-report",
+    );
 
     const sourceAuthorities = [
       ...(openingAuthorityHash
@@ -1931,6 +2297,8 @@ async function main() {
         : [await inputFileRecord(openingImage, "current-opening-authority-frame-root-f001")]),
       await inputFileRecord(options.sourceBuildReport, "source-build-report"),
       await inputFileRecord(options.sourceValidationReport, "source-validation-report"),
+      openingCompositionScriptAuthority,
+      openingCompositionAuthority,
       ...FAMILIES.map((family) => rawSequences[family].renderReportRecord),
       entryPlateBundle.manifestRecord,
       ...await Promise.all(FAMILIES.map((family) => inputFileRecord(entryPlates[family], `${family}-entry-plate`))),
@@ -1944,6 +2312,8 @@ async function main() {
       options.output,
       options.sourceBuildReport,
       options.sourceValidationReport,
+      openingCompositionScriptPath,
+      options.openingCompositionReport,
       rawSequences,
       entryPlateBundle.manifestPath,
     );
@@ -1961,7 +2331,7 @@ async function main() {
     const narrativeSheets = await createNarrativeSheets(options.output, families);
     const responsiveSheets = await createResponsiveSheets(options.output, families);
     const neighborSheet = await createShortLandscapeNeighborSheet(options.output, families, entryPlateBundle.neighborPlates);
-    const openingComparison = await createOpeningComparison(options.output, openingImage, families, compositions);
+    const openingComparison = await createOpeningComparison(options.output, openingImage, families, openingComposition);
     await atomicJson(path.join(options.output, "reports", "phase-4r0-opening-comparison.json"), {
       schema: "quantum-hub.phase-4-r0.opening-comparison.v1",
       classification: CLASSIFICATION,
@@ -2035,12 +2405,20 @@ async function main() {
           : "directory authority; first visual frame selected for comparison",
         sourceBuildStatus: "PASS",
         sourceValidationStatus: "PASS",
+        openingCompositionGeometryStatus: "PASS",
+        openingCompositionReport: openingCompositionAuthority,
+        openingCompositionMeasurementScript: openingCompositionScriptAuthority,
+        openingCompositionBlenderVersion: openingComposition.blenderVersion,
+        openingCompositionDerivativeSha256: openingComposition.derivativeSha256,
+        openingCompositionSpiralDenominator: openingComposition.spiralDenominator,
+        openingCompositionLimitation: openingComposition.limitation,
         eeveeRealCameraProofRequired: true,
         cameraSamplePaths: Object.fromEntries(FAMILIES.map((family) => [family, cameraPaths[family].sourcePath])),
-        compositionMeasurementPaths: Object.fromEntries(FAMILIES.map((family) => [family, compositions[family].sourcePath])),
+        openingCompositionFamilies: openingComposition.families,
         logoProvenance: logoProvenanceDeclaration,
       },
       timelineProposal: DEFAULT_TIMELINE,
+      openingCompositionGeometry: openingComposition,
       familyMapping: {
         responsiveMatrix: RESPONSIVE_VIEWPORTS,
         shortLandscapeNeighbors: SHORT_LANDSCAPE_NEIGHBORS.map((viewport) => ({ ...viewport, family: "landscape" })),

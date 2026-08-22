@@ -128,7 +128,12 @@ def retime_inherited_actions() -> dict[str, Any]:
 
 
 def boost_conduction_for_previsualization() -> dict[str, Any]:
-    factor = 2.0
+    # The production-authored conductor energy is calibrated for close final
+    # shots.  In the much wider orbit animatic it became illegible at the 25,
+    # 50 and 75 percent review gates.  Boost only the existing local conductor
+    # emission and its contact lights for the draft; dormancy remains black and
+    # no environmental material or brand colour is changed.
+    factors = {"desktop": 6.0, "mobile": 30.0}
     boosted_curves = 0
     boosted_points = 0
     for action in bpy.data.actions:
@@ -136,6 +141,8 @@ def boost_conduction_for_previsualization() -> dict[str, Any]:
         contact = action.name.startswith(("Phase3_DesktopContactLight_", "Phase3_MobileContactLight_"))
         if not conductor and not contact:
             continue
+        family = "mobile" if "_Mobile" in action.name else "desktop"
+        factor = factors[family]
         for curve in iter_action_fcurves(action):
             is_strength = conductor and 'inputs[29].default_value' in curve.data_path
             is_energy = contact and curve.data_path == "energy"
@@ -150,7 +157,7 @@ def boost_conduction_for_previsualization() -> dict[str, Any]:
                 point.handle_right.y *= factor
                 boosted_points += 1
     return {
-        "factor": factor,
+        "factors": factors,
         "curve_count": boosted_curves,
         "positive_keyframe_count": boosted_points,
         "scope": "conductor emission strength and local contact-light energy only; geometry and authored color unchanged",
@@ -626,7 +633,12 @@ def create_camera_rig(family: str, spec: dict[str, Any], target: bpy.types.Objec
     elevation_waypoints = {
         "desktop": (4.70, 4.50, 3.10),
         "mobile": (4.48, 4.20, 2.90),
-        "landscape": (3.12, 2.85, 1.90),
+        # The short-landscape rear quadrant needs a higher authored boom than
+        # portrait: at the lower draft elevation the proving-field service rail
+        # crossed the CRT and cable near 180 degrees.  This restrained crest
+        # clears that physical occluder while keeping the same monotonic orbit,
+        # contracting radius, target, and final frontal lock.
+        "landscape": (3.60, 5.40, 3.20),
     }[family]
     local_positions = (
         (cfg.FRAME_START, spec["start_radius"], spec["start_elevation"]),

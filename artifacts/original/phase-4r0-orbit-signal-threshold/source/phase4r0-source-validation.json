@@ -7,8 +7,8 @@
   "accepted_phase4_parent": "ce7bd0cb61bf4b9abd81303d89c5ac1aef089e0c",
   "source_build_report": {
     "path": "artifacts/original/phase-4r0-orbit-signal-threshold/source/phase4r0-source-build.json",
-    "bytes": 59473,
-    "sha256": "6bff9e37d32cf1d416542c61887523d9acd5c0f26f00bc1db6780c7b0ff13626"
+    "bytes": 59530,
+    "sha256": "b0bf2c3221e1f135504fc8060a791682a03dcfa9a75daeb302d6911b36ce44ed"
   },
   "accepted_phase3r_source": {
     "path": "artifacts/original/phase-3-crt-opening/source/quantum-signal-television-phase3-r-crt-authenticity.blend",
@@ -17,8 +17,8 @@
   },
   "phase4r0_derivative": {
     "path": "artifacts/original/phase-4r0-orbit-signal-threshold/source/quantum-signal-television-phase4r0-orbit-signal-threshold.blend",
-    "bytes": 2281435,
-    "sha256": "8653336b8a0b90a9898acd9a1f7b8bf10502cfde3000e9818da99b1e44cffcc2"
+    "bytes": 2281798,
+    "sha256": "838f304a0f029f5570c1ede2b4ce20c7e7475571f1e7e4fb7d6286e5536e72d3"
   },
   "quantum_q_authorities": {
     "reversed": {
@@ -54,7 +54,15 @@
       "missing_frames": [],
       "value_mismatches": [],
       "boost_curve_count": 384,
-      "boosted_positive_point_count": 1152
+      "boosted_positive_point_count": 1152,
+      "boost_curve_count_by_family": {
+        "desktop": 192,
+        "mobile": 192
+      },
+      "boosted_positive_point_count_by_family": {
+        "desktop": 576,
+        "mobile": 576
+      }
     },
     "camera_motion": {
       "desktop": {
@@ -70,6 +78,10 @@
         "elevation_start": 4.800000381469727,
         "elevation_completion": 0.7499999523162841,
         "elevation_monotonic": true,
+        "elevation_contract": {
+          "kind": "monotonic descent",
+          "monotonic": true
+        },
         "lens_start_mm": 40.0,
         "lens_completion_mm": 46.0,
         "lens_monotonic": true,
@@ -90,6 +102,10 @@
         "elevation_start": 4.600000095367432,
         "elevation_completion": 0.6800000190734863,
         "elevation_monotonic": true,
+        "elevation_contract": {
+          "kind": "monotonic descent",
+          "monotonic": true
+        },
         "lens_start_mm": 50.0,
         "lens_completion_mm": 56.0,
         "lens_monotonic": true,
@@ -109,7 +125,22 @@
         "radius_monotonic": true,
         "elevation_start": 3.2,
         "elevation_completion": 0.5500000238418579,
-        "elevation_monotonic": true,
+        "elevation_monotonic": false,
+        "elevation_contract": {
+          "kind": "exact single-crest rear-quadrant clearance",
+          "waypoints": {
+            "46": 3.2,
+            "106": 3.600000095367432,
+            "165": 5.400000286102295,
+            "225": 3.2,
+            "285": 0.5500000238418579
+          },
+          "peak_frames": [
+            165
+          ],
+          "rise_monotonic": true,
+          "descent_monotonic": true
+        },
         "lens_start_mm": 36.0,
         "lens_completion_mm": 42.0,
         "lens_monotonic": true,
@@ -316,13 +347,13 @@
       "pass": true,
       "actual": {
         "path": "artifacts/original/phase-4r0-orbit-signal-threshold/source/quantum-signal-television-phase4r0-orbit-signal-threshold.blend",
-        "bytes": 2281435,
-        "sha256": "8653336b8a0b90a9898acd9a1f7b8bf10502cfde3000e9818da99b1e44cffcc2"
+        "bytes": 2281798,
+        "sha256": "838f304a0f029f5570c1ede2b4ce20c7e7475571f1e7e4fb7d6286e5536e72d3"
       },
       "expected": {
         "path": "artifacts/original/phase-4r0-orbit-signal-threshold/source/quantum-signal-television-phase4r0-orbit-signal-threshold.blend",
-        "bytes": 2281435,
-        "sha256": "8653336b8a0b90a9898acd9a1f7b8bf10502cfde3000e9818da99b1e44cffcc2"
+        "bytes": 2281798,
+        "sha256": "838f304a0f029f5570c1ede2b4ce20c7e7475571f1e7e4fb7d6286e5536e72d3"
       }
     },
     {
@@ -759,7 +790,7 @@
       }
     },
     {
-      "id": "three_camera_rigs_360_monotonic",
+      "id": "three_camera_rigs_360_motion_contract",
       "status": "PASS",
       "pass": true,
       "actual": {
@@ -776,6 +807,10 @@
           "elevation_start": 4.800000381,
           "elevation_completion": 0.749999952,
           "elevation_monotonic": true,
+          "elevation_contract": {
+            "kind": "monotonic descent",
+            "monotonic": true
+          },
           "lens_start_mm": 40.0,
           "lens_completion_mm": 46.0,
           "lens_monotonic": true,
@@ -796,6 +831,10 @@
           "elevation_start": 4.600000095,
           "elevation_completion": 0.680000019,
           "elevation_monotonic": true,
+          "elevation_contract": {
+            "kind": "monotonic descent",
+            "monotonic": true
+          },
           "lens_start_mm": 50.0,
           "lens_completion_mm": 56.0,
           "lens_monotonic": true,
@@ -815,7 +854,22 @@
           "radius_monotonic": true,
           "elevation_start": 3.2,
           "elevation_completion": 0.550000024,
-          "elevation_monotonic": true,
+          "elevation_monotonic": false,
+          "elevation_contract": {
+            "kind": "exact single-crest rear-quadrant clearance",
+            "waypoints": {
+              "46": 3.2,
+              "106": 3.600000095,
+              "165": 5.400000286,
+              "225": 3.2,
+              "285": 0.550000024
+            },
+            "peak_frames": [
+              165
+            ],
+            "rise_monotonic": true,
+            "descent_monotonic": true
+          },
           "lens_start_mm": 36.0,
           "lens_completion_mm": 42.0,
           "lens_monotonic": true,
@@ -824,7 +878,7 @@
           "diagnostic_path_121_samples_hidden": true
         }
       },
-      "expected": "three exact rigs; CCW 360 degrees; contracting radius/elevation; monotonic orbit lens; frontal push; hidden 121-point diagnostic paths"
+      "expected": "three exact rigs; monotonic CCW 360 degrees/radius/lens; desktop/mobile descending elevation; landscape exact 3.2/3.6/5.4/3.2/0.55 m single crest at F165; frontal push; hidden 121-point diagnostic paths"
     },
     {
       "id": "desktop_camera_selected",
@@ -901,6 +955,10 @@
           "elevation_start": 4.800000381,
           "elevation_completion": 0.749999952,
           "elevation_monotonic": true,
+          "elevation_contract": {
+            "kind": "monotonic descent",
+            "monotonic": true
+          },
           "lens_start_mm": 40.0,
           "lens_completion_mm": 46.0,
           "lens_monotonic": true,
@@ -921,6 +979,10 @@
           "elevation_start": 4.600000095,
           "elevation_completion": 0.680000019,
           "elevation_monotonic": true,
+          "elevation_contract": {
+            "kind": "monotonic descent",
+            "monotonic": true
+          },
           "lens_start_mm": 50.0,
           "lens_completion_mm": 56.0,
           "lens_monotonic": true,
@@ -940,7 +1002,22 @@
           "radius_monotonic": true,
           "elevation_start": 3.2,
           "elevation_completion": 0.550000024,
-          "elevation_monotonic": true,
+          "elevation_monotonic": false,
+          "elevation_contract": {
+            "kind": "exact single-crest rear-quadrant clearance",
+            "waypoints": {
+              "46": 3.2,
+              "106": 3.600000095,
+              "165": 5.400000286,
+              "225": 3.2,
+              "285": 0.550000024
+            },
+            "peak_frames": [
+              165
+            ],
+            "rise_monotonic": true,
+            "descent_monotonic": true
+          },
           "lens_start_mm": 36.0,
           "lens_completion_mm": 42.0,
           "lens_monotonic": true,
@@ -1620,7 +1697,15 @@
         "missing_frames": [],
         "value_mismatches": [],
         "boost_curve_count": 384,
-        "boosted_positive_point_count": 1152
+        "boosted_positive_point_count": 1152,
+        "boost_curve_count_by_family": {
+          "desktop": 192,
+          "mobile": 192
+        },
+        "boosted_positive_point_count_by_family": {
+          "desktop": 576,
+          "mobile": 576
+        }
       },
       "expected": {
         "source_action_count": 421,
@@ -1640,15 +1725,29 @@
       "actual": {
         "independent_curve_count": 384,
         "independent_positive_points": 1152,
+        "independent_curve_count_by_family": {
+          "desktop": 192,
+          "mobile": 192
+        },
+        "independent_positive_points_by_family": {
+          "desktop": 576,
+          "mobile": 576
+        },
         "build_report": {
-          "factor": 2.0,
+          "factors": {
+            "desktop": 6.0,
+            "mobile": 30.0
+          },
           "curve_count": 384,
           "positive_keyframe_count": 1152,
           "scope": "conductor emission strength and local contact-light energy only; geometry and authored color unchanged"
         }
       },
       "expected": {
-        "factor": 2.0,
+        "factors": {
+          "desktop": 6.0,
+          "mobile": 30.0
+        },
         "curve_count": 384,
         "positive_keyframes": 1152,
         "scope": "conductor emission and local contact-light energy only"

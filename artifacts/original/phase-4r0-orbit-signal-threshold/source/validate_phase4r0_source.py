@@ -37,6 +37,14 @@ EXPECTED_VALIDATION_SCHEMA = "quantum-hub.phase-4-r0-orbit-signal-threshold.sour
 EXPECTED_BLENDER = (5, 2)
 EXPECTED_INHERITED_ACTIONS = 421
 EXPECTED_INHERITED_KEYFRAMES = 17266
+EXPECTED_CONDUCTION_FACTORS = {"desktop": 6.0, "mobile": 30.0}
+EXPECTED_LANDSCAPE_ELEVATION_PROFILE = {
+    46: 3.2,
+    106: 3.6,
+    165: 5.4,
+    225: 3.2,
+    285: 0.55,
+}
 EXPECTED_RETIME_POINTS = (
     (1.0, 1.0),
     (30.0, 45.0),
@@ -510,6 +518,10 @@ def compare_inherited_actions(
     compared_values = 0
     boost_curves: set[tuple[str, str, int]] = set()
     boosted_positive_points = 0
+    boost_curves_by_family: dict[str, set[tuple[str, str, int]]] = {
+        family: set() for family in EXPECTED_CONDUCTION_FACTORS
+    }
+    boosted_positive_points_by_family = {family: 0 for family in EXPECTED_CONDUCTION_FACTORS}
 
     for action_name, source_curves in source_snapshots.items():
         derivative_curves = derivative_snapshots.get(action_name, [])
@@ -533,6 +545,10 @@ def compare_inherited_actions(
             } and "inputs[29].default_value" in source_curve["path"]
             if conductor_boost or contact_boost:
                 boost_curves.add((action_name, source_curve["path"], int(source_curve["index"])))
+                boost_family = "mobile" if "_Mobile" in action_name else "desktop"
+                boost_curves_by_family[boost_family].add(
+                    (action_name, source_curve["path"], int(source_curve["index"]))
+                )
             for source_point in source_curve["points"]:
                 expected_frame = remap_frame(float(source_point["frame"]))
                 matches = sorted(
@@ -555,8 +571,10 @@ def compare_inherited_actions(
                     continue
                 expected_value = float(source_point["value"])
                 if (conductor_boost or contact_boost) and expected_value > 0.0:
-                    expected_value *= 2.0
+                    boost_family = "mobile" if "_Mobile" in action_name else "desktop"
+                    expected_value *= EXPECTED_CONDUCTION_FACTORS[boost_family]
                     boosted_positive_points += 1
+                    boosted_positive_points_by_family[boost_family] += 1
                 actual_value = float(matches[0]["value"])
                 compared_values += 1
                 if not close(actual_value, expected_value, 5e-5) and len(value_mismatches) < 25:
@@ -593,6 +611,10 @@ def compare_inherited_actions(
         "value_mismatches": value_mismatches,
         "boost_curve_count": len(boost_curves),
         "boosted_positive_point_count": boosted_positive_points,
+        "boost_curve_count_by_family": {
+            family: len(curves) for family, curves in boost_curves_by_family.items()
+        },
+        "boosted_positive_point_count_by_family": boosted_positive_points_by_family,
     }
 
 
@@ -750,11 +772,47 @@ def main() -> None:
         radii = [sample["radius"] for sample in samples]
         elevations = [sample["elevation"] for sample in samples]
         lenses = [sample["lens"] for sample in samples]
+        elevation_monotonic = monotonic(elevations, "decreasing") if elevations else False
+        if family == "landscape" and elevations:
+            first_frame = cfg.EVENTS["conduction_start"]
+            profile_actual = {
+                frame: elevations[frame - first_frame]
+                for frame in EXPECTED_LANDSCAPE_ELEVATION_PROFILE
+            }
+            peak_value = max(elevations)
+            peak_frames = [
+                first_frame + index
+                for index, value in enumerate(elevations)
+                if close(value, peak_value, 1e-6)
+            ]
+            peak_index = cfg.EVENTS["conduction_50"] - first_frame
+            elevation_contract_ok = (
+                all(
+                    close(profile_actual[frame], expected, 1e-4)
+                    for frame, expected in EXPECTED_LANDSCAPE_ELEVATION_PROFILE.items()
+                )
+                and peak_frames == [cfg.EVENTS["conduction_50"]]
+                and monotonic(elevations[: peak_index + 1], "increasing")
+                and monotonic(elevations[peak_index:], "decreasing")
+            )
+            elevation_contract = {
+                "kind": "exact single-crest rear-quadrant clearance",
+                "waypoints": profile_actual,
+                "peak_frames": peak_frames,
+                "rise_monotonic": monotonic(elevations[: peak_index + 1], "increasing"),
+                "descent_monotonic": monotonic(elevations[peak_index:], "decreasing"),
+            }
+        else:
+            elevation_contract_ok = elevation_monotonic
+            elevation_contract = {
+                "kind": "monotonic descent",
+                "monotonic": elevation_monotonic,
+            }
         orbit_ok = (
             len(samples) == 240
             and monotonic(angles, "increasing")
             and monotonic(radii, "decreasing")
-            and monotonic(elevations, "decreasing")
+            and elevation_contract_ok
             and monotonic(lenses, "increasing")
             and close(angles[0], cfg.START_ANGLE_DEGREES, 0.001)
             and close(angles[-1], cfg.END_ANGLE_DEGREES, 0.001)
@@ -810,7 +868,8 @@ def main() -> None:
             "radius_monotonic": monotonic(radii, "decreasing") if radii else False,
             "elevation_start": None if not elevations else elevations[0],
             "elevation_completion": None if not elevations else elevations[-1],
-            "elevation_monotonic": monotonic(elevations, "decreasing") if elevations else False,
+            "elevation_monotonic": elevation_monotonic,
+            "elevation_contract": elevation_contract,
             "lens_start_mm": None if not lenses else lenses[0],
             "lens_completion_mm": None if not lenses else lenses[-1],
             "lens_monotonic": monotonic(lenses, "increasing") if lenses else False,
@@ -818,7 +877,7 @@ def main() -> None:
             "linear_keyframes": linear_ok,
             "diagnostic_path_121_samples_hidden": path_ok,
         }
-    check(records, "three_camera_rigs_360_monotonic", cameras_ok and set(camera_metrics) == set(cfg.CAMERA_SPECS), camera_metrics, "three exact rigs; CCW 360 degrees; contracting radius/elevation; monotonic orbit lens; frontal push; hidden 121-point diagnostic paths")
+    check(records, "three_camera_rigs_360_motion_contract", cameras_ok and set(camera_metrics) == set(cfg.CAMERA_SPECS), camera_metrics, "three exact rigs; monotonic CCW 360 degrees/radius/lens; desktop/mobile descending elevation; landscape exact 3.2/3.6/5.4/3.2/0.55 m single crest at F165; frontal push; hidden 121-point diagnostic paths")
     check(records, "desktop_camera_selected", scene.camera is not None and scene.camera.name == cfg.CAMERA_SPECS["desktop"]["camera"], None if scene.camera is None else scene.camera.name, cfg.CAMERA_SPECS["desktop"]["camera"])
     build_camera = build.get("camera_motion", {})
     camera_report_ok = all(
@@ -1105,8 +1164,8 @@ def main() -> None:
     )
     check(records, "independent_421_layered_actions_retimed_nonempty", actions_exact, {key: value for key, value in action_comparison.items() if key not in {"source_action_names", "reported_action_names"}}, {"source_action_count": 421, "source_keyframe_count": 17266, "matched_retimed_points": 17266, "missing_curves": [], "missing_frames": [], "value_mismatches": [], "reported_count_mismatches": {}, "derivative_nonempty": True})
     boost_report = build_timeline.get("previsualization_conduction_legibility", {})
-    boost_exact = action_comparison["boost_curve_count"] == 384 and action_comparison["boosted_positive_point_count"] == 1152 and boost_report.get("factor") == 2.0 and boost_report.get("curve_count") == 384 and boost_report.get("positive_keyframe_count") == 1152
-    check(records, "independent_conduction_boost_scope", boost_exact, {"independent_curve_count": action_comparison["boost_curve_count"], "independent_positive_points": action_comparison["boosted_positive_point_count"], "build_report": boost_report}, {"factor": 2.0, "curve_count": 384, "positive_keyframes": 1152, "scope": "conductor emission and local contact-light energy only"})
+    boost_exact = action_comparison["boost_curve_count"] == 384 and action_comparison["boosted_positive_point_count"] == 1152 and boost_report.get("factors") == EXPECTED_CONDUCTION_FACTORS and boost_report.get("curve_count") == 384 and boost_report.get("positive_keyframe_count") == 1152
+    check(records, "independent_conduction_boost_scope", boost_exact, {"independent_curve_count": action_comparison["boost_curve_count"], "independent_positive_points": action_comparison["boosted_positive_point_count"], "independent_curve_count_by_family": action_comparison["boost_curve_count_by_family"], "independent_positive_points_by_family": action_comparison["boosted_positive_point_count_by_family"], "build_report": boost_report}, {"factors": EXPECTED_CONDUCTION_FACTORS, "curve_count": 384, "positive_keyframes": 1152, "scope": "conductor emission and local contact-light energy only"})
 
     source_terrain = bpy.data.objects.get("ProvingGround_Terrain")
     source_terrain_signature = None if source_terrain is None else terrain_authority_signature(source_terrain)

@@ -11,8 +11,8 @@
   },
   "phase4r0_derivative": {
     "path": "artifacts/original/phase-4r0-orbit-signal-threshold/source/quantum-signal-television-phase4r0-orbit-signal-threshold.blend",
-    "bytes": 2281435,
-    "sha256": "8653336b8a0b90a9898acd9a1f7b8bf10502cfde3000e9818da99b1e44cffcc2"
+    "bytes": 2281798,
+    "sha256": "838f304a0f029f5570c1ede2b4ce20c7e7475571f1e7e4fb7d6286e5536e72d3"
   },
   "quantum_q": {
     "source": {
@@ -1942,7 +1942,10 @@
       "keyframe_count": 17266
     },
     "previsualization_conduction_legibility": {
-      "factor": 2.0,
+      "factors": {
+        "desktop": 6.0,
+        "mobile": 30.0
+      },
       "curve_count": 384,
       "positive_keyframe_count": 1152,
       "scope": "conductor emission strength and local contact-light energy only; geometry and authored color unchanged"
