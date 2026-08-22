@@ -24,8 +24,8 @@
   "sourceAuthority": {
     "sourceBuildManifest": {
       "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/manifests/phase-3-r-source-build.json",
-      "bytes": 2689,
-      "sha256": "3c9b3c7081d90b16c34ac2cc6e971027e46bb0dc729e67a887dc5226f104c4b6",
+      "bytes": 2634,
+      "sha256": "10a1dc7bcae4aa07eaf8b335b6a69ef95830987a00b25caee9984c091846cdba",
       "schema": "quantum-hub.phase-3-r-crt-authenticity.source-build.v1",
       "status": "PASS"
     },
@@ -77,7 +77,7 @@
         "separateFromOtherVariant": true,
         "processIdRecordedAtRuntime": true,
         "exitCode": 0,
-        "durationSeconds": 143.42,
+        "durationSeconds": 148.215,
         "executable": "blender.exe",
         "quality": "production",
         "requestedFrames": [
@@ -115,8 +115,8 @@
             "height": 1080
           },
           "rerender": {
-            "bytes": 1462216,
-            "sha256": "1909c9e8b8a660307139b4878e6d66daa3382062475e2775f9e9d969f2eee999",
+            "bytes": 1462542,
+            "sha256": "57cb957108b2567dc624878ad39be842d7e33a62424035b526948dc0cad444ee",
             "width": 1920,
             "height": 1080
           },
@@ -126,10 +126,10 @@
             "comparable": true,
             "decodedChannels": 3,
             "decodedChannelValues": 6220800,
-            "changedChannels": 176,
-            "changedChannelRatio": 0.000028292,
-            "mae8Bit": 0.000028292,
-            "rmse8Bit": 0.005319039,
+            "changedChannels": 200,
+            "changedChannelRatio": 0.00003215,
+            "mae8Bit": 0.00003215,
+            "rmse8Bit": 0.005670115,
             "p95AbsChannelDelta": 0,
             "maxAbsChannelDelta": 1,
             "thresholds": {
@@ -157,8 +157,8 @@
             "height": 1080
           },
           "rerender": {
-            "bytes": 1498837,
-            "sha256": "36a25baf82135fb0224ac9e8b510ef28d9125d3b7cc383f854528894b44e461f",
+            "bytes": 1498747,
+            "sha256": "79a2cb62c5c611e20816e5fcf075fc7ab76fe1b5786c9032155ebec7d8e6ac21",
             "width": 1920,
             "height": 1080
           },
@@ -168,10 +168,10 @@
             "comparable": true,
             "decodedChannels": 3,
             "decodedChannelValues": 6220800,
-            "changedChannels": 200,
-            "changedChannelRatio": 0.00003215,
-            "mae8Bit": 0.00003215,
-            "rmse8Bit": 0.005670115,
+            "changedChannels": 192,
+            "changedChannelRatio": 0.000030864,
+            "mae8Bit": 0.000030864,
+            "rmse8Bit": 0.005555556,
             "p95AbsChannelDelta": 0,
             "maxAbsChannelDelta": 1,
             "thresholds": {
@@ -199,8 +199,8 @@
             "height": 1080
           },
           "rerender": {
-            "bytes": 1554627,
-            "sha256": "d4376e0d7df8bfa18261ff1bee9f33a6c5e69c29ddc98a2a18ac3dba96e6d849",
+            "bytes": 1554358,
+            "sha256": "4e94fb97f402603cef2f2cc22e87e52dcfdc1cff387d05658bba48cf360aafa4",
             "width": 1920,
             "height": 1080
           },
@@ -210,10 +210,10 @@
             "comparable": true,
             "decodedChannels": 3,
             "decodedChannelValues": 6220800,
-            "changedChannels": 199,
-            "changedChannelRatio": 0.000031989,
-            "mae8Bit": 0.000031989,
-            "rmse8Bit": 0.005655922,
+            "changedChannels": 194,
+            "changedChannelRatio": 0.000031186,
+            "mae8Bit": 0.000031186,
+            "rmse8Bit": 0.005584416,
             "p95AbsChannelDelta": 0,
             "maxAbsChannelDelta": 1,
             "thresholds": {
@@ -241,8 +241,8 @@
             "height": 1080
           },
           "rerender": {
-            "bytes": 1569379,
-            "sha256": "eacf2290fcde444425ba12d8f678bd8c701ec033ba4f56c91ef69df8c5dceebf",
+            "bytes": 1568935,
+            "sha256": "50b38f16bce38451511a6aba1df62d24958238fd302bfb87d856e8511b042384",
             "width": 1920,
             "height": 1080
           },
@@ -252,10 +252,10 @@
             "comparable": true,
             "decodedChannels": 3,
             "decodedChannelValues": 6220800,
-            "changedChannels": 181,
-            "changedChannelRatio": 0.000029096,
-            "mae8Bit": 0.000029096,
-            "rmse8Bit": 0.005394065,
+            "changedChannels": 177,
+            "changedChannelRatio": 0.000028453,
+            "mae8Bit": 0.000028453,
+            "rmse8Bit": 0.005334129,
             "p95AbsChannelDelta": 0,
             "maxAbsChannelDelta": 1,
             "thresholds": {
@@ -283,8 +283,8 @@
             "height": 1080
           },
           "rerender": {
-            "bytes": 1623401,
-            "sha256": "b58e50e592b7544455ff2be480e9270d53316185091d0f795f8ebbec8edbd1a6",
+            "bytes": 1623395,
+            "sha256": "369f9b53c682fcfd1cf9f23b388bc8ae7e3010a243fc79cc582a5b2e2d228ec1",
             "width": 1920,
             "height": 1080
           },
@@ -294,10 +294,10 @@
             "comparable": true,
             "decodedChannels": 3,
             "decodedChannelValues": 6220800,
-            "changedChannels": 199,
-            "changedChannelRatio": 0.000031989,
-            "mae8Bit": 0.000031989,
-            "rmse8Bit": 0.005655922,
+            "changedChannels": 197,
+            "changedChannelRatio": 0.000031668,
+            "mae8Bit": 0.000031668,
+            "rmse8Bit": 0.005627429,
             "p95AbsChannelDelta": 0,
             "maxAbsChannelDelta": 1,
             "thresholds": {
@@ -325,8 +325,8 @@
             "height": 1080
           },
           "rerender": {
-            "bytes": 1261752,
-            "sha256": "39762654a35ecd6b43540d28ab70008047d87762fefacc9d8330a4c63a6ac2a3",
+            "bytes": 1261166,
+            "sha256": "f7f89279c58f50244e95e61cb87bf9bbdd9ae75df1b6e06c93b608f2edc94ed4",
             "width": 1920,
             "height": 1080
           },
@@ -336,10 +336,10 @@
             "comparable": true,
             "decodedChannels": 3,
             "decodedChannelValues": 6220800,
-            "changedChannels": 39,
-            "changedChannelRatio": 0.000006269,
-            "mae8Bit": 0.000006269,
-            "rmse8Bit": 0.002503855,
+            "changedChannels": 38,
+            "changedChannelRatio": 0.000006109,
+            "mae8Bit": 0.000006109,
+            "rmse8Bit": 0.002471546,
             "p95AbsChannelDelta": 0,
             "maxAbsChannelDelta": 1,
             "thresholds": {
@@ -367,8 +367,8 @@
             "height": 1080
           },
           "rerender": {
-            "bytes": 683002,
-            "sha256": "ee9dd24deb48d15f4f89bc589d1080260899a81d5301f93ffbf87286f5ea29f4",
+            "bytes": 682731,
+            "sha256": "82482d8fedfa13624454d2bbcf4ff62ffa691625fe24e4305b5172f2533b4270",
             "width": 1920,
             "height": 1080
           },
@@ -378,10 +378,10 @@
             "comparable": true,
             "decodedChannels": 3,
             "decodedChannelValues": 6220800,
-            "changedChannels": 19,
-            "changedChannelRatio": 0.000003054,
-            "mae8Bit": 0.000003054,
-            "rmse8Bit": 0.001747647,
+            "changedChannels": 23,
+            "changedChannelRatio": 0.000003697,
+            "mae8Bit": 0.000003697,
+            "rmse8Bit": 0.00192283,
             "p95AbsChannelDelta": 0,
             "maxAbsChannelDelta": 1,
             "thresholds": {
@@ -409,8 +409,8 @@
             "height": 1080
           },
           "rerender": {
-            "bytes": 632777,
-            "sha256": "9c915a79c0e63b5278bc9e14f0528dbbd1dc32b398b505bbf1e63c9a639e5392",
+            "bytes": 632307,
+            "sha256": "da3c517893d2dc05cb5d19c0159e1ed06577828ec7c11e234b1d8e5026ae553a",
             "width": 1920,
             "height": 1080
           },
@@ -420,10 +420,10 @@
             "comparable": true,
             "decodedChannels": 3,
             "decodedChannelValues": 6220800,
-            "changedChannels": 17,
-            "changedChannelRatio": 0.000002733,
-            "mae8Bit": 0.000002733,
-            "rmse8Bit": 0.001653108,
+            "changedChannels": 16,
+            "changedChannelRatio": 0.000002572,
+            "mae8Bit": 0.000002572,
+            "rmse8Bit": 0.001603751,
             "p95AbsChannelDelta": 0,
             "maxAbsChannelDelta": 1,
             "thresholds": {
@@ -458,7 +458,7 @@
         "separateFromOtherVariant": true,
         "processIdRecordedAtRuntime": true,
         "exitCode": 0,
-        "durationSeconds": 76.263,
+        "durationSeconds": 88.175,
         "executable": "blender.exe",
         "quality": "production",
         "requestedFrames": [
@@ -496,8 +496,8 @@
             "height": 1280
           },
           "rerender": {
-            "bytes": 687670,
-            "sha256": "f36f2983e1bf882c654e35609b20b559d9a3fdcc469a5bfeb2fd24acfdb23a3f",
+            "bytes": 687147,
+            "sha256": "2419e40578c4daedf42fbb01f51ff279a415b8e9c729036b5864c3f8aae756c1",
             "width": 720,
             "height": 1280
           },
@@ -507,10 +507,10 @@
             "comparable": true,
             "decodedChannels": 3,
             "decodedChannelValues": 2764800,
-            "changedChannels": 74,
-            "changedChannelRatio": 0.000026765,
-            "mae8Bit": 0.000026765,
-            "rmse8Bit": 0.005173495,
+            "changedChannels": 69,
+            "changedChannelRatio": 0.000024957,
+            "mae8Bit": 0.000024957,
+            "rmse8Bit": 0.004995658,
             "p95AbsChannelDelta": 0,
             "maxAbsChannelDelta": 1,
             "thresholds": {
@@ -538,8 +538,8 @@
             "height": 1280
           },
           "rerender": {
-            "bytes": 677512,
-            "sha256": "af397e2c907521669e098a13cf66bff564edc040017d843bb492efac43870053",
+            "bytes": 677813,
+            "sha256": "6f867d80d49c3497ca00d5e3a3cc4c16eeaed31c904bfe1c9e811f04b168aa0c",
             "width": 720,
             "height": 1280
           },
@@ -549,10 +549,10 @@
             "comparable": true,
             "decodedChannels": 3,
             "decodedChannelValues": 2764800,
-            "changedChannels": 79,
-            "changedChannelRatio": 0.000028573,
-            "mae8Bit": 0.000028573,
-            "rmse8Bit": 0.005345418,
+            "changedChannels": 88,
+            "changedChannelRatio": 0.000031829,
+            "mae8Bit": 0.000031829,
+            "rmse8Bit": 0.005641693,
             "p95AbsChannelDelta": 0,
             "maxAbsChannelDelta": 1,
             "thresholds": {
@@ -580,8 +580,8 @@
             "height": 1280
           },
           "rerender": {
-            "bytes": 668919,
-            "sha256": "461b61345e75ebeab9c2f8c2c19cc67a657214ec371fdf6183083a9b5c11fe2e",
+            "bytes": 669236,
+            "sha256": "46d3c6256e169a7f13d84d2c9f6a11110eb337aa6d4fd5d000a82dcfd9477ec2",
             "width": 720,
             "height": 1280
           },
@@ -591,10 +591,10 @@
             "comparable": true,
             "decodedChannels": 3,
             "decodedChannelValues": 2764800,
-            "changedChannels": 93,
-            "changedChannelRatio": 0.000033637,
-            "mae8Bit": 0.000033637,
-            "rmse8Bit": 0.005799755,
+            "changedChannels": 81,
+            "changedChannelRatio": 0.000029297,
+            "mae8Bit": 0.000029297,
+            "rmse8Bit": 0.005412659,
             "p95AbsChannelDelta": 0,
             "maxAbsChannelDelta": 1,
             "thresholds": {
@@ -622,8 +622,8 @@
             "height": 1280
           },
           "rerender": {
-            "bytes": 660219,
-            "sha256": "59372b5f7f9620bf48abfba59a78add98e72f4f8688870a473241ea769847d55",
+            "bytes": 659996,
+            "sha256": "9d969f5f51312a414bd4e0ba63b24970263c54f03061f69a281c31ef85b3a80e",
             "width": 720,
             "height": 1280
           },
@@ -633,10 +633,10 @@
             "comparable": true,
             "decodedChannels": 3,
             "decodedChannelValues": 2764800,
-            "changedChannels": 85,
-            "changedChannelRatio": 0.000030744,
-            "mae8Bit": 0.000030744,
-            "rmse8Bit": 0.005544694,
+            "changedChannels": 91,
+            "changedChannelRatio": 0.000032914,
+            "mae8Bit": 0.000032914,
+            "rmse8Bit": 0.005737053,
             "p95AbsChannelDelta": 0,
             "maxAbsChannelDelta": 1,
             "thresholds": {
@@ -664,8 +664,8 @@
             "height": 1280
           },
           "rerender": {
-            "bytes": 635972,
-            "sha256": "733e92580ef9d43e39847a626698513552da96f58f51e6170b4e7cdeab2b8e4b",
+            "bytes": 635883,
+            "sha256": "9b802c3d4d7831cd95d1547d0ebab00f55be9f9074af79c104b69b74a2b01d07",
             "width": 720,
             "height": 1280
           },
@@ -675,10 +675,10 @@
             "comparable": true,
             "decodedChannels": 3,
             "decodedChannelValues": 2764800,
-            "changedChannels": 58,
-            "changedChannelRatio": 0.000020978,
-            "mae8Bit": 0.000020978,
-            "rmse8Bit": 0.004580176,
+            "changedChannels": 68,
+            "changedChannelRatio": 0.000024595,
+            "mae8Bit": 0.000024595,
+            "rmse8Bit": 0.004959325,
             "p95AbsChannelDelta": 0,
             "maxAbsChannelDelta": 1,
             "thresholds": {
@@ -706,8 +706,8 @@
             "height": 1280
           },
           "rerender": {
-            "bytes": 572129,
-            "sha256": "22bc349116267a7f10e6aa43bd67728e78f8539595360a33c3e4b6b3d9fbb728",
+            "bytes": 572222,
+            "sha256": "9139804fb3f69d15a8baa2f358be2e36d033d98218aa9e646da6d95f41cecd87",
             "width": 720,
             "height": 1280
           },
@@ -717,10 +717,10 @@
             "comparable": true,
             "decodedChannels": 3,
             "decodedChannelValues": 2764800,
-            "changedChannels": 16,
-            "changedChannelRatio": 0.000005787,
-            "mae8Bit": 0.000005787,
-            "rmse8Bit": 0.002405626,
+            "changedChannels": 15,
+            "changedChannelRatio": 0.000005425,
+            "mae8Bit": 0.000005425,
+            "rmse8Bit": 0.002329237,
             "p95AbsChannelDelta": 0,
             "maxAbsChannelDelta": 1,
             "thresholds": {
@@ -748,8 +748,8 @@
             "height": 1280
           },
           "rerender": {
-            "bytes": 313397,
-            "sha256": "46d4ef2b5abede82f6f77750c8fec6926e7a22122f3fb50763c74efb1da54572",
+            "bytes": 313261,
+            "sha256": "ddd62e18ff21ddf5329a5094e95e9fcefd172de20f39025e4f7ad8845c7f506c",
             "width": 720,
             "height": 1280
           },
@@ -790,8 +790,8 @@
             "height": 1280
           },
           "rerender": {
-            "bytes": 291216,
-            "sha256": "38ce442e1679f1c77d512d541138049705a7f2ea013a60680b99dd9ca62a39e5",
+            "bytes": 291199,
+            "sha256": "876235f564ef6e0526c2116121dc5e3bfd0aceff0ba36eb2b2b5c0c07bf1248a",
             "width": 720,
             "height": 1280
           },
@@ -801,10 +801,10 @@
             "comparable": true,
             "decodedChannels": 3,
             "decodedChannelValues": 2764800,
-            "changedChannels": 9,
-            "changedChannelRatio": 0.000003255,
-            "mae8Bit": 0.000003255,
-            "rmse8Bit": 0.00180422,
+            "changedChannels": 5,
+            "changedChannelRatio": 0.000001808,
+            "mae8Bit": 0.000001808,
+            "rmse8Bit": 0.001344786,
             "p95AbsChannelDelta": 0,
             "maxAbsChannelDelta": 1,
             "thresholds": {

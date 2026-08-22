@@ -4,7 +4,7 @@
   "scope": "SCREEN_ONLY_CRT_AUTHENTICITY_REPAIR",
   "repository": {
     "branch": "feature/phase-3-crt-opening-production",
-    "headAtPackaging": "9141063e3418d13317d7498fb50c602ef5e0169c",
+    "headAtPackaging": "961ed0970cd86580947e12c5cafa69052f848660",
     "repairParent": "ae6cd4c0c664a275c077bd37207efde01e9caa29"
   },
   "timeline": {
@@ -38,14 +38,14 @@
     "sourceBuild": {
       "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/manifests/phase-3-r-source-build.json",
       "filename": "phase-3-r-source-build.json",
-      "bytes": 2689,
-      "sha256": "3c9b3c7081d90b16c34ac2cc6e971027e46bb0dc729e67a887dc5226f104c4b6"
+      "bytes": 2634,
+      "sha256": "10a1dc7bcae4aa07eaf8b335b6a69ef95830987a00b25caee9984c091846cdba"
     },
     "sourceValidation": {
       "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/manifests/phase-3-r-source-validation.json",
       "filename": "phase-3-r-source-validation.json",
-      "bytes": 24533,
-      "sha256": "03a9093a5fad1e340ac1fbe1a2df2109be238f7749ca3b9d2c1b471d0ce92cc9"
+      "bytes": 23694,
+      "sha256": "562f246e5111cebc11d168a08a89d89a6d2b52fa1bbf22e23d1b3598515822b6"
     },
     "phase2bEntryEvidence": {
       "repositoryRelativePath": "artifacts/evidence/phase-2b/review/phase-2b-desktop-production-keyframes.png",
@@ -135,7 +135,7 @@
     "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/manifests/phase-3-r-candidate-authority.json",
     "filename": "phase-3-r-candidate-authority.json",
     "bytes": 19181,
-    "sha256": "6e4795de2c232769e535931337fc4c3ebe4e84c7279559e6aec3c79cc9fe57ae"
+    "sha256": "1ae5a66a4ec591688f1732d5444d7bf95b1e3731e9cd137e6de8c820b7df0bf2"
   },
   "historicalBeforeAuthority": {
     "manifest": {
@@ -4335,7 +4335,7 @@
         ],
         "maximumKeyframeInterval": 12,
         "bytes": 1658294,
-        "sha256": "ae83dc3207815696e1043423af325a64ca4633f7189a1180c5c35935d7596386",
+        "sha256": "44a1d9facd4316eff94e3712917a843b26d32b8012cadaa3f379edff2ffd2fcc",
         "decodedFrameBytesRGBA": 8294400
       },
       "status": "PHASE 3-R PRODUCTION CANDIDATE — HUMAN REVIEW REQUIRED"
@@ -4505,7 +4505,7 @@
         ],
         "maximumKeyframeInterval": 12,
         "bytes": 647761,
-        "sha256": "53760b5787421da6497aed7a1086efd5b2ad245207843b7f8524887918d510c9",
+        "sha256": "0ffcf12a431b585f4ce37afd7df6ec0da1e52c4ef3c67d0ab761aaa5d5be517b",
         "decodedFrameBytesRGBA": 3686400
       },
       "status": "PHASE 3-R PRODUCTION CANDIDATE — HUMAN REVIEW REQUIRED"
@@ -4518,17 +4518,17 @@
     "gopFrames": 12,
     "gopMilliseconds": 400,
     "browserSeekAndScrubQa": "COMPLETE_PASS_EXPLICIT_HASH_BOUND_REPORT",
-    "browserQaReportSha256": "ba0ae4a503369641b9b125e1f19363ff2bdf8701614e20bcd387d65fe87462b6",
-    "mediaLabRecordingSha256": "8468a7554bce10b904d231066cbf2144d9a95213d524b49b4ca8ea22a834e072",
+    "browserQaReportSha256": "7676d210c0b330b68dfe4b9b36a59e9a80c2d6d439979a2b2bea0d18478d0e31",
+    "mediaLabRecordingSha256": "23cc931fa85f9d7da53743caafb4c60a704bc03e03c688612c3706433976b8b9",
     "renderDeterminism": "COMPLETE_PASS_EXPLICIT_SEQUENCE_BOUND_REPORT",
-    "renderDeterminismReportSha256": "450dc1e263434b4eaa37d4d968552d0cf2282964a393142b3c69a5237ef72df8",
+    "renderDeterminismReportSha256": "52f020e4058e891e6fce4608cbe9416ea9f30a1de0b3acc38654935059e916c9",
     "humanCodecArtifactReviewRequired": true
   },
   "reviewArtifacts": [
     {
       "filename": "phase-3-r-media-qa-report.json",
-      "bytes": 285925,
-      "sha256": "ba0ae4a503369641b9b125e1f19363ff2bdf8701614e20bcd387d65fe87462b6",
+      "bytes": 285888,
+      "sha256": "7676d210c0b330b68dfe4b9b36a59e9a80c2d6d439979a2b2bea0d18478d0e31",
       "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/phase-3-r-media-qa-report.json",
       "role": "actual headed Chromium seek/scrub QA report",
       "evidenceClass": "ACTUAL_BROWSER_EXECUTION_NOT_SIMULATION",
@@ -4550,15 +4550,15 @@
       },
       "candidateHashes": {
         "desktop-h264": "a73be0bb989077551c0b3405cee2c3fa435b67049bf02b523df20baf0a4fb59e",
-        "desktop-vp9": "ae83dc3207815696e1043423af325a64ca4633f7189a1180c5c35935d7596386",
+        "desktop-vp9": "44a1d9facd4316eff94e3712917a843b26d32b8012cadaa3f379edff2ffd2fcc",
         "mobile-h264": "34319f80ae397758a3f7d4f192c572cee76c11ba5118a6fadb65c0374b4c99b2",
-        "mobile-vp9": "53760b5787421da6497aed7a1086efd5b2ad245207843b7f8524887918d510c9"
+        "mobile-vp9": "0ffcf12a431b585f4ce37afd7df6ec0da1e52c4ef3c67d0ab761aaa5d5be517b"
       }
     },
     {
       "filename": "phase-3-r-render-determinism-report.json",
-      "bytes": 26917,
-      "sha256": "450dc1e263434b4eaa37d4d968552d0cf2282964a393142b3c69a5237ef72df8",
+      "bytes": 26918,
+      "sha256": "52f020e4058e891e6fce4608cbe9416ea9f30a1de0b3acc38654935059e916c9",
       "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/phase-3-r-render-determinism-report.json",
       "role": "fresh-process sparse production-render determinism report",
       "evidenceClass": "ACTUAL_FRESH_BLENDER_PROCESS_CHECKPOINT_COMPARISON",
@@ -4581,15 +4581,15 @@
     },
     {
       "filename": "phase-3-r-media-lab-scrub-evidence.webm",
-      "bytes": 2040677,
-      "sha256": "8468a7554bce10b904d231066cbf2144d9a95213d524b49b4ca8ea22a834e072",
+      "bytes": 2180723,
+      "sha256": "23cc931fa85f9d7da53743caafb4c60a704bc03e03c688612c3706433976b8b9",
       "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/review/phase-3-r-media-lab-scrub-evidence.webm",
       "role": "actual headed isolated media-lab interaction recording",
       "sourceVariant": "isolated-media-lab",
       "source": {
         "captureAuthority": "QA_REPORT_BOUND_HEADED_BROWSER_RECORDING",
         "synthetic": false,
-        "sha256BoundByQaReport": "8468a7554bce10b904d231066cbf2144d9a95213d524b49b4ca8ea22a834e072"
+        "sha256BoundByQaReport": "23cc931fa85f9d7da53743caafb4c60a704bc03e03c688612c3706433976b8b9"
       },
       "mediaProbe": {
         "codec": "vp8",
@@ -4598,9 +4598,9 @@
         "pixelFormat": "yuv420p",
         "averageFrameRate": "25/1",
         "reportedFrameRate": "25/1",
-        "frameCount": 1002,
-        "durationSeconds": 40.08,
-        "bitrateBitsPerSecond": 407320,
+        "frameCount": 1010,
+        "durationSeconds": 40.4,
+        "bitrateBitsPerSecond": 431826,
         "containerFormats": "matroska,webm",
         "audioStreamCount": 0,
         "keyframeFrames": [
@@ -4623,9 +4623,9 @@
           153
         ],
         "maximumKeyframeInterval": 154,
-        "filename": "phase-3-r-media-lab-scrub-evidence-retry3.webm",
-        "bytes": 2040677,
-        "sha256": "8468a7554bce10b904d231066cbf2144d9a95213d524b49b4ca8ea22a834e072"
+        "filename": "phase-3-r-media-lab-scrub-evidence-retry4.webm",
+        "bytes": 2180723,
+        "sha256": "23cc931fa85f9d7da53743caafb4c60a704bc03e03c688612c3706433976b8b9"
       }
     },
     {
@@ -5249,7 +5249,7 @@
             }
           },
           "vp9": {
-            "candidateSha256": "ae83dc3207815696e1043423af325a64ca4633f7189a1180c5c35935d7596386",
+            "candidateSha256": "44a1d9facd4316eff94e3712917a843b26d32b8012cadaa3f379edff2ffd2fcc",
             "decodedFrameSha256": "903a3386f38f1e4704ba1ff4a8c94981894ec558eb32bab3e71e553cfa2a0470",
             "metrics": {
               "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
@@ -5342,7 +5342,7 @@
             }
           },
           "vp9": {
-            "candidateSha256": "ae83dc3207815696e1043423af325a64ca4633f7189a1180c5c35935d7596386",
+            "candidateSha256": "44a1d9facd4316eff94e3712917a843b26d32b8012cadaa3f379edff2ffd2fcc",
             "decodedFrameSha256": "439ef3fdede5087aff8dbb0ae2e243d6aaf321eb0e88d95ac9dace318dc30155",
             "metrics": {
               "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
@@ -5435,7 +5435,7 @@
             }
           },
           "vp9": {
-            "candidateSha256": "ae83dc3207815696e1043423af325a64ca4633f7189a1180c5c35935d7596386",
+            "candidateSha256": "44a1d9facd4316eff94e3712917a843b26d32b8012cadaa3f379edff2ffd2fcc",
             "decodedFrameSha256": "35969444a16431579cae71b5cb69be6ea0b8527a1633eb5502d64dd71f04f181",
             "metrics": {
               "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
@@ -5528,7 +5528,7 @@
             }
           },
           "vp9": {
-            "candidateSha256": "ae83dc3207815696e1043423af325a64ca4633f7189a1180c5c35935d7596386",
+            "candidateSha256": "44a1d9facd4316eff94e3712917a843b26d32b8012cadaa3f379edff2ffd2fcc",
             "decodedFrameSha256": "704238ebdb667bd4289aac5fe5211df53bf2c9c33fb8b0588cd3edfa934cf475",
             "metrics": {
               "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
@@ -5621,7 +5621,7 @@
             }
           },
           "vp9": {
-            "candidateSha256": "ae83dc3207815696e1043423af325a64ca4633f7189a1180c5c35935d7596386",
+            "candidateSha256": "44a1d9facd4316eff94e3712917a843b26d32b8012cadaa3f379edff2ffd2fcc",
             "decodedFrameSha256": "de35be091cef24fb171baaac707caca4bb0b9a930fe91bb810ac86cfa693676b",
             "metrics": {
               "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
@@ -5714,7 +5714,7 @@
             }
           },
           "vp9": {
-            "candidateSha256": "53760b5787421da6497aed7a1086efd5b2ad245207843b7f8524887918d510c9",
+            "candidateSha256": "0ffcf12a431b585f4ce37afd7df6ec0da1e52c4ef3c67d0ab761aaa5d5be517b",
             "decodedFrameSha256": "9bf969d260279aa79b0e66579590e3252d8cdc5d771b0d781daeda6f1e47dd73",
             "metrics": {
               "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
@@ -5807,7 +5807,7 @@
             }
           },
           "vp9": {
-            "candidateSha256": "53760b5787421da6497aed7a1086efd5b2ad245207843b7f8524887918d510c9",
+            "candidateSha256": "0ffcf12a431b585f4ce37afd7df6ec0da1e52c4ef3c67d0ab761aaa5d5be517b",
             "decodedFrameSha256": "0e884d8e3ab1d7408799bc1a9c33e5acff380603f5d570fc1bf1da17ed819938",
             "metrics": {
               "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
@@ -5900,7 +5900,7 @@
             }
           },
           "vp9": {
-            "candidateSha256": "53760b5787421da6497aed7a1086efd5b2ad245207843b7f8524887918d510c9",
+            "candidateSha256": "0ffcf12a431b585f4ce37afd7df6ec0da1e52c4ef3c67d0ab761aaa5d5be517b",
             "decodedFrameSha256": "d46576fa341f0948a3cc3dfa34f34505b6430fc4357b18c6735c2fea9bd16b18",
             "metrics": {
               "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
@@ -5993,7 +5993,7 @@
             }
           },
           "vp9": {
-            "candidateSha256": "53760b5787421da6497aed7a1086efd5b2ad245207843b7f8524887918d510c9",
+            "candidateSha256": "0ffcf12a431b585f4ce37afd7df6ec0da1e52c4ef3c67d0ab761aaa5d5be517b",
             "decodedFrameSha256": "242b4c5194ef0283c41fd9058efce2115a562ff8a2e3fc880e11e86811a7bccf",
             "metrics": {
               "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
@@ -6086,7 +6086,7 @@
             }
           },
           "vp9": {
-            "candidateSha256": "53760b5787421da6497aed7a1086efd5b2ad245207843b7f8524887918d510c9",
+            "candidateSha256": "0ffcf12a431b585f4ce37afd7df6ec0da1e52c4ef3c67d0ab761aaa5d5be517b",
             "decodedFrameSha256": "3fdf62c76052abcb228d0031886483f0a7497356720164603e32eed5e715467b",
             "metrics": {
               "metricDomain": "full-frame decoded RGB8 unless otherwise stated",
@@ -6776,7 +6776,7 @@
   },
   "compactEvidence": {
     "artifactCountExcludingReadmeAndManifest": 24,
-    "artifactBytesExcludingReadmeAndManifest": 29364935,
+    "artifactBytesExcludingReadmeAndManifest": 29504945,
     "rawFramesIncluded": false,
     "productionCandidatesIncludedInExternalZip": true,
     "actualBrowserQaIncluded": true,
@@ -6802,14 +6802,14 @@
     },
     "finalPackage": {
       "fileCount": 53,
-      "bytes": 43254742
+      "bytes": 43393857
     },
     "finalReview": {
       "fileCount": 29,
-      "bytes": 31020757
+      "bytes": 31160767
     },
-    "packageDeltaBytes": -4371236,
-    "reviewDeltaBytes": -5719494
+    "packageDeltaBytes": -4232121,
+    "reviewDeltaBytes": -5579484
   },
   "humanReview": {
     "automatedPackagingPassIsNotVisualAcceptance": true,

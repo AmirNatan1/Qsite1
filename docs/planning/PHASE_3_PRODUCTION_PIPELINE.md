@@ -350,7 +350,7 @@ Desktop and mobile use separate fresh Blender processes and frames `1,126,144,16
 $Phase3RCandidateAuthoritySha = (Get-FileHash -Algorithm SHA256 -LiteralPath $Phase3RCandidateAuthority).Hash.ToLowerInvariant()
 ```
 
-Stage 1 verifies both exact 270-frame source sequences, encodes the four candidates once, probes every stream and keyframe, binds the source/config/renderer/tool hashes, and writes only `phase-3-r-candidate-authority.json` as the reuse authority. The selected authority for this run is SHA-256 `6e4795de2c232769e535931337fc4c3ebe4e84c7279559e6aec3c79cc9fe57ae`.
+Stage 1 verifies both exact 270-frame source sequences, encodes the four candidates once, probes every stream and keyframe, binds the source/config/renderer/tool hashes, and writes only `phase-3-r-candidate-authority.json` as the reuse authority. The reconciled selected authority for this run is SHA-256 `1ae5a66a4ec591688f1732d5444d7bf95b1e3731e9cd137e6de8c820b7df0bf2`. H.264 retained exact byte identity; VP9 retained the same source, settings, sizes, and bitrates while its current bytes were fully reprobed and re-QA'd.
 
 ### Hash-bound isolated browser QA
 
@@ -371,7 +371,7 @@ Stage 1 verifies both exact 270-frame source sequences, encodes the four candida
 
 The harness serves only the supplied media through an in-memory loopback server and separates three authorities: managed Chromium for deterministic seek/decode measurements, normal non-debugged Chrome for Page Visibility and focused playback, and a headed Chromium context for the recorded media-lab controls. Native visibility is retry-hardened: at most three attempts, retry only after partial-inconclusive telemetry, and a fresh temporary profile for every attempt.
 
-The final report is a complete PASS: 4/4 probes, 4/4 Chromium candidates, 160/160 measured seeks, four genuine visible → hidden → visible transitions, focused presentation of 29.977–30.266 fps, and zero displayed dropped or corrupted frames. The actual media-lab run passes 33 measurements and 284 presented-frame deltas with zero drops or corruption.
+The final report is a complete PASS: 4/4 probes, 4/4 Chromium candidates, 160/160 measured seeks, four genuine visible → hidden → visible transitions, focused presentation of 29.940–30.777 fps, and zero displayed dropped or corrupted frames. The actual media-lab run passes 33 measurements and 277 presented-frame deltas with zero drops or corruption. Its tracked authority is 285,888 bytes, SHA-256 `7676d210c0b330b68dfe4b9b36a59e9a80c2d6d439979a2b2bea0d18478d0e31`; the recording is 2,180,723 bytes, SHA-256 `23cc931fa85f9d7da53743caafb4c60a704bc03e03c688612c3706433976b8b9`.
 
 ### Stage 2 — safe reuse and compact final packaging
 

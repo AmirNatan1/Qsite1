@@ -4,7 +4,7 @@
   "stage": "ENCODE_ONLY",
   "repository": {
     "branch": "feature/phase-3-crt-opening-production",
-    "headAtPackaging": "9141063e3418d13317d7498fb50c602ef5e0169c",
+    "headAtPackaging": "961ed0970cd86580947e12c5cafa69052f848660",
     "repairParent": "ae6cd4c0c664a275c077bd37207efde01e9caa29"
   },
   "sourceAuthority": {
@@ -29,14 +29,14 @@
     "sourceBuild": {
       "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/manifests/phase-3-r-source-build.json",
       "filename": "phase-3-r-source-build.json",
-      "bytes": 2689,
-      "sha256": "3c9b3c7081d90b16c34ac2cc6e971027e46bb0dc729e67a887dc5226f104c4b6"
+      "bytes": 2634,
+      "sha256": "10a1dc7bcae4aa07eaf8b335b6a69ef95830987a00b25caee9984c091846cdba"
     },
     "sourceValidation": {
       "repositoryRelativePath": "artifacts/original/phase-3-crt-opening/manifests/phase-3-r-source-validation.json",
       "filename": "phase-3-r-source-validation.json",
-      "bytes": 24533,
-      "sha256": "03a9093a5fad1e340ac1fbe1a2df2109be238f7749ca3b9d2c1b471d0ce92cc9"
+      "bytes": 23694,
+      "sha256": "562f246e5111cebc11d168a08a89d89a6d2b52fa1bbf22e23d1b3598515822b6"
     },
     "phase2bEntryEvidence": {
       "repositoryRelativePath": "artifacts/evidence/phase-2b/review/phase-2b-desktop-production-keyframes.png",
@@ -390,7 +390,7 @@
         ],
         "maximumKeyframeInterval": 12,
         "bytes": 1658294,
-        "sha256": "ae83dc3207815696e1043423af325a64ca4633f7189a1180c5c35935d7596386",
+        "sha256": "44a1d9facd4316eff94e3712917a843b26d32b8012cadaa3f379edff2ffd2fcc",
         "decodedFrameBytesRGBA": 8294400
       },
       "status": "PHASE 3-R PRODUCTION CANDIDATE — HUMAN REVIEW REQUIRED"
@@ -560,7 +560,7 @@
         ],
         "maximumKeyframeInterval": 12,
         "bytes": 647761,
-        "sha256": "53760b5787421da6497aed7a1086efd5b2ad245207843b7f8524887918d510c9",
+        "sha256": "0ffcf12a431b585f4ce37afd7df6ec0da1e52c4ef3c67d0ab761aaa5d5be517b",
         "decodedFrameBytesRGBA": 3686400
       },
       "status": "PHASE 3-R PRODUCTION CANDIDATE — HUMAN REVIEW REQUIRED"

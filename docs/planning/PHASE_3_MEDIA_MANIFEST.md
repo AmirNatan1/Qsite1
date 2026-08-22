@@ -54,11 +54,13 @@ All four candidates derive from the corresponding authoritative Phase 3-R sequen
 | Candidate | Codec and settings | Dimensions | Stream bitrate | Bytes | SHA-256 |
 | --- | --- | ---: | ---: | ---: | --- |
 | Desktop H.264 | `libx264`, CRF 18, slow, closed GOP 12, fast-start MP4 | 1920 × 1080 | 3,107,080 bps | 3,499,571 | `a73be0bb989077551c0b3405cee2c3fa435b67049bf02b523df20baf0a4fb59e` |
-| Desktop VP9 | `libvpx-vp9`, CRF 27, good/cpu-used 2, GOP 12, lag/alt-ref disabled, WebM | 1920 × 1080 | 1,474,039 bps | 1,658,294 | `ae83dc3207815696e1043423af325a64ca4633f7189a1180c5c35935d7596386` |
+| Desktop VP9 | `libvpx-vp9`, CRF 27, good/cpu-used 2, GOP 12, lag/alt-ref disabled, WebM | 1920 × 1080 | 1,474,039 bps | 1,658,294 | `44a1d9facd4316eff94e3712917a843b26d32b8012cadaa3f379edff2ffd2fcc` |
 | Mobile H.264 | `libx264`, CRF 19, slow, closed GOP 12, fast-start MP4 | 720 × 1280 | 1,100,632 bps | 1,242,276 | `34319f80ae397758a3f7d4f192c572cee76c11ba5118a6fadb65c0374b4c99b2` |
-| Mobile VP9 | `libvpx-vp9`, CRF 28, good/cpu-used 2, GOP 12, lag/alt-ref disabled, WebM | 720 × 1280 | 575,787 bps | 647,761 | `53760b5787421da6497aed7a1086efd5b2ad245207843b7f8524887918d510c9` |
+| Mobile VP9 | `libvpx-vp9`, CRF 28, good/cpu-used 2, GOP 12, lag/alt-ref disabled, WebM | 720 × 1280 | 575,787 bps | 647,761 | `0ffcf12a431b585f4ce37afd7df6ec0da1e52c4ef3c67d0ab761aaa5d5be517b` |
 
 The files remain under `artifacts/original/phase-3-crt-opening/media/` with status `PHASE 3-R PRODUCTION CANDIDATE — HUMAN REVIEW REQUIRED`.
+
+Fail-closed Git-blob reconciliation preserved both deterministic H.264 files byte-for-byte. VP9 was refreshed from the same authoritative raw sequences with the same settings, sizes, and stream bitrates; the current VP9 bytes shown above were fully reprobed and reran the complete browser/media QA before packaging.
 
 ## Codec artifact self-review
 
@@ -70,6 +72,8 @@ The production self-review independently accepts all four encodes as faithful re
 | Desktop VP9 | 0.996497 | 51.80 dB | 50.96 dB |
 | Mobile H.264 | 0.996011 | 51.78 dB | 51.14 dB |
 | Mobile VP9 | 0.996352 | 52.08 dB | 51.56 dB |
+
+The post-reconciliation codec re-audit reports **NO REGRESSION**: all per-frame SSIM, PSNR, and temporal logs are byte-identical. Exact SSIM / PSNR / temporal aggregates are desktop H.264 `0.996172 / 51.534545 / 50.585523`, desktop VP9 `0.996497 / 51.795310 / 50.963263`, mobile H.264 `0.996011 / 51.783522 / 51.141330`, and mobile VP9 `0.996352 / 52.076291 / 51.555308`.
 
 Worst transition PSNR remains within 47.33–47.88 dB, while the late-flattening window is approximately 56.5–56.7 dB. At frame 144 the luminance row-profile correlation is at least `0.998995`, including at least `0.999713` on mobile. Frame 196 text-edge p99 error is 6–7 luma levels; frames 250, 262, and 270 dark-field p99 error is at most 2. At normal size, neither codec shows visible scanline shimmer, crawling, moiré, text ringing, dark-field banding, or phosphor flicker. Brightness-stressed inspection reveals only expected minor compression smoothing/blocking, slightly stronger in VP9; it is not visible in the intended dark presentation.
 
@@ -133,39 +137,39 @@ These costs continue to reject frame-sequence delivery. A future authorized inte
 
 ## Browser and media-lab certification
 
-The tracked report `artifacts/original/phase-3-crt-opening/review/phase-3-r-media-qa-report.json` is `PASS`, 285,925 bytes, SHA-256 `ba0ae4a503369641b9b125e1f19363ff2bdf8701614e20bcd387d65fe87462b6`. Probe, managed Chromium, native Page Visibility, focused playback, and the headed media-lab recording are complete for all four candidates. Each candidate passes 40 of 40 seeks, for 160 of 160 total, with no failed or partial candidate.
+The tracked report `artifacts/original/phase-3-crt-opening/review/phase-3-r-media-qa-report.json` is `PASS`, 285,888 bytes, SHA-256 `7676d210c0b330b68dfe4b9b36a59e9a80c2d6d439979a2b2bea0d18478d0e31`. Probe, managed Chromium, native Page Visibility, focused playback, and the headed media-lab recording are complete for all four current candidate bytes. Each candidate passes 40 of 40 seeks, for 160 of 160 total, with no failed or partial candidate.
 
 | Candidate | First usable frame | Seek median | Seek p95 | Seek max | Focused displayed fps | Displayed drop / corrupt | Visibility |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| Desktop H.264 | 643.4 ms | 1,012.9 ms | 1,025.20 ms | 1,036.7 ms | 29.977 | 0 / 0 | complete pass |
-| Desktop VP9 | 657.6 ms | 1,018.7 ms | 1,028.25 ms | 1,030.9 ms | 30.266 | 0 / 0 | complete pass |
-| Mobile H.264 | 642.9 ms | 1,008.2 ms | 1,022.65 ms | 1,027.9 ms | 30.118 | 0 / 0 | complete pass |
-| Mobile VP9 | 585.1 ms | 1,007.65 ms | 1,021.57 ms | 1,030.1 ms | 30.143 | 0 / 0 | complete pass |
+| Desktop H.264 | 731.1 ms | 513.85 ms | 1,023.00 ms | 1,036.5 ms | 30.513 | 0 / 0 | complete pass |
+| Desktop VP9 | 611.0 ms | 1,014.65 ms | 1,030.12 ms | 1,038.4 ms | 30.021 | 0 / 0 | complete pass |
+| Mobile H.264 | 708.0 ms | 1,009.75 ms | 1,026.08 ms | 1,038.2 ms | 29.940 | 0 / 0 | complete pass |
+| Mobile VP9 | 612.7 ms | 1,007.95 ms | 1,025.12 ms | 1,028.6 ms | 30.777 | 0 / 0 | complete pass |
 
 The native-visibility harness is retry-hardened: a candidate may receive at most three attempts, retries are allowed only for partial-inconclusive telemetry, and each attempt uses a fresh temporary Chrome profile. Final authority for every candidate is a genuine visible → hidden → visible transition in non-debugged Chrome, with no media error, at least 27 presented fps, and zero displayed dropped or corrupted frames.
 
 Managed Chromium `151.0.7922.34` is the deterministic seek/decode authority. Safari/iOS and Firefox remain expected compatibility targets, not claimed executions.
 
-The actual headed interaction recording is `artifacts/original/phase-3-crt-opening/review/phase-3-r-media-lab-scrub-evidence.webm`, 2,040,677 bytes, SHA-256 `8468a7554bce10b904d231066cbf2144d9a95213d524b49b4ca8ea22a834e072`. Its five exercises pass first frame, final frame, 10 random seeks, 10 rapid alternating seeks, and 11 forward/reverse measurements: 33 measurements and 284 presented-frame deltas with zero dropped or corrupted frames. The separate scrub-simulation MP4 is clearly labeled synthetic and is not substituted for browser evidence.
+The actual headed interaction recording is `artifacts/original/phase-3-crt-opening/review/phase-3-r-media-lab-scrub-evidence.webm`, 2,180,723 bytes, SHA-256 `23cc931fa85f9d7da53743caafb4c60a704bc03e03c688612c3706433976b8b9`. Its five exercises pass first frame, final frame, 10 random seeks, 10 rapid alternating seeks, and 11 forward/reverse measurements: 33 measurements and 277 presented-frame deltas with zero dropped or corrupted frames. The separate scrub-simulation MP4 is clearly labeled synthetic and is not substituted for browser evidence.
 
 ## Production recommendation
 
 Subject to direct human acceptance:
 
 - Retain both codecs. Offer VP9 WebM first where support is confirmed and H.264 MP4 as the compatibility fallback. If a future authorized integration is constrained to one source, choose H.264 MP4.
-- Desktop VP9 is 52.6% smaller. H.264 reached the first usable frame 14.2 ms sooner in this run; seek p95 differs by only 3.05 ms.
-- Mobile VP9 is 47.9% smaller, reached the first usable frame 57.8 ms sooner, and had a 1.08 ms lower seek p95 in this run. H.264 remains the Safari/iOS fallback.
+- Desktop VP9 is 52.6% smaller, reached the first usable frame 120.1 ms sooner, and had a 7.12 ms higher seek p95 in this run.
+- Mobile VP9 is 47.9% smaller, reached the first usable frame 95.3 ms sooner, and had a 0.96 ms lower seek p95 in this run. H.264 remains the Safari/iOS fallback.
 - Reduced motion continues to use the viewport-appropriate dormant PNG poster with no autoplay or active-video state.
 
 No candidate is integrated or selected for Phase 4 by this document.
 
 ## Compact evidence and transfer package
 
-Phase 3-R replaces obsolete CRT-specific review evidence instead of retaining a second large tree. Four accepted frozen assets remain: the conduction contact sheet and three reduced-motion posters. The final tracked review tree contains 29 files / 31,020,757 bytes. Of these, 24 compact Phase 3-R evidence artifacts account for 29,364,935 bytes excluding the README and manifest authority.
+Phase 3-R replaces obsolete CRT-specific review evidence instead of retaining a second large tree. Four accepted frozen assets remain: the conduction contact sheet and three reduced-motion posters. The final tracked review tree contains 29 files / 31,160,767 bytes. Of these, 24 compact Phase 3-R evidence artifacts account for 29,504,945 bytes excluding the README and manifest authority.
 
-The repair-parent package contained 56 files / 47,625,978 bytes; the final package contains 53 files / 43,254,742 bytes, a reduction of 4,371,236 bytes. The review subtree falls from 42 files / 36,740,251 bytes to 29 files / 31,020,757 bytes, a reduction of 5,719,494 bytes.
+The repair-parent package contained 56 files / 47,625,978 bytes; the final package contains 53 files / 43,393,857 bytes, a reduction of 4,232,121 bytes. The review subtree falls from 42 files / 36,740,251 bytes to 29 files / 31,160,767 bytes, a reduction of 5,579,484 bytes.
 
-The prefinal outside-Git transfer is `<outside-git-review-root>/phase-3-r-crt-authenticity-human-review.zip`: 37,446,823 bytes, SHA-256 `0b983030cb7f0ab021dca92a63775898327e3b5e36195fd3f12835b9e36d1bd7`, 35 portable entries. It includes the 12 full-resolution desktop stills, startup/before-after/handoff/mobile/codec sheets, forward and reverse evidence, browser QA and its actual recording, determinism, the four selected delivery candidates, the four retained frozen assets, compact manifests, and a README. It includes no raw render sequence.
+The prefinal outside-Git transfer is `<outside-git-review-root>/phase-3-r-crt-authenticity-human-review.zip`: 37,574,654 bytes, SHA-256 `e93cc705519fb8643fc2b2842db982e39f1becd74ebacfc3cd2059bf7a5c5cf9`, 35 portable entries. It includes the 12 full-resolution desktop stills, startup/before-after/handoff/mobile/codec sheets, forward and reverse evidence, browser QA and its actual recording, determinism, the four selected delivery candidates, the four retained frozen assets, compact manifests, and a README. It includes no raw render sequence.
 
 After the final artifact commit is pushed, the external-only finalizer must regenerate the ZIP, adjacent external manifest, and hash sidecar against the exact pushed SHA. That operation writes no tracked file; its final byte/hash identity belongs in the human handoff.
 
@@ -173,9 +177,9 @@ After the final artifact commit is pushed, the external-only finalizer must rege
 
 - Source build: `artifacts/original/phase-3-crt-opening/manifests/phase-3-r-source-build.json`
 - Source validation: `artifacts/original/phase-3-crt-opening/manifests/phase-3-r-source-validation.json`
-- Candidate authority: `artifacts/original/phase-3-crt-opening/manifests/phase-3-r-candidate-authority.json`
+- Candidate authority: `artifacts/original/phase-3-crt-opening/manifests/phase-3-r-candidate-authority.json` — 19,181 bytes, SHA-256 `1ae5a66a4ec591688f1732d5444d7bf95b1e3731e9cd137e6de8c820b7df0bf2`
 - Post-production identity: `artifacts/original/phase-3-crt-opening/manifests/phase-3-r-post-production-manifest.json`
-- Fresh-process determinism: `artifacts/original/phase-3-crt-opening/review/phase-3-r-render-determinism-report.json`
+- Fresh-process determinism: `artifacts/original/phase-3-crt-opening/review/phase-3-r-render-determinism-report.json` — 26,918 bytes, SHA-256 `52f020e4058e891e6fce4608cbe9416ea9f30a1de0b3acc38654935059e916c9`
 - Browser/media QA: `artifacts/original/phase-3-crt-opening/review/phase-3-r-media-qa-report.json`
 - Actual media-lab recording: `artifacts/original/phase-3-crt-opening/review/phase-3-r-media-lab-scrub-evidence.webm`
 - Frozen Phase 2B ENTRY target: `artifacts/evidence/phase-2b/review/phase-2b-desktop-production-keyframes.png`
