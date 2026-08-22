@@ -1,0 +1,210 @@
+{
+  "schema": "quantum-hub.phase-4.integration-summary.v1",
+  "generatedAt": "2026-08-22T15:04:54.016Z",
+  "status": "PASS",
+  "provenance": {
+    "branch": "feature/phase-4-full-cinematic-integration",
+    "phase3Parent": "2fdee6feb9664578c6c8243d1b80ea885235279f",
+    "productionCommit": "39031c0690e82a2168ce0e6aa365f6c33ac5ecc9",
+    "note": "The evidence commit contains reports and curated sheets only; production runtime bytes are those in productionCommit."
+  },
+  "runtime": {
+    "controller": "src/scripts/home-cinematic-integration.ts",
+    "frameCount": 270,
+    "frameRate": 30,
+    "durationSeconds": 9,
+    "playbackPolicy": "paused deterministic frame-aware seeks; latest document position wins",
+    "scrollArchitecture": "passive native document scroll, resize and lifecycle events coalesced into at most one requestAnimationFrame",
+    "travel": {
+      "desktopViewportHeights": 3.65,
+      "shortDesktopViewportHeights": 3.35,
+      "mobileViewportHeights": 3,
+      "observed1440x900CssPixels": 3284.984375,
+      "observed390x844CssPixels": 2532
+    },
+    "piecewiseMapping": {
+      "outputFilmProgress": [0, 0.1, 0.42, 0.78, 1],
+      "desktopInputScrollProgress": [0, 0.0411, 0.3425, 0.6301, 1],
+      "shortDesktopInputScrollProgress": [0, 0.0358, 0.3343, 0.6269, 1],
+      "mobileInputScrollProgress": [0, 0.04, 0.3267, 0.6133, 1]
+    },
+    "portal": {
+      "takeoverStartFrame": 265,
+      "takeoverEndFrame": 270,
+      "takeoverStartFilmProgress": 0.981413,
+      "semanticRevealAfterTakeoverProgress": 0.24,
+      "pointerEnableAtTakeoverProgress": 0.78,
+      "settledAtScrollProgress": 0.9995,
+      "alignmentMaximumAbsoluteDeltaCssPixels": 0.005
+    },
+    "familySelection": {
+      "desktop": "landscape/desktop unless a mobile rule below matches",
+      "mobilePortrait": "width <= 800 and height > width",
+      "mobileLandscape": "width <= 900 and height <= 480",
+      "sourceLockedDuringSessionResizeOrOrientation": true
+    },
+    "codecSelection": {
+      "preferred": "VP9 only when canPlayType reports probably and the engine is not Safari/iOS",
+      "fallback": "H.264 when supported",
+      "unsupportedOutcome": "static authored fail-open"
+    }
+  },
+  "productionMedia": {
+    "distRoot": "dist/media/cinematic",
+    "files": 7,
+    "bytes": 8146303,
+    "gitMediaContributionBytes": 0,
+    "assets": [
+      {
+        "path": "media/cinematic/phase-3-desktop-h264-a73be0bb9890.mp4",
+        "mime": "video/mp4",
+        "bytes": 3499571,
+        "sha256": "a73be0bb989077551c0b3405cee2c3fa435b67049bf02b523df20baf0a4fb59e"
+      },
+      {
+        "path": "media/cinematic/phase-3-desktop-vp9-44a1d9facd43.webm",
+        "mime": "video/webm",
+        "bytes": 1658294,
+        "sha256": "44a1d9facd4316eff94e3712917a843b26d32b8012cadaa3f379edff2ffd2fcc"
+      },
+      {
+        "path": "media/cinematic/phase-3-mobile-h264-34319f80ae39.mp4",
+        "mime": "video/mp4",
+        "bytes": 1242276,
+        "sha256": "34319f80ae397758a3f7d4f192c572cee76c11ba5118a6fadb65c0374b4c99b2"
+      },
+      {
+        "path": "media/cinematic/phase-3-mobile-vp9-0ffcf12a431b.webm",
+        "mime": "video/webm",
+        "bytes": 647761,
+        "sha256": "0ffcf12a431b585f4ce37afd7df6ec0da1e52c4ef3c67d0ab761aaa5d5be517b"
+      },
+      {
+        "path": "media/cinematic/phase-3-dormant-desktop-03f5490ab11a.png",
+        "mime": "image/png",
+        "bytes": 726026,
+        "sha256": "03f5490ab11a628eb00c20fa6fc96f72a72593b9ca9da0e8735e55f1c5ffe465"
+      },
+      {
+        "path": "media/cinematic/phase-3-dormant-mobile-9d5c19b1a5e2.png",
+        "mime": "image/png",
+        "bytes": 209543,
+        "sha256": "9d5c19b1a5e294bc82822f44a11b94940829e67162c55783bb55bc5f5c02caad"
+      },
+      {
+        "path": "media/cinematic/phase-3-dormant-narrow-451d05bcc3d5.png",
+        "mime": "image/png",
+        "bytes": 162832,
+        "sha256": "451d05bcc3d53a8c451e01751bdbb5dc3ddd7d68d9cd6e208a69dc58e4684366"
+      }
+    ]
+  },
+  "bundles": {
+    "cinematicJavaScript": { "rawBytes": 7003, "gzipBytes": 2704 },
+    "totalProductionJavaScript": { "rawBytes": 13875, "gzipBytes": 5870 },
+    "addedProductionCss": { "rawBytes": 6527, "gzipBytes": 925 },
+    "totalProductionCss": { "rawBytes": 56005, "gzipBytes": 13204 }
+  },
+  "browserQa": {
+    "report": "phase-4-browser-report.json",
+    "reportBytes": 1039764,
+    "reportSha256": "504346d437972118a498664a8f9f75a34dda04486838e273ff0e2d5cfa8a4540",
+    "passed": true,
+    "failures": 0,
+    "referenceViewports": 9,
+    "nativeScrollTraversals": 2,
+    "supportingRoutes": 9,
+    "reloadPositions": 8,
+    "skipPositions": 4,
+    "orientationPositions": 3,
+    "methodEligibilityCases": 6,
+    "nativeScrollbar": { "executed": true, "passed": true, "widthCssPixels": 15, "forwardY": 2452, "reverseY": 0 },
+    "coldLoad": {
+      "cacheDisabled": true,
+      "firstContentfulPaintMs": 68,
+      "largestContentfulPaintMs": 68,
+      "largestContentfulPaintCandidate": "/brand/quantum-full-logo-white.svg",
+      "domContentLoadedMs": 187.8,
+      "mediaReadyMs": 261.1,
+      "desktopPosterTransferBytesIncludingHeaders": 726326
+    },
+    "warmCache": {
+      "posterCacheHit": true,
+      "posterTransferBytes": 0,
+      "selectedVideoPaths": 1,
+      "loaderCount": 0
+    },
+    "throttledConnection": {
+      "profile": "CDP simulated 2 Mbps down / 750 Kbps up / 200 ms RTT",
+      "isPhysicalNetworkTest": false,
+      "domContentLoadedMs": 1115.6,
+      "nativePageDownMs": 1474,
+      "mediaReadyMs": 3663.7,
+      "posterDecodedMs": 5995.3,
+      "completionMs": 6049,
+      "outcome": "ready",
+      "loaderCount": 0
+    },
+    "performance": {
+      "startupLongTasks": [{ "durationMs": 87, "attribution": "unknown" }],
+      "scrollLongTasks": 0,
+      "totalCls": 0.000453112273862043,
+      "scrollCls": 0,
+      "incrementalScrollMeasurementMs": 835.7,
+      "externalRequests": 0
+    },
+    "accessibility": {
+      "seriousOrCriticalAxeViolations": 0,
+      "fallbackFontViewports": 2,
+      "rootTextScalingViewports": 2,
+      "reducedMotionVideoRequests": 0,
+      "noJavaScriptControllerRequests": 0,
+      "semanticH1Count": 1
+    },
+    "touch": {
+      "syntheticCdpGestureExecuted": true,
+      "syntheticCdpGesturePassed": true,
+      "gestureScrollCssPixels": 524,
+      "physicalKineticMomentumExecuted": false,
+      "physicalKineticMomentumPassed": null
+    },
+    "bfcache": {
+      "attempted": true,
+      "persistedRestoreObserved": false,
+      "passed": null
+    },
+    "browserMatrix": {
+      "chrome150Full": "PASS",
+      "edge151Smoke": "PASS",
+      "safariWebKit": "UNEXECUTED",
+      "firefoxGecko": "UNEXECUTED",
+      "simulatedSafariUaH264Selection": "PASS_CHROMIUM_UA_ONLY"
+    }
+  },
+  "curatedEvidence": [
+    {
+      "path": "phase-4-desktop-production-contact-sheet.png",
+      "bytes": 1628189,
+      "sha256": "f974688774c577123b5287810ce797d1032436fccfdba77a2674d4e348eedc4c"
+    },
+    {
+      "path": "phase-4-portal-takeover-contact-sheet.png",
+      "bytes": 340343,
+      "sha256": "1a47908e3ff2cbe6337384260c2eab9e4ffab1b22ace15fa5f4dec2cf61756e2"
+    },
+    {
+      "path": "phase-4-physical-dom-alignment-sheet.png",
+      "bytes": 374596,
+      "sha256": "1c4651cd51a2f537add278dbb4d91cdc7cb6549e3d0fe3cd8a7c9768b1406bf9"
+    }
+  ],
+  "limitations": {
+    "physicalTrackpad": "unexecuted",
+    "physicalTouchKineticMomentum": "unexecuted",
+    "safariWebKitEngine": "unexecuted",
+    "firefoxGeckoEngine": "unexecuted",
+    "nativeBrowserUiZoom": "unexecuted; root text scaling and CDP visual-viewport safety paths passed",
+    "persistedBfcacheRestore": "attempted but not exposed by the Chromium run",
+    "decoderMemory": "not isolated by available tooling; one decoder and one source path were structurally verified"
+  }
+}
