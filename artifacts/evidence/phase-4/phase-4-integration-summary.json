@@ -1,12 +1,14 @@
 {
   "schema": "quantum-hub.phase-4.integration-summary.v1",
-  "generatedAt": "2026-08-22T15:04:54.016Z",
+  "generatedAt": "2026-08-22T15:28:48.460Z",
   "status": "PASS",
   "provenance": {
     "branch": "feature/phase-4-full-cinematic-integration",
     "phase3Parent": "2fdee6feb9664578c6c8243d1b80ea885235279f",
-    "productionCommit": "39031c0690e82a2168ce0e6aa365f6c33ac5ecc9",
-    "note": "The evidence commit contains reports and curated sheets only; production runtime bytes are those in productionCommit."
+    "initialIntegrationCommit": "39031c0690e82a2168ce0e6aa365f6c33ac5ecc9",
+    "productionCommit": "0246932f6c3482cab30a8b4c6cbb7cdb9443def2",
+    "cloudflareDeliveryRepair": "The selected immutable asset is fetched once and assigned through one lifecycle-managed Blob URL because Cloudflare Pages serves full 200 responses instead of byte ranges.",
+    "note": "The final evidence commit contains reports and curated sheets only; final production runtime bytes are those in productionCommit."
   },
   "runtime": {
     "controller": "src/scripts/home-cinematic-integration.ts",
@@ -14,6 +16,7 @@
     "frameRate": 30,
     "durationSeconds": 9,
     "playbackPolicy": "paused deterministic frame-aware seeks; latest document position wins",
+    "mediaDelivery": "one selected hash-named response becomes one browser-local seekable Blob URL; one decoder, no source hot-swap, object URL revoked on fail-open or non-persisted teardown",
     "scrollArchitecture": "passive native document scroll, resize and lifecycle events coalesced into at most one requestAnimationFrame",
     "travel": {
       "desktopViewportHeights": 3.65,
@@ -100,15 +103,15 @@
     ]
   },
   "bundles": {
-    "cinematicJavaScript": { "rawBytes": 7003, "gzipBytes": 2704 },
-    "totalProductionJavaScript": { "rawBytes": 13875, "gzipBytes": 5870 },
+    "cinematicJavaScript": { "rawBytes": 7519, "gzipBytes": 2932 },
+    "totalProductionJavaScript": { "rawBytes": 14391, "gzipBytes": 6098 },
     "addedProductionCss": { "rawBytes": 6527, "gzipBytes": 925 },
     "totalProductionCss": { "rawBytes": 56005, "gzipBytes": 13204 }
   },
   "browserQa": {
     "report": "phase-4-browser-report.json",
-    "reportBytes": 1039764,
-    "reportSha256": "504346d437972118a498664a8f9f75a34dda04486838e273ff0e2d5cfa8a4540",
+    "reportBytes": 1048134,
+    "reportSha256": "6180a28b71e94fa95dfa377186ccddfe956f7ed14349b8f5313e3d9a22a87756",
     "passed": true,
     "failures": 0,
     "referenceViewports": 9,
@@ -121,32 +124,38 @@
     "nativeScrollbar": { "executed": true, "passed": true, "widthCssPixels": 15, "forwardY": 2452, "reverseY": 0 },
     "coldLoad": {
       "cacheDisabled": true,
-      "firstContentfulPaintMs": 68,
-      "largestContentfulPaintMs": 68,
+      "firstContentfulPaintMs": 76,
+      "largestContentfulPaintMs": 76,
       "largestContentfulPaintCandidate": "/brand/quantum-full-logo-white.svg",
-      "domContentLoadedMs": 187.8,
-      "mediaReadyMs": 261.1,
-      "desktopPosterTransferBytesIncludingHeaders": 726326
+      "domContentLoadedMs": 200.1,
+      "mediaReadyMs": 264.7,
+      "desktopPosterTransferBytesIncludingHeaders": 726326,
+      "selectedVideoTransferBytesIncludingHeaders": 1658594,
+      "selectedVideoInitiator": "fetch"
     },
     "warmCache": {
       "posterCacheHit": true,
       "posterTransferBytes": 0,
+      "selectedVideoDiskCacheHit": true,
+      "selectedVideoEncodedTransferBytes": 0,
       "selectedVideoPaths": 1,
-      "loaderCount": 0
+      "loaderCount": 0,
+      "domContentLoadedMs": 88.2,
+      "mediaReadyMs": 197.5
     },
     "throttledConnection": {
       "profile": "CDP simulated 2 Mbps down / 750 Kbps up / 200 ms RTT",
       "isPhysicalNetworkTest": false,
-      "domContentLoadedMs": 1115.6,
-      "nativePageDownMs": 1474,
-      "mediaReadyMs": 3663.7,
-      "posterDecodedMs": 5995.3,
-      "completionMs": 6049,
+      "domContentLoadedMs": 1312.2,
+      "nativePageDownMs": 1615,
+      "mediaReadyMs": 10915.4,
+      "posterDecodedMs": 6222.7,
+      "completionMs": 10964,
       "outcome": "ready",
       "loaderCount": 0
     },
     "performance": {
-      "startupLongTasks": [{ "durationMs": 87, "attribution": "unknown" }],
+      "startupLongTasks": [{ "durationMs": 103, "attribution": "unknown" }],
       "scrollLongTasks": 0,
       "totalCls": 0.000453112273862043,
       "scrollCls": 0,

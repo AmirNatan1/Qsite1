@@ -8,7 +8,7 @@ This directory is the compact tracked evidence set for the Phase 4 production in
 - `phase-4-portal-takeover-contact-sheet.png` shows the accepted F250–F270 takeover window.
 - `phase-4-physical-dom-alignment-sheet.png` compares the late physical crossover, accepted F270 projection, and live semantic geometry; maximum measured delta is 0.005 CSS px.
 
-Production implementation commit: `39031c0690e82a2168ce0e6aa365f6c33ac5ecc9`.
+Final production implementation commit: `0246932f6c3482cab30a8b4c6cbb7cdb9443def2` (initial integration: `39031c0690e82a2168ce0e6aa365f6c33ac5ecc9`). The controller fetches exactly one selected immutable encode and exposes it to the single paused decoder through a lifecycle-managed Blob URL. This preserves deterministic seeking on Cloudflare Pages, whose static asset delivery returns full `200` bodies rather than byte-range `206` responses.
 
 The raw captures, four browser recordings, responsive/static/zoom sheets, network-transfer report, and transfer ZIP are intentionally external to Git. They must be regenerated from the clean deployed SHA with `scripts/package-phase4-human-review.mjs` before handoff.
 
