@@ -302,6 +302,7 @@ if (cinematicChunk) {
   ]) check(!prohibited[0].test(cinematicChunk.text), "native-scroll-authority", `dist/${cinematicChunk.path}`, `${prohibited[1]} is prohibited in the production controller`);
   check(/addEventListener\(["'`]scroll["'`][\s\S]{0,120}passive:!0/.test(cinematicChunk.text), "passive-scroll", `dist/${cinematicChunk.path}`, "production cinematic scroll listener must remain passive");
   check(/requestAnimationFrame\(/.test(cinematicChunk.text) && /ResizeObserver/.test(cinematicChunk.text), "controller-coalescing", `dist/${cinematicChunk.path}`, "production controller must retain rAF coalescing and resize invalidation");
+  check(/fetch\(/.test(cinematicChunk.text) && /\.blob\(\)/.test(cinematicChunk.text) && /URL\.createObjectURL\(/.test(cinematicChunk.text) && /URL\.revokeObjectURL\(/.test(cinematicChunk.text), "seekable-media-delivery", `dist/${cinematicChunk.path}`, "production controller must turn the single selected immutable response into one lifecycle-managed seekable Blob URL");
 }
 const homeCssReferences = referencedStylesheets(homeHtml);
 for (const reference of homeCssReferences) check(byPath.has(reference), "stylesheet-reference", "dist/index.html", `referenced stylesheet is missing: ${reference}`);

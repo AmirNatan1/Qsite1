@@ -502,6 +502,7 @@ async function runtimeState(page) {
       mediaFamily: shell?.getAttribute("data-media-family") ?? null,
       mediaCodec: shell?.getAttribute("data-media-codec") ?? null,
       mediaSource: shell?.getAttribute("data-media-source") ?? null,
+      mediaDelivery: shell?.getAttribute("data-media-delivery") ?? null,
       scrollProgress: numeric(shell?.getAttribute("data-scroll-progress")),
       cinematicProgress: numeric(shell?.getAttribute("data-cinematic-progress")),
       targetFrame: numeric(shell?.getAttribute("data-target-frame")),
@@ -785,6 +786,7 @@ async function captureMilestoneSet(browser, options, viewport, frames, id, title
       if (state.targetFrame !== frame) frameFailures.push("target-frame-mismatch");
       if (Math.abs((state.video?.visibleFrame ?? -1000) - frame) > 2) frameFailures.push("visible-frame-outside-two-frame-tolerance");
       if (state.mediaFamily !== viewport.family) frameFailures.push("family-mismatch");
+      if (state.mediaDelivery !== "blob" || !state.video?.currentSrc?.startsWith("blob:")) frameFailures.push("seekable-blob-delivery-mismatch");
       if (state.video?.objectPosition !== viewport.objectPosition) frameFailures.push("object-position-mismatch");
       if (state.document.scrollWidth > viewport.width + 1) frameFailures.push("horizontal-overflow");
       captures.push({

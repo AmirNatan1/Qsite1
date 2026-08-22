@@ -245,14 +245,26 @@ check(/prefers-reduced-motion:\s*reduce/.test(indexSource), "reduced-motion-boot
 check(matches(indexSource, /import\(["']\.\.\/scripts\/home-cinematic-integration["']\)/g) === 1, "cinematic-lazy-load", "src/pages/index.astro", "Home must lazy-load exactly one cinematic controller");
 check(indexSource.indexOf("prefers-reduced-motion: reduce") < indexSource.indexOf("home-cinematic-integration"), "reduced-motion-order", "src/pages/index.astro", "reduced-motion gate must precede the cinematic import");
 check(/root\.dataset\.cinematicMode\s*===\s*["']candidate["']/.test(indexSource), "capability-gated-import", "src/pages/index.astro", "cinematic import must be gated by candidate mode");
-check(matches(cinematicController, /video\.src\s*=/g) === 1 && /video\.src\s*=\s*SOURCES\[initialFamily\]\[codec\]/.test(cinematicController), "runtime-media-selection", "src/scripts/home-cinematic-integration.ts", "exactly one selected source must be assigned at runtime and never hot-swapped");
+check(
+  matches(cinematicController, /fetch\(selectedSource/g) === 1
+    && matches(cinematicController, /video\.src\s*=/g) === 1
+    && /response\.blob\(\)/.test(cinematicController)
+    && /mediaObjectUrl\s*=\s*URL\.createObjectURL\(mediaBlob\)/.test(cinematicController)
+    && /video\.src\s*=\s*mediaObjectUrl/.test(cinematicController),
+  "runtime-media-selection",
+  "src/scripts/home-cinematic-integration.ts",
+  "exactly one selected asset must be fetched and assigned through one seekable Blob URL without source hot-swaps",
+);
+check(/URL\.revokeObjectURL\(mediaObjectUrl\)/.test(cinematicController) && /mediaAbortController\.abort\(\)/.test(cinematicController), "runtime-media-cleanup", "src/scripts/home-cinematic-integration.ts", "Blob media delivery must be aborted and revoked during fail-open or teardown");
 check(!/createElement\(\s*["'](?:video|source)["']/.test(cinematicController), "single-decoder", "src/scripts/home-cinematic-integration.ts", "controller must not create additional video/source elements");
 const reducedGate = cinematicController.indexOf("motion.matches || !codec || !portalFits()");
-const sourceAssignment = cinematicController.indexOf("video.src = SOURCES[initialFamily][codec]");
-check(reducedGate >= 0 && sourceAssignment > reducedGate, "load-gate-order", "src/scripts/home-cinematic-integration.ts", "reduced-motion, codec, and portal-fit gates must run before source assignment");
+const mediaFetch = cinematicController.indexOf("fetch(selectedSource");
+const sourceAssignment = cinematicController.indexOf("video.src = mediaObjectUrl");
+check(reducedGate >= 0 && mediaFetch > reducedGate && sourceAssignment > mediaFetch, "load-gate-order", "src/scripts/home-cinematic-integration.ts", "reduced-motion, codec, and portal-fit gates must run before the selected asset fetch and Blob source assignment");
 check(/FRAME_COUNT\s*=\s*270/.test(cinematicController) && /FRAME_RATE\s*=\s*30/.test(cinematicController), "timeline-authority", "src/scripts/home-cinematic-integration.ts", "controller must retain the accepted 270-frame, 30fps timeline");
 check(/interpolatePiecewise/.test(cinematicController) && /targetFrame\s*=\s*Math\.round\(cinematicProgress\s*\*\s*FINAL_FRAME_INDEX\)/.test(cinematicController) && /targetTime\s*=\s*targetFrame\s*\/\s*FRAME_RATE/.test(cinematicController), "deterministic-mapping", "src/scripts/home-cinematic-integration.ts", "document progress must map deterministically through a piecewise timeline to frame time");
 check(/video\.pause\(\)/.test(cinematicController) && /video\.currentTime\s*=\s*targetTime/.test(cinematicController), "paused-seek-surface", "src/scripts/home-cinematic-integration.ts", "video must remain paused and render direct scroll-derived seeks");
+check(/video\.seeking/.test(cinematicController) && /addEventListener\(\s*["']seeked["'][\s\S]{0,180}requestCurrentFrame\(\)/.test(cinematicController), "latest-seek-coalescing", "src/scripts/home-cinematic-integration.ts", "an in-flight decoder seek must collapse subsequent updates to the newest pending frame");
 check(!/\.play\s*\(/.test(cinematicController), "autoplay-prohibited", "src/scripts/home-cinematic-integration.ts", "cinematic controller must never start linear playback");
 
 for (const [relative, controller] of [

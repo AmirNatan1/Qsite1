@@ -459,6 +459,7 @@ async function readHomeState(page) {
       mediaFamily: shell?.getAttribute("data-media-family") ?? null,
       mediaCodec: shell?.getAttribute("data-media-codec") ?? null,
       mediaSource: shell?.getAttribute("data-media-source") ?? null,
+      mediaDelivery: shell?.getAttribute("data-media-delivery") ?? null,
       mediaState: shell?.getAttribute("data-media-state") ?? null,
       scrollProgress: number(shell?.getAttribute("data-scroll-progress")),
       cinematicProgress: number(shell?.getAttribute("data-cinematic-progress")),
@@ -681,6 +682,14 @@ async function runReferenceViewport(browser, baseUrl, viewport, failures) {
     "media-ready",
     state.mediaState,
     "ready",
+  );
+  expect(
+    failures,
+    state.mediaDelivery === "blob" && state.video?.currentSrc?.startsWith("blob:"),
+    scenario,
+    "seekable-media-delivery",
+    { delivery: state.mediaDelivery, currentSrc: state.video?.currentSrc },
+    { delivery: "blob", currentSrc: "one browser-local Blob URL" },
   );
   expect(
     failures,

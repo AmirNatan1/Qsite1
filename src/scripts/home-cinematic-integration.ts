@@ -92,6 +92,7 @@ export function initHomeCinematicIntegration() {
 
   const abortController = new AbortController();
   const { signal } = abortController;
+  const mediaAbortController = new AbortController();
   const initialFamily = chooseFamily(window.innerWidth, window.innerHeight);
   const initialShortHeight = initialFamily === "desktop" && window.innerHeight < 704;
   const travelFactor = initialFamily === "mobile" ? 3 : initialShortHeight ? 3.35 : 3.65;
@@ -112,10 +113,20 @@ export function initHomeCinematicIntegration() {
   let mediaFailed = false;
   let failed = false;
   let loadTimer = 0;
+  let mediaObjectUrl: string | null = null;
 
   const clearLoadTimer = () => {
     if (loadTimer) window.clearTimeout(loadTimer);
     loadTimer = 0;
+  };
+
+  const releaseMedia = () => {
+    mediaAbortController.abort();
+    video.pause();
+    video.removeAttribute("src");
+    video.load();
+    if (mediaObjectUrl) URL.revokeObjectURL(mediaObjectUrl);
+    mediaObjectUrl = null;
   };
 
   const clearCinematicStyles = () => {
@@ -138,9 +149,7 @@ export function initHomeCinematicIntegration() {
     mediaFailed = preserveGeometry;
     failed = !preserveGeometry;
     clearLoadTimer();
-    video.pause();
-    video.removeAttribute("src");
-    video.load();
+    releaseMedia();
     root.dataset.cinematicFallback = reason;
     shell.dataset.mediaState = "failed";
     mediaReady = false;
@@ -180,10 +189,12 @@ export function initHomeCinematicIntegration() {
     return;
   }
 
+  const selectedSource = SOURCES[initialFamily][codec];
   const publicState = {
     mode: root.dataset.cinematicMode,
     mediaFamily: initialFamily,
     codec,
+    delivery: "blob" as const,
     scrollProgress: 0,
     cinematicProgress: 0,
     targetFrame: 1,
@@ -197,11 +208,28 @@ export function initHomeCinematicIntegration() {
   root.dataset.cinematicMode = "enhanced";
   shell.dataset.mediaFamily = initialFamily;
   shell.dataset.mediaCodec = codec;
-  shell.dataset.mediaSource = SOURCES[initialFamily][codec];
+  shell.dataset.mediaSource = selectedSource;
+  shell.dataset.mediaDelivery = "blob";
   shell.dataset.mediaState = "loading";
-  video.src = SOURCES[initialFamily][codec];
   video.preload = "auto";
-  video.load();
+
+  const loadSelectedMedia = async () => {
+    try {
+      const response = await fetch(selectedSource, {
+        cache: "force-cache",
+        signal: mediaAbortController.signal,
+      });
+      if (!response.ok) throw new Error(`cinematic media response ${response.status}`);
+      const mediaBlob = await response.blob();
+      if (!mediaBlob.size || !mediaBlob.type.startsWith("video/")) throw new Error("cinematic media response is not video");
+      if (failed || mediaFailed || mediaAbortController.signal.aborted) return;
+      mediaObjectUrl = URL.createObjectURL(mediaBlob);
+      video.src = mediaObjectUrl;
+      video.load();
+    } catch {
+      if (!mediaAbortController.signal.aborted) failOpen("media");
+    }
+  };
 
   const measure = () => {
     headerHeight = header?.getBoundingClientRect().height ?? 0;
@@ -220,7 +248,7 @@ export function initHomeCinematicIntegration() {
   };
 
   const requestCurrentFrame = () => {
-    if (!metadataReady || mediaFailed || failed || document.hidden || targetFrame === latestFrame) return;
+    if (!metadataReady || mediaFailed || failed || document.hidden || video.seeking || targetFrame === latestFrame) return;
     latestFrame = targetFrame;
     try {
       video.pause();
@@ -344,7 +372,10 @@ export function initHomeCinematicIntegration() {
     requestCurrentFrame();
   }, { signal });
   video.addEventListener("loadeddata", revealUsableFrame, { signal });
-  video.addEventListener("seeked", revealUsableFrame, { signal });
+  video.addEventListener("seeked", () => {
+    revealUsableFrame();
+    requestCurrentFrame();
+  }, { signal });
   video.addEventListener("error", () => failOpen("media"), { signal });
 
   void document.fonts?.ready.then(() => {
@@ -358,6 +389,7 @@ export function initHomeCinematicIntegration() {
     video.pause();
     if (event.persisted) return;
     clearLoadTimer();
+    releaseMedia();
     resizeObserver.disconnect();
     abortController.abort();
   }, { signal });
@@ -366,6 +398,7 @@ export function initHomeCinematicIntegration() {
     if (!mediaReady) failOpen(metadataReady ? "decode-timeout" : "load-timeout");
   }, LOAD_TIMEOUT_MS);
 
+  void loadSelectedMedia();
   measure();
   write();
 }
@@ -376,6 +409,7 @@ declare global {
       mode: string | undefined;
       mediaFamily: MediaFamily;
       codec: Codec;
+      delivery: "blob";
       scrollProgress: number;
       cinematicProgress: number;
       targetFrame: number;
