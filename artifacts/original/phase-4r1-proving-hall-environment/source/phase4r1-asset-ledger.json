@@ -1,0 +1,379 @@
+{
+  "schema": "quantum-hub.phase-4-r1-proving-hall.asset-ledger.v1",
+  "status": "PASS",
+  "description": "modeled-from-scratch geometry and procedural materials only; no downloads, scans, stock imagery, generative imagery or third-party textures",
+  "phase4r1_derivative_sha256": "e24ccf974a57c0a5ffad48a42d07238138bf7e519da0494f5b9329f2a8b60e87",
+  "source": {
+    "path": "artifacts/original/phase-4r1-proving-hall-environment/source/quantum-signal-television-phase4r1-proving-hall.blend",
+    "bytes": 3081427,
+    "sha256": "e24ccf974a57c0a5ffad48a42d07238138bf7e519da0494f5b9329f2a8b60e87"
+  },
+  "authoredAssets": [
+    {
+      "id": "p4r1-authored-001",
+      "name": "sealed concrete floor",
+      "creator": "Quantum-Hub Phase 4-R1 deterministic Blender builder",
+      "license": "project-authored; no external license dependency",
+      "source": "modeled-from-scratch geometry or procedural material in build_phase4r1_proving_hall.py",
+      "sha256": "39ad2721be8c0ba45982cab1db44d079b2cdb9cdc9bbf898d0f9ac4ad3f3d4cb",
+      "exactUse": "sealed concrete floor",
+      "modified": false,
+      "packedIntoBlend": true,
+      "inventory": {
+        "asset": "sealed concrete floor",
+        "count": 1,
+        "collection": "PHASE4R1_HALL_FLOOR",
+        "authored": true
+      }
+    },
+    {
+      "id": "p4r1-authored-002",
+      "name": "floor seams, service channel and maintenance patches",
+      "creator": "Quantum-Hub Phase 4-R1 deterministic Blender builder",
+      "license": "project-authored; no external license dependency",
+      "source": "modeled-from-scratch geometry or procedural material in build_phase4r1_proving_hall.py",
+      "sha256": "7d4205d2babc3ef6107c6bce23e5c0a21cf6c034e761a8604b29bd2458ad6ca0",
+      "exactUse": "floor seams, service channel and maintenance patches",
+      "modified": false,
+      "packedIntoBlend": true,
+      "inventory": {
+        "asset": "floor seams, service channel and maintenance patches",
+        "count": 14,
+        "collection": "PHASE4R1_HALL_FLOOR",
+        "authored": true
+      }
+    },
+    {
+      "id": "p4r1-authored-003",
+      "name": "fabricated steel columns with footplates and anchors",
+      "creator": "Quantum-Hub Phase 4-R1 deterministic Blender builder",
+      "license": "project-authored; no external license dependency",
+      "source": "modeled-from-scratch geometry or procedural material in build_phase4r1_proving_hall.py",
+      "sha256": "798c4a37682486fc4d9b24b6ac0f57308774d79f2849f958e64a9d5344ce74c9",
+      "exactUse": "fabricated steel columns with footplates and anchors",
+      "modified": false,
+      "packedIntoBlend": true,
+      "inventory": {
+        "asset": "fabricated steel columns with footplates and anchors",
+        "count": 8,
+        "anchors": 32,
+        "collection": "PHASE4R1_HALL_STRUCTURE",
+        "authored": true
+      }
+    },
+    {
+      "id": "p4r1-authored-004",
+      "name": "steel roof trusses",
+      "creator": "Quantum-Hub Phase 4-R1 deterministic Blender builder",
+      "license": "project-authored; no external license dependency",
+      "source": "modeled-from-scratch geometry or procedural material in build_phase4r1_proving_hall.py",
+      "sha256": "42ebad2730814b6997d1c5de3e0e723f88c12754c38e42e4e1ee5e14e01c613e",
+      "exactUse": "steel roof trusses",
+      "modified": false,
+      "packedIntoBlend": true,
+      "inventory": {
+        "asset": "steel roof trusses",
+        "count": 4,
+        "diagonal_members": 32,
+        "collection": "PHASE4R1_HALL_STRUCTURE",
+        "authored": true
+      }
+    },
+    {
+      "id": "p4r1-authored-005",
+      "name": "overhead crane rails and dormant bridge gantry",
+      "creator": "Quantum-Hub Phase 4-R1 deterministic Blender builder",
+      "license": "project-authored; no external license dependency",
+      "source": "modeled-from-scratch geometry or procedural material in build_phase4r1_proving_hall.py",
+      "sha256": "ab758c8254cd340031c8fe38af0dda3b911c4e61c1a32c5bde8c6fbfabc5efc0",
+      "exactUse": "overhead crane rails and dormant bridge gantry",
+      "modified": false,
+      "packedIntoBlend": true,
+      "inventory": {
+        "asset": "overhead crane rails and dormant bridge gantry",
+        "count": 5,
+        "collection": "PHASE4R1_HALL_ARCHITECTURE",
+        "authored": true
+      }
+    },
+    {
+      "id": "p4r1-authored-006",
+      "name": "three clear-span portal bents with knee braces",
+      "creator": "Quantum-Hub Phase 4-R1 deterministic Blender builder",
+      "license": "project-authored; no external license dependency",
+      "source": "modeled-from-scratch geometry or procedural material in build_phase4r1_proving_hall.py",
+      "sha256": "15bb92491cf5a883e4c8049e8c50b7351778c34efbdef5a2a024581431d1d3f3",
+      "exactUse": "three clear-span portal bents with knee braces",
+      "modified": false,
+      "packedIntoBlend": true,
+      "inventory": {
+        "asset": "three clear-span portal bents with knee braces",
+        "count": 3,
+        "members": 18,
+        "collection": "PHASE4R1_HALL_STRUCTURE",
+        "authored": true
+      }
+    },
+    {
+      "id": "p4r1-authored-007",
+      "name": "360-degree walls, clerestories and industrial bay door",
+      "creator": "Quantum-Hub Phase 4-R1 deterministic Blender builder",
+      "license": "project-authored; no external license dependency",
+      "source": "modeled-from-scratch geometry or procedural material in build_phase4r1_proving_hall.py",
+      "sha256": "82b550ac19112dc8df18e0ffd878ee35d3cb4759eed1b3b947c8c6965e0097cf",
+      "exactUse": "360-degree walls, clerestories and industrial bay door",
+      "modified": false,
+      "packedIntoBlend": true,
+      "inventory": {
+        "asset": "360-degree walls, clerestories and industrial bay door",
+        "count": 20,
+        "collection": "PHASE4R1_HALL_ARCHITECTURE",
+        "authored": true
+      }
+    },
+    {
+      "id": "p4r1-authored-008",
+      "name": "partial maintenance catwalk and service ladder",
+      "creator": "Quantum-Hub Phase 4-R1 deterministic Blender builder",
+      "license": "project-authored; no external license dependency",
+      "source": "modeled-from-scratch geometry or procedural material in build_phase4r1_proving_hall.py",
+      "sha256": "ac55a456188c74abd7db18532ae7dbc518e21c725dc0d669b2a294097b95dac7",
+      "exactUse": "partial maintenance catwalk and service ladder",
+      "modified": false,
+      "packedIntoBlend": true,
+      "inventory": {
+        "asset": "partial maintenance catwalk and service ladder",
+        "count": 25,
+        "collection": "PHASE4R1_HALL_ARCHITECTURE",
+        "authored": true
+      }
+    },
+    {
+      "id": "p4r1-authored-009",
+      "name": "overhead cable trays and ventilation duct",
+      "creator": "Quantum-Hub Phase 4-R1 deterministic Blender builder",
+      "license": "project-authored; no external license dependency",
+      "source": "modeled-from-scratch geometry or procedural material in build_phase4r1_proving_hall.py",
+      "sha256": "e294930cb54648cc15dee3dd3e851d84eb8b850fc56f6d0301ca2483d3d4ff4a",
+      "exactUse": "overhead cable trays and ventilation duct",
+      "modified": false,
+      "packedIntoBlend": true,
+      "inventory": {
+        "asset": "overhead cable trays and ventilation duct",
+        "count": 7,
+        "collection": "PHASE4R1_HALL_ARCHITECTURE",
+        "authored": true
+      }
+    },
+    {
+      "id": "p4r1-authored-010",
+      "name": "modeled mesh safety partitions with open perimeter frames",
+      "creator": "Quantum-Hub Phase 4-R1 deterministic Blender builder",
+      "license": "project-authored; no external license dependency",
+      "source": "modeled-from-scratch geometry or procedural material in build_phase4r1_proving_hall.py",
+      "sha256": "2c56180fb6bb3dfeeb16f2ccf09f0eb4b99fc45e3644d8c94388884e9decd15d",
+      "exactUse": "modeled mesh safety partitions with open perimeter frames",
+      "modified": false,
+      "packedIntoBlend": true,
+      "inventory": {
+        "asset": "modeled mesh safety partitions with open perimeter frames",
+        "count": 52,
+        "collection": "PHASE4R1_HALL_OPERATIONAL_DETAILS",
+        "authored": true
+      }
+    },
+    {
+      "id": "p4r1-authored-011",
+      "name": "dormant machinery cells, validation fixture and perimeter service stacks",
+      "creator": "Quantum-Hub Phase 4-R1 deterministic Blender builder",
+      "license": "project-authored; no external license dependency",
+      "source": "modeled-from-scratch geometry or procedural material in build_phase4r1_proving_hall.py",
+      "sha256": "ca36684c294052590a204abedd032557f7fd064fb46ac86e50c7286dea917f65",
+      "exactUse": "dormant machinery cells, validation fixture and perimeter service stacks",
+      "modified": false,
+      "packedIntoBlend": true,
+      "inventory": {
+        "asset": "dormant machinery cells, validation fixture and perimeter service stacks",
+        "count": 28,
+        "collection": "PHASE4R1_HALL_MACHINERY",
+        "authored": true
+      }
+    },
+    {
+      "id": "p4r1-authored-012",
+      "name": "protective barriers, workbench and service cart",
+      "creator": "Quantum-Hub Phase 4-R1 deterministic Blender builder",
+      "license": "project-authored; no external license dependency",
+      "source": "modeled-from-scratch geometry or procedural material in build_phase4r1_proving_hall.py",
+      "sha256": "152a473c837e731127998f1a9e2e540bed66a02b7d8bfd60c8146fbd0a5b15cf",
+      "exactUse": "protective barriers, workbench and service cart",
+      "modified": false,
+      "packedIntoBlend": true,
+      "inventory": {
+        "asset": "protective barriers, workbench and service cart",
+        "count": 17,
+        "collection": "PHASE4R1_HALL_OPERATIONAL_DETAILS",
+        "authored": true
+      }
+    },
+    {
+      "id": "p4r1-authored-013",
+      "name": "industrial distribution enclosure and pedestal",
+      "creator": "Quantum-Hub Phase 4-R1 deterministic Blender builder",
+      "license": "project-authored; no external license dependency",
+      "source": "modeled-from-scratch geometry or procedural material in build_phase4r1_proving_hall.py",
+      "sha256": "a372e838f5a0cb884aa14aa08fdd67f0a444e48811d29a649d3bc07fcc439869",
+      "exactUse": "industrial distribution enclosure and pedestal",
+      "modified": false,
+      "packedIntoBlend": true,
+      "inventory": {
+        "asset": "industrial distribution enclosure and pedestal",
+        "count": 2,
+        "authored": true
+      }
+    },
+    {
+      "id": "p4r1-authored-014",
+      "name": "continuous tray feed, three roof-chord hangers, infrastructure conduit and junction box",
+      "creator": "Quantum-Hub Phase 4-R1 deterministic Blender builder",
+      "license": "project-authored; no external license dependency",
+      "source": "modeled-from-scratch geometry or procedural material in build_phase4r1_proving_hall.py",
+      "sha256": "f224222962fc11715d115b5585ead1344f7ebb5c185c249420dacd551bafa4d3",
+      "exactUse": "continuous tray feed, three roof-chord hangers, infrastructure conduit and junction box",
+      "modified": false,
+      "packedIntoBlend": true,
+      "inventory": {
+        "asset": "continuous tray feed, three roof-chord hangers, infrastructure conduit and junction box",
+        "count": 11,
+        "authored": true
+      }
+    },
+    {
+      "id": "p4r1-authored-015",
+      "name": "heavy-duty socket mouth, matching plug and locking seam",
+      "creator": "Quantum-Hub Phase 4-R1 deterministic Blender builder",
+      "license": "project-authored; no external license dependency",
+      "source": "modeled-from-scratch geometry or procedural material in build_phase4r1_proving_hall.py",
+      "sha256": "1de0197bf47a1f5089aa8e968d52743e6ab6eb93fc3621deb9b0f9166faf4a7d",
+      "exactUse": "heavy-duty socket mouth, matching plug and locking seam",
+      "modified": false,
+      "packedIntoBlend": true,
+      "inventory": {
+        "asset": "heavy-duty socket mouth, matching plug and locking seam",
+        "count": 5,
+        "authored": true
+      }
+    },
+    {
+      "id": "p4r1-authored-016",
+      "name": "four-stage strain relief",
+      "creator": "Quantum-Hub Phase 4-R1 deterministic Blender builder",
+      "license": "project-authored; no external license dependency",
+      "source": "modeled-from-scratch geometry or procedural material in build_phase4r1_proving_hall.py",
+      "sha256": "eb5e12b9436cbbdec68eb02516d341ed8ed1bb1b01bbd2ddfcd1e480137802c1",
+      "exactUse": "four-stage strain relief",
+      "modified": false,
+      "packedIntoBlend": true,
+      "inventory": {
+        "asset": "four-stage strain relief",
+        "count": 4,
+        "authored": true
+      }
+    },
+    {
+      "id": "p4r1-authored-017",
+      "name": "supported floor-transition saddle and clamps",
+      "creator": "Quantum-Hub Phase 4-R1 deterministic Blender builder",
+      "license": "project-authored; no external license dependency",
+      "source": "modeled-from-scratch geometry or procedural material in build_phase4r1_proving_hall.py",
+      "sha256": "ebc39082667bd28352b68a020bc16b939cd12b989ba73f66a40d927d36da6b3e",
+      "exactUse": "supported floor-transition saddle and clamps",
+      "modified": false,
+      "packedIntoBlend": true,
+      "inventory": {
+        "asset": "supported floor-transition saddle and clamps",
+        "count": 3,
+        "authored": true
+      }
+    },
+    {
+      "id": "p4r1-authored-018",
+      "name": "rear CRT connection seated flange, axial bridge, collar and gland",
+      "creator": "Quantum-Hub Phase 4-R1 deterministic Blender builder",
+      "license": "project-authored; no external license dependency",
+      "source": "modeled-from-scratch geometry or procedural material in build_phase4r1_proving_hall.py",
+      "sha256": "772f77815cc6343c4721ad05cbd61d11087bb579cbfa1b67b874e0d1d021186c",
+      "exactUse": "rear CRT connection seated flange, axial bridge, collar and gland",
+      "modified": false,
+      "packedIntoBlend": true,
+      "inventory": {
+        "asset": "rear CRT connection seated flange, axial bridge, collar and gland",
+        "count": 4,
+        "authored": true
+      }
+    },
+    {
+      "id": "p4r1-authored-019",
+      "name": "desktop extended physical cable and conductor",
+      "creator": "Quantum-Hub Phase 4-R1 deterministic Blender builder",
+      "license": "project-authored; no external license dependency",
+      "source": "modeled-from-scratch geometry or procedural material in build_phase4r1_proving_hall.py",
+      "sha256": "1a2c6bba380588a4d44d768403ce67381e557ec6962da8c986337f7c7ef8ff10",
+      "exactUse": "desktop extended physical cable and conductor",
+      "modified": false,
+      "packedIntoBlend": true,
+      "inventory": {
+        "asset": "desktop extended physical cable and conductor",
+        "count": 161,
+        "authored": true
+      }
+    },
+    {
+      "id": "p4r1-authored-020",
+      "name": "mobile extended physical cable and conductor",
+      "creator": "Quantum-Hub Phase 4-R1 deterministic Blender builder",
+      "license": "project-authored; no external license dependency",
+      "source": "modeled-from-scratch geometry or procedural material in build_phase4r1_proving_hall.py",
+      "sha256": "71c1bffc42898547126a98b54e5f76893bf3cb23e736bf6eed34ab5a249d12ce",
+      "exactUse": "mobile extended physical cable and conductor",
+      "modified": false,
+      "packedIntoBlend": true,
+      "inventory": {
+        "asset": "mobile extended physical cable and conductor",
+        "count": 145,
+        "authored": true
+      }
+    },
+    {
+      "id": "p4r1-authored-021",
+      "name": "landscape extended physical cable and conductor",
+      "creator": "Quantum-Hub Phase 4-R1 deterministic Blender builder",
+      "license": "project-authored; no external license dependency",
+      "source": "modeled-from-scratch geometry or procedural material in build_phase4r1_proving_hall.py",
+      "sha256": "fe3ffbf0c10c5ede09b4ec12496540f29525b6fa8c3af0ea0a2897d975cb12a1",
+      "exactUse": "landscape extended physical cable and conductor",
+      "modified": false,
+      "packedIntoBlend": true,
+      "inventory": {
+        "asset": "landscape extended physical cable and conductor",
+        "count": 153,
+        "authored": true
+      }
+    }
+  ],
+  "externalAssets": [],
+  "counts": {
+    "authored_record_count": 21,
+    "external_asset_count": 0
+  },
+  "licenses": [],
+  "textureContributionBytes": 0,
+  "packed_external_resources": 0,
+  "policy": {
+    "aiGeneratedFacilityImageryUsed": false,
+    "higgsfieldProductionMaterialUsed": false,
+    "unknownLicenseAssetsUsed": false,
+    "confidentialMaterialUploaded": false,
+    "stockVideoOrVisiblePhotographyUsed": false
+  }
+}
