@@ -30,6 +30,7 @@ import path from "node:path";
 import process from "node:process";
 import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
+import { deflateSync, inflateSync } from "node:zlib";
 import sharp from "sharp";
 
 const execFileAsync = promisify(execFile);
@@ -192,6 +193,8 @@ function parseArguments(argv) {
     output: null,
     ffmpeg: process.env.FFMPEG_PATH ?? null,
     help: false,
+    mediaPrivacySelfTest: false,
+    mediaPrivacyFixture: null,
   };
   const flags = new Map([
     ["--desktop-frames", "desktopFrames"],
@@ -217,9 +220,17 @@ function parseArguments(argv) {
       options[key] = key === "ffmpeg" && !/[\\/]/.test(supplied) ? supplied : path.resolve(supplied);
       index += 1;
     } else if (value === "--help" || value === "-h") options.help = true;
+    else if (value === "--self-test-media-privacy") {
+      options.mediaPrivacySelfTest = true;
+      const fixture = argv[index + 1];
+      if (fixture && !fixture.startsWith("--")) {
+        options.mediaPrivacyFixture = path.resolve(fixture);
+        index += 1;
+      }
+    }
     else throw new Error(`Unknown argument: ${value}`);
   }
-  if (options.help) return options;
+  if (options.help || options.mediaPrivacySelfTest) return options;
   for (const [key, flag] of flags.entries()) {
     if (flag === "ffmpeg") continue;
     if (!options[flag]) throw new Error(`${key} is required`);
@@ -231,6 +242,9 @@ function printHelp() {
   process.stdout.write(`Phase 4-R1 Proving Hall deterministic review packager
 
 Usage:
+  node scripts/package-phase4r1-proving-hall-review.mjs --self-test-media-privacy [media-file] [--ffmpeg <executable>]
+
+or:
   node scripts/package-phase4r1-proving-hall-review.mjs \\
     --desktop-frames <external PASS Eevee F001-F500 root> \\
     --mobile-frames <external PASS Eevee F001-F500 root> \\
@@ -2090,10 +2104,39 @@ async function copyCyclesStills(outputRoot, cyclesStills) {
     const filename = `phase-4r1-${role.id}.png`;
     const directory = role.semantic ? "regressions" : "cycles/benchmark-stills";
     const destination = path.join(outputRoot, ...directory.split("/"), filename);
-    await copyFile(source.filename, destination);
+    const sourceData = await readFile(source.filename);
+    if (sourceData.length !== source.bytes || sha256(sourceData) !== String(source.sha256).toLowerCase()) {
+      throw new Error(`original benchmark authority changed before copy: ${role.id}`);
+    }
+    const sanitized = sanitizePngPrivateMetadata(sourceData, `benchmark ${role.id}`);
+    await atomicWrite(destination, sanitized.data);
     const data = await readFile(destination);
-    if (data.length !== source.bytes || sha256(data) !== String(source.sha256).toLowerCase()) throw new Error(`original-quality copy changed ${role.id}`);
-    results.push({ id: role.id, evidenceClass: role.semantic ? "AUTHENTICATED_BROWSER_ENTRY_REGRESSION" : "NATIVE_CYCLES_BENCHMARK", path: `${directory}/${filename}`, bytes: data.length, sha256: sha256(data), dimensions: [source.width, source.height], renderer: source.renderer });
+    if (!data.equals(sanitized.data)) throw new Error(`atomic benchmark copy changed ${role.id}`);
+    const [sourcePixels, copiedPixels] = await Promise.all([
+      sharp(sourceData).ensureAlpha().raw().toBuffer(),
+      sharp(data).ensureAlpha().raw().toBuffer(),
+    ]);
+    const sourcePixelSha256 = sha256(sourcePixels);
+    if (sourcePixels.length !== copiedPixels.length || sourcePixelSha256 !== sha256(copiedPixels)) {
+      throw new Error(`private metadata removal changed decoded benchmark pixels: ${role.id}`);
+    }
+    results.push({
+      id: role.id,
+      evidenceClass: role.semantic ? "AUTHENTICATED_BROWSER_ENTRY_REGRESSION" : "NATIVE_CYCLES_BENCHMARK",
+      path: `${directory}/${filename}`,
+      bytes: data.length,
+      sha256: sha256(data),
+      dimensions: [source.width, source.height],
+      renderer: source.renderer,
+      sourceAuthority: { bytes: sourceData.length, sha256: sha256(sourceData) },
+      privacySanitization: {
+        method: "remove only CRC-validated PNG text chunks containing private host paths; preserve all image chunks byte-for-byte",
+        removedTextChunks: sanitized.removed,
+        decodedPixelsPreserved: true,
+        decodedRgbaBytes: sourcePixels.length,
+        decodedRgbaSha256: sourcePixelSha256,
+      },
+    });
   }
   return results;
 }
@@ -2508,7 +2551,339 @@ async function packageFileRecords(root, files) {
   return records;
 }
 
-async function assertPackageSafety(root, files) {
+const MAX_EMBEDDED_METADATA_BYTES = 4 * 1024 * 1024;
+const MP4_REGULAR_CONTAINERS = new Set(["moov", "trak", "mdia", "minf", "dinf", "stbl", "edts", "udta", "ilst"]);
+const MP4_TEXT_BOXES = new Set([
+  "©nam", "©ART", "©alb", "©wrt", "©too", "©cmt", "©day", "©gen", "©grp", "©lyr", "©xyz",
+  "auth", "cprt", "desc", "dscp", "kind", "ldes", "name", "titl", "xml ", "XMP_",
+]);
+const ADOBE_XMP_UUID = "be7acfcb97a942e89c71999491e3afac";
+const PNG_SIGNATURE = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+
+function metadataStrings(value, result = []) {
+  if (typeof value === "string") result.push(value);
+  else if (Array.isArray(value)) value.forEach((item) => metadataStrings(item, result));
+  else if (value && typeof value === "object") {
+    for (const [key, child] of Object.entries(value)) {
+      result.push(key);
+      metadataStrings(child, result);
+    }
+  }
+  return result;
+}
+
+function assertNoPrivateMetadata(strings, label) {
+  if (strings.some((value) => privateHostPath(value))) throw new Error(`private host path leaked into ${label}`);
+}
+
+function mp4BoxHeader(data, offset, end, label) {
+  if (offset + 8 > end) throw new Error(`${label} has a truncated MP4 box header at byte ${offset}`);
+  let size = data.readUInt32BE(offset);
+  const type = data.subarray(offset + 4, offset + 8).toString("latin1");
+  let headerBytes = 8;
+  if (size === 1) {
+    if (offset + 16 > end) throw new Error(`${label} has a truncated extended MP4 box header at byte ${offset}`);
+    const extended = data.readBigUInt64BE(offset + 8);
+    if (extended > BigInt(Number.MAX_SAFE_INTEGER)) throw new Error(`${label} has an unsupported MP4 box size at byte ${offset}`);
+    size = Number(extended);
+    headerBytes = 16;
+  } else if (size === 0) size = end - offset;
+  if (size < headerBytes || offset + size > end) throw new Error(`${label} has an invalid MP4 box bound at byte ${offset}`);
+  return { type, start: offset, payloadStart: offset + headerBytes, end: offset + size };
+}
+
+function appendBoundedMetadataText(result, payload, label, encoding = "utf8") {
+  if (payload.length > MAX_EMBEDDED_METADATA_BYTES) throw new Error(`${label} exceeds the embedded metadata size limit`);
+  if (encoding === "utf16be") {
+    if (payload.length % 2) throw new Error(`${label} has malformed UTF-16 metadata`);
+    const swapped = Buffer.from(payload);
+    swapped.swap16();
+    result.push(swapped.toString("utf16le"));
+    return;
+  }
+  result.push(payload.toString(encoding));
+  if (encoding === "utf8") result.push(payload.toString("latin1"));
+}
+
+function mp4TextMetadata(data, label = "MP4") {
+  if (!Buffer.isBuffer(data) || data.length < 8) throw new Error(`${label} is not a bounded MP4 container`);
+  const result = [];
+  const topLevel = new Set();
+
+  function walk(start, end, context) {
+    let offset = start;
+    while (offset < end) {
+      const box = mp4BoxHeader(data, offset, end, label);
+      if (context === "root") topLevel.add(box.type);
+
+      if (box.type === "mdat") {
+        // Encoded samples are deliberately opaque: byte patterns in H.264 entropy are not metadata.
+      } else if (context === "ilst") {
+        walk(box.payloadStart, box.end, "metadata-item");
+      } else if (context === "metadata-item" && box.type === "data") {
+        if (box.end - box.payloadStart < 8) throw new Error(`${label} has a truncated MP4 metadata data box`);
+        const dataType = data.readUInt32BE(box.payloadStart) & 0x00ffffff;
+        const payload = data.subarray(box.payloadStart + 8, box.end);
+        if (dataType === 2) appendBoundedMetadataText(result, payload, label, "utf16be");
+        else if (dataType === 0 || dataType === 1) appendBoundedMetadataText(result, payload, label);
+      } else if (context === "metadata-item" && (box.type === "mean" || box.type === "name")) {
+        if (box.end - box.payloadStart < 4) throw new Error(`${label} has a truncated MP4 freeform metadata box`);
+        appendBoundedMetadataText(result, data.subarray(box.payloadStart + 4, box.end), label);
+      } else if (box.type === "meta") {
+        if (box.end - box.payloadStart < 4) throw new Error(`${label} has a truncated MP4 meta full-box header`);
+        walk(box.payloadStart + 4, box.end, "meta");
+      } else if (MP4_REGULAR_CONTAINERS.has(box.type)) {
+        walk(box.payloadStart, box.end, box.type);
+      } else if (MP4_TEXT_BOXES.has(box.type) || (context === "udta" && box.type.charCodeAt(0) === 0xa9)) {
+        appendBoundedMetadataText(result, data.subarray(box.payloadStart, box.end), label);
+      } else if (box.type === "uuid" && box.end - box.payloadStart >= 16
+        && data.subarray(box.payloadStart, box.payloadStart + 16).toString("hex") === ADOBE_XMP_UUID) {
+        appendBoundedMetadataText(result, data.subarray(box.payloadStart + 16, box.end), label);
+      }
+      offset = box.end;
+    }
+    if (offset !== end) throw new Error(`${label} has an unconsumed MP4 box tail`);
+  }
+
+  walk(0, data.length, "root");
+  for (const required of ["ftyp", "moov", "mdat"]) {
+    if (!topLevel.has(required)) throw new Error(`${label} lacks required top-level ${required} box`);
+  }
+  return result;
+}
+
+function pngNull(data, start, end, label) {
+  const index = data.indexOf(0, start);
+  if (index < start || index >= end) throw new Error(`${label} has a malformed PNG text field`);
+  return index;
+}
+
+function inflatePngText(payload, label) {
+  try {
+    return inflateSync(payload, { maxOutputLength: MAX_EMBEDDED_METADATA_BYTES });
+  } catch (error) {
+    throw new Error(`${label} has invalid or oversized compressed PNG text metadata: ${error.message}`);
+  }
+}
+
+function pngTextChunkMetadata(type, payload, label) {
+  const result = [];
+  const keywordEnd = pngNull(payload, 0, payload.length, label);
+  if (keywordEnd < 1 || keywordEnd > 79) throw new Error(`${label} has an invalid PNG text keyword`);
+  result.push(payload.subarray(0, keywordEnd).toString("latin1"));
+  if (type === "tEXt") {
+    appendBoundedMetadataText(result, payload.subarray(keywordEnd + 1), label, "latin1");
+  } else if (type === "zTXt") {
+    const methodOffset = keywordEnd + 1;
+    if (methodOffset >= payload.length || payload[methodOffset] !== 0) throw new Error(`${label} has an unsupported zTXt compression method`);
+    appendBoundedMetadataText(result, inflatePngText(payload.subarray(methodOffset + 1), label), label, "latin1");
+  } else if (type === "iTXt") {
+    let cursor = keywordEnd + 1;
+    if (cursor + 2 > payload.length) throw new Error(`${label} has a truncated iTXt header`);
+    const compressed = payload[cursor];
+    const method = payload[cursor + 1];
+    cursor += 2;
+    if ((compressed !== 0 && compressed !== 1) || method !== 0) throw new Error(`${label} has invalid iTXt compression fields`);
+    const languageEnd = pngNull(payload, cursor, payload.length, label);
+    result.push(payload.subarray(cursor, languageEnd).toString("ascii"));
+    cursor = languageEnd + 1;
+    const translatedEnd = pngNull(payload, cursor, payload.length, label);
+    appendBoundedMetadataText(result, payload.subarray(cursor, translatedEnd), label);
+    cursor = translatedEnd + 1;
+    const text = compressed ? inflatePngText(payload.subarray(cursor), label) : payload.subarray(cursor);
+    appendBoundedMetadataText(result, text, label);
+  } else throw new Error(`${label} requested an unsupported PNG text chunk`);
+  return result;
+}
+
+function pngTextMetadata(data, label = "PNG") {
+  if (!Buffer.isBuffer(data) || data.length < PNG_SIGNATURE.length || !data.subarray(0, 8).equals(PNG_SIGNATURE)) {
+    throw new Error(`${label} has an invalid PNG signature`);
+  }
+  const result = [];
+  let offset = 8;
+  let chunkIndex = 0;
+  let sawIend = false;
+  while (offset < data.length) {
+    if (offset + 12 > data.length) throw new Error(`${label} has a truncated PNG chunk header`);
+    const length = data.readUInt32BE(offset);
+    const typeStart = offset + 4;
+    const payloadStart = offset + 8;
+    const payloadEnd = payloadStart + length;
+    const chunkEnd = payloadEnd + 4;
+    if (payloadEnd < payloadStart || chunkEnd > data.length) throw new Error(`${label} has an invalid PNG chunk bound`);
+    const typeBytes = data.subarray(typeStart, payloadStart);
+    const type = typeBytes.toString("ascii");
+    if (!/^[A-Za-z]{4}$/.test(type)) throw new Error(`${label} has an invalid PNG chunk type`);
+    if (chunkIndex === 0 && type !== "IHDR") throw new Error(`${label} does not begin with IHDR`);
+    if (sawIend) throw new Error(`${label} has bytes after IEND`);
+    const payload = data.subarray(payloadStart, payloadEnd);
+
+    if (type === "tEXt" || type === "zTXt" || type === "iTXt") {
+      const declaredCrc = data.readUInt32BE(payloadEnd);
+      const actualCrc = crc32(data.subarray(typeStart, payloadEnd));
+      if (declaredCrc !== actualCrc) throw new Error(`${label} has a PNG text chunk CRC mismatch`);
+      result.push(...pngTextChunkMetadata(type, payload, label));
+    }
+    if (type === "IEND") {
+      if (length !== 0) throw new Error(`${label} has a non-empty IEND chunk`);
+      sawIend = true;
+    }
+    offset = chunkEnd;
+    chunkIndex += 1;
+  }
+  if (!sawIend) throw new Error(`${label} lacks IEND`);
+  return result;
+}
+
+function sanitizePngPrivateMetadata(data, label = "PNG") {
+  pngTextMetadata(data, label);
+  const parts = [data.subarray(0, 8)];
+  const removed = [];
+  let offset = 8;
+  while (offset < data.length) {
+    const length = data.readUInt32BE(offset);
+    const payloadStart = offset + 8;
+    const payloadEnd = payloadStart + length;
+    const chunkEnd = payloadEnd + 4;
+    const type = data.subarray(offset + 4, payloadStart).toString("ascii");
+    const payload = data.subarray(payloadStart, payloadEnd);
+    if (type === "tEXt" || type === "zTXt" || type === "iTXt") {
+      const strings = pngTextChunkMetadata(type, payload, label);
+      if (strings.some((value) => privateHostPath(value))) {
+        removed.push({ type, keyword: strings[0], bytes: chunkEnd - offset });
+        offset = chunkEnd;
+        continue;
+      }
+    }
+    parts.push(data.subarray(offset, chunkEnd));
+    offset = chunkEnd;
+  }
+  const sanitized = Buffer.concat(parts);
+  assertNoPrivateMetadata(pngTextMetadata(sanitized, `${label} sanitized copy`), `${label} sanitized PNG text metadata`);
+  return { data: sanitized, removed };
+}
+
+async function ffprobeMetadata(ffmpegPath, filename, label) {
+  const ffprobe = matchingFfprobe(ffmpegPath);
+  await access(ffprobe);
+  const result = await execFileAsync(ffprobe, [
+    "-v", "error", "-show_entries", "format_tags:stream_tags", "-of", "json", filename,
+  ], { windowsHide: true, maxBuffer: 2_000_000 });
+  let parsed;
+  try { parsed = JSON.parse(result.stdout); }
+  catch { throw new Error(`${label} produced malformed ffprobe metadata JSON`); }
+  return metadataStrings(parsed);
+}
+
+function fixtureMp4Box(type, payload = Buffer.alloc(0)) {
+  const typeBytes = Buffer.from(type, "latin1");
+  if (typeBytes.length !== 4) throw new Error("internal MP4 fixture type must be four bytes");
+  const box = Buffer.alloc(8 + payload.length);
+  box.writeUInt32BE(box.length, 0);
+  typeBytes.copy(box, 4);
+  payload.copy(box, 8);
+  return box;
+}
+
+function fixturePngChunk(type, payload = Buffer.alloc(0)) {
+  const typeBytes = Buffer.from(type, "ascii");
+  const chunk = Buffer.alloc(12 + payload.length);
+  chunk.writeUInt32BE(payload.length, 0);
+  typeBytes.copy(chunk, 4);
+  payload.copy(chunk, 8);
+  chunk.writeUInt32BE(crc32(chunk.subarray(4, 8 + payload.length)), 8 + payload.length);
+  return chunk;
+}
+
+function fixturePng(...chunks) {
+  const ihdr = Buffer.alloc(13);
+  ihdr.writeUInt32BE(1, 0);
+  ihdr.writeUInt32BE(1, 4);
+  ihdr[8] = 8;
+  ihdr[9] = 2;
+  return Buffer.concat([PNG_SIGNATURE, fixturePngChunk("IHDR", ihdr), ...chunks, fixturePngChunk("IEND")]);
+}
+
+function expectFixtureFailure(operation, label) {
+  try { operation(); }
+  catch { return; }
+  throw new Error(`media privacy self-test did not fail closed: ${label}`);
+}
+
+function assertMediaPrivacyScannerSelfTest() {
+  const privatePath = "C:\\Users\\fixture-user\\private-project\\source.mov";
+  const ftyp = fixtureMp4Box("ftyp", Buffer.from("isom\u0000\u0000\u0002\u0000isomiso2", "latin1"));
+  const mediaOnlyMp4 = Buffer.concat([ftyp, fixtureMp4Box("moov"), fixtureMp4Box("mdat", Buffer.from(privatePath))]);
+  assertNoPrivateMetadata(mp4TextMetadata(mediaOnlyMp4, "MP4 mdat fixture"), "MP4 mdat fixture metadata");
+
+  const dataHeader = Buffer.alloc(8);
+  dataHeader.writeUInt32BE(1, 0);
+  const comment = fixtureMp4Box("©cmt", fixtureMp4Box("data", Buffer.concat([dataHeader, Buffer.from(privatePath)])));
+  const metadataMp4 = Buffer.concat([
+    ftyp,
+    fixtureMp4Box("moov", fixtureMp4Box("udta", fixtureMp4Box("meta", Buffer.concat([Buffer.alloc(4), fixtureMp4Box("ilst", comment)])))),
+    fixtureMp4Box("mdat", Buffer.from("opaque encoded sample")),
+  ]);
+  expectFixtureFailure(() => assertNoPrivateMetadata(mp4TextMetadata(metadataMp4, "MP4 metadata fixture"), "MP4 metadata fixture"), "MP4 metadata path");
+  expectFixtureFailure(() => assertNoPrivateMetadata(metadataStrings({ format: { tags: { comment: privatePath } } }), "ffprobe fixture"), "ffprobe tag path");
+
+  const idatOnlyPng = fixturePng(fixturePngChunk("IDAT", Buffer.from(privatePath)));
+  assertNoPrivateMetadata(pngTextMetadata(idatOnlyPng, "PNG IDAT fixture"), "PNG IDAT fixture metadata");
+  const textPng = fixturePng(fixturePngChunk("tEXt", Buffer.from(`Comment\0${privatePath}`, "latin1")));
+  expectFixtureFailure(() => assertNoPrivateMetadata(pngTextMetadata(textPng, "PNG tEXt fixture"), "PNG tEXt fixture"), "PNG tEXt path");
+  const sanitizedTextPng = sanitizePngPrivateMetadata(textPng, "PNG sanitization fixture");
+  if (sanitizedTextPng.removed.length !== 1 || sanitizedTextPng.removed[0].keyword !== "Comment"
+    || pngTextMetadata(sanitizedTextPng.data, "PNG sanitized fixture").some((value) => privateHostPath(value))) {
+    throw new Error("media privacy self-test did not remove only the private PNG text chunk");
+  }
+  const ztxt = Buffer.concat([Buffer.from("Comment\0\0", "latin1"), deflateSync(Buffer.from(privatePath, "latin1"))]);
+  expectFixtureFailure(() => assertNoPrivateMetadata(pngTextMetadata(fixturePng(fixturePngChunk("zTXt", ztxt)), "PNG zTXt fixture"), "PNG zTXt fixture"), "PNG zTXt path");
+  const itxt = Buffer.concat([Buffer.from("Comment\0\0\0\0\0", "latin1"), Buffer.from(privatePath)]);
+  expectFixtureFailure(() => assertNoPrivateMetadata(pngTextMetadata(fixturePng(fixturePngChunk("iTXt", itxt)), "PNG iTXt fixture"), "PNG iTXt fixture"), "PNG iTXt path");
+
+  const corruptTextChunk = fixturePngChunk("tEXt", Buffer.from(`Comment\0${privatePath}`, "latin1"));
+  corruptTextChunk[corruptTextChunk.length - 1] ^= 0x01;
+  expectFixtureFailure(() => pngTextMetadata(fixturePng(corruptTextChunk), "PNG corrupt text fixture"), "PNG text CRC");
+  const corruptMp4 = Buffer.from(metadataMp4);
+  corruptMp4.writeUInt32BE(0x7fffffff, 0);
+  expectFixtureFailure(() => mp4TextMetadata(corruptMp4, "MP4 corrupt bounds fixture"), "MP4 box bounds");
+
+  return {
+    status: "PASS",
+    cases: 10,
+    mediaPayloadExclusions: ["MP4 mdat", "PNG IDAT"],
+    metadataPathFailures: ["ffprobe tags", "MP4 ilst/data", "PNG tEXt", "PNG zTXt", "PNG iTXt"],
+    metadataSanitization: ["private PNG text chunk removed without touching image chunks"],
+    malformedContainerFailures: ["MP4 box bounds", "PNG text CRC"],
+  };
+}
+
+async function auditMediaPrivacyFixture(candidate, ffmpegOverride) {
+  const filename = await assertFile(candidate, "media privacy fixture");
+  const data = await readFile(filename);
+  const extension = path.extname(filename).toLowerCase();
+  let metadataFields;
+  if (extension === ".mp4") {
+    const ffmpegPath = await resolveFfmpeg(ffmpegOverride);
+    const probeStrings = await ffprobeMetadata(ffmpegPath, filename, "media privacy fixture");
+    const atomStrings = mp4TextMetadata(data, "media privacy fixture");
+    assertNoPrivateMetadata(probeStrings, "media privacy fixture ffprobe metadata");
+    assertNoPrivateMetadata(atomStrings, "media privacy fixture MP4 text metadata");
+    metadataFields = { ffprobe: probeStrings.length, recognizedMp4TextAtoms: atomStrings.length };
+  } else if (extension === ".png") {
+    const strings = pngTextMetadata(data, "media privacy fixture");
+    assertNoPrivateMetadata(strings, "media privacy fixture PNG text metadata");
+    metadataFields = { pngText: strings.length };
+  } else if (TEXT_EXTENSIONS.has(extension)) {
+    if (privateHostPath(data.toString("utf8"))) throw new Error("private host path leaked into media privacy text fixture");
+    metadataFields = { fullText: 1 };
+  } else throw new Error("media privacy fixture must be a package text, MP4, or PNG file");
+  return { status: "PASS", basename: path.basename(filename), bytes: data.length, sha256: sha256(data), metadataFields };
+}
+
+async function assertPackageSafety(root, files, ffmpegPath) {
+  assertMediaPrivacyScannerSelfTest();
   const forbidden = /(?:^|\/)(?:raw|frames?|cache|caches|source)(?:\/|$)|\.(?:blend\d*|exr|abc|vdb|bphys|tmp|bak)$/i;
   for (const relativePath of files) {
     if (forbidden.test(relativePath)) throw new Error(`raw/source/cache leakage is forbidden: ${relativePath}`);
@@ -2516,13 +2891,12 @@ async function assertPackageSafety(root, files) {
     const data = await readFile(filename);
     const extension = path.extname(relativePath).toLowerCase();
     if (TEXT_EXTENSIONS.has(extension)) {
-      const text = data.toString("utf8");
-      if (privateHostPath(text)) throw new Error(`private host path leaked into ${relativePath}`);
-    } else if (extension === ".mp4" || extension === ".png") {
-      const ascii = data.toString("latin1");
-      if (/file:\/{2,3}(?:[a-z]:\/|\/)|(?:^|[^a-z0-9])[a-z]:[\\/][a-z0-9._ -]{1,80}[\\/][a-z0-9._ -]{1,120}|\\\\[a-z0-9._ -]{1,80}[\\/][a-z0-9$._ -]{1,80}[\\/]|\/(?:Users|home|tmp)\/[a-z0-9._ -]{1,80}\//i.test(ascii)) {
-        throw new Error(`private host path metadata leaked into ${relativePath}`);
-      }
+      if (privateHostPath(data.toString("utf8"))) throw new Error(`private host path leaked into ${relativePath}`);
+    } else if (extension === ".mp4") {
+      assertNoPrivateMetadata(await ffprobeMetadata(ffmpegPath, filename, relativePath), `${relativePath} ffprobe metadata`);
+      assertNoPrivateMetadata(mp4TextMetadata(data, relativePath), `${relativePath} MP4 text metadata`);
+    } else if (extension === ".png") {
+      assertNoPrivateMetadata(pngTextMetadata(data, relativePath), `${relativePath} PNG text metadata`);
     }
   }
 }
@@ -2615,6 +2989,12 @@ async function verifyStoredZip(archiveData, root, expectedFiles) {
 async function main() {
   const options = parseArguments(process.argv.slice(2));
   if (options.help) { printHelp(); return; }
+  if (options.mediaPrivacySelfTest) {
+    const report = assertMediaPrivacyScannerSelfTest();
+    if (options.mediaPrivacyFixture) report.fixture = await auditMediaPrivacyFixture(options.mediaPrivacyFixture, options.ffmpeg);
+    process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
+    return;
+  }
 
   const externalRoots = {
     desktop: await assertExternalDirectory(options.desktopFrames, "--desktop-frames"),
@@ -2852,7 +3232,7 @@ async function main() {
     await rm(workRoot, { recursive: true, force: false });
 
     const archiveFiles = (await listFiles(outputResolved)).filter((relativePath) => ![ARCHIVE_FILENAME, RESULT_FILENAME].includes(relativePath));
-    await assertPackageSafety(outputResolved, archiveFiles);
+    await assertPackageSafety(outputResolved, archiveFiles, ffmpegPath);
     const archivePath = path.join(outputResolved, ARCHIVE_FILENAME);
     await createStoredZip(outputResolved, archiveFiles, archivePath, generatedAt);
     const [archiveData, manifestData] = await Promise.all([readFile(archivePath), readFile(path.join(outputResolved, MANIFEST_FILENAME))]);
