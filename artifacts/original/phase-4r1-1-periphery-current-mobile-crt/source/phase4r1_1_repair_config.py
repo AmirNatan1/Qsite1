@@ -31,7 +31,49 @@ CENTRAL_ZONE_CENTRE_XY = (0.65, 0.0)
 CENTRAL_ZONE_RADIUS_METERS = 6.1
 FLOAT_TOLERANCE = 2e-6
 
-STAGE_ORDER = ("periphery", "cable")
+STAGE_ORDER = ("periphery", "cable", "mobile")
+
+MOBILE_CAMERA_OBJECT = "Phase4R1_Camera_Mobile"
+MOBILE_CAMERA_DATA = "Phase4R1_Camera_Mobile_Data"
+MOBILE_CAMERA_ACTION = "Phase4R1_Camera_MobileAction"
+MOBILE_AIM_OBJECT = "Phase4R1_EstablishingAimTarget_Mobile"
+MOBILE_ORBIT_RIG = "Phase4R1_OrbitRig_Mobile"
+MOBILE_CAMERA_OBJECT_SLOT_IDENTIFIER = "OBPhase4R1_Camera_Mobile"
+MOBILE_CAMERA_DATA_SLOT_IDENTIFIER = "CAPhase4R1_Camera_Mobile_Data"
+MOBILE_R1_LENS_KEYS = (
+    (1, 74.0),
+    (45, 74.0),
+    (46, 74.0),
+    (76, 24.0),
+    (106, 24.0),
+    (165, 24.0),
+    (225, 24.0),
+    (255, 40.0),
+    (285, 56.0),
+    (405, 56.0),
+    (460, 39.0),
+    (480, 35.0),
+    (500, 35.0),
+    (540, 35.0),
+)
+MOBILE_R1_1_LENS_KEYS = (
+    (1, 42.0),
+    (45, 42.0),
+    (46, 42.0),
+    (76, 42.0),
+    (106, 42.0),
+    (165, 42.0),
+    (225, 44.0),
+    (255, 50.0),
+    (285, 56.0),
+    (405, 56.0),
+    (460, 39.0),
+    (480, 35.0),
+    (500, 35.0),
+    (540, 35.0),
+)
+MOBILE_CHANGED_LENS_KEY_FRAMES = (1, 45, 46, 76, 106, 165, 225, 255)
+MOBILE_SCALE_MILESTONE_FRAMES = (1, 46, 76, 106, 135, 165, 195, 225, 255, 285, 356, 405, 450)
 
 CABLE_CONTACT_PROFILE_OBJECT = "Phase4R1V2_WeightedSheathContactProfile"
 CABLE_SHEATH_MATERIAL = "Phase4R1V2_HeavyGraphiteCable"

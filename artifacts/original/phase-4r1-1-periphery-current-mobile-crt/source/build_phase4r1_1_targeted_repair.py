@@ -1,9 +1,10 @@
 """Build the isolated Phase 4-R1.1 targeted repair derivative.
 
 Each requested stage is cumulative: Checkpoint 2 deterministically reapplies
-the accepted peripheral-authority repair before the material-only cable repair.
-Every run starts from the exact accepted R1 source, never from the recovered
-pre-R1 blend or an earlier derivative.
+the accepted peripheral-authority repair before the material-only cable repair,
+and Checkpoint 3 then changes only the accepted mobile lens-key values. Every
+run starts from the exact accepted R1 source, never from the recovered pre-R1
+blend or an earlier derivative.
 """
 
 from __future__ import annotations
@@ -18,6 +19,7 @@ import sys
 from typing import Any, Iterable
 
 import bpy
+from bpy_extras.anim_utils import animdata_get_channelbag_for_assigned_slot
 from mathutils import Vector
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -40,6 +42,12 @@ CRT_COLLECTIONS = (
     "PHASE3R_CRT_SCREEN_REPAIR",
     "PHASE4R1V2_EXACT_Q_SCREEN",
 )
+
+
+def includes_stage(through: str, stage: str) -> bool:
+    return cfg.STAGE_ORDER.index(through) >= cfg.STAGE_ORDER.index(stage)
+
+
 def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
@@ -271,6 +279,396 @@ def action_signature(owner: Any, excluded_paths: set[str] | None = None) -> Any:
             ],
         })
     return {"name": action.name, "curves": curves}
+
+
+def fcurve_authority_record(curve: Any, *, exclude_key_values: bool = False) -> dict[str, Any]:
+    keyframes = []
+    for point in curve.keyframe_points:
+        record = {
+            "frame": rounded(point.co.x),
+            "interpolation": point.interpolation,
+            "easing": point.easing,
+            "amplitude": rounded(point.amplitude),
+            "back": rounded(point.back),
+            "period": rounded(point.period),
+            "handleLeftType": point.handle_left_type,
+            "handleRightType": point.handle_right_type,
+        }
+        if exclude_key_values:
+            record.update({
+                "handleLeftFrame": rounded(point.handle_left.x),
+                "handleRightFrame": rounded(point.handle_right.x),
+            })
+        else:
+            record.update({
+                "value": rounded(point.co.y),
+                "handleLeft": vector(point.handle_left),
+                "handleRight": vector(point.handle_right),
+            })
+        keyframes.append(record)
+    return {
+        "dataPath": curve.data_path,
+        "arrayIndex": int(curve.array_index),
+        "extrapolation": curve.extrapolation,
+        "mute": bool(curve.mute),
+        "lock": bool(curve.lock),
+        "group": None if curve.group is None else curve.group.name,
+        "modifiers": [
+            {
+                "type": modifier.type,
+                "properties": rna_simple_properties(modifier),
+            }
+            for modifier in curve.modifiers
+        ],
+        "keyframes": keyframes,
+        "keyValuesExcluded": bool(exclude_key_values),
+    }
+
+
+def action_slot_record(slot: Any) -> dict[str, Any]:
+    return {
+        "handle": int(slot.handle),
+        "identifier": str(slot.identifier),
+        "targetIdType": str(slot.target_id_type),
+    }
+
+
+def mobile_camera_action_authority(*, exclude_lens_key_values: bool = False) -> tuple[dict[str, Any], Any]:
+    camera_object = bpy.data.objects.get(cfg.MOBILE_CAMERA_OBJECT)
+    camera_data = bpy.data.cameras.get(cfg.MOBILE_CAMERA_DATA)
+    action = bpy.data.actions.get(cfg.MOBILE_CAMERA_ACTION)
+    if (
+        camera_object is None
+        or camera_object.type != "CAMERA"
+        or camera_object.data is not camera_data
+        or camera_data is None
+        or action is None
+    ):
+        raise RuntimeError("missing exact accepted mobile camera/action authority")
+    object_animation = camera_object.animation_data
+    data_animation = camera_data.animation_data
+    if (
+        object_animation is None
+        or data_animation is None
+        or object_animation.action is not action
+        or data_animation.action is not action
+        or object_animation.action_slot is None
+        or data_animation.action_slot is None
+    ):
+        raise RuntimeError("mobile camera object/data do not share the exact layered action authority")
+    object_slot = object_animation.action_slot
+    data_slot = data_animation.action_slot
+    expected_slots = {
+        (cfg.MOBILE_CAMERA_OBJECT_SLOT_IDENTIFIER, "OBJECT"),
+        (cfg.MOBILE_CAMERA_DATA_SLOT_IDENTIFIER, "CAMERA"),
+    }
+    slots = list(action.slots)
+    if (
+        len(slots) != 2
+        or {(str(slot.identifier), str(slot.target_id_type)) for slot in slots} != expected_slots
+        or str(object_slot.identifier) != cfg.MOBILE_CAMERA_OBJECT_SLOT_IDENTIFIER
+        or str(object_slot.target_id_type) != "OBJECT"
+        or str(data_slot.identifier) != cfg.MOBILE_CAMERA_DATA_SLOT_IDENTIFIER
+        or str(data_slot.target_id_type) != "CAMERA"
+        or int(object_slot.handle) == int(data_slot.handle)
+    ):
+        raise RuntimeError("mobile camera layered-action slot topology mismatch")
+    layers = list(action.layers)
+    if len(layers) != 1:
+        raise RuntimeError("mobile camera action must have exactly one layer")
+    strips = list(layers[0].strips)
+    if len(strips) != 1 or strips[0].type != "KEYFRAME":
+        raise RuntimeError("mobile camera action must have exactly one KEYFRAME strip")
+    channelbags = list(strips[0].channelbags)
+    if len(channelbags) != 2 or {int(bag.slot_handle) for bag in channelbags} != {
+        int(object_slot.handle),
+        int(data_slot.handle),
+    }:
+        raise RuntimeError("mobile camera action channelbag topology mismatch")
+    bag_by_handle = {int(bag.slot_handle): bag for bag in channelbags}
+    object_bag = bag_by_handle[int(object_slot.handle)]
+    data_bag = bag_by_handle[int(data_slot.handle)]
+    assigned_object_bag = animdata_get_channelbag_for_assigned_slot(object_animation)
+    assigned_data_bag = animdata_get_channelbag_for_assigned_slot(data_animation)
+    if (
+        assigned_object_bag is None
+        or assigned_data_bag is None
+        or int(assigned_object_bag.slot_handle) != int(object_slot.handle)
+        or int(assigned_data_bag.slot_handle) != int(data_slot.handle)
+    ):
+        raise RuntimeError("mobile camera assigned channelbags do not match their action slots")
+    object_curve_keys = sorted((curve.data_path, int(curve.array_index)) for curve in object_bag.fcurves)
+    data_curve_keys = sorted((curve.data_path, int(curve.array_index)) for curve in data_bag.fcurves)
+    if object_curve_keys != [("location", 0), ("location", 1), ("location", 2)]:
+        raise RuntimeError(f"mobile camera object-channel topology mismatch: {object_curve_keys}")
+    if data_curve_keys != [("lens", 0), ("shift_x", 0), ("shift_y", 0)]:
+        raise RuntimeError(f"mobile camera data-channel topology mismatch: {data_curve_keys}")
+    lens_curves = [
+        curve
+        for curve in data_bag.fcurves
+        if curve.data_path == "lens" and int(curve.array_index) == 0
+    ]
+    if len(lens_curves) != 1:
+        raise RuntimeError("mobile camera action does not contain exactly one lens F-curve")
+    lens_curve = lens_curves[0]
+    channelbag_records = []
+    for bag in sorted(channelbags, key=lambda item: int(item.slot_handle)):
+        curves = []
+        for curve in sorted(bag.fcurves, key=lambda item: (item.data_path, int(item.array_index))):
+            is_lens = (
+                int(bag.slot_handle) == int(data_slot.handle)
+                and curve.data_path == "lens"
+                and int(curve.array_index) == 0
+            )
+            curves.append(fcurve_authority_record(
+                curve,
+                exclude_key_values=bool(exclude_lens_key_values and is_lens),
+            ))
+        channelbag_records.append({
+            "slotHandle": int(bag.slot_handle),
+            "curves": curves,
+        })
+    record = {
+        "action": action.name,
+        "slots": [action_slot_record(slot) for slot in sorted(slots, key=lambda item: int(item.handle))],
+        "objectBinding": {
+            "object": camera_object.name,
+            "data": camera_data.name,
+            "slot": action_slot_record(object_slot),
+        },
+        "dataBinding": {
+            "data": camera_data.name,
+            "slot": action_slot_record(data_slot),
+        },
+        "layers": [{
+            "name": layers[0].name,
+            "stripType": strips[0].type,
+            "channelbags": channelbag_records,
+        }],
+        "lensKeyValuesExcluded": bool(exclude_lens_key_values),
+    }
+    record["sha256"] = canonical_hash(record)
+    return record, lens_curve
+
+
+def action_datablock_record(action: bpy.types.Action, *, exclude_target_mobile_lens: bool) -> dict[str, Any]:
+    slots = list(getattr(action, "slots", ()))
+    slot_identifiers = {int(slot.handle): str(slot.identifier) for slot in slots}
+    layers = []
+    for layer in getattr(action, "layers", ()):
+        strips = []
+        for strip in getattr(layer, "strips", ()):
+            channelbags = []
+            for bag in getattr(strip, "channelbags", ()):
+                curves = []
+                for curve in sorted(bag.fcurves, key=lambda item: (item.data_path, int(item.array_index))):
+                    is_target_lens = (
+                        action.name == cfg.MOBILE_CAMERA_ACTION
+                        and slot_identifiers.get(int(bag.slot_handle)) == cfg.MOBILE_CAMERA_DATA_SLOT_IDENTIFIER
+                        and curve.data_path == "lens"
+                        and int(curve.array_index) == 0
+                    )
+                    curves.append(fcurve_authority_record(
+                        curve,
+                        exclude_key_values=bool(exclude_target_mobile_lens and is_target_lens),
+                    ))
+                channelbags.append({
+                    "slotHandle": int(bag.slot_handle),
+                    "curves": curves,
+                })
+            strips.append({
+                "type": str(strip.type),
+                "channelbags": channelbags,
+            })
+        layers.append({"name": str(layer.name), "strips": strips})
+    legacy_curves = []
+    if not layers:
+        legacy_curves = [
+            fcurve_authority_record(curve)
+            for curve in sorted(iter_action_fcurves(action), key=lambda item: (item.data_path, int(item.array_index)))
+        ]
+    return {
+        "name": action.name,
+        "slots": [action_slot_record(slot) for slot in sorted(slots, key=lambda item: int(item.handle))],
+        "layers": layers,
+        "legacyCurves": legacy_curves,
+    }
+
+
+def global_actions_except_target_lens_authority() -> dict[str, Any]:
+    records = [
+        action_datablock_record(action, exclude_target_mobile_lens=True)
+        for action in sorted(bpy.data.actions, key=lambda item: item.name)
+    ]
+    names = [record["name"] for record in records]
+    return {
+        "actionCount": len(records),
+        "actionNamesSha256": canonical_hash(names),
+        "allActionsExceptTargetLensSha256": canonical_hash(records),
+    }
+
+
+def validate_mobile_lens_curve(curve: Any, expected_keys: Iterable[tuple[int, float]], label: str) -> dict[str, Any]:
+    expected = [(int(frame), float(value)) for frame, value in expected_keys]
+    points = list(curve.keyframe_points)
+    if (
+        curve.data_path != "lens"
+        or int(curve.array_index) != 0
+        or curve.extrapolation != "CONSTANT"
+        or bool(curve.mute)
+        or bool(curve.lock)
+        or curve.group is not None
+        or len(curve.modifiers) != 0
+        or len(points) != len(expected)
+    ):
+        raise RuntimeError(f"{label} mobile lens F-curve topology mismatch")
+    observed = []
+    for point, (expected_frame, expected_value) in zip(points, expected):
+        frame = float(point.co.x)
+        value = float(point.co.y)
+        if (
+            abs(frame - expected_frame) > cfg.FLOAT_TOLERANCE
+            or abs(value - expected_value) > cfg.FLOAT_TOLERANCE
+            or point.interpolation != "LINEAR"
+            or point.easing != "AUTO"
+            or point.handle_left_type != "AUTO_CLAMPED"
+            or point.handle_right_type != "AUTO_CLAMPED"
+        ):
+            raise RuntimeError(
+                f"{label} mobile lens key mismatch at expected F{expected_frame}: "
+                f"observed frame={frame:.9f}, value={value:.9f}"
+            )
+        observed.append({"frame": expected_frame, "millimeters": rounded(value)})
+    return {
+        "dataPath": curve.data_path,
+        "arrayIndex": int(curve.array_index),
+        "extrapolation": curve.extrapolation,
+        "interpolation": "LINEAR",
+        "handleType": "AUTO_CLAMPED",
+        "modifierCount": len(curve.modifiers),
+        "keys": observed,
+        "sha256": canonical_hash(observed),
+    }
+
+
+def linear_key_value(keys: Iterable[tuple[int, float]], frame: int) -> float:
+    ordered = [(int(key_frame), float(value)) for key_frame, value in keys]
+    if frame <= ordered[0][0]:
+        return ordered[0][1]
+    for (left_frame, left_value), (right_frame, right_value) in zip(ordered, ordered[1:]):
+        if frame <= right_frame:
+            fraction = (frame - left_frame) / (right_frame - left_frame)
+            return left_value + fraction * (right_value - left_value)
+    return ordered[-1][1]
+
+
+def mobile_lens_evaluation_record(
+    scene: bpy.types.Scene,
+    curve: Any,
+    expected_keys: Iterable[tuple[int, float]],
+) -> dict[str, Any]:
+    original = scene_frame_record(scene)
+    frames = sorted({
+        *(int(frame) for frame, _value in expected_keys),
+        *(int(frame) for frame in cfg.MOBILE_SCALE_MILESTONE_FRAMES),
+    })
+    camera_data = bpy.data.cameras[cfg.MOBILE_CAMERA_DATA]
+    records = []
+    try:
+        for frame in frames:
+            expected = linear_key_value(expected_keys, frame)
+            evaluated_curve = float(curve.evaluate(frame))
+            scene.frame_set(frame, subframe=0.0)
+            bpy.context.view_layer.update()
+            evaluated_data = float(camera_data.lens)
+            if (
+                abs(evaluated_curve - expected) > 2e-5
+                or abs(evaluated_data - expected) > 2e-5
+            ):
+                raise RuntimeError(
+                    f"mobile lens evaluation mismatch at F{frame}: "
+                    f"expected={expected:.9f}, curve={evaluated_curve:.9f}, data={evaluated_data:.9f}"
+                )
+            records.append({
+                "frame": frame,
+                "expectedMillimeters": rounded(expected),
+                "curveMillimeters": rounded(evaluated_curve),
+                "cameraDataMillimeters": rounded(evaluated_data),
+            })
+    finally:
+        scene.frame_set(original["frame"], subframe=original["subframe"])
+        bpy.context.view_layer.update()
+    if scene_frame_record(scene) != original:
+        raise RuntimeError("mobile lens sampling failed to restore the accepted scene frame/subframe")
+    return {
+        "records": records,
+        "allEvaluationsExact": True,
+        "sha256": canonical_hash(records),
+    }
+
+
+def build_mobile_optics(scene: bpy.types.Scene) -> dict[str, Any]:
+    global_actions_before = global_actions_except_target_lens_authority()
+    before_full, lens_curve = mobile_camera_action_authority()
+    before_except_lens, _ = mobile_camera_action_authority(exclude_lens_key_values=True)
+    before_keys = validate_mobile_lens_curve(lens_curve, cfg.MOBILE_R1_LENS_KEYS, "accepted R1")
+    before_evaluations = mobile_lens_evaluation_record(scene, lens_curve, cfg.MOBILE_R1_LENS_KEYS)
+    original = scene_frame_record(scene)
+    for point, (expected_frame, repaired_value) in zip(lens_curve.keyframe_points, cfg.MOBILE_R1_1_LENS_KEYS):
+        if abs(float(point.co.x) - float(expected_frame)) > cfg.FLOAT_TOLERANCE:
+            raise RuntimeError("mobile lens keyframe order changed before mutation")
+        point.co[1] = float(repaired_value)
+    lens_curve.update()
+    scene.frame_set(original["frame"], subframe=original["subframe"])
+    bpy.context.view_layer.update()
+    after_full, repaired_curve = mobile_camera_action_authority()
+    after_except_lens, _ = mobile_camera_action_authority(exclude_lens_key_values=True)
+    after_keys = validate_mobile_lens_curve(repaired_curve, cfg.MOBILE_R1_1_LENS_KEYS, "R1.1 repaired")
+    after_evaluations = mobile_lens_evaluation_record(scene, repaired_curve, cfg.MOBILE_R1_1_LENS_KEYS)
+    changed_frames = [
+        int(before_frame)
+        for (before_frame, before_value), (after_frame, after_value) in zip(
+            cfg.MOBILE_R1_LENS_KEYS,
+            cfg.MOBILE_R1_1_LENS_KEYS,
+        )
+        if int(before_frame) != int(after_frame) or abs(float(before_value) - float(after_value)) > cfg.FLOAT_TOLERANCE
+    ]
+    if changed_frames != list(cfg.MOBILE_CHANGED_LENS_KEY_FRAMES):
+        raise RuntimeError(f"mobile optics changed the wrong lens-key set: {changed_frames}")
+    global_actions_after = global_actions_except_target_lens_authority()
+    if before_full["sha256"] == after_full["sha256"]:
+        raise RuntimeError("mobile optics stage did not change the exact full mobile camera authority")
+    if before_except_lens != after_except_lens:
+        raise RuntimeError("mobile optics stage changed shared action topology or a non-lens camera channel")
+    if global_actions_before != global_actions_after:
+        raise RuntimeError("mobile optics stage changed an action authority outside the target lens payload")
+    if scene_frame_record(scene) != original:
+        raise RuntimeError("mobile optics stage failed to restore the accepted scene frame/subframe")
+    return {
+        "repair": "mobile camera lens F-curve values only",
+        "cameraObject": cfg.MOBILE_CAMERA_OBJECT,
+        "cameraData": cfg.MOBILE_CAMERA_DATA,
+        "action": cfg.MOBILE_CAMERA_ACTION,
+        "aimObject": cfg.MOBILE_AIM_OBJECT,
+        "orbitRig": cfg.MOBILE_ORBIT_RIG,
+        "actionAuthorityBefore": before_full,
+        "actionAuthorityAfter": after_full,
+        "actionExceptLensBefore": before_except_lens,
+        "actionExceptLensAfter": after_except_lens,
+        "actionExceptLensUnchanged": before_except_lens == after_except_lens,
+        "lensKeysBefore": before_keys,
+        "lensKeysAfter": after_keys,
+        "lensEvaluationsBefore": before_evaluations,
+        "lensEvaluationsAfter": after_evaluations,
+        "changedLensKeyFrames": changed_frames,
+        "expectedChangedLensKeyFrames": list(cfg.MOBILE_CHANGED_LENS_KEY_FRAMES),
+        "globalActionsExceptTargetLensBefore": global_actions_before,
+        "globalActionsExceptTargetLensAfter": global_actions_after,
+        "globalActionsExceptTargetLensUnchanged": global_actions_before == global_actions_after,
+        "onlyExistingMobileDataSlotLensCurveChanged": True,
+        "milestoneFrames": list(cfg.MOBILE_SCALE_MILESTONE_FRAMES),
+        "sceneFrameRestored": True,
+    }
 
 
 def custom_properties(owner: Any) -> dict[str, Any]:
@@ -728,6 +1126,39 @@ def preservation_snapshot() -> dict[str, str]:
         "acceptedLights": canonical_hash(accepted_lights),
         "screenSpill": canonical_hash(object_signature(screen_spill)),
     }
+
+
+def periphery_authority_snapshot() -> dict[str, Any]:
+    collection = bpy.data.collections.get(cfg.COLLECTION)
+    if collection is None:
+        raise RuntimeError("missing cumulative R1.1 periphery collection")
+    objects = sorted(collection.objects, key=lambda item: item.name)
+    object_records = [object_signature(obj) for obj in objects]
+    material_names = sorted(spec["name"] for spec in cfg.MATERIALS.values())
+    materials = material_records(material_names)
+    header_records = {
+        name: object_signature(bpy.data.objects[name])
+        for name in cfg.SUPPRESSED_OPENING_HEADER_OBJECTS
+        if bpy.data.objects.get(name) is not None
+    }
+    if (
+        len(header_records) != len(cfg.SUPPRESSED_OPENING_HEADER_OBJECTS)
+        or not all(record["hideRender"] for record in header_records.values())
+    ):
+        raise RuntimeError("cumulative periphery does not retain both exact suppressed opening headers")
+    record = {
+        "collection": collection.name,
+        "collectionHideRender": bool(collection.hide_render),
+        "collectionHideViewport": bool(collection.hide_viewport),
+        "objectCount": len(objects),
+        "objectNames": [obj.name for obj in objects],
+        "objectAuthoritySha256": canonical_hash(object_records),
+        "materialNames": material_names,
+        "materialAuthoritySha256": canonical_hash(materials),
+        "openingHeaderAuthoritySha256": canonical_hash(header_records),
+    }
+    record["sha256"] = canonical_hash(record)
+    return record
 
 
 def enabled_input(node: bpy.types.Node, name: str):
@@ -1394,10 +1825,11 @@ def main() -> None:
         raise RuntimeError("R1.1 output must be the exact isolated derivative path")
     pending = output.with_name(output.stem + ".pending.blend")
     report_pending = cfg.BUILD_REPORT.with_name(cfg.BUILD_REPORT.stem + ".pending.json")
-    if pending.exists():
-        raise RuntimeError("R1.1 pending derivative residue exists")
-    if report_pending.exists():
-        raise RuntimeError("R1.1 pending build-report residue exists")
+    restore_output = output.with_name(output.stem + ".restore.pending.blend")
+    restore_report = cfg.BUILD_REPORT.with_name(cfg.BUILD_REPORT.stem + ".restore.pending.json")
+    residue = [path for path in (pending, report_pending, restore_output, restore_report) if path.exists()]
+    if residue:
+        raise RuntimeError(f"R1.1 staged/restore residue exists: {[path.name for path in residue]}")
     if tuple(bpy.app.version) != (5, 2, 0):
         raise RuntimeError(f"R1.1 builder requires Blender 5.2.0, got {bpy.app.version_string}")
     if bpy.data.collections.get(cfg.COLLECTION) is not None:
@@ -1452,27 +1884,60 @@ def main() -> None:
     }
     if header_before != header_after or not all(bpy.data.objects[name].hide_render for name in cfg.SUPPRESSED_OPENING_HEADER_OBJECTS):
         raise RuntimeError("opening header repair changed more than the two exact render-visibility flags")
+    periphery_authority_after_periphery = periphery_authority_snapshot()
+    periphery["authorityAfterPeriphery"] = periphery_authority_after_periphery
 
     stages: dict[str, Any] = {"periphery": periphery}
     completed_stages = ["periphery"]
     cable_authority_before = cable_authority_snapshot()
     current_states_before = current_state_hashes(scene)
-    if args.through == "cable":
+    after_cable_preservation = after_periphery
+    if includes_stage(args.through, "cable"):
         cable_stage = build_cable_material()
         completed_stages.append("cable")
         stages["cable"] = cable_stage
+        after_cable_preservation = preservation_snapshot()
+        changed_after_cable = sorted(
+            key for key in before if before[key] != after_cable_preservation[key]
+        )
+        if changed_after_cable:
+            raise RuntimeError(f"cumulative cable stage changed a fixed authority: {changed_after_cable}")
+        periphery_authority_after_cable = periphery_authority_snapshot()
+        if periphery_authority_after_cable != periphery_authority_after_periphery:
+            raise RuntimeError("cumulative cable stage changed the R1.1 periphery authority")
+        stages["cable"].update({
+            "preservationAfterCable": after_cable_preservation,
+            "changedPreservationAuthoritiesAfterCable": changed_after_cable,
+            "peripheryAuthorityAfterCable": periphery_authority_after_cable,
+            "peripheryAuthorityUnchanged": True,
+        })
+    if includes_stage(args.through, "mobile"):
+        mobile_stage = build_mobile_optics(scene)
+        completed_stages.append("mobile")
+        stages["mobile"] = mobile_stage
     after = preservation_snapshot()
     cable_authority_after = cable_authority_snapshot()
     current_states_after = current_state_hashes(scene)
     timeline_after = timeline_record(scene)
     frame_after = scene_frame_record(scene)
+    periphery_authority_after = periphery_authority_snapshot()
+    if periphery_authority_after != periphery_authority_after_periphery:
+        raise RuntimeError("targeted repair changed the cumulative R1.1 periphery authority")
     if timeline_after != timeline_before:
         raise RuntimeError(f"targeted repair changed the accepted timeline authority: {timeline_after}")
     if frame_after != frame_before:
         raise RuntimeError(f"targeted repair changed the accepted scene frame/subframe: {frame_after}")
     unchanged = {key: before[key] == after[key] for key in before}
-    if not all(unchanged.values()):
-        raise RuntimeError(f"targeted repair changed an accepted fixed authority: {[key for key, passed in unchanged.items() if not passed]}")
+    changed_preservation_authorities = sorted(key for key, passed in unchanged.items() if not passed)
+    expected_changed_preservation_authorities = (
+        ["mobileCameraFull"] if includes_stage(args.through, "mobile") else []
+    )
+    if changed_preservation_authorities != expected_changed_preservation_authorities:
+        raise RuntimeError(
+            "targeted repair changed an authority outside the exact stage allowlist: "
+            f"observed={changed_preservation_authorities}, "
+            f"expected={expected_changed_preservation_authorities}"
+        )
     cable_stage_unchanged = {
         key: cable_authority_before[key] == cable_authority_after[key]
         for key in cable_authority_before
@@ -1494,7 +1959,9 @@ def main() -> None:
         for name in accepted_material_names
         if accepted_material_hashes_before[name] != accepted_material_hashes_after[name]
     )
-    expected_material_changes = sorted(allowed_cable_material_names) if args.through == "cable" else []
+    expected_material_changes = (
+        sorted(allowed_cable_material_names) if includes_stage(args.through, "cable") else []
+    )
     if changed_accepted_materials != expected_material_changes:
         raise RuntimeError(
             f"accepted material graph delta is not the exact stage allowlist: {changed_accepted_materials}"
@@ -1514,7 +1981,7 @@ def main() -> None:
     cable_material_users_after = validate_cable_material_users()
     if cable_material_users_after != cable_material_users_before:
         raise RuntimeError("targeted repair changed exact cable material users")
-    if args.through == "cable":
+    if includes_stage(args.through, "cable"):
         stages["cable"].update({
             "fixedAuthorityBefore": cable_authority_before,
             "fixedAuthorityAfter": cable_authority_after,
@@ -1527,6 +1994,24 @@ def main() -> None:
             "changedAcceptedMaterials": changed_accepted_materials,
             "exactlyTwoAllowedMaterialGraphsChanged": changed_accepted_materials == expected_material_changes,
         })
+    if includes_stage(args.through, "mobile"):
+        if unchanged["mobileCameraFull"] or not unchanged["mobileCameraExceptLens"]:
+            raise RuntimeError("mobile optics delta is not isolated to the full mobile-camera lens authority")
+        stages["mobile"].update({
+            "preservationBefore": {
+                "mobileCameraFull": before["mobileCameraFull"],
+                "mobileCameraExceptLens": before["mobileCameraExceptLens"],
+            },
+            "preservationAfter": {
+                "mobileCameraFull": after["mobileCameraFull"],
+                "mobileCameraExceptLens": after["mobileCameraExceptLens"],
+            },
+            "mobileCameraFullChanged": before["mobileCameraFull"] != after["mobileCameraFull"],
+            "mobileCameraExceptLensUnchanged": before["mobileCameraExceptLens"] == after["mobileCameraExceptLens"],
+            "exactChangedPreservationAuthorities": changed_preservation_authorities,
+            "peripheryAuthorityAfterMobile": periphery_authority_after,
+            "peripheryAuthorityUnchanged": periphery_authority_after == periphery_authority_after_periphery,
+        })
 
     scene["phase4r1_1_schema"] = cfg.SCHEMA
     scene["phase4r1_1_parent_sha256"] = cfg.ACCEPTED_R1_SHA256
@@ -1537,8 +2022,7 @@ def main() -> None:
     scene["phase4r1_1_config_sha256"] = producer_records["config"]["sha256"]
     previous_output = output.read_bytes() if output.is_file() else None
     previous_report = cfg.BUILD_REPORT.read_bytes() if cfg.BUILD_REPORT.is_file() else None
-    output_published = False
-    report_published = False
+    publication_started = False
     bpy.context.preferences.filepaths.save_version = 0
     try:
         save_result = bpy.ops.wm.save_as_mainfile(
@@ -1553,15 +2037,71 @@ def main() -> None:
             raise RuntimeError("Blender did not emit the staged R1.1 derivative")
         if Path(bpy.data.filepath).resolve() != pending.resolve():
             raise RuntimeError("Blender staged save did not bind the exact pending derivative path")
+        reopen_result = bpy.ops.wm.open_mainfile(filepath=str(pending), load_ui=False)
+        if reopen_result != {"FINISHED"}:
+            raise RuntimeError(f"Blender staged derivative reopen did not finish: {reopen_result}")
+        if Path(bpy.data.filepath).resolve() != pending.resolve():
+            raise RuntimeError("reopened Blender data is not bound to the exact pending derivative")
+        scene = bpy.context.scene
+        if (
+            scene.get("phase4r1_1_schema") != cfg.SCHEMA
+            or scene.get("phase4r1_1_parent_sha256") != cfg.ACCEPTED_R1_SHA256
+            or scene.get("phase4r1_1_completed_stages") != json.dumps(completed_stages, separators=(",", ":"))
+            or scene.get("phase4r1_1_periphery_collection") != cfg.COLLECTION
+            or scene.get("phase4r1_1_authorization") != json.dumps(cfg.AUTHORIZATION, sort_keys=True, separators=(",", ":"))
+            or scene.get("phase4r1_1_builder_sha256") != producer_records["builder"]["sha256"]
+            or scene.get("phase4r1_1_config_sha256") != producer_records["config"]["sha256"]
+        ):
+            raise RuntimeError("reopened staged derivative lost its exact R1.1 scene authority properties")
         post_save_q = packed_q_record()
         if post_save_q != expected_q:
             raise RuntimeError("staged save changed the exact-Q logical path or packed byte authority")
         if cable_authority_snapshot() != cable_authority_after:
             raise RuntimeError("staged save changed fixed cable geometry, progression, bindings, contact profile, collection state, or local response")
-        if args.through == "cable" and source_corridor_axis_audit() != stages["cable"]["sourceCorridorAxisAuditAfter"]:
+        if includes_stage(args.through, "cable") and source_corridor_axis_audit() != stages["cable"]["sourceCorridorAxisAuditAfter"]:
             raise RuntimeError("staged save changed the source-corridor route-axis authority")
         if material_records(sorted(allowed_cable_material_names)) != allowed_material_records_after:
             raise RuntimeError("staged save changed an allowed cable material graph")
+        if validate_cable_material_users() != cable_material_users_after:
+            raise RuntimeError("reopened staged derivative changed exact cable material users")
+        post_save_periphery_authority = periphery_authority_snapshot()
+        if post_save_periphery_authority != periphery_authority_after:
+            raise RuntimeError("reopened staged derivative changed the cumulative R1.1 periphery authority")
+        post_save_preservation = preservation_snapshot()
+        if post_save_preservation != after:
+            raise RuntimeError("staged save changed an accepted preservation authority")
+        if includes_stage(args.through, "mobile"):
+            post_save_action, post_save_lens_curve = mobile_camera_action_authority()
+            post_save_except_lens, _ = mobile_camera_action_authority(exclude_lens_key_values=True)
+            post_save_lens_keys = validate_mobile_lens_curve(
+                post_save_lens_curve,
+                cfg.MOBILE_R1_1_LENS_KEYS,
+                "post-save R1.1 repaired",
+            )
+            post_save_lens_evaluations = mobile_lens_evaluation_record(
+                scene,
+                post_save_lens_curve,
+                cfg.MOBILE_R1_1_LENS_KEYS,
+            )
+            post_save_global_actions = global_actions_except_target_lens_authority()
+            if (
+                post_save_action != stages["mobile"]["actionAuthorityAfter"]
+                or post_save_except_lens != stages["mobile"]["actionExceptLensAfter"]
+                or post_save_lens_keys != stages["mobile"]["lensKeysAfter"]
+                or post_save_lens_evaluations != stages["mobile"]["lensEvaluationsAfter"]
+                or post_save_global_actions != stages["mobile"]["globalActionsExceptTargetLensAfter"]
+            ):
+                raise RuntimeError("staged save changed the exact repaired mobile lens/action authority")
+            stages["mobile"].update({
+                "postSaveActionAuthority": post_save_action,
+                "postSaveActionExceptLensAuthority": post_save_except_lens,
+                "postSaveLensKeys": post_save_lens_keys,
+                "postSaveLensEvaluations": post_save_lens_evaluations,
+                "postSaveGlobalActionsExceptTargetLens": post_save_global_actions,
+                "postSaveAuthorityExact": True,
+            })
+        if timeline_record(scene) != timeline_after:
+            raise RuntimeError("reopened staged derivative changed the accepted timeline authority")
         if scene_frame_record(scene) != frame_after:
             raise RuntimeError("staged save changed the restored scene frame/subframe")
         derivative_record = file_record(pending)
@@ -1584,9 +2124,18 @@ def main() -> None:
             "preservation": {
                 "before": before,
                 "afterPeriphery": after_periphery,
+                "afterCable": after_cable_preservation,
                 "after": after,
                 "unchanged": unchanged,
+                "changedAuthorities": changed_preservation_authorities,
+                "expectedChangedAuthorities": expected_changed_preservation_authorities,
+                "exactChangedAuthoritySet": changed_preservation_authorities == expected_changed_preservation_authorities,
                 "peripheryUnchanged": periphery_unchanged,
+                "cumulativePeripheryAuthority": {
+                    "afterPeriphery": periphery_authority_after_periphery,
+                    "afterFinalStage": periphery_authority_after,
+                    "unchanged": periphery_authority_after_periphery == periphery_authority_after,
+                },
                 "sceneFrame": {
                     "before": frame_before,
                     "after": frame_after,
@@ -1627,31 +2176,51 @@ def main() -> None:
         staged_report = json.loads(report_pending.read_text(encoding="utf-8"))
         if staged_report.get("status") != "PASS" or staged_report.get("derivative") != report["derivative"]:
             raise RuntimeError("staged build report failed its self-validation")
+        staged_report_record = file_record(report_pending)
+        publication_started = True
         os.replace(pending, output)
-        output_published = True
         os.replace(report_pending, cfg.BUILD_REPORT)
-        report_published = True
         if file_record(output) != derivative_record:
             raise RuntimeError("published derivative differs from its staged authority")
-    except BaseException:
-        if output_published:
-            if previous_output is None:
-                output.unlink(missing_ok=True)
-            else:
-                restore_output = output.with_name(output.stem + ".restore.pending.blend")
-                restore_output.write_bytes(previous_output)
-                os.replace(restore_output, output)
-        if report_published:
-            if previous_report is None:
-                cfg.BUILD_REPORT.unlink(missing_ok=True)
-            else:
-                restore_report = cfg.BUILD_REPORT.with_name(cfg.BUILD_REPORT.stem + ".restore.pending.json")
-                restore_report.write_bytes(previous_report)
-                os.replace(restore_report, cfg.BUILD_REPORT)
+        if file_record(cfg.BUILD_REPORT) != staged_report_record:
+            raise RuntimeError("published build report differs from its staged authority")
+        published_report = json.loads(cfg.BUILD_REPORT.read_text(encoding="utf-8"))
+        if (
+            published_report.get("status") != "PASS"
+            or published_report.get("throughStage") != args.through
+            or published_report.get("derivative") != report["derivative"]
+        ):
+            raise RuntimeError("published build report failed its final binding check")
+    except BaseException as failure:
+        rollback_errors = []
+        if publication_started:
+            restoration_jobs = (
+                ("derivative", output, restore_output, previous_output),
+                ("build report", cfg.BUILD_REPORT, restore_report, previous_report),
+            )
+            for label, target, restore_path, previous_bytes in restoration_jobs:
+                try:
+                    if previous_bytes is None:
+                        target.unlink(missing_ok=True)
+                        if target.exists():
+                            raise RuntimeError(f"{label} still exists after rollback removal")
+                    else:
+                        restore_path.write_bytes(previous_bytes)
+                        os.replace(restore_path, target)
+                        if not target.is_file() or target.read_bytes() != previous_bytes:
+                            raise RuntimeError(f"{label} rollback bytes do not match the prior authority")
+                except BaseException as rollback_failure:
+                    rollback_errors.append(f"{label}: {rollback_failure!r}")
+        if rollback_errors:
+            raise RuntimeError(
+                "R1.1 publication failed and rollback was incomplete: " + "; ".join(rollback_errors)
+            ) from failure
         raise
     finally:
         pending.unlink(missing_ok=True)
         report_pending.unlink(missing_ok=True)
+        restore_output.unlink(missing_ok=True)
+        restore_report.unlink(missing_ok=True)
     print("PHASE4R1_1_BUILD_STATUS=PASS")
     print(f"PHASE4R1_1_DERIVATIVE={output}")
     print(f"PHASE4R1_1_BUILD_REPORT={cfg.BUILD_REPORT}")
