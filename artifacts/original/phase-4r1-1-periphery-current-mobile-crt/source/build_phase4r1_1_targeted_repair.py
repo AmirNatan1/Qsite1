@@ -1,9 +1,9 @@
 """Build the isolated Phase 4-R1.1 targeted repair derivative.
 
-Checkpoint 1 applies only the peripheral-authority repair. Later checkpoint
-commits extend this same deterministic builder through the remaining authorized
-stages. Every run starts from the exact accepted R1 source, never from the
-recovered pre-R1 blend or an earlier derivative.
+Each requested stage is cumulative: Checkpoint 2 deterministically reapplies
+the accepted peripheral-authority repair before the material-only cable repair.
+Every run starts from the exact accepted R1 source, never from the recovered
+pre-R1 blend or an earlier derivative.
 """
 
 from __future__ import annotations
@@ -40,13 +40,6 @@ CRT_COLLECTIONS = (
     "PHASE3R_CRT_SCREEN_REPAIR",
     "PHASE4R1V2_EXACT_Q_SCREEN",
 )
-CABLE_COLLECTIONS = (
-    "PHASE4R1V2_CABLE_DESKTOP",
-    "PHASE4R1V2_CABLE_MOBILE",
-    "PHASE4R1V2_CABLE_LANDSCAPE",
-)
-
-
 def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
@@ -74,15 +67,176 @@ def srgb(value: str) -> tuple[float, float, float, float]:
     return tuple(int(clean[index : index + 2], 16) / 255.0 for index in (0, 2, 4)) + (1.0,)
 
 
+def stable_rna_value(value: Any) -> Any:
+    if value is None or isinstance(value, (bool, int, str)):
+        return value
+    if isinstance(value, float):
+        return rounded(value)
+    if isinstance(value, bpy.types.ID):
+        return {"idType": value.bl_rna.identifier, "name": value.name}
+    if hasattr(value, "__len__") and not isinstance(value, (bytes, bytearray, str)):
+        try:
+            return [stable_rna_value(item) for item in value]
+        except (AttributeError, RuntimeError, TypeError, ValueError):
+            pass
+    if hasattr(value, "bl_rna"):
+        try:
+            path = str(value.path_from_id()) if hasattr(value, "path_from_id") else ""
+        except (AttributeError, RuntimeError, TypeError, ValueError):
+            path = "<unsupported>"
+        return {
+            "rnaType": value.bl_rna.identifier,
+            "name": str(getattr(value, "name", "")),
+            "path": path,
+        }
+    return {"pythonType": type(value).__name__}
+
+
+def rna_simple_properties(owner: Any) -> dict[str, Any]:
+    record: dict[str, Any] = {}
+    for prop in owner.bl_rna.properties:
+        if prop.identifier in {"rna_type", "session_uid"} or prop.type in {"POINTER", "COLLECTION"}:
+            continue
+        try:
+            record[prop.identifier] = stable_rna_value(getattr(owner, prop.identifier))
+        except (AttributeError, RuntimeError, TypeError, ValueError):
+            record[prop.identifier] = "<unreadable>"
+    return record
+
+
+def rna_pointer_properties(owner: Any) -> dict[str, Any]:
+    record: dict[str, Any] = {}
+    for prop in owner.bl_rna.properties:
+        if prop.identifier == "rna_type" or prop.type != "POINTER":
+            continue
+        try:
+            record[prop.identifier] = stable_rna_value(getattr(owner, prop.identifier))
+        except (AttributeError, RuntimeError, TypeError, ValueError):
+            record[prop.identifier] = "<unreadable>"
+    return record
+
+
+def all_custom_properties(owner: Any) -> dict[str, Any]:
+    if not hasattr(owner, "keys"):
+        return {}
+    return {
+        str(key): stable_rna_value(owner[key])
+        for key in sorted(owner.keys())
+        if str(key) != "_RNA_UI"
+    }
+
+
+def node_socket_record(socket: Any) -> dict[str, Any]:
+    default = None
+    if hasattr(socket, "default_value"):
+        try:
+            default = stable_rna_value(socket.default_value)
+        except (AttributeError, RuntimeError, TypeError, ValueError):
+            default = "<unreadable>"
+    return {
+        "name": socket.name,
+        "identifier": socket.identifier,
+        "rnaType": socket.bl_rna.identifier,
+        "enabled": bool(socket.enabled),
+        "linked": bool(socket.is_linked),
+        "hide": bool(socket.hide),
+        "default": default,
+        "properties": rna_simple_properties(socket),
+    }
+
+
+def material_graph_record(material: bpy.types.Material) -> dict[str, Any]:
+    nodes = []
+    links = []
+    if material.use_nodes and material.node_tree is not None:
+        for node in sorted(material.node_tree.nodes, key=lambda item: item.name):
+            nodes.append({
+                "name": node.name,
+                "label": node.label,
+                "type": node.bl_idname,
+                "mute": bool(node.mute),
+                "hide": bool(node.hide),
+                "properties": rna_simple_properties(node),
+                "pointers": rna_pointer_properties(node),
+                "customProperties": all_custom_properties(node),
+                "inputs": [node_socket_record(socket) for socket in node.inputs],
+                "outputs": [node_socket_record(socket) for socket in node.outputs],
+            })
+        for link in material.node_tree.links:
+            links.append({
+                "fromNode": link.from_node.name,
+                "fromSocket": link.from_socket.identifier,
+                "fromSocketIndex": list(link.from_node.outputs).index(link.from_socket),
+                "toNode": link.to_node.name,
+                "toSocket": link.to_socket.identifier,
+                "toSocketIndex": list(link.to_node.inputs).index(link.to_socket),
+                "muted": bool(link.is_muted),
+                "valid": bool(link.is_valid),
+            })
+    record = {
+        "name": material.name,
+        "diffuseColor": vector(material.diffuse_color),
+        "useNodes": bool(material.use_nodes),
+        "surfaceRenderMethod": str(getattr(material, "surface_render_method", "")),
+        "properties": rna_simple_properties(material),
+        "pointers": rna_pointer_properties(material),
+        "customProperties": all_custom_properties(material),
+        "nodeTree": None if material.node_tree is None else material.node_tree.name,
+        "nodes": nodes,
+        "links": sorted(
+            links,
+            key=lambda item: (
+                item["fromNode"], item["fromSocketIndex"], item["toNode"], item["toSocketIndex"]
+            ),
+        ),
+    }
+    if "<unreadable>" in json.dumps(record, sort_keys=True):
+        raise RuntimeError(f"material graph signature contains unreadable RNA: {material.name}")
+    record["sha256"] = canonical_hash(record)
+    return record
+
+
+def material_records(names: Iterable[str]) -> dict[str, dict[str, Any]]:
+    records: dict[str, dict[str, Any]] = {}
+    for name in sorted(names):
+        material = bpy.data.materials.get(name)
+        if material is None:
+            raise RuntimeError(f"missing accepted material authority: {name}")
+        records[name] = material_graph_record(material)
+    return records
+
+
+def material_user_inventory(material_name: str) -> list[dict[str, Any]]:
+    users = []
+    for obj in sorted(bpy.data.objects, key=lambda item: item.name):
+        data = obj.data
+        if data is None or not hasattr(data, "materials"):
+            continue
+        for index, material in enumerate(data.materials):
+            if material is not None and material.name == material_name:
+                users.append({"object": obj.name, "data": data.name, "slot": index})
+    return users
+
+
 def iter_action_fcurves(action: bpy.types.Action):
     legacy = getattr(action, "fcurves", None)
     if legacy is not None:
-        yield from legacy
-        return
-    for layer in action.layers:
-        for strip in layer.strips:
+        try:
+            legacy_curves = list(legacy)
+        except (AttributeError, RuntimeError, TypeError):
+            legacy_curves = []
+        if legacy_curves:
+            yield from legacy_curves
+            return
+    seen: set[int] = set()
+    for layer in getattr(action, "layers", ()):
+        for strip in getattr(layer, "strips", ()):
             for channelbag in getattr(strip, "channelbags", ()):
-                yield from channelbag.fcurves
+                for curve in getattr(channelbag, "fcurves", ()):
+                    identity = id(curve)
+                    if identity not in seen:
+                        seen.add(identity)
+                        yield curve
 
 
 def action_signature(owner: Any, excluded_paths: set[str] | None = None) -> Any:
@@ -98,11 +252,20 @@ def action_signature(owner: Any, excluded_paths: set[str] | None = None) -> Any:
         curves.append({
             "dataPath": curve.data_path,
             "arrayIndex": int(curve.array_index),
+            "extrapolation": curve.extrapolation,
+            "mute": bool(curve.mute),
+            "lock": bool(curve.lock),
+            "group": None if curve.group is None else curve.group.name,
             "keyframes": [
                 {
                     "frame": rounded(point.co.x),
                     "value": rounded(point.co.y),
                     "interpolation": point.interpolation,
+                    "easing": point.easing,
+                    "handleLeft": vector(point.handle_left),
+                    "handleRight": vector(point.handle_right),
+                    "handleLeftType": point.handle_left_type,
+                    "handleRightType": point.handle_right_type,
                 }
                 for point in curve.keyframe_points
             ],
@@ -156,21 +319,55 @@ def data_payload(obj: bpy.types.Object, include_camera_lens: bool = True) -> Any
                         "right": vector(point.handle_right),
                         "leftType": point.handle_left_type,
                         "rightType": point.handle_right_type,
+                        "radius": rounded(point.radius),
+                        "tilt": rounded(point.tilt),
+                        "weightSoftbody": rounded(getattr(point, "weight_softbody", 0.0)),
                     }
                     for point in spline.bezier_points
                 ]
             else:
-                points = [vector(point.co) for point in spline.points]
-            splines.append({"type": spline.type, "cyclic": bool(spline.use_cyclic_u), "points": points})
+                points = [
+                    {
+                        "co": vector(point.co),
+                        "radius": rounded(point.radius),
+                        "tilt": rounded(point.tilt),
+                        "weight": rounded(getattr(point, "weight", 0.0)),
+                        "weightSoftbody": rounded(getattr(point, "weight_softbody", 0.0)),
+                    }
+                    for point in spline.points
+                ]
+            splines.append({
+                "type": spline.type,
+                "cyclic": bool(spline.use_cyclic_u),
+                "endpoint": bool(getattr(spline, "use_endpoint_u", False)),
+                "bezierEndpoint": bool(getattr(spline, "use_bezier_u", False)),
+                "orderU": int(getattr(spline, "order_u", 0)),
+                "resolutionU": int(getattr(spline, "resolution_u", 0)),
+                "tiltInterpolation": str(getattr(spline, "tilt_interpolation", "")),
+                "radiusInterpolation": str(getattr(spline, "radius_interpolation", "")),
+                "points": points,
+            })
         record.update({
             "dimensions": data.dimensions,
             "resolutionU": int(data.resolution_u),
+            "renderResolutionU": int(data.render_resolution_u),
+            "resolutionV": int(data.resolution_v),
+            "renderResolutionV": int(getattr(data, "render_resolution_v", 0)),
             "bevelDepth": rounded(data.bevel_depth),
             "bevelResolution": int(data.bevel_resolution),
             "bevelMode": data.bevel_mode,
             "bevelObject": None if data.bevel_object is None else data.bevel_object.name,
+            "taperObject": None if data.taper_object is None else data.taper_object.name,
             "fillMode": data.fill_mode,
             "useFillCaps": bool(data.use_fill_caps),
+            "twistMode": data.twist_mode,
+            "twistSmooth": rounded(getattr(data, "twist_smooth", 0.0)),
+            "extrude": rounded(data.extrude),
+            "offset": rounded(data.offset),
+            "bevelFactorStart": rounded(data.bevel_factor_start),
+            "bevelFactorEnd": rounded(data.bevel_factor_end),
+            "bevelFactorMappingStart": data.bevel_factor_mapping_start,
+            "bevelFactorMappingEnd": data.bevel_factor_mapping_end,
             "splines": splines,
         })
     elif obj.type == "CAMERA":
@@ -210,8 +407,34 @@ def object_signature(
         "location": vector(obj.location),
         "rotationEuler": vector(obj.rotation_euler),
         "scale": vector(obj.scale),
+        "color": vector(obj.color),
+        "collections": sorted(collection.name for collection in obj.users_collection),
         "parent": None if obj.parent is None else obj.parent.name,
         "parentType": obj.parent_type,
+        "hideViewport": bool(obj.hide_viewport),
+        "visibleCamera": bool(getattr(obj, "visible_camera", True)),
+        "visibleDiffuse": bool(getattr(obj, "visible_diffuse", True)),
+        "visibleGlossy": bool(getattr(obj, "visible_glossy", True)),
+        "visibleShadow": bool(getattr(obj, "visible_shadow", True)),
+        "modifiers": [
+            {
+                "name": modifier.name,
+                "type": modifier.type,
+                "showRender": bool(modifier.show_render),
+                "showViewport": bool(modifier.show_viewport),
+            }
+            for modifier in obj.modifiers
+        ],
+        "constraints": [
+            {
+                "name": constraint.name,
+                "type": constraint.type,
+                "mute": bool(constraint.mute),
+                "influence": rounded(constraint.influence),
+                "target": None if not hasattr(constraint, "target") or constraint.target is None else constraint.target.name,
+            }
+            for constraint in obj.constraints
+        ],
         "customProperties": custom_properties(obj),
         "objectAction": action_signature(obj, excluded_action_paths),
         "dataAction": None if obj.data is None else action_signature(obj.data, excluded_action_paths),
@@ -283,6 +506,200 @@ def timeline_record(scene: bpy.types.Scene) -> dict[str, Any]:
     }
 
 
+def scene_frame_record(scene: bpy.types.Scene) -> dict[str, Any]:
+    return {
+        "frame": int(scene.frame_current),
+        "subframe": rounded(scene.frame_subframe),
+    }
+
+
+def configured_cable_inventory() -> dict[str, Any]:
+    families: dict[str, Any] = {}
+    all_sheaths: list[bpy.types.Object] = []
+    all_currents: list[bpy.types.Object] = []
+    all_responses: list[bpy.types.Object] = []
+    for family, spec in cfg.CABLE_FAMILY_AUTHORITY.items():
+        collection = bpy.data.collections.get(spec["collection"])
+        if collection is None:
+            raise RuntimeError(f"missing accepted cable collection: {spec['collection']}")
+        sheath = bpy.data.objects.get(spec["sheath"])
+        if sheath is None or collection.objects.get(sheath.name) is None or sheath.type != "CURVE":
+            raise RuntimeError(f"missing accepted {family} sheath authority")
+        currents = sorted(
+            (obj for obj in collection.objects if obj.name.startswith(spec["currentPrefix"])),
+            key=lambda obj: int(obj.get("phase4r1v2_segment_index", -1)),
+        )
+        responses = sorted(
+            (obj for obj in collection.objects if obj.name.startswith(spec["localResponsePrefix"])),
+            key=lambda obj: obj.name,
+        )
+        if len(currents) != spec["currentCount"]:
+            raise RuntimeError(f"accepted {family} current-segment count mismatch: {len(currents)}")
+        if [int(obj.get("phase4r1v2_segment_index", -1)) for obj in currents] != list(range(spec["currentCount"])):
+            raise RuntimeError(f"accepted {family} current segment indices are not exact and contiguous")
+        expected_response_names = [f"{spec['localResponsePrefix']}{index:02d}" for index in range(spec["localResponseCount"])]
+        if [obj.name for obj in responses] != expected_response_names or any(obj.type != "LIGHT" for obj in responses):
+            raise RuntimeError(f"accepted {family} local-response inventory mismatch")
+        families[family] = {
+            "collection": collection,
+            "sheath": sheath,
+            "currents": currents,
+            "responses": responses,
+        }
+        all_sheaths.append(sheath)
+        all_currents.extend(currents)
+        all_responses.extend(responses)
+    if len(all_sheaths) != cfg.CABLE_EXPECTED_SHEATH_USERS:
+        raise RuntimeError("accepted sheath-object count mismatch")
+    if len(all_currents) != cfg.CABLE_EXPECTED_CURRENT_USERS:
+        raise RuntimeError("accepted current-object count mismatch")
+    if len(all_responses) != cfg.CABLE_EXPECTED_LOCAL_RESPONSE_LIGHTS:
+        raise RuntimeError("accepted local-response-light count mismatch")
+    return {
+        "families": families,
+        "sheaths": all_sheaths,
+        "currents": all_currents,
+        "responses": all_responses,
+    }
+
+
+def source_corridor_axis_audit() -> dict[str, Any]:
+    spec = cfg.CABLE_MATERIAL_AUTHORITY["current"]
+    axis = tuple(float(value) for value in spec["sourceCorridorAxisWorld"])
+    if axis != (1.0, 0.0, 0.0):
+        raise RuntimeError("source-corridor shader authority is not the exact fixed +X axis")
+    surface_reach_y = float(spec["sourceCorridorGateZeroY"]) + float(spec["sourceCorridorOverlayRadiusMeters"])
+    minimum_required = float(spec["sourceCorridorMinimumAbsoluteTangentX"])
+    inventory = configured_cable_inventory()
+    families: dict[str, Any] = {}
+    for family, record in inventory["families"].items():
+        edge_count = 0
+        minimum_absolute_tangent_x = 1.0
+        worst_edge: dict[str, Any] | None = None
+        for obj in record["currents"]:
+            for spline_index, spline in enumerate(obj.data.splines):
+                if spline.type == "BEZIER":
+                    points = [obj.matrix_world @ point.co for point in spline.bezier_points]
+                else:
+                    points = [obj.matrix_world @ Vector(point.co[:3]) for point in spline.points]
+                for edge_index, (first, second) in enumerate(zip(points, points[1:])):
+                    if min(float(first.y), float(second.y)) > surface_reach_y:
+                        continue
+                    delta = second - first
+                    if delta.length <= 1e-9:
+                        raise RuntimeError(f"zero-length {family} current edge enters the source-corridor gate")
+                    edge_count += 1
+                    absolute_tangent_x = abs(float(delta.normalized().x))
+                    if absolute_tangent_x < minimum_absolute_tangent_x:
+                        minimum_absolute_tangent_x = absolute_tangent_x
+                        worst_edge = {
+                            "object": obj.name,
+                            "spline": spline_index,
+                            "edge": edge_index,
+                            "minimumEndpointY": round(min(float(first.y), float(second.y)), 8),
+                            "maximumEndpointY": round(max(float(first.y), float(second.y)), 8),
+                            "absoluteTangentX": round(absolute_tangent_x, 8),
+                        }
+        if edge_count == 0 or minimum_absolute_tangent_x < minimum_required:
+            raise RuntimeError(
+                f"{family} source-corridor current axis is not safely +X-aligned: "
+                f"edges={edge_count}, minimum |Tx|={minimum_absolute_tangent_x:.9f}"
+            )
+        families[family] = {
+            "surfaceEligibleEdgeCount": edge_count,
+            "minimumAbsoluteTangentX": round(minimum_absolute_tangent_x, 8),
+            "worstEligibleEdge": worst_edge,
+            "passesMinimum": True,
+        }
+    return {
+        "axisWorld": list(axis),
+        "gateFullY": float(spec["sourceCorridorGateFullY"]),
+        "gateZeroY": float(spec["sourceCorridorGateZeroY"]),
+        "overlayRadiusMeters": float(spec["sourceCorridorOverlayRadiusMeters"]),
+        "surfaceEligibilityMaximumCenterlineY": round(surface_reach_y, 8),
+        "minimumAbsoluteTangentXRequired": minimum_required,
+        "families": families,
+        "allFamiliesPass": True,
+    }
+
+
+def cable_authority_snapshot() -> dict[str, str]:
+    inventory = configured_cable_inventory()
+    collection_records = []
+    geometry_records = []
+    progression_records = []
+    binding_records = []
+    local_response_records = []
+    for family, record in inventory["families"].items():
+        collection = record["collection"]
+        collection_records.append({
+            "family": family,
+            "name": collection.name,
+            "hideRender": bool(collection.hide_render),
+            "hideViewport": bool(collection.hide_viewport),
+            "objects": sorted(obj.name for obj in collection.objects),
+        })
+    for obj in sorted(inventory["sheaths"] + inventory["currents"], key=lambda item: item.name):
+        signature = object_signature(obj)
+        signature.pop("objectAction", None)
+        signature.pop("dataAction", None)
+        signature.pop("color", None)
+        if isinstance(signature.get("data"), dict):
+            signature["data"].pop("materials", None)
+        geometry_records.append(signature)
+        binding_records.append({
+            "object": obj.name,
+            "data": obj.data.name,
+            "materials": [material.name if material is not None else None for material in obj.data.materials],
+        })
+    for obj in sorted(inventory["currents"], key=lambda item: item.name):
+        progression_records.append({
+            "object": obj.name,
+            "segmentIndex": int(obj["phase4r1v2_segment_index"]),
+            "arrivalFrame": int(obj["phase4r1v2_arrival_frame"]),
+            "action": action_signature(obj),
+        })
+    for obj in sorted(inventory["responses"], key=lambda item: item.name):
+        local_response_records.append(object_signature(obj))
+    contact = bpy.data.objects.get(cfg.CABLE_CONTACT_PROFILE_OBJECT)
+    if contact is None or contact.type != "CURVE":
+        raise RuntimeError("accepted weighted sheath contact-profile geometry is missing")
+    return {
+        "cableFamilyCollectionState": canonical_hash(collection_records),
+        "cableContactProfileGeometry": canonical_hash(object_signature(contact)),
+        "cableRouteGeometryAndTopology": canonical_hash(geometry_records),
+        "cableCurrentProgressionActions": canonical_hash(progression_records),
+        "cableMaterialBindings": canonical_hash(binding_records),
+        "cableLocalResponseAuthority": canonical_hash(local_response_records),
+    }
+
+
+def current_state_hashes(scene: bpy.types.Scene) -> dict[str, str]:
+    inventory = configured_cable_inventory()
+    original = scene_frame_record(scene)
+    hashes: dict[str, str] = {}
+    try:
+        for frame in cfg.CABLE_CURRENT_STATE_FRAMES:
+            scene.frame_set(int(frame), subframe=0.0)
+            bpy.context.view_layer.update()
+            records = [
+                {
+                    "object": obj.name,
+                    "segmentIndex": int(obj["phase4r1v2_segment_index"]),
+                    "arrivalFrame": int(obj["phase4r1v2_arrival_frame"]),
+                    "color": vector(obj.color),
+                }
+                for obj in sorted(inventory["currents"], key=lambda item: item.name)
+            ]
+            hashes[str(frame)] = canonical_hash(records)
+    finally:
+        scene.frame_set(original["frame"], subframe=original["subframe"])
+        bpy.context.view_layer.update()
+    if scene_frame_record(scene) != original:
+        raise RuntimeError("current-state sampling failed to restore the accepted scene frame/subframe")
+    return hashes
+
+
 def preservation_snapshot() -> dict[str, str]:
     q_plane = bpy.data.objects.get("Phase4R1V2_ExactQuantumQ_PicturePlane")
     screen_spill = bpy.data.objects.get("Phase3_ScreenSpill")
@@ -292,6 +709,7 @@ def preservation_snapshot() -> dict[str, str]:
         object_signature(obj)
         for obj in sorted((item for item in bpy.data.objects if item.type == "LIGHT" and not item.name.startswith("Phase4R11_")), key=lambda item: item.name)
     ]
+    cable = cable_authority_snapshot()
     return {
         "hallExceptOpeningHeaders": collection_hash(
             ("PHASE4R1_HALL_ARCHITECTURE", "PHASE4R1_HALL_STRUCTURE"),
@@ -299,7 +717,7 @@ def preservation_snapshot() -> dict[str, str]:
         ),
         "centralFloor": collection_hash(("PHASE4R1_HALL_FLOOR",)),
         "cableOriginAndDistributionSource": collection_hash(("PHASE4R1_DISTRIBUTION_SOURCE",)),
-        "cableGeometryTimingAndResponse": collection_hash(CABLE_COLLECTIONS),
+        **cable,
         "connections": collection_hash(("PHASE4R1V2_RESTRAINED_CONNECTIONS",)),
         "crtGeometryActionsAndMaterialBindings": collection_hash(CRT_COLLECTIONS),
         "desktopCamera": camera_family_hash("desktop"),
@@ -309,6 +727,338 @@ def preservation_snapshot() -> dict[str, str]:
         "exactQ": canonical_hash({"image": packed_q_record(), "plane": object_signature(q_plane)}),
         "acceptedLights": canonical_hash(accepted_lights),
         "screenSpill": canonical_hash(object_signature(screen_spill)),
+    }
+
+
+def enabled_input(node: bpy.types.Node, name: str):
+    sockets = [
+        socket
+        for socket in node.inputs
+        if socket.name == name
+        and socket.enabled
+        and socket.bl_idname.startswith("NodeSocketFloat")
+    ]
+    visible = [socket for socket in sockets if not socket.hide]
+    if len(visible) == 1:
+        return visible[0]
+    if len(sockets) != 1:
+        raise RuntimeError(f"expected one enabled float {node.name}.{name} input, got {len(sockets)}")
+    return sockets[0]
+
+
+def reset_existing_cable_material(name: str) -> bpy.types.Material:
+    material = bpy.data.materials.get(name)
+    if material is None or material.library is not None or material.override_library is not None:
+        raise RuntimeError(f"cable material is missing or not a local writable authority: {name}")
+    if material.animation_data is not None:
+        raise RuntimeError(f"refusing to clear animated cable material: {name}")
+    if not material.use_nodes or material.node_tree is None or material.node_tree.animation_data is not None:
+        raise RuntimeError(f"refusing to clear missing or animated cable node tree: {name}")
+    material.node_tree.nodes.clear()
+    return material
+
+
+def rebuild_graphite_sheath_material() -> bpy.types.Material:
+    spec = cfg.CABLE_MATERIAL_AUTHORITY["sheath"]
+    material = reset_existing_cable_material(spec["name"])
+    nodes = material.node_tree.nodes
+    links = material.node_tree.links
+
+    output = nodes.new("ShaderNodeOutputMaterial")
+    output.name = "Phase4R11_Sheath_Output"
+    shader = nodes.new("ShaderNodeBsdfPrincipled")
+    shader.name = "Phase4R11_Sheath_PhysicalRubber"
+    shader.inputs["Base Color"].default_value = srgb(spec["baseColor"])
+    shader.inputs["Metallic"].default_value = 0.0
+    shader.inputs["Emission Strength"].default_value = spec["emissionStrength"]
+    shader.inputs["Transmission Weight"].default_value = spec["transmissionWeight"]
+
+    coordinates = nodes.new("ShaderNodeTexCoord")
+    coordinates.name = "Phase4R11_Sheath_ObjectCoordinates"
+    noise = nodes.new("ShaderNodeTexNoise")
+    noise.name = "Phase4R11_Sheath_RubberMicrotexture"
+    noise.noise_dimensions = "3D"
+    noise.inputs["Scale"].default_value = spec["noiseScale"]
+    noise.inputs["Detail"].default_value = spec["noiseDetail"]
+    noise.inputs["Roughness"].default_value = spec["noiseRoughness"]
+    noise.inputs["Distortion"].default_value = spec["noiseDistortion"]
+    roughness = nodes.new("ShaderNodeMapRange")
+    roughness.name = "Phase4R11_Sheath_RoughnessRange"
+    roughness.data_type = "FLOAT"
+    roughness.interpolation_type = "SMOOTHERSTEP"
+    roughness.clamp = True
+    enabled_input(roughness, "From Min").default_value = 0.0
+    enabled_input(roughness, "From Max").default_value = 1.0
+    enabled_input(roughness, "To Min").default_value = spec["roughnessMinimum"]
+    enabled_input(roughness, "To Max").default_value = spec["roughnessMaximum"]
+    bump = nodes.new("ShaderNodeBump")
+    bump.name = "Phase4R11_Sheath_RubberMicroBump"
+    bump.inputs["Strength"].default_value = spec["bumpStrength"]
+    bump.inputs["Distance"].default_value = spec["bumpDistanceMeters"]
+
+    links.new(coordinates.outputs["Object"], noise.inputs["Vector"])
+    links.new(noise.outputs["Fac"], enabled_input(roughness, "Value"))
+    links.new(roughness.outputs["Result"], shader.inputs["Roughness"])
+    links.new(noise.outputs["Fac"], bump.inputs["Height"])
+    links.new(bump.outputs["Normal"], shader.inputs["Normal"])
+    links.new(shader.outputs["BSDF"], output.inputs["Surface"])
+
+    material.diffuse_color = srgb(spec["baseColor"])
+    material["phase4r1v2_palette_hex"] = spec["baseColor"]
+    material["phase4r1v2_no_emission"] = True
+    material["phase4r1_1_material_role"] = "opaque graphite-rubber cable sheath"
+    material["phase4r1_1_roughness_range"] = [spec["roughnessMinimum"], spec["roughnessMaximum"]]
+    material["phase4r1_1_bump_distance_m"] = spec["bumpDistanceMeters"]
+    return material
+
+
+def configure_float_map_range(node: bpy.types.Node, minimum: float, maximum: float) -> None:
+    node.data_type = "FLOAT"
+    node.interpolation_type = "SMOOTHERSTEP"
+    node.clamp = True
+    enabled_input(node, "From Min").default_value = minimum
+    enabled_input(node, "From Max").default_value = maximum
+    enabled_input(node, "To Min").default_value = 0.0
+    enabled_input(node, "To Max").default_value = 1.0
+
+
+def rebuild_internal_current_material() -> bpy.types.Material:
+    spec = cfg.CABLE_MATERIAL_AUTHORITY["current"]
+    if tuple(float(value) for value in spec["sourceCorridorAxisWorld"]) != (1.0, 0.0, 0.0):
+        raise RuntimeError("current shader requires the exact fixed +X source-corridor axis")
+    material = reset_existing_cable_material(spec["name"])
+    nodes = material.node_tree.nodes
+    links = material.node_tree.links
+
+    output = nodes.new("ShaderNodeOutputMaterial")
+    output.name = "Phase4R11_Current_Output"
+    transparent = nodes.new("ShaderNodeBsdfTransparent")
+    transparent.name = "Phase4R11_Current_TransparentAhead"
+    housing = nodes.new("ShaderNodeBsdfPrincipled")
+    housing.name = "Phase4R11_Current_BlackChannelHousing"
+    housing.inputs["Base Color"].default_value = srgb(spec["channelHousingColor"])
+    housing.inputs["Roughness"].default_value = spec["channelHousingRoughness"]
+    housing.inputs["Metallic"].default_value = 0.0
+    housing.inputs["Emission Strength"].default_value = 0.0
+    housing.inputs["Transmission Weight"].default_value = 0.0
+    emission = nodes.new("ShaderNodeEmission")
+    emission.name = "Phase4R11_Current_InternalEmission"
+    add = nodes.new("ShaderNodeAddShader")
+    add.name = "Phase4R11_Current_HousingPlusSignal"
+    final_mix = nodes.new("ShaderNodeMixShader")
+    final_mix.name = "Phase4R11_Current_AnimatedVisibility"
+
+    info = nodes.new("ShaderNodeObjectInfo")
+    info.name = "Phase4R11_Current_ExactAnimatedObjectInfo"
+    tint = nodes.new("ShaderNodeMixRGB")
+    tint.name = "Phase4R11_Current_DeepWarmMagentaTint"
+    tint.blend_type = "MULTIPLY"
+    tint.inputs[0].default_value = 1.0
+    tint.inputs[2].default_value = spec["objectColorTint"]
+
+    geometry = nodes.new("ShaderNodeNewGeometry")
+    geometry.name = "Phase4R11_Current_SurfaceAuthority"
+    facing_dot = nodes.new("ShaderNodeVectorMath")
+    facing_dot.name = "Phase4R11_Current_ViewFacingDot"
+    facing_dot.operation = "DOT_PRODUCT"
+    facing_absolute = nodes.new("ShaderNodeMath")
+    facing_absolute.name = "Phase4R11_Current_ViewFacingAbsolute"
+    facing_absolute.operation = "ABSOLUTE"
+
+    position_components = nodes.new("ShaderNodeSeparateXYZ")
+    position_components.name = "Phase4R11_Current_WorldPositionComponents"
+    corridor_gate = nodes.new("ShaderNodeMapRange")
+    corridor_gate.name = "Phase4R11_Current_SourceCorridorGate"
+    corridor_gate.data_type = "FLOAT"
+    corridor_gate.interpolation_type = "SMOOTHERSTEP"
+    corridor_gate.clamp = True
+    enabled_input(corridor_gate, "From Min").default_value = spec["sourceCorridorGateFullY"]
+    enabled_input(corridor_gate, "From Max").default_value = spec["sourceCorridorGateZeroY"]
+    enabled_input(corridor_gate, "To Min").default_value = 1.0
+    enabled_input(corridor_gate, "To Max").default_value = 0.0
+
+    incoming_normalized = nodes.new("ShaderNodeVectorMath")
+    incoming_normalized.name = "Phase4R11_Current_NormalizedIncoming"
+    incoming_normalized.operation = "NORMALIZE"
+    incoming_components = nodes.new("ShaderNodeSeparateXYZ")
+    incoming_components.name = "Phase4R11_Current_IncomingComponents"
+    incoming_perpendicular = nodes.new("ShaderNodeCombineXYZ")
+    incoming_perpendicular.name = "Phase4R11_Current_IncomingPerpendicularToSourceAxis"
+    incoming_perpendicular.inputs["X"].default_value = 0.0
+    incoming_perpendicular_length = nodes.new("ShaderNodeVectorMath")
+    incoming_perpendicular_length.name = "Phase4R11_Current_SourceCorridorPerpendicularLength"
+    incoming_perpendicular_length.operation = "LENGTH"
+    corridor_denominator = nodes.new("ShaderNodeMath")
+    corridor_denominator.name = "Phase4R11_Current_SourceCorridorSafeDenominator"
+    corridor_denominator.operation = "MAXIMUM"
+    corridor_denominator.inputs[1].default_value = spec["sourceCorridorCrossSectionDenominatorMinimum"]
+    normal_normalized = nodes.new("ShaderNodeVectorMath")
+    normal_normalized.name = "Phase4R11_Current_NormalizedSurfaceNormal"
+    normal_normalized.operation = "NORMALIZE"
+    corridor_dot = nodes.new("ShaderNodeVectorMath")
+    corridor_dot.name = "Phase4R11_Current_SourceCorridorCrossSectionDot"
+    corridor_dot.operation = "DOT_PRODUCT"
+    corridor_absolute = nodes.new("ShaderNodeMath")
+    corridor_absolute.name = "Phase4R11_Current_SourceCorridorCrossSectionAbsolute"
+    corridor_absolute.operation = "ABSOLUTE"
+    corridor_divide = nodes.new("ShaderNodeMath")
+    corridor_divide.name = "Phase4R11_Current_SourceCorridorNormalizedCosine"
+    corridor_divide.operation = "DIVIDE"
+    corridor_clamp = nodes.new("ShaderNodeClamp")
+    corridor_clamp.name = "Phase4R11_Current_SourceCorridorCosineClamp"
+    corridor_clamp.clamp_type = "MINMAX"
+    corridor_clamp.inputs["Min"].default_value = 0.0
+    corridor_clamp.inputs["Max"].default_value = 1.0
+
+    one_minus_corridor = nodes.new("ShaderNodeMath")
+    one_minus_corridor.name = "Phase4R11_Current_OutsideSourceCorridor"
+    one_minus_corridor.operation = "SUBTRACT"
+    one_minus_corridor.inputs[0].default_value = 1.0
+    raw_weighted = nodes.new("ShaderNodeMath")
+    raw_weighted.name = "Phase4R11_Current_RawViewFacingWeighted"
+    raw_weighted.operation = "MULTIPLY"
+    corridor_weighted = nodes.new("ShaderNodeMath")
+    corridor_weighted.name = "Phase4R11_Current_SourceCorridorWeighted"
+    corridor_weighted.operation = "MULTIPLY"
+    corrected_add = nodes.new("ShaderNodeMath")
+    corrected_add.name = "Phase4R11_Current_CorrectedViewFacingAdd"
+    corrected_add.operation = "ADD"
+    corrected_clamp = nodes.new("ShaderNodeClamp")
+    corrected_clamp.name = "Phase4R11_Current_CorrectedViewFacingClamp"
+    corrected_clamp.clamp_type = "MINMAX"
+    corrected_clamp.inputs["Min"].default_value = 0.0
+    corrected_clamp.inputs["Max"].default_value = 1.0
+
+    outer = nodes.new("ShaderNodeMapRange")
+    outer.name = "Phase4R11_Current_OuterViewFacingWindow"
+    configure_float_map_range(outer, spec["outerViewFacingMinimum"], spec["outerViewFacingMaximum"])
+    outer_visibility = nodes.new("ShaderNodeMath")
+    outer_visibility.name = "Phase4R11_Current_OuterAlphaVisibility"
+    outer_visibility.operation = "MULTIPLY"
+    front_facing = nodes.new("ShaderNodeMath")
+    front_facing.name = "Phase4R11_Current_FrontFacing"
+    front_facing.operation = "SUBTRACT"
+    front_facing.inputs[0].default_value = 1.0
+    front_visibility = nodes.new("ShaderNodeMath")
+    front_visibility.name = "Phase4R11_Current_FrontFacingVisibility"
+    front_visibility.operation = "MULTIPLY"
+
+    core = nodes.new("ShaderNodeMapRange")
+    core.name = "Phase4R11_Current_InternalCoreViewFacingWindow"
+    configure_float_map_range(core, spec["coreViewFacingMinimum"], spec["coreViewFacingMaximum"])
+    emission_strength = nodes.new("ShaderNodeMath")
+    emission_strength.name = "Phase4R11_Current_RestrainedEmissionStrength"
+    emission_strength.operation = "MULTIPLY"
+    emission_strength.inputs[1].default_value = spec["emissionStrength"]
+
+    links.new(info.outputs["Color"], tint.inputs[1])
+    links.new(tint.outputs["Color"], emission.inputs["Color"])
+    links.new(geometry.outputs["Normal"], facing_dot.inputs[0])
+    links.new(geometry.outputs["Incoming"], facing_dot.inputs[1])
+    links.new(facing_dot.outputs["Value"], facing_absolute.inputs[0])
+    links.new(geometry.outputs["Position"], position_components.inputs["Vector"])
+    links.new(position_components.outputs["Y"], enabled_input(corridor_gate, "Value"))
+    links.new(geometry.outputs["Incoming"], incoming_normalized.inputs[0])
+    links.new(incoming_normalized.outputs["Vector"], incoming_components.inputs["Vector"])
+    links.new(incoming_components.outputs["Y"], incoming_perpendicular.inputs["Y"])
+    links.new(incoming_components.outputs["Z"], incoming_perpendicular.inputs["Z"])
+    links.new(incoming_perpendicular.outputs["Vector"], incoming_perpendicular_length.inputs[0])
+    links.new(incoming_perpendicular_length.outputs["Value"], corridor_denominator.inputs[0])
+    links.new(geometry.outputs["Normal"], normal_normalized.inputs[0])
+    links.new(normal_normalized.outputs["Vector"], corridor_dot.inputs[0])
+    links.new(incoming_perpendicular.outputs["Vector"], corridor_dot.inputs[1])
+    links.new(corridor_dot.outputs["Value"], corridor_absolute.inputs[0])
+    links.new(corridor_absolute.outputs[0], corridor_divide.inputs[0])
+    links.new(corridor_denominator.outputs[0], corridor_divide.inputs[1])
+    links.new(corridor_divide.outputs[0], corridor_clamp.inputs["Value"])
+    links.new(corridor_gate.outputs["Result"], one_minus_corridor.inputs[1])
+    links.new(facing_absolute.outputs[0], raw_weighted.inputs[0])
+    links.new(one_minus_corridor.outputs[0], raw_weighted.inputs[1])
+    links.new(corridor_clamp.outputs["Result"], corridor_weighted.inputs[0])
+    links.new(corridor_gate.outputs["Result"], corridor_weighted.inputs[1])
+    links.new(raw_weighted.outputs[0], corrected_add.inputs[0])
+    links.new(corridor_weighted.outputs[0], corrected_add.inputs[1])
+    links.new(corrected_add.outputs[0], corrected_clamp.inputs["Value"])
+    links.new(corrected_clamp.outputs["Result"], enabled_input(outer, "Value"))
+    links.new(corrected_clamp.outputs["Result"], enabled_input(core, "Value"))
+    links.new(outer.outputs["Result"], outer_visibility.inputs[0])
+    links.new(info.outputs["Alpha"], outer_visibility.inputs[1])
+    links.new(geometry.outputs["Backfacing"], front_facing.inputs[1])
+    links.new(outer_visibility.outputs[0], front_visibility.inputs[0])
+    links.new(front_facing.outputs[0], front_visibility.inputs[1])
+    links.new(core.outputs["Result"], emission_strength.inputs[0])
+    links.new(emission_strength.outputs[0], emission.inputs["Strength"])
+    links.new(housing.outputs["BSDF"], add.inputs[0])
+    links.new(emission.outputs["Emission"], add.inputs[1])
+    links.new(front_visibility.outputs[0], final_mix.inputs[0])
+    links.new(transparent.outputs["BSDF"], final_mix.inputs[1])
+    links.new(add.outputs[0], final_mix.inputs[2])
+    links.new(final_mix.outputs[0], output.inputs["Surface"])
+
+    if not hasattr(material, "surface_render_method"):
+        raise RuntimeError("Blender 5.2 current material lacks surface_render_method")
+    material.surface_render_method = spec["surfaceRenderMethod"]
+    material.use_backface_culling = spec["useBackfaceCulling"]
+    material.diffuse_color = (*srgb(spec["channelHousingColor"])[0:3], 0.0)
+    material["phase4r1v2_emission_multiplier"] = spec["emissionStrength"]
+    material["phase4r1v2_broad_upper_sheath_cap"] = False
+    material["phase4r1_1_material_role"] = "black channel housing with contained internal current"
+    material["phase4r1_1_object_color_tint"] = list(spec["objectColorTint"])
+    material["phase4r1_1_transmission_basis"] = spec["transmissionBasis"]
+    material["phase4r1_1_source_corridor_axis_world"] = list(spec["sourceCorridorAxisWorld"])
+    material["phase4r1_1_source_corridor_gate_y"] = [spec["sourceCorridorGateFullY"], spec["sourceCorridorGateZeroY"]]
+    material["phase4r1_1_source_corridor_denominator_minimum"] = spec["sourceCorridorCrossSectionDenominatorMinimum"]
+    material["phase4r1_1_source_corridor_overlay_radius_m"] = spec["sourceCorridorOverlayRadiusMeters"]
+    material["phase4r1_1_source_corridor_minimum_absolute_tangent_x"] = spec["sourceCorridorMinimumAbsoluteTangentX"]
+    material["phase4r1_1_outer_view_facing_window"] = [spec["outerViewFacingMinimum"], spec["outerViewFacingMaximum"]]
+    material["phase4r1_1_core_view_facing_window"] = [spec["coreViewFacingMinimum"], spec["coreViewFacingMaximum"]]
+    material["phase4r1_1_front_facing_only"] = spec["frontFacingOnly"]
+    material["phase4r1_1_use_backface_culling"] = spec["useBackfaceCulling"]
+    material["phase4r1_1_exact_object_alpha_progression"] = True
+    return material
+
+
+def validate_cable_material_users() -> dict[str, list[dict[str, Any]]]:
+    inventory = configured_cable_inventory()
+    expected_sheaths = sorted(obj.name for obj in inventory["sheaths"])
+    expected_currents = sorted(obj.name for obj in inventory["currents"])
+    sheath_users = material_user_inventory(cfg.CABLE_SHEATH_MATERIAL)
+    current_users = material_user_inventory(cfg.CABLE_CURRENT_MATERIAL)
+    if [row["object"] for row in sheath_users] != expected_sheaths or any(row["slot"] != 0 for row in sheath_users):
+        raise RuntimeError("graphite sheath material user inventory is not the exact three accepted sheath objects")
+    if [row["object"] for row in current_users] != expected_currents or any(row["slot"] != 0 for row in current_users):
+        raise RuntimeError("current material user inventory is not the exact 456 accepted current segments")
+    if len(sheath_users) != cfg.CABLE_EXPECTED_SHEATH_USERS or len(current_users) != cfg.CABLE_EXPECTED_CURRENT_USERS:
+        raise RuntimeError("accepted cable material user counts do not match config authority")
+    if int(bpy.data.materials[cfg.CABLE_SHEATH_MATERIAL].users) != cfg.CABLE_EXPECTED_SHEATH_USERS:
+        raise RuntimeError("graphite sheath material datablock user count is not exactly three")
+    if int(bpy.data.materials[cfg.CABLE_CURRENT_MATERIAL].users) != cfg.CABLE_EXPECTED_CURRENT_USERS:
+        raise RuntimeError("current material datablock user count is not exactly 456")
+    return {"sheath": sheath_users, "current": current_users}
+
+
+def build_cable_material() -> dict[str, Any]:
+    users_before = validate_cable_material_users()
+    source_corridor_before = source_corridor_axis_audit()
+    rebuild_graphite_sheath_material()
+    rebuild_internal_current_material()
+    users_after = validate_cable_material_users()
+    source_corridor_after = source_corridor_axis_audit()
+    if users_after != users_before:
+        raise RuntimeError("cable material repair changed an accepted material binding or user")
+    if source_corridor_after != source_corridor_before:
+        raise RuntimeError("cable material repair changed the source-corridor route-axis authority")
+    return {
+        "materialNames": [cfg.CABLE_SHEATH_MATERIAL, cfg.CABLE_CURRENT_MATERIAL],
+        "materialAuthority": cfg.CABLE_MATERIAL_AUTHORITY,
+        "materialUsersBefore": users_before,
+        "materialUsersAfter": users_after,
+        "materialUsersUnchanged": users_before == users_after,
+        "sourceCorridorAxisAuditBefore": source_corridor_before,
+        "sourceCorridorAxisAuditAfter": source_corridor_after,
+        "sourceCorridorAxisAuditUnchanged": source_corridor_before == source_corridor_after,
+        "responseLightsChanged": False,
+        "currentOrLightActionsChanged": False,
     }
 
 
@@ -626,7 +1376,7 @@ def build_periphery() -> dict[str, Any]:
 def parse_args() -> argparse.Namespace:
     argv = sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else []
     parser = argparse.ArgumentParser()
-    parser.add_argument("--through", choices=("periphery",), required=True)
+    parser.add_argument("--through", choices=cfg.STAGE_ORDER, required=True)
     parser.add_argument("--output", default=str(cfg.DERIVATIVE))
     return parser.parse_args(argv)
 
@@ -661,6 +1411,19 @@ def main() -> None:
     timeline_before = timeline_record(scene)
     if timeline_before != {"frameStart": 1, "frameEnd": 540, "fps": 30, "fpsBase": 1.0}:
         raise RuntimeError(f"accepted R1 timeline authority mismatch: {timeline_before}")
+    frame_before = scene_frame_record(scene)
+    accepted_material_names = sorted(material.name for material in bpy.data.materials)
+    allowed_cable_material_names = {cfg.CABLE_SHEATH_MATERIAL, cfg.CABLE_CURRENT_MATERIAL}
+    if not allowed_cable_material_names.issubset(accepted_material_names):
+        raise RuntimeError("accepted R1 source is missing one or both exact cable materials")
+    accepted_material_records_before = material_records(accepted_material_names)
+    accepted_material_hashes_before = {
+        name: record["sha256"] for name, record in accepted_material_records_before.items()
+    }
+    allowed_material_records_before = {
+        name: accepted_material_records_before[name] for name in sorted(allowed_cable_material_names)
+    }
+    cable_material_users_before = validate_cable_material_users()
     before = preservation_snapshot()
     expected_q = packed_q_record()
     if expected_q != {
@@ -676,13 +1439,13 @@ def main() -> None:
         for name in cfg.SUPPRESSED_OPENING_HEADER_OBJECTS
     }
     periphery = build_periphery()
-    after = preservation_snapshot()
-    timeline_after = timeline_record(scene)
-    if timeline_after != timeline_before:
-        raise RuntimeError(f"checkpoint-1 changed the accepted timeline authority: {timeline_after}")
-    unchanged = {key: before[key] == after[key] for key in before}
-    if not all(unchanged.values()):
-        raise RuntimeError(f"checkpoint-1 changed an accepted non-periphery authority: {[key for key, passed in unchanged.items() if not passed]}")
+    after_periphery = preservation_snapshot()
+    timeline_after_periphery = timeline_record(scene)
+    if timeline_after_periphery != timeline_before:
+        raise RuntimeError(f"periphery stage changed the accepted timeline authority: {timeline_after_periphery}")
+    periphery_unchanged = {key: before[key] == after_periphery[key] for key in before}
+    if not all(periphery_unchanged.values()):
+        raise RuntimeError(f"periphery stage changed an accepted non-periphery authority: {[key for key, passed in periphery_unchanged.items() if not passed]}")
     header_after = {
         name: canonical_hash(object_signature(bpy.data.objects[name], include_hide_render=False))
         for name in cfg.SUPPRESSED_OPENING_HEADER_OBJECTS
@@ -690,9 +1453,84 @@ def main() -> None:
     if header_before != header_after or not all(bpy.data.objects[name].hide_render for name in cfg.SUPPRESSED_OPENING_HEADER_OBJECTS):
         raise RuntimeError("opening header repair changed more than the two exact render-visibility flags")
 
+    stages: dict[str, Any] = {"periphery": periphery}
+    completed_stages = ["periphery"]
+    cable_authority_before = cable_authority_snapshot()
+    current_states_before = current_state_hashes(scene)
+    if args.through == "cable":
+        cable_stage = build_cable_material()
+        completed_stages.append("cable")
+        stages["cable"] = cable_stage
+    after = preservation_snapshot()
+    cable_authority_after = cable_authority_snapshot()
+    current_states_after = current_state_hashes(scene)
+    timeline_after = timeline_record(scene)
+    frame_after = scene_frame_record(scene)
+    if timeline_after != timeline_before:
+        raise RuntimeError(f"targeted repair changed the accepted timeline authority: {timeline_after}")
+    if frame_after != frame_before:
+        raise RuntimeError(f"targeted repair changed the accepted scene frame/subframe: {frame_after}")
+    unchanged = {key: before[key] == after[key] for key in before}
+    if not all(unchanged.values()):
+        raise RuntimeError(f"targeted repair changed an accepted fixed authority: {[key for key, passed in unchanged.items() if not passed]}")
+    cable_stage_unchanged = {
+        key: cable_authority_before[key] == cable_authority_after[key]
+        for key in cable_authority_before
+    }
+    if not all(cable_stage_unchanged.values()):
+        raise RuntimeError(f"cable material stage changed cable geometry, progression, bindings, contact profile, collection state, or local response: {[key for key, passed in cable_stage_unchanged.items() if not passed]}")
+    if current_states_before != current_states_after:
+        raise RuntimeError("cable material stage changed accepted current state at a diagnostic frame")
+
+    accepted_material_records_after = material_records(accepted_material_names)
+    accepted_material_hashes_after = {
+        name: record["sha256"] for name, record in accepted_material_records_after.items()
+    }
+    allowed_material_records_after = {
+        name: accepted_material_records_after[name] for name in sorted(allowed_cable_material_names)
+    }
+    changed_accepted_materials = sorted(
+        name
+        for name in accepted_material_names
+        if accepted_material_hashes_before[name] != accepted_material_hashes_after[name]
+    )
+    expected_material_changes = sorted(allowed_cable_material_names) if args.through == "cable" else []
+    if changed_accepted_materials != expected_material_changes:
+        raise RuntimeError(
+            f"accepted material graph delta is not the exact stage allowlist: {changed_accepted_materials}"
+        )
+    accepted_except_cable_before = {
+        name: value for name, value in accepted_material_hashes_before.items() if name not in allowed_cable_material_names
+    }
+    accepted_except_cable_after = {
+        name: value for name, value in accepted_material_hashes_after.items() if name not in allowed_cable_material_names
+    }
+    if accepted_except_cable_before != accepted_except_cable_after:
+        raise RuntimeError("a global accepted material outside the exact two cable materials changed")
+    new_material_names = sorted(set(material.name for material in bpy.data.materials) - set(accepted_material_names))
+    expected_new_material_names = sorted(spec["name"] for spec in cfg.MATERIALS.values())
+    if new_material_names != expected_new_material_names:
+        raise RuntimeError(f"targeted repair created an unexpected material datablock: {new_material_names}")
+    cable_material_users_after = validate_cable_material_users()
+    if cable_material_users_after != cable_material_users_before:
+        raise RuntimeError("targeted repair changed exact cable material users")
+    if args.through == "cable":
+        stages["cable"].update({
+            "fixedAuthorityBefore": cable_authority_before,
+            "fixedAuthorityAfter": cable_authority_after,
+            "fixedAuthorityUnchanged": cable_stage_unchanged,
+            "currentStateHashesBefore": current_states_before,
+            "currentStateHashesAfter": current_states_after,
+            "currentStateHashesUnchanged": current_states_before == current_states_after,
+            "materialGraphsBefore": allowed_material_records_before,
+            "materialGraphsAfter": allowed_material_records_after,
+            "changedAcceptedMaterials": changed_accepted_materials,
+            "exactlyTwoAllowedMaterialGraphsChanged": changed_accepted_materials == expected_material_changes,
+        })
+
     scene["phase4r1_1_schema"] = cfg.SCHEMA
     scene["phase4r1_1_parent_sha256"] = cfg.ACCEPTED_R1_SHA256
-    scene["phase4r1_1_completed_stages"] = json.dumps(["periphery"], separators=(",", ":"))
+    scene["phase4r1_1_completed_stages"] = json.dumps(completed_stages, separators=(",", ":"))
     scene["phase4r1_1_periphery_collection"] = cfg.COLLECTION
     scene["phase4r1_1_authorization"] = json.dumps(cfg.AUTHORIZATION, sort_keys=True, separators=(",", ":"))
     scene["phase4r1_1_builder_sha256"] = producer_records["builder"]["sha256"]
@@ -718,6 +1556,14 @@ def main() -> None:
         post_save_q = packed_q_record()
         if post_save_q != expected_q:
             raise RuntimeError("staged save changed the exact-Q logical path or packed byte authority")
+        if cable_authority_snapshot() != cable_authority_after:
+            raise RuntimeError("staged save changed fixed cable geometry, progression, bindings, contact profile, collection state, or local response")
+        if args.through == "cable" and source_corridor_axis_audit() != stages["cable"]["sourceCorridorAxisAuditAfter"]:
+            raise RuntimeError("staged save changed the source-corridor route-axis authority")
+        if material_records(sorted(allowed_cable_material_names)) != allowed_material_records_after:
+            raise RuntimeError("staged save changed an allowed cable material graph")
+        if scene_frame_record(scene) != frame_after:
+            raise RuntimeError("staged save changed the restored scene frame/subframe")
         derivative_record = file_record(pending)
         report = {
             "schema": "quantum-hub.phase-4-r1-1.targeted-repair.source-build.v1",
@@ -734,11 +1580,43 @@ def main() -> None:
             "producerAuthorities": producer_records,
             "blender": {"version": bpy.app.version_string, "versionTuple": list(bpy.app.version)},
             "timeline": {"before": timeline_before, "after": timeline_after, "unchanged": timeline_before == timeline_after},
-            "stages": {"periphery": periphery},
+            "stages": stages,
             "preservation": {
                 "before": before,
+                "afterPeriphery": after_periphery,
                 "after": after,
                 "unchanged": unchanged,
+                "peripheryUnchanged": periphery_unchanged,
+                "sceneFrame": {
+                    "before": frame_before,
+                    "after": frame_after,
+                    "unchanged": frame_before == frame_after,
+                },
+                "cableFixedAuthority": {
+                    "before": cable_authority_before,
+                    "after": cable_authority_after,
+                    "unchanged": cable_stage_unchanged,
+                },
+                "currentStateHashes": {
+                    "frames": list(cfg.CABLE_CURRENT_STATE_FRAMES),
+                    "before": current_states_before,
+                    "after": current_states_after,
+                    "unchanged": current_states_before == current_states_after,
+                },
+                "materialGraphs": {
+                    "allowedCableMaterialNames": sorted(allowed_cable_material_names),
+                    "changedAcceptedMaterials": changed_accepted_materials,
+                    "expectedChangedAcceptedMaterials": expected_material_changes,
+                    "allowedBefore": allowed_material_records_before,
+                    "allowedAfter": allowed_material_records_after,
+                    "acceptedExceptCableBeforeSha256": canonical_hash(accepted_except_cable_before),
+                    "acceptedExceptCableAfterSha256": canonical_hash(accepted_except_cable_after),
+                    "acceptedExceptCableUnchanged": accepted_except_cable_before == accepted_except_cable_after,
+                    "newPeripheryMaterials": new_material_names,
+                    "cableUsersBefore": cable_material_users_before,
+                    "cableUsersAfter": cable_material_users_after,
+                    "cableUsersUnchanged": cable_material_users_before == cable_material_users_after,
+                },
                 "openingHeaderGeometryAndMaterialBindingsUnchanged": header_before == header_after,
                 "onlyOpeningHeaderRenderVisibilitySuppressed": all(bpy.data.objects[name].hide_render for name in cfg.SUPPRESSED_OPENING_HEADER_OBJECTS),
             },

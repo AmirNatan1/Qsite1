@@ -31,6 +31,80 @@ CENTRAL_ZONE_CENTRE_XY = (0.65, 0.0)
 CENTRAL_ZONE_RADIUS_METERS = 6.1
 FLOAT_TOLERANCE = 2e-6
 
+STAGE_ORDER = ("periphery", "cable")
+
+CABLE_CONTACT_PROFILE_OBJECT = "Phase4R1V2_WeightedSheathContactProfile"
+CABLE_SHEATH_MATERIAL = "Phase4R1V2_HeavyGraphiteCable"
+CABLE_CURRENT_MATERIAL = "Phase4R1V2_ExactArcLengthCurrentSurface"
+CABLE_FAMILY_AUTHORITY = {
+    "desktop": {
+        "collection": "PHASE4R1V2_CABLE_DESKTOP",
+        "sheath": "Phase4R1V2_Desktop_ContinuousGraphiteSheath",
+        "currentPrefix": "Phase4R1V2_Desktop_Current_",
+        "currentCount": 160,
+        "localResponsePrefix": "Phase4R1V2_Desktop_LocalResponse_",
+        "localResponseCount": 4,
+    },
+    "mobile": {
+        "collection": "PHASE4R1V2_CABLE_MOBILE",
+        "sheath": "Phase4R1V2_Mobile_ContinuousGraphiteSheath",
+        "currentPrefix": "Phase4R1V2_Mobile_Current_",
+        "currentCount": 144,
+        "localResponsePrefix": "Phase4R1V2_Mobile_LocalResponse_",
+        "localResponseCount": 4,
+    },
+    "landscape": {
+        "collection": "PHASE4R1V2_CABLE_LANDSCAPE",
+        "sheath": "Phase4R1V2_Landscape_ContinuousGraphiteSheath",
+        "currentPrefix": "Phase4R1V2_Landscape_Current_",
+        "currentCount": 152,
+        "localResponsePrefix": "Phase4R1V2_Landscape_LocalResponse_",
+        "localResponseCount": 4,
+    },
+}
+CABLE_EXPECTED_SHEATH_USERS = 3
+CABLE_EXPECTED_CURRENT_USERS = 456
+CABLE_EXPECTED_LOCAL_RESPONSE_LIGHTS = 12
+CABLE_CURRENT_STATE_FRAMES = (1, 46, 70, 106, 166, 225, 261, 285)
+
+CABLE_MATERIAL_AUTHORITY = {
+    "sheath": {
+        "name": CABLE_SHEATH_MATERIAL,
+        "baseColor": "#060808",
+        "roughnessMinimum": 0.78,
+        "roughnessMaximum": 0.91,
+        "noiseScale": 145.0,
+        "noiseDetail": 2.2,
+        "noiseRoughness": 0.62,
+        "noiseDistortion": 0.04,
+        "bumpStrength": 0.055,
+        "bumpDistanceMeters": 0.00045,
+        "emissionStrength": 0.0,
+        "transmissionWeight": 0.0,
+    },
+    "current": {
+        "name": CABLE_CURRENT_MATERIAL,
+        "channelHousingColor": "#030505",
+        "channelHousingRoughness": 0.90,
+        "objectColorTint": (0.82, 0.45, 0.76, 1.0),
+        "emissionStrength": 0.78,
+        "transmissionBasis": "SOURCE_CORRIDOR_FIXED_X_CROSS_SECTION_ELSE_ABS_DOT_GEOMETRY_NORMAL_INCOMING",
+        "sourceCorridorAxisWorld": (1.0, 0.0, 0.0),
+        "sourceCorridorGateFullY": -5.50,
+        "sourceCorridorGateZeroY": -5.20,
+        "sourceCorridorCrossSectionDenominatorMinimum": 0.0001,
+        "sourceCorridorOverlayRadiusMeters": 0.0305,
+        "sourceCorridorMinimumAbsoluteTangentX": 0.90,
+        "outerViewFacingMinimum": 0.64,
+        "outerViewFacingMaximum": 0.80,
+        "coreViewFacingMinimum": 0.88,
+        "coreViewFacingMaximum": 0.96,
+        "frontFacingOnly": True,
+        "useBackfaceCulling": True,
+        "surfaceRenderMethod": "DITHERED",
+    },
+}
+
 PALETTE = {
     "primaryBlack": "#0e1112",
     "deepGraphite": "#1a2020",
