@@ -1,0 +1,776 @@
+{
+  "acceptedR1Source": {
+    "bytes": 3526219,
+    "path": "artifacts/original/phase-4r1-refined-proving-hall/source/quantum-signal-television-phase4r1-refined-proving-hall.blend",
+    "sha256": "a0a122baaf021833e9cad6194a474ef714b182be2c8e7171e00ad69c00565215"
+  },
+  "authorization": {
+    "complete540FrameCyclesFilmResumed": false,
+    "complete540FrameCyclesFilmStarted": false,
+    "finalRefinedMediaIntegrationStarted": false,
+    "generativeVideoAuthorized": false,
+    "phase5Authorized": false
+  },
+  "blender": {
+    "version": "5.2.0 LTS",
+    "versionTuple": [
+      5,
+      2,
+      0
+    ]
+  },
+  "derivative": {
+    "bytes": 3586504,
+    "path": "artifacts/original/phase-4r1-1-periphery-current-mobile-crt/source/quantum-signal-television-phase4r1-1-periphery-current-mobile-crt.blend",
+    "sha256": "31d99bf02b678c268b6e7fbb93e41da5eed9dfc33d7bd6fd2d4d63b3e2b93d97"
+  },
+  "exactQ": {
+    "bytes": 69348,
+    "filepath": "//q-fidelity/quantum-icon-pre-crt-effect.png",
+    "name": "Phase4R1V2_ExactQuantumQ_PreCRTEffect_2048",
+    "packedFilepath": "//q-fidelity/quantum-icon-pre-crt-effect.png",
+    "sha256": "009c494df3b301470ab539f23e02b375f0c1fcec9b4b18cf07fc853b95fd03c5"
+  },
+  "preservation": {
+    "after": {
+      "acceptedLights": "4757aaf1095f3eef2b42ca32eeb11378cc837b8121f426ea5c5ef5f701ea18d2",
+      "cableGeometryTimingAndResponse": "23c2b2a67242e08ec6dd20f92f93d684fd9fd1e06baaf84eb045ddd9b0a0fe15",
+      "cableOriginAndDistributionSource": "26697d87fed62c9c93fc3adef6926ef7307afbb9aecb0332f2a342e9941b8882",
+      "centralFloor": "48e2cfe0137730273e18a4a6f0d424176c43c056f2fc00e477a6f8ea06917a0d",
+      "connections": "77b4102e310b51a235f8a94e9d2d44734e677c02632964eaa2eb9dac051c937e",
+      "crtGeometryActionsAndMaterialBindings": "3e24cc49d541cac327c09cde42bb03cf2fa70e3a597f01aa90c4802140fc511a",
+      "desktopCamera": "09c44d5d969ec8f7af53a8bade8bb717c37cb0ac4b045b907791724a503b2540",
+      "exactQ": "4e344da097ab1c8c8e88a4ecf4b909dc4c8d738a3a99c7519029cb15ee421ac0",
+      "hallExceptOpeningHeaders": "7f52f346d2b200993e10a00ebdba8ea1b5b7e745d56084d6cd0bcc2a36a3dad0",
+      "landscapeCamera": "16c99622892b3dee90872269a9df87dbd29f26cbc8061f33247bb3759424171a",
+      "mobileCameraExceptLens": "29db60533b938353f86dc07b82f43595cea187706c6c0a0c31c9ad7ad42d33a9",
+      "mobileCameraFull": "ed3fd29d65566d8d53bafce291ba28a3bc4035fa0edf0a181b01d4701aadb4fb",
+      "screenSpill": "f3cb5da27d9ce519004bb5436af009245011864cd2ac1b1181cc06fb8c03f7fc"
+    },
+    "before": {
+      "acceptedLights": "4757aaf1095f3eef2b42ca32eeb11378cc837b8121f426ea5c5ef5f701ea18d2",
+      "cableGeometryTimingAndResponse": "23c2b2a67242e08ec6dd20f92f93d684fd9fd1e06baaf84eb045ddd9b0a0fe15",
+      "cableOriginAndDistributionSource": "26697d87fed62c9c93fc3adef6926ef7307afbb9aecb0332f2a342e9941b8882",
+      "centralFloor": "48e2cfe0137730273e18a4a6f0d424176c43c056f2fc00e477a6f8ea06917a0d",
+      "connections": "77b4102e310b51a235f8a94e9d2d44734e677c02632964eaa2eb9dac051c937e",
+      "crtGeometryActionsAndMaterialBindings": "3e24cc49d541cac327c09cde42bb03cf2fa70e3a597f01aa90c4802140fc511a",
+      "desktopCamera": "09c44d5d969ec8f7af53a8bade8bb717c37cb0ac4b045b907791724a503b2540",
+      "exactQ": "4e344da097ab1c8c8e88a4ecf4b909dc4c8d738a3a99c7519029cb15ee421ac0",
+      "hallExceptOpeningHeaders": "7f52f346d2b200993e10a00ebdba8ea1b5b7e745d56084d6cd0bcc2a36a3dad0",
+      "landscapeCamera": "16c99622892b3dee90872269a9df87dbd29f26cbc8061f33247bb3759424171a",
+      "mobileCameraExceptLens": "29db60533b938353f86dc07b82f43595cea187706c6c0a0c31c9ad7ad42d33a9",
+      "mobileCameraFull": "ed3fd29d65566d8d53bafce291ba28a3bc4035fa0edf0a181b01d4701aadb4fb",
+      "screenSpill": "f3cb5da27d9ce519004bb5436af009245011864cd2ac1b1181cc06fb8c03f7fc"
+    },
+    "onlyOpeningHeaderRenderVisibilitySuppressed": true,
+    "openingHeaderGeometryAndMaterialBindingsUnchanged": true,
+    "unchanged": {
+      "acceptedLights": true,
+      "cableGeometryTimingAndResponse": true,
+      "cableOriginAndDistributionSource": true,
+      "centralFloor": true,
+      "connections": true,
+      "crtGeometryActionsAndMaterialBindings": true,
+      "desktopCamera": true,
+      "exactQ": true,
+      "hallExceptOpeningHeaders": true,
+      "landscapeCamera": true,
+      "mobileCameraExceptLens": true,
+      "mobileCameraFull": true,
+      "screenSpill": true
+    }
+  },
+  "producerAuthorities": {
+    "builder": {
+      "bytes": 36876,
+      "path": "artifacts/original/phase-4r1-1-periphery-current-mobile-crt/source/build_phase4r1_1_targeted_repair.py",
+      "sha256": "dbcfc62f3f254965a48cc4dc21a097bde1b8edc365d966dadec63b90be586f0d"
+    },
+    "config": {
+      "bytes": 5517,
+      "path": "artifacts/original/phase-4r1-1-periphery-current-mobile-crt/source/phase4r1_1_repair_config.py",
+      "sha256": "49131daf8fbc1381afe25a3835149654e2c30409bf25b3630d840683ab9c84d1"
+    }
+  },
+  "schema": "quantum-hub.phase-4-r1-1.targeted-repair.source-build.v1",
+  "stages": {
+    "periphery": {
+      "acceptedStructuralObstructionOverlaps": [],
+      "centralZoneViolations": [],
+      "collection": "PHASE4R11_PERIPHERAL_AUTHORITY",
+      "hiddenOpeningHeaders": [
+        "P4R1_Portal_00_Header",
+        "P4R1_Portal_00_ServiceEdge"
+      ],
+      "lightCount": 2,
+      "lights": [
+        {
+          "color": [
+            0.5,
+            0.47,
+            0.44
+          ],
+          "coneDegrees": 48.00000134,
+          "data": "Phase4R11_ServiceWall_Skim_Data",
+          "energyWatts": 54.0,
+          "object": "Phase4R11_ServiceWall_Skim",
+          "softRadiusMeters": 0.55000001,
+          "type": "SPOT"
+        },
+        {
+          "color": [
+            0.43000001,
+            0.47,
+            0.47
+          ],
+          "coneDegrees": 42.00000117,
+          "data": "Phase4R11_VentRecess_Skim_Data",
+          "energyWatts": 46.0,
+          "object": "Phase4R11_VentRecess_Skim",
+          "softRadiusMeters": 0.44999999,
+          "type": "SPOT"
+        }
+      ],
+      "materialAuthority": {
+        "cabinet": {
+          "bumpStrength": 0.055,
+          "color": "#121718",
+          "metallic": 0.18,
+          "name": "Phase4R11_CabinetGraphite",
+          "noiseScale": 26.0,
+          "roughness": 0.62
+        },
+        "conduit": {
+          "bumpStrength": 0.035,
+          "color": "#293234",
+          "metallic": 0.72,
+          "name": "Phase4R11_DarkGalvanizedConduit",
+          "noiseScale": 32.0,
+          "roughness": 0.38
+        },
+        "paintedSteel": {
+          "bumpStrength": 0.045,
+          "color": "#1b2224",
+          "metallic": 0.52,
+          "name": "Phase4R11_PaintedStructuralSteel",
+          "noiseScale": 18.0,
+          "roughness": 0.48
+        },
+        "plate": {
+          "bumpStrength": 0.025,
+          "color": "#343a3b",
+          "metallic": 0.58,
+          "name": "Phase4R11_MaintenancePlate",
+          "noiseScale": 35.0,
+          "roughness": 0.44
+        },
+        "recess": {
+          "bumpStrength": 0.025,
+          "color": "#14090f",
+          "metallic": 0.04,
+          "name": "Phase4R11_UtilityRecessWarmDark",
+          "noiseScale": 12.0,
+          "roughness": 0.84
+        },
+        "vent": {
+          "bumpStrength": 0.035,
+          "color": "#141b1c",
+          "metallic": 0.24,
+          "name": "Phase4R11_VentilationBlack",
+          "noiseScale": 20.0,
+          "roughness": 0.72
+        }
+      },
+      "materialCount": 6,
+      "objectCount": 61,
+      "objectInventory": [
+        {
+          "materials": [
+            "Phase4R11_PaintedStructuralSteel"
+          ],
+          "name": "Phase4R11_OpeningHeader_East",
+          "type": "MESH",
+          "zone": "opening-overhead"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_OpeningHeader_EastServiceEdge",
+          "type": "MESH",
+          "zone": "opening-overhead"
+        },
+        {
+          "materials": [
+            "Phase4R11_PaintedStructuralSteel"
+          ],
+          "name": "Phase4R11_OpeningHeader_West",
+          "type": "MESH",
+          "zone": "opening-overhead"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_OpeningHeader_WestServiceEdge",
+          "type": "MESH",
+          "zone": "opening-overhead"
+        },
+        {
+          "materials": [
+            "Phase4R11_CabinetGraphite"
+          ],
+          "name": "Phase4R11_ServiceWall_Cabinet_A",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_MaintenancePlate"
+          ],
+          "name": "Phase4R11_ServiceWall_Cabinet_A_BlankPlate",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_PaintedStructuralSteel"
+          ],
+          "name": "Phase4R11_ServiceWall_Cabinet_A_Door",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_ServiceWall_Cabinet_A_Handle",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_ServiceWall_Cabinet_A_Hinge_0",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_ServiceWall_Cabinet_A_Hinge_1",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_CabinetGraphite"
+          ],
+          "name": "Phase4R11_ServiceWall_Cabinet_B",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_MaintenancePlate"
+          ],
+          "name": "Phase4R11_ServiceWall_Cabinet_B_BlankPlate",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_PaintedStructuralSteel"
+          ],
+          "name": "Phase4R11_ServiceWall_Cabinet_B_Door",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_ServiceWall_Cabinet_B_Handle",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_ServiceWall_Cabinet_B_Hinge_0",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_ServiceWall_Cabinet_B_Hinge_1",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_CabinetGraphite"
+          ],
+          "name": "Phase4R11_ServiceWall_Cabinet_C",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_MaintenancePlate"
+          ],
+          "name": "Phase4R11_ServiceWall_Cabinet_C_BlankPlate",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_PaintedStructuralSteel"
+          ],
+          "name": "Phase4R11_ServiceWall_Cabinet_C_Door",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_ServiceWall_Cabinet_C_Handle",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_ServiceWall_Cabinet_C_Hinge_0",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_ServiceWall_Cabinet_C_Hinge_1",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_ServiceWall_CableTray_Lower",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_ServiceWall_CableTray_Rung_00",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_ServiceWall_CableTray_Rung_01",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_ServiceWall_CableTray_Rung_02",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_ServiceWall_CableTray_Rung_03",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_ServiceWall_CableTray_Rung_04",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_ServiceWall_CableTray_Rung_05",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_ServiceWall_CableTray_Rung_06",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_ServiceWall_CableTray_Rung_07",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_ServiceWall_CableTray_Rung_08",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_ServiceWall_CableTray_Rung_09",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_ServiceWall_CableTray_Rung_10",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_ServiceWall_CableTray_Rung_11",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_ServiceWall_CableTray_Upper",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_ServiceWall_Conduit_A",
+          "type": "CURVE",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_ServiceWall_Conduit_B",
+          "type": "CURVE",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_ServiceWall_Conduit_C",
+          "type": "CURVE",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_PaintedStructuralSteel"
+          ],
+          "name": "Phase4R11_ServiceWall_Frame_Bottom",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_PaintedStructuralSteel"
+          ],
+          "name": "Phase4R11_ServiceWall_Frame_Left",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_PaintedStructuralSteel"
+          ],
+          "name": "Phase4R11_ServiceWall_Frame_Right",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_PaintedStructuralSteel"
+          ],
+          "name": "Phase4R11_ServiceWall_Frame_Top",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_UtilityRecessWarmDark"
+          ],
+          "name": "Phase4R11_ServiceWall_RecessBack",
+          "type": "MESH",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [],
+          "name": "Phase4R11_ServiceWall_Skim",
+          "type": "LIGHT",
+          "zone": "service-wall"
+        },
+        {
+          "materials": [
+            "Phase4R11_UtilityRecessWarmDark"
+          ],
+          "name": "Phase4R11_VentRecess_Back",
+          "type": "MESH",
+          "zone": "vent-recess"
+        },
+        {
+          "materials": [
+            "Phase4R11_MaintenancePlate"
+          ],
+          "name": "Phase4R11_VentRecess_BlankPlate",
+          "type": "MESH",
+          "zone": "vent-recess"
+        },
+        {
+          "materials": [
+            "Phase4R11_PaintedStructuralSteel"
+          ],
+          "name": "Phase4R11_VentRecess_Frame_Bottom",
+          "type": "MESH",
+          "zone": "vent-recess"
+        },
+        {
+          "materials": [
+            "Phase4R11_PaintedStructuralSteel"
+          ],
+          "name": "Phase4R11_VentRecess_Frame_Left",
+          "type": "MESH",
+          "zone": "vent-recess"
+        },
+        {
+          "materials": [
+            "Phase4R11_PaintedStructuralSteel"
+          ],
+          "name": "Phase4R11_VentRecess_Frame_Right",
+          "type": "MESH",
+          "zone": "vent-recess"
+        },
+        {
+          "materials": [
+            "Phase4R11_PaintedStructuralSteel"
+          ],
+          "name": "Phase4R11_VentRecess_Frame_Top",
+          "type": "MESH",
+          "zone": "vent-recess"
+        },
+        {
+          "materials": [
+            "Phase4R11_VentilationBlack"
+          ],
+          "name": "Phase4R11_VentRecess_Louver_00",
+          "type": "MESH",
+          "zone": "vent-recess"
+        },
+        {
+          "materials": [
+            "Phase4R11_VentilationBlack"
+          ],
+          "name": "Phase4R11_VentRecess_Louver_01",
+          "type": "MESH",
+          "zone": "vent-recess"
+        },
+        {
+          "materials": [
+            "Phase4R11_VentilationBlack"
+          ],
+          "name": "Phase4R11_VentRecess_Louver_02",
+          "type": "MESH",
+          "zone": "vent-recess"
+        },
+        {
+          "materials": [
+            "Phase4R11_VentilationBlack"
+          ],
+          "name": "Phase4R11_VentRecess_Louver_03",
+          "type": "MESH",
+          "zone": "vent-recess"
+        },
+        {
+          "materials": [
+            "Phase4R11_VentilationBlack"
+          ],
+          "name": "Phase4R11_VentRecess_Louver_04",
+          "type": "MESH",
+          "zone": "vent-recess"
+        },
+        {
+          "materials": [
+            "Phase4R11_VentilationBlack"
+          ],
+          "name": "Phase4R11_VentRecess_Louver_05",
+          "type": "MESH",
+          "zone": "vent-recess"
+        },
+        {
+          "materials": [
+            "Phase4R11_VentilationBlack"
+          ],
+          "name": "Phase4R11_VentRecess_Louver_06",
+          "type": "MESH",
+          "zone": "vent-recess"
+        },
+        {
+          "materials": [
+            "Phase4R11_VentilationBlack"
+          ],
+          "name": "Phase4R11_VentRecess_Louver_07",
+          "type": "MESH",
+          "zone": "vent-recess"
+        },
+        {
+          "materials": [
+            "Phase4R11_PaintedStructuralSteel"
+          ],
+          "name": "Phase4R11_VentRecess_Plenum",
+          "type": "MESH",
+          "zone": "vent-recess"
+        },
+        {
+          "materials": [
+            "Phase4R11_DarkGalvanizedConduit"
+          ],
+          "name": "Phase4R11_VentRecess_ReturnCollar",
+          "type": "MESH",
+          "zone": "vent-recess"
+        },
+        {
+          "materials": [
+            "Phase4R11_PaintedStructuralSteel"
+          ],
+          "name": "Phase4R11_VentRecess_ReturnDuct",
+          "type": "MESH",
+          "zone": "vent-recess"
+        },
+        {
+          "materials": [],
+          "name": "Phase4R11_VentRecess_Skim",
+          "type": "LIGHT",
+          "zone": "vent-recess"
+        }
+      ],
+      "zones": {
+        "openingOverhead": [
+          "Phase4R11_OpeningHeader_East",
+          "Phase4R11_OpeningHeader_EastServiceEdge",
+          "Phase4R11_OpeningHeader_West",
+          "Phase4R11_OpeningHeader_WestServiceEdge"
+        ],
+        "serviceWall": [
+          "Phase4R11_ServiceWall_Cabinet_A",
+          "Phase4R11_ServiceWall_Cabinet_A_BlankPlate",
+          "Phase4R11_ServiceWall_Cabinet_A_Door",
+          "Phase4R11_ServiceWall_Cabinet_A_Handle",
+          "Phase4R11_ServiceWall_Cabinet_A_Hinge_0",
+          "Phase4R11_ServiceWall_Cabinet_A_Hinge_1",
+          "Phase4R11_ServiceWall_Cabinet_B",
+          "Phase4R11_ServiceWall_Cabinet_B_BlankPlate",
+          "Phase4R11_ServiceWall_Cabinet_B_Door",
+          "Phase4R11_ServiceWall_Cabinet_B_Handle",
+          "Phase4R11_ServiceWall_Cabinet_B_Hinge_0",
+          "Phase4R11_ServiceWall_Cabinet_B_Hinge_1",
+          "Phase4R11_ServiceWall_Cabinet_C",
+          "Phase4R11_ServiceWall_Cabinet_C_BlankPlate",
+          "Phase4R11_ServiceWall_Cabinet_C_Door",
+          "Phase4R11_ServiceWall_Cabinet_C_Handle",
+          "Phase4R11_ServiceWall_Cabinet_C_Hinge_0",
+          "Phase4R11_ServiceWall_Cabinet_C_Hinge_1",
+          "Phase4R11_ServiceWall_CableTray_Lower",
+          "Phase4R11_ServiceWall_CableTray_Rung_00",
+          "Phase4R11_ServiceWall_CableTray_Rung_01",
+          "Phase4R11_ServiceWall_CableTray_Rung_02",
+          "Phase4R11_ServiceWall_CableTray_Rung_03",
+          "Phase4R11_ServiceWall_CableTray_Rung_04",
+          "Phase4R11_ServiceWall_CableTray_Rung_05",
+          "Phase4R11_ServiceWall_CableTray_Rung_06",
+          "Phase4R11_ServiceWall_CableTray_Rung_07",
+          "Phase4R11_ServiceWall_CableTray_Rung_08",
+          "Phase4R11_ServiceWall_CableTray_Rung_09",
+          "Phase4R11_ServiceWall_CableTray_Rung_10",
+          "Phase4R11_ServiceWall_CableTray_Rung_11",
+          "Phase4R11_ServiceWall_CableTray_Upper",
+          "Phase4R11_ServiceWall_Conduit_A",
+          "Phase4R11_ServiceWall_Conduit_B",
+          "Phase4R11_ServiceWall_Conduit_C",
+          "Phase4R11_ServiceWall_Frame_Bottom",
+          "Phase4R11_ServiceWall_Frame_Left",
+          "Phase4R11_ServiceWall_Frame_Right",
+          "Phase4R11_ServiceWall_Frame_Top",
+          "Phase4R11_ServiceWall_RecessBack"
+        ],
+        "ventRecess": [
+          "Phase4R11_VentRecess_Back",
+          "Phase4R11_VentRecess_BlankPlate",
+          "Phase4R11_VentRecess_Frame_Bottom",
+          "Phase4R11_VentRecess_Frame_Left",
+          "Phase4R11_VentRecess_Frame_Right",
+          "Phase4R11_VentRecess_Frame_Top",
+          "Phase4R11_VentRecess_Louver_00",
+          "Phase4R11_VentRecess_Louver_01",
+          "Phase4R11_VentRecess_Louver_02",
+          "Phase4R11_VentRecess_Louver_03",
+          "Phase4R11_VentRecess_Louver_04",
+          "Phase4R11_VentRecess_Louver_05",
+          "Phase4R11_VentRecess_Louver_06",
+          "Phase4R11_VentRecess_Louver_07",
+          "Phase4R11_VentRecess_Plenum",
+          "Phase4R11_VentRecess_ReturnCollar",
+          "Phase4R11_VentRecess_ReturnDuct"
+        ]
+      }
+    }
+  },
+  "status": "PASS",
+  "throughStage": "periphery",
+  "timeline": {
+    "after": {
+      "fps": 30,
+      "fpsBase": 1.0,
+      "frameEnd": 540,
+      "frameStart": 1
+    },
+    "before": {
+      "fps": 30,
+      "fpsBase": 1.0,
+      "frameEnd": 540,
+      "frameStart": 1
+    },
+    "unchanged": true
+  }
+}
