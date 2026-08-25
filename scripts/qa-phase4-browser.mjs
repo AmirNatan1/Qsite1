@@ -407,6 +407,37 @@ async function readHomeState(page) {
     const stageStyle = style(stage);
     const entryStyle = style(entry);
     const entryContentStyle = style(entryContent);
+    const headerStyle = style(header);
+    const focusableSelector = "a[href], button, summary, input:not([type=hidden]), select, textarea, [tabindex]";
+    const effectivelyFocusable = (element) =>
+      !element.closest("[inert]")
+      && !element.hasAttribute("disabled")
+      && element.tabIndex >= 0;
+    const visibleElement = (element) => {
+      const computed = style(element);
+      const rect = element?.getBoundingClientRect();
+      return Boolean(
+        element
+        && computed
+        && rect
+        && computed.display !== "none"
+        && computed.visibility !== "hidden"
+        && Number.parseFloat(computed.opacity) > 0.001
+        && rect.width > 0
+        && rect.height > 0
+      );
+    };
+    const headerRect = header?.getBoundingClientRect();
+    const headerHitTested = Boolean(
+      header
+      && headerRect
+      && headerRect.width > 0
+      && headerRect.height > 0
+      && document.elementsFromPoint(
+        Math.min(innerWidth - 1, Math.max(0, headerRect.left + headerRect.width / 2)),
+        Math.min(innerHeight - 1, Math.max(0, headerRect.top + headerRect.height / 2)),
+      ).some((element) => element === header || header.contains(element))
+    );
     const main = document.querySelector("main");
     const nestedVerticalScrollers = main
       ? [...main.querySelectorAll("*")]
@@ -441,6 +472,8 @@ async function readHomeState(page) {
       chapterOrder: [...document.querySelectorAll("[data-home-scene]")]
         .map((element) => element.getAttribute("data-home-scene")),
       rootMode: root.getAttribute("data-cinematic-mode"),
+      rootEligibility: root.getAttribute("data-cinematic-eligibility"),
+      rootBootstrap: root.getAttribute("data-cinematic-bootstrap"),
       rootFallback: root.getAttribute("data-cinematic-fallback"),
       rootHeader: root.getAttribute("data-cinematic-header"),
       rootFocus: root.getAttribute("data-cinematic-focus"),
@@ -454,6 +487,23 @@ async function readHomeState(page) {
       entryTop: absoluteTop(entry),
       entryHeight: entry?.getBoundingClientRect().height ?? null,
       headerHeight: header?.getBoundingClientRect().height ?? 0,
+      header: header
+        ? {
+            visibility: headerStyle?.visibility ?? null,
+            opacity: number(headerStyle?.opacity),
+            pointerEvents: headerStyle?.pointerEvents ?? null,
+            inert: header.hasAttribute("inert"),
+            hitTested: headerHitTested,
+            focusableDescendantCount: [...header.querySelectorAll(focusableSelector)]
+              .filter(effectivelyFocusable).length,
+            visibleDescendantCount: [
+              header.querySelector(".brand-link"),
+              header.querySelector(".desktop-nav"),
+              header.querySelector(".mobile-nav > summary"),
+            ].filter(visibleElement).length,
+            detailsOpen: Boolean(header.querySelector("[data-mobile-nav][open]")),
+          }
+        : null,
       phase: shell?.getAttribute("data-cinematic-phase") ?? null,
       interactive: shell?.getAttribute("data-cinematic-interactive") ?? null,
       mediaFamily: shell?.getAttribute("data-media-family") ?? null,
@@ -487,6 +537,10 @@ async function readHomeState(page) {
             opacity: number(entryStyle?.opacity),
             pointerEvents: entryStyle?.pointerEvents ?? null,
             contentOpacity: number(entryContentStyle?.opacity),
+            inert: entry.hasAttribute("inert"),
+            focusableDescendantCount: [...entry.querySelectorAll(focusableSelector)]
+              .filter(effectivelyFocusable).length,
+            routeCount: entry.querySelectorAll(".entry-path[href]").length,
           }
         : null,
       video: video
@@ -576,6 +630,50 @@ function expectHomeSemantics(failures, scenario, state) {
   );
 }
 
+function expectChromeConcealed(failures, scenario, state) {
+  expect(
+    failures,
+    state.rootHeader === "concealed"
+      && state.interactive === "false"
+      && state.header?.visibility === "hidden"
+      && (state.header?.opacity ?? 1) <= 0.001
+      && state.header?.pointerEvents === "none"
+      && state.header?.inert === true
+      && state.header?.hitTested === false
+      && state.header?.focusableDescendantCount === 0
+      && state.header?.visibleDescendantCount === 0
+      && state.header?.detailsOpen === false
+      && state.entry?.inert === true
+      && state.entry?.pointerEvents === "none"
+      && state.entry?.focusableDescendantCount === 0
+      && state.entry?.routeCount === 2,
+    scenario,
+    "pre-settled-chrome-suppression",
+    { rootHeader: state.rootHeader, interactive: state.interactive, header: state.header, entry: state.entry },
+    "header absent from paint/hit/focus, mobile menu closed, ENTRY inert, one H1 and two routes retained",
+  );
+}
+
+function expectChromeReleased(failures, scenario, state, { requireRootState = true } = {}) {
+  expect(
+    failures,
+    (!requireRootState || state.rootHeader === "released")
+      && state.header?.visibility === "visible"
+      && (state.header?.opacity ?? 0) >= 0.999
+      && state.header?.pointerEvents !== "none"
+      && state.header?.inert === false
+      && state.header?.hitTested === true
+      && state.header?.visibleDescendantCount >= 2
+      && state.entry?.inert === false
+      && state.entry?.pointerEvents !== "none"
+      && state.entry?.routeCount === 2,
+    scenario,
+    "released-chrome-interaction",
+    { rootHeader: state.rootHeader, header: state.header, entry: state.entry },
+    "normal visible pointer-active header and interactive semantic ENTRY",
+  );
+}
+
 function expectCleanRuntime(failures, scenario, network) {
   expect(
     failures,
@@ -618,6 +716,7 @@ async function runReferenceViewport(browser, baseUrl, viewport, failures) {
 
   expect(failures, response?.status() === 200, scenario, "http", response?.status(), 200);
   expectHomeSemantics(failures, scenario, state);
+  expectChromeConcealed(failures, scenario, state);
   expect(
     failures,
     controllerCompleted,
@@ -843,6 +942,7 @@ async function runScrollTraversal(browser, baseUrl, viewport, failures) {
     nativePageDown.nestedVerticalScrollers,
     "document scrolling only",
   );
+  expectChromeConcealed(failures, scenario + "/native-page-down", nativePageDown);
 
   const milestones = [
     { id: "physical-open", progress: 0 },
@@ -919,6 +1019,8 @@ async function runScrollTraversal(browser, baseUrl, viewport, failures) {
         "non-decreasing scroll, film and frame state",
       );
     }
+    if (item.progress < 1) expectChromeConcealed(failures, scenario + "/" + item.id, item.state);
+    else expectChromeReleased(failures, scenario + "/" + item.id, item.state);
   }
 
   const opening = forward[0].state;
@@ -981,6 +1083,7 @@ async function runScrollTraversal(browser, baseUrl, viewport, failures) {
   }
   for (let index = 0; index < reverse.length; index += 1) {
     const item = reverse[index];
+    expectChromeConcealed(failures, scenario + "/reverse-" + item.progress, item.state);
     expect(
       failures,
       item.media.synchronized,
@@ -1032,6 +1135,7 @@ async function runScrollTraversal(browser, baseUrl, viewport, failures) {
   await scrollTo(page, startY);
   const fastForward = await scrollTo(page, endY);
   const fastForwardMedia = await waitForMediaTarget(page);
+  expectChromeReleased(failures, scenario + "/fast-forward", fastForward);
   expect(
     failures,
     fastForward.phase === "settled"
@@ -1054,6 +1158,7 @@ async function runScrollTraversal(browser, baseUrl, viewport, failures) {
 
   const fastReverse = await scrollTo(page, startY);
   const fastReverseMedia = await waitForMediaTarget(page);
+  expectChromeConcealed(failures, scenario + "/fast-reverse", fastReverse);
   expect(
     failures,
     fastReverse.phase === "physical"
@@ -1087,6 +1192,7 @@ async function runScrollTraversal(browser, baseUrl, viewport, failures) {
   );
   await settle(page);
   const rapidFinal = await readHomeState(page);
+  expectChromeReleased(failures, scenario + "/rapid-latest", rapidFinal);
   expect(
     failures,
     Math.abs(rapidFinal.scrollY - endY) <= 3
@@ -1399,6 +1505,7 @@ async function runKeyboardSkip(browser, baseUrl, failures) {
     { active: focused.active, skip: focused.skip },
     "visible Skip cinematic intro link targeting #entry",
   );
+  expectChromeConcealed(failures, scenario + "/focused", focused);
 
   await page.keyboard.press("Enter");
   await page.waitForFunction(
@@ -1409,6 +1516,7 @@ async function runKeyboardSkip(browser, baseUrl, failures) {
   await waitForScrollStable(page);
   await settle(page);
   const skipped = await readHomeState(page);
+  expectChromeReleased(failures, scenario + "/settled", skipped);
   const expectedY = Math.min(
     skipped.maxScroll,
     Math.max(0, (skipped.entryTop ?? 0) - skipped.headerHeight),
@@ -1506,6 +1614,8 @@ async function runKeyboardSkipMatrix(browser, baseUrl, failures) {
       },
       "visible keyboard-first skip link from the requested cinematic phase",
     );
+    expectChromeConcealed(failures, scenario + "/focused", focused);
+    expectChromeReleased(failures, scenario + "/settled", skipped);
     expect(
       failures,
       skipped.hash === "#entry"
@@ -1558,6 +1668,7 @@ async function runStaticVariant(
 
   expect(failures, response?.status() === 200, scenario, "http", response?.status(), 200);
   expectHomeSemantics(failures, scenario, initial);
+  expectChromeReleased(failures, scenario, initial, { requireRootState: javaScriptEnabled });
   expect(
     failures,
     initial.rootMode === (javaScriptEnabled ? "static" : null),
@@ -1675,7 +1786,7 @@ async function readHashTarget(page, selector) {
 async function runDirectDeepLink(
   browser,
   baseUrl,
-  { id, hash, selector, expectedHeader },
+  { id, hash, selector },
   failures,
 ) {
   const context = await browser.newContext({
@@ -1697,20 +1808,23 @@ async function runDirectDeepLink(
 
   expect(failures, response?.status() === 200, scenario, "http", response?.status(), 200);
   expectHomeSemantics(failures, scenario, state);
+  expectChromeReleased(failures, scenario, state);
   expect(
     failures,
     controllerCompleted
-      && state.rootMode === "enhanced"
-      && state.mediaState === "ready",
+      && state.rootMode === "static"
+      && state.rootEligibility === "bypass"
+      && state.rootBootstrap === "deep-link"
+      && state.mediaState === null,
     scenario,
-    "enhanced-deep-link",
+    "static-deep-link-bypass",
     {
       controllerCompleted,
       mode: state.rootMode,
       mediaState: state.mediaState,
       fallback: state.rootFallback,
     },
-    "enhanced controller reconstructed from the deep document position",
+    "deep link bypasses cinematic media and releases normal document chrome",
   );
   expect(
     failures,
@@ -1726,9 +1840,8 @@ async function runDirectDeepLink(
   );
   expect(
     failures,
-    state.phase === "settled"
-      && state.targetFrame >= 269
-      && state.stage?.visibility === "hidden"
+    state.phase === "fallback"
+      && state.stage?.position === "absolute"
       && state.entry?.contentOpacity >= 0.99
       && state.entry?.pointerEvents !== "none",
     scenario,
@@ -1739,11 +1852,11 @@ async function runDirectDeepLink(
       stage: state.stage,
       entry: state.entry,
     },
-    "settled semantic Home without a poster obstruction",
+    "bounded static poster outside the target viewport and fully interactive semantic Home",
   );
   expect(
     failures,
-    state.rootHeader === expectedHeader
+    state.rootHeader === "released"
       && !state.rootDeepLink,
     scenario,
     "deep-link-root-state",
@@ -1751,15 +1864,16 @@ async function runDirectDeepLink(
       header: state.rootHeader,
       deepLinkMarker: state.rootDeepLink,
     },
-    { header: expectedHeader, deepLinkMarker: false },
+    { header: "released", deepLinkMarker: false },
   );
   expect(
     failures,
-    network.uniqueMediaPaths.length === 1,
+    network.uniqueMediaPaths.length === 0
+      && network.cinematicControllerRequests.length === 0,
     scenario,
     "single-deep-link-media",
     network.uniqueMediaPaths,
-    ["one selected cinematic source"],
+    { media: [], controller: [] },
   );
   expectCleanRuntime(failures, scenario, network);
 
@@ -1846,31 +1960,37 @@ async function runLifecycleRestoration(browser, baseUrl, failures) {
   expect(
     failures,
     Math.abs(afterSettledReload.scrollY - beforeSettledReload.scrollY) <= 6
-      && afterSettledReload.phase === "settled"
-      && afterSettledReload.targetFrame >= 269
-      && afterSettledReload.stage?.visibility === "hidden"
+      && afterSettledReload.phase === "fallback"
+      && afterSettledReload.rootMode === "static"
+      && afterSettledReload.rootBootstrap === "restored-scroll"
+      && afterSettledReload.rootHeader === "released"
+      && afterSettledReload.stage?.position === "absolute"
       && afterSettledReload.entry?.contentOpacity >= 0.99,
     reloadScenario,
     "settled-reload-restoration",
     { before: beforeSettledReload, after: afterSettledReload },
-    "settled ENTRY position and semantic state restored within 6px",
+    "settled ENTRY position restores within 6px into first-paint released static semantics",
   );
   expect(
     failures,
     Math.abs(afterDeepReload.scrollY - beforeDeepReload.scrollY) <= 6
-      && afterDeepReload.scrollY > settledY
-      && afterDeepReload.phase === "settled"
+      && afterDeepReload.scrollY > (afterDeepReload.entryTop ?? 0) - afterDeepReload.headerHeight
+      && afterDeepReload.phase === "fallback"
+      && afterDeepReload.rootMode === "static"
+      && afterDeepReload.rootBootstrap === "restored-scroll"
       && afterDeepReload.rootHeader === "released"
-      && afterDeepReload.stage?.visibility === "hidden",
+      && afterDeepReload.stage?.position === "absolute",
     reloadScenario,
     "deep-reload-restoration",
     { before: beforeDeepReload, after: afterDeepReload, settledY },
-    "deep METHOD position and released semantic state restored within 6px",
+    "deep METHOD position and released static semantic state restored within 6px",
   );
   expect(
     failures,
-    afterSettledReload.rootMode === "enhanced"
-      && afterDeepReload.rootMode === "enhanced"
+    afterSettledReload.rootMode === "static"
+      && afterDeepReload.rootMode === "static"
+      && afterSettledReload.rootHeader === "released"
+      && afterDeepReload.rootHeader === "released"
       && afterSettledReload.rootFallback === null
       && afterDeepReload.rootFallback === null,
     reloadScenario,
@@ -1885,8 +2005,10 @@ async function runLifecycleRestoration(browser, baseUrl, failures) {
         fallback: afterDeepReload.rootFallback,
       },
     },
-    "fresh enhanced controller without stale fallback state",
+    "restored-state bootstrap bypasses before controller/media without stale fallback state",
   );
+  expectChromeReleased(failures, reloadScenario + "/entry", afterSettledReload);
+  expectChromeReleased(failures, reloadScenario + "/lower", afterDeepReload);
   expectCleanRuntime(failures, reloadScenario, reloadAssertionNetwork);
 
   const historyPage = await context.newPage();
@@ -1940,10 +2062,12 @@ async function runLifecycleRestoration(browser, baseUrl, failures) {
     failures,
     homeAfterForward.path === "/"
       && homeAfterForward.hash === "#method"
-      && homeAfterForward.rootMode === "enhanced"
-      && homeAfterForward.phase === "settled"
+      && homeAfterForward.rootMode === "static"
+      && homeAfterForward.rootBootstrap === "deep-link"
+      && homeAfterForward.phase === "fallback"
       && homeAfterForward.rootFallback === null
-      && homeAfterForward.stage?.visibility === "hidden"
+      && homeAfterForward.rootHeader === "released"
+      && homeAfterForward.stage?.position === "absolute"
       && methodAfterForward.top >= -3
       && methodAfterForward.top <= homeAfterForward.headerHeight + 8,
     historyScenario,
@@ -1954,8 +2078,9 @@ async function runLifecycleRestoration(browser, baseUrl, failures) {
       afterForward: homeAfterForward,
       afterTarget: methodAfterForward,
     },
-    "Home #method reconstructs without stale classes or a reset jump",
+    "Home #method restores directly into released static semantic flow without stale classes or a reset jump",
   );
+  expectChromeReleased(failures, historyScenario + "/forward", homeAfterForward);
   expect(
     failures,
     Math.abs(homeAfterForward.scrollY - homeBeforeBack.scrollY) <= 6,
@@ -2057,8 +2182,10 @@ async function runReloadPositionMatrix(browser, baseUrl, failures) {
     await settle(page);
     const after = await readHomeState(page);
     const scenario = "reload-position/" + position.id;
+    const settledOrLower = position.kind === "section" || position.id === "entry";
     const cinematicStateMatches =
-      position.kind !== "cinematic"
+      settledOrLower
+      || position.kind !== "cinematic"
       || (
         Math.abs((after.scrollProgress ?? 0) - (before.scrollProgress ?? 0)) <= 0.015
         && Math.abs((after.cinematicProgress ?? 0) - (before.cinematicProgress ?? 0)) <= 0.015
@@ -2070,7 +2197,12 @@ async function runReloadPositionMatrix(browser, baseUrl, failures) {
       controllerCompleted
         && Math.abs(after.scrollY - before.scrollY) <= 6
         && cinematicStateMatches
-        && after.rootMode === "enhanced"
+        && (settledOrLower
+          ? after.rootMode === "static"
+            && after.rootBootstrap === "restored-scroll"
+            && after.rootHeader === "released"
+          : after.rootMode === "enhanced"
+            && after.rootHeader === "concealed")
         && after.rootFallback === null,
       scenario,
       "reload-state-reconstruction",
@@ -2095,21 +2227,24 @@ async function runReloadPositionMatrix(browser, baseUrl, failures) {
           fallback: after.rootFallback,
         },
       },
-      "document position within 6px and current cinematic state reconstructed",
+      "document position within 6px; active cinematic reconstructs, while restored ENTRY/lower state bypasses before paint",
     );
     expectHomeSemantics(failures, scenario, after);
-    if (position.kind === "section" || position.id === "entry") {
+    if (settledOrLower) {
       expect(
         failures,
-        after.phase === "settled"
-          && after.stage?.visibility === "hidden"
+        after.phase === "fallback"
+          && after.stage?.position === "absolute"
           && after.entry?.contentOpacity >= 0.99
           && after.entry?.pointerEvents !== "none",
         scenario,
         "reload-deep-semantic-state",
         after,
-        "settled semantic Home at or below ENTRY",
+        "released static semantic Home at or below ENTRY",
       );
+      expectChromeReleased(failures, scenario, after);
+    } else {
+      expectChromeConcealed(failures, scenario, after);
     }
     results.push({
       ...position,
@@ -2495,6 +2630,7 @@ async function runMediaFailOpen(browser, baseUrl, failures) {
 
   expect(failures, response?.status() === 200, scenario, "http", response?.status(), 200);
   expectHomeSemantics(failures, scenario, state);
+  expectChromeReleased(failures, scenario, state);
   expect(
     failures,
     state.rootMode === "static"
@@ -2631,6 +2767,7 @@ async function runMedia404FailOpen(browser, baseUrl, failures) {
 
   expect(failures, response?.status() === 200, scenario, "http", response?.status(), 200);
   expectHomeSemantics(failures, scenario, state);
+  expectChromeReleased(failures, scenario, state);
   expect(
     failures,
     state.rootMode === "static"
@@ -2718,6 +2855,7 @@ async function runUnsupportedCodecFailOpen(browser, baseUrl, failures) {
 
   expect(failures, response?.status() === 200, scenario, "http", response?.status(), 200);
   expectHomeSemantics(failures, scenario, state);
+  expectChromeReleased(failures, scenario, state);
   expect(
     failures,
     state.rootMode === "static"
@@ -2863,6 +3001,7 @@ async function runTextZoom(browser, baseUrl, viewport, failures) {
 
   expect(failures, response?.status() === 200, scenario, "http", response?.status(), 200);
   expectHomeSemantics(failures, scenario, state);
+  expectChromeReleased(failures, scenario, state);
   expect(
     failures,
     controllerCompleted
@@ -2886,18 +3025,14 @@ async function runTextZoom(browser, baseUrl, viewport, failures) {
   );
   expect(
     failures,
-    (
-      state.rootMode === "static"
-      && state.rootFallback === "typography-fit"
+    state.rootMode === "static"
+      && state.rootEligibility === "bypass"
+      && state.rootBootstrap === "text-zoom"
+      && state.rootFallback === null
+      && state.phase === "fallback"
       && state.stage?.position === "absolute"
       && network.uniqueMediaPaths.length === 0
-    ) || (
-      state.rootMode === "enhanced"
-      && state.rootFallback === null
-      && state.phase === "settled"
-      && state.stage?.visibility === "hidden"
-      && network.uniqueMediaPaths.length === 1
-    ),
+      && network.cinematicControllerRequests.length === 0,
     scenario,
     "authored-bypass-or-fit",
     {
@@ -2909,7 +3044,7 @@ async function runTextZoom(browser, baseUrl, viewport, failures) {
       mediaPaths: network.uniqueMediaPaths,
       fit,
     },
-    "unsafe typography bypasses before media; enhanced mode is allowed only for a fully fitting authored layout",
+    "200% authored text bypasses in head before controller/media and exposes released semantic flow",
   );
   expectCleanRuntime(failures, scenario, network);
   await context.close();
@@ -3265,6 +3400,8 @@ async function runPostLoadZoomFitTransition(browser, baseUrl, failures) {
   const scenario = "post-load-zoom-fit-transition";
 
   expect(failures, response?.status() === 200, scenario, "http", response?.status(), 200);
+  expectChromeConcealed(failures, scenario + "/before", before);
+  expectChromeReleased(failures, scenario + "/after", after);
   expect(
     failures,
     controllerCompleted
@@ -4312,7 +4449,6 @@ async function runColdLoadEvidence(browser, baseUrl, failures) {
   expect(
     failures,
     firstContentfulPaint?.startTime > 0
-      && lcpCandidates.length > 0
       && evidence.timeline.observerErrors.length === 0,
     scenario,
     "cold-paint-evidence",
@@ -4321,8 +4457,9 @@ async function runColdLoadEvidence(browser, baseUrl, failures) {
       lcpCandidates,
       observerErrors: evidence.timeline.observerErrors,
     },
-    "FCP and at least one LCP candidate are observed",
+    "FCP is observed without PerformanceObserver errors; headless Chromium may omit LCP candidates",
   );
+  expectChromeConcealed(failures, scenario, state);
   expect(
     failures,
     network.uniqueMediaPaths.length === 1
@@ -4954,6 +5091,7 @@ async function runAccessibilityAudit(browser, baseUrl, viewport, failures) {
   await page.waitForTimeout(250);
   await settle(page);
   const skipFocus = await readFocusEvidence(page);
+  const skipFocusedState = await readHomeState(page);
   await page.keyboard.press("Tab");
   await settle(page);
   const navigationFocus = await readFocusEvidence(page);
@@ -4979,6 +5117,9 @@ async function runAccessibilityAudit(browser, baseUrl, viewport, failures) {
     Math.max(0, Math.round((focusedState.entryTop ?? 0) - focusedState.headerHeight)),
   );
   await scrollTo(page, entryY);
+  await page.locator("#entry .entry-path").first().focus();
+  await settle(page);
+  const settledEntryFocus = await readFocusEvidence(page);
   const targets = await readTargetSizes(page);
   const violations = compactAxeViolations(await runAxeScan(page));
   const severeViolations = violations.filter(
@@ -5006,29 +5147,33 @@ async function runAccessibilityAudit(browser, baseUrl, viewport, failures) {
     skipFocus,
     "visible, unobscured 2px focus treatment on the skip link",
   );
+  expectChromeConcealed(failures, scenario + "/skip-focused", skipFocusedState);
   expect(
     failures,
-    navigationFocus.inHeader
-      && navigationFocus.rootFocus === "navigation"
-      && navigationFocus.headerInnerOpacity >= 0.99
+    !navigationFocus.inHeader
+      && !navigationFocus.inEntry
+      && navigationFocus.rootFocus === null
       && focusPasses(navigationFocus),
     scenario,
-    "navigation-focus-reveal",
+    "concealed-target-tab-exclusion",
     navigationFocus,
-    "keyboard focus immediately reveals an unobscured header control",
+    "second Tab bypasses inert header and ENTRY targets and lands on a visible permitted semantic control",
   );
   expect(
     failures,
-    entryFocus?.inEntry
-      && entryFocus.rootFocus === "entry"
-      && entryFocus.entryContentOpacity >= 0.99
-      && entryFocus.stageVisibility === "hidden"
-      && focusPasses(entryFocus),
+    settledEntryFocus.inEntry
+      && settledEntryFocus.rootFocus === null
+      && settledEntryFocus.entryContentOpacity >= 0.99
+      && settledEntryFocus.stageVisibility === "hidden"
+      && finalState.phase === "settled"
+      && finalState.rootHeader === "released"
+      && focusPasses(settledEntryFocus),
     scenario,
-    "entry-focus-reveal",
-    { entryFocus, focusSequence },
-    "keyboard focus hides opaque media and reveals an unobscured ENTRY route",
+    "settled-entry-focus",
+    { tabDiscoveredEntryFocus: entryFocus, settledEntryFocus, focusSequence },
+    "ENTRY becomes focusable only after native focus progression has settled and released the semantic composition",
   );
+  expectChromeReleased(failures, scenario + "/final", finalState);
   expect(
     failures,
     targets.count > 0 && targets.undersized.length === 0,
@@ -5559,13 +5704,11 @@ try {
         id: "entry",
         hash: "#entry",
         selector: "#entry",
-        expectedHeader: "visible",
       },
       {
         id: "method",
         hash: "#method",
         selector: "#method",
-        expectedHeader: "released",
       },
     ]) {
       report.deepLinks.push(

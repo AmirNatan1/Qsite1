@@ -72,10 +72,11 @@ function chooseCodec(video: HTMLVideoElement): Codec | null {
 }
 
 function zoomMakesPortalUnsafe() {
+  const rootFontSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
   const viewportScale = window.visualViewport?.scale ?? 1;
   const chromeRatio = window.innerWidth > 0 && window.outerWidth > 0 ? window.outerWidth / window.innerWidth : 1;
   const desktopPageZoom = navigator.maxTouchPoints === 0 && window.outerWidth >= 900 && chromeRatio >= 1.65;
-  return viewportScale >= 1.75 || desktopPageZoom;
+  return rootFontSize >= 30 || viewportScale >= 1.75 || desktopPageZoom;
 }
 
 export function initHomeCinematicIntegration() {
@@ -86,9 +87,22 @@ export function initHomeCinematicIntegration() {
   const entry = shell?.querySelector<HTMLElement>("#entry");
   const entryContent = shell?.querySelector<HTMLElement>(".entry-field__content");
   const header = document.querySelector<HTMLElement>(".site-header");
+  const skipLink = document.querySelector<HTMLAnchorElement>(".skip-link[href='#entry']");
+  const mobileMenu = header?.querySelector<HTMLDetailsElement>("[data-mobile-nav]");
   const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   if (!shell || !stage || !video || !entry || !entryContent || root.dataset.cinematicMode !== "candidate") return;
+  if (!header || !skipLink) {
+    root.dataset.cinematicEligibility = "bypass";
+    root.dataset.cinematicMode = "static";
+    root.dataset.cinematicHeader = "released";
+    root.dataset.cinematicFallback = "required-dom";
+    header?.removeAttribute("inert");
+    entry.removeAttribute("inert");
+    shell.dataset.cinematicInteractive = "true";
+    shell.dataset.cinematicPhase = "fallback";
+    return;
+  }
 
   const abortController = new AbortController();
   const { signal } = abortController;
@@ -114,6 +128,45 @@ export function initHomeCinematicIntegration() {
   let failed = false;
   let loadTimer = 0;
   let mediaObjectUrl: string | null = null;
+  let persistedSettledState: boolean | null = null;
+
+  const closeMobileMenu = () => {
+    if (mobileMenu?.open) mobileMenu.removeAttribute("open");
+  };
+
+  const persistRestorationState = (settledOrLower: boolean) => {
+    if (persistedSettledState === settledOrLower) return;
+    try {
+      const currentState = history.state && typeof history.state === "object" ? history.state : {};
+      history.replaceState({
+        ...currentState,
+        quantumHomeCinematic: { version: 1, settledOrLower },
+      }, document.title);
+      persistedSettledState = settledOrLower;
+    } catch {
+      // History restoration metadata is advisory; failure must not trap the page.
+    }
+  };
+
+  const setSettledInteraction = (settled: boolean) => {
+    if (settled) {
+      header.removeAttribute("inert");
+      entry.removeAttribute("inert");
+      root.dataset.cinematicHeader = "released";
+      shell.dataset.cinematicInteractive = "true";
+      return;
+    }
+
+    closeMobileMenu();
+    const focused = document.activeElement;
+    if (focused instanceof Node && (header.contains(focused) || entry.contains(focused))) {
+      skipLink.focus({ preventScroll: true });
+    }
+    header.setAttribute("inert", "");
+    entry.setAttribute("inert", "");
+    root.dataset.cinematicHeader = "concealed";
+    shell.dataset.cinematicInteractive = "false";
+  };
 
   const clearLoadTimer = () => {
     if (loadTimer) window.clearTimeout(loadTimer);
@@ -144,28 +197,20 @@ export function initHomeCinematicIntegration() {
 
   const failOpen = (reason: string) => {
     if (failed || mediaFailed) return;
-    const currentProgress = travel > 1 ? clamp((window.scrollY - shellTop) / travel) : 0;
-    const preserveGeometry = root.dataset.cinematicMode === "enhanced" && currentProgress > 0.02;
-    mediaFailed = preserveGeometry;
-    failed = !preserveGeometry;
+    mediaFailed = true;
+    failed = true;
     clearLoadTimer();
     releaseMedia();
     root.dataset.cinematicFallback = reason;
+    root.dataset.cinematicEligibility = "bypass";
     shell.dataset.mediaState = "failed";
     mediaReady = false;
-
-    if (preserveGeometry) {
-      latestFrame = -1;
-      schedule();
-      return;
-    }
 
     if (animationFrame) window.cancelAnimationFrame(animationFrame);
     animationFrame = 0;
     shell.dataset.cinematicPhase = "fallback";
-    shell.dataset.cinematicInteractive = "true";
+    setSettledInteraction(true);
     root.dataset.cinematicMode = "static";
-    root.dataset.cinematicHeader = "released";
     clearCinematicStyles();
   };
 
@@ -277,21 +322,15 @@ export function initHomeCinematicIntegration() {
     root.style.setProperty("--cinematic-takeover", takeover.toFixed(4));
     root.style.setProperty("--cinematic-semantic", semantic.toFixed(4));
 
-    shell.dataset.cinematicPhase = scrollProgress >= 0.9995 ? "settled" : takeover > 0 ? "takeover" : "physical";
-    shell.dataset.cinematicInteractive = takeover >= 0.78 ? "true" : "false";
+    const settled = scrollProgress >= 0.9995;
+    shell.dataset.cinematicPhase = settled ? "settled" : takeover > 0 ? "takeover" : "physical";
+    setSettledInteraction(settled);
+    persistRestorationState(settled);
     shell.dataset.scrollProgress = scrollProgress.toFixed(4);
     shell.dataset.cinematicProgress = cinematicProgress.toFixed(4);
     shell.dataset.targetFrame = String(targetFrame + 1);
     shell.dataset.targetTime = targetTime.toFixed(4);
     shell.dataset.takeoverProgress = takeover.toFixed(4);
-    root.dataset.cinematicHeader = window.scrollY > entryBottom - headerHeight
-      ? "released"
-      : semantic >= 0.5
-        ? "visible"
-        : "concealed";
-
-    if (root.dataset.cinematicDeepLink && window.scrollY > 0) delete root.dataset.cinematicDeepLink;
-
     requestCurrentFrame();
 
     Object.assign(publicState, {
@@ -332,12 +371,22 @@ export function initHomeCinematicIntegration() {
     schedule();
   };
 
-  const handleFocus = () => {
-    const focused = document.activeElement;
-    if (focused instanceof Node && entry.contains(focused)) root.dataset.cinematicFocus = "entry";
-    else if (focused instanceof Node && header?.contains(focused)) root.dataset.cinematicFocus = "navigation";
-    else delete root.dataset.cinematicFocus;
-    schedule();
+  const handleSkip = () => {
+    shell.style.setProperty("--cinematic-progress", "1");
+    shell.style.setProperty("--cinematic-film-progress", "1");
+    shell.style.setProperty("--cinematic-takeover", "1");
+    shell.style.setProperty("--cinematic-semantic", "1");
+    root.style.setProperty("--cinematic-takeover", "1");
+    root.style.setProperty("--cinematic-semantic", "1");
+    shell.dataset.cinematicPhase = "settled";
+    shell.dataset.scrollProgress = "1.0000";
+    shell.dataset.cinematicProgress = "1.0000";
+    shell.dataset.targetFrame = String(FRAME_COUNT);
+    shell.dataset.targetTime = (FINAL_FRAME_INDEX / FRAME_RATE).toFixed(4);
+    shell.dataset.takeoverProgress = "1.0000";
+    setSettledInteraction(true);
+    persistRestorationState(true);
+    entry.focus({ preventScroll: true });
   };
 
   const resizeObserver = new ResizeObserver(invalidate);
@@ -348,8 +397,7 @@ export function initHomeCinematicIntegration() {
   window.addEventListener("resize", invalidate, { passive: true, signal });
   window.addEventListener("orientationchange", invalidate, { passive: true, signal });
   window.addEventListener("pageshow", invalidate, { passive: true, signal });
-  document.addEventListener("focusin", handleFocus, { signal });
-  document.addEventListener("focusout", () => queueMicrotask(handleFocus), { signal });
+  skipLink.addEventListener("click", handleSkip, { signal });
   document.addEventListener(
     "visibilitychange",
     () => {
@@ -384,6 +432,10 @@ export function initHomeCinematicIntegration() {
   });
 
   window.addEventListener("pagehide", (event) => {
+    const settledOrLower = shell.dataset.cinematicPhase === "settled"
+      || window.scrollY >= entryTop - headerHeight - 1;
+    persistedSettledState = null;
+    persistRestorationState(settledOrLower);
     if (animationFrame) window.cancelAnimationFrame(animationFrame);
     animationFrame = 0;
     video.pause();

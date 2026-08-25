@@ -54,6 +54,7 @@ const canonical = !noindex && Astro.site
     <meta name="twitter:description" content={description} />
     {canonical && <link rel="canonical" href={canonical} />}
     <link rel="icon" href="/brand/quantum-icon-color.svg" type="image/svg+xml" />
+    <slot name="head" />
     <title>{documentTitle}</title>
   </head>
   <body class={bodyClass}>

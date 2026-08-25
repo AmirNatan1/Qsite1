@@ -243,6 +243,12 @@ const skipLink = tags(homeHtml, "a").find((tag) => (attribute(tag, "class") ?? "
 check(attribute(skipLink ?? "", "href") === "#entry", "skip-intro-target", "dist/index.html", "Home skip link must target ENTRY");
 const skipElement = elements(homeHtml, "a").find(({ tag }) => (attribute(tag, "class") ?? "").split(/\s+/).includes("skip-link"));
 check(normalized(visibleText(skipElement?.inner ?? "")) === "Skip cinematic intro", "skip-intro-label", "dist/index.html", "Home skip link must describe the cinematic intro");
+const bodyStart = homeHtml.indexOf("<body");
+const eligibilityBootstrap = homeHtml.indexOf("cinematicEligibility");
+const headerMarkup = tags(homeHtml, "header").find((tag) => (attribute(tag, "class") ?? "").split(/\s+/).includes("site-header"));
+check(eligibilityBootstrap >= 0 && bodyStart >= 0 && eligibilityBootstrap < bodyStart, "head-bootstrap-order", "dist/index.html", "cinematic eligibility and concealment must execute in head before the header can be parsed or painted");
+check(/cinematicMode\s*=\s*\w+\s*\?\s*["']candidate["']\s*:\s*["']static["']/.test(homeHtml) && /cinematicHeader\s*=\s*\w+\s*\?\s*["']concealed["']\s*:\s*["']released["']/.test(homeHtml), "bootstrap-chrome-states", "dist/index.html", "built bootstrap must emit only candidate/concealed or static/released initial states");
+check(attribute(headerMarkup ?? "", "inert") === undefined && attribute(entrySection ?? "", "inert") === undefined, "no-js-chrome-release", "dist/index.html", "SSR must not make header or ENTRY inert when JavaScript is unavailable");
 for (const [href, copy] of [
   ["/for-partners/", "Bring us an operational challenge."],
   ["/for-startups/", "Bring us a technology ready to be tested."],
@@ -303,6 +309,10 @@ if (cinematicChunk) {
   check(/addEventListener\(["'`]scroll["'`][\s\S]{0,120}passive:!0/.test(cinematicChunk.text), "passive-scroll", `dist/${cinematicChunk.path}`, "production cinematic scroll listener must remain passive");
   check(/requestAnimationFrame\(/.test(cinematicChunk.text) && /ResizeObserver/.test(cinematicChunk.text), "controller-coalescing", `dist/${cinematicChunk.path}`, "production controller must retain rAF coalescing and resize invalidation");
   check(/fetch\(/.test(cinematicChunk.text) && /\.blob\(\)/.test(cinematicChunk.text) && /URL\.createObjectURL\(/.test(cinematicChunk.text) && /URL\.revokeObjectURL\(/.test(cinematicChunk.text), "seekable-media-delivery", `dist/${cinematicChunk.path}`, "production controller must turn the single selected immutable response into one lifecycle-managed seekable Blob URL");
+  check(/>=\.9995/.test(cinematicChunk.text) && /setAttribute\(["'`]inert["'`]/.test(cinematicChunk.text) && /removeAttribute\(["'`]inert["'`]/.test(cinematicChunk.text), "settled-chrome-boundary", `dist/${cinematicChunk.path}`, "built controller must gate inert header/ENTRY release at the exact settled boundary");
+  check(/replaceState\(/.test(cinematicChunk.text) && /quantumHomeCinematic/.test(cinematicChunk.text), "restored-scroll-metadata", `dist/${cinematicChunk.path}`, "built controller must bind settled/lower restoration metadata to the current history entry");
+  check(!/localStorage|sessionStorage|cookieStore|document\.cookie/.test(cinematicChunk.text), "no-persistent-skip", `dist/${cinematicChunk.path}`, "built controller must not use cookies or persistent storage to skip the cinematic");
+  check(!/cinematicFocus|cinematicDeepLink|preserveGeometry|cinematicHeader=["']visible["']/.test(cinematicChunk.text), "superseded-chrome-state", `dist/${cinematicChunk.path}`, "built controller must not retain focus-reveal, enhanced deep-link, partial failure, or early-visible header states");
 }
 const homeCssReferences = referencedStylesheets(homeHtml);
 for (const reference of homeCssReferences) check(byPath.has(reference), "stylesheet-reference", "dist/index.html", `referenced stylesheet is missing: ${reference}`);
@@ -313,6 +323,8 @@ check(!/scroll-snap-(?:type|align|stop):/i.test(emittedHomeCss), "scroll-snap", 
 check(!/overflow-y:(?:auto|scroll)/i.test(emittedHomeCss), "nested-scroll", "Home CSS output", "built Home must not create a nested vertical scroll container");
 check(!/(?:^|[;{])overflow:[^;}]*\b(?:auto|scroll)\b/i.test(emittedHomeCss), "nested-scroll", "Home CSS output", "built Home must not create an overflow shorthand scroll container");
 check(!/touch-action:none/i.test(emittedHomeCss), "touch-lock", "Home CSS output", "built Home must not suppress native touch scrolling");
+check(/data-cinematic-header=(?:["']?concealed["']?)[^}]*\.site-header[^}]*\{[^}]*visibility:hidden[^}]*opacity:0[^}]*pointer-events:none/.test(emittedHomeCss), "concealed-chrome-css", "Home CSS output", "built pre-settled header must be fully invisible and pointer-safe");
+check(!/:focus-within[^}]*\{[^}]*(?:opacity:1|visibility:visible|pointer-events:auto)/.test(emittedHomeCss), "no-focus-reveal-css", "Home CSS output", "built CSS must not reveal cinematic chrome or ENTRY from focus alone");
 
 const supportingIsolation = {};
 for (const route of SUPPORTING_ROUTES) {
@@ -377,7 +389,7 @@ const totalJavaScript = sizes([...javascriptRecords.map(({ contents }) => conten
 const totalCss = sizes(cssRecords.map(({ contents }) => contents));
 const cinematicJavaScript = sizes(cinematicChunkRecords.map(({ contents }) => contents));
 const addedCssRaw = Math.max(0, totalCss.raw - ACCEPTED_PHASE2B_CSS_RAW);
-check(cinematicJavaScript.raw <= 8 * 1024, "cinematic-js-budget", "dist/_astro", `Phase 4 cinematic runtime must remain at or below 8 KiB raw; observed ${formatBytes(cinematicJavaScript.raw)}`);
+check(cinematicJavaScript.raw <= 9 * 1024, "cinematic-js-budget", "dist/_astro", `Phase 4 cinematic runtime with R1 chrome safety must remain at or below 9 KiB raw; observed ${formatBytes(cinematicJavaScript.raw)}`);
 check(cinematicJavaScript.gzip <= 3.5 * 1024, "cinematic-js-gzip-budget", "dist/_astro", `Phase 4 cinematic runtime must remain at or below 3.5 KiB gzip; observed ${formatBytes(cinematicJavaScript.gzip)}`);
 check(totalJavaScript.raw <= 20 * 1024, "total-js-budget", "dist/_astro + Home inline scripts", `total production JavaScript must remain at or below 20 KiB raw; observed ${formatBytes(totalJavaScript.raw)}`);
 check(totalJavaScript.gzip <= 8 * 1024, "total-js-gzip-budget", "dist/_astro + Home inline scripts", `total production JavaScript must remain at or below 8 KiB gzip; observed ${formatBytes(totalJavaScript.gzip)}`);

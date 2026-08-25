@@ -159,6 +159,7 @@ const layoutSource = await readOrFail("src/layouts/BaseLayout.astro");
 const cinematicController = await readOrFail("src/scripts/home-cinematic-integration.ts", "controller-missing");
 const operatingController = await readOrFail("src/scripts/home-operating-field.ts", "controller-missing");
 const cinematicCss = await readOrFail("src/styles/routes/home-cinematic.css", "cinematic-css-missing");
+const chromeEvidenceCapture = await readOrFail("scripts/capture-phase4r1-chrome-evidence.mjs", "chrome-capture-missing");
 const stageSource = await readOrFail("scripts/stage-phase4-media.mjs", "media-stage-missing");
 const cloudflareHeaders = await readOrFail("public/_headers", "cloudflare-headers-missing");
 const componentSources = new Map();
@@ -242,6 +243,14 @@ const expectedVideoPaths = VIDEO_OUTPUTS.map(({ output }) => `/media/cinematic/$
 check(JSON.stringify([...new Set(controllerCinematicPaths)].sort()) === JSON.stringify(expectedVideoPaths), "controller-media-inventory", "src/scripts/home-cinematic-integration.ts", "controller must contain exactly the four accepted video candidates", controllerCinematicPaths);
 
 check(/prefers-reduced-motion:\s*reduce/.test(indexSource), "reduced-motion-bootstrap", "src/pages/index.astro", "Home must decide reduced motion before loading the cinematic controller");
+check(/<Fragment\s+slot=["']head["']>[\s\S]*?dataset\.cinematicMode\s*=\s*candidate\s*\?\s*["']candidate["']\s*:\s*["']static["'][\s\S]*?<\/Fragment>/.test(indexSource), "head-bootstrap", "src/pages/index.astro", "cinematic candidate/static eligibility must be established through BaseLayout's head slot before body parsing");
+check(/dataset\.cinematicHeader\s*=\s*candidate\s*\?\s*["']concealed["']\s*:\s*["']released["']/.test(indexSource), "bootstrap-chrome-state", "src/pages/index.astro", "the head bootstrap must emit only candidate/concealed or static/released initial chrome states");
+for (const bootstrapGate of ["directDeepLink", "restoredSettled", "textZoomUnsafe", "reduced"]) {
+  check(indexSource.includes(bootstrapGate), "bootstrap-fallback-gate", "src/pages/index.astro", `head eligibility must explicitly cover ${bootstrapGate}`);
+}
+check(/rootFontSize\s*>=\s*30/.test(indexSource), "text-zoom-bootstrap", "src/pages/index.astro", "200% authored text must bypass before controller eligibility");
+check(/history\.state\?\.quantumHomeCinematic/.test(indexSource), "restored-scroll-bootstrap", "src/pages/index.astro", "restored settled/lower history state must release chrome on first paint");
+check(/toggleAttribute\(["']inert["'],\s*concealed\)/.test(indexSource), "bootstrap-inert", "src/pages/index.astro", "the parsed header and ENTRY must become inert before the lazy controller resolves");
 check(matches(indexSource, /import\(["']\.\.\/scripts\/home-cinematic-integration["']\)/g) === 1, "cinematic-lazy-load", "src/pages/index.astro", "Home must lazy-load exactly one cinematic controller");
 check(indexSource.indexOf("prefers-reduced-motion: reduce") < indexSource.indexOf("home-cinematic-integration"), "reduced-motion-order", "src/pages/index.astro", "reduced-motion gate must precede the cinematic import");
 check(/root\.dataset\.cinematicMode\s*===\s*["']candidate["']/.test(indexSource), "capability-gated-import", "src/pages/index.astro", "cinematic import must be gated by candidate mode");
@@ -266,6 +275,15 @@ check(/interpolatePiecewise/.test(cinematicController) && /targetFrame\s*=\s*Mat
 check(/video\.pause\(\)/.test(cinematicController) && /video\.currentTime\s*=\s*targetTime/.test(cinematicController), "paused-seek-surface", "src/scripts/home-cinematic-integration.ts", "video must remain paused and render direct scroll-derived seeks");
 check(/video\.seeking/.test(cinematicController) && /addEventListener\(\s*["']seeked["'][\s\S]{0,180}requestCurrentFrame\(\)/.test(cinematicController), "latest-seek-coalescing", "src/scripts/home-cinematic-integration.ts", "an in-flight decoder seek must collapse subsequent updates to the newest pending frame");
 check(!/\.play\s*\(/.test(cinematicController), "autoplay-prohibited", "src/scripts/home-cinematic-integration.ts", "cinematic controller must never start linear playback");
+check(/const\s+settled\s*=\s*scrollProgress\s*>=\s*0\.9995/.test(cinematicController) && /setSettledInteraction\(settled\)/.test(cinematicController), "chrome-release-boundary", "src/scripts/home-cinematic-integration.ts", "header and ENTRY interaction may release only at scrollProgress >= 0.9995");
+check(/header\.setAttribute\(["']inert["']/.test(cinematicController) && /entry\.setAttribute\(["']inert["']/.test(cinematicController) && /header\.removeAttribute\(["']inert["']/.test(cinematicController) && /entry\.removeAttribute\(["']inert["']/.test(cinematicController), "settled-inert-state", "src/scripts/home-cinematic-integration.ts", "header and ENTRY must be inert before settlement and released together at settlement/fallback");
+check(/mobileMenu\.removeAttribute\(["']open["']\)/.test(cinematicController), "reverse-menu-close", "src/scripts/home-cinematic-integration.ts", "reverse concealment must close the mobile menu");
+check(/skipLink\.focus\(\{\s*preventScroll:\s*true\s*\}\)/.test(cinematicController), "reverse-focus-safety", "src/scripts/home-cinematic-integration.ts", "reverse concealment must move hidden header/ENTRY focus to the permitted skip link without scrolling");
+check(/skipLink\.addEventListener\(["']click["'],\s*handleSkip/.test(cinematicController) && /entry\.focus\(\{\s*preventScroll:\s*true\s*\}\)/.test(cinematicController), "native-skip-settle", "src/scripts/home-cinematic-integration.ts", "the native #entry skip must synchronously settle, release, and focus ENTRY without waiting for media");
+check(/history\.replaceState\([\s\S]*?quantumHomeCinematic:\s*\{\s*version:\s*1,\s*settledOrLower\s*\}/.test(cinematicController), "restored-scroll-metadata", "src/scripts/home-cinematic-integration.ts", "pagehide must persist only settled/lower metadata in the current history entry");
+check(!/localStorage|sessionStorage|document\.cookie|cookieStore/.test(`${indexSource}\n${cinematicController}`), "no-persistent-skip", "Home cinematic bootstrap/controller", "cinematic eligibility must not use cookies or persistent web storage");
+check(!/cinematicFocus|cinematicDeepLink|preserveGeometry|cinematicHeader\s*=\s*["']visible["']/.test(`${indexSource}\n${cinematicController}\n${cinematicCss}`), "superseded-chrome-state", "Home cinematic integration", "focus reveals, enhanced deep links, partial fail-open geometry, and early visible header states are prohibited");
+check(/root\.dataset\.cinematicMode\s*=\s*["']static["'][\s\S]{0,180}clearCinematicStyles\(\)/.test(cinematicController), "media-fail-open", "src/scripts/home-cinematic-integration.ts", "every media/controller failure must fully fail open to static/released document flow");
 
 for (const [relative, controller] of [
   ["src/scripts/home-cinematic-integration.ts", cinematicController],
@@ -294,6 +312,39 @@ check(!/scroll-snap-(?:type|align|stop)\s*:/i.test(homeStyles), "scroll-snap", "
 check(!/\boverflow-y\s*:\s*(?:auto|scroll)/i.test(homeStyles), "nested-scroll", "src/styles/routes/home*.css", "Home must not create a nested vertical scroll container");
 check(!/(?:^|[;{])\s*overflow\s*:[^;}]*\b(?:auto|scroll)\b/im.test(homeStyles), "nested-scroll", "src/styles/routes/home*.css", "Home must not create an overflow shorthand scroll container");
 check(!/\btouch-action\s*:\s*none/i.test(homeStyles), "touch-lock", "src/styles/routes/home*.css", "Home must not suppress native touch scrolling");
+check(/data-cinematic-header=["']concealed["'][\s\S]{0,180}\.site-header[\s\S]{0,260}visibility:\s*hidden[\s\S]{0,160}opacity:\s*0[\s\S]{0,160}pointer-events:\s*none/.test(cinematicCss), "concealed-chrome-css", "src/styles/routes/home-cinematic.css", "the complete pre-settled header must be invisible, transparent, and pointer-safe");
+check(!/:focus-within[\s\S]{0,160}(?:site-header|entry-field)|cinematic-focus/.test(cinematicCss), "no-focus-reveal-css", "src/styles/routes/home-cinematic.css", "keyboard focus must never reveal concealed chrome or ENTRY prematurely");
+for (const marker of [
+  "quantum-hub.phase-4r1.chrome-evidence.v2",
+  "current-runtime chrome-state proxy — R1 physical runtime integration not authorized",
+  "phase4r1-chrome-evidence-report.json",
+  "Page.lifecycleEvent",
+  "firstContentfulPaint",
+  "Page.captureScreenshot",
+  "Runtime.evaluate",
+  "no-first-paint-flash",
+  "firstPaintHadNoChrome && controllerReleasedAt === null",
+  "requiredStateIds",
+  "requiredCheckIds",
+  "stateCheckInventory",
+  "reportSelfHashExcluded: true",
+]) check(chromeEvidenceCapture.includes(marker), "chrome-capture-contract", "scripts/capture-phase4r1-chrome-evidence.mjs", `dedicated external capture must retain ${marker}`);
+for (const stateId of [
+  "first-paint-desktop", "first-paint-mobile", "dormancy", "conduction-25", "conduction-50", "q-activation", "q-hold", "approach", "threshold", "breathing", "entry-first-readable", "entry-settled", "reverse-one-step", "fast-jump-forward", "fast-jump-reverse", "fast-jump-latest", "skip-media-pending", "reduced-motion", "no-javascript", "deep-link-entry", "deep-link-method", "restored-settled", "restored-lower", "text-200-desktop", "text-200-mobile", "media-abort", "media-404", "supporting-about", "real-404",
+]) check(chromeEvidenceCapture.includes(`"${stateId}"`), "chrome-capture-state", "scripts/capture-phase4r1-chrome-evidence.mjs", `external capture is missing required state ${stateId}`);
+for (const [roleId, filename] of [
+  ["CHROME_FIRST_PAINT_DESKTOP", "first-paint-desktop.png"],
+  ["CHROME_FIRST_PAINT_MOBILE", "first-paint-mobile.png"],
+  ["CHROME_MILESTONES_DESKTOP_SHEET", "chrome-visibility-desktop-sheet.png"],
+  ["CHROME_MILESTONES_MOBILE_SHEET", "chrome-visibility-mobile-sheet.png"],
+  ["CHROME_REVEAL_REVERSE_RECORDING", "chrome-reveal-reverse.mp4"],
+  ["CHROME_SKIP_PENDING_RECORDING", "chrome-skip-media-pending.mp4"],
+  ["CHROME_FALLBACKS_SHEET", "chrome-fallbacks-sheet.png"],
+]) check(chromeEvidenceCapture.includes(`"${roleId}"`) && chromeEvidenceCapture.includes(`"${filename}"`), "chrome-capture-role", "scripts/capture-phase4r1-chrome-evidence.mjs", `${roleId} must bind ${filename}`);
+check(!/artifactRecord\([^\n]+CHROME_MACHINE_REPORT/.test(chromeEvidenceCapture), "chrome-report-self-hash", "scripts/capture-phase4r1-chrome-evidence.mjs", "the machine report must be contract-bound, not placed in its own hash-bearing artifacts array");
+check(/producerAuthorities\s*=\s*\{[\s\S]{0,900}captureScript:[\s\S]{0,300}artifactBuilder:[\s\S]{0,300}browserQa:[\s\S]{0,300}controller:/.test(chromeEvidenceCapture), "chrome-producer-authority", "scripts/capture-phase4r1-chrome-evidence.mjs", "capture report must bind all tracked producer authorities");
+check(/Refusing to overwrite existing evidence directory/.test(chromeEvidenceCapture) && /Chrome evidence must be external to Git/.test(chromeEvidenceCapture), "chrome-external-output", "scripts/capture-phase4r1-chrome-evidence.mjs", "capture must write only to a new external directory without overwriting evidence");
+check(/workingTreeClean[\s\S]{0,500}headMatchesUpstream[\s\S]{0,200}headMatchesRemote/.test(chromeEvidenceCapture) && /ls-remote/.test(chromeEvidenceCapture), "chrome-git-authority", "scripts/capture-phase4r1-chrome-evidence.mjs", "final capture must fail closed unless HEAD is clean and independently matches upstream/remote");
 check(
   /^\/media\/cinematic\/\*\s+Cache-Control:\s*public,\s*max-age=31556952,\s*immutable\s*$/m.test(cloudflareHeaders.replace(/\r?\n\s+/g, " ")),
   "cinematic-cache-policy",
@@ -312,8 +363,9 @@ try {
   const expectedLayout = acceptedLayout
     .replace("  bodyClass?: string;\n", "  bodyClass?: string;\n  skipHref?: string;\n  skipLabel?: string;\n")
     .replace("  bodyClass = \"\",\n", "  bodyClass = \"\",\n  skipHref = \"#main-content\",\n  skipLabel = \"Skip to content\",\n")
-    .replace('<a class="skip-link" href="#main-content">Skip to content</a>', '<a class="skip-link" href={skipHref}>{skipLabel}</a>');
-  check(normalizeLineEndings(layoutSource).trim() === expectedLayout.trim(), "shared-layout-scope", "src/layouts/BaseLayout.astro", "shared BaseLayout changes must be limited to configurable skip-link props with unchanged supporting-route defaults");
+    .replace('<a class="skip-link" href="#main-content">Skip to content</a>', '<a class="skip-link" href={skipHref}>{skipLabel}</a>')
+    .replace('    <title>{documentTitle}</title>\n', '    <slot name="head" />\n    <title>{documentTitle}</title>\n');
+  check(normalizeLineEndings(layoutSource).trim() === expectedLayout.trim(), "shared-layout-scope", "src/layouts/BaseLayout.astro", "shared BaseLayout changes must be limited to configurable skip-link props and the generic head slot, with unchanged supporting-route defaults");
 } catch (error) {
   check(false, "layout-baseline", "src/layouts/BaseLayout.astro", `could not compare shared layout with accepted Phase 3: ${error.message}`);
 }

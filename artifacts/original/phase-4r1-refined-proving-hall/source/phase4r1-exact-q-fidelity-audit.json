@@ -1,0 +1,224 @@
+{
+  "audit": {
+    "activeMaterialOutput": "Material Output",
+    "activeOutputReachableNodeNames": [
+      "Emission",
+      "Image Texture",
+      "Math",
+      "Math.001",
+      "Mix Shader",
+      "Object Info",
+      "Transparent BSDF"
+    ],
+    "approximateBlenderGeometry": false,
+    "imageDatablock": "Phase4R1V2_ExactQuantumQ_PreCRTEffect_2048",
+    "imageFilepathBufferOverwriteMinimumCharacters": 1023,
+    "imageFilepathBufferOverwriteRealizedCharacters": 1023,
+    "imagePacked": true,
+    "manualRedraw": false,
+    "material": "Phase4R1V2_ExactQuantumQ_Phosphor",
+    "materialImageBindingValid": true,
+    "materialImageNodeNamesBoundToExactDatablock": [
+      "Image Texture"
+    ],
+    "officialColorSourcePath": "public/brand/quantum-icon-color.svg",
+    "officialColorSourceSha256": "04dc37965b33587fea5f4664660f8a7f9a81ec7904d39925b41c6826b80cded9",
+    "officialSourcePath": "public/brand/quantum-icon-white.svg",
+    "officialSourceSha256": "c660ed87bc5293bfbffa662e523343a7e83bc86cb94848912494e85e0dc9d4ff",
+    "oldQCurvesVisible": [],
+    "packedFileEntryCount": 1,
+    "packedFileEntryFilepath": "//q-fidelity/quantum-icon-pre-crt-effect.png",
+    "packedFileEntryFilepathCanonicalizationError": null,
+    "packedFileEntryFilepathRaw": "//q-fidelity/quantum-icon-pre-crt-effect.png",
+    "packedImageBytes": 69348,
+    "packedImageFilepath": "//q-fidelity/quantum-icon-pre-crt-effect.png",
+    "packedImageFilepathCanonicalizationError": null,
+    "packedImageFilepathRaw": "//q-fidelity\\quantum-icon-pre-crt-effect.png",
+    "packedImageSha256": "009c494df3b301470ab539f23e02b375f0c1fcec9b4b18cf07fc853b95fd03c5",
+    "packedTextureAspectRatio": 1.0,
+    "picturePlane": "Phase4R1V2_ExactQuantumQ_PicturePlane",
+    "picturePlaneGeometry": {
+      "expectedUvCoordinatesInLoopOrder": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0
+        ],
+        [
+          0.0,
+          1.0
+        ]
+      ],
+      "localAspectRatio": 1.0,
+      "localHeightMeters": 0.35800001,
+      "localWidthMeters": 0.35800001,
+      "passes": true,
+      "polygonCount": 1,
+      "screenFacingNegativeYDot": 1.0,
+      "uvActiveRender": true,
+      "uvCoordinatesInLoopOrder": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0
+        ],
+        [
+          0.0,
+          1.0
+        ]
+      ],
+      "uvLayer": "ExactQ_UV",
+      "vertexCount": 4,
+      "worldNormal": [
+        0.0,
+        -1.0,
+        0.0
+      ]
+    },
+    "preCrtComposition": {
+      "bodyAuthority": "official-white-svg",
+      "bodyColor": "#ffffff",
+      "effectAppliedBeforePackedTexture": false,
+      "nodeColor": "#d82b72",
+      "nodeColorAuthority": "official-white-svg and official-color-svg",
+      "officialPathTopologyIdenticalAcrossWhiteAndColorAuthorities": true,
+      "packedRole": "pre-crt-effect-q"
+    },
+    "provenanceAuthority": {
+      "bytes": 5816,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/phase4r1-exact-q-provenance.json",
+      "sha256": "f8759f6f6f39d07c5b081f139983afe1a9e39e7c37e0e916e8f3230bb736a93a"
+    },
+    "provenanceMetrics": {
+      "contourDeviationPixels": 0,
+      "internalNegativeSpaceDifferencePixels": 0,
+      "missingSectionPixels": 0,
+      "topologyDifferencePixels": 0
+    },
+    "provenanceScreenTextureRecord": {
+      "bytes": 69348,
+      "height": 2048,
+      "mediaType": "image/png",
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/q-fidelity/quantum-icon-pre-crt-effect.png",
+      "role": "pre-crt-effect-q",
+      "sha256": "009c494df3b301470ab539f23e02b375f0c1fcec9b4b18cf07fc853b95fd03c5",
+      "width": 2048
+    },
+    "provenanceTextureAspectRatio": 1.0,
+    "sceneImageFilepathBufferOverwriteRealizedCharacters": 1023,
+    "screenTexturePath": "artifacts/original/phase-4r1-refined-proving-hall/source/q-fidelity/quantum-icon-pre-crt-effect.png",
+    "screenTextureRole": "pre-crt-effect-q",
+    "screenTextureSha256": "009c494df3b301470ab539f23e02b375f0c1fcec9b4b18cf07fc853b95fd03c5",
+    "sourceAspectRatio": 1.0,
+    "sourceViewBox": [
+      0,
+      0,
+      109.09,
+      109.09
+    ]
+  },
+  "authorization": {
+    "chromeStatePolicyImplementationEvidenced": true,
+    "full540FrameCyclesProductionFilmResumed": false,
+    "full540FrameCyclesProductionFilmStarted": false,
+    "humanAccepted": false,
+    "phase5Authorized": false,
+    "refinedPhysicalMediaRuntimeIntegrationStarted": false
+  },
+  "generatedAt": "2026-08-24T00:00:00Z",
+  "producerAuthorities": {
+    "builder": {
+      "bytes": 157397,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/build_phase4r1_refined_proving_hall.py",
+      "sha256": "44d6624353e9b7c8996aab94d62094e310e47e5dbd318ab7204d91f44de6c344"
+    },
+    "config": {
+      "bytes": 23567,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/phase4r1_refined_config.py",
+      "sha256": "83542e41bce3aeee6eda58dae08ede2a18a824d5ff3a62ebf4fee490a9aeff06"
+    },
+    "cycles-benchmarks-renderer": {
+      "bytes": 10859,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/render_phase4r1_refined_cycles_benchmarks.py",
+      "sha256": "7540e843dc28a536177e18aade81650ba4180793ce3a091695719263f2dc3866"
+    },
+    "exact-q-generator": {
+      "bytes": 9588,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/generate_phase4r1_exact_q.mjs",
+      "sha256": "9c75917b004249c745821ccd0da295b38547ad80a17bf06693f1e5ae79c8a31c"
+    },
+    "preflight": {
+      "bytes": 169699,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/preflight_phase4r1_refined_geometry.py",
+      "sha256": "9b61e931107aa44977096edced1fd27b9858e5782b27c833691194393446f8c3"
+    },
+    "preview-renderer": {
+      "bytes": 8533,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/render_phase4r1_refined_previews.py",
+      "sha256": "aa6136121278bdaf9a78ccc00ff851d094c434820cadf479734e7e0984a6558f"
+    },
+    "sparse-proof-renderer": {
+      "bytes": 98051,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/render_phase4r1_refined_sparse_proof.py",
+      "sha256": "029827ef5f116348d1c837a5fd55b9c4eda011ecc4d6df4b6447f95317fc70f9"
+    },
+    "validator": {
+      "bytes": 33067,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/validate_phase4r1_refined_source.py",
+      "sha256": "eb299363a8bc928ed94d59d2e5175647cd4c7b3531711f670b80e2fff3107f85"
+    }
+  },
+  "schema": "quantum-hub.phase-4-r1.refined-proving-hall.exact-q-fidelity-audit.v2",
+  "sourceAuthorities": {
+    "build": {
+      "bytes": 4782567,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/phase4r1-refined-source-build.json",
+      "sha256": "f8c2cee743bd7868a4abb07232eea0dcdcc1570ba81800d671102c4e1085a1c9"
+    },
+    "derivative": {
+      "bytes": 3526219,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/quantum-signal-television-phase4r1-refined-proving-hall.blend",
+      "sha256": "a0a122baaf021833e9cad6194a474ef714b182be2c8e7171e00ad69c00565215"
+    },
+    "ledger": {
+      "bytes": 89936,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/phase4r1-refined-asset-ledger.json",
+      "sha256": "a88c3faaf85a38690c88cd983d9d690116db3a26cca7570934453f0f592c8859"
+    },
+    "qProvenance": {
+      "bytes": 5816,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/phase4r1-exact-q-provenance.json",
+      "sha256": "f8759f6f6f39d07c5b081f139983afe1a9e39e7c37e0e916e8f3230bb736a93a"
+    },
+    "recovery": {
+      "bytes": 9353,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/phase4r1-recovery-report.json",
+      "sha256": "2bf0a6457bd6153dc0df543b7a724fb61bbc095f8133d94a9facad5645ef49d5"
+    },
+    "recoveryBackupSummary": {
+      "bytes": 7858,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/phase4r1-recovery-backup-summary.json",
+      "sha256": "74d52229025c350512f9d99a604024e86f559ae3ae1a2ad1a1ba699f3c682b34"
+    },
+    "validationParentPreflight": {
+      "bytes": 4639898,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/phase4r1-refined-preflight.json",
+      "sha256": "2ff3ee5337044ad7b0d088ac8ae9c62cbdb5f85d9feac1481b72530daa377623"
+    }
+  },
+  "status": "PASS"
+}

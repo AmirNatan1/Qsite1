@@ -1,0 +1,172 @@
+{
+  "schema": "quantum-hub.phase-4-r1.exact-q-provenance.v2",
+  "status": "PASS",
+  "generatedAt": "2026-08-24T00:00:00Z",
+  "method": "Official SVG bytes rasterized directly through sharp/libvips; no manual trace, glyph, Blender curve, or alternative logo.",
+  "preCrtComposition": {
+    "packedRole": "pre-crt-effect-q",
+    "bodyAuthority": "official-white-svg",
+    "nodeColorAuthority": "official-white-svg and official-color-svg",
+    "bodyColor": "#ffffff",
+    "nodeColor": "#d82b72",
+    "officialPathTopologyIdenticalAcrossWhiteAndColorAuthorities": true,
+    "effectAppliedBeforePackedTexture": false
+  },
+  "command": "node artifacts/original/phase-4r1-refined-proving-hall/source/generate_phase4r1_exact_q.mjs",
+  "rasterization": {
+    "method": "direct official SVG bytes to lossless RGBA PNG through sharp/libvips",
+    "commandOrScript": "node artifacts/original/phase-4r1-refined-proving-hall/source/generate_phase4r1_exact_q.mjs",
+    "sourceViewBox": [
+      0,
+      0,
+      109.09,
+      109.09
+    ],
+    "sourceAspectRatio": 1,
+    "textureAspectRatio": 1,
+    "width": 2048,
+    "height": 2048,
+    "alpha": true,
+    "losslessPng": true,
+    "density": 600,
+    "resizeKernel": "lanczos3"
+  },
+  "fidelity": {
+    "comparedPixelCount": 4194304,
+    "differentPixelCount": 0,
+    "maximumChannelDelta": 0,
+    "topologyDifference": false,
+    "alteredNegativeSpace": false,
+    "aspectRatioDifference": 0
+  },
+  "metrics": {
+    "topologyDifferencePixels": 0,
+    "missingSectionPixels": 0,
+    "internalNegativeSpaceDifferencePixels": 0,
+    "contourDeviationPixels": 0
+  },
+  "manualRedraw": false,
+  "approximateBlenderGeometry": false,
+  "panelLegend": {
+    "silhouette-comparison": [
+      {
+        "panel": "left",
+        "meaning": "official SVG direct raster"
+      },
+      {
+        "panel": "middle",
+        "meaning": "lossless screen texture"
+      },
+      {
+        "panel": "right",
+        "meaning": "absolute RGBA difference"
+      }
+    ],
+    "aspect-ratio-comparison": [
+      {
+        "panel": "left",
+        "meaning": "official SVG direct raster at source viewBox aspect"
+      },
+      {
+        "panel": "right",
+        "meaning": "screen texture at packed-image aspect"
+      }
+    ]
+  },
+  "producerAuthority": {
+    "path": "artifacts/original/phase-4r1-refined-proving-hall/source/generate_phase4r1_exact_q.mjs",
+    "bytes": 9588,
+    "sha256": "9c75917b004249c745821ccd0da295b38547ad80a17bf06693f1e5ae79c8a31c"
+  },
+  "files": [
+    {
+      "role": "official-white-svg",
+      "path": "public/brand/quantum-icon-white.svg",
+      "bytes": 785,
+      "sha256": "c660ed87bc5293bfbffa662e523343a7e83bc86cb94848912494e85e0dc9d4ff",
+      "width": null,
+      "height": null,
+      "mediaType": "image/svg+xml"
+    },
+    {
+      "role": "official-color-svg",
+      "path": "public/brand/quantum-icon-color.svg",
+      "bytes": 788,
+      "sha256": "04dc37965b33587fea5f4664660f8a7f9a81ec7904d39925b41c6826b80cded9",
+      "width": null,
+      "height": null,
+      "mediaType": "image/svg+xml"
+    },
+    {
+      "role": "screen-texture-white",
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/q-fidelity/quantum-icon-white-2048.png",
+      "bytes": 69348,
+      "sha256": "009c494df3b301470ab539f23e02b375f0c1fcec9b4b18cf07fc853b95fd03c5",
+      "width": 2048,
+      "height": 2048,
+      "mediaType": "image/png"
+    },
+    {
+      "role": "screen-texture-color",
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/q-fidelity/quantum-icon-color-2048.png",
+      "bytes": 82650,
+      "sha256": "0a809342310b1cac22a2250b6bd43a09f5dc63641d509db3c38ac3e310e0f55e",
+      "width": 2048,
+      "height": 2048,
+      "mediaType": "image/png"
+    },
+    {
+      "role": "pre-crt-effect-q",
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/q-fidelity/quantum-icon-pre-crt-effect.png",
+      "bytes": 69348,
+      "sha256": "009c494df3b301470ab539f23e02b375f0c1fcec9b4b18cf07fc853b95fd03c5",
+      "width": 2048,
+      "height": 2048,
+      "mediaType": "image/png"
+    },
+    {
+      "role": "official-source-overlay",
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/q-fidelity/quantum-icon-white-overlay.png",
+      "bytes": 62035,
+      "sha256": "ba2fefeed5ca1a34c24c22e1f00c2bc85673f186280aafe12e09b489dbd83334",
+      "width": 2048,
+      "height": 2048,
+      "mediaType": "image/png"
+    },
+    {
+      "role": "difference-image",
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/q-fidelity/quantum-icon-white-difference.png",
+      "bytes": 19750,
+      "sha256": "12d22cb04b726afd957acbf6e8f4241cd21d739eb904cf0c0600628d3f9f74f0",
+      "width": 2048,
+      "height": 2048,
+      "mediaType": "image/png"
+    },
+    {
+      "role": "silhouette-comparison",
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/q-fidelity/quantum-icon-white-silhouette-comparison.png",
+      "bytes": 44151,
+      "sha256": "cb3b00d77e407615c017dad1cf01a22a91983507fd0ad05bfde49b6e76ab9bb0",
+      "width": 1920,
+      "height": 720,
+      "mediaType": "image/png"
+    },
+    {
+      "role": "aspect-ratio-comparison",
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/q-fidelity/quantum-icon-aspect-comparison.png",
+      "bytes": 40216,
+      "sha256": "d436670436397cd598151af9fd895c3920b27c1722ed56c1839997efb3c2c6b4",
+      "width": 1280,
+      "height": 720,
+      "mediaType": "image/png"
+    }
+  ],
+  "authorization": {
+    "full540FrameCyclesProductionFilmStarted": false,
+    "full540FrameCyclesProductionFilmResumed": false,
+    "refinedPhysicalMediaRuntimeIntegrationStarted": false,
+    "chromeStatePolicyImplementationEvidenced": true,
+    "humanAccepted": false,
+    "phase5Authorized": false
+  }
+}

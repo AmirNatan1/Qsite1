@@ -1,0 +1,2233 @@
+{
+  "assets": [
+    {
+      "id": "accepted-crt",
+      "oldApproximateQVisibilityUnchangedHidden": {
+        "after": {
+          "Phase4R0_QuantumQ_Accent": true,
+          "Phase4R0_QuantumQ_Body": true
+        },
+        "before": {
+          "Phase4R0_QuantumQ_Accent": true,
+          "Phase4R0_QuantumQ_Body": true
+        },
+        "changed": false,
+        "crtTrackMutationOccurred": false
+      },
+      "origin": "preserved recovered authority",
+      "persistenceVolatileRnaPropertyExclusionAuthority": {
+        "properties": [
+          "session_uid"
+        ],
+        "reason": "Blender assigns session_uid at runtime and reassigns it after save/reopen; it is not authored or persisted scene state",
+        "scope": "generic RNA simple-property persistence hashing only"
+      },
+      "physicalGeometryMaterialsActionsChanged": false,
+      "preservationSignatureSchema": "quantum-hub.phase-4-r1.refined-proving-hall.preservation-signatures.v3",
+      "signature": {
+        "collectionAuthority": {
+          "layerCollectionStates": [
+            {
+              "collection": "CRT_CABLE_CONNECTION",
+              "exclude": false,
+              "hideViewport": false,
+              "holdout": false,
+              "indirectOnly": false,
+              "path": [
+                "Scene Collection",
+                "PHASE_0_4_REFINED_QUANTUM_SIGNAL_TELEVISION",
+                "REFINED_CRT_ASSEMBLY",
+                "CRT_CABLE_CONNECTION"
+              ],
+              "viewLayer": "ViewLayer"
+            },
+            {
+              "collection": "CRT_PHYSICAL_CONTROLS",
+              "exclude": false,
+              "hideViewport": false,
+              "holdout": false,
+              "indirectOnly": false,
+              "path": [
+                "Scene Collection",
+                "PHASE_0_4_REFINED_QUANTUM_SIGNAL_TELEVISION",
+                "REFINED_CRT_ASSEMBLY",
+                "CRT_PHYSICAL_CONTROLS"
+              ],
+              "viewLayer": "ViewLayer"
+            },
+            {
+              "collection": "CRT_PHYSICAL_SIGNAL_INTERFACE",
+              "exclude": false,
+              "hideViewport": false,
+              "holdout": false,
+              "indirectOnly": false,
+              "path": [
+                "Scene Collection",
+                "PHASE_0_4_REFINED_QUANTUM_SIGNAL_TELEVISION",
+                "REFINED_CRT_ASSEMBLY",
+                "CRT_PHYSICAL_SIGNAL_INTERFACE"
+              ],
+              "viewLayer": "ViewLayer"
+            },
+            {
+              "collection": "CRT_PORTAL_TAKEOVER_CUES",
+              "exclude": false,
+              "hideViewport": false,
+              "holdout": false,
+              "indirectOnly": false,
+              "path": [
+                "Scene Collection",
+                "PHASE_0_4_REFINED_QUANTUM_SIGNAL_TELEVISION",
+                "REFINED_CRT_ASSEMBLY",
+                "CRT_PORTAL_TAKEOVER_CUES"
+              ],
+              "viewLayer": "ViewLayer"
+            },
+            {
+              "collection": "CRT_REAR_SERVICE_DETAIL",
+              "exclude": false,
+              "hideViewport": false,
+              "holdout": false,
+              "indirectOnly": false,
+              "path": [
+                "Scene Collection",
+                "PHASE_0_4_REFINED_QUANTUM_SIGNAL_TELEVISION",
+                "REFINED_CRT_ASSEMBLY",
+                "CRT_REAR_SERVICE_DETAIL"
+              ],
+              "viewLayer": "ViewLayer"
+            },
+            {
+              "collection": "CRT_SCANLINE_GEOMETRY",
+              "exclude": false,
+              "hideViewport": false,
+              "holdout": false,
+              "indirectOnly": false,
+              "path": [
+                "Scene Collection",
+                "PHASE_0_4_REFINED_QUANTUM_SIGNAL_TELEVISION",
+                "REFINED_CRT_ASSEMBLY",
+                "CRT_SCANLINE_GEOMETRY"
+              ],
+              "viewLayer": "ViewLayer"
+            },
+            {
+              "collection": "CRT_SIDE_VENT_DETAIL",
+              "exclude": false,
+              "hideViewport": false,
+              "holdout": false,
+              "indirectOnly": false,
+              "path": [
+                "Scene Collection",
+                "PHASE_0_4_REFINED_QUANTUM_SIGNAL_TELEVISION",
+                "REFINED_CRT_ASSEMBLY",
+                "CRT_SIDE_VENT_DETAIL"
+              ],
+              "viewLayer": "ViewLayer"
+            },
+            {
+              "collection": "CRT_SPEAKER_PERFORATIONS",
+              "exclude": false,
+              "hideViewport": false,
+              "holdout": false,
+              "indirectOnly": false,
+              "path": [
+                "Scene Collection",
+                "PHASE_0_4_REFINED_QUANTUM_SIGNAL_TELEVISION",
+                "REFINED_CRT_ASSEMBLY",
+                "CRT_SPEAKER_PERFORATIONS"
+              ],
+              "viewLayer": "ViewLayer"
+            },
+            {
+              "collection": "CRT_STARTUP_RASTER_EXPANSION",
+              "exclude": false,
+              "hideViewport": false,
+              "holdout": false,
+              "indirectOnly": false,
+              "path": [
+                "Scene Collection",
+                "PHASE_0_4_REFINED_QUANTUM_SIGNAL_TELEVISION",
+                "REFINED_CRT_ASSEMBLY",
+                "CRT_STARTUP_RASTER_EXPANSION"
+              ],
+              "viewLayer": "ViewLayer"
+            },
+            {
+              "collection": "PHASE3R_CRT_SCREEN_REPAIR",
+              "exclude": false,
+              "hideViewport": false,
+              "holdout": false,
+              "indirectOnly": false,
+              "path": [
+                "Scene Collection",
+                "PHASE3R_CRT_SCREEN_REPAIR"
+              ],
+              "viewLayer": "ViewLayer"
+            },
+            {
+              "collection": "PHASE4R0_DRAFT_RASTER",
+              "exclude": false,
+              "hideViewport": false,
+              "holdout": false,
+              "indirectOnly": false,
+              "path": [
+                "Scene Collection",
+                "PHASE4R0_DRAFT_RASTER"
+              ],
+              "viewLayer": "ViewLayer"
+            },
+            {
+              "collection": "PHASE4R0_Q_SIGNAL",
+              "exclude": false,
+              "hideViewport": false,
+              "holdout": false,
+              "indirectOnly": false,
+              "path": [
+                "Scene Collection",
+                "PHASE4R0_Q_SIGNAL"
+              ],
+              "viewLayer": "ViewLayer"
+            },
+            {
+              "collection": "REFINED_CRT_ASSEMBLY",
+              "exclude": false,
+              "hideViewport": false,
+              "holdout": false,
+              "indirectOnly": false,
+              "path": [
+                "Scene Collection",
+                "PHASE_0_4_REFINED_QUANTUM_SIGNAL_TELEVISION",
+                "REFINED_CRT_ASSEMBLY"
+              ],
+              "viewLayer": "ViewLayer"
+            }
+          ],
+          "records": [
+            {
+              "actions": {
+                "actionCount": 0,
+                "actionNames": [],
+                "curveCount": 0,
+                "keyframePointCount": 0,
+                "records": [],
+                "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+              },
+              "allObjects": [
+                "CRT_ConnectorArrivalResponseRing",
+                "CRT_IntegratedCableCollar",
+                "CRT_ProtectedCableEntryShroud",
+                "CRT_StrainReliefRib_01",
+                "CRT_StrainReliefRib_02",
+                "CRT_StrainReliefRib_03",
+                "CRT_StrainReliefRib_04",
+                "CRT_StrainReliefRib_05",
+                "CRT_StrainReliefRib_06"
+              ],
+              "animation": {
+                "activeAction": null,
+                "tracks": []
+              },
+              "children": [],
+              "customProperties": {},
+              "directObjects": [
+                "CRT_ConnectorArrivalResponseRing",
+                "CRT_IntegratedCableCollar",
+                "CRT_ProtectedCableEntryShroud",
+                "CRT_StrainReliefRib_01",
+                "CRT_StrainReliefRib_02",
+                "CRT_StrainReliefRib_03",
+                "CRT_StrainReliefRib_04",
+                "CRT_StrainReliefRib_05",
+                "CRT_StrainReliefRib_06"
+              ],
+              "drivers": {
+                "count": 0,
+                "records": [],
+                "sha256": "08ad1c5feffd7fd57739648178c6eeb0fdda038078cd47ac6b8bbe9ed9c9b3a3"
+              },
+              "hideRender": false,
+              "hideSelect": false,
+              "hideViewport": false,
+              "instanceOffset": [
+                "0x0.0p+0",
+                "0x0.0p+0",
+                "0x0.0p+0"
+              ],
+              "name": "CRT_CABLE_CONNECTION",
+              "parents": [
+                "REFINED_CRT_ASSEMBLY"
+              ],
+              "pointerProperties": {
+                "asset_data": null,
+                "library": null,
+                "library_weak_reference": null,
+                "original": {
+                  "idType": "Collection",
+                  "name": "CRT_CABLE_CONNECTION"
+                },
+                "override_library": null,
+                "preview": null
+              },
+              "properties": {
+                "active_exporter_index": 0,
+                "color_tag": "NONE",
+                "hide_render": false,
+                "hide_select": false,
+                "hide_viewport": false,
+                "id_type": "COLLECTION",
+                "instance_offset": [
+                  "0x0.0p+0",
+                  "0x0.0p+0",
+                  "0x0.0p+0"
+                ],
+                "is_editable": true,
+                "is_embedded_data": false,
+                "is_evaluated": false,
+                "is_library_indirect": false,
+                "is_linked_packed": false,
+                "is_missing": false,
+                "is_runtime_data": false,
+                "lineart_intersection_mask": [
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false
+                ],
+                "lineart_intersection_priority": 0,
+                "lineart_usage": "INCLUDE",
+                "lineart_use_intersection_mask": false,
+                "name": "CRT_CABLE_CONNECTION",
+                "name_full": "CRT_CABLE_CONNECTION",
+                "tag": false,
+                "use_extra_user": false,
+                "use_fake_user": false,
+                "use_lineart_intersection_priority": false,
+                "users": 1
+              }
+            },
+            {
+              "actions": {
+                "actionCount": 0,
+                "actionNames": [],
+                "curveCount": 0,
+                "keyframePointCount": 0,
+                "records": [],
+                "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+              },
+              "allObjects": [
+                "CRT_DormantPowerIndicator",
+                "CRT_RecessedRoundPowerButton",
+                "CRT_RecessedTuningRocker",
+                "CRT_TuningRockerCenterSeam"
+              ],
+              "animation": {
+                "activeAction": null,
+                "tracks": []
+              },
+              "children": [],
+              "customProperties": {},
+              "directObjects": [
+                "CRT_DormantPowerIndicator",
+                "CRT_RecessedRoundPowerButton",
+                "CRT_RecessedTuningRocker",
+                "CRT_TuningRockerCenterSeam"
+              ],
+              "drivers": {
+                "count": 0,
+                "records": [],
+                "sha256": "08ad1c5feffd7fd57739648178c6eeb0fdda038078cd47ac6b8bbe9ed9c9b3a3"
+              },
+              "hideRender": false,
+              "hideSelect": false,
+              "hideViewport": false,
+              "instanceOffset": [
+                "0x0.0p+0",
+                "0x0.0p+0",
+                "0x0.0p+0"
+              ],
+              "name": "CRT_PHYSICAL_CONTROLS",
+              "parents": [
+                "REFINED_CRT_ASSEMBLY"
+              ],
+              "pointerProperties": {
+                "asset_data": null,
+                "library": null,
+                "library_weak_reference": null,
+                "original": {
+                  "idType": "Collection",
+                  "name": "CRT_PHYSICAL_CONTROLS"
+                },
+                "override_library": null,
+                "preview": null
+              },
+              "properties": {
+                "active_exporter_index": 0,
+                "color_tag": "NONE",
+                "hide_render": false,
+                "hide_select": false,
+                "hide_viewport": false,
+                "id_type": "COLLECTION",
+                "instance_offset": [
+                  "0x0.0p+0",
+                  "0x0.0p+0",
+                  "0x0.0p+0"
+                ],
+                "is_editable": true,
+                "is_embedded_data": false,
+                "is_evaluated": false,
+                "is_library_indirect": false,
+                "is_linked_packed": false,
+                "is_missing": false,
+                "is_runtime_data": false,
+                "lineart_intersection_mask": [
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false
+                ],
+                "lineart_intersection_priority": 0,
+                "lineart_usage": "INCLUDE",
+                "lineart_use_intersection_mask": false,
+                "name": "CRT_PHYSICAL_CONTROLS",
+                "name_full": "CRT_PHYSICAL_CONTROLS",
+                "tag": false,
+                "use_extra_user": false,
+                "use_fake_user": false,
+                "use_lineart_intersection_priority": false,
+                "users": 1
+              }
+            },
+            {
+              "actions": {
+                "actionCount": 0,
+                "actionNames": [],
+                "curveCount": 0,
+                "keyframePointCount": 0,
+                "records": [],
+                "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+              },
+              "allObjects": [
+                "CRT_InterfaceRouteCarrier",
+                "CRT_InterfaceStatus",
+                "CRT_InterfaceTitle"
+              ],
+              "animation": {
+                "activeAction": null,
+                "tracks": []
+              },
+              "children": [],
+              "customProperties": {
+                "phase4r0_reason": "superseded screen-content/portal hierarchy hidden only in Phase 4-R0 derivative"
+              },
+              "directObjects": [
+                "CRT_InterfaceRouteCarrier",
+                "CRT_InterfaceStatus",
+                "CRT_InterfaceTitle"
+              ],
+              "drivers": {
+                "count": 0,
+                "records": [],
+                "sha256": "08ad1c5feffd7fd57739648178c6eeb0fdda038078cd47ac6b8bbe9ed9c9b3a3"
+              },
+              "hideRender": true,
+              "hideSelect": false,
+              "hideViewport": true,
+              "instanceOffset": [
+                "0x0.0p+0",
+                "0x0.0p+0",
+                "0x0.0p+0"
+              ],
+              "name": "CRT_PHYSICAL_SIGNAL_INTERFACE",
+              "parents": [
+                "REFINED_CRT_ASSEMBLY"
+              ],
+              "pointerProperties": {
+                "asset_data": null,
+                "library": null,
+                "library_weak_reference": null,
+                "original": {
+                  "idType": "Collection",
+                  "name": "CRT_PHYSICAL_SIGNAL_INTERFACE"
+                },
+                "override_library": null,
+                "preview": null
+              },
+              "properties": {
+                "active_exporter_index": 0,
+                "color_tag": "NONE",
+                "hide_render": true,
+                "hide_select": false,
+                "hide_viewport": true,
+                "id_type": "COLLECTION",
+                "instance_offset": [
+                  "0x0.0p+0",
+                  "0x0.0p+0",
+                  "0x0.0p+0"
+                ],
+                "is_editable": true,
+                "is_embedded_data": false,
+                "is_evaluated": false,
+                "is_library_indirect": false,
+                "is_linked_packed": false,
+                "is_missing": false,
+                "is_runtime_data": false,
+                "lineart_intersection_mask": [
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false
+                ],
+                "lineart_intersection_priority": 0,
+                "lineart_usage": "INCLUDE",
+                "lineart_use_intersection_mask": false,
+                "name": "CRT_PHYSICAL_SIGNAL_INTERFACE",
+                "name_full": "CRT_PHYSICAL_SIGNAL_INTERFACE",
+                "tag": false,
+                "use_extra_user": false,
+                "use_fake_user": false,
+                "use_lineart_intersection_priority": false,
+                "users": 1
+              }
+            },
+            {
+              "actions": {
+                "actionCount": 0,
+                "actionNames": [],
+                "curveCount": 0,
+                "keyframePointCount": 0,
+                "records": [],
+                "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+              },
+              "allObjects": [
+                "CRT_TextFreeOverscanCue_01",
+                "CRT_TextFreeOverscanCue_02",
+                "CRT_TextFreeRouteCarrierContinuity"
+              ],
+              "animation": {
+                "activeAction": null,
+                "tracks": []
+              },
+              "children": [],
+              "customProperties": {
+                "phase4r0_reason": "superseded screen-content/portal hierarchy hidden only in Phase 4-R0 derivative"
+              },
+              "directObjects": [
+                "CRT_TextFreeOverscanCue_01",
+                "CRT_TextFreeOverscanCue_02",
+                "CRT_TextFreeRouteCarrierContinuity"
+              ],
+              "drivers": {
+                "count": 0,
+                "records": [],
+                "sha256": "08ad1c5feffd7fd57739648178c6eeb0fdda038078cd47ac6b8bbe9ed9c9b3a3"
+              },
+              "hideRender": true,
+              "hideSelect": false,
+              "hideViewport": true,
+              "instanceOffset": [
+                "0x0.0p+0",
+                "0x0.0p+0",
+                "0x0.0p+0"
+              ],
+              "name": "CRT_PORTAL_TAKEOVER_CUES",
+              "parents": [
+                "REFINED_CRT_ASSEMBLY"
+              ],
+              "pointerProperties": {
+                "asset_data": null,
+                "library": null,
+                "library_weak_reference": null,
+                "original": {
+                  "idType": "Collection",
+                  "name": "CRT_PORTAL_TAKEOVER_CUES"
+                },
+                "override_library": null,
+                "preview": null
+              },
+              "properties": {
+                "active_exporter_index": 0,
+                "color_tag": "NONE",
+                "hide_render": true,
+                "hide_select": false,
+                "hide_viewport": true,
+                "id_type": "COLLECTION",
+                "instance_offset": [
+                  "0x0.0p+0",
+                  "0x0.0p+0",
+                  "0x0.0p+0"
+                ],
+                "is_editable": true,
+                "is_embedded_data": false,
+                "is_evaluated": false,
+                "is_library_indirect": false,
+                "is_linked_packed": false,
+                "is_missing": false,
+                "is_runtime_data": false,
+                "lineart_intersection_mask": [
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false
+                ],
+                "lineart_intersection_priority": 0,
+                "lineart_usage": "INCLUDE",
+                "lineart_use_intersection_mask": false,
+                "name": "CRT_PORTAL_TAKEOVER_CUES",
+                "name_full": "CRT_PORTAL_TAKEOVER_CUES",
+                "tag": false,
+                "use_extra_user": false,
+                "use_fake_user": false,
+                "use_lineart_intersection_priority": false,
+                "users": 1
+              }
+            },
+            {
+              "actions": {
+                "actionCount": 0,
+                "actionNames": [],
+                "curveCount": 0,
+                "keyframePointCount": 0,
+                "records": [],
+                "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+              },
+              "allObjects": [
+                "CRT_RearRemovableServicePanel",
+                "CRT_RearServiceFastener_L_L",
+                "CRT_RearServiceFastener_L_U",
+                "CRT_RearServiceFastener_R_L",
+                "CRT_RearServiceFastener_R_U",
+                "CRT_RearServicePanelGasket",
+                "CRT_RearVentDarkInterior"
+              ],
+              "animation": {
+                "activeAction": null,
+                "tracks": []
+              },
+              "children": [],
+              "customProperties": {},
+              "directObjects": [
+                "CRT_RearRemovableServicePanel",
+                "CRT_RearServiceFastener_L_L",
+                "CRT_RearServiceFastener_L_U",
+                "CRT_RearServiceFastener_R_L",
+                "CRT_RearServiceFastener_R_U",
+                "CRT_RearServicePanelGasket",
+                "CRT_RearVentDarkInterior"
+              ],
+              "drivers": {
+                "count": 0,
+                "records": [],
+                "sha256": "08ad1c5feffd7fd57739648178c6eeb0fdda038078cd47ac6b8bbe9ed9c9b3a3"
+              },
+              "hideRender": false,
+              "hideSelect": false,
+              "hideViewport": false,
+              "instanceOffset": [
+                "0x0.0p+0",
+                "0x0.0p+0",
+                "0x0.0p+0"
+              ],
+              "name": "CRT_REAR_SERVICE_DETAIL",
+              "parents": [
+                "REFINED_CRT_ASSEMBLY"
+              ],
+              "pointerProperties": {
+                "asset_data": null,
+                "library": null,
+                "library_weak_reference": null,
+                "original": {
+                  "idType": "Collection",
+                  "name": "CRT_REAR_SERVICE_DETAIL"
+                },
+                "override_library": null,
+                "preview": null
+              },
+              "properties": {
+                "active_exporter_index": 0,
+                "color_tag": "NONE",
+                "hide_render": false,
+                "hide_select": false,
+                "hide_viewport": false,
+                "id_type": "COLLECTION",
+                "instance_offset": [
+                  "0x0.0p+0",
+                  "0x0.0p+0",
+                  "0x0.0p+0"
+                ],
+                "is_editable": true,
+                "is_embedded_data": false,
+                "is_evaluated": false,
+                "is_library_indirect": false,
+                "is_linked_packed": false,
+                "is_missing": false,
+                "is_runtime_data": false,
+                "lineart_intersection_mask": [
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false
+                ],
+                "lineart_intersection_priority": 0,
+                "lineart_usage": "INCLUDE",
+                "lineart_use_intersection_mask": false,
+                "name": "CRT_REAR_SERVICE_DETAIL",
+                "name_full": "CRT_REAR_SERVICE_DETAIL",
+                "tag": false,
+                "use_extra_user": false,
+                "use_fake_user": false,
+                "use_lineart_intersection_priority": false,
+                "users": 1
+              }
+            },
+            {
+              "actions": {
+                "actionCount": 0,
+                "actionNames": [],
+                "curveCount": 0,
+                "keyframePointCount": 0,
+                "records": [],
+                "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+              },
+              "allObjects": [
+                "CRT_Scanline_01",
+                "CRT_Scanline_02",
+                "CRT_Scanline_03",
+                "CRT_Scanline_04",
+                "CRT_Scanline_05",
+                "CRT_Scanline_06",
+                "CRT_Scanline_07",
+                "CRT_Scanline_08",
+                "CRT_Scanline_09",
+                "CRT_Scanline_10",
+                "CRT_Scanline_11",
+                "CRT_Scanline_12",
+                "CRT_Scanline_13",
+                "CRT_Scanline_14",
+                "CRT_Scanline_15",
+                "CRT_Scanline_16",
+                "CRT_Scanline_17",
+                "CRT_Scanline_18",
+                "CRT_Scanline_19",
+                "CRT_Scanline_20",
+                "CRT_Scanline_21",
+                "CRT_Scanline_22",
+                "CRT_Scanline_23",
+                "CRT_Scanline_24",
+                "CRT_Scanline_25",
+                "CRT_Scanline_26",
+                "CRT_Scanline_27",
+                "CRT_Scanline_28",
+                "CRT_Scanline_29",
+                "CRT_Scanline_30",
+                "CRT_Scanline_31",
+                "CRT_Scanline_32"
+              ],
+              "animation": {
+                "activeAction": null,
+                "tracks": []
+              },
+              "children": [],
+              "customProperties": {
+                "active_raster_aspect": "0x1.55554fbdad752p+0",
+                "active_raster_height_m": "0x1.8f5c28f5c28f6p-2",
+                "active_raster_width_m": "0x1.0a3d70a3d70a4p-1",
+                "shape": "rounded rectangular 4:3-class overscan field; never elliptical"
+              },
+              "directObjects": [
+                "CRT_Scanline_01",
+                "CRT_Scanline_02",
+                "CRT_Scanline_03",
+                "CRT_Scanline_04",
+                "CRT_Scanline_05",
+                "CRT_Scanline_06",
+                "CRT_Scanline_07",
+                "CRT_Scanline_08",
+                "CRT_Scanline_09",
+                "CRT_Scanline_10",
+                "CRT_Scanline_11",
+                "CRT_Scanline_12",
+                "CRT_Scanline_13",
+                "CRT_Scanline_14",
+                "CRT_Scanline_15",
+                "CRT_Scanline_16",
+                "CRT_Scanline_17",
+                "CRT_Scanline_18",
+                "CRT_Scanline_19",
+                "CRT_Scanline_20",
+                "CRT_Scanline_21",
+                "CRT_Scanline_22",
+                "CRT_Scanline_23",
+                "CRT_Scanline_24",
+                "CRT_Scanline_25",
+                "CRT_Scanline_26",
+                "CRT_Scanline_27",
+                "CRT_Scanline_28",
+                "CRT_Scanline_29",
+                "CRT_Scanline_30",
+                "CRT_Scanline_31",
+                "CRT_Scanline_32"
+              ],
+              "drivers": {
+                "count": 0,
+                "records": [],
+                "sha256": "08ad1c5feffd7fd57739648178c6eeb0fdda038078cd47ac6b8bbe9ed9c9b3a3"
+              },
+              "hideRender": false,
+              "hideSelect": false,
+              "hideViewport": false,
+              "instanceOffset": [
+                "0x0.0p+0",
+                "0x0.0p+0",
+                "0x0.0p+0"
+              ],
+              "name": "CRT_SCANLINE_GEOMETRY",
+              "parents": [
+                "REFINED_CRT_ASSEMBLY"
+              ],
+              "pointerProperties": {
+                "asset_data": null,
+                "library": null,
+                "library_weak_reference": null,
+                "original": {
+                  "idType": "Collection",
+                  "name": "CRT_SCANLINE_GEOMETRY"
+                },
+                "override_library": null,
+                "preview": null
+              },
+              "properties": {
+                "active_exporter_index": 0,
+                "color_tag": "NONE",
+                "hide_render": false,
+                "hide_select": false,
+                "hide_viewport": false,
+                "id_type": "COLLECTION",
+                "instance_offset": [
+                  "0x0.0p+0",
+                  "0x0.0p+0",
+                  "0x0.0p+0"
+                ],
+                "is_editable": true,
+                "is_embedded_data": false,
+                "is_evaluated": false,
+                "is_library_indirect": false,
+                "is_linked_packed": false,
+                "is_missing": false,
+                "is_runtime_data": false,
+                "lineart_intersection_mask": [
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false
+                ],
+                "lineart_intersection_priority": 0,
+                "lineart_usage": "INCLUDE",
+                "lineart_use_intersection_mask": false,
+                "name": "CRT_SCANLINE_GEOMETRY",
+                "name_full": "CRT_SCANLINE_GEOMETRY",
+                "tag": false,
+                "use_extra_user": false,
+                "use_fake_user": false,
+                "use_lineart_intersection_priority": false,
+                "users": 1
+              }
+            },
+            {
+              "actions": {
+                "actionCount": 0,
+                "actionNames": [],
+                "curveCount": 0,
+                "keyframePointCount": 0,
+                "records": [],
+                "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+              },
+              "allObjects": [
+                "CRT_SideVentDarkPlenum"
+              ],
+              "animation": {
+                "activeAction": null,
+                "tracks": []
+              },
+              "children": [],
+              "customProperties": {},
+              "directObjects": [
+                "CRT_SideVentDarkPlenum"
+              ],
+              "drivers": {
+                "count": 0,
+                "records": [],
+                "sha256": "08ad1c5feffd7fd57739648178c6eeb0fdda038078cd47ac6b8bbe9ed9c9b3a3"
+              },
+              "hideRender": false,
+              "hideSelect": false,
+              "hideViewport": false,
+              "instanceOffset": [
+                "0x0.0p+0",
+                "0x0.0p+0",
+                "0x0.0p+0"
+              ],
+              "name": "CRT_SIDE_VENT_DETAIL",
+              "parents": [
+                "REFINED_CRT_ASSEMBLY"
+              ],
+              "pointerProperties": {
+                "asset_data": null,
+                "library": null,
+                "library_weak_reference": null,
+                "original": {
+                  "idType": "Collection",
+                  "name": "CRT_SIDE_VENT_DETAIL"
+                },
+                "override_library": null,
+                "preview": null
+              },
+              "properties": {
+                "active_exporter_index": 0,
+                "color_tag": "NONE",
+                "hide_render": false,
+                "hide_select": false,
+                "hide_viewport": false,
+                "id_type": "COLLECTION",
+                "instance_offset": [
+                  "0x0.0p+0",
+                  "0x0.0p+0",
+                  "0x0.0p+0"
+                ],
+                "is_editable": true,
+                "is_embedded_data": false,
+                "is_evaluated": false,
+                "is_library_indirect": false,
+                "is_linked_packed": false,
+                "is_missing": false,
+                "is_runtime_data": false,
+                "lineart_intersection_mask": [
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false
+                ],
+                "lineart_intersection_priority": 0,
+                "lineart_usage": "INCLUDE",
+                "lineart_use_intersection_mask": false,
+                "name": "CRT_SIDE_VENT_DETAIL",
+                "name_full": "CRT_SIDE_VENT_DETAIL",
+                "tag": false,
+                "use_extra_user": false,
+                "use_fake_user": false,
+                "use_lineart_intersection_priority": false,
+                "users": 1
+              }
+            },
+            {
+              "actions": {
+                "actionCount": 0,
+                "actionNames": [],
+                "curveCount": 0,
+                "keyframePointCount": 0,
+                "records": [],
+                "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+              },
+              "allObjects": [
+                "CRT_SpeakerGrilleDarkInterior"
+              ],
+              "animation": {
+                "activeAction": null,
+                "tracks": []
+              },
+              "children": [],
+              "customProperties": {},
+              "directObjects": [
+                "CRT_SpeakerGrilleDarkInterior"
+              ],
+              "drivers": {
+                "count": 0,
+                "records": [],
+                "sha256": "08ad1c5feffd7fd57739648178c6eeb0fdda038078cd47ac6b8bbe9ed9c9b3a3"
+              },
+              "hideRender": false,
+              "hideSelect": false,
+              "hideViewport": false,
+              "instanceOffset": [
+                "0x0.0p+0",
+                "0x0.0p+0",
+                "0x0.0p+0"
+              ],
+              "name": "CRT_SPEAKER_PERFORATIONS",
+              "parents": [
+                "REFINED_CRT_ASSEMBLY"
+              ],
+              "pointerProperties": {
+                "asset_data": null,
+                "library": null,
+                "library_weak_reference": null,
+                "original": {
+                  "idType": "Collection",
+                  "name": "CRT_SPEAKER_PERFORATIONS"
+                },
+                "override_library": null,
+                "preview": null
+              },
+              "properties": {
+                "active_exporter_index": 0,
+                "color_tag": "NONE",
+                "hide_render": false,
+                "hide_select": false,
+                "hide_viewport": false,
+                "id_type": "COLLECTION",
+                "instance_offset": [
+                  "0x0.0p+0",
+                  "0x0.0p+0",
+                  "0x0.0p+0"
+                ],
+                "is_editable": true,
+                "is_embedded_data": false,
+                "is_evaluated": false,
+                "is_library_indirect": false,
+                "is_linked_packed": false,
+                "is_missing": false,
+                "is_runtime_data": false,
+                "lineart_intersection_mask": [
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false
+                ],
+                "lineart_intersection_priority": 0,
+                "lineart_usage": "INCLUDE",
+                "lineart_use_intersection_mask": false,
+                "name": "CRT_SPEAKER_PERFORATIONS",
+                "name_full": "CRT_SPEAKER_PERFORATIONS",
+                "tag": false,
+                "use_extra_user": false,
+                "use_fake_user": false,
+                "use_lineart_intersection_priority": false,
+                "users": 1
+              }
+            },
+            {
+              "actions": {
+                "actionCount": 0,
+                "actionNames": [],
+                "curveCount": 0,
+                "keyframePointCount": 0,
+                "records": [],
+                "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+              },
+              "allObjects": [
+                "CRT_StartupExpansionScanline_01",
+                "CRT_StartupExpansionScanline_02",
+                "CRT_StartupExpansionScanline_03",
+                "CRT_StartupExpansionScanline_04",
+                "CRT_StartupExpansionScanline_05",
+                "CRT_StartupExpansionScanline_06",
+                "CRT_StartupExpansionScanline_07",
+                "CRT_StartupExpansionScanline_08",
+                "CRT_StartupExpansionScanline_09",
+                "CRT_StartupExpansionScanline_10",
+                "CRT_StartupExpansionScanline_11",
+                "CRT_StartupExpansionScanline_12",
+                "CRT_StartupExpansionScanline_13",
+                "CRT_StartupExpansionScanline_14",
+                "CRT_StartupExpansionScanline_15",
+                "CRT_StartupExpansionScanline_16",
+                "CRT_StartupExpansionScanline_17",
+                "CRT_StartupExpansionScanline_18"
+              ],
+              "animation": {
+                "activeAction": null,
+                "tracks": []
+              },
+              "children": [],
+              "customProperties": {
+                "degaussing_ripple_present": true,
+                "degaussing_state": "active and visibly settling",
+                "expands_from": "CRT_WakeHorizontalPhosphorLine",
+                "shape": "partial-height rounded rectangular 4:3 raster; never elliptical",
+                "vertical_fill_ratio": "0x1.eb851eb851eb8p-2"
+              },
+              "directObjects": [
+                "CRT_StartupExpansionScanline_01",
+                "CRT_StartupExpansionScanline_02",
+                "CRT_StartupExpansionScanline_03",
+                "CRT_StartupExpansionScanline_04",
+                "CRT_StartupExpansionScanline_05",
+                "CRT_StartupExpansionScanline_06",
+                "CRT_StartupExpansionScanline_07",
+                "CRT_StartupExpansionScanline_08",
+                "CRT_StartupExpansionScanline_09",
+                "CRT_StartupExpansionScanline_10",
+                "CRT_StartupExpansionScanline_11",
+                "CRT_StartupExpansionScanline_12",
+                "CRT_StartupExpansionScanline_13",
+                "CRT_StartupExpansionScanline_14",
+                "CRT_StartupExpansionScanline_15",
+                "CRT_StartupExpansionScanline_16",
+                "CRT_StartupExpansionScanline_17",
+                "CRT_StartupExpansionScanline_18"
+              ],
+              "drivers": {
+                "count": 0,
+                "records": [],
+                "sha256": "08ad1c5feffd7fd57739648178c6eeb0fdda038078cd47ac6b8bbe9ed9c9b3a3"
+              },
+              "hideRender": false,
+              "hideSelect": false,
+              "hideViewport": false,
+              "instanceOffset": [
+                "0x0.0p+0",
+                "0x0.0p+0",
+                "0x0.0p+0"
+              ],
+              "name": "CRT_STARTUP_RASTER_EXPANSION",
+              "parents": [
+                "REFINED_CRT_ASSEMBLY"
+              ],
+              "pointerProperties": {
+                "asset_data": null,
+                "library": null,
+                "library_weak_reference": null,
+                "original": {
+                  "idType": "Collection",
+                  "name": "CRT_STARTUP_RASTER_EXPANSION"
+                },
+                "override_library": null,
+                "preview": null
+              },
+              "properties": {
+                "active_exporter_index": 0,
+                "color_tag": "NONE",
+                "hide_render": false,
+                "hide_select": false,
+                "hide_viewport": false,
+                "id_type": "COLLECTION",
+                "instance_offset": [
+                  "0x0.0p+0",
+                  "0x0.0p+0",
+                  "0x0.0p+0"
+                ],
+                "is_editable": true,
+                "is_embedded_data": false,
+                "is_evaluated": false,
+                "is_library_indirect": false,
+                "is_linked_packed": false,
+                "is_missing": false,
+                "is_runtime_data": false,
+                "lineart_intersection_mask": [
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false
+                ],
+                "lineart_intersection_priority": 0,
+                "lineart_usage": "INCLUDE",
+                "lineart_use_intersection_mask": false,
+                "name": "CRT_STARTUP_RASTER_EXPANSION",
+                "name_full": "CRT_STARTUP_RASTER_EXPANSION",
+                "tag": false,
+                "use_extra_user": false,
+                "use_fake_user": false,
+                "use_lineart_intersection_priority": false,
+                "users": 1
+              }
+            },
+            {
+              "actions": {
+                "actionCount": 0,
+                "actionNames": [],
+                "curveCount": 0,
+                "keyframePointCount": 0,
+                "records": [],
+                "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+              },
+              "allObjects": [
+                "Phase3R_WakePhosphorBody",
+                "Phase3R_WakePhosphorCore",
+                "Phase3R_WakePhosphorHalo"
+              ],
+              "animation": {
+                "activeAction": null,
+                "tracks": []
+              },
+              "children": [],
+              "customProperties": {},
+              "directObjects": [
+                "Phase3R_WakePhosphorBody",
+                "Phase3R_WakePhosphorCore",
+                "Phase3R_WakePhosphorHalo"
+              ],
+              "drivers": {
+                "count": 0,
+                "records": [],
+                "sha256": "08ad1c5feffd7fd57739648178c6eeb0fdda038078cd47ac6b8bbe9ed9c9b3a3"
+              },
+              "hideRender": false,
+              "hideSelect": false,
+              "hideViewport": false,
+              "instanceOffset": [
+                "0x0.0p+0",
+                "0x0.0p+0",
+                "0x0.0p+0"
+              ],
+              "name": "PHASE3R_CRT_SCREEN_REPAIR",
+              "parents": [
+                "<SCENE_MASTER>"
+              ],
+              "pointerProperties": {
+                "asset_data": null,
+                "library": null,
+                "library_weak_reference": null,
+                "original": {
+                  "idType": "Collection",
+                  "name": "PHASE3R_CRT_SCREEN_REPAIR"
+                },
+                "override_library": null,
+                "preview": null
+              },
+              "properties": {
+                "active_exporter_index": 0,
+                "color_tag": "NONE",
+                "hide_render": false,
+                "hide_select": false,
+                "hide_viewport": false,
+                "id_type": "COLLECTION",
+                "instance_offset": [
+                  "0x0.0p+0",
+                  "0x0.0p+0",
+                  "0x0.0p+0"
+                ],
+                "is_editable": true,
+                "is_embedded_data": false,
+                "is_evaluated": false,
+                "is_library_indirect": false,
+                "is_linked_packed": false,
+                "is_missing": false,
+                "is_runtime_data": false,
+                "lineart_intersection_mask": [
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false
+                ],
+                "lineart_intersection_priority": 0,
+                "lineart_usage": "INCLUDE",
+                "lineart_use_intersection_mask": false,
+                "name": "PHASE3R_CRT_SCREEN_REPAIR",
+                "name_full": "PHASE3R_CRT_SCREEN_REPAIR",
+                "tag": false,
+                "use_extra_user": false,
+                "use_fake_user": false,
+                "use_lineart_intersection_priority": false,
+                "users": 1
+              }
+            },
+            {
+              "actions": {
+                "actionCount": 0,
+                "actionNames": [],
+                "curveCount": 0,
+                "keyframePointCount": 0,
+                "records": [],
+                "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+              },
+              "allObjects": [
+                "Phase4R0_ConvexDraftRasterSurface"
+              ],
+              "animation": {
+                "activeAction": null,
+                "tracks": []
+              },
+              "children": [],
+              "customProperties": {},
+              "directObjects": [
+                "Phase4R0_ConvexDraftRasterSurface"
+              ],
+              "drivers": {
+                "count": 0,
+                "records": [],
+                "sha256": "08ad1c5feffd7fd57739648178c6eeb0fdda038078cd47ac6b8bbe9ed9c9b3a3"
+              },
+              "hideRender": false,
+              "hideSelect": false,
+              "hideViewport": false,
+              "instanceOffset": [
+                "0x0.0p+0",
+                "0x0.0p+0",
+                "0x0.0p+0"
+              ],
+              "name": "PHASE4R0_DRAFT_RASTER",
+              "parents": [
+                "<SCENE_MASTER>"
+              ],
+              "pointerProperties": {
+                "asset_data": null,
+                "library": null,
+                "library_weak_reference": null,
+                "original": {
+                  "idType": "Collection",
+                  "name": "PHASE4R0_DRAFT_RASTER"
+                },
+                "override_library": null,
+                "preview": null
+              },
+              "properties": {
+                "active_exporter_index": 0,
+                "color_tag": "NONE",
+                "hide_render": false,
+                "hide_select": false,
+                "hide_viewport": false,
+                "id_type": "COLLECTION",
+                "instance_offset": [
+                  "0x0.0p+0",
+                  "0x0.0p+0",
+                  "0x0.0p+0"
+                ],
+                "is_editable": true,
+                "is_embedded_data": false,
+                "is_evaluated": false,
+                "is_library_indirect": false,
+                "is_linked_packed": false,
+                "is_missing": false,
+                "is_runtime_data": false,
+                "lineart_intersection_mask": [
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false
+                ],
+                "lineart_intersection_priority": 0,
+                "lineart_usage": "INCLUDE",
+                "lineart_use_intersection_mask": false,
+                "name": "PHASE4R0_DRAFT_RASTER",
+                "name_full": "PHASE4R0_DRAFT_RASTER",
+                "tag": false,
+                "use_extra_user": false,
+                "use_fake_user": false,
+                "use_lineart_intersection_priority": false,
+                "users": 1
+              }
+            },
+            {
+              "actions": {
+                "actionCount": 0,
+                "actionNames": [],
+                "curveCount": 0,
+                "keyframePointCount": 0,
+                "records": [],
+                "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+              },
+              "allObjects": [
+                "Phase4R0_ApprovedQuantumQ_Root",
+                "Phase4R0_QuantumQ_Accent",
+                "Phase4R0_QuantumQ_Body"
+              ],
+              "animation": {
+                "activeAction": null,
+                "tracks": []
+              },
+              "children": [],
+              "customProperties": {},
+              "directObjects": [
+                "Phase4R0_ApprovedQuantumQ_Root",
+                "Phase4R0_QuantumQ_Accent",
+                "Phase4R0_QuantumQ_Body"
+              ],
+              "drivers": {
+                "count": 0,
+                "records": [],
+                "sha256": "08ad1c5feffd7fd57739648178c6eeb0fdda038078cd47ac6b8bbe9ed9c9b3a3"
+              },
+              "hideRender": false,
+              "hideSelect": false,
+              "hideViewport": false,
+              "instanceOffset": [
+                "0x0.0p+0",
+                "0x0.0p+0",
+                "0x0.0p+0"
+              ],
+              "name": "PHASE4R0_Q_SIGNAL",
+              "parents": [
+                "<SCENE_MASTER>"
+              ],
+              "pointerProperties": {
+                "asset_data": null,
+                "library": null,
+                "library_weak_reference": null,
+                "original": {
+                  "idType": "Collection",
+                  "name": "PHASE4R0_Q_SIGNAL"
+                },
+                "override_library": null,
+                "preview": null
+              },
+              "properties": {
+                "active_exporter_index": 0,
+                "color_tag": "NONE",
+                "hide_render": false,
+                "hide_select": false,
+                "hide_viewport": false,
+                "id_type": "COLLECTION",
+                "instance_offset": [
+                  "0x0.0p+0",
+                  "0x0.0p+0",
+                  "0x0.0p+0"
+                ],
+                "is_editable": true,
+                "is_embedded_data": false,
+                "is_evaluated": false,
+                "is_library_indirect": false,
+                "is_linked_packed": false,
+                "is_missing": false,
+                "is_runtime_data": false,
+                "lineart_intersection_mask": [
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false
+                ],
+                "lineart_intersection_priority": 0,
+                "lineart_usage": "INCLUDE",
+                "lineart_use_intersection_mask": false,
+                "name": "PHASE4R0_Q_SIGNAL",
+                "name_full": "PHASE4R0_Q_SIGNAL",
+                "tag": false,
+                "use_extra_user": false,
+                "use_fake_user": false,
+                "use_lineart_intersection_priority": false,
+                "users": 1
+              }
+            },
+            {
+              "actions": {
+                "actionCount": 0,
+                "actionNames": [],
+                "curveCount": 0,
+                "keyframePointCount": 0,
+                "records": [],
+                "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+              },
+              "allObjects": [
+                "CRT_ASSEMBLY_ROOT",
+                "CRT_CabinetPartingSeam",
+                "CRT_ConnectorArrivalResponseRing",
+                "CRT_ConvexThickSmokedGlass",
+                "CRT_DormantPowerIndicator",
+                "CRT_IntegratedCableCollar",
+                "CRT_InterfaceRouteCarrier",
+                "CRT_InterfaceStatus",
+                "CRT_InterfaceTitle",
+                "CRT_InternalPhosphorLayer",
+                "CRT_LowerBandUpperShadowSeam",
+                "CRT_LowerSpeakerControlBand",
+                "CRT_ProtectedCableEntryShroud",
+                "CRT_RearRemovableServicePanel",
+                "CRT_RearServiceFastener_L_L",
+                "CRT_RearServiceFastener_L_U",
+                "CRT_RearServiceFastener_R_L",
+                "CRT_RearServiceFastener_R_U",
+                "CRT_RearServicePanelGasket",
+                "CRT_RearVentDarkInterior",
+                "CRT_RecessedGlassGasket",
+                "CRT_RecessedRoundPowerButton",
+                "CRT_RecessedTuningRocker",
+                "CRT_RefinedDeepMouldedCabinetShell",
+                "CRT_RestrainedHiddenFoot_01",
+                "CRT_RestrainedHiddenFoot_02",
+                "CRT_RestrainedHiddenFoot_03",
+                "CRT_RestrainedHiddenFoot_04",
+                "CRT_Scanline_01",
+                "CRT_Scanline_02",
+                "CRT_Scanline_03",
+                "CRT_Scanline_04",
+                "CRT_Scanline_05",
+                "CRT_Scanline_06",
+                "CRT_Scanline_07",
+                "CRT_Scanline_08",
+                "CRT_Scanline_09",
+                "CRT_Scanline_10",
+                "CRT_Scanline_11",
+                "CRT_Scanline_12",
+                "CRT_Scanline_13",
+                "CRT_Scanline_14",
+                "CRT_Scanline_15",
+                "CRT_Scanline_16",
+                "CRT_Scanline_17",
+                "CRT_Scanline_18",
+                "CRT_Scanline_19",
+                "CRT_Scanline_20",
+                "CRT_Scanline_21",
+                "CRT_Scanline_22",
+                "CRT_Scanline_23",
+                "CRT_Scanline_24",
+                "CRT_Scanline_25",
+                "CRT_Scanline_26",
+                "CRT_Scanline_27",
+                "CRT_Scanline_28",
+                "CRT_Scanline_29",
+                "CRT_Scanline_30",
+                "CRT_Scanline_31",
+                "CRT_Scanline_32",
+                "CRT_SideVentDarkPlenum",
+                "CRT_SpeakerGrilleDarkInterior",
+                "CRT_StartupExpansionScanline_01",
+                "CRT_StartupExpansionScanline_02",
+                "CRT_StartupExpansionScanline_03",
+                "CRT_StartupExpansionScanline_04",
+                "CRT_StartupExpansionScanline_05",
+                "CRT_StartupExpansionScanline_06",
+                "CRT_StartupExpansionScanline_07",
+                "CRT_StartupExpansionScanline_08",
+                "CRT_StartupExpansionScanline_09",
+                "CRT_StartupExpansionScanline_10",
+                "CRT_StartupExpansionScanline_11",
+                "CRT_StartupExpansionScanline_12",
+                "CRT_StartupExpansionScanline_13",
+                "CRT_StartupExpansionScanline_14",
+                "CRT_StartupExpansionScanline_15",
+                "CRT_StartupExpansionScanline_16",
+                "CRT_StartupExpansionScanline_17",
+                "CRT_StartupExpansionScanline_18",
+                "CRT_StrainReliefRib_01",
+                "CRT_StrainReliefRib_02",
+                "CRT_StrainReliefRib_03",
+                "CRT_StrainReliefRib_04",
+                "CRT_StrainReliefRib_05",
+                "CRT_StrainReliefRib_06",
+                "CRT_TextFreeOverscanCue_01",
+                "CRT_TextFreeOverscanCue_02",
+                "CRT_TextFreeRouteCarrierContinuity",
+                "CRT_ThickProtectiveBezel",
+                "CRT_TuningRockerCenterSeam",
+                "CRT_WakeHorizontalPhosphorLine"
+              ],
+              "animation": {
+                "activeAction": null,
+                "tracks": []
+              },
+              "children": [
+                "CRT_CABLE_CONNECTION",
+                "CRT_PHYSICAL_CONTROLS",
+                "CRT_PHYSICAL_SIGNAL_INTERFACE",
+                "CRT_PORTAL_TAKEOVER_CUES",
+                "CRT_REAR_SERVICE_DETAIL",
+                "CRT_SCANLINE_GEOMETRY",
+                "CRT_SIDE_VENT_DETAIL",
+                "CRT_SPEAKER_PERFORATIONS",
+                "CRT_STARTUP_RASTER_EXPANSION"
+              ],
+              "customProperties": {},
+              "directObjects": [
+                "CRT_ASSEMBLY_ROOT",
+                "CRT_CabinetPartingSeam",
+                "CRT_ConvexThickSmokedGlass",
+                "CRT_InternalPhosphorLayer",
+                "CRT_LowerBandUpperShadowSeam",
+                "CRT_LowerSpeakerControlBand",
+                "CRT_RecessedGlassGasket",
+                "CRT_RefinedDeepMouldedCabinetShell",
+                "CRT_RestrainedHiddenFoot_01",
+                "CRT_RestrainedHiddenFoot_02",
+                "CRT_RestrainedHiddenFoot_03",
+                "CRT_RestrainedHiddenFoot_04",
+                "CRT_ThickProtectiveBezel",
+                "CRT_WakeHorizontalPhosphorLine"
+              ],
+              "drivers": {
+                "count": 0,
+                "records": [],
+                "sha256": "08ad1c5feffd7fd57739648178c6eeb0fdda038078cd47ac6b8bbe9ed9c9b3a3"
+              },
+              "hideRender": false,
+              "hideSelect": false,
+              "hideViewport": false,
+              "instanceOffset": [
+                "0x0.0p+0",
+                "0x0.0p+0",
+                "0x0.0p+0"
+              ],
+              "name": "REFINED_CRT_ASSEMBLY",
+              "parents": [
+                "PHASE_0_4_REFINED_QUANTUM_SIGNAL_TELEVISION"
+              ],
+              "pointerProperties": {
+                "asset_data": null,
+                "library": null,
+                "library_weak_reference": null,
+                "original": {
+                  "idType": "Collection",
+                  "name": "REFINED_CRT_ASSEMBLY"
+                },
+                "override_library": null,
+                "preview": null
+              },
+              "properties": {
+                "active_exporter_index": 0,
+                "color_tag": "NONE",
+                "hide_render": false,
+                "hide_select": false,
+                "hide_viewport": false,
+                "id_type": "COLLECTION",
+                "instance_offset": [
+                  "0x0.0p+0",
+                  "0x0.0p+0",
+                  "0x0.0p+0"
+                ],
+                "is_editable": true,
+                "is_embedded_data": false,
+                "is_evaluated": false,
+                "is_library_indirect": false,
+                "is_linked_packed": false,
+                "is_missing": false,
+                "is_runtime_data": false,
+                "lineart_intersection_mask": [
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false
+                ],
+                "lineart_intersection_priority": 0,
+                "lineart_usage": "INCLUDE",
+                "lineart_use_intersection_mask": false,
+                "name": "REFINED_CRT_ASSEMBLY",
+                "name_full": "REFINED_CRT_ASSEMBLY",
+                "tag": false,
+                "use_extra_user": false,
+                "use_fake_user": false,
+                "use_lineart_intersection_priority": false,
+                "users": 1
+              }
+            }
+          ],
+          "rootCollectionNames": [
+            "REFINED_CRT_ASSEMBLY",
+            "CRT_CABLE_CONNECTION",
+            "CRT_PHYSICAL_CONTROLS",
+            "CRT_PHYSICAL_SIGNAL_INTERFACE",
+            "CRT_REAR_SERVICE_DETAIL",
+            "CRT_SCANLINE_GEOMETRY",
+            "CRT_SIDE_VENT_DETAIL",
+            "CRT_SPEAKER_PERFORATIONS",
+            "CRT_STARTUP_RASTER_EXPANSION",
+            "CRT_PORTAL_TAKEOVER_CUES",
+            "PHASE3R_CRT_SCREEN_REPAIR",
+            "PHASE4R0_DRAFT_RASTER",
+            "PHASE4R0_Q_SIGNAL"
+          ],
+          "sha256": "b30caf41e636bd67b1adb2db619782a7cecd92e576515b37f74a094af9fe049a"
+        },
+        "objectCount": 99,
+        "objectHashes": {
+          "CRT_ASSEMBLY_ROOT": "aee3243a8936ca5c6e8152a1dafdffd25c4b52d04f5ae5ef0c10a40a7062f584",
+          "CRT_CabinetPartingSeam": "325dfea16b8919cb87ad9d5b89f58aaecd2766e3b44eefbb60b175df54d05d50",
+          "CRT_ConnectorArrivalResponseRing": "2fcaf51190692682a14f0f78fe1c9eb0eb8c86ffdf949ae22dd30460d6bc3e25",
+          "CRT_ConvexThickSmokedGlass": "62db5b9d231930e18a4d386699303ad7908c77b62c9d1af93c3ee20d870ebec2",
+          "CRT_DormantPowerIndicator": "5e898a67af51b7575646465057f09e5a5b5e3e581f16f4564be2b1fecb4ea369",
+          "CRT_IntegratedCableCollar": "c5bea8536f5632001d2f0508b4a62648ed6bb0c69a6c18a43868d50b0a5f50ea",
+          "CRT_InterfaceRouteCarrier": "3f22f95a5f5329b672dd1b0cf2194e74f162ecc1c8cd0c2935a03131d16d1bc2",
+          "CRT_InterfaceStatus": "8be966dc616ddf7866eb14317b0708a621dc7f18e3707328e8f4b9404cb1e99e",
+          "CRT_InterfaceTitle": "eaf59e100ce05c323716ba31091121b8afd2a2b7b2ba1ecafe31bb49658e4303",
+          "CRT_InternalPhosphorLayer": "a99f35d227b817f98b3c37d070ec4e8b5a141daa1901326a5d0983736e810bb7",
+          "CRT_LowerBandUpperShadowSeam": "358d08292ad1f49eeb51455c770ce11499e128a2a1fe6cc72ef70fedc22cec37",
+          "CRT_LowerSpeakerControlBand": "bb109e69589e6e6efed7a5dd378849028c337afe6f5a8f1d14754f625579357e",
+          "CRT_ProtectedCableEntryShroud": "8b116d9291628f8ab4c7c35d690ac58c98c95d4be8f2c8be6cc09089f1653f15",
+          "CRT_RearRemovableServicePanel": "32f628c8aad9e5e7b3980344609e1302099a5662068de0fb67427bb263a96aaa",
+          "CRT_RearServiceFastener_L_L": "1fe19ab6fa0ee25b6bec8ffb6e99618eed9027773884bd93d85fec88ac1a49f9",
+          "CRT_RearServiceFastener_L_U": "b2c0f33041e17d5b6aff66cd31ff14b084eecf5d815c5ba40ff832b7149f3bbc",
+          "CRT_RearServiceFastener_R_L": "be6b0d73b61462b7f64437a38575007d18b4ee344dee53ae92efa3c6c632c637",
+          "CRT_RearServiceFastener_R_U": "e0405b43537cc3d8a858f420290c1e23e7f0fa487cb4d919c6eb1545c2cb0207",
+          "CRT_RearServicePanelGasket": "dd2f644cf77d4af918e18930db4f2baad43a6206ed075838d6461e08d5013438",
+          "CRT_RearVentDarkInterior": "0a4c095a25dce06e8d7f6d4e442ed94c02aa5b3909678ca3b5a201d21e57ee65",
+          "CRT_RecessedGlassGasket": "1f09ae68e46a5db41eb6af41aa7482ae968ee4fd3ca63973bd31ddc6fb8340ff",
+          "CRT_RecessedRoundPowerButton": "be2bff70638cf184762ab89137a42880151ac6f5bd4df02e0e0b9253fa40ab92",
+          "CRT_RecessedTuningRocker": "eae489bc41ed0c277f4561269a104d614ac5ce9cfbeb352f42e740d8663a2c7f",
+          "CRT_RefinedDeepMouldedCabinetShell": "517b59c34d3f8871a9a7f6fe97255e033c400c7ed25333f3850c4bb365e4661d",
+          "CRT_RestrainedHiddenFoot_01": "18425d3520452ca83f37f13f19b387e4b0795acec2dfb656908609b93fefd71e",
+          "CRT_RestrainedHiddenFoot_02": "4454ad4fb023b178350db2c8e9c106ca1a423731bbae6a7f1742b4a26ed95474",
+          "CRT_RestrainedHiddenFoot_03": "8e8ff642228e3176d2221700ea5ee770b35b5da53028761de3a3cda793b94193",
+          "CRT_RestrainedHiddenFoot_04": "23fd6d87e3701ad0dbf3389c5cd87bccc771f1837d0273f6bb0e67fa23690a41",
+          "CRT_Scanline_01": "cfaae7653941e7e414ad870890d75d3c32484f821fb41972ce5b5a8c80cddeac",
+          "CRT_Scanline_02": "ac9a308e88463cfe17cc57a14034a9d00d28f2fc7418e72d6b96a79e235051c0",
+          "CRT_Scanline_03": "0c7d807f5780606b01d3d6186fccf36c6fec5cc6d6a10b048407fe158e2075d6",
+          "CRT_Scanline_04": "46204706ea1cd5df5f14f6688dbb3bb7a37553e901597479c56f7b3800009f6c",
+          "CRT_Scanline_05": "d46f90f1ef80fe562fae41e3eeeb713374813454d96a18453f2cabee90cbd1ce",
+          "CRT_Scanline_06": "2620d5581acae06eeb9bf84fc35a2ff144f21317941cfdc4a2511d037c163d03",
+          "CRT_Scanline_07": "ccf5befc9646504794ff26100ab40fab2657098c0d01a56bac06694df50c6dc9",
+          "CRT_Scanline_08": "352fc943e4b062b08d629e0ba626f76b390fee0f7afa68652e3c94a3eff29303",
+          "CRT_Scanline_09": "325747b2b0e2ce6dbf78d66d4df78d4ac180676ac8ca74c2471bcd2968997cab",
+          "CRT_Scanline_10": "81b08c8621b34d0f8a727aa3e8f92710f0e6032fc1b5d3d4f26af6f800b226e0",
+          "CRT_Scanline_11": "0d2712e11f8ba2ebbda61cd046d6e81493fc4573f4d8f3c6e4dbd0329da6ddef",
+          "CRT_Scanline_12": "5142dae9f4580e5affd1106eb2f7b9417d324c17e2c19a445a82390f00ba4934",
+          "CRT_Scanline_13": "529724832ec7443f4f5abe08814ec6b41104eb4cb6c7f0ac928d75a80b78213f",
+          "CRT_Scanline_14": "1aa7bc9e3a9138f5d28b84af7836b9aba9a7d4ba23b48f8344f9491ed089ddfb",
+          "CRT_Scanline_15": "0286458279ce3eb88f1bc6db75f72d44d94e35bdf6c3b57acf04d4347681ba1a",
+          "CRT_Scanline_16": "094d19c2910c2cb183ec5fe259ceff94f83f6353eadc6fd5730d8c09e1063655",
+          "CRT_Scanline_17": "c02a2b010d5459a60986f95c50efbd094841754ef28b527dacb1504a4845635a",
+          "CRT_Scanline_18": "d3d613ee381057365461cfa22b64ecd7e449483406bb487c67ff7c1d1c5b1d01",
+          "CRT_Scanline_19": "9c0379d9bd9290277255563c38eee9791c1933959a4301ec7f5848c1f0e11be3",
+          "CRT_Scanline_20": "5d732983cccda9a61f8847cdce19de21ebb7a18bccd117b29886f5a39118b177",
+          "CRT_Scanline_21": "6ba589da538fc89e485e0390e86d3666dd779da242ad693edf2e98ece64cb811",
+          "CRT_Scanline_22": "cfa88e81075bf1a0cf3b9aa2f62d83ee52b1f6be3d9008af48b7bb0b10f50fd8",
+          "CRT_Scanline_23": "ba549164bdafb765c358e237002509261da70d9cbe1763e3c0be048e4d74d82e",
+          "CRT_Scanline_24": "72767206e63fc5ae8bed3bc6baf73838166d6d74cd872ecc1b2dd6a1466b3493",
+          "CRT_Scanline_25": "209913c328957b994235856675338a2dadbaf9fe7f568753565b07ea34867f4f",
+          "CRT_Scanline_26": "80536d227fcc9924e06ae006e7f3cd9e2ecfdc1134d8e3ffaf0050a0644745f4",
+          "CRT_Scanline_27": "d5e7c914ebb483d5ad48234d145026c990a9d23ea09160934f0fdd6d38de839c",
+          "CRT_Scanline_28": "be1499bd6e9fb0d8d3b476b6ccda4a45283e13d8d8c33cf3d115475a5ded1b13",
+          "CRT_Scanline_29": "54f7e3b9b77fec23a50ae3c5468921ccf6b2c99191b0d63cc3c00e5ea1e291f6",
+          "CRT_Scanline_30": "265a1998884acabe01dc7c63d00ce24114029d78a1d8fce744540d9f9016582d",
+          "CRT_Scanline_31": "be350fb1528ff39848ea158bd47b4a2f2e5acb2f0e9e2674db550d4231b7d4d1",
+          "CRT_Scanline_32": "79776716cc7afa1fb7dd3c702db28cdc579d9b5bf5d08f088904b808bfe87a0c",
+          "CRT_SideVentDarkPlenum": "f00b79ccb87500978f240935208917ac628189cfcba540f6e4a5d88f43b87fc3",
+          "CRT_SpeakerGrilleDarkInterior": "66879940000eea9778f0328a6d0649a81e69067bfcd1001b95c1f75ff6f32d2f",
+          "CRT_StartupExpansionScanline_01": "bbac3227b14b7342efd072be96723fb08ed197391f095009c58a1360f635f162",
+          "CRT_StartupExpansionScanline_02": "5c760d2d9ae68bc4212e6509d3d123e3542fab0f52eb16b4fad930e48ad37324",
+          "CRT_StartupExpansionScanline_03": "9ebef880346c56aff7e7acd697bce669fbc92901f30617c9f0d53dfc75cc34df",
+          "CRT_StartupExpansionScanline_04": "6b35d1bce3572c5563f3e24ae712825821af595d9a9272c44b22e7e3b50a2079",
+          "CRT_StartupExpansionScanline_05": "a2669357864bbfde60bbfe06fd068cede555d7ff2af20908a47a4471f0a85a5a",
+          "CRT_StartupExpansionScanline_06": "a33995ce6079985427a542f63c68dc93c2fa783359707f5ac254490f5621af93",
+          "CRT_StartupExpansionScanline_07": "e137b2201733857d6cb11436ba109a75d182dd54d8f0d0f680a22cbdd197ddca",
+          "CRT_StartupExpansionScanline_08": "c900b48f1992ad4a838037c1173ad6bdd03fbfc49f6c98a6e79e9b2bd4af99a0",
+          "CRT_StartupExpansionScanline_09": "b10f0c680299c87dc32cdc60149a5935b9aac1e07c5a9d7bdd38063324971e4b",
+          "CRT_StartupExpansionScanline_10": "2ad41d29f85c75b44e5b87047795f3eabbae012bbbf50cd0fc0c6a6f95444b23",
+          "CRT_StartupExpansionScanline_11": "d4434c403c621ec965b5c1cc45435c7112eba791cef6b3ec1d683c0cd0289a17",
+          "CRT_StartupExpansionScanline_12": "d7d6f58e3baa7366da7d046192178ccc54a67d30f7c62d778eb43b7aeb99cdc4",
+          "CRT_StartupExpansionScanline_13": "9f123e64f23033aef7b13e2382cf693ea730ad19ae57b4c7c83197f24b30529a",
+          "CRT_StartupExpansionScanline_14": "594bd9ac01bc6e15254fe766021d890a60fd87dcecaccb3c71140bf91d6fca4d",
+          "CRT_StartupExpansionScanline_15": "ca76c3f06d458b20e5155bbe9eb607ef97115429ad598482eaf48f7d42611a77",
+          "CRT_StartupExpansionScanline_16": "5f6dae31a59fd9667f2ac19267d8c5492be55ca4a04d10d7cb7c87a3f5b9ae81",
+          "CRT_StartupExpansionScanline_17": "5fe6a778455a88f3c495f8e579f46b49db89f13d1b3f8fda284c539789ec9125",
+          "CRT_StartupExpansionScanline_18": "53b33f2a17d8d51ead271b9b4395a540b4f3603aa072759bc0ac376063039f07",
+          "CRT_StrainReliefRib_01": "207155ad0934af48d20748aa054f2d78b6ac86cd7e5f4d6da71246ace827fcf7",
+          "CRT_StrainReliefRib_02": "754ec6941d2743ee03f0f4fefddd48f1e663379af6d7d8db3c4635793b6b7e9d",
+          "CRT_StrainReliefRib_03": "fa58104de8e722dd4fa6c4a99f8098a892177e0880f6c7bb88a1f6b88889c35b",
+          "CRT_StrainReliefRib_04": "c0621d0dac99f20de5f4e6498ff0be8d7fa6be122914a5978a163160d1bdc629",
+          "CRT_StrainReliefRib_05": "12cc80da66e40590dbb54e23f0b6b0bd08796a5ab94d20d4e7a299ddd84fa931",
+          "CRT_StrainReliefRib_06": "15d430a39ad6fd4b8a9fb69ee3d4d17bcf895e03ae85c412f259c348af5e0f9d",
+          "CRT_TextFreeOverscanCue_01": "e30df62da5c36e25ada6a7180c1aa958ebd9d46320d09a949adefec2a5f3d072",
+          "CRT_TextFreeOverscanCue_02": "9066e42a02fc93f8673c6aa1d4b2df294489bc732adc2e0b4a68a46629359170",
+          "CRT_TextFreeRouteCarrierContinuity": "8acd6a865cd779c668029fe715cb1c4bcf05f5c97b7a50947e671d0edc699d63",
+          "CRT_ThickProtectiveBezel": "42a4cc15ed7948b33a9057df3af3cc157f7f2e34052f4af811dfd30830c31320",
+          "CRT_TuningRockerCenterSeam": "01f51b4c1644aada9799f8c3baa61f756af144cd5794306eae302bfb5501ab8d",
+          "CRT_WakeHorizontalPhosphorLine": "5c6ded8088cefd8cafcf23eeaefa9f6f8bea1360ef03331c3b9646a775c1030c",
+          "Phase3R_WakePhosphorBody": "e6015a59883c72004f2fd0c58d313e9a55b2a4514edb62b6a8f1df80be60e581",
+          "Phase3R_WakePhosphorCore": "c009f42755caa63664009403eec4fe5706135c261e9683a56608d362515fd07a",
+          "Phase3R_WakePhosphorHalo": "268f96be27b3538c7bebe5e4ac33073126c59bd7c93f3a90c799ebb3a2fa1426",
+          "Phase4R0_ApprovedQuantumQ_Root": "60ffbf23a21fe41df22848fb24b830e83d742109f7191f7242897758c6b4a101",
+          "Phase4R0_ConvexDraftRasterSurface": "cf010739f22e3277c8b89334cfc3d900ff25fe226b62223b22820b805950f633",
+          "Phase4R0_QuantumQ_Accent": "ad5f1bc472dbc7b960773dff030cde81652bcaf55fcb415f56d304b892d32e94",
+          "Phase4R0_QuantumQ_Body": "002517ea1dee9b9a48110e907b6000002c74aba739a5a1cd2fd7f4a92ca60c66"
+        },
+        "objectNames": [
+          "CRT_ASSEMBLY_ROOT",
+          "CRT_CabinetPartingSeam",
+          "CRT_ConnectorArrivalResponseRing",
+          "CRT_ConvexThickSmokedGlass",
+          "CRT_DormantPowerIndicator",
+          "CRT_IntegratedCableCollar",
+          "CRT_InterfaceRouteCarrier",
+          "CRT_InterfaceStatus",
+          "CRT_InterfaceTitle",
+          "CRT_InternalPhosphorLayer",
+          "CRT_LowerBandUpperShadowSeam",
+          "CRT_LowerSpeakerControlBand",
+          "CRT_ProtectedCableEntryShroud",
+          "CRT_RearRemovableServicePanel",
+          "CRT_RearServiceFastener_L_L",
+          "CRT_RearServiceFastener_L_U",
+          "CRT_RearServiceFastener_R_L",
+          "CRT_RearServiceFastener_R_U",
+          "CRT_RearServicePanelGasket",
+          "CRT_RearVentDarkInterior",
+          "CRT_RecessedGlassGasket",
+          "CRT_RecessedRoundPowerButton",
+          "CRT_RecessedTuningRocker",
+          "CRT_RefinedDeepMouldedCabinetShell",
+          "CRT_RestrainedHiddenFoot_01",
+          "CRT_RestrainedHiddenFoot_02",
+          "CRT_RestrainedHiddenFoot_03",
+          "CRT_RestrainedHiddenFoot_04",
+          "CRT_Scanline_01",
+          "CRT_Scanline_02",
+          "CRT_Scanline_03",
+          "CRT_Scanline_04",
+          "CRT_Scanline_05",
+          "CRT_Scanline_06",
+          "CRT_Scanline_07",
+          "CRT_Scanline_08",
+          "CRT_Scanline_09",
+          "CRT_Scanline_10",
+          "CRT_Scanline_11",
+          "CRT_Scanline_12",
+          "CRT_Scanline_13",
+          "CRT_Scanline_14",
+          "CRT_Scanline_15",
+          "CRT_Scanline_16",
+          "CRT_Scanline_17",
+          "CRT_Scanline_18",
+          "CRT_Scanline_19",
+          "CRT_Scanline_20",
+          "CRT_Scanline_21",
+          "CRT_Scanline_22",
+          "CRT_Scanline_23",
+          "CRT_Scanline_24",
+          "CRT_Scanline_25",
+          "CRT_Scanline_26",
+          "CRT_Scanline_27",
+          "CRT_Scanline_28",
+          "CRT_Scanline_29",
+          "CRT_Scanline_30",
+          "CRT_Scanline_31",
+          "CRT_Scanline_32",
+          "CRT_SideVentDarkPlenum",
+          "CRT_SpeakerGrilleDarkInterior",
+          "CRT_StartupExpansionScanline_01",
+          "CRT_StartupExpansionScanline_02",
+          "CRT_StartupExpansionScanline_03",
+          "CRT_StartupExpansionScanline_04",
+          "CRT_StartupExpansionScanline_05",
+          "CRT_StartupExpansionScanline_06",
+          "CRT_StartupExpansionScanline_07",
+          "CRT_StartupExpansionScanline_08",
+          "CRT_StartupExpansionScanline_09",
+          "CRT_StartupExpansionScanline_10",
+          "CRT_StartupExpansionScanline_11",
+          "CRT_StartupExpansionScanline_12",
+          "CRT_StartupExpansionScanline_13",
+          "CRT_StartupExpansionScanline_14",
+          "CRT_StartupExpansionScanline_15",
+          "CRT_StartupExpansionScanline_16",
+          "CRT_StartupExpansionScanline_17",
+          "CRT_StartupExpansionScanline_18",
+          "CRT_StrainReliefRib_01",
+          "CRT_StrainReliefRib_02",
+          "CRT_StrainReliefRib_03",
+          "CRT_StrainReliefRib_04",
+          "CRT_StrainReliefRib_05",
+          "CRT_StrainReliefRib_06",
+          "CRT_TextFreeOverscanCue_01",
+          "CRT_TextFreeOverscanCue_02",
+          "CRT_TextFreeRouteCarrierContinuity",
+          "CRT_ThickProtectiveBezel",
+          "CRT_TuningRockerCenterSeam",
+          "CRT_WakeHorizontalPhosphorLine",
+          "Phase3R_WakePhosphorBody",
+          "Phase3R_WakePhosphorCore",
+          "Phase3R_WakePhosphorHalo",
+          "Phase4R0_ApprovedQuantumQ_Root",
+          "Phase4R0_ConvexDraftRasterSurface",
+          "Phase4R0_QuantumQ_Accent",
+          "Phase4R0_QuantumQ_Body"
+        ],
+        "persistenceVolatileRnaPropertyExclusionAuthority": {
+          "properties": [
+            "session_uid"
+          ],
+          "reason": "Blender assigns session_uid at runtime and reassigns it after save/reopen; it is not authored or persisted scene state",
+          "scope": "generic RNA simple-property persistence hashing only"
+        },
+        "sha256": "0703ec658dd1deb22a420661216832394fd5c68de5d71f5081b4d61544f55552",
+        "signatureFrame": 1,
+        "signatureSchema": "quantum-hub.phase-4-r1.refined-proving-hall.preservation-signatures.v3",
+        "supersededOldQVisibilityState": [
+          {
+            "hideRender": true,
+            "name": "Phase4R0_QuantumQ_Accent",
+            "reason": "superseded approximate Q curve; recovered authority is already hidden and must remain unchanged"
+          },
+          {
+            "hideRender": true,
+            "name": "Phase4R0_QuantumQ_Body",
+            "reason": "superseded approximate Q curve; recovered authority is already hidden and must remain unchanged"
+          }
+        ]
+      }
+    },
+    {
+      "downloads": false,
+      "id": "dark-v2-hall",
+      "origin": "retained R1 architecture with deterministic local material reassignment",
+      "palette": {
+        "deep_graphite": "#1a2020",
+        "muted_dark_steel": "#252e30",
+        "neutral_practical": "#b7aea3",
+        "primary_black": "#0e1112",
+        "quantum_accent": "#f06ba0",
+        "quantum_magenta": "#d82b72",
+        "warm_dark": "#2b2229"
+      }
+    },
+    {
+      "downloads": false,
+      "families": [
+        "desktop",
+        "mobile",
+        "landscape"
+      ],
+      "id": "responsive-spiral-cables",
+      "mobileRefinedRouteAuthority": {
+        "analyticEndpointXYErrorMeters": 1.3328003749250113e-07,
+        "analyticPrimitiveLengthsMeters": [
+          0.04100121518230231,
+          1.179176344702622,
+          0.6738035468789358
+        ],
+        "analyticTerminalHeadingDot": 1.0000000596046448,
+        "analyticTotalLengthMeters": 1.8939811067638601,
+        "deduplicatedPointCount": 634,
+        "expectedFinishedReadableMinimumAbsoluteTurns": 2.5,
+        "expectedFloorAbsoluteTurns": 0.256814167375,
+        "expectedFloorSignedTurns": 0.238007759222,
+        "floorLeadTopologyAuthority": {
+          "c1ContinuityErrorMeters": 4.76837158203125e-07,
+          "controlPointsWorldMeters": {
+            "firstCubic": [
+              [
+                -15.850000381469727,
+                -7.199999809265137,
+                0.028999999165534973
+              ],
+              [
+                -13.75,
+                -7.199999809265137,
+                0.028999999165534973
+              ],
+              [
+                -12.680761337280273,
+                -4.830890655517578,
+                0.02945421077311039
+              ],
+              [
+                -6.181933403015137,
+                -5.5,
+                0.029859023168683052
+              ]
+            ],
+            "secondCubic": [
+              [
+                -6.181933403015137,
+                -5.5,
+                0.029859023168683052
+              ],
+              [
+                0.3168940544128418,
+                -6.169109344482422,
+                0.030263835564255714
+              ],
+              [
+                -0.9490955471992493,
+                -2.776289224624634,
+                0.029839202761650085
+              ],
+              [
+                0.6499999761581421,
+                -2.722527503967285,
+                0.028081513941287994
+              ]
+            ]
+          },
+          "coordinateAuthorities": {
+            "floorLead": {
+              "bytes": 5921,
+              "method": "compact JSON array of world XYZ coordinates rounded to 12 decimals",
+              "pointCount": 121,
+              "sha256": "1f759861b91a04e66e4adc606927c51efe180071525925401d6ae865290444e1"
+            },
+            "fullRoute": {
+              "bytes": 69649,
+              "method": "compact JSON array of world XYZ coordinates rounded to 12 decimals",
+              "pointCount": 1475,
+              "sha256": "281c9192cfa26d32eb44d6999b897848bdc9904e62a52b06d004b57c816d5504"
+            },
+            "preservedSpiralAndTail": {
+              "bytes": 61389,
+              "method": "compact JSON array of world XYZ coordinates rounded to 12 decimals",
+              "pointCount": 1307,
+              "sha256": "70223cd92d25f0d62a8ac7cc46f299fc3d860ec34fd7314895ae19393bd049fc"
+            },
+            "sourceServiceTransition": {
+              "bytes": 2438,
+              "method": "compact JSON array of world XYZ coordinates rounded to 12 decimals",
+              "pointCount": 49,
+              "sha256": "25a0dc521b30430a657fb2aee268d506a8c0a48940f4bc3ec3d11d5d1e0e2391"
+            }
+          },
+          "coordinateAuthorityChecks": {
+            "floorLead": true,
+            "fullRoute": true,
+            "preservedSpiralAndTail": true,
+            "sourceServiceTransition": true
+          },
+          "deduplicatedLeadPointCount": 121,
+          "endpointRealizationErrorsMeters": {
+            "floorEntryMeters": 0.0,
+            "sharedWaypointMeters": 0.0,
+            "spiralStartMeters": 0.0
+          },
+          "entryTangentDotPositiveX": 1.0,
+          "globalIndexAuthority": {
+            "floorEntry": 48,
+            "joinIndices": [
+              48,
+              108,
+              168,
+              649,
+              663,
+              1057,
+              1282,
+              1442
+            ],
+            "leadPointCount": 121,
+            "routePointCount": 1475,
+            "spiralStart": 168,
+            "waypoint": 108
+          },
+          "inclusiveSampleCounts": [
+            61,
+            61
+          ],
+          "leadCoordinateAuthority": {
+            "bytes": 5921,
+            "method": "compact JSON array of world XYZ coordinates rounded to 12 decimals",
+            "pointCount": 121,
+            "sha256": "1f759861b91a04e66e4adc606927c51efe180071525925401d6ae865290444e1"
+          },
+          "leftWaypointHandleAuthorityErrorMeters": 4.915125475189242e-07,
+          "preservedInvariants": {
+            "fullRouteMatchesStage2Authority": true,
+            "preservedSpiralAndTailUnchanged": true,
+            "sourceServiceTransitionUnchanged": true
+          },
+          "requiredMinimumVisibleLeadArcLengthMeters": 2.0,
+          "rightWaypointHandleAuthorityErrorMeters": 1.1920951692423985e-07,
+          "schema": "phase4r1-mobile-two-cubic-floor-lead-authority.v1",
+          "spiralApproachTangentDot": 0.999999955243311,
+          "stage2CandidateDigestSha256": "2e392a8d9473283167c2d80a5eb5ec89438bd678692f5cbb464863e16af197f4",
+          "stage2VerificationAuthority": {
+            "contactCount": 0,
+            "evidenceEnvelopeBytes": 28639,
+            "evidenceEnvelopeSha256": "1bec6cfcacae82ba653013409d72e67c3e3cc69d4c730dc2430be90592b01394",
+            "externalRecoveryId": "phase4r1-mobile-lead-stage2-rank20-2e392a8d9473",
+            "minimumBendRadiusMeters": 0.17935765664867664,
+            "minimumClearanceMeters": 0.0907124096,
+            "minimumClearanceSegmentPair": [
+              1253,
+              1285
+            ],
+            "properPlanarCrossingCount": 0,
+            "routePointCount": 1475
+          },
+          "topology": "two cubic Bezier spans with one shared C1 waypoint and the original 121-point/index budget",
+          "verifiedVisibleLeadArcLengthMeters": 2.080271697148068,
+          "waypointLeadLocalIndex": 60,
+          "waypointTangentControlVectorMeters": [
+            6.4988274574279785,
+            -0.6691093444824219,
+            0.00040481239557266235
+          ],
+          "waypointWorldMeters": [
+            -6.181933403015137,
+            -5.5,
+            0.029859023168683052
+          ]
+        },
+        "floorTransitionAbsoluteTurnRealizationErrorTurns": 2.896540118868529e-09,
+        "floorTransitionAbsoluteTurns": 0.2568141644784599,
+        "floorTransitionEndWorldMeters": [
+          0.6800000071525574,
+          1.0199999809265137,
+          0.028999999165534973
+        ],
+        "floorTransitionEndYawDegrees": -40.0,
+        "floorTransitionType": "LSL",
+        "globalIndexAuthority": {
+          "fullRoutePointCount": 1475,
+          "joinIndices": [
+            48,
+            108,
+            168,
+            649,
+            663,
+            1057,
+            1282,
+            1442
+          ],
+          "preservedPrefixEnd": 649,
+          "sourceLeadPointCountStrictlyBeforeSpiralStart": 168,
+          "sourceLeadPointCountThroughSpiralStartInclusive": 169,
+          "spiralStart": 168
+        },
+        "inclusivePrimitiveSampleCounts": [
+          15,
+          395,
+          226
+        ],
+        "maximumChordMeters": 0.0029947610714407074,
+        "maximumFloorCentreErrorMeters": 0.00042794831097126007,
+        "parameters": [
+          0.22778452879056843,
+          6.550979692792345,
+          3.7433530382163105
+        ],
+        "preservedPrefix": {
+          "bytes": 17076,
+          "method": "compact JSON array of world XYZ coordinates rounded to 8 decimals",
+          "pointCount": 482,
+          "sha256": "a5e3c2dead8b5100fb06c676503e058967cd44359433bec9a3f8d8a8de84f03d"
+        },
+        "preservedPrefixExpectedAbsoluteTurns": 2.257312563286151,
+        "radiusMeters": 0.18,
+        "requiredMaximumAnalyticEndpointXYErrorMeters": 1e-06,
+        "requiredMaximumBlenderRealizationErrorMeters": 1e-06,
+        "requiredMaximumFloorTransitionAbsoluteTurnRealizationErrorTurns": 1e-08,
+        "retainedPrefixTerminalUnitTangent": [
+          -0.043106380850076675,
+          0.9990702867507935,
+          -0.0007669911137782037
+        ],
+        "retainedPrefixTerminalWorldMeters": [
+          1.2910853624343872,
+          0.029476171359419823,
+          0.029427947476506233
+        ],
+        "sampledLengthMeters": 1.8939727930227899,
+        "sampledMaximumZMeters": 0.029427947476506233,
+        "sampledMinimumZMeters": 0.0289979986846447,
+        "terminalAuthority": {
+          "axialInclusiveSampleCount": 33,
+          "axialSeatLengthMeters": 0.06400001083314327,
+          "axialSeatStartWorldMeters": [
+            0.8549999594688416,
+            0.7260000109672546,
+            0.13500000536441803
+          ],
+          "endpointUnitTangent": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "horizontalSpanMeters": 0.39848333630488303,
+          "liftControl1WorldMeters": [
+            0.7872462272644043,
+            0.9300097227096558,
+            0.028999999165534973
+          ],
+          "liftControl2WorldMeters": [
+            0.8549999594688416,
+            0.8859999775886536,
+            0.13500000536441803
+          ],
+          "liftInclusiveSampleCount": 161,
+          "liftStartWorldMeters": [
+            0.6800000071525574,
+            1.0199999809265137,
+            0.028999999165534973
+          ],
+          "rearSeatWorldMeters": [
+            0.8549999594688416,
+            0.6620000004768372,
+            0.13500000536441803
+          ],
+          "riseMeters": 0.10600000536441803,
+          "sampledArcLengthMeters": 0.4424955269745404
+        },
+        "zInterpolation": "cubic Hermite over sampled cumulative XY length; recovered seam dz/ds and zero terminal dz/ds",
+        "zInterpolationSampledTotalLengthMeters": 1.8939727930227899,
+        "zInterpolationStartDzDs": -0.0007669911137782037
+      },
+      "origin": "desktop/landscape preserve their complete recovered spirals; mobile preserves the exact hash-bound 482-point recovered prefix and uses the independently clearance-verified r=.18 LSL floor transition; all families add authored perimeter leads and restrained lower-rear tails"
+    },
+    {
+      "approximateGeometry": false,
+      "id": "exact-quantum-q",
+      "manualRedraw": false,
+      "origin": "official repository SVG direct raster",
+      "provenance": {
+        "bytes": 5816,
+        "path": "artifacts/original/phase-4r1-refined-proving-hall/source/phase4r1-exact-q-provenance.json",
+        "sha256": "f8759f6f6f39d07c5b081f139983afe1a9e39e7c37e0e916e8f3230bb736a93a"
+      }
+    }
+  ],
+  "authorization": {
+    "chromeStatePolicyImplementationEvidenced": true,
+    "full540FrameCyclesProductionFilmResumed": false,
+    "full540FrameCyclesProductionFilmStarted": false,
+    "humanAccepted": false,
+    "phase5Authorized": false,
+    "refinedPhysicalMediaRuntimeIntegrationStarted": false
+  },
+  "externalAssetsDownloaded": [],
+  "generatedAt": "2026-08-24T00:00:00Z",
+  "schema": "quantum-hub.phase-4-r1.refined-proving-hall.asset-ledger.v2",
+  "sourceAuthorities": {
+    "exactQProvenance": {
+      "bytes": 5816,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/phase4r1-exact-q-provenance.json",
+      "sha256": "f8759f6f6f39d07c5b081f139983afe1a9e39e7c37e0e916e8f3230bb736a93a"
+    },
+    "recoveredDerivative": {
+      "bytes": 3081427,
+      "path": "artifacts/original/phase-4r1-proving-hall-environment/source/quantum-signal-television-phase4r1-proving-hall.blend",
+      "sha256": "e24ccf974a57c0a5ffad48a42d07238138bf7e519da0494f5b9329f2a8b60e87"
+    },
+    "refinedDerivative": {
+      "bytes": 3526219,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/quantum-signal-television-phase4r1-refined-proving-hall.blend",
+      "sha256": "a0a122baaf021833e9cad6194a474ef714b182be2c8e7171e00ad69c00565215"
+    }
+  },
+  "status": "PASS",
+  "stockOrGenerativeAssetsUsed": false
+}

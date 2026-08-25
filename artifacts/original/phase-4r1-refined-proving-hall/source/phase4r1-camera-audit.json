@@ -1,0 +1,1494 @@
+{
+  "audit": {
+    "establishingAimActionsPreserved": true,
+    "establishingAimSignature": "64385fdd3502e75f97783575049ee2d18c2dd86c101c8f86b2f7a97c44512035",
+    "families": {
+      "desktop": {
+        "angleEndDegrees": 270.000001,
+        "angleStartDegrees": -90.0000024,
+        "angularTravelDegrees": 360.000003,
+        "camera": "Phase4R1_Camera_Desktop",
+        "counterClockwise": true,
+        "elevationEndMeters": 0.71999997,
+        "elevationStartMeters": 7.73099995,
+        "lensEndMillimeters": 46.0,
+        "lensStartMillimeters": 25.29999924,
+        "monotonicDescent": true,
+        "monotonicInward": true,
+        "radiusEndMeters": 3.4000001,
+        "radiusStartMeters": 11.39999962,
+        "selectedTelemetry": [
+          {
+            "angleDegreesUnwrapped": -90.0000024,
+            "elevationAboveTargetMeters": 7.73099995,
+            "frame": 46,
+            "horizontalRadiusMeters": 11.39999962,
+            "lensMillimeters": 25.29999924,
+            "worldMeters": [
+              0.6499995,
+              -11.39999962,
+              8.15600014
+            ]
+          },
+          {
+            "angleDegreesUnwrapped": -44.81171898,
+            "elevationAboveTargetMeters": 5.0845499,
+            "frame": 76,
+            "horizontalRadiusMeters": 10.39581571,
+            "lensMillimeters": 29.95750046,
+            "worldMeters": [
+              8.02506828,
+              -7.326756,
+              5.50955009
+            ]
+          },
+          {
+            "angleDegreesUnwrapped": 0.37656879,
+            "elevationAboveTargetMeters": 1.85000014,
+            "frame": 106,
+            "horizontalRadiusMeters": 9.39163274,
+            "lensMillimeters": 34.61500168,
+            "worldMeters": [
+              10.04142952,
+              0.0617248,
+              2.2750001
+            ]
+          },
+          {
+            "angleDegreesUnwrapped": 89.246865,
+            "elevationAboveTargetMeters": 1.55400014,
+            "frame": 165,
+            "horizontalRadiusMeters": 7.41673694,
+            "lensMillimeters": 38.36759949,
+            "worldMeters": [
+              0.74748784,
+              7.41609621,
+              1.97900009
+            ]
+          },
+          {
+            "angleDegreesUnwrapped": 179.62342933,
+            "elevationAboveTargetMeters": 1.25800014,
+            "frame": 225,
+            "horizontalRadiusMeters": 5.4083681,
+            "lensMillimeters": 42.18379974,
+            "worldMeters": [
+              -4.75825119,
+              0.03554569,
+              1.68300009
+            ]
+          },
+          {
+            "angleDegreesUnwrapped": 270.000001,
+            "elevationAboveTargetMeters": 0.71999997,
+            "frame": 285,
+            "horizontalRadiusMeters": 3.4000001,
+            "lensMillimeters": 46.0,
+            "worldMeters": [
+              0.65000004,
+              -3.4000001,
+              1.14499998
+            ]
+          }
+        ]
+      },
+      "landscape": {
+        "angleEndDegrees": 270.00000096,
+        "angleStartDegrees": -90.0000024,
+        "angularTravelDegrees": 360.000003,
+        "camera": "Phase4R1_Camera_Landscape",
+        "counterClockwise": true,
+        "elevationEndMeters": 0.57999998,
+        "elevationStartMeters": 7.73099995,
+        "lensEndMillimeters": 42.0,
+        "lensStartMillimeters": 20.0,
+        "monotonicDescent": true,
+        "monotonicInward": true,
+        "radiusEndMeters": 3.54999995,
+        "radiusStartMeters": 11.39999962,
+        "selectedTelemetry": [
+          {
+            "angleDegreesUnwrapped": -90.0000024,
+            "elevationAboveTargetMeters": 7.73099995,
+            "frame": 46,
+            "horizontalRadiusMeters": 11.39999962,
+            "lensMillimeters": 20.0,
+            "worldMeters": [
+              0.6499995,
+              -11.39999962,
+              8.15600014
+            ]
+          },
+          {
+            "angleDegreesUnwrapped": -44.81171621,
+            "elevationAboveTargetMeters": 5.01704979,
+            "frame": 76,
+            "horizontalRadiusMeters": 10.41464466,
+            "lensMillimeters": 24.95000076,
+            "worldMeters": [
+              8.0384264,
+              -7.3400259,
+              5.44204998
+            ]
+          },
+          {
+            "angleDegreesUnwrapped": 0.37656878,
+            "elevationAboveTargetMeters": 1.70000005,
+            "frame": 106,
+            "horizontalRadiusMeters": 9.42928938,
+            "lensMillimeters": 29.89999962,
+            "worldMeters": [
+              10.07908535,
+              0.06197229,
+              2.125
+            ]
+          },
+          {
+            "angleDegreesUnwrapped": 89.24686504,
+            "elevationAboveTargetMeters": 1.42799997,
+            "frame": 165,
+            "horizontalRadiusMeters": 7.49142277,
+            "lensMillimeters": 33.88826752,
+            "worldMeters": [
+              0.74846953,
+              7.49077559,
+              1.85299993
+            ]
+          },
+          {
+            "angleDegreesUnwrapped": 179.62342937,
+            "elevationAboveTargetMeters": 1.15600014,
+            "frame": 225,
+            "horizontalRadiusMeters": 5.52071145,
+            "lensMillimeters": 37.94413376,
+            "worldMeters": [
+              -4.87059212,
+              0.03628405,
+              1.58100009
+            ]
+          },
+          {
+            "angleDegreesUnwrapped": 270.00000096,
+            "elevationAboveTargetMeters": 0.57999998,
+            "frame": 285,
+            "horizontalRadiusMeters": 3.54999995,
+            "lensMillimeters": 42.0,
+            "worldMeters": [
+              0.65000004,
+              -3.54999995,
+              1.005
+            ]
+          }
+        ]
+      },
+      "mobile": {
+        "angleEndDegrees": 270.00000121,
+        "angleStartDegrees": -90.00000256,
+        "angularTravelDegrees": 360.000004,
+        "camera": "Phase4R1_Camera_Mobile",
+        "counterClockwise": true,
+        "elevationEndMeters": 0.66000003,
+        "elevationStartMeters": 6.46999979,
+        "lensEndMillimeters": 56.0,
+        "lensStartMillimeters": 74.0,
+        "monotonicDescent": true,
+        "monotonicInward": true,
+        "radiusEndMeters": 2.81999993,
+        "radiusStartMeters": 12.0,
+        "selectedTelemetry": [
+          {
+            "angleDegreesUnwrapped": -90.00000256,
+            "elevationAboveTargetMeters": 6.46999979,
+            "frame": 46,
+            "horizontalRadiusMeters": 12.0,
+            "lensMillimeters": 74.0,
+            "worldMeters": [
+              0.64999944,
+              -12.0,
+              6.89499998
+            ]
+          },
+          {
+            "angleDegreesUnwrapped": -44.81171733,
+            "elevationAboveTargetMeters": 4.25600004,
+            "frame": 76,
+            "horizontalRadiusMeters": 10.84769946,
+            "lensMillimeters": 24.0,
+            "worldMeters": [
+              8.34564686,
+              -7.64523411,
+              4.68100023
+            ]
+          },
+          {
+            "angleDegreesUnwrapped": 0.3765688,
+            "elevationAboveTargetMeters": 1.54999995,
+            "frame": 106,
+            "horizontalRadiusMeters": 9.69539792,
+            "lensMillimeters": 24.0,
+            "worldMeters": [
+              10.34518814,
+              0.06372124,
+              1.9749999
+            ]
+          },
+          {
+            "angleDegreesUnwrapped": 89.24686477,
+            "elevationAboveTargetMeters": 1.30200005,
+            "frame": 165,
+            "horizontalRadiusMeters": 7.42920493,
+            "lensMillimeters": 24.0,
+            "worldMeters": [
+              0.74765176,
+              7.42856312,
+              1.727
+            ]
+          },
+          {
+            "angleDegreesUnwrapped": 179.62342936,
+            "elevationAboveTargetMeters": 1.05400014,
+            "frame": 225,
+            "horizontalRadiusMeters": 5.12460237,
+            "lensMillimeters": 24.0,
+            "worldMeters": [
+              -4.4744916,
+              0.03368068,
+              1.47900009
+            ]
+          },
+          {
+            "angleDegreesUnwrapped": 270.00000121,
+            "elevationAboveTargetMeters": 0.66000003,
+            "frame": 285,
+            "horizontalRadiusMeters": 2.81999993,
+            "lensMillimeters": 56.0,
+            "worldMeters": [
+              0.65000004,
+              -2.81999993,
+              1.08500004
+            ]
+          }
+        ]
+      }
+    },
+    "openingComposition": {
+      "desktop": {
+        "closeArrivalCoverage": {
+          "cabinetCentreNdc": [
+            0.5,
+            0.48934549,
+            3.75113893
+          ],
+          "cabinetCentreSafe": true,
+          "leftOverscanNormalized": 0.0,
+          "leftRightOverscanDifferenceNormalized": 0.0,
+          "maximumOverscanAsymmetryNormalized": 0.002,
+          "maximumPerSideOverscanNormalized": 0.012,
+          "nativeSparseArrivalProofRequired": false,
+          "physicalCrtRawNdcBounds": [
+            0.33990318,
+            0.25229475,
+            0.66009688,
+            0.69931954
+          ],
+          "physicalCrtVisibleFraction": 1.0,
+          "rightOverscanNormalized": 0.0,
+          "screenFullyVisibleAndSafe": true,
+          "screenProjection": {
+            "areaOccupancy": 0.05479035,
+            "horizontalOccupancy": 0.21625146,
+            "inFrontCount": 48,
+            "ndcBounds": [
+              0.39187428,
+              0.36533388,
+              0.60812575,
+              0.61869794
+            ],
+            "pointCount": 48,
+            "safeMargin": 0.36533388,
+            "verticalOccupancy": 0.25336406,
+            "visibleFraction": 1.0,
+            "visiblePointCount": 48
+          },
+          "sourceGeometryPasses": true,
+          "sourceStageNativeVisualStatus": "NOT_REQUIRED"
+        },
+        "frame1": {
+          "cameraLensMillimeters": 25.29999924,
+          "completeCable": {
+            "areaOccupancy": 1.50539439,
+            "horizontalOccupancy": 1.93713319,
+            "inFrontCount": 1241,
+            "ndcBounds": [
+              -1.11138165,
+              -0.07448303,
+              0.82575154,
+              0.70264184
+            ],
+            "pointCount": 1241,
+            "safeMargin": -1.11138165,
+            "verticalOccupancy": 0.77712487,
+            "visibleFraction": 0.90491539,
+            "visiblePointCount": 1123
+          },
+          "completeSpiral": {
+            "areaOccupancy": 0.3532897,
+            "horizontalOccupancy": 0.57678781,
+            "inFrontCount": 721,
+            "ndcBounds": [
+              0.24896373,
+              0.09012942,
+              0.82575154,
+              0.70264184
+            ],
+            "pointCount": 721,
+            "safeMargin": 0.09012942,
+            "verticalOccupancy": 0.61251242,
+            "visibleFraction": 1.0,
+            "visiblePointCount": 721
+          },
+          "crt": {
+            "areaOccupancy": 0.00360335,
+            "horizontalOccupancy": 0.04439458,
+            "inFrontCount": 104,
+            "ndcBounds": [
+              0.49462995,
+              0.51605219,
+              0.53902453,
+              0.59721863
+            ],
+            "pointCount": 104,
+            "safeMargin": 0.40278137,
+            "verticalOccupancy": 0.08116645,
+            "visibleFraction": 1.0,
+            "visiblePointCount": 104
+          },
+          "crtVerticalOccupancyDescriptive": 0.08116645,
+          "downwardPitchDegrees": 23.74108039,
+          "leadUnderstood": true,
+          "offscreenSourceCausality": {
+            "leadApproachTangentControlMeters": 2.4,
+            "rawVisibleLeadPointFraction": 0.4214876,
+            "requiredMinimumVisibleLeadArcLengthMeters": 2.0,
+            "sourceOriginIntentionallyOffscreen": true,
+            "spiralStartGlobalIndex": 168,
+            "spiralStartWorldMeters": [
+              0.64999998,
+              -5.57059908,
+              0.02808151
+            ],
+            "visibleLeadArcLengthMeters": 5.98588081,
+            "visibleLeadFormsOneContiguousSuffix": true,
+            "visibleLeadGlobalPointRange": [
+              118,
+              168
+            ],
+            "visibleLeadLocalPointIndices": [
+              70,
+              71,
+              72,
+              73,
+              74,
+              75,
+              76,
+              77,
+              78,
+              79,
+              80,
+              81,
+              82,
+              83,
+              84,
+              85,
+              86,
+              87,
+              88,
+              89,
+              90,
+              91,
+              92,
+              93,
+              94,
+              95,
+              96,
+              97,
+              98,
+              99,
+              100,
+              101,
+              102,
+              103,
+              104,
+              105,
+              106,
+              107,
+              108,
+              109,
+              110,
+              111,
+              112,
+              113,
+              114,
+              115,
+              116,
+              117,
+              118,
+              119,
+              120
+            ],
+            "visibleLeadPointCount": 51,
+            "visibleSuffixTouchesExactPreservedSpiralStart": true
+          },
+          "perimeterLead": {
+            "areaOccupancy": 0.25402358,
+            "horizontalOccupancy": 1.53944957,
+            "inFrontCount": 121,
+            "ndcBounds": [
+              -1.02601886,
+              -0.07448303,
+              0.51343071,
+              0.09052633
+            ],
+            "pointCount": 121,
+            "safeMargin": -1.02601886,
+            "verticalOccupancy": 0.16500936,
+            "visibleFraction": 0.4214876,
+            "visiblePointCount": 51
+          },
+          "recoveredLensAuthorityMillimeters": 25.3,
+          "routeSourceNdc": [
+            -1.11138165,
+            -0.05951473,
+            7.52094221
+          ],
+          "screen": {
+            "areaOccupancy": 0.00095549,
+            "horizontalOccupancy": 0.02976656,
+            "inFrontCount": 48,
+            "ndcBounds": [
+              0.50187933,
+              0.52993643,
+              0.53164589,
+              0.56203586
+            ],
+            "pointCount": 48,
+            "safeMargin": 0.43796414,
+            "verticalOccupancy": 0.03209943,
+            "visibleFraction": 1.0,
+            "visiblePointCount": 48
+          },
+          "screenToCrtVerticalOccupancyRatio": 0.39547658,
+          "screenVerticalOccupancy": 0.03209943,
+          "serviceMouth": {
+            "areaOccupancy": 0.00179155,
+            "horizontalOccupancy": 0.04539192,
+            "inFrontCount": 8,
+            "ndcBounds": [
+              -1.12964129,
+              -0.07959728,
+              -1.08424938,
+              -0.0401287
+            ],
+            "pointCount": 8,
+            "safeMargin": -1.12964129,
+            "verticalOccupancy": 0.03946858,
+            "visibleFraction": 0.0,
+            "visiblePointCount": 0
+          },
+          "sourceOriginIntentionallyOffscreen": true
+        },
+        "laterCompositionGates": {
+          "frame165RearMassAndCrt": true,
+          "frame285CloseArrivalGeometry": true
+        },
+        "laterRearComposition": {
+          "165": {
+            "cabinetCentreNdc": [
+              0.50050759,
+              0.4699772,
+              7.33338928
+            ],
+            "cameraWorldMeters": [
+              0.74748784,
+              7.41609621,
+              1.97900009
+            ],
+            "crt": {
+              "areaOccupancy": 0.02529773,
+              "horizontalOccupancy": 0.13071805,
+              "inFrontCount": 104,
+              "ndcBounds": [
+                0.43588942,
+                0.37055436,
+                0.56660748,
+                0.56408334
+              ],
+              "pointCount": 104,
+              "safeMargin": 0.37055436,
+              "verticalOccupancy": 0.19352898,
+              "visibleFraction": 1.0,
+              "visiblePointCount": 104
+            },
+            "rearMass": {
+              "areaOccupancy": 0.0081282,
+              "horizontalOccupancy": 0.06637299,
+              "inFrontCount": 136,
+              "ndcBounds": [
+                0.4615469,
+                0.39166701,
+                0.52791989,
+                0.51412946
+              ],
+              "pointCount": 136,
+              "safeMargin": 0.39166701,
+              "verticalOccupancy": 0.12246245,
+              "visibleFraction": 1.0,
+              "visiblePointCount": 136
+            },
+            "screen": {
+              "areaOccupancy": 0.0075106,
+              "horizontalOccupancy": 0.0794791,
+              "inFrontCount": 48,
+              "ndcBounds": [
+                0.46013802,
+                0.45621216,
+                0.53961712,
+                0.5507099
+              ],
+              "pointCount": 48,
+              "safeMargin": 0.4492901,
+              "verticalOccupancy": 0.09449774,
+              "visibleFraction": 1.0,
+              "visiblePointCount": 48
+            }
+          },
+          "285": {
+            "cabinetCentreNdc": [
+              0.5,
+              0.48934549,
+              3.75113893
+            ],
+            "cameraWorldMeters": [
+              0.65000004,
+              -3.4000001,
+              1.14499998
+            ],
+            "crt": {
+              "areaOccupancy": 0.14313453,
+              "horizontalOccupancy": 0.32019371,
+              "inFrontCount": 104,
+              "ndcBounds": [
+                0.33990318,
+                0.25229475,
+                0.66009688,
+                0.69931954
+              ],
+              "pointCount": 104,
+              "safeMargin": 0.25229475,
+              "verticalOccupancy": 0.44702479,
+              "visibleFraction": 1.0,
+              "visiblePointCount": 104
+            },
+            "rearMass": {
+              "areaOccupancy": 0.02884099,
+              "horizontalOccupancy": 0.14502278,
+              "inFrontCount": 136,
+              "ndcBounds": [
+                0.44594344,
+                0.40926182,
+                0.59096622,
+                0.60813397
+              ],
+              "pointCount": 136,
+              "safeMargin": 0.39186603,
+              "verticalOccupancy": 0.19887215,
+              "visibleFraction": 1.0,
+              "visiblePointCount": 136
+            },
+            "screen": {
+              "areaOccupancy": 0.05479035,
+              "horizontalOccupancy": 0.21625146,
+              "inFrontCount": 48,
+              "ndcBounds": [
+                0.39187428,
+                0.36533388,
+                0.60812575,
+                0.61869794
+              ],
+              "pointCount": 48,
+              "safeMargin": 0.36533388,
+              "verticalOccupancy": 0.25336406,
+              "visibleFraction": 1.0,
+              "visiblePointCount": 48
+            }
+          }
+        },
+        "projectionResolution": {
+          "authority": [
+            960,
+            600
+          ],
+          "effective": {
+            "pixelAspectX": 1.0,
+            "pixelAspectY": 1.0,
+            "resolutionPercentage": 100,
+            "resolutionX": 960,
+            "resolutionY": 600
+          },
+          "passes": true,
+          "purpose": "world-to-camera projection audit only; final preview output uses cfg.PREVIEW_RESOLUTIONS"
+        },
+        "requirements": {
+          "crtAndScreenOccupanciesAreDescriptiveNotInventedAcceptanceBounds": true,
+          "frame165MinimumRearMassVisibleFraction": 0.25,
+          "frame285ScreenAndCabinetCentreMustBeFullySafe": true,
+          "minimumCompleteCableVisibleFraction": 0.62,
+          "minimumCrtVisibleFraction": 0.9,
+          "minimumSpiralVisibleFraction": 0.9,
+          "minimumVisibleLeadArcLengthMeters": 2.0,
+          "mobileFrame285MaximumOverscanAsymmetryNormalized": 0.002,
+          "mobileFrame285MaximumPerSideOverscanNormalized": 0.012,
+          "mobileFrame285MinimumPhysicalCrtVisibleFraction": 0.98,
+          "recoveredLensAuthorityMillimeters": 25.3,
+          "visibleLeadMustBeContiguousSuffixTouchingSpiralStart": true
+        },
+        "status": "PASS"
+      },
+      "landscape": {
+        "closeArrivalCoverage": {
+          "cabinetCentreNdc": [
+            0.5,
+            0.47886515,
+            3.87159419
+          ],
+          "cabinetCentreSafe": true,
+          "leftOverscanNormalized": 0.0,
+          "leftRightOverscanDifferenceNormalized": 0.0,
+          "maximumOverscanAsymmetryNormalized": 0.002,
+          "maximumPerSideOverscanNormalized": 0.012,
+          "nativeSparseArrivalProofRequired": false,
+          "physicalCrtRawNdcBounds": [
+            0.35938826,
+            0.20324709,
+            0.64061177,
+            0.72160655
+          ],
+          "physicalCrtVisibleFraction": 1.0,
+          "rightOverscanNormalized": 0.0,
+          "screenFullyVisibleAndSafe": true,
+          "screenProjection": {
+            "areaOccupancy": 0.05772142,
+            "horizontalOccupancy": 0.19002345,
+            "inFrontCount": 48,
+            "ndcBounds": [
+              0.40498826,
+              0.34052128,
+              0.59501171,
+              0.64428073
+            ],
+            "pointCount": 48,
+            "safeMargin": 0.34052128,
+            "verticalOccupancy": 0.30375946,
+            "visibleFraction": 1.0,
+            "visiblePointCount": 48
+          },
+          "sourceGeometryPasses": true,
+          "sourceStageNativeVisualStatus": "NOT_REQUIRED"
+        },
+        "frame1": {
+          "cameraLensMillimeters": 20.0,
+          "completeCable": {
+            "areaOccupancy": 1.22824308,
+            "horizontalOccupancy": 1.4898904,
+            "inFrontCount": 1233,
+            "ndcBounds": [
+              -0.77381963,
+              -0.12806968,
+              0.71607077,
+              0.69631517
+            ],
+            "pointCount": 1233,
+            "safeMargin": -0.77381963,
+            "verticalOccupancy": 0.82438485,
+            "visibleFraction": 0.90592052,
+            "visiblePointCount": 1117
+          },
+          "completeSpiral": {
+            "areaOccupancy": 0.23179983,
+            "horizontalOccupancy": 0.37693807,
+            "inFrontCount": 681,
+            "ndcBounds": [
+              0.3391327,
+              0.0813605,
+              0.71607077,
+              0.69631517
+            ],
+            "pointCount": 681,
+            "safeMargin": 0.0813605,
+            "verticalOccupancy": 0.61495467,
+            "visibleFraction": 1.0,
+            "visiblePointCount": 681
+          },
+          "crt": {
+            "areaOccupancy": 0.00304568,
+            "horizontalOccupancy": 0.03509456,
+            "inFrontCount": 104,
+            "ndcBounds": [
+              0.4957549,
+              0.50313514,
+              0.53084946,
+              0.58991998
+            ],
+            "pointCount": 104,
+            "safeMargin": 0.41008002,
+            "verticalOccupancy": 0.08678484,
+            "visibleFraction": 1.0,
+            "visiblePointCount": 104
+          },
+          "crtVerticalOccupancyDescriptive": 0.08678484,
+          "downwardPitchDegrees": 23.74108039,
+          "leadUnderstood": true,
+          "offscreenSourceCausality": {
+            "leadApproachTangentControlMeters": 2.4,
+            "rawVisibleLeadPointFraction": 0.43801653,
+            "requiredMinimumVisibleLeadArcLengthMeters": 2.0,
+            "sourceOriginIntentionallyOffscreen": true,
+            "spiralStartGlobalIndex": 168,
+            "spiralStartWorldMeters": [
+              0.64999998,
+              -5.30930328,
+              0.02808151
+            ],
+            "visibleLeadArcLengthMeters": 6.32056346,
+            "visibleLeadFormsOneContiguousSuffix": true,
+            "visibleLeadGlobalPointRange": [
+              116,
+              168
+            ],
+            "visibleLeadLocalPointIndices": [
+              68,
+              69,
+              70,
+              71,
+              72,
+              73,
+              74,
+              75,
+              76,
+              77,
+              78,
+              79,
+              80,
+              81,
+              82,
+              83,
+              84,
+              85,
+              86,
+              87,
+              88,
+              89,
+              90,
+              91,
+              92,
+              93,
+              94,
+              95,
+              96,
+              97,
+              98,
+              99,
+              100,
+              101,
+              102,
+              103,
+              104,
+              105,
+              106,
+              107,
+              108,
+              109,
+              110,
+              111,
+              112,
+              113,
+              114,
+              115,
+              116,
+              117,
+              118,
+              119,
+              120
+            ],
+            "visibleLeadPointCount": 53,
+            "visibleSuffixTouchesExactPreservedSpiralStart": true
+          },
+          "perimeterLead": {
+            "areaOccupancy": 0.25525439,
+            "horizontalOccupancy": 1.21713239,
+            "inFrontCount": 121,
+            "ndcBounds": [
+              -0.70633912,
+              -0.12806968,
+              0.51079327,
+              0.08164817
+            ],
+            "pointCount": 121,
+            "safeMargin": -0.70633912,
+            "verticalOccupancy": 0.20971785,
+            "visibleFraction": 0.43801653,
+            "visiblePointCount": 53
+          },
+          "recoveredLensAuthorityMillimeters": 20.0,
+          "routeSourceNdc": [
+            -0.77381963,
+            -0.11227299,
+            7.52094221
+          ],
+          "screen": {
+            "areaOccupancy": 0.00080761,
+            "horizontalOccupancy": 0.02353084,
+            "inFrontCount": 48,
+            "ndcBounds": [
+              0.50148565,
+              0.5179804,
+              0.52501649,
+              0.55230182
+            ],
+            "pointCount": 48,
+            "safeMargin": 0.44769818,
+            "verticalOccupancy": 0.03432143,
+            "visibleFraction": 1.0,
+            "visiblePointCount": 48
+          },
+          "screenToCrtVerticalOccupancyRatio": 0.39547725,
+          "screenVerticalOccupancy": 0.03432143,
+          "serviceMouth": {
+            "areaOccupancy": 0.00151428,
+            "horizontalOccupancy": 0.03588295,
+            "inFrontCount": 8,
+            "ndcBounds": [
+              -0.78825414,
+              -0.13374561,
+              -0.75237119,
+              -0.09154507
+            ],
+            "pointCount": 8,
+            "safeMargin": -0.78825414,
+            "verticalOccupancy": 0.04220054,
+            "visibleFraction": 0.0,
+            "visiblePointCount": 0
+          },
+          "sourceOriginIntentionallyOffscreen": true
+        },
+        "laterCompositionGates": {
+          "frame165RearMassAndCrt": true,
+          "frame285CloseArrivalGeometry": true
+        },
+        "laterRearComposition": {
+          "165": {
+            "cabinetCentreNdc": [
+              0.50044554,
+              0.46559006,
+              7.37960148
+            ],
+            "cameraWorldMeters": [
+              0.74846953,
+              7.49077559,
+              1.85299993
+            ],
+            "crt": {
+              "areaOccupancy": 0.02598504,
+              "horizontalOccupancy": 0.11460933,
+              "inFrontCount": 104,
+              "ndcBounds": [
+                0.44379011,
+                0.34910294,
+                0.55839944,
+                0.57583004
+              ],
+              "pointCount": 104,
+              "safeMargin": 0.34910294,
+              "verticalOccupancy": 0.2267271,
+              "visibleFraction": 1.0,
+              "visiblePointCount": 104
+            },
+            "rearMass": {
+              "areaOccupancy": 0.00836831,
+              "horizontalOccupancy": 0.05822453,
+              "inFrontCount": 136,
+              "ndcBounds": [
+                0.46626845,
+                0.37431464,
+                0.52449298,
+                0.51803952
+              ],
+              "pointCount": 136,
+              "safeMargin": 0.37431464,
+              "verticalOccupancy": 0.14372489,
+              "visibleFraction": 1.0,
+              "visiblePointCount": 136
+            },
+            "screen": {
+              "areaOccupancy": 0.00783493,
+              "horizontalOccupancy": 0.06971782,
+              "inFrontCount": 48,
+              "ndcBounds": [
+                0.46503377,
+                0.44754729,
+                0.53475159,
+                0.55992782
+              ],
+              "pointCount": 48,
+              "safeMargin": 0.44007218,
+              "verticalOccupancy": 0.11238053,
+              "visibleFraction": 1.0,
+              "visiblePointCount": 48
+            }
+          },
+          "285": {
+            "cabinetCentreNdc": [
+              0.5,
+              0.47886515,
+              3.87159419
+            ],
+            "cameraWorldMeters": [
+              0.65000004,
+              -3.54999995,
+              1.005
+            ],
+            "crt": {
+              "areaOccupancy": 0.14577487,
+              "horizontalOccupancy": 0.28122351,
+              "inFrontCount": 104,
+              "ndcBounds": [
+                0.35938826,
+                0.20324709,
+                0.64061177,
+                0.72160655
+              ],
+              "pointCount": 104,
+              "safeMargin": 0.20324709,
+              "verticalOccupancy": 0.51835947,
+              "visibleFraction": 1.0,
+              "visiblePointCount": 104
+            },
+            "rearMass": {
+              "areaOccupancy": 0.03124177,
+              "horizontalOccupancy": 0.12808183,
+              "inFrontCount": 136,
+              "ndcBounds": [
+                0.45216587,
+                0.37234288,
+                0.5802477,
+                0.61626327
+              ],
+              "pointCount": 136,
+              "safeMargin": 0.37234288,
+              "verticalOccupancy": 0.24392039,
+              "visibleFraction": 1.0,
+              "visiblePointCount": 136
+            },
+            "screen": {
+              "areaOccupancy": 0.05772142,
+              "horizontalOccupancy": 0.19002345,
+              "inFrontCount": 48,
+              "ndcBounds": [
+                0.40498826,
+                0.34052128,
+                0.59501171,
+                0.64428073
+              ],
+              "pointCount": 48,
+              "safeMargin": 0.34052128,
+              "verticalOccupancy": 0.30375946,
+              "visibleFraction": 1.0,
+              "visiblePointCount": 48
+            }
+          }
+        },
+        "projectionResolution": {
+          "authority": [
+            844,
+            390
+          ],
+          "effective": {
+            "pixelAspectX": 1.0,
+            "pixelAspectY": 1.0,
+            "resolutionPercentage": 100,
+            "resolutionX": 844,
+            "resolutionY": 390
+          },
+          "passes": true,
+          "purpose": "world-to-camera projection audit only; final preview output uses cfg.PREVIEW_RESOLUTIONS"
+        },
+        "requirements": {
+          "crtAndScreenOccupanciesAreDescriptiveNotInventedAcceptanceBounds": true,
+          "frame165MinimumRearMassVisibleFraction": 0.25,
+          "frame285ScreenAndCabinetCentreMustBeFullySafe": true,
+          "minimumCompleteCableVisibleFraction": 0.62,
+          "minimumCrtVisibleFraction": 0.9,
+          "minimumSpiralVisibleFraction": 0.9,
+          "minimumVisibleLeadArcLengthMeters": 2.0,
+          "mobileFrame285MaximumOverscanAsymmetryNormalized": 0.002,
+          "mobileFrame285MaximumPerSideOverscanNormalized": 0.012,
+          "mobileFrame285MinimumPhysicalCrtVisibleFraction": 0.98,
+          "recoveredLensAuthorityMillimeters": 20.0,
+          "visibleLeadMustBeContiguousSuffixTouchingSpiralStart": true
+        },
+        "status": "PASS"
+      },
+      "mobile": {
+        "closeArrivalCoverage": {
+          "cabinetCentreNdc": [
+            0.5,
+            0.49328557,
+            3.17229724
+          ],
+          "cabinetCentreSafe": true,
+          "leftOverscanNormalized": 0.0101087,
+          "leftRightOverscanDifferenceNormalized": 1e-08,
+          "maximumOverscanAsymmetryNormalized": 0.002,
+          "maximumPerSideOverscanNormalized": 0.012,
+          "nativeSparseArrivalProofRequired": true,
+          "physicalCrtRawNdcBounds": [
+            -0.0101087,
+            0.27451321,
+            1.01010871,
+            0.6828348
+          ],
+          "physicalCrtVisibleFraction": 0.98076923,
+          "rightOverscanNormalized": 0.01010871,
+          "screenFullyVisibleAndSafe": true,
+          "screenProjection": {
+            "areaOccupancy": 0.15975458,
+            "horizontalOccupancy": 0.69005775,
+            "inFrontCount": 48,
+            "ndcBounds": [
+              0.15497112,
+              0.37647334,
+              0.84502888,
+              0.60798234
+            ],
+            "pointCount": 48,
+            "safeMargin": 0.15497112,
+            "verticalOccupancy": 0.231509,
+            "visibleFraction": 1.0,
+            "visiblePointCount": 48
+          },
+          "sourceGeometryPasses": true,
+          "sourceStageNativeVisualStatus": "DEFERRED"
+        },
+        "frame1": {
+          "cameraLensMillimeters": 74.0,
+          "completeCable": {
+            "areaOccupancy": 10.41828383,
+            "horizontalOccupancy": 10.22915632,
+            "inFrontCount": 1475,
+            "ndcBounds": [
+              -9.24257374,
+              -0.34619331,
+              0.98658258,
+              0.67229575
+            ],
+            "pointCount": 1475,
+            "safeMargin": -9.24257374,
+            "verticalOccupancy": 1.01848906,
+            "visibleFraction": 0.90440678,
+            "visiblePointCount": 1334
+          },
+          "completeSpiral": {
+            "areaOccupancy": 0.27419779,
+            "horizontalOccupancy": 0.68069634,
+            "inFrontCount": 482,
+            "ndcBounds": [
+              0.30588624,
+              0.26947621,
+              0.98658258,
+              0.67229575
+            ],
+            "pointCount": 482,
+            "safeMargin": 0.01341742,
+            "verticalOccupancy": 0.40281954,
+            "visibleFraction": 1.0,
+            "visiblePointCount": 482
+          },
+          "crt": {
+            "areaOccupancy": 0.03953229,
+            "horizontalOccupancy": 0.27967265,
+            "inFrontCount": 104,
+            "ndcBounds": [
+              0.49055329,
+              0.50482172,
+              0.77022594,
+              0.64617372
+            ],
+            "pointCount": 104,
+            "safeMargin": 0.22977406,
+            "verticalOccupancy": 0.141352,
+            "visibleFraction": 1.0,
+            "visiblePointCount": 104
+          },
+          "crtVerticalOccupancyDescriptive": 0.141352,
+          "downwardPitchDegrees": 26.63059931,
+          "leadUnderstood": true,
+          "offscreenSourceCausality": {
+            "leadApproachTangentControlMeters": 3.2,
+            "rawVisibleLeadPointFraction": 0.23140496,
+            "requiredMinimumVisibleLeadArcLengthMeters": 2.0,
+            "sourceOriginIntentionallyOffscreen": true,
+            "spiralStartGlobalIndex": 168,
+            "spiralStartWorldMeters": [
+              0.64999998,
+              -2.7225275,
+              0.02808151
+            ],
+            "visibleLeadArcLengthMeters": 2.0802717,
+            "visibleLeadFormsOneContiguousSuffix": true,
+            "visibleLeadGlobalPointRange": [
+              141,
+              168
+            ],
+            "visibleLeadLocalPointIndices": [
+              93,
+              94,
+              95,
+              96,
+              97,
+              98,
+              99,
+              100,
+              101,
+              102,
+              103,
+              104,
+              105,
+              106,
+              107,
+              108,
+              109,
+              110,
+              111,
+              112,
+              113,
+              114,
+              115,
+              116,
+              117,
+              118,
+              119,
+              120
+            ],
+            "visibleLeadPointCount": 28,
+            "visibleSuffixTouchesExactPreservedSpiralStart": true
+          },
+          "perimeterLead": {
+            "areaOccupancy": 5.75365142,
+            "horizontalOccupancy": 9.34522623,
+            "inFrontCount": 121,
+            "ndcBounds": [
+              -8.72604752,
+              -0.34619331,
+              0.61917871,
+              0.26948482
+            ],
+            "pointCount": 121,
+            "safeMargin": -8.72604752,
+            "verticalOccupancy": 0.61567813,
+            "visibleFraction": 0.23140496,
+            "visiblePointCount": 28
+          },
+          "recoveredLensAuthorityMillimeters": 74.0,
+          "routeSourceNdc": [
+            -9.24257374,
+            -0.32004339,
+            7.85572052
+          ],
+          "screen": {
+            "areaOccupancy": 0.01135192,
+            "horizontalOccupancy": 0.18791592,
+            "inFrontCount": 48,
+            "ndcBounds": [
+              0.53570157,
+              0.53116077,
+              0.72361749,
+              0.59157032
+            ],
+            "pointCount": 48,
+            "safeMargin": 0.27638251,
+            "verticalOccupancy": 0.06040955,
+            "visibleFraction": 1.0,
+            "visiblePointCount": 48
+          },
+          "screenToCrtVerticalOccupancyRatio": 0.42736962,
+          "screenVerticalOccupancy": 0.06040955,
+          "serviceMouth": {
+            "areaOccupancy": 0.01696346,
+            "horizontalOccupancy": 0.26812267,
+            "inFrontCount": 8,
+            "ndcBounds": [
+              -9.34992313,
+              -0.35223877,
+              -9.08180046,
+              -0.28897125
+            ],
+            "pointCount": 8,
+            "safeMargin": -9.34992313,
+            "verticalOccupancy": 0.06326753,
+            "visibleFraction": 0.0,
+            "visiblePointCount": 0
+          },
+          "sourceOriginIntentionallyOffscreen": true
+        },
+        "laterCompositionGates": {
+          "frame165RearMassAndCrt": true,
+          "frame285CloseArrivalGeometry": true
+        },
+        "laterRearComposition": {
+          "165": {
+            "cabinetCentreNdc": [
+              0.50069088,
+              0.48894337,
+              7.29389811
+            ],
+            "cameraWorldMeters": [
+              0.74765176,
+              7.42856312,
+              1.727
+            ],
+            "crt": {
+              "areaOccupancy": 0.01319767,
+              "horizontalOccupancy": 0.17774415,
+              "inFrontCount": 104,
+              "ndcBounds": [
+                0.41282475,
+                0.45076728,
+                0.5905689,
+                0.52501822
+              ],
+              "pointCount": 104,
+              "safeMargin": 0.4094311,
+              "verticalOccupancy": 0.07425094,
+              "visibleFraction": 1.0,
+              "visiblePointCount": 104
+            },
+            "rearMass": {
+              "areaOccupancy": 0.00425875,
+              "horizontalOccupancy": 0.09031048,
+              "inFrontCount": 136,
+              "ndcBounds": [
+                0.44768962,
+                0.45915693,
+                0.53800011,
+                0.50631374
+              ],
+              "pointCount": 136,
+              "safeMargin": 0.44768962,
+              "verticalOccupancy": 0.04715681,
+              "visibleFraction": 1.0,
+              "visiblePointCount": 136
+            },
+            "screen": {
+              "areaOccupancy": 0.00402024,
+              "horizontalOccupancy": 0.10799158,
+              "inFrontCount": 48,
+              "ndcBounds": [
+                0.44583762,
+                0.48252293,
+                0.55382919,
+                0.5197503
+              ],
+              "pointCount": 48,
+              "safeMargin": 0.44583762,
+              "verticalOccupancy": 0.03722736,
+              "visibleFraction": 1.0,
+              "visiblePointCount": 48
+            }
+          },
+          "285": {
+            "cabinetCentreNdc": [
+              0.5,
+              0.49328557,
+              3.17229724
+            ],
+            "cameraWorldMeters": [
+              0.65000004,
+              -2.81999993,
+              1.08500004
+            ],
+            "crt": {
+              "areaOccupancy": 0.41657679,
+              "horizontalOccupancy": 1.0202174,
+              "inFrontCount": 104,
+              "ndcBounds": [
+                -0.0101087,
+                0.27451321,
+                1.01010871,
+                0.6828348
+              ],
+              "pointCount": 104,
+              "safeMargin": -0.01010871,
+              "verticalOccupancy": 0.40832159,
+              "visibleFraction": 0.98076923,
+              "visiblePointCount": 102
+            },
+            "rearMass": {
+              "areaOccupancy": 0.07886638,
+              "horizontalOccupancy": 0.45084503,
+              "inFrontCount": 136,
+              "ndcBounds": [
+                0.33388308,
+                0.42609593,
+                0.78472811,
+                0.60102606
+              ],
+              "pointCount": 136,
+              "safeMargin": 0.21527189,
+              "verticalOccupancy": 0.17493013,
+              "visibleFraction": 1.0,
+              "visiblePointCount": 136
+            },
+            "screen": {
+              "areaOccupancy": 0.15975458,
+              "horizontalOccupancy": 0.69005775,
+              "inFrontCount": 48,
+              "ndcBounds": [
+                0.15497112,
+                0.37647334,
+                0.84502888,
+                0.60798234
+              ],
+              "pointCount": 48,
+              "safeMargin": 0.15497112,
+              "verticalOccupancy": 0.231509,
+              "visibleFraction": 1.0,
+              "visiblePointCount": 48
+            }
+          }
+        },
+        "projectionResolution": {
+          "authority": [
+            390,
+            844
+          ],
+          "effective": {
+            "pixelAspectX": 1.0,
+            "pixelAspectY": 1.0,
+            "resolutionPercentage": 100,
+            "resolutionX": 390,
+            "resolutionY": 844
+          },
+          "passes": true,
+          "purpose": "world-to-camera projection audit only; final preview output uses cfg.PREVIEW_RESOLUTIONS"
+        },
+        "requirements": {
+          "crtAndScreenOccupanciesAreDescriptiveNotInventedAcceptanceBounds": true,
+          "frame165MinimumRearMassVisibleFraction": 0.25,
+          "frame285ScreenAndCabinetCentreMustBeFullySafe": true,
+          "minimumCompleteCableVisibleFraction": 0.62,
+          "minimumCrtVisibleFraction": 0.9,
+          "minimumSpiralVisibleFraction": 0.9,
+          "minimumVisibleLeadArcLengthMeters": 2.0,
+          "mobileFrame285MaximumOverscanAsymmetryNormalized": 0.002,
+          "mobileFrame285MaximumPerSideOverscanNormalized": 0.012,
+          "mobileFrame285MinimumPhysicalCrtVisibleFraction": 0.98,
+          "recoveredLensAuthorityMillimeters": 74.0,
+          "visibleLeadMustBeContiguousSuffixTouchingSpiralStart": true
+        },
+        "status": "PASS"
+      }
+    },
+    "pathActionsPreserved": true,
+    "signature": "be3852d1f5eb01b532da7346b148d0db86a1f2aff94c820806e75632f52e7cf7"
+  },
+  "authorization": {
+    "chromeStatePolicyImplementationEvidenced": true,
+    "full540FrameCyclesProductionFilmResumed": false,
+    "full540FrameCyclesProductionFilmStarted": false,
+    "humanAccepted": false,
+    "phase5Authorized": false,
+    "refinedPhysicalMediaRuntimeIntegrationStarted": false
+  },
+  "generatedAt": "2026-08-24T00:00:00Z",
+  "producerAuthorities": {
+    "builder": {
+      "bytes": 157397,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/build_phase4r1_refined_proving_hall.py",
+      "sha256": "44d6624353e9b7c8996aab94d62094e310e47e5dbd318ab7204d91f44de6c344"
+    },
+    "config": {
+      "bytes": 23567,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/phase4r1_refined_config.py",
+      "sha256": "83542e41bce3aeee6eda58dae08ede2a18a824d5ff3a62ebf4fee490a9aeff06"
+    },
+    "cycles-benchmarks-renderer": {
+      "bytes": 10859,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/render_phase4r1_refined_cycles_benchmarks.py",
+      "sha256": "7540e843dc28a536177e18aade81650ba4180793ce3a091695719263f2dc3866"
+    },
+    "exact-q-generator": {
+      "bytes": 9588,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/generate_phase4r1_exact_q.mjs",
+      "sha256": "9c75917b004249c745821ccd0da295b38547ad80a17bf06693f1e5ae79c8a31c"
+    },
+    "preflight": {
+      "bytes": 169699,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/preflight_phase4r1_refined_geometry.py",
+      "sha256": "9b61e931107aa44977096edced1fd27b9858e5782b27c833691194393446f8c3"
+    },
+    "preview-renderer": {
+      "bytes": 8533,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/render_phase4r1_refined_previews.py",
+      "sha256": "aa6136121278bdaf9a78ccc00ff851d094c434820cadf479734e7e0984a6558f"
+    },
+    "sparse-proof-renderer": {
+      "bytes": 98051,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/render_phase4r1_refined_sparse_proof.py",
+      "sha256": "029827ef5f116348d1c837a5fd55b9c4eda011ecc4d6df4b6447f95317fc70f9"
+    },
+    "validator": {
+      "bytes": 33067,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/validate_phase4r1_refined_source.py",
+      "sha256": "eb299363a8bc928ed94d59d2e5175647cd4c7b3531711f670b80e2fff3107f85"
+    }
+  },
+  "schema": "quantum-hub.phase-4-r1.refined-proving-hall.camera-audit.v2",
+  "sourceAuthorities": {
+    "build": {
+      "bytes": 4782567,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/phase4r1-refined-source-build.json",
+      "sha256": "f8c2cee743bd7868a4abb07232eea0dcdcc1570ba81800d671102c4e1085a1c9"
+    },
+    "derivative": {
+      "bytes": 3526219,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/quantum-signal-television-phase4r1-refined-proving-hall.blend",
+      "sha256": "a0a122baaf021833e9cad6194a474ef714b182be2c8e7171e00ad69c00565215"
+    },
+    "ledger": {
+      "bytes": 89936,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/phase4r1-refined-asset-ledger.json",
+      "sha256": "a88c3faaf85a38690c88cd983d9d690116db3a26cca7570934453f0f592c8859"
+    },
+    "qProvenance": {
+      "bytes": 5816,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/phase4r1-exact-q-provenance.json",
+      "sha256": "f8759f6f6f39d07c5b081f139983afe1a9e39e7c37e0e916e8f3230bb736a93a"
+    },
+    "recovery": {
+      "bytes": 9353,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/phase4r1-recovery-report.json",
+      "sha256": "2bf0a6457bd6153dc0df543b7a724fb61bbc095f8133d94a9facad5645ef49d5"
+    },
+    "recoveryBackupSummary": {
+      "bytes": 7858,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/phase4r1-recovery-backup-summary.json",
+      "sha256": "74d52229025c350512f9d99a604024e86f559ae3ae1a2ad1a1ba699f3c682b34"
+    },
+    "validationParentPreflight": {
+      "bytes": 4639898,
+      "path": "artifacts/original/phase-4r1-refined-proving-hall/source/phase4r1-refined-preflight.json",
+      "sha256": "2ff3ee5337044ad7b0d088ac8ae9c62cbdb5f85d9feac1481b72530daa377623"
+    }
+  },
+  "status": "PASS"
+}

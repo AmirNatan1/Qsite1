@@ -1,0 +1,195 @@
+{
+  "authorization": {
+    "chromeStatePolicyImplementationEvidenced": true,
+    "full540FrameCyclesProductionFilmResumed": false,
+    "full540FrameCyclesProductionFilmStarted": false,
+    "humanAccepted": false,
+    "phase5Authorized": false,
+    "refinedPhysicalMediaRuntimeIntegrationStarted": false
+  },
+  "externalAbsolutePathStored": false,
+  "externalRecoveryId": "qsite-phase4r1-recovery-20260824-095513",
+  "files": [
+    {
+      "backupPath": "externalRecoveryId:/recovery-backup-inventory.json",
+      "bytes": 1618351,
+      "mtimeUtc": "2026-08-24T07:00:23.7928053Z",
+      "originalPath": "logical:recovery-run/inventory",
+      "role": "external-recovery-backup-inventory",
+      "sha256": "6a22ca38fd8db7b5bf2775ca7c251a4babae19f41bb1217d0fb5e26fd1dfd896"
+    },
+    {
+      "backupPath": "externalRecoveryId:/recovery-frame-inventory.json",
+      "bytes": 2449,
+      "mtimeUtc": "2026-08-24T06:58:14.6106873Z",
+      "originalPath": "logical:recovery-run/frame-inventory",
+      "role": "external-recovery-frame-inventory",
+      "sha256": "7a660cc69bc7073e52e3a908d1dcf147e8595baaeed254bdd14b41e6db3d29d7"
+    },
+    {
+      "backupPath": "externalRecoveryId:/recovery-state.json",
+      "bytes": 3174,
+      "mtimeUtc": "2026-08-24T06:58:14.6106873Z",
+      "originalPath": "logical:recovery-run/state",
+      "role": "external-recovery-state",
+      "sha256": "cfab14a43d41a0ad57f66663baaee77cc3a7ccd99f562e1bd1c6cb3920ac95df"
+    },
+    {
+      "backupPath": "externalRecoveryId:/workspace/phase4r1-source/quantum-signal-television-phase4r1-proving-hall.blend",
+      "bytes": 3081427,
+      "mtimeUtc": "2026-08-23T18:43:02.1620372Z",
+      "originalPath": "artifacts/original/phase-4r1-proving-hall-environment/source/quantum-signal-television-phase4r1-proving-hall.blend",
+      "role": "selected-recovered-blender",
+      "sha256": "e24ccf974a57c0a5ffad48a42d07238138bf7e519da0494f5b9329f2a8b60e87"
+    },
+    {
+      "backupPath": "externalRecoveryId:/workspace/phase4r1-source",
+      "bytes": 5642977,
+      "fileCount": 11,
+      "mtimeUtc": null,
+      "originalPath": "artifacts/original/phase-4r1-proving-hall-environment/source",
+      "recordKind": "tree-digest",
+      "role": "recovered-source-tree",
+      "sha256": "2d27c2affafb317b2d4c6b79dfa096570e7e4ea29384cf63703e10d79646f4d0"
+    },
+    {
+      "backupPath": "externalRecoveryId:/evidence/eevee-full-review-log",
+      "bytes": 608923304,
+      "fileCount": 1535,
+      "mtimeUtc": null,
+      "originalPath": "logical:interrupted-run/eevee-full-review-log",
+      "recordKind": "tree-digest",
+      "role": "recovered-eevee-full-review-log-tree",
+      "sha256": "9bd5c9186ad202d55eedf41374fdc17ec5c29a5e33e3fbf2948093f1e4f68196"
+    },
+    {
+      "backupPath": "externalRecoveryId:/evidence/cycles-stills",
+      "bytes": 10386206,
+      "fileCount": 16,
+      "mtimeUtc": null,
+      "originalPath": "logical:interrupted-run/cycles-stills",
+      "recordKind": "tree-digest",
+      "role": "recovered-cycles-stills-tree",
+      "sha256": "719d7618d8f670ee768910a6e244870848e3e3046a42cbf1bb4fed975b20eaf9"
+    },
+    {
+      "backupPath": "externalRecoveryId:/evidence/cycles-motion",
+      "bytes": 99530646,
+      "fileCount": 183,
+      "mtimeUtc": null,
+      "originalPath": "logical:interrupted-run/cycles-motion",
+      "recordKind": "tree-digest",
+      "role": "recovered-cycles-motion-tree",
+      "sha256": "be8a23e0782f19643e6be6cf776479771a1fd02914823513b2dd188890bba120"
+    },
+    {
+      "backupPath": "externalRecoveryId:/evidence/entry",
+      "bytes": 2497133,
+      "fileCount": 27,
+      "mtimeUtc": null,
+      "originalPath": "logical:interrupted-run/entry",
+      "recordKind": "tree-digest",
+      "role": "recovered-entry-tree",
+      "sha256": "377f7aef450390e7ed6a56217d1f7fce00da54a4a7a40cb49c1b6be482ab7476"
+    },
+    {
+      "backupPath": "externalRecoveryId:/evidence/rear-proof",
+      "bytes": 4772207,
+      "fileCount": 14,
+      "mtimeUtc": null,
+      "originalPath": "logical:interrupted-run/rear-proof",
+      "recordKind": "tree-digest",
+      "role": "recovered-rear-proof-tree",
+      "sha256": "a04d0ee8ea9a864c9e700b107900c8fade4445d740bf5ccac18476724dfb3a55"
+    },
+    {
+      "backupPath": "externalRecoveryId:/evidence/responsive",
+      "bytes": 4061908,
+      "fileCount": 18,
+      "mtimeUtc": null,
+      "originalPath": "logical:interrupted-run/responsive",
+      "recordKind": "tree-digest",
+      "role": "recovered-responsive-tree",
+      "sha256": "5ef65e4cfe234ff58243395825eae43c03ebc042aea3f1554950b77e13f98d04"
+    },
+    {
+      "backupPath": "externalRecoveryId:/evidence/diagnostic.mp4",
+      "bytes": 2110721,
+      "mtimeUtc": null,
+      "originalPath": "logical:interrupted-run/diagnostic-mp4",
+      "role": "recovered-diagnostic-mp4",
+      "sha256": "ea8456e4b2efc517679e7052651a6446a540838072546d7b94e547184a51f798"
+    },
+    {
+      "backupPath": "externalRecoveryId:/workspace/scripts/package-phase4r1-proving-hall-review.mjs",
+      "bytes": 194136,
+      "mtimeUtc": "2026-08-23T21:33:55.4238563Z",
+      "originalPath": "scripts/package-phase4r1-proving-hall-review.mjs",
+      "role": "unstaged-packager",
+      "sha256": "ace061b67927a9d7fd1c33b0f466b7ef898c1fd315bb9e6ef1295117b345fa93"
+    },
+    {
+      "backupPath": "externalRecoveryId:/git/unstaged.patch",
+      "bytes": 25136,
+      "mtimeUtc": null,
+      "originalPath": "logical:git/unstaged.patch",
+      "role": "recovery-patch",
+      "sha256": "654f1ab63548540c130ab9b43e204afcac623a144abe44ce2b59a82652a9d260"
+    },
+    {
+      "backupPath": "externalRecoveryId:/git/status-porcelain.txt",
+      "bytes": 361,
+      "mtimeUtc": null,
+      "originalPath": "logical:git/status-porcelain",
+      "role": "recovery-porcelain",
+      "sha256": "15ab93bcb157ddc488fe535d8b9dc929b766a2eaa6bb9eb66e7cb883d41d32eb"
+    },
+    {
+      "backupPath": "externalRecoveryId:/git/unstaged-name-status.txt",
+      "bytes": 51,
+      "mtimeUtc": null,
+      "originalPath": "logical:git/unstaged-name-status",
+      "role": "recovery-unstaged-name-status",
+      "sha256": "79982253875bbc868f43e5b7c687f97b3f1d42e668caf56618dfdadd629d01a7"
+    },
+    {
+      "backupPath": "externalRecoveryId:/git/recent-history.txt",
+      "bytes": 2301,
+      "mtimeUtc": null,
+      "originalPath": "logical:git/recent-history",
+      "role": "recovery-recent-history",
+      "sha256": "351306378b0c7fa4672e29ba59bbefa1826beba313360fd00d78bd91ee508907"
+    },
+    {
+      "backupPath": "externalRecoveryId:/git/staged.diff",
+      "bytes": 0,
+      "mtimeUtc": null,
+      "originalPath": "logical:git/staged.diff",
+      "role": "recovery-staged-diff",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "backupPath": "externalRecoveryId:/git/untracked-list.txt",
+      "bytes": 0,
+      "mtimeUtc": null,
+      "originalPath": "logical:git/untracked-list",
+      "role": "recovery-untracked-list",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "generatedAt": "2026-08-24T00:00:00Z",
+  "inventorySummary": {
+    "actualBackupBytesIncludingManifest": 996348783,
+    "actualBackupFileCountIncludingManifest": 1821,
+    "exactCopyCount": 1810,
+    "generatedArtifactCount": 9,
+    "liveLogSnapshotCount": 1,
+    "manifestRecordBytes": 994730432,
+    "manifestRecordCount": 1820
+  },
+  "limitations": [
+    "The full 1,820-entry private-path inventory remains external; this tracked summary binds it by exact bytes/SHA without copying private host paths."
+  ],
+  "schema": "quantum-hub.phase-4-r1.recovery-backup-summary.v2",
+  "status": "PASS"
+}

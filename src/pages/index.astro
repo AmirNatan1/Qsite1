@@ -44,26 +44,53 @@ if (!maradinOpening || !maradinClimax) {
   skipHref="#entry"
   skipLabel="Skip cinematic intro"
 >
-  <script is:inline>
-    (() => {
-      const root = document.documentElement;
-      const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? true;
-      const capable =
-        "HTMLVideoElement" in window &&
-        "ResizeObserver" in window &&
-        "requestAnimationFrame" in window;
-      const candidate = !reduced && capable;
-      root.dataset.cinematicMode = candidate ? "candidate" : "static";
-      if (!candidate) {
-        root.dataset.cinematicHeader = "released";
-      } else if (window.location.hash && window.location.hash !== "#main-content") {
-        root.dataset.cinematicDeepLink = "true";
-        root.dataset.cinematicHeader = "visible";
-      } else {
-        root.dataset.cinematicHeader = "concealed";
-      }
-    })();
-  </script>
+  <Fragment slot="head">
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        try {
+          const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? true;
+          const capable =
+            "HTMLVideoElement" in window &&
+            "ResizeObserver" in window &&
+            "requestAnimationFrame" in window;
+          const directDeepLink = window.location.hash.length > 1;
+          const restoredState = window.history.state?.quantumHomeCinematic;
+          const restoredSettled = restoredState?.version === 1 && restoredState.settledOrLower === true;
+          const viewportScale = window.visualViewport?.scale ?? 1;
+          const rootFontSize = Number.parseFloat(getComputedStyle(root).fontSize);
+          const chromeRatio = window.innerWidth > 0 && window.outerWidth > 0
+            ? window.outerWidth / window.innerWidth
+            : 1;
+          const textZoomUnsafe = rootFontSize >= 30
+            || viewportScale >= 1.75
+            || (navigator.maxTouchPoints === 0 && window.outerWidth >= 900 && chromeRatio >= 1.65);
+          const candidate = capable && !reduced && !directDeepLink && !restoredSettled && !textZoomUnsafe;
+          const bypassReason = !capable
+            ? "capability"
+            : reduced
+              ? "reduced-motion"
+              : directDeepLink
+                ? "deep-link"
+                : restoredSettled
+                  ? "restored-scroll"
+                  : textZoomUnsafe
+                    ? "text-zoom"
+                    : "eligible";
+
+          root.dataset.cinematicEligibility = candidate ? "eligible" : "bypass";
+          root.dataset.cinematicMode = candidate ? "candidate" : "static";
+          root.dataset.cinematicHeader = candidate ? "concealed" : "released";
+          root.dataset.cinematicBootstrap = bypassReason;
+        } catch {
+          root.dataset.cinematicEligibility = "bypass";
+          root.dataset.cinematicMode = "static";
+          root.dataset.cinematicHeader = "released";
+          root.dataset.cinematicBootstrap = "bootstrap-error";
+        }
+      })();
+    </script>
+  </Fragment>
 
   <div class="cinematic-shell" data-cinematic-shell data-cinematic-interactive="false">
     <div class="cinematic-runway" aria-hidden="true">
@@ -103,6 +130,23 @@ if (!maradinOpening || !maradinClimax) {
 
     <EntryField />
 
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        const shell = document.querySelector("[data-cinematic-shell]");
+        const header = document.querySelector(".site-header");
+        const entry = shell?.querySelector("#entry");
+        const concealed = root.dataset.cinematicMode === "candidate"
+          && root.dataset.cinematicHeader === "concealed";
+        header?.toggleAttribute("inert", concealed);
+        entry?.toggleAttribute("inert", concealed);
+        if (!concealed && shell) {
+          shell.dataset.cinematicInteractive = "true";
+          shell.dataset.cinematicPhase = "fallback";
+        }
+      })();
+    </script>
+
     <script>
       const root = document.documentElement;
       if (root.dataset.cinematicMode === "candidate") {
@@ -112,6 +156,14 @@ if (!maradinOpening || !maradinClimax) {
             root.dataset.cinematicMode = "static";
             root.dataset.cinematicFallback = "controller";
             root.dataset.cinematicHeader = "released";
+            root.dataset.cinematicEligibility = "bypass";
+            document.querySelector(".site-header")?.removeAttribute("inert");
+            document.querySelector("#entry")?.removeAttribute("inert");
+            const shell = document.querySelector("[data-cinematic-shell]");
+            if (shell instanceof HTMLElement) {
+              shell.dataset.cinematicInteractive = "true";
+              shell.dataset.cinematicPhase = "fallback";
+            }
           });
       }
     </script>

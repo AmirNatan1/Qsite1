@@ -1,2 +1,16 @@
 # Keep the governed upstream OFL license files byte-for-byte intact.
 public/fonts/licenses/OFL-*.txt whitespace=-trailing-space
+
+# Preserve exact governed Phase 4-R1 evidence and producer bytes on every checkout.
+artifacts/original/phase-4r1-refined-proving-hall/source/** -text whitespace=cr-at-eol
+scripts/aggregate-phase4r1-refined-evidence.mjs -text
+scripts/package-phase4r1-refined-proving-hall-review-v2.mjs -text
+scripts/capture-phase4r0-entry-plates.mjs -text
+scripts/capture-phase4r1-chrome-evidence.mjs -text
+scripts/qa-phase4-browser.mjs -text
+src/pages/index.astro -text
+src/components/home/EntryField.astro -text
+src/scripts/home-cinematic-integration.ts -text
+src/styles/routes/home.css -text
+src/styles/routes/home-cinematic.css -text
+src/styles/routes/home-responsive.css -text

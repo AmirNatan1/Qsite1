@@ -77,30 +77,24 @@
   scroll-margin-top: var(--cinematic-header-px);
 }
 
-html[data-cinematic-mode="candidate"]:not([data-cinematic-header="released"]) .home-page .site-header,
-html[data-cinematic-mode="enhanced"]:not([data-cinematic-header="released"]) .home-page .site-header {
+.home-page .site-header {
   position: sticky;
   top: 0;
   z-index: 40;
-  border-color: rgba(255, 255, 255, calc(0.025 + var(--cinematic-semantic, 0) * 0.055));
-  background: rgba(9, 12, 13, calc(0.18 + var(--cinematic-semantic, 0) * 0.82));
-  backdrop-filter: blur(calc(3px + var(--cinematic-semantic, 0) * 15px));
 }
 
-html[data-cinematic-mode="candidate"]:not([data-cinematic-header="released"]) .home-page .site-header__inner,
-html[data-cinematic-mode="enhanced"]:not([data-cinematic-header="released"]) .home-page .site-header__inner {
-  opacity: calc(0.12 + var(--cinematic-semantic, 0) * 0.88);
+html[data-cinematic-mode="candidate"][data-cinematic-header="concealed"] .home-page .site-header,
+html[data-cinematic-mode="enhanced"][data-cinematic-header="concealed"] .home-page .site-header {
+  visibility: hidden;
+  border-color: transparent;
+  opacity: 0;
+  pointer-events: none;
+  background: transparent;
+  backdrop-filter: none;
 }
 
-html[data-cinematic-mode="candidate"]:not([data-cinematic-header="released"]) .home-page .site-header:focus-within .site-header__inner,
-html[data-cinematic-mode="enhanced"]:not([data-cinematic-header="released"]) .home-page .site-header:focus-within .site-header__inner,
-html[data-cinematic-focus="navigation"] .home-page .site-header__inner {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-html[data-cinematic-mode="candidate"][data-cinematic-header="concealed"] .home-page .site-header__inner,
-html[data-cinematic-mode="enhanced"][data-cinematic-header="concealed"] .home-page .site-header__inner {
+html[data-cinematic-mode="candidate"][data-cinematic-header="concealed"] .home-page .site-header *,
+html[data-cinematic-mode="enhanced"][data-cinematic-header="concealed"] .home-page .site-header * {
   pointer-events: none;
 }
 
@@ -145,21 +139,8 @@ html[data-cinematic-mode="enhanced"] .cinematic-shell > .entry-field .entry-fiel
 }
 
 html[data-cinematic-mode="candidate"] .cinematic-shell[data-cinematic-interactive="true"] > .entry-field,
-html[data-cinematic-mode="enhanced"] .cinematic-shell[data-cinematic-interactive="true"] > .entry-field,
-html[data-cinematic-mode="candidate"] .cinematic-shell > .entry-field:focus-within,
-html[data-cinematic-mode="enhanced"] .cinematic-shell > .entry-field:focus-within {
+html[data-cinematic-mode="enhanced"] .cinematic-shell[data-cinematic-interactive="true"] > .entry-field {
   pointer-events: auto;
-}
-
-html[data-cinematic-mode="candidate"] .cinematic-shell > .entry-field:focus-within .entry-field__residual,
-html[data-cinematic-mode="candidate"] .cinematic-shell > .entry-field:focus-within .entry-field__content,
-html[data-cinematic-mode="enhanced"] .cinematic-shell > .entry-field:focus-within .entry-field__residual,
-html[data-cinematic-mode="enhanced"] .cinematic-shell > .entry-field:focus-within .entry-field__content {
-  opacity: 1;
-}
-
-html[data-cinematic-focus="entry"] .cinematic-stage {
-  visibility: hidden;
 }
 
 .cinematic-shell[data-cinematic-phase="settled"] .cinematic-stage {
@@ -171,23 +152,6 @@ html[data-cinematic-focus="entry"] .cinematic-stage {
 }
 
 .cinematic-shell[data-cinematic-phase="settled"] > .entry-field .entry-field__residual {
-  opacity: 1;
-}
-
-html[data-cinematic-deep-link][data-cinematic-mode="candidate"] .cinematic-stage,
-html[data-cinematic-deep-link][data-cinematic-mode="enhanced"] .cinematic-stage {
-  visibility: hidden;
-}
-
-html[data-cinematic-deep-link][data-cinematic-mode="candidate"] .cinematic-shell > .entry-field,
-html[data-cinematic-deep-link][data-cinematic-mode="enhanced"] .cinematic-shell > .entry-field {
-  background: var(--field-black);
-}
-
-html[data-cinematic-deep-link][data-cinematic-mode="candidate"] .cinematic-shell > .entry-field .entry-field__residual,
-html[data-cinematic-deep-link][data-cinematic-mode="candidate"] .cinematic-shell > .entry-field .entry-field__content,
-html[data-cinematic-deep-link][data-cinematic-mode="enhanced"] .cinematic-shell > .entry-field .entry-field__residual,
-html[data-cinematic-deep-link][data-cinematic-mode="enhanced"] .cinematic-shell > .entry-field .entry-field__content {
   opacity: 1;
 }
 
