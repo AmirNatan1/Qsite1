@@ -3,6 +3,7 @@ public/fonts/licenses/OFL-*.txt whitespace=-trailing-space
 
 # Preserve exact governed Phase 4-R1 evidence and producer bytes on every checkout.
 artifacts/original/phase-4r1-refined-proving-hall/source/** -text whitespace=cr-at-eol
+artifacts/original/phase-4r1-1-periphery-current-mobile-crt/source/** -text whitespace=cr-at-eol
 scripts/aggregate-phase4r1-refined-evidence.mjs -text
 scripts/package-phase4r1-refined-proving-hall-review-v2.mjs -text
 scripts/capture-phase4r0-entry-plates.mjs -text

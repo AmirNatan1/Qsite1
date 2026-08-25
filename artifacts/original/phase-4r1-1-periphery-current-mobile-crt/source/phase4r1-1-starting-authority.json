@@ -1,0 +1,95 @@
+{
+  "schema": "quantum-hub.phase-4-r1-1.starting-authority.v1",
+  "status": "PASS",
+  "repairScope": "peripheral authority, physical current, mobile optics, and CRT phosphor only",
+  "repository": {
+    "startingBranch": "redirect/phase-4r1-proving-hall-environment",
+    "repairBranch": "repair/phase-4r1-1-periphery-current-mobile-crt",
+    "startingHead": "bfbd3e6a07ab20cd034b4c669f3759287bd73c82",
+    "startingHeadDirectParent": "5cb0ad10c64db810e4719c08e42c9f4120593885",
+    "startingUpstream": "origin/redirect/phase-4r1-proving-hall-environment",
+    "startingUpstreamSha256": "bfbd3e6a07ab20cd034b4c669f3759287bd73c82",
+    "liveRemoteStartingBranchSha256": "bfbd3e6a07ab20cd034b4c669f3759287bd73c82",
+    "repairBranchInitiallyAbsentFromLiveRemote": true,
+    "worktreeInitiallyClean": true,
+    "initialUntrackedInventory": [],
+    "main": {
+      "local": "501040c42bba30b9d9517b88a8f9857992a2dba4",
+      "remoteTracking": "501040c42bba30b9d9517b88a8f9857992a2dba4",
+      "liveRemote": "501040c42bba30b9d9517b88a8f9857992a2dba4",
+      "unchanged": true
+    }
+  },
+  "ancestry": {
+    "status": "PASS",
+    "orderedAuthorities": [
+      {
+        "role": "production-main",
+        "commit": "501040c42bba30b9d9517b88a8f9857992a2dba4"
+      },
+      {
+        "role": "accepted-phase-2b",
+        "commit": "b54f3a83b6180466127589a8d028f94dab892d17"
+      },
+      {
+        "role": "accepted-phase-3r",
+        "commit": "2fdee6feb9664578c6c8243d1b80ea885235279f"
+      },
+      {
+        "role": "accepted-phase-4-integration",
+        "commit": "ce7bd0cb61bf4b9abd81303d89c5ac1aef089e0c"
+      },
+      {
+        "role": "accepted-phase-4-r0",
+        "commit": "4fd17810d47697785e66584a7ef40199ff597ba1"
+      },
+      {
+        "role": "human-reviewed-phase-4-r1",
+        "commit": "bfbd3e6a07ab20cd034b4c669f3759287bd73c82"
+      }
+    ]
+  },
+  "acceptedSource": {
+    "repositoryRelativePath": "artifacts/original/phase-4r1-refined-proving-hall/source/quantum-signal-television-phase4r1-refined-proving-hall.blend",
+    "bytes": 3526219,
+    "sha256": "a0a122baaf021833e9cad6194a474ef714b182be2c8e7171e00ad69c00565215",
+    "gitBlob": "83f58d48f4daeb77156a62740f2a8d21035cc30a",
+    "normalTrackedBinary": true,
+    "mustRemainUnchanged": true
+  },
+  "rejectedRecoveredStartingSource": {
+    "bytes": 3081427,
+    "sha256": "e24ccf974a57c0a5ffad48a42d07238138bf7e519da0494f5b9329f2a8b60e87",
+    "selectedForR1_1": false
+  },
+  "externalBackup": {
+    "directoryName": "qsite-phase4r1-1-prechange-20260825-110434",
+    "fileCount": 5,
+    "bytes": 3602956,
+    "allByteAndHashRecordsExact": true
+  },
+  "prechangeValidation": {
+    "repositoryRelativePath": "artifacts/original/phase-4r1-1-periphery-current-mobile-crt/source/phase4r1-1-prechange-source-validation.json",
+    "bytes": 8982,
+    "sha256": "1000c913acfe1968eb70ab609f5fea7efb102f80c4bb642612ce8ca17e8b4e27",
+    "status": "PASS",
+    "passed": 10,
+    "failed": 0,
+    "blender": "5.2.0 LTS",
+    "noSave": true,
+    "unresolvedResources": 0,
+    "linkedLibraries": 0
+  },
+  "authorization": {
+    "complete540FrameCyclesStarted": false,
+    "complete540FrameCyclesResumed": false,
+    "finalRefinedMediaIntegrationStarted": false,
+    "phase5Authorized": false,
+    "generativeVideoAuthorized": false
+  },
+  "rollback": {
+    "sourceRestorationBackupRelativePath": "qsite-phase4r1-1-prechange-20260825-110434/source/quantum-signal-television-phase4r1-refined-proving-hall.blend",
+    "returnCommit": "bfbd3e6a07ab20cd034b4c669f3759287bd73c82",
+    "nonDestructiveCommand": "git switch redirect/phase-4r1-proving-hall-environment"
+  }
+}

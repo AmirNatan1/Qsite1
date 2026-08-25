@@ -1,0 +1,276 @@
+{
+  "audits": [
+    {
+      "actual": "quantum-signal-television-phase4r1-refined-proving-hall.blend",
+      "expected": "quantum-signal-television-phase4r1-refined-proving-hall.blend",
+      "id": "accepted-source-filename",
+      "status": "PASS"
+    },
+    {
+      "actual": 3526219,
+      "expected": 3526219,
+      "id": "accepted-source-bytes",
+      "status": "PASS"
+    },
+    {
+      "actual": "a0a122baaf021833e9cad6194a474ef714b182be2c8e7171e00ad69c00565215",
+      "expected": "a0a122baaf021833e9cad6194a474ef714b182be2c8e7171e00ad69c00565215",
+      "id": "accepted-source-sha256",
+      "status": "PASS"
+    },
+    {
+      "actual": [
+        5,
+        2,
+        0
+      ],
+      "expected": [
+        5,
+        2,
+        0
+      ],
+      "id": "blender-version",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "fps": 30,
+        "frameEnd": 540,
+        "frameStart": 1
+      },
+      "expected": {
+        "fps": 30,
+        "frameEnd": 540,
+        "frameStart": 1
+      },
+      "id": "accepted-timeline",
+      "status": "PASS"
+    },
+    {
+      "actual": [],
+      "expected": [],
+      "id": "no-missing-resources",
+      "status": "PASS"
+    },
+    {
+      "actual": [],
+      "expected": [],
+      "id": "no-linked-libraries",
+      "status": "PASS"
+    },
+    {
+      "actual": "Phase4R1V2_ExactQuantumQ_PreCRTEffect_2048",
+      "expected": "Phase4R1V2_ExactQuantumQ_PreCRTEffect_2048",
+      "id": "exact-q-image-present",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "filepath": "//q-fidelity/quantum-icon-pre-crt-effect.png",
+        "name": "Phase4R1V2_ExactQuantumQ_PreCRTEffect_2048",
+        "packedBytes": 69348,
+        "packedFileCount": 1,
+        "packedFilepaths": [
+          "//q-fidelity/quantum-icon-pre-crt-effect.png"
+        ],
+        "packedSha256": "009c494df3b301470ab539f23e02b375f0c1fcec9b4b18cf07fc853b95fd03c5"
+      },
+      "expected": {
+        "filepath": "//q-fidelity/quantum-icon-pre-crt-effect.png",
+        "packedBytes": 69348,
+        "packedFileCount": 1,
+        "packedSha256": "009c494df3b301470ab539f23e02b375f0c1fcec9b4b18cf07fc853b95fd03c5"
+      },
+      "id": "exact-q-packed-authority",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "brand/quantum-icon-color.svg": {
+          "bytes": 788,
+          "exists": true,
+          "expectedBytes": 788,
+          "expectedSha256": "04dc37965b33587fea5f4664660f8a7f9a81ec7904d39925b41c6826b80cded9",
+          "sha256": "04dc37965b33587fea5f4664660f8a7f9a81ec7904d39925b41c6826b80cded9"
+        },
+        "brand/quantum-icon-white.svg": {
+          "bytes": 785,
+          "exists": true,
+          "expectedBytes": 785,
+          "expectedSha256": "c660ed87bc5293bfbffa662e523343a7e83bc86cb94848912494e85e0dc9d4ff",
+          "sha256": "c660ed87bc5293bfbffa662e523343a7e83bc86cb94848912494e85e0dc9d4ff"
+        },
+        "q-fidelity/phase4r1-exact-q-provenance.json": {
+          "bytes": 5816,
+          "exists": true,
+          "expectedBytes": 5816,
+          "expectedSha256": "f8759f6f6f39d07c5b081f139983afe1a9e39e7c37e0e916e8f3230bb736a93a",
+          "sha256": "f8759f6f6f39d07c5b081f139983afe1a9e39e7c37e0e916e8f3230bb736a93a"
+        },
+        "q-fidelity/quantum-icon-pre-crt-effect.png": {
+          "bytes": 69348,
+          "exists": true,
+          "expectedBytes": 69348,
+          "expectedSha256": "009c494df3b301470ab539f23e02b375f0c1fcec9b4b18cf07fc853b95fd03c5",
+          "sha256": "009c494df3b301470ab539f23e02b375f0c1fcec9b4b18cf07fc853b95fd03c5"
+        },
+        "source/quantum-signal-television-phase4r1-refined-proving-hall.blend": {
+          "bytes": 3526219,
+          "exists": true,
+          "expectedBytes": 3526219,
+          "expectedSha256": "a0a122baaf021833e9cad6194a474ef714b182be2c8e7171e00ad69c00565215",
+          "sha256": "a0a122baaf021833e9cad6194a474ef714b182be2c8e7171e00ad69c00565215"
+        }
+      },
+      "expected": "all expected files byte/hash exact",
+      "id": "external-backup-authority",
+      "status": "PASS"
+    }
+  ],
+  "backup": {
+    "externalDirectoryName": "qsite-phase4r1-1-prechange-20260825-110434",
+    "records": {
+      "brand/quantum-icon-color.svg": {
+        "bytes": 788,
+        "exists": true,
+        "expectedBytes": 788,
+        "expectedSha256": "04dc37965b33587fea5f4664660f8a7f9a81ec7904d39925b41c6826b80cded9",
+        "sha256": "04dc37965b33587fea5f4664660f8a7f9a81ec7904d39925b41c6826b80cded9"
+      },
+      "brand/quantum-icon-white.svg": {
+        "bytes": 785,
+        "exists": true,
+        "expectedBytes": 785,
+        "expectedSha256": "c660ed87bc5293bfbffa662e523343a7e83bc86cb94848912494e85e0dc9d4ff",
+        "sha256": "c660ed87bc5293bfbffa662e523343a7e83bc86cb94848912494e85e0dc9d4ff"
+      },
+      "q-fidelity/phase4r1-exact-q-provenance.json": {
+        "bytes": 5816,
+        "exists": true,
+        "expectedBytes": 5816,
+        "expectedSha256": "f8759f6f6f39d07c5b081f139983afe1a9e39e7c37e0e916e8f3230bb736a93a",
+        "sha256": "f8759f6f6f39d07c5b081f139983afe1a9e39e7c37e0e916e8f3230bb736a93a"
+      },
+      "q-fidelity/quantum-icon-pre-crt-effect.png": {
+        "bytes": 69348,
+        "exists": true,
+        "expectedBytes": 69348,
+        "expectedSha256": "009c494df3b301470ab539f23e02b375f0c1fcec9b4b18cf07fc853b95fd03c5",
+        "sha256": "009c494df3b301470ab539f23e02b375f0c1fcec9b4b18cf07fc853b95fd03c5"
+      },
+      "source/quantum-signal-television-phase4r1-refined-proving-hall.blend": {
+        "bytes": 3526219,
+        "exists": true,
+        "expectedBytes": 3526219,
+        "expectedSha256": "a0a122baaf021833e9cad6194a474ef714b182be2c8e7171e00ad69c00565215",
+        "sha256": "a0a122baaf021833e9cad6194a474ef714b182be2c8e7171e00ad69c00565215"
+      }
+    }
+  },
+  "blender": {
+    "version": "5.2.0 LTS",
+    "versionTuple": [
+      5,
+      2,
+      0
+    ]
+  },
+  "exactQ": {
+    "filepath": "//q-fidelity/quantum-icon-pre-crt-effect.png",
+    "name": "Phase4R1V2_ExactQuantumQ_PreCRTEffect_2048",
+    "packedBytes": 69348,
+    "packedFileCount": 1,
+    "packedFilepaths": [
+      "//q-fidelity/quantum-icon-pre-crt-effect.png"
+    ],
+    "packedSha256": "009c494df3b301470ab539f23e02b375f0c1fcec9b4b18cf07fc853b95fd03c5"
+  },
+  "mode": "read-only-no-save",
+  "producer": {
+    "bytes": 10852,
+    "repositoryRelativePath": "artifacts/original/phase-4r1-1-periphery-current-mobile-crt/source/prechange_validate_phase4r1_1.py",
+    "sha256": "feb5b4c7edb70ca411405a4622011c24cfaabb57a7cd71d5e22fe2cdcc3c6b69"
+  },
+  "resources": {
+    "externalDataBlocks": [],
+    "images": [
+      {
+        "filepath": "//q-fidelity/quantum-icon-pre-crt-effect.png",
+        "name": "Phase4R1V2_ExactQuantumQ_PreCRTEffect_2048",
+        "packedBytes": 69348,
+        "packedFileCount": 1,
+        "packedFilepaths": [
+          "//q-fidelity/quantum-icon-pre-crt-effect.png"
+        ],
+        "packedSha256": "009c494df3b301470ab539f23e02b375f0c1fcec9b4b18cf07fc853b95fd03c5",
+        "source": "FILE"
+      }
+    ],
+    "libraries": [],
+    "unresolved": []
+  },
+  "sceneInventory": {
+    "actions": 1743,
+    "cameras": [
+      "Camera_CRT_Wake",
+      "Camera_Cabinet_Material",
+      "Camera_Conductor_Macro",
+      "Camera_Connector_Macro",
+      "Camera_Controls_Macro",
+      "Camera_Dormant_Hero",
+      "Camera_Front_Design",
+      "Camera_Glass_Grazing",
+      "Camera_LowerBand_Diagnostic",
+      "Camera_Mobile_Dormant",
+      "Camera_Path_30",
+      "Camera_Path_60",
+      "Camera_Path_Arrival",
+      "Camera_Path_NearFrontal",
+      "Camera_Portal_03_CloseApproach",
+      "Camera_Portal_04_GlassAlmostFills",
+      "Camera_Portal_05_BezelExits",
+      "Camera_Portal_06_TextFree",
+      "Camera_Power_Front",
+      "Camera_Raster_Close",
+      "Camera_Rear_Arrival",
+      "Camera_Rear_Design",
+      "Camera_Rear_Detail",
+      "Camera_Reduced_Desktop",
+      "Camera_Reduced_Mobile",
+      "Camera_Side_Design",
+      "Camera_Speaker_Macro",
+      "Camera_ThreeQuarter_Front_Design",
+      "Camera_ThreeQuarter_Rear_Design",
+      "Phase3_Camera_Desktop_Data",
+      "Phase3_Camera_Mobile_Data",
+      "Phase4R0_Camera_Desktop_Data",
+      "Phase4R0_Camera_Landscape_Data",
+      "Phase4R0_Camera_Mobile_Data",
+      "Phase4R1_Camera_Desktop_Data",
+      "Phase4R1_Camera_Landscape_Data",
+      "Phase4R1_Camera_Mobile_Data"
+    ],
+    "collections": 50,
+    "images": 1,
+    "materials": 433,
+    "objects": 2005
+  },
+  "schema": "quantum-hub.phase-4-r1-1.prechange-source-validation.v1",
+  "source": {
+    "bytes": 3526219,
+    "repositoryRelativePath": "artifacts/original/phase-4r1-refined-proving-hall/source/quantum-signal-television-phase4r1-refined-proving-hall.blend",
+    "sha256": "a0a122baaf021833e9cad6194a474ef714b182be2c8e7171e00ad69c00565215"
+  },
+  "status": "PASS",
+  "summary": {
+    "failed": 0,
+    "failedIds": [],
+    "passed": 10,
+    "total": 10
+  },
+  "timeline": {
+    "fps": 30,
+    "frameEnd": 540,
+    "frameStart": 1
+  }
+}
