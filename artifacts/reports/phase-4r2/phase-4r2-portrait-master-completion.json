@@ -1,0 +1,133 @@
+{
+  "schema": "quantum-hub.phase-4-r2.master-completion.v1",
+  "generatedAt": "2026-08-26T23:19:43.5803450Z",
+  "status": "PASS",
+  "family": "portrait",
+  "source": {
+    "blendSha256": "b0c9c7c1cf5a1642870cf03a36791cc50ec31ac207aeae794fbea83c856a79c0",
+    "camera": "Phase4R1_Camera_Mobile",
+    "settingsSha256": "132864c63c625eb850f578d1350295d389175bc489b0815478358482ebf916d7"
+  },
+  "master": {
+    "resolution": [
+      780,
+      1688
+    ],
+    "fps": 30,
+    "frameRange": [
+      1,
+      500
+    ],
+    "frameCount": 500,
+    "validFrames": 500,
+    "missingFrames": 0,
+    "extraFrames": 0,
+    "duplicateFrames": 0,
+    "corruptFrames": 0,
+    "pixelFormat": "rgb48be",
+    "totalBytes": 1848953026,
+    "sequenceSha256": "9a73386d868e590a6f17c955150366f04753dab077d9428952ea0d09b5fb8ccc",
+    "cumulativeRenderSeconds": 5625.544076
+  },
+  "frameManifest": {
+    "basename": "phase-4r2-portrait-frame-manifest.json",
+    "bytes": 126487,
+    "sha256": "09ed1008a156117a071377c35f3c1c798cb5c01935263f2a004872b16fe62c7b",
+    "deterministicTwoRunCheck": "PASS"
+  },
+  "machineAudit": {
+    "fullPngDecode": "PASS",
+    "independentFfmpegDecode": "PASS",
+    "ledgerParity": "PASS",
+    "inventory": "PASS"
+  },
+  "independentVisualReview": {
+    "status": "GO",
+    "sampleFrames": [
+      1,
+      25,
+      50,
+      75,
+      76,
+      100,
+      106,
+      125,
+      150,
+      166,
+      175,
+      180,
+      200,
+      225,
+      250,
+      275,
+      285,
+      300,
+      320,
+      325,
+      350,
+      356,
+      360,
+      370,
+      375,
+      390,
+      400,
+      405,
+      425,
+      450,
+      475,
+      480,
+      500
+    ],
+    "nativeOriginalFrames": [
+      1,
+      25,
+      50,
+      100,
+      166,
+      225,
+      285,
+      320,
+      356,
+      370,
+      405,
+      450,
+      480,
+      500
+    ],
+    "observations": [
+      "The authored portrait composition remains coherent from distant dormancy through the orbit and frontal threshold.",
+      "The dark hall remains legible, and graphite sheath visibility plus contiguous current progression are preserved without gaps or islands.",
+      "CRT wake, stable Q, hold, and push preserve the exact Q silhouette and negative spaces with restrained phosphor softness, fine raster, and convex-glass character.",
+      "The late approach remains centered and continuous.",
+      "F500 is the intentional clean-black physical screen threshold documented by the frozen narrative and approved final-resolution pilot; browser-authored F501-F513 continue the black breathing beat.",
+      "No actionable clipping, banding, fireflies, denoiser smearing, raster aliasing, or framing defects were observed."
+    ],
+    "contactSheets": [
+      {
+        "basename": "portrait-master-audit-sheet-1.png",
+        "bytes": 1196351,
+        "sha256": "1b82f345c1377330442c3ab2caecb9fbb061b2fe645535f580435e8c6db00afc"
+      },
+      {
+        "basename": "portrait-master-audit-sheet-2.png",
+        "bytes": 1114265,
+        "sha256": "b8b204e0fe9fd0281e0f54fea20c7e648911242e21c3371a44eaa7ff92af20cb"
+      },
+      {
+        "basename": "portrait-master-audit-sheet-3.png",
+        "bytes": 1074086,
+        "sha256": "ea672e0a8342532554c9322ed9db0608f5838133d5c2223fd949773d21ac99c9"
+      }
+    ],
+    "limitations": [
+      "Visual review is milestone-sampled rather than a human inspection of all 500 individual frames.",
+      "All 500 frames were independently machine-decoded and inventory-verified.",
+      "Contact sheets are reduced-resolution diagnostics; selected originals were reviewed at native fidelity."
+    ]
+  },
+  "authorization": {
+    "proceedToNextFamily": true,
+    "humanAccepted": false,
+    "phase5Authorized": false
+  }
+}
