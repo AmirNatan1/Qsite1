@@ -865,13 +865,13 @@ async function resolveMobile(root) {
   if (!Array.isArray(diagnostic.artifacts) || diagnostic.artifacts.length !== 21) throw new Error("mobile diagnostic must contain exactly 21 artifact declarations");
   const diagnosticDeclarations = collectFileRecords({ artifacts: diagnostic.artifacts });
   const diagnosticDeclarationPaths = diagnosticDeclarations.map((record, index) => recordFields(record, `mobile diagnostic declaration[${index}]`).relativePath);
-  if (diagnosticDeclarations.length !== 21) throw new Error("mobile diagnostic declaration collection is not exactly 21 records");
+  if (diagnosticDeclarations.length !== 37) throw new Error("mobile diagnostic must collect exactly 37 top-level and nested file authorities");
   const canonicalDeclarationPaths = await Promise.all(diagnosticDeclarationPaths.map(async (relativePath, index) => {
     const candidate = path.resolve(root, ...relativePath.split("/"));
     if (!isWithin(root, candidate) || !(await pathExists(candidate))) throw new Error(`mobile diagnostic declaration[${index}] is missing or escapes its root`);
     return normalizedPath(await realpath(candidate));
   }));
-  if (new Set(canonicalDeclarationPaths).size !== 21) throw new Error("mobile diagnostic declarations do not resolve to exactly 21 unique files");
+  if (new Set(canonicalDeclarationPaths).size !== 37) throw new Error("mobile diagnostic declarations do not resolve to exactly 37 unique files");
   const frameManifestPath = "animatic/mobile-animatic-frame-manifest.json";
   const frameManifestIndexes = diagnosticDeclarationPaths.map((relativePath, index) => relativePath === frameManifestPath ? index : -1).filter((index) => index >= 0);
   if (frameManifestIndexes.length !== 1) throw new Error("mobile diagnostic must contain exactly one frame-manifest declaration");
@@ -894,14 +894,17 @@ async function resolveMobile(root) {
   const finalFrameManifestRecord = await authenticateRecord(root, orbit.sourceFramesManifest, "mobile finalized frame manifest");
   const records = [...authenticatedDiagnosticRecords];
   records.splice(diagnosticFrameManifestIndex, 0, finalFrameManifestRecord);
-  if (records.length !== 21) throw new Error("mobile authenticated artifact count must remain exactly 21 after bounded frame-manifest supersession");
-  if (new Set(records.map((record) => normalizedPath(record.filename))).size !== 21) throw new Error("mobile authenticated artifact realpaths are not exactly unique");
+  if (records.length !== 37) throw new Error("mobile authenticated file-authority count must remain exactly 37 after bounded frame-manifest supersession");
+  if (new Set(records.map((record) => normalizedPath(record.filename))).size !== 37) throw new Error("mobile authenticated file-authority realpaths are not exactly unique");
   const frameManifestSupersession = {
     status: "PASS",
     applied: true,
     reason: "The diagnostic recorded the pre-render frame-manifest header; the later orbit finalization receipt authenticates the completed 500-frame manifest at the same path.",
     diagnosticPreFinalDeclaration: diagnosticFrameManifest,
     finalizationDeclaration: finalFrameManifest,
+    topLevelArtifactDeclarationCount: 21,
+    collectedFileAuthorityCount: 37,
+    otherCollectedFileAuthoritiesAuthenticatedExactly: 36,
     allOtherDiagnosticArtifactsAuthenticatedExactly: true,
   };
   const orbitRecord = await authenticateRecord(root, { path: orbit.path, ...orbit.file }, "mobile orbit video");
@@ -1361,7 +1364,7 @@ function limitationsReport() {
       "Responsive recordings are explicitly labelled nine-state hard-cut review clips, not a continuous production render; each uses native final-source physical frames, a literal 13-frame black beat, and settled browser ENTRY.",
       "Browser/Chrome evidence is the accepted prior-runtime state-policy proxy. It does not claim final R1.1 refined-media integration.",
       "The complete 844x390 settled ENTRY and skip plates reuse the frozen accepted R1 capture-only, ENTRY-scoped short-landscape composition from bfbd3e6; they do not alter production runtime CSS, root typography, or browser zoom.",
-      "The mobile diagnostic's pre-render frame-manifest declaration is superseded only by the later authenticated orbit-finalization receipt for the completed 500-frame manifest; the other 20 diagnostic artifacts authenticate exactly.",
+      "The mobile diagnostic's pre-render frame-manifest declaration is superseded only by the later authenticated orbit-finalization receipt for the completed 500-frame manifest; the other 36 collected file authorities (covering the remaining top-level artifacts and nested frame receipts) authenticate exactly.",
       "Rejected and superseded CRT frames are excluded; only their aliases, source authority where known, and rejection reasons are disclosed.",
       "The final .blend and raw render sequences remain outside the ZIP; their exact byte/hash authorities are reported.",
     ],
