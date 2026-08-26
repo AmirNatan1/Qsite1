@@ -79,9 +79,9 @@ const PRIOR_RUNTIME_MEDIA_PATHS = Object.freeze([
 const PRIVATE_PATTERNS = Object.freeze([
   Object.freeze({ id: "windows-user-path", expression: /[A-Za-z]:[\\/]Users[\\/]/iu }),
   Object.freeze({ id: "mac-user-path", expression: /\/Users\/[^/\s"']+/iu }),
-  Object.freeze({ id: "linux-home-path", expression: /\/home\/[^/\s"']+/iu }),
-  Object.freeze({ id: "onedrive-component", expression: /OneDrive/iu }),
-  Object.freeze({ id: "appdata-component", expression: /AppData/iu }),
+  Object.freeze({ id: "linux-home-path", expression: /(?:^|[\s"'(])\/home\/[^/\s"']+\//iu }),
+  Object.freeze({ id: "cloud-sync-profile-component", expression: /OneDrive/iu }),
+  Object.freeze({ id: "windows-profile-data-component", expression: /AppData/iu }),
   Object.freeze({ id: "file-uri", expression: /file:\/\//iu }),
 ]);
 
@@ -343,7 +343,8 @@ function safeRequestPath(value) {
 function sanitizeMessage(value) {
   return String(value ?? "")
     .replace(/[A-Za-z]:[\\/]Users[\\/][^\s"']+/giu, "[REDACTED_LOCAL_PATH]")
-    .replace(/\/(?:Users|home)\/[^\s"']+/giu, "[REDACTED_LOCAL_PATH]")
+    .replace(/\/Users\/[^\s"']+/giu, "[REDACTED_LOCAL_PATH]")
+    .replace(/(?:^|[\s"'(])\/home\/[^/\s"']+\/[^\s"']*/giu, " [REDACTED_LOCAL_PATH]")
     .replace(/OneDrive|AppData/giu, "[REDACTED_LOCAL_COMPONENT]")
     .slice(0, 800);
 }
@@ -1014,6 +1015,9 @@ function runSelfTest() {
     check("authorization-denials", Object.values(AUTHORIZATION).every((value) => value === false), "all authorization flags false", AUTHORIZATION),
     check("privacy-detector-positive-control", privacyFindings("C:\\Users\\example\\OneDrive\\evidence.json").includes("windows-user-path"), true, privacyFindings("C:\\Users\\example\\OneDrive\\evidence.json")),
     check("privacy-detector-negative-control", privacyFindings(`${EVIDENCE_LABEL} scripts/example.mjs`).length === 0, [], privacyFindings(`${EVIDENCE_LABEL} scripts/example.mjs`)),
+    check("privacy-detector-repository-home-route", privacyFindings("src/components/home/EntryField.astro").length === 0, [], privacyFindings("src/components/home/EntryField.astro")),
+    check("privacy-detector-self-description", privacyFindings(PRIVATE_PATTERNS.map(({ id }) => id).join(" ")).length === 0, [], privacyFindings(PRIVATE_PATTERNS.map(({ id }) => id).join(" "))),
+    check("privacy-detector-linux-home-positive-control", privacyFindings("/home/example/project/evidence.json").includes("linux-home-path"), true, privacyFindings("/home/example/project/evidence.json")),
   ];
   const status = checks.every(({ passed }) => passed) ? "PASS" : "FAIL";
   process.stdout.write(`${JSON.stringify({
