@@ -230,14 +230,30 @@ function sha256(bytes) {
   return createHash("sha256").update(bytes).digest("hex");
 }
 
-async function authorityRecord(relativePath, requireTracked = true) {
-  if (requireTracked) git("ls-files", "--error-unmatch", relativePath);
-  const bytes = await readFile(path.join(ROOT, ...relativePath.split("/")));
-  return { relativePath, bytes: bytes.length, sha256: sha256(bytes) };
+function gitPathMatches(...args) {
+  try {
+    git(...args);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
-async function authorityRecords(paths) {
-  return Promise.all(paths.map((relativePath) => authorityRecord(relativePath)));
+async function authorityRecord(relativePath, { requireTracked = true, requireIgnored = false } = {}) {
+  const repositoryTracked = gitPathMatches("ls-files", "--error-unmatch", relativePath);
+  const repositoryIgnored = gitPathMatches("check-ignore", "-q", "--", relativePath);
+  if (requireTracked && !repositoryTracked) {
+    throw new Error(`Required tracked authority is not tracked: ${relativePath}`);
+  }
+  if (requireIgnored && !repositoryIgnored) {
+    throw new Error(`Accepted prior-runtime proxy is not intentionally ignored: ${relativePath}`);
+  }
+  const bytes = await readFile(path.join(ROOT, ...relativePath.split("/")));
+  return { relativePath, bytes: bytes.length, sha256: sha256(bytes), repositoryTracked, repositoryIgnored };
+}
+
+async function authorityRecords(paths, options) {
+  return Promise.all(paths.map((relativePath) => authorityRecord(relativePath, options)));
 }
 
 async function exists(candidate) {
@@ -1025,7 +1041,7 @@ async function main() {
   if (!beforeGit.ready) throw new Error(`Exact clean pushed local/upstream authority is required: ${JSON.stringify(beforeGit, null, 2)}`);
   const producerAuthority = await authorityRecord(SCRIPT_RELATIVE_PATH);
   const runtimeSourcesBefore = await authorityRecords(RUNTIME_SOURCE_PATHS);
-  const runtimeMediaBefore = await authorityRecords(PRIOR_RUNTIME_MEDIA_PATHS);
+  const runtimeMediaBefore = await authorityRecords(PRIOR_RUNTIME_MEDIA_PATHS, { requireTracked: false, requireIgnored: true });
   const chromePath = await resolveChrome(options.browser);
 
   await mkdir(path.join(options.output, "captures"), { recursive: true });
@@ -1055,7 +1071,7 @@ async function main() {
     const stateInventoryPass = missingStateIds.length === 0 && unexpectedStateIds.length === 0 && duplicateStateIds.length === 0 && actualStateIds.length === REQUIRED_STATE_IDS.length;
 
     const runtimeSourcesAfter = await authorityRecords(RUNTIME_SOURCE_PATHS);
-    const runtimeMediaAfter = await authorityRecords(PRIOR_RUNTIME_MEDIA_PATHS);
+    const runtimeMediaAfter = await authorityRecords(PRIOR_RUNTIME_MEDIA_PATHS, { requireTracked: false, requireIgnored: true });
     const afterGit = gitState(options.expectedHead, options.expectedBranch);
     const runtimeSourceMutationAbsent = JSON.stringify(runtimeSourcesBefore) === JSON.stringify(runtimeSourcesAfter);
     const runtimeMediaMutationAbsent = JSON.stringify(runtimeMediaBefore) === JSON.stringify(runtimeMediaAfter);
@@ -1099,6 +1115,7 @@ async function main() {
       runtimeMediaAuthority: {
         classification: "accepted-prior-runtime-proxy",
         sourceGeneration: "accepted Phase 3 runtime media",
+        repositoryState: "present locally and intentionally ignored under public/media/cinematic/",
         finalR11RefinedMediaIntegrated: false,
         finalR11RefinedMediaIntegrationAuthorized: false,
         media: runtimeMediaAfter,
