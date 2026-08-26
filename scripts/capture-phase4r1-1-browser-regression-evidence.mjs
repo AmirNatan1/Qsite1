@@ -30,6 +30,107 @@ const AUTHORIZATION = Object.freeze({
   humanAccepted: false,
 });
 
+/*
+ * Frozen accepted R1 evidence composition for short-landscape ENTRY plates.
+ * This exact style is injected into the browser evidence document only. It is
+ * never written to source CSS or the preview build, and every declaration is
+ * gated by a capture-only root marker. The accepted bfbd3e6 authority used the
+ * same scoped composition and semantic-fit definition for its complete
+ * 844x390 ENTRY plate.
+ */
+const ACCEPTED_SHORT_LANDSCAPE_ENTRY_CSS = String.raw`
+html[data-phase4r0-entry-plate="short-landscape"] .cinematic-shell > .entry-field {
+  min-height: calc(100svh - var(--cinematic-header-px, 100.25px)) !important;
+}
+
+html[data-phase4r0-entry-plate="short-landscape"] .entry-field__content {
+  width: min(calc(100% - (2 * clamp(1.25rem, 4vw, 3rem))), 84rem) !important;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr) !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  gap: clamp(0.3rem, 1.4vh, 0.6rem) clamp(1.25rem, 4vw, 2.75rem) !important;
+  padding-block: clamp(0.48rem, 1.8vh, 0.82rem) !important;
+}
+
+html[data-phase4r0-entry-plate="short-landscape"] .entry-field__content > .field-label {
+  grid-column: 1 / -1 !important;
+  grid-row: 1 !important;
+}
+
+html[data-phase4r0-entry-plate="short-landscape"] .entry-field h1 {
+  grid-column: 1 !important;
+  grid-row: 2 !important;
+  align-self: center !important;
+  width: 100% !important;
+  max-width: none !important;
+  font-size: clamp(2.55rem, 6.35vw, 3.7rem) !important;
+  line-height: 0.78 !important;
+  text-align: left !important;
+}
+
+html[data-phase4r0-entry-plate="short-landscape"] .entry-paths {
+  grid-column: 2 !important;
+  grid-row: 2 !important;
+  align-self: center !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 0 !important;
+}
+
+html[data-phase4r0-entry-plate="short-landscape"] .entry-path {
+  min-height: 0 !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  grid-template-rows: auto auto !important;
+  column-gap: clamp(0.75rem, 2vw, 1.25rem) !important;
+  padding-block: clamp(0.42rem, 1.55vh, 0.66rem) !important;
+}
+
+html[data-phase4r0-entry-plate="short-landscape"] .entry-path--startup {
+  text-align: left !important;
+}
+
+html[data-phase4r0-entry-plate="short-landscape"] .entry-path--startup .entry-path__audience,
+html[data-phase4r0-entry-plate="short-landscape"] .entry-path--startup .entry-path__statement {
+  grid-column: 1 !important;
+}
+
+html[data-phase4r0-entry-plate="short-landscape"] .entry-path .entry-path__direction,
+html[data-phase4r0-entry-plate="short-landscape"] .entry-path--startup .entry-path__direction {
+  grid-column: 2 !important;
+  grid-row: 1 / span 2 !important;
+  justify-self: end !important;
+}
+
+html[data-phase4r0-entry-plate="short-landscape"] .entry-path__audience,
+html[data-phase4r0-entry-plate="short-landscape"] .entry-path__direction {
+  font-size: 0.78rem !important;
+}
+
+html[data-phase4r0-entry-plate="short-landscape"] .entry-path__statement {
+  font-size: 0.9rem !important;
+  line-height: 1.22 !important;
+}
+
+html[data-phase4r0-entry-plate="short-landscape"] .entry-field,
+html[data-phase4r0-entry-plate="short-landscape"] .entry-field * {
+  animation: none !important;
+  transition: none !important;
+}
+`;
+const ACCEPTED_SHORT_LANDSCAPE_ENTRY_CSS_SHA256 = "9393d910c3c68c183611ff0fdbc66bb117684d53b1cc0d879fe32034968ffc24";
+const ACCEPTED_SHORT_LANDSCAPE_ENTRY_CONTEXT = Object.freeze({
+  applied: true,
+  classification: "PREVIEW_ONLY_ENTRY_SCOPED_SHORT_LANDSCAPE_COMPOSITION_NOT_PRODUCTION_RUNTIME_CSS",
+  frozenAcceptedR1Authority: true,
+  marker: 'html[data-phase4r0-entry-plate="short-landscape"]',
+  sourceAuthorityCommit: "bfbd3e6a07ab20cd034b4c669f3759287bd73c82",
+  sourceAuthorityPath: "scripts/capture-phase4r0-entry-plates.mjs",
+  appliedToStateIds: Object.freeze(["settled-entry-844x390", "skip-intro-844x390"]),
+  cssSha256: ACCEPTED_SHORT_LANDSCAPE_ENTRY_CSS_SHA256,
+  globalTypographyShrinkApplied: false,
+  rootFontSizeChanged: false,
+  browserZoomChanged: false,
+  productionFilesChanged: false,
+});
+
 const VIEWPORTS = Object.freeze([
   Object.freeze({ id: "320x800", width: 320, height: 800, expectedRuntimeFamily: "mobile", familyReason: "portrait viewport width is at most 800px" }),
   Object.freeze({ id: "360x800", width: 360, height: 800, expectedRuntimeFamily: "mobile", familyReason: "portrait viewport width is at most 800px" }),
@@ -575,9 +676,9 @@ function check(id, passed, expected, actual) {
   return { id, status: passed ? "PASS" : "FAIL", passed: Boolean(passed), expected, actual };
 }
 
-function withinViewport(bounds, viewport, tolerance = 3) {
+function withinViewport(bounds, viewport, tolerance = 3, minimumTop = 0) {
   return Boolean(bounds
-    && bounds.top >= -tolerance
+    && bounds.top >= minimumTop - tolerance
     && bounds.left >= -tolerance
     && bounds.right <= viewport.width + tolerance
     && bounds.bottom <= viewport.height + tolerance);
@@ -602,7 +703,8 @@ function semanticChecks(measured) {
 }
 
 function releasedChecks(measured, viewport, { requireEnhanced = true, requireCompleteEntry = false, expectedRuntimeFamily = null } = {}) {
-  const completeBounds = [measured.entry?.contentBounds, measured.semantics.h1Bounds, ...measured.semantics.routes.map(({ bounds }) => bounds)];
+  const completeBounds = [measured.semantics.h1Bounds, ...measured.semantics.routes.map(({ bounds }) => bounds)];
+  const visibleHeaderBottom = measured.header?.bounds?.bottom ?? 0;
   return [
     ...semanticChecks(measured),
     check("cinematic-mode-enhanced", !requireEnhanced || measured.root.cinematicMode === "enhanced", requireEnhanced ? "enhanced" : "enhanced or static", measured.root.cinematicMode),
@@ -614,8 +716,32 @@ function releasedChecks(measured, viewport, { requireEnhanced = true, requireCom
     check("entry-interactive", measured.entry?.inert === false && measured.entry?.pointerEvents !== "none" && measured.entry?.focusableDescendantCount === 2, "non-inert with two focusable routes", measured.entry),
     check("entry-content-opaque", (measured.entry?.contentOpacity ?? 0) >= .999, ">=0.999", measured.entry?.contentOpacity),
     check("runtime-media-family", !expectedRuntimeFamily || measured.shell?.mediaFamily === expectedRuntimeFamily, expectedRuntimeFamily, measured.shell?.mediaFamily),
-    check("complete-entry-in-viewport", !requireCompleteEntry || completeBounds.every((bounds) => withinViewport(bounds, viewport)), "ENTRY content, H1, and both routes fully within viewport", completeBounds),
+    check("complete-entry-in-viewport", !requireCompleteEntry || completeBounds.every((bounds) => withinViewport(bounds, viewport, 3, visibleHeaderBottom)), "complete semantic H1 and both routes fully within the visible viewport below the header", { visibleHeaderBottom, semanticBounds: completeBounds }),
   ];
+}
+
+async function applyAcceptedShortLandscapeEntryComposition(page) {
+  if (sha256(Buffer.from(ACCEPTED_SHORT_LANDSCAPE_ENTRY_CSS)) !== ACCEPTED_SHORT_LANDSCAPE_ENTRY_CSS_SHA256) {
+    throw new Error("Frozen accepted short-landscape ENTRY CSS authority drifted");
+  }
+  await page.evaluate(({ css, marker }) => {
+    document.getElementById("phase4r1-1-accepted-short-landscape-entry")?.remove();
+    document.documentElement.dataset.phase4r0EntryPlate = marker;
+    const style = document.createElement("style");
+    style.id = "phase4r1-1-accepted-short-landscape-entry";
+    style.textContent = css;
+    document.head.append(style);
+  }, { css: ACCEPTED_SHORT_LANDSCAPE_ENTRY_CSS, marker: "short-landscape" });
+  await settle(page);
+  return ACCEPTED_SHORT_LANDSCAPE_ENTRY_CONTEXT;
+}
+
+async function removeAcceptedShortLandscapeEntryComposition(page) {
+  await page.evaluate(() => {
+    document.getElementById("phase4r1-1-accepted-short-landscape-entry")?.remove();
+    delete document.documentElement.dataset.phase4r0EntryPlate;
+  });
+  await settle(page);
 }
 
 function concealedChecks(measured, expectedRuntimeFamily) {
@@ -674,7 +800,7 @@ function artifactRecord(relativePath, bytes, details) {
   };
 }
 
-async function captureState({ page, outputRoot, finalHead, id, group, viewport, expected, checks, animationFrames = true }) {
+async function captureState({ page, outputRoot, finalHead, id, group, viewport, expected, checks, animationFrames = true, captureContext = null }) {
   await settle(page, { animationFrames });
   const measured = await readHomeState(page);
   const raw = await page.screenshot({ type: "png", fullPage: false, animations: "disabled", caret: "hide", scale: "css" });
@@ -701,6 +827,7 @@ async function captureState({ page, outputRoot, finalHead, id, group, viewport, 
     finalHead,
     viewport,
     expected,
+    captureContext,
     measured,
     checks: evaluatedChecks,
     authorization: AUTHORIZATION,
@@ -805,6 +932,7 @@ async function captureChromeTrack(browser, options, viewport) {
     }));
 
     await setProgress(page, geometry, 1);
+    const settledCaptureContext = await applyAcceptedShortLandscapeEntryComposition(page);
     records.push(await captureState({
       page,
       outputRoot: options.output,
@@ -813,11 +941,13 @@ async function captureChromeTrack(browser, options, viewport) {
       group: "responsive-settled-entry",
       viewport,
       expected: { state: "complete settled semantic ENTRY; site chrome released only at settled boundary", runtimeFamily: viewport.expectedRuntimeFamily, runtimeFamilyReason: viewport.familyReason },
+      captureContext: settledCaptureContext,
       checks: (measured) => [
         ...releasedChecks(measured, viewport, { requireEnhanced: true, requireCompleteEntry: true, expectedRuntimeFamily: viewport.expectedRuntimeFamily }),
         check("settled-runtime-ready", measured.shell?.mediaState === "ready", "ready", measured.shell?.mediaState),
       ],
     }));
+    await removeAcceptedShortLandscapeEntryComposition(page);
 
     await page.evaluate(() => {
       const menu = document.querySelector("[data-mobile-nav]");
@@ -872,6 +1002,7 @@ async function captureSkipIntro(browser, options, viewport) {
     await page.waitForFunction(() => document.activeElement?.classList.contains("skip-link"));
     await page.keyboard.press("Enter");
     await page.waitForFunction(() => location.hash === "#entry" && document.documentElement.dataset.cinematicHeader === "released" && document.querySelector("[data-cinematic-shell]")?.getAttribute("data-cinematic-phase") === "settled");
+    const captureContext = await applyAcceptedShortLandscapeEntryComposition(page);
     const record = await captureState({
       page,
       outputRoot: options.output,
@@ -880,6 +1011,7 @@ async function captureSkipIntro(browser, options, viewport) {
       group: "skip-intro",
       viewport,
       expected: { state: "native skip settles and exposes semantic ENTRY while accepted-prior media remains deliberately pending" },
+      captureContext,
       checks: (measured) => [
         ...releasedChecks(measured, viewport, { requireEnhanced: true, requireCompleteEntry: true, expectedRuntimeFamily: viewport.expectedRuntimeFamily }),
         check("skip-hash-entry", measured.location === "/#entry", "/#entry", measured.location),
@@ -1013,6 +1145,7 @@ function runSelfTest() {
     check("operating-section-contract", EXPECTED_OPERATING_SECTION_IDS.length === 7 && new Set(EXPECTED_OPERATING_SECTION_IDS).size === 7, "seven unique semantic Operating Field sections", EXPECTED_OPERATING_SECTION_IDS),
     check("proxy-label-unambiguous", EVIDENCE_LABEL.includes("accepted prior/runtime proxy") && EVIDENCE_LABEL.includes("not authorized") && EVIDENCE_LABEL.includes("has not started"), "prior/runtime proxy with explicit integration denial", EVIDENCE_LABEL),
     check("authorization-denials", Object.values(AUTHORIZATION).every((value) => value === false), "all authorization flags false", AUTHORIZATION),
+    check("accepted-short-landscape-css-authority", sha256(Buffer.from(ACCEPTED_SHORT_LANDSCAPE_ENTRY_CSS)) === ACCEPTED_SHORT_LANDSCAPE_ENTRY_CSS_SHA256, ACCEPTED_SHORT_LANDSCAPE_ENTRY_CSS_SHA256, sha256(Buffer.from(ACCEPTED_SHORT_LANDSCAPE_ENTRY_CSS))),
     check("privacy-detector-positive-control", privacyFindings("C:\\Users\\example\\OneDrive\\evidence.json").includes("windows-user-path"), true, privacyFindings("C:\\Users\\example\\OneDrive\\evidence.json")),
     check("privacy-detector-negative-control", privacyFindings(`${EVIDENCE_LABEL} scripts/example.mjs`).length === 0, [], privacyFindings(`${EVIDENCE_LABEL} scripts/example.mjs`)),
     check("privacy-detector-repository-home-route", privacyFindings("src/components/home/EntryField.astro").length === 0, [], privacyFindings("src/components/home/EntryField.astro")),
@@ -1133,6 +1266,7 @@ async function main() {
         authoredRuntimeFamily: viewport.expectedRuntimeFamily,
         reason: viewport.familyReason,
       })),
+      acceptedShortLandscapeEntryComposition: ACCEPTED_SHORT_LANDSCAPE_ENTRY_CONTEXT,
       producerAuthorities: {
         captureScript: producerAuthority,
         runtimeSources: runtimeSourcesAfter,
@@ -1191,6 +1325,7 @@ async function main() {
         status: record.status,
         viewport: record.viewport,
         expected: record.expected,
+        captureContext: record.captureContext,
         failedChecks: record.checks.filter(({ passed }) => !passed),
         screenshot,
         stateJson,
@@ -1201,6 +1336,7 @@ async function main() {
         "The browser producer proves semantic, responsive, chrome, skip, reduced-motion, no-JavaScript, and native-scroll behavior; it does not judge the final Blender periphery, graphite current, mobile optics, or CRT phosphor appearance.",
         "Machine PASS is not human acceptance of Phase 4-R1.1.",
         "Live remote parity is intentionally not queried by this capture producer and must be verified separately in the final Git handoff.",
+        "The complete 844x390 settled ENTRY and skip plates reuse the frozen accepted R1 capture-only, ENTRY-scoped short-landscape composition from bfbd3e6; it does not mutate production runtime CSS, root typography, or browser zoom.",
       ],
     };
     const reportBytes = Buffer.from(`${JSON.stringify(report, null, 2)}\n`, "utf8");

@@ -1285,6 +1285,7 @@ function limitationsReport() {
       "No new bounded Cycles current-motion sample was completed for the graphite-current repair; the package uses intended-exposure Eevee diagnostics, close crops, continuity measurements, and a bloom-disabled sheath diagnostic.",
       "Responsive recordings are explicitly labelled nine-state hard-cut review clips, not a continuous production render; each uses native final-source physical frames, a literal 13-frame black beat, and settled browser ENTRY.",
       "Browser/Chrome evidence is the accepted prior-runtime state-policy proxy. It does not claim final R1.1 refined-media integration.",
+      "The complete 844x390 settled ENTRY and skip plates reuse the frozen accepted R1 capture-only, ENTRY-scoped short-landscape composition from bfbd3e6; they do not alter production runtime CSS, root typography, or browser zoom.",
       "Rejected and superseded CRT frames are excluded; only their aliases, source authority where known, and rejection reasons are disclosed.",
       "The final .blend and raw render sequences remain outside the ZIP; their exact byte/hash authorities are reported.",
     ],
@@ -1345,7 +1346,7 @@ All six values remain null/PENDING in \`MANIFEST.json\`. Review the numbered evi
 
 ## Evidence limits and prohibited work
 
-See \`reports/evidence-limitations.json\`. No full 540-frame Cycles film has started or resumed; no final refined-media integration has started; no final production encode is included; Phase 5 remains unauthorized. Responsive videos are compact hard-cut review records, not production films.
+See \`reports/evidence-limitations.json\`. No full 540-frame Cycles film has started or resumed; no final refined-media integration has started; no final production encode is included; Phase 5 remains unauthorized. Responsive videos are compact hard-cut review records, not production films. The complete 844x390 settled ENTRY and skip plates reuse the frozen accepted R1 capture-only, ENTRY-scoped short-landscape composition and do not modify production runtime CSS or typography.
 `;
 }
 
