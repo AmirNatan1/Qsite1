@@ -1,0 +1,190 @@
+{
+  "schema": "quantum-hub.phase-4-r2.temporal-stability-audit.v1",
+  "auditedAt": "2026-08-26T18:10:00Z",
+  "status": "PASS",
+  "decision": "GO",
+  "sourceBlendSha256": "b0c9c7c1cf5a1642870cf03a36791cc50ec31ac207aeae794fbea83c856a79c0",
+  "ranges": [
+    [150, 180],
+    [360, 390],
+    [450, 480]
+  ],
+  "framesPerFamily": 93,
+  "newFramesPerFamily": 89,
+  "exactPilotReuses": [166, 370, 450, 480],
+  "productionSettings": {
+    "engine": "CYCLES",
+    "device": "OPTIX_GPU",
+    "samples": 192,
+    "adaptiveThreshold": 0.018,
+    "denoiser": "OPENIMAGEDENOISE",
+    "motionBlur": true,
+    "viewTransform": "AgX",
+    "look": "AgX - Medium High Contrast",
+    "exposureStops": 1,
+    "masterFormat": "PNG_RGB_16_BIT"
+  },
+  "machineAudit": {
+    "decodedRgb16FramesPerFamily": 93,
+    "payloadHashParity": "PASS",
+    "byteSizeParity": "PASS",
+    "processReceiptParity": "PASS",
+    "processLogParity": "PASS",
+    "ledgerParity": "PASS",
+    "sourceAndSettingsBinding": "PASS",
+    "corruptFrames": 0,
+    "pendingOrPartialFiles": 0
+  },
+  "families": {
+    "desktop": {
+      "status": "PASS",
+      "resolution": [1920, 1200],
+      "settingsSha256": "df63b497e22a2654516e8bd2f66c0fc1b8314ffaab760de7063e7c9d57c9aa34",
+      "auditedPayloadBytes": 624284670,
+      "processReceipt": {
+        "bytes": 7736,
+        "sha256": "37f5930b573bbd7ba35b0896db250220e2cb7e66f054238696b97f35e6b5dd30"
+      },
+      "processLog": {
+        "bytes": 30062,
+        "sha256": "6b340780960edda317cfc86b5a2e00881a4f22ad69106451dc42a43d685d5304"
+      },
+      "stableQ": {
+        "wholeAdjacentMaePer255": 0.011785,
+        "wholeAdjacentSsimMin": 0.997835,
+        "roiAdjacentMaePer255": 0.051573,
+        "roiAdjacentSsimMin": 0.996583,
+        "rasterRowProfileCorrelationMin": 0.999799
+      },
+      "current": {
+        "magentaMaskPixelsStart": 5874,
+        "magentaMaskPixelsEnd": 12114,
+        "frameCorrelation": 0.978138,
+        "dilatedAdjacentOverlapMin": 0.940577,
+        "dilatedAdjacentOverlapMean": 0.977081,
+        "continuity": "PASS"
+      },
+      "approach": {
+        "apertureRadiusStartPx": 106.16,
+        "apertureRadiusEndPx": 657.98,
+        "strictlyIncreasingSteps": 30,
+        "nonIncreasingSteps": 0,
+        "firstBoundaryFrame": 479
+      },
+      "diagnosticRootBasename": "qsite-phase4r2-desktop-temporal-audit-20260826T1715Z",
+      "objectiveReport": {
+        "basename": "desktop-temporal-objective-metrics.json",
+        "bytes": 15472,
+        "sha256": "2de7c9054f91f407ae8ca3aeaf6b7586afc791bb9cc2027eaa8475a449017d98"
+      }
+    },
+    "portrait": {
+      "status": "PASS",
+      "resolution": [780, 1688],
+      "settingsSha256": "132864c63c625eb850f578d1350295d389175bc489b0815478358482ebf916d7",
+      "auditedPayloadBytes": 340890271,
+      "processReceipt": {
+        "bytes": 7734,
+        "sha256": "b3cb64456b393e3639a79c3089234849f4169afa2648a18d0633b838c137e677"
+      },
+      "processLog": {
+        "bytes": 30246,
+        "sha256": "2bdd37b9e022f7a6ab22f4bc312fcbf2ad086de66d5a1a9f475ef7c98cb62b6b"
+      },
+      "stableQ": {
+        "wholeAdjacentMaePer255": 0.024201,
+        "wholeAdjacentSsimMin": 0.996513,
+        "roiAdjacentMaePer255": 0.042416,
+        "roiAdjacentSsimMin": 0.996056,
+        "rasterRowProfileCorrelationMin": 0.99977
+      },
+      "current": {
+        "visibleMaskPixelsF150": 1953,
+        "visibleMaskPixelsF160": 26,
+        "cameraGeometryOccludedFrames": [161, 168],
+        "visibleMaskPixelsF169": 25,
+        "visibleMaskPixelsF180": 917,
+        "continuity": "PASS_VISUAL_OCCLUSION_AUDIT"
+      },
+      "approach": {
+        "apertureRadiusStartPx": 122.43,
+        "apertureRadiusEndPx": 554.58,
+        "strictlyIncreasingSteps": 30,
+        "nonIncreasingSteps": 0,
+        "firstBoundaryFrame": 476
+      },
+      "diagnosticRootBasename": "qsite-phase4r2-portrait-temporal-audit-20260826T1735Z",
+      "objectiveReport": {
+        "basename": "portrait-temporal-objective-metrics.json",
+        "bytes": 15372,
+        "sha256": "1807e6a1b055f38db199e937a764b942da792186e3f2c1d3bc925084b7b41604"
+      }
+    },
+    "landscape": {
+      "status": "PASS",
+      "resolution": [1688, 780],
+      "settingsSha256": "d705be7dd797934fe8fb1cbf6a7116a3700fa88f1f23ae8d9b76529d004c6dde",
+      "auditedPayloadBytes": 375509341,
+      "processReceipt": {
+        "bytes": 7750,
+        "sha256": "8b2b522073eadeac461fe4348cd2517afea1b64a90ae284cba2b7ea53aaf66aa"
+      },
+      "processLog": {
+        "bytes": 30439,
+        "sha256": "811fae9cd8c4c07daddf9d80049ce11e117c11ada307d06c72f6f06f46830a7f"
+      },
+      "stableQ": {
+        "wholeAdjacentMaePer255": 0.012154,
+        "wholeAdjacentSsimMin": 0.998116,
+        "roiAdjacentMaePer255": 0.042496,
+        "roiAdjacentSsimMin": 0.997146,
+        "roiP99DifferenceMaxPer255": 2.7874,
+        "rasterRowProfileCorrelationMin": 0.999804
+      },
+      "current": {
+        "magentaMaskPixelsStart": 3254,
+        "magentaMaskPixelsEnd": 5432,
+        "frameCorrelation": 0.889952,
+        "dilatedAdjacentOverlapMin": 0.819231,
+        "dilatedAdjacentOverlapMean": 0.94906,
+        "continuity": "PASS"
+      },
+      "approach": {
+        "apertureRadiusStartPx": 86.17,
+        "apertureRadiusEndPx": 502.12,
+        "strictlyIncreasingSteps": 30,
+        "nonIncreasingSteps": 0,
+        "firstBoundaryFrame": 477
+      },
+      "diagnosticRootBasename": "qsite-phase4r2-landscape-temporal-audit-20260826T1750Z",
+      "objectiveReport": {
+        "basename": "landscape-temporal-objective-metrics.json",
+        "bytes": 10312,
+        "sha256": "57677370619f6b439e682192f98df85741139c4d397044042c531830350531ee"
+      }
+    }
+  },
+  "nativeResolutionVisualAudit": {
+    "denoiserShimmerOrCrawling": "PASS",
+    "wallMaterialFlicker": "PASS",
+    "phosphorBeyondAuthoredBehavior": "PASS",
+    "rasterAliasingOrMoire": "PASS",
+    "cableCurrentDiscontinuity": "PASS",
+    "changingBlackLevel": "PASS",
+    "glassNoise": "PASS",
+    "approachContinuity": "PASS"
+  },
+  "limitations": [
+    "Objective measurements use display-referred 8-bit RGB decoded from independently validated RGB16 masters and do not quantify subtle linear-light 16-bit noise.",
+    "Moving-range MAE and SSIM include intended camera and object motion; the static F360-F390 hold is the primary flicker and denoiser measurement.",
+    "Portrait automated overlap is invalid across the authored F161-F168 camera/geometry occlusion and is superseded by frame-by-frame visual inspection.",
+    "CRF10 YUV444 diagnostic clips are not production encode authority.",
+    "This gate covers bounded 31-frame samples and authorizes full master rendering; it is not a full-master, encode, runtime, or human acceptance decision."
+  ],
+  "authorization": {
+    "proceedToFullPhysicalMasterRendering": true,
+    "physicalCyclesFrameMaximum": 500,
+    "mergeMain": false,
+    "phase5": false
+  }
+}
