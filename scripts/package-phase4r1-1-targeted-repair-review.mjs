@@ -823,17 +823,90 @@ async function resolveMobile(root) {
   if (diagnostic.frame501Through540RenderedOrEncoded !== false || diagnostic.complete540FrameCyclesFilmStarted !== false || diagnostic.finalRefinedMediaIntegrationStarted !== false) {
     throw new Error("mobile diagnostic crossed a prohibited boundary");
   }
-  const records = await authenticateRecords(root, collectFileRecords({ artifacts: diagnostic.artifacts }), "mobile diagnostic artifacts");
   const finalizationPath = await findSingle(root, /(?:^|\/)mobile-animatic-finalization\.json$/i, "mobile animatic finalization");
   const finalization = await readJson(finalizationPath, "mobile animatic finalization");
+  if (finalization.schema !== "quantum-hub.phase-4-r1-1.mobile-physical-animatic-finalization.v1" || finalization.status !== "IN_PROGRESS") {
+    throw new Error("mobile animatic finalization schema/status differs from the bounded orbit receipt");
+  }
   assertAuthorizationDenied(finalization.authorization, "mobile animatic finalization");
+  const modeKeys = Object.keys(finalization.modes ?? {}).sort(lexicalCompare);
+  if (JSON.stringify(modeKeys) !== JSON.stringify(["orbit-f001-f285"])) throw new Error("mobile finalization mode inventory differs");
   const orbit = finalization.modes?.["orbit-f001-f285"];
-  if (orbit?.status !== "PASS" || orbit?.encodedFrameCount !== 285 || orbit?.frameRange?.join(",") !== "1,285") {
+  assertAuthorizationDenied(orbit?.authorization, "mobile orbit finalization");
+  const expectedCheckpointSource = { relativePath: "artifacts/original/phase-4r1-1-periphery-current-mobile-crt/source/quantum-signal-television-phase4r1-1-periphery-current-mobile-crt.blend", byteSize: 3599561, sha256: "369719d6766bffbfa14c760c1053f0291ae2ffce17fda30fe30de37a2404ac9a" };
+  const expectedCheckpointBuild = { relativePath: "artifacts/original/phase-4r1-1-periphery-current-mobile-crt/source/phase4r1-1-source-build.json", byteSize: 2200037, sha256: "fe2fdd4a127957bfa54bbaeec0333dff998607f3f9008a7f1ae5215601a8b58f" };
+  const expectedProducer = { relativePath: "artifacts/original/phase-4r1-1-periphery-current-mobile-crt/source/render_phase4r1_1_mobile_optics_diagnostic.py", byteSize: 123412, sha256: "e0e7dfd868b21aa1821f7737f4a70194751f572531cad564ee0836daf66fbe24" };
+  const exactAuthority = (record, expected, label) => {
+    if (JSON.stringify(recordFields(record, label)) !== JSON.stringify(expected)) throw new Error(`${label} differs from frozen checkpoint authority`);
+  };
+  exactAuthority(diagnostic.sourceAuthorities?.files?.derivative, expectedCheckpointSource, "mobile diagnostic source");
+  exactAuthority(diagnostic.sourceAuthorities?.files?.sourceBuild, expectedCheckpointBuild, "mobile diagnostic source build");
+  exactAuthority(diagnostic.sourceAuthorities?.files?.producer, expectedProducer, "mobile diagnostic producer");
+  exactAuthority(finalization.source, expectedCheckpointSource, "mobile finalization source");
+  exactAuthority(finalization.sourceBuild, expectedCheckpointBuild, "mobile finalization source build");
+  exactAuthority(finalization.producer, expectedProducer, "mobile finalization producer");
+  exactAuthority(orbit?.source, expectedCheckpointSource, "mobile orbit source");
+  exactAuthority(orbit?.sourceBuild, expectedCheckpointBuild, "mobile orbit source build");
+  exactAuthority(orbit?.producer, expectedProducer, "mobile orbit producer");
+  const exactRange = (value, expected) => Array.isArray(value) && JSON.stringify(value) === JSON.stringify(expected);
+  if (orbit?.status !== "PASS" || orbit?.encodedFrameCount !== 285 || !exactRange(orbit?.frameRange, [1, 285])
+    || !exactRange(finalization.physicalFrameRange, [1, 500]) || !exactRange(orbit?.physicalFrameRange, [1, 500])
+    || !exactRange(finalization.forbiddenFrameRange, [501, 540]) || !exactRange(orbit?.forbiddenFrameRange, [501, 540])
+    || finalization.complete540FrameCyclesFilmStarted !== false || finalization.finalRefinedMediaIntegrationStarted !== false
+    || finalization.frame501Through540Encoded !== false || finalization.phase5Authorized !== false
+    || orbit.complete540FrameCyclesFilmStarted !== false || orbit.finalRefinedMediaIntegrationStarted !== false
+    || orbit.frame501Through540Encoded !== false || orbit.phase5Authorized !== false
+    || orbit.reviewAnimaticOnly !== true || orbit.finalRefinedMedia !== false
+    || orbit.path !== "animatic/mobile-390x844-orbit-F001-F285.mp4") {
     throw new Error("mobile orbit F001-F285 finalization is incomplete");
   }
+  const expectedOrbitFile = { relativePath: "animatic/mobile-390x844-orbit-F001-F285.mp4", byteSize: 504437, sha256: "f63b4a658131e05150eca52dd5d0d58b3986b8f00c78c723b8d896046db05b2b" };
+  exactAuthority({ path: orbit.path, ...orbit.file }, expectedOrbitFile, "mobile orbit file");
+  if (!Array.isArray(diagnostic.artifacts) || diagnostic.artifacts.length !== 21) throw new Error("mobile diagnostic must contain exactly 21 artifact declarations");
+  const diagnosticDeclarations = collectFileRecords({ artifacts: diagnostic.artifacts });
+  const diagnosticDeclarationPaths = diagnosticDeclarations.map((record, index) => recordFields(record, `mobile diagnostic declaration[${index}]`).relativePath);
+  if (diagnosticDeclarations.length !== 21) throw new Error("mobile diagnostic declaration collection is not exactly 21 records");
+  const canonicalDeclarationPaths = await Promise.all(diagnosticDeclarationPaths.map(async (relativePath, index) => {
+    const candidate = path.resolve(root, ...relativePath.split("/"));
+    if (!isWithin(root, candidate) || !(await pathExists(candidate))) throw new Error(`mobile diagnostic declaration[${index}] is missing or escapes its root`);
+    return normalizedPath(await realpath(candidate));
+  }));
+  if (new Set(canonicalDeclarationPaths).size !== 21) throw new Error("mobile diagnostic declarations do not resolve to exactly 21 unique files");
+  const frameManifestPath = "animatic/mobile-animatic-frame-manifest.json";
+  const frameManifestIndexes = diagnosticDeclarationPaths.map((relativePath, index) => relativePath === frameManifestPath ? index : -1).filter((index) => index >= 0);
+  if (frameManifestIndexes.length !== 1) throw new Error("mobile diagnostic must contain exactly one frame-manifest declaration");
+  const [diagnosticFrameManifestIndex] = frameManifestIndexes;
+  const diagnosticFrameManifest = recordFields(diagnosticDeclarations[diagnosticFrameManifestIndex], "mobile diagnostic frame-manifest declaration");
+  const topFinalFrameManifest = recordFields(finalization.sourceFramesManifest, "mobile top-level finalization frame-manifest declaration");
+  const finalFrameManifest = recordFields(orbit.sourceFramesManifest, "mobile finalization frame-manifest declaration");
+  const expectedPreFinal = { relativePath: frameManifestPath, byteSize: 18720, sha256: "2a4fb5b5a7700388cb28c812d8fa91cd1fd74a546868f74d14d1936b68a93194" };
+  const expectedFinal = { relativePath: frameManifestPath, byteSize: 206089, sha256: "c2f2fb545623dd4790fa48ec2f13277e1e9c336422e6ad7049ec9ab42c361db4" };
+  if (JSON.stringify(diagnosticFrameManifest) !== JSON.stringify(expectedPreFinal)
+    || JSON.stringify(topFinalFrameManifest) !== JSON.stringify(expectedFinal)
+    || JSON.stringify(finalFrameManifest) !== JSON.stringify(expectedFinal)) {
+    throw new Error("mobile frame-manifest supersession differs from the exact bounded producer finalization");
+  }
+  const authenticatedDiagnosticRecords = await authenticateRecords(
+    root,
+    diagnosticDeclarations.filter((_, index) => index !== diagnosticFrameManifestIndex),
+    "mobile diagnostic artifacts",
+  );
+  const finalFrameManifestRecord = await authenticateRecord(root, orbit.sourceFramesManifest, "mobile finalized frame manifest");
+  const records = [...authenticatedDiagnosticRecords];
+  records.splice(diagnosticFrameManifestIndex, 0, finalFrameManifestRecord);
+  if (records.length !== 21) throw new Error("mobile authenticated artifact count must remain exactly 21 after bounded frame-manifest supersession");
+  if (new Set(records.map((record) => normalizedPath(record.filename))).size !== 21) throw new Error("mobile authenticated artifact realpaths are not exactly unique");
+  const frameManifestSupersession = {
+    status: "PASS",
+    applied: true,
+    reason: "The diagnostic recorded the pre-render frame-manifest header; the later orbit finalization receipt authenticates the completed 500-frame manifest at the same path.",
+    diagnosticPreFinalDeclaration: diagnosticFrameManifest,
+    finalizationDeclaration: finalFrameManifest,
+    allOtherDiagnosticArtifactsAuthenticatedExactly: true,
+  };
   const orbitRecord = await authenticateRecord(root, { path: orbit.path, ...orbit.file }, "mobile orbit video");
   for (const frame of MOBILE_MILESTONES) byRelative(records, `animatic/frames/F${String(frame).padStart(3, "0")}.png`, "mobile milestone");
-  return { root, diagnosticPath, diagnostic, records, finalizationPath, finalization, orbitRecord };
+  return { root, diagnosticPath, diagnostic, records, finalizationPath, finalization, orbitRecord, frameManifestRecord: finalFrameManifestRecord, frameManifestSupersession };
 }
 
 async function resolveR1Reference(root) {
@@ -1270,6 +1343,8 @@ function compactMobileReport(mobile, finalSourceSha) {
     interpretation: "distant establishment -> continuously approaching orbit -> frontal entry; no optical pull-away",
     completeForwardPhysicalAuthority: "03-mobile-camera-optics/mobile-390x844-physical-F001-F500.mp4",
     focusedOrbitAuthority: "03-mobile-camera-optics/mobile-390x844-orbit-F001-F285.mp4",
+    animaticFrameManifestAuthority: recordFields(mobile.frameManifestRecord, "mobile finalized frame-manifest authority"),
+    animaticFrameManifestSupersession: mobile.frameManifestSupersession,
     humanReviewDecision: "PENDING",
     authorization: AUTHORIZATION_DENIALS,
   };
@@ -1286,6 +1361,7 @@ function limitationsReport() {
       "Responsive recordings are explicitly labelled nine-state hard-cut review clips, not a continuous production render; each uses native final-source physical frames, a literal 13-frame black beat, and settled browser ENTRY.",
       "Browser/Chrome evidence is the accepted prior-runtime state-policy proxy. It does not claim final R1.1 refined-media integration.",
       "The complete 844x390 settled ENTRY and skip plates reuse the frozen accepted R1 capture-only, ENTRY-scoped short-landscape composition from bfbd3e6; they do not alter production runtime CSS, root typography, or browser zoom.",
+      "The mobile diagnostic's pre-render frame-manifest declaration is superseded only by the later authenticated orbit-finalization receipt for the completed 500-frame manifest; the other 20 diagnostic artifacts authenticate exactly.",
       "Rejected and superseded CRT frames are excluded; only their aliases, source authority where known, and rejection reasons are disclosed.",
       "The final .blend and raw render sequences remain outside the ZIP; their exact byte/hash authorities are reported.",
     ],
