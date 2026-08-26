@@ -22,6 +22,8 @@
     "qa:evidence": "npm run qa:evidence:phase4",
     "qa:evidence:phase2b": "node scripts/capture-phase2b-evidence.mjs",
     "qa:evidence:phase4": "node scripts/capture-phase4-evidence.mjs --url http://127.0.0.1:4322/ --output artifacts/evidence/phase-4/review",
+    "phase4r2:preflight": "node scripts/phase4r2-production.mjs preflight",
+    "phase4r2:status": "node scripts/phase4r2-production.mjs status",
     "check:phase0-evidence": "node --test tests/phase0.test.mjs && node scripts/verify-creative-assets.mjs && node scripts/verify-phase0-3d-repair.mjs && node scripts/verify-phase0-3d-repair-v2-assets.mjs && node scripts/verify-phase0-3d-repair-v2-layout.mjs && node scripts/verify-phase0-3d-repair-v3-layout.mjs && node scripts/verify-phase0-3d-repair-v3-assets.mjs && node scripts/verify-phase0-4r-crt-layout.mjs && node scripts/verify-phase0-4r-crt-assets.mjs --final",
     "capture:phase03": "node scripts/capture-phase03-browser-matrix.mjs",
     "capture:phase04": "node scripts/capture-phase04-browser-matrix.mjs",
