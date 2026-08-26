@@ -375,8 +375,10 @@ function observeNetwork(page) {
   };
 }
 
-async function settle(page) {
-  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+async function settle(page, { animationFrames = true } = {}) {
+  if (animationFrames) {
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  }
   await page.waitForTimeout(50);
 }
 
@@ -671,8 +673,8 @@ function artifactRecord(relativePath, bytes, details) {
   };
 }
 
-async function captureState({ page, outputRoot, finalHead, id, group, viewport, expected, checks }) {
-  await settle(page);
+async function captureState({ page, outputRoot, finalHead, id, group, viewport, expected, checks, animationFrames = true }) {
+  await settle(page, { animationFrames });
   const measured = await readHomeState(page);
   const raw = await page.screenshot({ type: "png", fullPage: false, animations: "disabled", caret: "hide", scale: "css" });
   const sanitized = await sanitizePng(raw, viewport);
@@ -932,6 +934,7 @@ async function captureNoJavaScript(browser, options, viewport) {
       id: "no-javascript-844x390",
       group: "fallback-no-javascript",
       viewport,
+      animationFrames: false,
       expected: { state: "SSR semantic Home remains visible and usable with JavaScript disabled" },
       checks: (measured) => [
         ...semanticChecks(measured),
