@@ -220,15 +220,10 @@ function processIsAlive(pid) {
   }
 }
 
-function matchingBlenderProcesses(lockToken, lockFile) {
+function queryWindowsProcesses(query, label) {
   if (process.platform !== "win32") {
-    throw new Error("Cannot prove an unrecorded Blender child absent on this operating system");
+    throw new Error("Cannot prove " + label + " absent on this operating system");
   }
-  const query = [
-    "Get-CimInstance Win32_Process -Filter \"Name='blender.exe'\"",
-    "| Select-Object ProcessId,CommandLine",
-    "| ConvertTo-Json -Compress",
-  ].join(" ");
   const result = spawnSync(
     "powershell.exe",
     ["-NoProfile", "-NonInteractive", "-Command", query],
@@ -236,7 +231,7 @@ function matchingBlenderProcesses(lockToken, lockFile) {
   );
   if (result.error || result.status !== 0) {
     throw new Error(
-      "Could not inspect Blender command lines while proving a production lock stale: "
+      "Could not inspect " + label + " while proving a production lock stale: "
       + String(result.error?.message ?? result.stderr ?? result.status),
     );
   }
@@ -246,15 +241,34 @@ function matchingBlenderProcesses(lockToken, lockFile) {
   try {
     parsed = JSON.parse(output);
   } catch (error) {
-    throw new Error("Blender process inspection returned invalid JSON", { cause: error });
+    throw new Error(label + " inspection returned invalid JSON", { cause: error });
   }
-  const records = Array.isArray(parsed) ? parsed : [parsed];
+  return Array.isArray(parsed) ? parsed : [parsed];
+}
+
+function matchingBlenderProcesses(lockToken, lockFile) {
+  const query = [
+    "Get-CimInstance Win32_Process -Filter \"Name='blender.exe'\"",
+    "| Select-Object ProcessId,CommandLine",
+    "| ConvertTo-Json -Compress",
+  ].join(" ");
+  const records = queryWindowsProcesses(query, "Blender command lines");
   const tokenNeedle = String(lockToken).toLowerCase();
   const pathNeedle = String(lockFile).toLowerCase();
   return records.filter((record) => {
     const commandLine = String(record?.CommandLine ?? "").toLowerCase();
     return commandLine.includes(tokenNeedle) && commandLine.includes(pathNeedle);
   });
+}
+
+function runningMediaProcesses() {
+  const query = [
+    "Get-CimInstance Win32_Process",
+    "| Where-Object { $_.Name -in @('ffmpeg.exe','ffprobe.exe') }",
+    "| Select-Object ProcessId,Name,CommandLine",
+    "| ConvertTo-Json -Compress",
+  ].join(" ");
+  return queryWindowsProcesses(query, "FFmpeg/FFprobe process state");
 }
 
 async function acquireProductionLock(config, command, options) {
@@ -323,6 +337,20 @@ async function acquireProductionLock(config, command, options) {
           "Production lock owner is gone but a matching Blender child is still running: "
           + unrecordedChildren.map((record) => record.ProcessId).join(","),
         );
+      }
+      const mediaLock = String(existing.command ?? "").startsWith("media:")
+        || new Set(["SPAWNING", "RUNNING"]).has(existing.childState);
+      if (mediaLock) {
+        const firstMediaScan = runningMediaProcesses();
+        await delay(2_000);
+        const secondMediaScan = runningMediaProcesses();
+        const mediaChildren = [...firstMediaScan, ...secondMediaScan];
+        if (mediaChildren.length) {
+          throw new Error(
+            "Media production lock owner is gone but FFmpeg/FFprobe is still running: "
+            + [...new Set(mediaChildren.map((record) => record.ProcessId))].join(","),
+          );
+        }
       }
       const quarantineDirectory = path.join(config.outputRoot, "quarantine", "locks");
       await mkdir(quarantineDirectory, { recursive: true });

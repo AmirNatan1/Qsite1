@@ -1,0 +1,118 @@
+{
+  "schema": "quantum-hub.phase-4-r2.final-resolution-pilot-audit.v1",
+  "auditedAt": "2026-08-26T16:24:19.7189857Z",
+  "status": "PASS",
+  "sourceBlendSha256": "b0c9c7c1cf5a1642870cf03a36791cc50ec31ac207aeae794fbea83c856a79c0",
+  "immutableBackupSha256": "b0c9c7c1cf5a1642870cf03a36791cc50ec31ac207aeae794fbea83c856a79c0",
+  "frames": [
+    1,
+    76,
+    106,
+    166,
+    225,
+    285,
+    320,
+    356,
+    370,
+    405,
+    450,
+    480,
+    500
+  ],
+  "productionSettings": {
+    "engine": "CYCLES",
+    "device": "OPTIX_GPU",
+    "samples": 192,
+    "adaptiveThreshold": 0.018,
+    "denoiser": "OPENIMAGEDENOISE",
+    "motionBlur": true,
+    "viewTransform": "AgX",
+    "look": "AgX - Medium High Contrast",
+    "exposureStops": 1,
+    "masterFormat": "PNG_RGB_16_BIT"
+  },
+  "families": {
+    "desktop": {
+      "status": "PASS",
+      "camera": "Phase4R1_Camera_Desktop",
+      "cableCollection": "PHASE4R1V2_CABLE_DESKTOP",
+      "resolution": [
+        1920,
+        1200
+      ],
+      "settingsSha256": "df63b497e22a2654516e8bd2f66c0fc1b8314ffaab760de7063e7c9d57c9aa34",
+      "pilotFrameCount": 13,
+      "pilotBytes": 82398033,
+      "pilotSequenceSha256": "367567509b3aeb22aa68696b513a86086619243d890221a7cb5f0742bf964539",
+      "cumulativeRenderSeconds": 279.701375,
+      "processLogSha256": "119973c0a8088feae06a3e6c53fe2b627c1878c5d34ac9450bec3cd2b3fb433b",
+      "processReceiptSha256": "7ee4a9715df8fe7dd5dd1fa24330f973de98df74ea808954dfc346a99bebd8a0"
+    },
+    "portrait": {
+      "status": "PASS",
+      "camera": "Phase4R1_Camera_Mobile",
+      "cableCollection": "PHASE4R1V2_CABLE_MOBILE",
+      "resolution": [
+        780,
+        1688
+      ],
+      "settingsSha256": "132864c63c625eb850f578d1350295d389175bc489b0815478358482ebf916d7",
+      "pilotFrameCount": 13,
+      "pilotBytes": 44598914,
+      "pilotSequenceSha256": "ddfa1a450ecfd141e890c68027fdd4562111553713cb16372d0adb4ef5d8c91f",
+      "cumulativeRenderSeconds": 158.636701,
+      "processLogSha256": "13384d89dfeec1e648d30ea4d0097115f579fca7e2415bcece4532e00b257a99",
+      "processReceiptSha256": "b70309035477e3a2e8d05fd3f746d518c0a99fd7a80d396458fa456c64d5301f"
+    },
+    "landscape": {
+      "status": "PASS",
+      "camera": "Phase4R1_Camera_Landscape",
+      "cableCollection": "PHASE4R1V2_CABLE_LANDSCAPE",
+      "resolution": [
+        1688,
+        780
+      ],
+      "settingsSha256": "d705be7dd797934fe8fb1cbf6a7116a3700fa88f1f23ae8d9b76529d004c6dde",
+      "pilotFrameCount": 13,
+      "pilotBytes": 49362845,
+      "pilotSequenceSha256": "a5e1712a00b8cef371bbdd39bcbde47d0e7c6ee5e67c018884bc9b3c44eafe7b",
+      "cumulativeRenderSeconds": 158.039688,
+      "processLogSha256": "4ec8679c61e40b15ed6baccbc10a16cc4ccc7c4a036aa20fad611f7a41666401",
+      "processReceiptSha256": "d6f359885593a84c6516f832f83c9f067354b59e2817cd7eb767e9371109bc34"
+    }
+  },
+  "machineAudit": {
+    "decodedFrameCount": 39,
+    "nonInterlacedRgb16": "PASS",
+    "frameReceiptHashParity": "PASS",
+    "ledgerParity": "PASS",
+    "sourceAndSettingsBinding": "PASS",
+    "corruptFrames": 0,
+    "activeChunks": 0
+  },
+  "nativeResolutionVisualAudit": {
+    "residualNoiseOrFireflies": "PASS",
+    "denoiserSmearing": "PASS",
+    "gradientBandingOrClipping": "PASS",
+    "rasterAliasingOrMoire": "PASS",
+    "cameraFraming": "PASS",
+    "environmentLegibility": "PASS",
+    "graphiteSheathAndCurrent": "PASS",
+    "qPhosphorGlassAndRaster": "PASS",
+    "f480Approach": "PASS",
+    "f500BlackThreshold": "PASS"
+  },
+  "decision": {
+    "desktop": "GO",
+    "portrait": "GO",
+    "landscape": "GO",
+    "settingsSufficientForTemporalAudit": true,
+    "sourceChangeRequired": false
+  },
+  "limitation": "Sparse pilots cannot prove frame-to-frame flicker, denoiser shimmer, or moving-front continuity; the bounded contiguous temporal audit remains required before mass rendering.",
+  "authorization": {
+    "physicalCyclesFrameMaximum": 500,
+    "mergeMain": false,
+    "phase5": false
+  }
+}
