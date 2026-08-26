@@ -31,7 +31,7 @@ CENTRAL_ZONE_CENTRE_XY = (0.65, 0.0)
 CENTRAL_ZONE_RADIUS_METERS = 6.1
 FLOAT_TOLERANCE = 2e-6
 
-STAGE_ORDER = ("periphery", "cable", "mobile")
+STAGE_ORDER = ("periphery", "cable", "mobile", "crt")
 
 MOBILE_CAMERA_OBJECT = "Phase4R1_Camera_Mobile"
 MOBILE_CAMERA_DATA = "Phase4R1_Camera_Mobile_Data"
@@ -74,6 +74,125 @@ MOBILE_R1_1_LENS_KEYS = (
 )
 MOBILE_CHANGED_LENS_KEY_FRAMES = (1, 45, 46, 76, 106, 165, 225, 255)
 MOBILE_SCALE_MILESTONE_FRAMES = (1, 46, 76, 106, 135, 165, 195, 225, 255, 285, 356, 405, 450)
+
+CRT_Q_PLANE_OBJECT = "Phase4R1V2_ExactQuantumQ_PicturePlane"
+CRT_Q_PHOSPHOR_MATERIAL = "Phase4R1V2_ExactQuantumQ_Phosphor"
+CRT_Q_PLANE_ACTION = "Phase4R1V2_ExactQuantumQ_PicturePlaneAction"
+CRT_GLASS_OBJECT = "CRT_ConvexThickSmokedGlass"
+CRT_GLASS_MATERIAL = "Phase3_AnimatedSmokedGlass"
+CRT_GLASS_ACTION = "Phase3_AnimatedSmokedGlassAction"
+CRT_EXPECTED_Q_MATERIAL_USERS = 1
+CRT_EXPECTED_GLASS_MATERIAL_USERS = 1
+CRT_MATERIAL_AUTHORITY = {
+    "qPhosphor": {
+        "name": CRT_Q_PHOSPHOR_MATERIAL,
+        "object": CRT_Q_PLANE_OBJECT,
+        "baseEmissionStrength": 3.2,
+        "scanBands": {
+            "dimensions": "2D_UV",
+            "waveType": "BANDS",
+            "bandsDirection": "Y",
+            "scale": 15.0796447372,
+            "actualBandCount": 48,
+            "actualBandFormula": "20 * scale / (2 * pi)",
+            "minimumMultiplier": 0.92,
+            "maximumMultiplier": 1.0,
+        },
+        "scanContrastDistanceFade": {
+            "nearMeters": 0.30,
+            "nearContrastMultiplier": 0.28,
+            "farMeters": 2.40,
+            "farContrastMultiplier": 1.0,
+        },
+        "staticPhosphorVariation": {
+            "dimensions": "2D",
+            "scale": 7.0,
+            "detail": 2.0,
+            "roughness": 0.45,
+            "minimumMultiplier": 0.985,
+            "maximumMultiplier": 1.008,
+        },
+        "emissionCalibration": 0.43,
+        "energySplit": {
+            "core": 0.74,
+            "scatter": 0.26,
+        },
+        "scatterRing": {
+            "radiusUv": 0.0065,
+            "diagonalOffsetUv": 0.0045961941,
+            "tapCount": 8,
+            "tapAverageMultiplier": 0.125,
+            "interpolation": "Linear",
+            "extension": "CLIP",
+            "offsets": (
+                ("E", 0.0065, 0.0),
+                ("W", -0.0065, 0.0),
+                ("N", 0.0, 0.0065),
+                ("S", 0.0, -0.0065),
+                ("NE", 0.0045961941, 0.0045961941),
+                ("NW", -0.0045961941, 0.0045961941),
+                ("SE", 0.0045961941, -0.0045961941),
+                ("SW", -0.0045961941, -0.0045961941),
+            ),
+        },
+        "acceptedImageSamplerCount": 1,
+        "repairedImageSamplerCount": 9,
+        "preserveImageVectorInput": True,
+        "preserveTextureColorAndAlphaBranches": True,
+        "preserveObjectAlphaGate": True,
+    },
+    "glass": {
+        "name": CRT_GLASS_MATERIAL,
+        "object": CRT_GLASS_OBJECT,
+        "roughTransmissionMix": 0.14,
+        "roughTransmission": {
+            "roughness": 0.12,
+            "transmissionWeight": 1.0,
+            "ior": 1.52,
+            "specularIorLevel": 0.18,
+        },
+        "darkReflection": {
+            "roughness": 0.18,
+            "transmissionWeight": 0.0,
+            "ior": 1.52,
+            "specularIorLevel": 0.32,
+        },
+        "fresnelIor": 1.52,
+        "fresnelMixScale": 0.14,
+        "coatWeight": 0.0,
+        "volumeShader": False,
+        "bumpOrDisplacement": False,
+        "preserveInheritedAnimatedPrincipled": True,
+    },
+}
+CRT_CYCLES_EVIDENCE_FRAMES = {
+    "firstReadableQ": 356,
+    "stableQ": 370,
+    "lateQHold": 405,
+    "beginningOfPush": 406,
+    "closePhysicalGlass": 480,
+}
+CRT_STABLE_Q_CYCLES_AUTHORITY = {
+    "frame": 370,
+    "resolution": (1440, 900),
+    "samples": 192,
+    "engine": "CYCLES",
+}
+CRT_Q_MOTION_AUTHORITY = {
+    "frameStart": 345,
+    "frameEnd": 464,
+    "frameCount": 120,
+    "fps": 30,
+    "durationSeconds": 4.0,
+    "resolution": (960, 600),
+    "samples": 96,
+    "engine": "CYCLES",
+    "codec": "H264",
+    "pixelFormat": "yuv420p",
+    "audio": False,
+}
+CRT_MAXIMUM_AUTHORIZED_EVIDENCE_FRAME = 500
+CRT_FORBIDDEN_PRODUCTION_FRAME_RANGE = (501, 540)
 
 CABLE_CONTACT_PROFILE_OBJECT = "Phase4R1V2_WeightedSheathContactProfile"
 CABLE_SHEATH_MATERIAL = "Phase4R1V2_HeavyGraphiteCable"

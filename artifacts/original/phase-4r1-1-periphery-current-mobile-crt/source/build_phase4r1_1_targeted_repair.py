@@ -2,9 +2,10 @@
 
 Each requested stage is cumulative: Checkpoint 2 deterministically reapplies
 the accepted peripheral-authority repair before the material-only cable repair,
-and Checkpoint 3 then changes only the accepted mobile lens-key values. Every
-run starts from the exact accepted R1 source, never from the recovered pre-R1
-blend or an earlier derivative.
+Checkpoint 3 then changes only the accepted mobile lens-key values, and
+Checkpoint 4 changes only the two accepted CRT phosphor/glass material graphs.
+Every run starts from the exact accepted R1 source, never from the recovered
+pre-R1 blend or an earlier derivative.
 """
 
 from __future__ import annotations
@@ -1177,6 +1178,1075 @@ def enabled_input(node: bpy.types.Node, name: str):
     return sockets[0]
 
 
+def required_node(material: bpy.types.Material, name: str, bl_idname: str) -> bpy.types.Node:
+    if not material.use_nodes or material.node_tree is None:
+        raise RuntimeError(f"material lacks a writable node tree: {material.name}")
+    node = material.node_tree.nodes.get(name)
+    if node is None or node.bl_idname != bl_idname:
+        observed = None if node is None else node.bl_idname
+        raise RuntimeError(
+            f"material node authority mismatch for {material.name}.{name}: "
+            f"expected {bl_idname}, got {observed}"
+        )
+    return node
+
+
+def required_input(node: bpy.types.Node, name: str):
+    sockets = [socket for socket in node.inputs if socket.name == name and socket.enabled]
+    if len(sockets) != 1:
+        raise RuntimeError(f"expected one enabled {node.name}.{name} input, got {len(sockets)}")
+    return sockets[0]
+
+
+def required_output(node: bpy.types.Node, name: str):
+    sockets = [socket for socket in node.outputs if socket.name == name and socket.enabled]
+    if len(sockets) != 1:
+        raise RuntimeError(f"expected one enabled {node.name}.{name} output, got {len(sockets)}")
+    return sockets[0]
+
+
+def rna_pointer(value: Any) -> int:
+    pointer = getattr(value, "as_pointer", None)
+    if pointer is None:
+        raise RuntimeError(f"RNA authority lacks as_pointer(): {type(value).__name__}")
+    return int(pointer())
+
+
+def required_link(
+    tree: bpy.types.NodeTree,
+    from_socket: Any,
+    to_socket: Any,
+    label: str,
+):
+    from_pointer = rna_pointer(from_socket)
+    to_pointer = rna_pointer(to_socket)
+    matches = [
+        link
+        for link in tree.links
+        if rna_pointer(link.from_socket) == from_pointer and rna_pointer(link.to_socket) == to_pointer
+    ]
+    if len(matches) != 1:
+        raise RuntimeError(f"expected one exact {label} link, got {len(matches)}")
+    return matches[0]
+
+
+def has_exact_link(tree: bpy.types.NodeTree, from_socket: Any, to_socket: Any) -> bool:
+    from_pointer = rna_pointer(from_socket)
+    to_pointer = rna_pointer(to_socket)
+    return any(
+        rna_pointer(link.from_socket) == from_pointer and rna_pointer(link.to_socket) == to_pointer
+        for link in tree.links
+    )
+
+
+def require_float(actual: float, expected: float, label: str) -> None:
+    if abs(float(actual) - float(expected)) > cfg.FLOAT_TOLERANCE:
+        raise RuntimeError(f"{label} mismatch: expected {expected}, got {actual}")
+
+
+def node_authority_record(material: bpy.types.Material, node_name: str) -> dict[str, Any]:
+    material_record = material_graph_record(material)
+    matches = [node for node in material_record["nodes"] if node["name"] == node_name]
+    if len(matches) != 1:
+        raise RuntimeError(f"expected one material-node record for {material.name}.{node_name}")
+    return matches[0]
+
+
+def data_block_inventory() -> dict[str, dict[str, Any]]:
+    inventories = {
+        "actions": bpy.data.actions,
+        "cameras": bpy.data.cameras,
+        "collections": bpy.data.collections,
+        "curves": bpy.data.curves,
+        "images": bpy.data.images,
+        "lights": bpy.data.lights,
+        "materials": bpy.data.materials,
+        "meshes": bpy.data.meshes,
+        "nodeGroups": bpy.data.node_groups,
+        "objects": bpy.data.objects,
+    }
+    record: dict[str, dict[str, Any]] = {}
+    for key, values in inventories.items():
+        names = sorted(value.name for value in values)
+        record[key] = {
+            "count": len(names),
+            "namesSha256": canonical_hash(names),
+        }
+    return record
+
+
+def global_object_authority_hash() -> str:
+    records = [object_signature(obj) for obj in sorted(bpy.data.objects, key=lambda item: item.name)]
+    return canonical_hash(records)
+
+
+def validate_crt_material_users() -> dict[str, list[dict[str, Any]]]:
+    q_material = bpy.data.materials.get(cfg.CRT_Q_PHOSPHOR_MATERIAL)
+    glass_material = bpy.data.materials.get(cfg.CRT_GLASS_MATERIAL)
+    if q_material is None or glass_material is None:
+        raise RuntimeError("accepted CRT phosphor or glass material is missing")
+    q_users = material_user_inventory(cfg.CRT_Q_PHOSPHOR_MATERIAL)
+    glass_users = material_user_inventory(cfg.CRT_GLASS_MATERIAL)
+    if (
+        len(q_users) != cfg.CRT_EXPECTED_Q_MATERIAL_USERS
+        or q_users[0]["object"] != cfg.CRT_Q_PLANE_OBJECT
+        or q_users[0]["slot"] != 0
+    ):
+        raise RuntimeError(f"exact-Q phosphor material user authority mismatch: {q_users}")
+    if (
+        len(glass_users) != cfg.CRT_EXPECTED_GLASS_MATERIAL_USERS
+        or glass_users[0]["object"] != cfg.CRT_GLASS_OBJECT
+        or glass_users[0]["slot"] != 0
+    ):
+        raise RuntimeError(f"animated CRT glass material user authority mismatch: {glass_users}")
+    if int(q_material.users) != cfg.CRT_EXPECTED_Q_MATERIAL_USERS:
+        raise RuntimeError("exact-Q phosphor material datablock user count is not exactly one")
+    if int(glass_material.users) != cfg.CRT_EXPECTED_GLASS_MATERIAL_USERS:
+        raise RuntimeError("animated CRT glass material datablock user count is not exactly one")
+    return {"qPhosphor": q_users, "glass": glass_users}
+
+
+def exact_q_source_material_record() -> dict[str, Any]:
+    material = bpy.data.materials.get(cfg.CRT_Q_PHOSPHOR_MATERIAL)
+    plane = bpy.data.objects.get(cfg.CRT_Q_PLANE_OBJECT)
+    image = bpy.data.images.get(cfg.EXACT_Q_IMAGE_NAME)
+    if (
+        material is None
+        or material.library is not None
+        or material.override_library is not None
+        or plane is None
+        or plane.type != "MESH"
+        or image is None
+    ):
+        raise RuntimeError("exact-Q phosphor source authority is missing or not local")
+    if len(plane.data.materials) != 1 or rna_pointer(plane.data.materials[0]) != rna_pointer(material):
+        raise RuntimeError("exact-Q plane material binding is not the exact accepted single slot")
+    if len(plane.data.vertices) != 4 or len(plane.data.edges) != 4 or len(plane.data.polygons) != 1:
+        raise RuntimeError("exact-Q plane is not the accepted four-vertex, four-edge, one-polygon geometry")
+    if list(image.size) != [2048, 2048] or image.colorspace_settings.name != "sRGB":
+        raise RuntimeError("exact-Q packed image dimensions or colorspace authority changed")
+    xs = [float(vertex.co.x) for vertex in plane.data.vertices]
+    zs = [float(vertex.co.z) for vertex in plane.data.vertices]
+    require_float(max(xs) - min(xs), 0.358, "exact-Q local width")
+    require_float(max(zs) - min(zs), 0.358, "exact-Q local height")
+    uv_layers = list(plane.data.uv_layers)
+    if len(uv_layers) != 1 or uv_layers[0].name != "ExactQ_UV" or not uv_layers[0].active_render:
+        raise RuntimeError("exact-Q plane lost its single active-render ExactQ_UV authority")
+    observed_uv = [[rounded(loop.uv.x), rounded(loop.uv.y)] for loop in uv_layers[0].data]
+    expected_uv = [[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0]]
+    if observed_uv != expected_uv:
+        raise RuntimeError(f"exact-Q UV authority mismatch: {observed_uv}")
+
+    output = required_node(material, "Material Output", "ShaderNodeOutputMaterial")
+    transparent = required_node(material, "Transparent BSDF", "ShaderNodeBsdfTransparent")
+    emission = required_node(material, "Emission", "ShaderNodeEmission")
+    texture = required_node(material, "Image Texture", "ShaderNodeTexImage")
+    info = required_node(material, "Object Info", "ShaderNodeObjectInfo")
+    alpha = required_node(material, "Math", "ShaderNodeMath")
+    mix = required_node(material, "Mix Shader", "ShaderNodeMixShader")
+    strength = required_node(material, "Math.001", "ShaderNodeMath")
+    tree = material.node_tree
+    if tree is None or texture.image is None or rna_pointer(texture.image) != rna_pointer(image) or texture.inputs["Vector"].is_linked:
+        raise RuntimeError("exact-Q image node binding or unlinked Vector authority changed")
+    if texture.interpolation != "Linear":
+        raise RuntimeError("exact-Q accepted Linear image interpolation changed")
+    if alpha.operation != "MULTIPLY" or strength.operation != "MULTIPLY":
+        raise RuntimeError("exact-Q accepted alpha/strength multiply topology changed")
+    require_float(strength.inputs[1].default_value, cfg.CRT_MATERIAL_AUTHORITY["qPhosphor"]["baseEmissionStrength"], "exact-Q base emission strength")
+    required_link(tree, texture.outputs["Color"], emission.inputs["Color"], "exact-Q texture Color to Emission Color")
+    required_link(tree, texture.outputs["Alpha"], alpha.inputs[0], "exact-Q texture Alpha to alpha gate")
+    required_link(tree, info.outputs["Alpha"], alpha.inputs[1], "exact-Q Object Alpha to alpha gate")
+    required_link(tree, alpha.outputs[0], mix.inputs[0], "exact-Q alpha gate to surface mix")
+    required_link(tree, transparent.outputs["BSDF"], mix.inputs[1], "exact-Q transparent surface branch")
+    required_link(tree, emission.outputs["Emission"], mix.inputs[2], "exact-Q emission surface branch")
+    surface_add = tree.nodes.get("Phase4R11_Q_CorePlusScatterSurface")
+    if surface_add is None:
+        required_link(tree, mix.outputs["Shader"], output.inputs["Surface"], "exact-Q accepted final surface")
+    else:
+        if surface_add.bl_idname != "ShaderNodeAddShader":
+            raise RuntimeError("exact-Q downstream physical surface node has the wrong type")
+        required_link(tree, mix.outputs["Shader"], surface_add.inputs[0], "exact-Q core surface into downstream physical add")
+        required_link(tree, surface_add.outputs[0], output.inputs["Surface"], "exact-Q downstream physical surface")
+    required_link(tree, info.outputs["Alpha"], strength.inputs[0], "exact-Q Object Alpha to base strength")
+    plane_signature = object_signature(plane)
+    plane_action = action_signature(plane)
+    plane_animation = plane.animation_data
+    if (
+        plane_action is None
+        or plane_action["name"] != cfg.CRT_Q_PLANE_ACTION
+        or plane_animation is None
+        or len(plane_animation.drivers) != 0
+        or len(plane_animation.nla_tracks) != 0
+    ):
+        raise RuntimeError("exact-Q picture-plane opacity action, driver, or NLA authority changed")
+    return {
+        "packedImage": packed_q_record(),
+        "imageNode": texture.name,
+        "imageNodeBoundToExactPackedDatablock": True,
+        "imageSize": list(image.size),
+        "imageColorSpace": image.colorspace_settings.name,
+        "imageInterpolation": texture.interpolation,
+        "imageVectorInputUnlinked": not texture.inputs["Vector"].is_linked,
+        "textureColorToEmissionColor": True,
+        "textureAlphaTimesObjectAlphaGate": True,
+        "objectAlphaTimesBaseStrength": True,
+        "acceptedCoreSurfaceClosurePreserved": True,
+        "planeObject": plane.name,
+        "planeData": plane.data.name,
+        "planeVertexCount": len(plane.data.vertices),
+        "planeEdgeCount": len(plane.data.edges),
+        "planePolygonCount": len(plane.data.polygons),
+        "planeWidthMeters": rounded(max(xs) - min(xs)),
+        "planeHeightMeters": rounded(max(zs) - min(zs)),
+        "uvLayer": uv_layers[0].name,
+        "uvCoordinates": observed_uv,
+        "planeAuthoritySha256": canonical_hash(plane_signature),
+        "planeOpacityActionAuthority": plane_action,
+        "planeOpacityActionSha256": canonical_hash(plane_action),
+        "planeDriverCount": len(plane_animation.drivers),
+        "planeNlaTrackCount": len(plane_animation.nla_tracks),
+    }
+
+
+def exact_q_image_reference_record(expected_sampler_count: int) -> dict[str, Any]:
+    material = bpy.data.materials.get(cfg.CRT_Q_PHOSPHOR_MATERIAL)
+    image = bpy.data.images.get(cfg.EXACT_Q_IMAGE_NAME)
+    if material is None or material.node_tree is None or image is None:
+        raise RuntimeError("exact-Q material, node tree, or packed image is missing")
+    samplers = sorted(
+        (node for node in material.node_tree.nodes if node.bl_idname == "ShaderNodeTexImage"),
+        key=lambda node: node.name,
+    )
+    references = [
+        {
+            "node": node.name,
+            "image": None if node.image is None else node.image.name,
+            "samePackedImagePointer": node.image is not None and rna_pointer(node.image) == rna_pointer(image),
+            "interpolation": node.interpolation,
+            "extension": node.extension,
+        }
+        for node in samplers
+    ]
+    if len(samplers) != expected_sampler_count:
+        raise RuntimeError(
+            f"exact-Q image sampler count mismatch: expected {expected_sampler_count}, got {len(samplers)}"
+        )
+    if int(image.users) != expected_sampler_count:
+        raise RuntimeError(
+            f"exact-Q packed image user count mismatch: expected {expected_sampler_count}, got {int(image.users)}"
+        )
+    if not all(item["samePackedImagePointer"] for item in references):
+        raise RuntimeError("an exact-Q image sampler references a different image datablock")
+    return {
+        "packedImage": packed_q_record(),
+        "samplerCount": len(samplers),
+        "imageUsers": int(image.users),
+        "allSamplersReferenceSamePackedImagePointer": True,
+        "samplers": references,
+    }
+
+
+def animated_glass_source_record() -> dict[str, Any]:
+    material = bpy.data.materials.get(cfg.CRT_GLASS_MATERIAL)
+    glass = bpy.data.objects.get(cfg.CRT_GLASS_OBJECT)
+    if (
+        material is None
+        or material.library is not None
+        or material.override_library is not None
+        or glass is None
+        or glass.type != "MESH"
+        or not material.use_nodes
+        or material.node_tree is None
+    ):
+        raise RuntimeError("accepted animated CRT glass authority is missing or not local")
+    if len(glass.data.materials) != 1 or rna_pointer(glass.data.materials[0]) != rna_pointer(material):
+        raise RuntimeError("accepted CRT glass material binding is not the exact single slot")
+    inherited = required_node(material, "Principled BSDF", "ShaderNodeBsdfPrincipled")
+    output = required_node(material, "Material Output", "ShaderNodeOutputMaterial")
+    action = action_signature(material.node_tree)
+    animation = material.node_tree.animation_data
+    if (
+        action is None
+        or action["name"] != cfg.CRT_GLASS_ACTION
+        or animation is None
+        or len(animation.drivers) != 0
+        or len(animation.nla_tracks) != 0
+    ):
+        raise RuntimeError("accepted animated CRT glass action, driver, or NLA authority changed")
+    if output.inputs["Volume"].is_linked or output.inputs["Displacement"].is_linked:
+        raise RuntimeError("accepted CRT glass unexpectedly uses volume or displacement")
+    return {
+        "object": glass.name,
+        "objectAuthoritySha256": canonical_hash(object_signature(glass)),
+        "material": material.name,
+        "diffuseColor": vector(material.diffuse_color),
+        "surfaceRenderMethod": str(getattr(material, "surface_render_method", "")),
+        "inheritedPrincipledNodeSha256": canonical_hash(node_authority_record(material, inherited.name)),
+        "nodeTreeAction": action["name"],
+        "nodeTreeActionAuthority": action,
+        "nodeTreeActionSha256": canonical_hash(action),
+        "nodeTreeDriverCount": len(animation.drivers),
+        "nodeTreeNlaTrackCount": len(animation.nla_tracks),
+        "volumeUnlinked": not output.inputs["Volume"].is_linked,
+        "displacementUnlinked": not output.inputs["Displacement"].is_linked,
+    }
+
+
+def dormant_legacy_crt_scan_record() -> dict[str, Any]:
+    scan_collection = bpy.data.collections.get("CRT_SCANLINE_GEOMETRY")
+    startup_collection = bpy.data.collections.get("CRT_STARTUP_RASTER_EXPANSION")
+    wake = bpy.data.objects.get("CRT_WakeHorizontalPhosphorLine")
+    if scan_collection is None or startup_collection is None or wake is None:
+        raise RuntimeError("accepted dormant CRT scan/startup/wake authority is missing")
+    scanlines = sorted(scan_collection.objects, key=lambda item: item.name)
+    startup_bars = sorted(startup_collection.objects, key=lambda item: item.name)
+    if len(scanlines) != 32 or len(startup_bars) != 18:
+        raise RuntimeError(
+            f"accepted dormant CRT coarse-geometry counts changed: "
+            f"scanlines={len(scanlines)}, startupBars={len(startup_bars)}"
+        )
+    participants = scanlines + startup_bars + [wake]
+    if any(not obj.hide_render for obj in participants):
+        raise RuntimeError("a rejected legacy CRT scan/startup/wake object is render-visible")
+    if any(action_signature(obj) is not None for obj in participants):
+        raise RuntimeError("a rejected legacy CRT scan/startup/wake object is animated")
+    return {
+        "coarseScanlineCount": len(scanlines),
+        "startupExpansionBarCount": len(startup_bars),
+        "wakeLineCount": 1,
+        "allHideRender": True,
+        "allUnanimated": True,
+        "objectAuthoritySha256": canonical_hash([
+            object_signature(obj) for obj in participants
+        ]),
+    }
+
+
+def crt_fixed_authority_snapshot() -> dict[str, Any]:
+    global_actions = global_actions_except_target_lens_authority()
+    return {
+        "exactQSource": exact_q_source_material_record(),
+        "animatedGlassSource": animated_glass_source_record(),
+        "dormantLegacyCrtScanGeometry": dormant_legacy_crt_scan_record(),
+        "materialUsers": validate_crt_material_users(),
+        "globalObjectAuthoritySha256": global_object_authority_hash(),
+        "globalActionsExceptTargetMobileLensSha256": canonical_hash(global_actions),
+        "dataBlockInventory": data_block_inventory(),
+    }
+
+
+def configure_map_range(
+    node: bpy.types.Node,
+    *,
+    from_minimum: float,
+    from_maximum: float,
+    to_minimum: float,
+    to_maximum: float,
+) -> None:
+    node.data_type = "FLOAT"
+    node.interpolation_type = "SMOOTHERSTEP"
+    node.clamp = True
+    enabled_input(node, "From Min").default_value = from_minimum
+    enabled_input(node, "From Max").default_value = from_maximum
+    enabled_input(node, "To Min").default_value = to_minimum
+    enabled_input(node, "To Max").default_value = to_maximum
+
+
+def rebuild_exact_q_phosphor_material() -> dict[str, Any]:
+    spec = cfg.CRT_MATERIAL_AUTHORITY["qPhosphor"]
+    material = bpy.data.materials.get(spec["name"])
+    if material is None or material.library is not None or material.override_library is not None:
+        raise RuntimeError("exact-Q phosphor material is missing or not a local writable authority")
+    if material.animation_data is not None or material.node_tree is None or material.node_tree.animation_data is not None:
+        raise RuntimeError("refusing to alter animated exact-Q material or node tree")
+    expected_source_nodes = {
+        "Emission": "ShaderNodeEmission",
+        "Image Texture": "ShaderNodeTexImage",
+        "Material Output": "ShaderNodeOutputMaterial",
+        "Math": "ShaderNodeMath",
+        "Math.001": "ShaderNodeMath",
+        "Mix Shader": "ShaderNodeMixShader",
+        "Object Info": "ShaderNodeObjectInfo",
+        "Transparent BSDF": "ShaderNodeBsdfTransparent",
+    }
+    observed_source_nodes = {
+        node.name: node.bl_idname
+        for node in material.node_tree.nodes
+        if node.name in expected_source_nodes
+    }
+    if (
+        observed_source_nodes != expected_source_nodes
+        or len(material.node_tree.nodes) != len(expected_source_nodes)
+        or len(material.node_tree.links) != 9
+    ):
+        raise RuntimeError("exact-Q accepted source topology is not the exact eight-node, nine-link authority")
+    source_before = exact_q_source_material_record()
+    image_references_before = exact_q_image_reference_record(spec["acceptedImageSamplerCount"])
+    nodes = material.node_tree.nodes
+    links = material.node_tree.links
+    emission = required_node(material, "Emission", "ShaderNodeEmission")
+    texture = required_node(material, "Image Texture", "ShaderNodeTexImage")
+    core_surface = required_node(material, "Mix Shader", "ShaderNodeMixShader")
+    output = required_node(material, "Material Output", "ShaderNodeOutputMaterial")
+    strength = required_node(material, "Math.001", "ShaderNodeMath")
+    if texture.image is None:
+        raise RuntimeError("exact-Q accepted source image sampler lost its packed image")
+    exact_image = texture.image
+    old_strength_link = required_link(
+        material.node_tree,
+        strength.outputs[0],
+        emission.inputs["Strength"],
+        "exact-Q accepted base strength to emission",
+    )
+    links.remove(old_strength_link)
+
+    coordinates = nodes.new("ShaderNodeTexCoord")
+    coordinates.name = "Phase4R11_Q_UVCoordinates"
+    wave = nodes.new("ShaderNodeTexWave")
+    wave.name = "Phase4R11_Q_FineScanBands"
+    wave.wave_type = spec["scanBands"]["waveType"]
+    wave.bands_direction = spec["scanBands"]["bandsDirection"]
+    wave.inputs["Scale"].default_value = spec["scanBands"]["scale"]
+    scan_range = nodes.new("ShaderNodeMapRange")
+    scan_range.name = "Phase4R11_Q_FineScanMultiplier"
+    configure_map_range(
+        scan_range,
+        from_minimum=0.0,
+        from_maximum=1.0,
+        to_minimum=spec["scanBands"]["minimumMultiplier"],
+        to_maximum=spec["scanBands"]["maximumMultiplier"],
+    )
+
+    camera_data = nodes.new("ShaderNodeCameraData")
+    camera_data.name = "Phase4R11_Q_CameraData"
+    distance_fade = nodes.new("ShaderNodeMapRange")
+    distance_fade.name = "Phase4R11_Q_ScanContrastDistanceFade"
+    configure_map_range(
+        distance_fade,
+        from_minimum=spec["scanContrastDistanceFade"]["nearMeters"],
+        from_maximum=spec["scanContrastDistanceFade"]["farMeters"],
+        to_minimum=spec["scanContrastDistanceFade"]["nearContrastMultiplier"],
+        to_maximum=spec["scanContrastDistanceFade"]["farContrastMultiplier"],
+    )
+
+    noise = nodes.new("ShaderNodeTexNoise")
+    noise.name = "Phase4R11_Q_StaticPhosphorNoise"
+    noise.noise_dimensions = spec["staticPhosphorVariation"]["dimensions"]
+    noise.inputs["Scale"].default_value = spec["staticPhosphorVariation"]["scale"]
+    noise.inputs["Detail"].default_value = spec["staticPhosphorVariation"]["detail"]
+    noise.inputs["Roughness"].default_value = spec["staticPhosphorVariation"]["roughness"]
+    noise_range = nodes.new("ShaderNodeMapRange")
+    noise_range.name = "Phase4R11_Q_StaticPhosphorVariation"
+    configure_map_range(
+        noise_range,
+        from_minimum=0.0,
+        from_maximum=1.0,
+        to_minimum=spec["staticPhosphorVariation"]["minimumMultiplier"],
+        to_maximum=spec["staticPhosphorVariation"]["maximumMultiplier"],
+    )
+
+    scan_delta = nodes.new("ShaderNodeMath")
+    scan_delta.name = "Phase4R11_Q_ScanDeltaFromUnity"
+    scan_delta.operation = "SUBTRACT"
+    scan_delta.inputs[1].default_value = 1.0
+    faded_scan_delta = nodes.new("ShaderNodeMath")
+    faded_scan_delta.name = "Phase4R11_Q_FadedScanDelta"
+    faded_scan_delta.operation = "MULTIPLY"
+    scan_envelope = nodes.new("ShaderNodeMath")
+    scan_envelope.name = "Phase4R11_Q_ScanEnvelope"
+    scan_envelope.operation = "ADD"
+    scan_envelope.inputs[0].default_value = 1.0
+    strength_times_scan = nodes.new("ShaderNodeMath")
+    strength_times_scan.name = "Phase4R11_Q_StrengthTimesScanEnvelope"
+    strength_times_scan.operation = "MULTIPLY"
+    final_strength = nodes.new("ShaderNodeMath")
+    final_strength.name = "Phase4R11_Q_FinalPhysicalStrength"
+    final_strength.operation = "MULTIPLY"
+
+    core_calibration = nodes.new("ShaderNodeMath")
+    core_calibration.name = "Phase4R11_Q_CorePhysicalCalibration"
+    core_calibration.operation = "MULTIPLY"
+    core_calibration.inputs[1].default_value = spec["emissionCalibration"]
+    core_split = nodes.new("ShaderNodeMath")
+    core_split.name = "Phase4R11_Q_CoreEnergySplit"
+    core_split.operation = "MULTIPLY"
+    core_split.inputs[1].default_value = spec["energySplit"]["core"]
+
+    scatter_calibration = nodes.new("ShaderNodeMath")
+    scatter_calibration.name = "Phase4R11_Q_ScatterPhysicalCalibration"
+    scatter_calibration.operation = "MULTIPLY"
+    scatter_calibration.inputs[1].default_value = spec["emissionCalibration"]
+    scatter_split = nodes.new("ShaderNodeMath")
+    scatter_split.name = "Phase4R11_Q_ScatterEnergySplit"
+    scatter_split.operation = "MULTIPLY"
+    scatter_split.inputs[1].default_value = spec["energySplit"]["scatter"]
+    scatter_average = nodes.new("ShaderNodeMath")
+    scatter_average.name = "Phase4R11_Q_ScatterTapAverage"
+    scatter_average.operation = "MULTIPLY"
+    scatter_average.inputs[1].default_value = spec["scatterRing"]["tapAverageMultiplier"]
+
+    scatter_taps = []
+    scatter_premultiplies = []
+    for label, offset_x, offset_y in spec["scatterRing"]["offsets"]:
+        offset = nodes.new("ShaderNodeVectorMath")
+        offset.name = f"Phase4R11_Q_ScatterOffset_{label}"
+        offset.operation = "ADD"
+        offset.inputs[1].default_value = (offset_x, offset_y, 0.0)
+        tap = nodes.new("ShaderNodeTexImage")
+        tap.name = f"Phase4R11_Q_ScatterTap_{label}"
+        tap.image = exact_image
+        tap.interpolation = spec["scatterRing"]["interpolation"]
+        tap.extension = spec["scatterRing"]["extension"]
+        premultiply = nodes.new("ShaderNodeVectorMath")
+        premultiply.name = f"Phase4R11_Q_ScatterPremultiply_{label}"
+        premultiply.operation = "SCALE"
+        links.new(coordinates.outputs["UV"], offset.inputs[0])
+        links.new(offset.outputs["Vector"], tap.inputs["Vector"])
+        links.new(tap.outputs["Color"], premultiply.inputs[0])
+        links.new(tap.outputs["Alpha"], enabled_input(premultiply, "Scale"))
+        scatter_taps.append(tap)
+        scatter_premultiplies.append(premultiply)
+
+    scatter_sums = []
+    scatter_color = scatter_premultiplies[0].outputs["Vector"]
+    for index, premultiply in enumerate(scatter_premultiplies[1:], start=2):
+        sum_node = nodes.new("ShaderNodeVectorMath")
+        sum_node.name = f"Phase4R11_Q_ScatterSum_{index:02d}"
+        sum_node.operation = "ADD"
+        links.new(scatter_color, sum_node.inputs[0])
+        links.new(premultiply.outputs["Vector"], sum_node.inputs[1])
+        scatter_color = sum_node.outputs["Vector"]
+        scatter_sums.append(sum_node)
+
+    scatter_emission = nodes.new("ShaderNodeEmission")
+    scatter_emission.name = "Phase4R11_Q_ScatterEmission"
+    surface_add = nodes.new("ShaderNodeAddShader")
+    surface_add.name = "Phase4R11_Q_CorePlusScatterSurface"
+
+    links.new(coordinates.outputs["UV"], wave.inputs["Vector"])
+    links.new(wave.outputs["Fac"], enabled_input(scan_range, "Value"))
+    links.new(coordinates.outputs["UV"], noise.inputs["Vector"])
+    links.new(noise.outputs["Fac"], enabled_input(noise_range, "Value"))
+    links.new(camera_data.outputs["View Distance"], enabled_input(distance_fade, "Value"))
+    links.new(scan_range.outputs["Result"], scan_delta.inputs[0])
+    links.new(scan_delta.outputs[0], faded_scan_delta.inputs[0])
+    links.new(distance_fade.outputs["Result"], faded_scan_delta.inputs[1])
+    links.new(faded_scan_delta.outputs[0], scan_envelope.inputs[1])
+    links.new(strength.outputs[0], strength_times_scan.inputs[0])
+    links.new(scan_envelope.outputs[0], strength_times_scan.inputs[1])
+    links.new(strength_times_scan.outputs[0], final_strength.inputs[0])
+    links.new(noise_range.outputs["Result"], final_strength.inputs[1])
+    links.new(final_strength.outputs[0], core_calibration.inputs[0])
+    links.new(core_calibration.outputs[0], core_split.inputs[0])
+    links.new(core_split.outputs[0], emission.inputs["Strength"])
+    links.new(strength.outputs[0], scatter_calibration.inputs[0])
+    links.new(scatter_calibration.outputs[0], scatter_split.inputs[0])
+    links.new(scatter_split.outputs[0], scatter_average.inputs[0])
+    links.new(scatter_average.outputs[0], scatter_emission.inputs["Strength"])
+    links.new(scatter_color, scatter_emission.inputs["Color"])
+    old_surface_link = required_link(
+        material.node_tree,
+        core_surface.outputs["Shader"],
+        output.inputs["Surface"],
+        "exact-Q accepted core surface",
+    )
+    links.remove(old_surface_link)
+    links.new(core_surface.outputs["Shader"], surface_add.inputs[0])
+    links.new(scatter_emission.outputs["Emission"], surface_add.inputs[1])
+    links.new(surface_add.outputs[0], output.inputs["Surface"])
+
+    source_after = exact_q_source_material_record()
+    if source_after != source_before:
+        raise RuntimeError("exact-Q phosphor treatment changed the image, plane, UV, color, alpha, or opacity-action source authority")
+    image_references_after = exact_q_image_reference_record(spec["repairedImageSamplerCount"])
+    if (
+        image_references_after["samplerCount"] - image_references_before["samplerCount"] != 8
+        or image_references_after["imageUsers"] - image_references_before["imageUsers"] != 8
+    ):
+        raise RuntimeError("exact-Q scatter repair did not add exactly eight same-image sampler references")
+    return audit_exact_q_physical_treatment()
+
+
+def audit_exact_q_physical_treatment() -> dict[str, Any]:
+    spec = cfg.CRT_MATERIAL_AUTHORITY["qPhosphor"]
+    material = bpy.data.materials[spec["name"]]
+    tree = material.node_tree
+    if tree is None:
+        raise RuntimeError("exact-Q phosphor treatment lost its material node tree")
+    output = required_node(material, "Material Output", "ShaderNodeOutputMaterial")
+    transparent = required_node(material, "Transparent BSDF", "ShaderNodeBsdfTransparent")
+    core_surface = required_node(material, "Mix Shader", "ShaderNodeMixShader")
+    info = required_node(material, "Object Info", "ShaderNodeObjectInfo")
+    alpha = required_node(material, "Math", "ShaderNodeMath")
+    strength = required_node(material, "Math.001", "ShaderNodeMath")
+    emission = required_node(material, "Emission", "ShaderNodeEmission")
+    texture = required_node(material, "Image Texture", "ShaderNodeTexImage")
+    coordinates = required_node(material, "Phase4R11_Q_UVCoordinates", "ShaderNodeTexCoord")
+    wave = required_node(material, "Phase4R11_Q_FineScanBands", "ShaderNodeTexWave")
+    scan_range = required_node(material, "Phase4R11_Q_FineScanMultiplier", "ShaderNodeMapRange")
+    camera_data = required_node(material, "Phase4R11_Q_CameraData", "ShaderNodeCameraData")
+    distance_fade = required_node(material, "Phase4R11_Q_ScanContrastDistanceFade", "ShaderNodeMapRange")
+    noise = required_node(material, "Phase4R11_Q_StaticPhosphorNoise", "ShaderNodeTexNoise")
+    noise_range = required_node(material, "Phase4R11_Q_StaticPhosphorVariation", "ShaderNodeMapRange")
+    scan_delta = required_node(material, "Phase4R11_Q_ScanDeltaFromUnity", "ShaderNodeMath")
+    faded_scan_delta = required_node(material, "Phase4R11_Q_FadedScanDelta", "ShaderNodeMath")
+    scan_envelope = required_node(material, "Phase4R11_Q_ScanEnvelope", "ShaderNodeMath")
+    strength_times_scan = required_node(material, "Phase4R11_Q_StrengthTimesScanEnvelope", "ShaderNodeMath")
+    final_strength = required_node(material, "Phase4R11_Q_FinalPhysicalStrength", "ShaderNodeMath")
+    core_calibration = required_node(material, "Phase4R11_Q_CorePhysicalCalibration", "ShaderNodeMath")
+    core_split = required_node(material, "Phase4R11_Q_CoreEnergySplit", "ShaderNodeMath")
+    scatter_calibration = required_node(material, "Phase4R11_Q_ScatterPhysicalCalibration", "ShaderNodeMath")
+    scatter_split = required_node(material, "Phase4R11_Q_ScatterEnergySplit", "ShaderNodeMath")
+    scatter_average = required_node(material, "Phase4R11_Q_ScatterTapAverage", "ShaderNodeMath")
+    scatter_emission = required_node(material, "Phase4R11_Q_ScatterEmission", "ShaderNodeEmission")
+    surface_add = required_node(material, "Phase4R11_Q_CorePlusScatterSurface", "ShaderNodeAddShader")
+
+    expected_offsets = (
+        ("E", 0.0065, 0.0),
+        ("W", -0.0065, 0.0),
+        ("N", 0.0, 0.0065),
+        ("S", 0.0, -0.0065),
+        ("NE", 0.0045961941, 0.0045961941),
+        ("NW", -0.0045961941, 0.0045961941),
+        ("SE", 0.0045961941, -0.0045961941),
+        ("SW", -0.0045961941, -0.0045961941),
+    )
+    configured_offsets = tuple(spec["scatterRing"]["offsets"])
+    if len(configured_offsets) != len(expected_offsets):
+        raise RuntimeError("exact-Q scatter ring does not contain exactly eight taps")
+    for configured, expected in zip(configured_offsets, expected_offsets):
+        if configured[0] != expected[0]:
+            raise RuntimeError("exact-Q scatter ring tap label or order changed")
+        require_float(configured[1], expected[1], f"exact-Q {expected[0]} scatter U offset")
+        require_float(configured[2], expected[2], f"exact-Q {expected[0]} scatter V offset")
+        require_float(math.hypot(configured[1], configured[2]), 0.0065, f"exact-Q {expected[0]} scatter radius")
+    require_float(spec["emissionCalibration"], 0.43, "exact-Q common physical emission calibration")
+    require_float(spec["energySplit"]["core"], 0.74, "exact-Q core energy split")
+    require_float(spec["energySplit"]["scatter"], 0.26, "exact-Q scatter energy split")
+    require_float(
+        spec["energySplit"]["core"] + spec["energySplit"]["scatter"],
+        1.0,
+        "exact-Q energy-conserving split sum",
+    )
+    require_float(spec["scatterRing"]["radiusUv"], 0.0065, "exact-Q scatter ring radius")
+    require_float(spec["scatterRing"]["diagonalOffsetUv"], 0.0045961941, "exact-Q scatter diagonal offset")
+    if spec["scatterRing"]["tapCount"] != 8:
+        raise RuntimeError("exact-Q scatter tap-count authority changed")
+    require_float(spec["scatterRing"]["tapAverageMultiplier"], 0.125, "exact-Q scatter tap average")
+    require_float(
+        spec["scatterRing"]["tapCount"] * spec["scatterRing"]["tapAverageMultiplier"],
+        1.0,
+        "exact-Q scatter average normalization",
+    )
+
+    accepted_node_types = {
+        "Emission": "ShaderNodeEmission",
+        "Image Texture": "ShaderNodeTexImage",
+        "Material Output": "ShaderNodeOutputMaterial",
+        "Math": "ShaderNodeMath",
+        "Math.001": "ShaderNodeMath",
+        "Mix Shader": "ShaderNodeMixShader",
+        "Object Info": "ShaderNodeObjectInfo",
+        "Transparent BSDF": "ShaderNodeBsdfTransparent",
+    }
+    physical_node_types = {
+        "Phase4R11_Q_UVCoordinates": "ShaderNodeTexCoord",
+        "Phase4R11_Q_FineScanBands": "ShaderNodeTexWave",
+        "Phase4R11_Q_FineScanMultiplier": "ShaderNodeMapRange",
+        "Phase4R11_Q_CameraData": "ShaderNodeCameraData",
+        "Phase4R11_Q_ScanContrastDistanceFade": "ShaderNodeMapRange",
+        "Phase4R11_Q_StaticPhosphorNoise": "ShaderNodeTexNoise",
+        "Phase4R11_Q_StaticPhosphorVariation": "ShaderNodeMapRange",
+        "Phase4R11_Q_ScanDeltaFromUnity": "ShaderNodeMath",
+        "Phase4R11_Q_FadedScanDelta": "ShaderNodeMath",
+        "Phase4R11_Q_ScanEnvelope": "ShaderNodeMath",
+        "Phase4R11_Q_StrengthTimesScanEnvelope": "ShaderNodeMath",
+        "Phase4R11_Q_FinalPhysicalStrength": "ShaderNodeMath",
+    }
+    scatter_node_types = {
+        "Phase4R11_Q_CorePhysicalCalibration": "ShaderNodeMath",
+        "Phase4R11_Q_CoreEnergySplit": "ShaderNodeMath",
+        "Phase4R11_Q_ScatterPhysicalCalibration": "ShaderNodeMath",
+        "Phase4R11_Q_ScatterEnergySplit": "ShaderNodeMath",
+        "Phase4R11_Q_ScatterTapAverage": "ShaderNodeMath",
+        "Phase4R11_Q_ScatterEmission": "ShaderNodeEmission",
+        "Phase4R11_Q_CorePlusScatterSurface": "ShaderNodeAddShader",
+    }
+    for label, _offset_x, _offset_y in expected_offsets:
+        scatter_node_types[f"Phase4R11_Q_ScatterOffset_{label}"] = "ShaderNodeVectorMath"
+        scatter_node_types[f"Phase4R11_Q_ScatterTap_{label}"] = "ShaderNodeTexImage"
+        scatter_node_types[f"Phase4R11_Q_ScatterPremultiply_{label}"] = "ShaderNodeVectorMath"
+    for index in range(2, 9):
+        scatter_node_types[f"Phase4R11_Q_ScatterSum_{index:02d}"] = "ShaderNodeVectorMath"
+    expected_node_types = accepted_node_types | physical_node_types | scatter_node_types
+    observed_node_types = {node.name: node.bl_idname for node in tree.nodes}
+    if len(tree.nodes) != len(expected_node_types) or observed_node_types != expected_node_types:
+        raise RuntimeError(
+            f"exact-Q repaired node topology mismatch: expected {expected_node_types}, got {observed_node_types}"
+        )
+    if sum(node.bl_idname == "ShaderNodeBsdfTransparent" for node in tree.nodes) != 1:
+        raise RuntimeError("exact-Q scatter repair introduced an additional Transparent BSDF")
+    if sum(node.bl_idname == "ShaderNodeMixShader" for node in tree.nodes) != 1:
+        raise RuntimeError("exact-Q scatter repair introduced an additional Mix Shader")
+
+    if wave.wave_type != spec["scanBands"]["waveType"] or wave.bands_direction != spec["scanBands"]["bandsDirection"]:
+        raise RuntimeError("exact-Q fine scan-band topology changed")
+    require_float(wave.inputs["Scale"].default_value, spec["scanBands"]["scale"], "exact-Q scan scale")
+    if spec["scanBands"].get("actualBandFormula") != "20 * scale / (2 * pi)":
+        raise RuntimeError("exact-Q scan-band scale formula authority changed")
+    require_float(
+        20.0 * wave.inputs["Scale"].default_value / (2.0 * math.pi),
+        spec["scanBands"]["actualBandCount"],
+        "exact-Q actual scan-band count",
+    )
+    if noise.noise_dimensions != spec["staticPhosphorVariation"]["dimensions"]:
+        raise RuntimeError("exact-Q static phosphor noise dimensionality changed")
+    require_float(noise.inputs["Scale"].default_value, spec["staticPhosphorVariation"]["scale"], "exact-Q phosphor noise scale")
+    require_float(noise.inputs["Detail"].default_value, spec["staticPhosphorVariation"]["detail"], "exact-Q phosphor noise detail")
+    require_float(noise.inputs["Roughness"].default_value, spec["staticPhosphorVariation"]["roughness"], "exact-Q phosphor noise roughness")
+    for node, minimum, maximum, label in (
+        (scan_range, spec["scanBands"]["minimumMultiplier"], spec["scanBands"]["maximumMultiplier"], "scan"),
+        (distance_fade, spec["scanContrastDistanceFade"]["nearContrastMultiplier"], spec["scanContrastDistanceFade"]["farContrastMultiplier"], "scan-contrast distance"),
+        (noise_range, spec["staticPhosphorVariation"]["minimumMultiplier"], spec["staticPhosphorVariation"]["maximumMultiplier"], "noise"),
+    ):
+        if node.data_type != "FLOAT" or node.interpolation_type != "SMOOTHERSTEP" or not node.clamp:
+            raise RuntimeError(f"exact-Q {label} map-range configuration changed")
+        require_float(enabled_input(node, "To Min").default_value, minimum, f"exact-Q {label} minimum multiplier")
+        require_float(enabled_input(node, "To Max").default_value, maximum, f"exact-Q {label} maximum multiplier")
+    for node, label in ((scan_range, "scan"), (noise_range, "noise")):
+        require_float(enabled_input(node, "From Min").default_value, 0.0, f"exact-Q {label} source minimum")
+        require_float(enabled_input(node, "From Max").default_value, 1.0, f"exact-Q {label} source maximum")
+    require_float(enabled_input(distance_fade, "From Min").default_value, spec["scanContrastDistanceFade"]["nearMeters"], "exact-Q near camera distance")
+    require_float(enabled_input(distance_fade, "From Max").default_value, spec["scanContrastDistanceFade"]["farMeters"], "exact-Q far camera distance")
+    if (
+        alpha.operation != "MULTIPLY"
+        or strength.operation != "MULTIPLY"
+        or scan_delta.operation != "SUBTRACT"
+        or faded_scan_delta.operation != "MULTIPLY"
+        or scan_envelope.operation != "ADD"
+        or strength_times_scan.operation != "MULTIPLY"
+        or final_strength.operation != "MULTIPLY"
+    ):
+        raise RuntimeError("exact-Q contrast-only scan envelope or physical strength operations changed")
+    for node, factor, label in (
+        (core_calibration, spec["emissionCalibration"], "core physical calibration"),
+        (core_split, spec["energySplit"]["core"], "core energy split"),
+        (scatter_calibration, spec["emissionCalibration"], "scatter physical calibration"),
+        (scatter_split, spec["energySplit"]["scatter"], "scatter energy split"),
+        (scatter_average, spec["scatterRing"]["tapAverageMultiplier"], "scatter tap average"),
+    ):
+        if node.operation != "MULTIPLY":
+            raise RuntimeError(f"exact-Q {label} is not a multiplier")
+        require_float(node.inputs[1].default_value, factor, f"exact-Q {label}")
+    require_float(scan_delta.inputs[1].default_value, 1.0, "exact-Q scan unity subtraction")
+    require_float(scan_envelope.inputs[0].default_value, 1.0, "exact-Q scan unity restoration")
+    require_float(strength.inputs[1].default_value, spec["baseEmissionStrength"], "exact-Q accepted base emission strength")
+    required_link(tree, texture.outputs["Color"], emission.inputs["Color"], "exact-Q accepted texture Color to core Emission Color")
+    required_link(tree, texture.outputs["Alpha"], alpha.inputs[0], "exact-Q accepted texture Alpha gate")
+    required_link(tree, info.outputs["Alpha"], alpha.inputs[1], "exact-Q accepted Object Alpha gate")
+    required_link(tree, alpha.outputs[0], core_surface.inputs[0], "exact-Q accepted alpha gate to core surface")
+    required_link(tree, transparent.outputs["BSDF"], core_surface.inputs[1], "exact-Q accepted transparent core branch")
+    required_link(tree, emission.outputs["Emission"], core_surface.inputs[2], "exact-Q accepted emission core branch")
+    required_link(tree, info.outputs["Alpha"], strength.inputs[0], "exact-Q accepted Object Alpha to base strength")
+    required_link(tree, coordinates.outputs["UV"], wave.inputs["Vector"], "exact-Q UV to scan bands")
+    required_link(tree, wave.outputs["Fac"], enabled_input(scan_range, "Value"), "exact-Q scan bands to multiplier")
+    required_link(tree, coordinates.outputs["UV"], noise.inputs["Vector"], "exact-Q UV to static phosphor noise")
+    required_link(tree, noise.outputs["Fac"], enabled_input(noise_range, "Value"), "exact-Q phosphor noise to variation")
+    required_link(tree, camera_data.outputs["View Distance"], enabled_input(distance_fade, "Value"), "exact-Q camera distance fade")
+    required_link(tree, scan_range.outputs["Result"], scan_delta.inputs[0], "exact-Q scan multiplier to delta")
+    required_link(tree, scan_delta.outputs[0], faded_scan_delta.inputs[0], "exact-Q scan delta")
+    required_link(tree, distance_fade.outputs["Result"], faded_scan_delta.inputs[1], "exact-Q scan-contrast distance fade")
+    required_link(tree, faded_scan_delta.outputs[0], scan_envelope.inputs[1], "exact-Q faded scan delta")
+    required_link(tree, strength.outputs[0], strength_times_scan.inputs[0], "exact-Q base strength preserved before scan envelope")
+    required_link(tree, scan_envelope.outputs[0], strength_times_scan.inputs[1], "exact-Q contrast-only scan envelope")
+    required_link(tree, strength_times_scan.outputs[0], final_strength.inputs[0], "exact-Q scan-adjusted base strength")
+    required_link(tree, noise_range.outputs["Result"], final_strength.inputs[1], "exact-Q static variation multiplier")
+    required_link(tree, final_strength.outputs[0], core_calibration.inputs[0], "exact-Q final scan/noise strength to common core calibration")
+    required_link(tree, core_calibration.outputs[0], core_split.inputs[0], "exact-Q calibrated core strength to core split")
+    required_link(tree, core_split.outputs[0], emission.inputs["Strength"], "exact-Q split core emission strength")
+    required_link(tree, strength.outputs[0], scatter_calibration.inputs[0], "exact-Q accepted base strength to scatter calibration")
+    required_link(tree, scatter_calibration.outputs[0], scatter_split.inputs[0], "exact-Q calibrated scatter strength")
+    required_link(tree, scatter_split.outputs[0], scatter_average.inputs[0], "exact-Q scatter energy split")
+    required_link(tree, scatter_average.outputs[0], scatter_emission.inputs["Strength"], "exact-Q averaged scatter emission strength")
+
+    exact_image = bpy.data.images.get(cfg.EXACT_Q_IMAGE_NAME)
+    if exact_image is None:
+        raise RuntimeError("exact-Q packed image disappeared during scatter audit")
+    taps = []
+    premultiplies = []
+    for label, offset_x, offset_y in expected_offsets:
+        offset = required_node(material, f"Phase4R11_Q_ScatterOffset_{label}", "ShaderNodeVectorMath")
+        tap = required_node(material, f"Phase4R11_Q_ScatterTap_{label}", "ShaderNodeTexImage")
+        premultiply = required_node(material, f"Phase4R11_Q_ScatterPremultiply_{label}", "ShaderNodeVectorMath")
+        if offset.operation != "ADD":
+            raise RuntimeError(f"exact-Q {label} scatter offset is not vector addition")
+        for component, expected in zip(offset.inputs[1].default_value, (offset_x, offset_y, 0.0)):
+            require_float(component, expected, f"exact-Q {label} scatter offset component")
+        if (
+            tap.image is None
+            or rna_pointer(tap.image) != rna_pointer(exact_image)
+            or tap.interpolation != spec["scatterRing"]["interpolation"]
+            or tap.extension != spec["scatterRing"]["extension"]
+        ):
+            raise RuntimeError(f"exact-Q {label} scatter tap image, interpolation, or extension changed")
+        if premultiply.operation != "SCALE":
+            raise RuntimeError(f"exact-Q {label} scatter tap is not alpha-premultiplied")
+        required_link(tree, coordinates.outputs["UV"], offset.inputs[0], f"exact-Q UV to {label} scatter offset")
+        required_link(tree, offset.outputs["Vector"], tap.inputs["Vector"], f"exact-Q {label} offset to tap Vector")
+        required_link(tree, tap.outputs["Color"], premultiply.inputs[0], f"exact-Q {label} tap Color to premultiply")
+        required_link(tree, tap.outputs["Alpha"], enabled_input(premultiply, "Scale"), f"exact-Q {label} tap Alpha to premultiply")
+        taps.append(tap)
+        premultiplies.append(premultiply)
+
+    sums = []
+    scatter_color = premultiplies[0].outputs["Vector"]
+    for index, premultiply in enumerate(premultiplies[1:], start=2):
+        sum_node = required_node(material, f"Phase4R11_Q_ScatterSum_{index:02d}", "ShaderNodeVectorMath")
+        if sum_node.operation != "ADD":
+            raise RuntimeError("exact-Q scatter color reduction contains a non-add operation")
+        required_link(tree, scatter_color, sum_node.inputs[0], f"exact-Q scatter running sum {index:02d}")
+        required_link(tree, premultiply.outputs["Vector"], sum_node.inputs[1], f"exact-Q scatter premultiply into sum {index:02d}")
+        scatter_color = sum_node.outputs["Vector"]
+        sums.append(sum_node)
+    required_link(tree, scatter_color, scatter_emission.inputs["Color"], "exact-Q averaged premultiplied scatter color")
+    required_link(tree, core_surface.outputs["Shader"], surface_add.inputs[0], "exact-Q preserved core surface into additive physical surface")
+    required_link(tree, scatter_emission.outputs["Emission"], surface_add.inputs[1], "exact-Q scatter emission into additive physical surface")
+    required_link(tree, surface_add.outputs[0], output.inputs["Surface"], "exact-Q final core-plus-scatter physical surface")
+
+    if has_exact_link(tree, strength.outputs[0], emission.inputs["Strength"]):
+        raise RuntimeError("exact-Q physical treatment left the bypass strength link active")
+    if has_exact_link(tree, final_strength.outputs[0], emission.inputs["Strength"]):
+        raise RuntimeError("exact-Q scatter repair left the pre-calibration core-strength bypass active")
+    if has_exact_link(tree, core_surface.outputs["Shader"], output.inputs["Surface"]):
+        raise RuntimeError("exact-Q scatter repair left the pre-scatter surface bypass active")
+    if texture.inputs["Vector"].is_linked:
+        raise RuntimeError("exact-Q physical treatment changed the pre-effects image Vector input")
+    if len(tree.links) != 77:
+        raise RuntimeError(f"exact-Q repaired link topology mismatch: expected 77, got {len(tree.links)}")
+    image_references = exact_q_image_reference_record(spec["repairedImageSamplerCount"])
+    return {
+        "material": material.name,
+        "authority": spec,
+        "nodeCount": len(tree.nodes),
+        "linkCount": len(tree.links),
+        "newNodeNames": sorted(set(physical_node_types) | set(scatter_node_types)),
+        "scatterRepairNodeNames": sorted(scatter_node_types),
+        "imageReferences": image_references,
+        "imageReferenceChange": {
+            "acceptedSamplerCount": spec["acceptedImageSamplerCount"],
+            "repairedSamplerCount": spec["repairedImageSamplerCount"],
+            "addedSamplerReferences": spec["repairedImageSamplerCount"] - spec["acceptedImageSamplerCount"],
+            "samePackedImageDatablock": True,
+        },
+        "sourceImageVectorInputUnchanged": True,
+        "sourceTextureColorAndAlphaBranchesUnchanged": True,
+        "objectAlphaGateUnchanged": True,
+        "animatedInputsAdded": False,
+        "cameraDistanceModulatesOnlyScanContrast": True,
+        "baseEmissionStrengthPreservedAtAllDistances": True,
+        "upstreamBaseEmissionStrengthPreserved": True,
+        "scanNoiseTopologyAndValuesFrozen": True,
+        "coreStrengthFormula": "FinalPhysicalStrength * 0.43 * 0.74",
+        "scatterStrengthFormula": "Math.001 * 0.43 * 0.26 * 0.125",
+        "scatterBypassesScanAndNoise": True,
+        "coreScatterEnergySplitSum": rounded(spec["energySplit"]["core"] + spec["energySplit"]["scatter"]),
+        "tapColorsPremultipliedByTapAlpha": True,
+        "outsideSampledCoverageExactBlackByConstruction": True,
+        "additionalTransparentBsdfCount": 0,
+        "additionalMixShaderCount": 0,
+        "singleScatterEmission": True,
+        "singleAddShader": True,
+        "physicalStrengthChainValid": True,
+    }
+
+
+def configure_glass_principled(node: bpy.types.Node, source: bpy.types.Node, spec: dict[str, Any]) -> None:
+    node.inputs["Base Color"].default_value = tuple(source.inputs["Base Color"].default_value)
+    node.inputs["Metallic"].default_value = 0.0
+    node.inputs["Roughness"].default_value = spec["roughness"]
+    required_input(node, "IOR").default_value = spec["ior"]
+    required_input(node, "Transmission Weight").default_value = spec["transmissionWeight"]
+    required_input(node, "Specular IOR Level").default_value = spec["specularIorLevel"]
+    required_input(node, "Coat Weight").default_value = cfg.CRT_MATERIAL_AUTHORITY["glass"]["coatWeight"]
+    required_input(node, "Emission Strength").default_value = 0.0
+
+
+def rebuild_animated_smoked_glass_material() -> dict[str, Any]:
+    spec = cfg.CRT_MATERIAL_AUTHORITY["glass"]
+    material = bpy.data.materials.get(spec["name"])
+    if material is None or material.library is not None or material.override_library is not None:
+        raise RuntimeError("animated CRT glass material is missing or not a local writable authority")
+    if material.animation_data is not None or material.node_tree is None or material.node_tree.animation_data is None:
+        raise RuntimeError("refusing to alter missing or non-node-tree-animated CRT glass")
+    expected_source_nodes = {
+        "Material Output": "ShaderNodeOutputMaterial",
+        "Principled BSDF": "ShaderNodeBsdfPrincipled",
+    }
+    observed_source_nodes = {node.name: node.bl_idname for node in material.node_tree.nodes}
+    if observed_source_nodes != expected_source_nodes:
+        raise RuntimeError(f"accepted animated glass source topology mismatch: {observed_source_nodes}")
+    source_before = animated_glass_source_record()
+    inherited = required_node(material, "Principled BSDF", "ShaderNodeBsdfPrincipled")
+    output = required_node(material, "Material Output", "ShaderNodeOutputMaterial")
+    tree = material.node_tree
+    old_surface_link = required_link(tree, inherited.outputs["BSDF"], output.inputs["Surface"], "accepted animated glass surface")
+    tree.links.remove(old_surface_link)
+
+    rough_transmission = tree.nodes.new("ShaderNodeBsdfPrincipled")
+    rough_transmission.name = "Phase4R11_Glass_RoughTransmission"
+    configure_glass_principled(rough_transmission, inherited, spec["roughTransmission"])
+    inherited_mix = tree.nodes.new("ShaderNodeMixShader")
+    inherited_mix.name = "Phase4R11_Glass_InheritedPlusTransmission"
+    inherited_mix.inputs[0].default_value = spec["roughTransmissionMix"]
+
+    dark_reflection = tree.nodes.new("ShaderNodeBsdfPrincipled")
+    dark_reflection.name = "Phase4R11_Glass_DarkReflection"
+    configure_glass_principled(dark_reflection, inherited, spec["darkReflection"])
+    fresnel = tree.nodes.new("ShaderNodeFresnel")
+    fresnel.name = "Phase4R11_Glass_Fresnel"
+    fresnel.inputs["IOR"].default_value = spec["fresnelIor"]
+    fresnel_scale = tree.nodes.new("ShaderNodeMath")
+    fresnel_scale.name = "Phase4R11_Glass_RestrainedFresnelScale"
+    fresnel_scale.operation = "MULTIPLY"
+    fresnel_scale.inputs[1].default_value = spec["fresnelMixScale"]
+    reflection_mix = tree.nodes.new("ShaderNodeMixShader")
+    reflection_mix.name = "Phase4R11_Glass_PhysicalSurface"
+
+    tree.links.new(inherited.outputs["BSDF"], inherited_mix.inputs[1])
+    tree.links.new(rough_transmission.outputs["BSDF"], inherited_mix.inputs[2])
+    tree.links.new(fresnel.outputs["Fac"], fresnel_scale.inputs[0])
+    tree.links.new(fresnel_scale.outputs[0], reflection_mix.inputs[0])
+    tree.links.new(inherited_mix.outputs["Shader"], reflection_mix.inputs[1])
+    tree.links.new(dark_reflection.outputs["BSDF"], reflection_mix.inputs[2])
+    tree.links.new(reflection_mix.outputs["Shader"], output.inputs["Surface"])
+
+    source_after = animated_glass_source_record()
+    if source_after != source_before:
+        raise RuntimeError("CRT glass treatment changed the inherited Principled node, action, object, or material binding")
+    return audit_animated_glass_physical_treatment()
+
+
+def audit_animated_glass_physical_treatment() -> dict[str, Any]:
+    spec = cfg.CRT_MATERIAL_AUTHORITY["glass"]
+    material = bpy.data.materials[spec["name"]]
+    tree = material.node_tree
+    if tree is None:
+        raise RuntimeError("animated CRT glass treatment lost its material node tree")
+    inherited = required_node(material, "Principled BSDF", "ShaderNodeBsdfPrincipled")
+    output = required_node(material, "Material Output", "ShaderNodeOutputMaterial")
+    rough_transmission = required_node(material, "Phase4R11_Glass_RoughTransmission", "ShaderNodeBsdfPrincipled")
+    inherited_mix = required_node(material, "Phase4R11_Glass_InheritedPlusTransmission", "ShaderNodeMixShader")
+    dark_reflection = required_node(material, "Phase4R11_Glass_DarkReflection", "ShaderNodeBsdfPrincipled")
+    fresnel = required_node(material, "Phase4R11_Glass_Fresnel", "ShaderNodeFresnel")
+    fresnel_scale = required_node(material, "Phase4R11_Glass_RestrainedFresnelScale", "ShaderNodeMath")
+    reflection_mix = required_node(material, "Phase4R11_Glass_PhysicalSurface", "ShaderNodeMixShader")
+    require_float(required_input(inherited, "Coat Weight").default_value, spec["coatWeight"], "inherited CRT glass coat")
+    if inherited.inputs["Normal"].is_linked:
+        raise RuntimeError("inherited CRT glass unexpectedly uses bump or normal input")
+    require_float(inherited_mix.inputs[0].default_value, spec["roughTransmissionMix"], "CRT glass rough-transmission mix")
+    require_float(fresnel.inputs["IOR"].default_value, spec["fresnelIor"], "CRT glass Fresnel IOR")
+    if fresnel_scale.operation != "MULTIPLY":
+        raise RuntimeError("CRT glass restrained Fresnel node is not a multiplier")
+    require_float(fresnel_scale.inputs[1].default_value, spec["fresnelMixScale"], "CRT glass Fresnel mix scale")
+    for node, values, label in (
+        (rough_transmission, spec["roughTransmission"], "rough transmission"),
+        (dark_reflection, spec["darkReflection"], "dark reflection"),
+    ):
+        require_float(node.inputs["Roughness"].default_value, values["roughness"], f"CRT glass {label} roughness")
+        require_float(required_input(node, "Transmission Weight").default_value, values["transmissionWeight"], f"CRT glass {label} transmission")
+        require_float(required_input(node, "IOR").default_value, values["ior"], f"CRT glass {label} IOR")
+        require_float(required_input(node, "Specular IOR Level").default_value, values["specularIorLevel"], f"CRT glass {label} specular")
+        require_float(required_input(node, "Coat Weight").default_value, spec["coatWeight"], f"CRT glass {label} coat")
+        require_float(required_input(node, "Emission Strength").default_value, 0.0, f"CRT glass {label} emission")
+        if node.inputs["Normal"].is_linked:
+            raise RuntimeError(f"CRT glass {label} unexpectedly uses bump or normal input")
+        if vector(node.inputs["Base Color"].default_value) != vector(inherited.inputs["Base Color"].default_value):
+            raise RuntimeError(f"CRT glass {label} base color diverged from the inherited smoked-black authority")
+    required_link(tree, inherited.outputs["BSDF"], inherited_mix.inputs[1], "inherited animated glass branch")
+    required_link(tree, rough_transmission.outputs["BSDF"], inherited_mix.inputs[2], "rough transmission glass branch")
+    required_link(tree, fresnel.outputs["Fac"], fresnel_scale.inputs[0], "CRT glass Fresnel response")
+    required_link(tree, fresnel_scale.outputs[0], reflection_mix.inputs[0], "restrained CRT glass Fresnel factor")
+    required_link(tree, inherited_mix.outputs["Shader"], reflection_mix.inputs[1], "CRT glass base physical surface")
+    required_link(tree, dark_reflection.outputs["BSDF"], reflection_mix.inputs[2], "CRT glass dark reflection branch")
+    required_link(tree, reflection_mix.outputs["Shader"], output.inputs["Surface"], "CRT glass final surface")
+    if has_exact_link(tree, inherited.outputs["BSDF"], output.inputs["Surface"]):
+        raise RuntimeError("CRT glass treatment left the direct inherited-surface bypass active")
+    if output.inputs["Volume"].is_linked or output.inputs["Displacement"].is_linked:
+        raise RuntimeError("CRT glass treatment added forbidden volume or displacement")
+    return {
+        "material": material.name,
+        "authority": spec,
+        "newNodeNames": sorted(node.name for node in (
+            rough_transmission,
+            inherited_mix,
+            dark_reflection,
+            fresnel,
+            fresnel_scale,
+            reflection_mix,
+        )),
+        "inheritedPrincipledPreserved": True,
+        "inheritedNodeTreeActionPreserved": True,
+        "noVolume": True,
+        "noBumpOrDisplacement": True,
+        "noCoat": True,
+        "physicalSurfaceChainValid": True,
+    }
+
+
+def build_crt_material() -> dict[str, Any]:
+    users_before = validate_crt_material_users()
+    fixed_before = crt_fixed_authority_snapshot()
+    image_references_before = exact_q_image_reference_record(
+        cfg.CRT_MATERIAL_AUTHORITY["qPhosphor"]["acceptedImageSamplerCount"]
+    )
+    q_treatment = rebuild_exact_q_phosphor_material()
+    glass_treatment = rebuild_animated_smoked_glass_material()
+    users_after = validate_crt_material_users()
+    fixed_after = crt_fixed_authority_snapshot()
+    image_references_after = exact_q_image_reference_record(
+        cfg.CRT_MATERIAL_AUTHORITY["qPhosphor"]["repairedImageSamplerCount"]
+    )
+    if users_after != users_before:
+        raise RuntimeError("CRT material repair changed an exact material binding or user")
+    if fixed_after != fixed_before:
+        raise RuntimeError("CRT material repair changed an object, geometry, image, action, collection, or datablock authority")
+    image_reference_delta = {
+        "samplers": image_references_after["samplerCount"] - image_references_before["samplerCount"],
+        "imageUsers": image_references_after["imageUsers"] - image_references_before["imageUsers"],
+    }
+    if image_reference_delta != {"samplers": 8, "imageUsers": 8}:
+        raise RuntimeError(f"exact-Q packed-image reference delta is not exactly eight: {image_reference_delta}")
+    return {
+        "repair": "two existing CRT material node graphs only",
+        "materialNames": [cfg.CRT_Q_PHOSPHOR_MATERIAL, cfg.CRT_GLASS_MATERIAL],
+        "materialAuthority": cfg.CRT_MATERIAL_AUTHORITY,
+        "materialUsersBefore": users_before,
+        "materialUsersAfter": users_after,
+        "materialUsersUnchanged": users_before == users_after,
+        "fixedAuthorityBefore": fixed_before,
+        "fixedAuthorityAfter": fixed_after,
+        "fixedAuthorityUnchanged": fixed_before == fixed_after,
+        "dataBlockInventoryUnchanged": fixed_before["dataBlockInventory"] == fixed_after["dataBlockInventory"],
+        "onlyAuthorizedMaterialGraphDelta": True,
+        "imageReferenceAuthority": {
+            "before": image_references_before,
+            "after": image_references_after,
+            "delta": image_reference_delta,
+            "onlyAdditionalReferencesToSamePackedImage": True,
+        },
+        "qPhosphorTreatment": q_treatment,
+        "glassTreatment": glass_treatment,
+        "cyclesEvidenceFrames": cfg.CRT_CYCLES_EVIDENCE_FRAMES,
+        "stableQCyclesAuthority": cfg.CRT_STABLE_Q_CYCLES_AUTHORITY,
+        "qMotionAuthority": cfg.CRT_Q_MOTION_AUTHORITY,
+        "maximumAuthorizedEvidenceFrame": cfg.CRT_MAXIMUM_AUTHORIZED_EVIDENCE_FRAME,
+        "forbiddenProductionFrameRange": list(cfg.CRT_FORBIDDEN_PRODUCTION_FRAME_RANGE),
+        "complete540FrameCyclesFilmStarted": False,
+        "finalRefinedMediaIntegrationStarted": False,
+        "phase5Authorized": False,
+    }
+
+
 def reset_existing_cable_material(name: str) -> bpy.types.Material:
     material = bpy.data.materials.get(name)
     if material is None or material.library is not None or material.override_library is not None:
@@ -1846,16 +2916,19 @@ def main() -> None:
     frame_before = scene_frame_record(scene)
     accepted_material_names = sorted(material.name for material in bpy.data.materials)
     allowed_cable_material_names = {cfg.CABLE_SHEATH_MATERIAL, cfg.CABLE_CURRENT_MATERIAL}
-    if not allowed_cable_material_names.issubset(accepted_material_names):
-        raise RuntimeError("accepted R1 source is missing one or both exact cable materials")
+    allowed_crt_material_names = {cfg.CRT_Q_PHOSPHOR_MATERIAL, cfg.CRT_GLASS_MATERIAL}
+    target_material_names = allowed_cable_material_names | allowed_crt_material_names
+    if not target_material_names.issubset(accepted_material_names):
+        raise RuntimeError("accepted R1 source is missing one or more exact cable/CRT target materials")
     accepted_material_records_before = material_records(accepted_material_names)
     accepted_material_hashes_before = {
         name: record["sha256"] for name, record in accepted_material_records_before.items()
     }
-    allowed_material_records_before = {
-        name: accepted_material_records_before[name] for name in sorted(allowed_cable_material_names)
+    target_material_records_before = {
+        name: accepted_material_records_before[name] for name in sorted(target_material_names)
     }
     cable_material_users_before = validate_cable_material_users()
+    crt_material_users_before = validate_crt_material_users()
     before = preservation_snapshot()
     expected_q = packed_q_record()
     if expected_q != {
@@ -1915,6 +2988,31 @@ def main() -> None:
         mobile_stage = build_mobile_optics(scene)
         completed_stages.append("mobile")
         stages["mobile"] = mobile_stage
+    after_mobile_preservation = preservation_snapshot()
+    if includes_stage(args.through, "crt"):
+        crt_stage = build_crt_material()
+        completed_stages.append("crt")
+        stages["crt"] = crt_stage
+        after_crt_preservation = preservation_snapshot()
+        expected_after_crt = ["mobileCameraFull"]
+        changed_after_crt = sorted(
+            key for key in before if before[key] != after_crt_preservation[key]
+        )
+        if changed_after_crt != expected_after_crt:
+            raise RuntimeError(
+                "cumulative CRT stage changed an authority outside its two material graphs: "
+                f"observed={changed_after_crt}, expected={expected_after_crt}"
+            )
+        if periphery_authority_snapshot() != periphery_authority_after_periphery:
+            raise RuntimeError("cumulative CRT stage changed the R1.1 periphery authority")
+        stages["crt"].update({
+            "preservationAfterCrt": after_crt_preservation,
+            "changedPreservationAuthoritiesAfterCrt": changed_after_crt,
+            "expectedChangedPreservationAuthoritiesAfterCrt": expected_after_crt,
+            "peripheryAuthorityUnchanged": True,
+        })
+    else:
+        after_crt_preservation = after_mobile_preservation
     after = preservation_snapshot()
     cable_authority_after = cable_authority_snapshot()
     current_states_after = current_state_hashes(scene)
@@ -1951,29 +3049,32 @@ def main() -> None:
     accepted_material_hashes_after = {
         name: record["sha256"] for name, record in accepted_material_records_after.items()
     }
-    allowed_material_records_after = {
-        name: accepted_material_records_after[name] for name in sorted(allowed_cable_material_names)
+    target_material_records_after = {
+        name: accepted_material_records_after[name] for name in sorted(target_material_names)
     }
     changed_accepted_materials = sorted(
         name
         for name in accepted_material_names
         if accepted_material_hashes_before[name] != accepted_material_hashes_after[name]
     )
-    expected_material_changes = (
-        sorted(allowed_cable_material_names) if includes_stage(args.through, "cable") else []
-    )
+    authorized_material_names: set[str] = set()
+    if includes_stage(args.through, "cable"):
+        authorized_material_names.update(allowed_cable_material_names)
+    if includes_stage(args.through, "crt"):
+        authorized_material_names.update(allowed_crt_material_names)
+    expected_material_changes = sorted(authorized_material_names)
     if changed_accepted_materials != expected_material_changes:
         raise RuntimeError(
             f"accepted material graph delta is not the exact stage allowlist: {changed_accepted_materials}"
         )
-    accepted_except_cable_before = {
-        name: value for name, value in accepted_material_hashes_before.items() if name not in allowed_cable_material_names
+    accepted_except_authorized_before = {
+        name: value for name, value in accepted_material_hashes_before.items() if name not in authorized_material_names
     }
-    accepted_except_cable_after = {
-        name: value for name, value in accepted_material_hashes_after.items() if name not in allowed_cable_material_names
+    accepted_except_authorized_after = {
+        name: value for name, value in accepted_material_hashes_after.items() if name not in authorized_material_names
     }
-    if accepted_except_cable_before != accepted_except_cable_after:
-        raise RuntimeError("a global accepted material outside the exact two cable materials changed")
+    if accepted_except_authorized_before != accepted_except_authorized_after:
+        raise RuntimeError("a global accepted material outside the cumulative stage allowlist changed")
     new_material_names = sorted(set(material.name for material in bpy.data.materials) - set(accepted_material_names))
     expected_new_material_names = sorted(spec["name"] for spec in cfg.MATERIALS.values())
     if new_material_names != expected_new_material_names:
@@ -1981,6 +3082,31 @@ def main() -> None:
     cable_material_users_after = validate_cable_material_users()
     if cable_material_users_after != cable_material_users_before:
         raise RuntimeError("targeted repair changed exact cable material users")
+    crt_material_users_after = validate_crt_material_users()
+    if crt_material_users_after != crt_material_users_before:
+        raise RuntimeError("targeted repair changed exact CRT material users")
+    cable_material_records_before = {
+        name: target_material_records_before[name] for name in sorted(allowed_cable_material_names)
+    }
+    cable_material_records_after = {
+        name: target_material_records_after[name] for name in sorted(allowed_cable_material_names)
+    }
+    crt_material_records_before = {
+        name: target_material_records_before[name] for name in sorted(allowed_crt_material_names)
+    }
+    crt_material_records_after = {
+        name: target_material_records_after[name] for name in sorted(allowed_crt_material_names)
+    }
+    changed_cable_materials = sorted(
+        name
+        for name in allowed_cable_material_names
+        if accepted_material_hashes_before[name] != accepted_material_hashes_after[name]
+    )
+    changed_crt_materials = sorted(
+        name
+        for name in allowed_crt_material_names
+        if accepted_material_hashes_before[name] != accepted_material_hashes_after[name]
+    )
     if includes_stage(args.through, "cable"):
         stages["cable"].update({
             "fixedAuthorityBefore": cable_authority_before,
@@ -1989,10 +3115,31 @@ def main() -> None:
             "currentStateHashesBefore": current_states_before,
             "currentStateHashesAfter": current_states_after,
             "currentStateHashesUnchanged": current_states_before == current_states_after,
-            "materialGraphsBefore": allowed_material_records_before,
-            "materialGraphsAfter": allowed_material_records_after,
-            "changedAcceptedMaterials": changed_accepted_materials,
-            "exactlyTwoAllowedMaterialGraphsChanged": changed_accepted_materials == expected_material_changes,
+            "materialGraphsBefore": cable_material_records_before,
+            "materialGraphsAfter": cable_material_records_after,
+            "changedAcceptedMaterials": changed_cable_materials,
+            "expectedChangedAcceptedMaterials": sorted(allowed_cable_material_names),
+            "exactlyTwoAllowedMaterialGraphsChanged": changed_cable_materials == sorted(allowed_cable_material_names),
+        })
+    if includes_stage(args.through, "crt"):
+        q_source_before = stages["crt"]["fixedAuthorityBefore"]["exactQSource"]
+        q_source_after = stages["crt"]["fixedAuthorityAfter"]["exactQSource"]
+        stages["crt"].update({
+            "materialGraphsBefore": crt_material_records_before,
+            "materialGraphsAfter": crt_material_records_after,
+            "changedAcceptedMaterials": changed_crt_materials,
+            "expectedChangedAcceptedMaterials": sorted(allowed_crt_material_names),
+            "exactlyTwoAllowedMaterialGraphsChanged": changed_crt_materials == sorted(allowed_crt_material_names),
+            "cumulativeChangedAcceptedMaterials": changed_accepted_materials,
+            "preEffectsSourceDifference": {
+                "packedBefore": q_source_before["packedImage"],
+                "packedAfter": q_source_after["packedImage"],
+                "packedByteDifferenceCount": 0 if q_source_before["packedImage"] == q_source_after["packedImage"] else None,
+                "planeAuthorityBeforeSha256": q_source_before["planeAuthoritySha256"],
+                "planeAuthorityAfterSha256": q_source_after["planeAuthoritySha256"],
+                "planeGeometryUvOpacityActionDifference": 0 if q_source_before == q_source_after else None,
+                "zeroDifference": q_source_before == q_source_after,
+            },
         })
     if includes_stage(args.through, "mobile"):
         if unchanged["mobileCameraFull"] or not unchanged["mobileCameraExceptLens"]:
@@ -2060,10 +3207,12 @@ def main() -> None:
             raise RuntimeError("staged save changed fixed cable geometry, progression, bindings, contact profile, collection state, or local response")
         if includes_stage(args.through, "cable") and source_corridor_axis_audit() != stages["cable"]["sourceCorridorAxisAuditAfter"]:
             raise RuntimeError("staged save changed the source-corridor route-axis authority")
-        if material_records(sorted(allowed_cable_material_names)) != allowed_material_records_after:
-            raise RuntimeError("staged save changed an allowed cable material graph")
+        if material_records(sorted(target_material_names)) != target_material_records_after:
+            raise RuntimeError("staged save changed an exact target material graph")
         if validate_cable_material_users() != cable_material_users_after:
             raise RuntimeError("reopened staged derivative changed exact cable material users")
+        if validate_crt_material_users() != crt_material_users_after:
+            raise RuntimeError("reopened staged derivative changed exact CRT material users")
         post_save_periphery_authority = periphery_authority_snapshot()
         if post_save_periphery_authority != periphery_authority_after:
             raise RuntimeError("reopened staged derivative changed the cumulative R1.1 periphery authority")
@@ -2100,6 +3249,27 @@ def main() -> None:
                 "postSaveGlobalActionsExceptTargetLens": post_save_global_actions,
                 "postSaveAuthorityExact": True,
             })
+        if includes_stage(args.through, "crt"):
+            post_save_crt_fixed = crt_fixed_authority_snapshot()
+            post_save_q_treatment = audit_exact_q_physical_treatment()
+            post_save_glass_treatment = audit_animated_glass_physical_treatment()
+            post_save_image_references = exact_q_image_reference_record(
+                cfg.CRT_MATERIAL_AUTHORITY["qPhosphor"]["repairedImageSamplerCount"]
+            )
+            if (
+                post_save_crt_fixed != stages["crt"]["fixedAuthorityAfter"]
+                or post_save_q_treatment != stages["crt"]["qPhosphorTreatment"]
+                or post_save_glass_treatment != stages["crt"]["glassTreatment"]
+                or post_save_image_references != stages["crt"]["imageReferenceAuthority"]["after"]
+            ):
+                raise RuntimeError("staged save changed the exact CRT material or fixed-source authority")
+            stages["crt"].update({
+                "postSaveFixedAuthority": post_save_crt_fixed,
+                "postSaveQPhosphorTreatment": post_save_q_treatment,
+                "postSaveGlassTreatment": post_save_glass_treatment,
+                "postSaveImageReferences": post_save_image_references,
+                "postSaveAuthorityExact": True,
+            })
         if timeline_record(scene) != timeline_after:
             raise RuntimeError("reopened staged derivative changed the accepted timeline authority")
         if scene_frame_record(scene) != frame_after:
@@ -2125,6 +3295,8 @@ def main() -> None:
                 "before": before,
                 "afterPeriphery": after_periphery,
                 "afterCable": after_cable_preservation,
+                "afterMobile": after_mobile_preservation,
+                "afterCrt": after_crt_preservation,
                 "after": after,
                 "unchanged": unchanged,
                 "changedAuthorities": changed_preservation_authorities,
@@ -2154,17 +3326,22 @@ def main() -> None:
                 },
                 "materialGraphs": {
                     "allowedCableMaterialNames": sorted(allowed_cable_material_names),
+                    "allowedCrtMaterialNames": sorted(allowed_crt_material_names),
+                    "cumulativeAuthorizedMaterialNames": sorted(authorized_material_names),
                     "changedAcceptedMaterials": changed_accepted_materials,
                     "expectedChangedAcceptedMaterials": expected_material_changes,
-                    "allowedBefore": allowed_material_records_before,
-                    "allowedAfter": allowed_material_records_after,
-                    "acceptedExceptCableBeforeSha256": canonical_hash(accepted_except_cable_before),
-                    "acceptedExceptCableAfterSha256": canonical_hash(accepted_except_cable_after),
-                    "acceptedExceptCableUnchanged": accepted_except_cable_before == accepted_except_cable_after,
+                    "targetBefore": target_material_records_before,
+                    "targetAfter": target_material_records_after,
+                    "acceptedExceptAuthorizedBeforeSha256": canonical_hash(accepted_except_authorized_before),
+                    "acceptedExceptAuthorizedAfterSha256": canonical_hash(accepted_except_authorized_after),
+                    "acceptedExceptAuthorizedUnchanged": accepted_except_authorized_before == accepted_except_authorized_after,
                     "newPeripheryMaterials": new_material_names,
                     "cableUsersBefore": cable_material_users_before,
                     "cableUsersAfter": cable_material_users_after,
                     "cableUsersUnchanged": cable_material_users_before == cable_material_users_after,
+                    "crtUsersBefore": crt_material_users_before,
+                    "crtUsersAfter": crt_material_users_after,
+                    "crtUsersUnchanged": crt_material_users_before == crt_material_users_after,
                 },
                 "openingHeaderGeometryAndMaterialBindingsUnchanged": header_before == header_after,
                 "onlyOpeningHeaderRenderVisibilitySuppressed": all(bpy.data.objects[name].hide_render for name in cfg.SUPPRESSED_OPENING_HEADER_OBJECTS),
