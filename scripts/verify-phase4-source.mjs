@@ -371,6 +371,12 @@ for (const nested of ["media", "posters"]) check(
   "public/_headers",
   `hash-named Phase 4-R2 ${nested} must retain long immutable caching`,
 );
+check(
+  /^\/_astro\/\*\s+Cache-Control:\s*public,\s*max-age=31556952,\s*immutable\s*$/m.test(cloudflareHeaders.replace(/\r?\n[ \t]+/g, " ")),
+  "runtime-immutable-cache-policy",
+  "public/_headers",
+  "hash-named Astro runtime assets must retain long immutable caching",
+);
 
 for (const route of SUPPORTING_ROUTES) {
   const source = await readOrFail(route.source);

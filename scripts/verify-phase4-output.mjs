@@ -400,6 +400,12 @@ for (const nested of ["media", "posters"]) check(
   "dist/_headers",
   `content-hash-named Phase 4-R2 ${nested} must retain long immutable caching`,
 );
+check(
+  Boolean(cloudflareHeadersRecord?.text.match(/^\/_astro\/\*\s+Cache-Control:\s*public,\s*max-age=31556952,\s*immutable\s*$/m)),
+  "runtime-immutable-cache-policy",
+  "dist/_headers",
+  "hash-named Astro runtime assets must retain long immutable caching",
+);
 const observedCinematic = cinematicRecords.map((record) => record.path.slice(cinematicPrefix.length)).sort();
 const r2CinematicInventory = phase4r2ManifestRecord
   ? ["phase-4r2/manifests/phase-4r2-production-media-manifest.json", ...phase4r2Assets.map(({ file }) => `phase-4r2/${file}`)]

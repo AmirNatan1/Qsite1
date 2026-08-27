@@ -7,5 +7,8 @@
 /media/cinematic/phase-4r2/posters/*
   Cache-Control: public, max-age=31556952, immutable
 
+/_astro/*
+  Cache-Control: public, max-age=31556952, immutable
+
 /media/cinematic/phase-3-*
   Cache-Control: public, max-age=31556952, immutable
