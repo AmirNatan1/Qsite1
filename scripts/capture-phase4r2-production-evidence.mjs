@@ -430,10 +430,15 @@ async function runtimeState(page) {
       targetTime: Number(window.quantumPhase4?.targetTime ?? shell?.getAttribute("data-target-time") ?? -1),
       mediaFamily: shell?.getAttribute("data-media-family") ?? null,
       mediaCodec: shell?.getAttribute("data-media-codec") ?? null,
-      mediaSourcePath: media instanceof HTMLVideoElement && media.currentSrc ? new URL(media.currentSrc).pathname : null,
+      mediaSourcePath: shell?.getAttribute("data-media-source") ?? null,
+      mediaDelivery: shell?.getAttribute("data-media-delivery") ?? null,
+      mediaState: shell?.getAttribute("data-media-state") ?? null,
+      decoderSourceScheme: media instanceof HTMLVideoElement && media.currentSrc ? new URL(media.currentSrc).protocol.replace(":", "") : null,
       mediaReady: Boolean(window.quantumPhase4?.mediaReady),
       currentTime: media instanceof HTMLVideoElement ? media.currentTime : null,
       duration: media instanceof HTMLVideoElement && Number.isFinite(media.duration) ? media.duration : null,
+      readyState: media instanceof HTMLVideoElement ? media.readyState : null,
+      seeking: media instanceof HTMLVideoElement ? media.seeking : null,
       videoWidth: media instanceof HTMLVideoElement ? media.videoWidth : null,
       videoHeight: media instanceof HTMLVideoElement ? media.videoHeight : null,
       frameCallbackAvailable: media instanceof HTMLVideoElement && typeof media.requestVideoFrameCallback === "function",
@@ -559,11 +564,12 @@ async function captureViewpoint(browser, options, viewpoint) {
         ...timelineStateChecks(state, milestone.frame),
         expectedFamily: state.mediaFamily === viewpoint.family,
         exactNestedMediaPath: typeof state.mediaSourcePath === "string" && state.mediaSourcePath.startsWith(`${DEPLOYED_ASSET_PREFIX}media/`) && !state.mediaSourcePath.slice(`${DEPLOYED_ASSET_PREFIX}media/`.length).includes("/"),
-        enhancedReady: state.mode === "enhanced" && state.fallback === null && state.mediaReady,
+        blobDecoderDelivery: state.mediaDelivery === "blob" && state.decoderSourceScheme === "blob",
+        enhancedReady: state.mode === "enhanced" && state.fallback === null && state.mediaReady && state.mediaState === "ready",
         exactViewport: state.document.width === viewpoint.width && state.document.height === viewpoint.height && state.document.devicePixelRatio === 1,
         noHorizontalOverflow: state.document.scrollWidth <= viewpoint.width + 2,
         requestVideoFrameCallbackUsedWhenAvailable: !state.frameCallbackAvailable || (frameCallback.available && frameCallback.requested),
-        decoderSettled: milestone.frame > PHYSICAL_FRAME_END ? Math.abs(state.currentTime - 499 / FPS) <= 2 / FPS : frameCallback.matched,
+        decoderSettled: state.readyState >= 2 && state.seeking === false && Math.abs(state.currentTime - expectedTimeline.physicalTargetTime) <= 2 / FPS,
         entryState: milestone.frame === FRAME_COUNT ? state.entryOpacity >= 0.99 : true,
       };
       if (Object.values(checks).some((passed) => passed !== true)) throw new Error(`${viewpoint.id}/${milestone.id} checks failed: ${JSON.stringify(checks)}`);
@@ -571,6 +577,10 @@ async function captureViewpoint(browser, options, viewpoint) {
       states.push({ milestone, expectedTimeline, requestedScrollY, state, frameCallback, screenshot: { bytes: screenshot.bytes.length, sha256: sha256(screenshot.bytes), width: screenshot.width, height: screenshot.height }, checks, thumbnail: thumb });
     }
   } finally { await context.close(); }
+  const manifestRequests = diagnostics.requests.filter((request) => request.path === DEPLOYED_MANIFEST_PATH);
+  const mediaRequests = diagnostics.requests.filter((request) => request.path.startsWith(`${DEPLOYED_ASSET_PREFIX}media/`));
+  const uniqueMediaPaths = [...new Set(mediaRequests.map((request) => request.path))];
+  if (manifestRequests.length !== 1 || mediaRequests.length !== 1 || uniqueMediaPaths.length !== 1 || uniqueMediaPaths[0] !== states[0]?.state.mediaSourcePath) throw new Error(`${viewpoint.id} single-manifest/single-media request contract failed`);
   if (diagnostics.consoleErrors.length || diagnostics.pageErrors.length || diagnostics.failedRequests.length || diagnostics.responseErrors.length) throw new Error(`${viewpoint.id} browser diagnostics failed: ${JSON.stringify(diagnostics)}`);
   return { viewpoint, states, diagnostics };
 }
@@ -899,6 +909,7 @@ async function selfTest() {
   const captureSource = await readFile(path.join(ROOT, SCRIPT_RELATIVE), "utf8");
   const forbiddenGenericWait = ['waitUntil: "', "network", "idle", '"'].join("");
   if (captureSource.includes(forbiddenGenericWait)) throw new Error("Long-lived media capture must use explicit runtime readiness rather than generic network-idle self-test failed");
+  if (!captureSource.includes('shell?.getAttribute("data-media-source")') || !captureSource.includes('state.mediaDelivery === "blob" && state.decoderSourceScheme === "blob"')) throw new Error("Hash-named fetch authority and Blob decoder separation self-test failed");
   if (Object.keys(HUMAN_REVIEW_GATES).join("|") !== "PHYSICAL → DIGITAL CONTINUITY|NATIVE SCROLL + REVERSE INTEGRITY|RESPONSIVE + ACCESSIBLE INTEGRATION|MEDIA + PERFORMANCE SAFETY|OPERATING FIELD REGRESSION") throw new Error("Gate identity self-test failed");
   process.stdout.write(stableJson({ schema: `${SCHEMA}.self-test`, status: "PASS", outputContract: { sheets: 16, recordings: 7, reports: 10 } }));
 }
