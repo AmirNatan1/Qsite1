@@ -462,6 +462,26 @@ async function runtimeState(page) {
   });
 }
 
+async function loadPerformanceSnapshot(page, decoderReadyMs) {
+  return page.evaluate(({ decoderReadyMs, assetPrefix }) => {
+    const navigation = performance.getEntriesByType("navigation")[0];
+    const paints = performance.getEntriesByType("paint");
+    const resources = performance.getEntriesByType("resource");
+    const poster = resources.find((entry) => entry.name.includes(`${assetPrefix}posters/`));
+    const media = resources.find((entry) => entry.name.includes(`${assetPrefix}media/`));
+    const firstContentfulPaint = paints.find((entry) => entry.name === "first-contentful-paint");
+    return {
+      dclMs: Number.isFinite(navigation?.domContentLoadedEventEnd) ? navigation.domContentLoadedEventEnd : null,
+      fcpMs: Number.isFinite(firstContentfulPaint?.startTime) ? firstContentfulPaint.startTime : null,
+      lcpMs: Number.isFinite(window.__phase4r2LoadMetrics?.lcp) ? window.__phase4r2LoadMetrics.lcp : null,
+      posterReadyMs: Number.isFinite(poster?.responseEnd) && poster.responseEnd > 0 ? poster.responseEnd : null,
+      mediaFetchCompleteMs: Number.isFinite(media?.responseEnd) && media.responseEnd > 0 ? media.responseEnd : null,
+      decoderReadyMs,
+      cls: Number(window.__phase4r2LoadMetrics?.cls ?? 0),
+    };
+  }, { decoderReadyMs, assetPrefix: DEPLOYED_ASSET_PREFIX });
+}
+
 async function scrollForFrame(page, frame) {
   const maximum = await page.evaluate(() => Math.max(0, document.documentElement.scrollHeight - innerHeight));
   let low = 0;
@@ -876,6 +896,11 @@ async function captureOperationalQa(browser, options) {
   const coldWarm = [];
   for (const profile of [{ id: "cold-then-warm", cacheDisabled: false }, { id: "2mbps-200ms", cacheDisabled: true, latency: 200, throughput: 250_000 }]) {
     const profileContext = await browser.newContext(contextOptions(viewpoint));
+    await profileContext.addInitScript(() => {
+      window.__phase4r2LoadMetrics = { lcp: null, cls: 0 };
+      try { new PerformanceObserver((list) => { for (const entry of list.getEntries()) window.__phase4r2LoadMetrics.lcp = entry.startTime; }).observe({ type: "largest-contentful-paint", buffered: true }); } catch {}
+      try { new PerformanceObserver((list) => { for (const entry of list.getEntries()) if (!entry.hadRecentInput) window.__phase4r2LoadMetrics.cls += entry.value; }).observe({ type: "layout-shift", buffered: true }); } catch {}
+    });
     const profilePage = await profileContext.newPage();
     const session = await profileContext.newCDPSession(profilePage);
     await session.send("Network.enable");
@@ -883,13 +908,36 @@ async function captureOperationalQa(browser, options) {
     if (profile.latency) await session.send("Network.emulateNetworkConditions", { offline: false, latency: profile.latency, downloadThroughput: profile.throughput, uploadThroughput: profile.throughput });
     const started = Date.now();
     await profilePage.goto(options.url, { waitUntil: "domcontentloaded", timeout: options.timeoutMs });
-    await settleEnhanced(profilePage, options.timeoutMs);
-    coldWarm.push({ profile: profile.id === "cold-then-warm" ? "cold" : profile.id, elapsedMs: Date.now() - started, status: "PASS" });
     if (profile.id === "cold-then-warm") {
+      await settleEnhanced(profilePage, options.timeoutMs);
+      const decoderReadyMs = Date.now() - started;
+      await twoFrames(profilePage);
+      coldWarm.push({ profile: "cold", metrics: await loadPerformanceSnapshot(profilePage, decoderReadyMs), state: await runtimeState(profilePage), status: "PASS" });
       const warmStarted = Date.now();
       await profilePage.reload({ waitUntil: "domcontentloaded", timeout: options.timeoutMs });
       await settleEnhanced(profilePage, options.timeoutMs);
-      coldWarm.push({ profile: "warm", elapsedMs: Date.now() - warmStarted, status: "PASS" });
+      const warmDecoderReadyMs = Date.now() - warmStarted;
+      await twoFrames(profilePage);
+      coldWarm.push({ profile: "warm", metrics: await loadPerformanceSnapshot(profilePage, warmDecoderReadyMs), state: await runtimeState(profilePage), status: "PASS" });
+    } else {
+      await profilePage.waitForFunction(() => document.documentElement.dataset.cinematicMode === "enhanced" && document.querySelector("[data-cinematic-shell]")?.getAttribute("data-media-state") === "loading", null, { timeout: Math.min(options.timeoutMs, 8_000) });
+      const maximum = await profilePage.evaluate(() => Math.max(0, document.documentElement.scrollHeight - innerHeight));
+      await profilePage.evaluate((y) => window.scrollTo(0, y), maximum);
+      await twoFrames(profilePage);
+      const outrun = await runtimeState(profilePage);
+      await profilePage.waitForFunction(() => document.documentElement.dataset.cinematicMode === "static" || Boolean(window.quantumPhase4?.mediaReady), null, { timeout: Math.min(options.timeoutMs, 30_000) });
+      await twoFrames(profilePage);
+      const terminal = await runtimeState(profilePage);
+      const constrainedChecks = {
+        immediateScroll: outrun.conceptualFrame === FRAME_COUNT && outrun.targetFrame === PHYSICAL_FRAME_END,
+        decoderUnavailableWhileOutrun: outrun.mediaReady === false,
+        semanticEntryVisibleWhileOutrun: outrun.entryOpacity >= 0.99,
+        latestStateAuthoritative: outrun.targetFrame === PHYSICAL_FRAME_END && Math.abs(outrun.targetTime - 499 / FPS) <= 0.0002,
+        gracefulTerminal: (terminal.mode === "static" && terminal.entryOpacity >= 0.99 && terminal.headerOpacity >= 0.99) || (terminal.mode === "enhanced" && terminal.mediaReady),
+      };
+      if (Object.values(constrainedChecks).some((passed) => !passed)) throw new Error(`Constrained-network fail-open contract failed: ${JSON.stringify({ constrainedChecks, outrun, terminal })}`);
+      const decoderReadyMs = terminal.mediaReady ? Date.now() - started : null;
+      coldWarm.push({ profile: profile.id, emulation: { throughputBitsPerSecond: 2_000_000, roundTripTimeMs: 200 }, metrics: await loadPerformanceSnapshot(profilePage, decoderReadyMs), outrun, terminal, checks: constrainedChecks, status: "PASS" });
     }
     await profileContext.close();
   }
@@ -942,6 +990,7 @@ async function selfTest() {
   if (!captureSource.includes('raw.startsWith("blob:")') || !captureSource.includes("state.cinematicDecoderCount === 1 && state.totalVideoCount === 1")) throw new Error("Blob seek telemetry and single decoder-node self-test failed");
   if (!captureSource.includes('await page.keyboard.press("PageDown");\n  await twoFrames(page);')) throw new Error("Input sampling must wait for the runtime animation-frame write self-test failed");
   if (!captureSource.includes('mediaState === "loading";\n  }, null, { timeout: Math.min(options.timeoutMs, 8_000) });')) throw new Error("Pending skip-link focus must wait for the documented loading state self-test failed");
+  if (!captureSource.includes("semanticEntryVisibleWhileOutrun") || !captureSource.includes("mediaFetchCompleteMs") || !captureSource.includes("largest-contentful-paint")) throw new Error("Cold/warm/constrained performance metric contract self-test failed");
   if (Object.keys(HUMAN_REVIEW_GATES).join("|") !== "PHYSICAL → DIGITAL CONTINUITY|NATIVE SCROLL + REVERSE INTEGRITY|RESPONSIVE + ACCESSIBLE INTEGRATION|MEDIA + PERFORMANCE SAFETY|OPERATING FIELD REGRESSION") throw new Error("Gate identity self-test failed");
   process.stdout.write(stableJson({ schema: `${SCHEMA}.self-test`, status: "PASS", outputContract: { sheets: 16, recordings: 7, reports: 10 } }));
 }
