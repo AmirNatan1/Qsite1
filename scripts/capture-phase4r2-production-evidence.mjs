@@ -544,7 +544,7 @@ async function captureViewpoint(browser, options, viewpoint) {
   const diagnostics = observePage(page);
   const states = [];
   try {
-    const response = await page.goto(options.url, { waitUntil: "networkidle", timeout: options.timeoutMs });
+    const response = await page.goto(options.url, { waitUntil: "domcontentloaded", timeout: options.timeoutMs });
     if (!response?.ok()) throw new Error(`${viewpoint.id} returned HTTP ${response?.status() ?? "none"}`);
     await settleEnhanced(page, options.timeoutMs);
     for (const milestone of MILESTONES) {
@@ -619,7 +619,7 @@ async function recordScenario(browser, options, scenario, rawRoot) {
   let actionState = null;
   let end;
   try {
-    const response = await page.goto(options.url, { waitUntil: "networkidle", timeout: options.timeoutMs });
+    const response = await page.goto(options.url, { waitUntil: "domcontentloaded", timeout: options.timeoutMs });
     if (!response?.ok()) throw new Error(`${scenario.id} returned HTTP ${response?.status() ?? "none"}`);
     await settleEnhanced(page, options.timeoutMs);
     const geometry = await recordingGeometry(page);
@@ -705,7 +705,8 @@ async function captureFallbackQa(browser, options) {
   const reducedContext = await browser.newContext(contextOptions(viewpoint, { reducedMotion: "reduce" }));
   const reducedPage = await reducedContext.newPage();
   const reducedObserved = observePage(reducedPage);
-  await reducedPage.goto(options.url, { waitUntil: "networkidle", timeout: options.timeoutMs });
+  await reducedPage.goto(options.url, { waitUntil: "domcontentloaded", timeout: options.timeoutMs });
+  await reducedPage.waitForFunction(() => document.documentElement.dataset.cinematicMode === "static", null, { timeout: options.timeoutMs });
   await twoFrames(reducedPage);
   const reduced = await reducedPage.evaluate(() => { const videos = [...document.querySelectorAll("video")]; return { mode: document.documentElement.dataset.cinematicMode ?? null, videoElements: videos.length, activeVideoSources: videos.filter((video) => video.currentSrc || video.getAttribute("src") || video.querySelector("source[src]")).length, skipVisible: Boolean(document.querySelector('a[href="#entry"]')) }; });
   const reducedVideoRequests = reducedObserved.requests.filter((item) => /\.(?:mp4|webm)$/i.test(item.path));
@@ -724,7 +725,8 @@ async function captureFallbackQa(browser, options) {
   const zoomContext = await browser.newContext(contextOptions(viewpoint));
   const zoomPage = await zoomContext.newPage();
   const zoomSession = await zoomContext.newCDPSession(zoomPage);
-  await zoomPage.goto(options.url, { waitUntil: "networkidle", timeout: options.timeoutMs });
+  await zoomPage.goto(options.url, { waitUntil: "domcontentloaded", timeout: options.timeoutMs });
+  await settleEnhanced(zoomPage, options.timeoutMs);
   await zoomSession.send("Emulation.setPageScaleFactor", { pageScaleFactor: 2 });
   await twoFrames(zoomPage);
   const zoom200 = await zoomPage.evaluate(() => ({ scale: visualViewport?.scale ?? null, horizontalOverflow: document.documentElement.scrollWidth > innerWidth + 2, entryPresent: Boolean(document.querySelector("#entry")) }));
@@ -761,23 +763,23 @@ async function captureOperationalQa(browser, options) {
     try { new PerformanceObserver((list) => window.__phase4r2Metrics.longTasks.push(...list.getEntries().map((entry) => ({ startTime: entry.startTime, duration: entry.duration })))).observe({ type: "longtask", buffered: true }); } catch {}
     try { new PerformanceObserver((list) => window.__phase4r2Metrics.layoutShifts.push(...list.getEntries().filter((entry) => !entry.hadRecentInput).map((entry) => ({ value: entry.value })))).observe({ type: "layout-shift", buffered: true }); } catch {}
   });
-  await page.goto(options.url, { waitUntil: "networkidle", timeout: options.timeoutMs });
+  await page.goto(options.url, { waitUntil: "domcontentloaded", timeout: options.timeoutMs });
   await settleEnhanced(page, options.timeoutMs);
   const initial = await runtimeState(page);
   await page.mouse.wheel(0, 400);
   await page.keyboard.press("PageDown");
   const afterKeyboard = await runtimeState(page);
-  await page.goto(options.url, { waitUntil: "networkidle", timeout: options.timeoutMs });
+  await page.goto(options.url, { waitUntil: "domcontentloaded", timeout: options.timeoutMs });
   await settleEnhanced(page, options.timeoutMs);
-  await page.reload({ waitUntil: "networkidle", timeout: options.timeoutMs });
+  await page.reload({ waitUntil: "domcontentloaded", timeout: options.timeoutMs });
   await settleEnhanced(page, options.timeoutMs);
   const rootReload = await runtimeState(page);
   await page.evaluate(() => history.pushState({ phase4r2: true }, "", "#entry"));
-  await page.reload({ waitUntil: "networkidle", timeout: options.timeoutMs });
+  await page.reload({ waitUntil: "domcontentloaded", timeout: options.timeoutMs });
   await twoFrames(page);
   const deepReload = await page.evaluate(() => ({ mode: document.documentElement.dataset.cinematicMode ?? null, fallback: document.documentElement.dataset.cinematicFallback ?? null, hash: location.hash, entryPresent: Boolean(document.querySelector("#entry")) }));
-  await page.goBack({ waitUntil: "networkidle", timeout: options.timeoutMs }).catch(() => null);
-  await page.goForward({ waitUntil: "networkidle", timeout: options.timeoutMs }).catch(() => null);
+  await page.goBack({ waitUntil: "domcontentloaded", timeout: options.timeoutMs }).catch(() => null);
+  await page.goForward({ waitUntil: "domcontentloaded", timeout: options.timeoutMs }).catch(() => null);
   const lifecycleSession = await context.newCDPSession(page);
   const visibilityTransitions = [];
   for (const visibilityState of ["hidden", "visible"]) {
@@ -795,10 +797,10 @@ async function captureOperationalQa(browser, options) {
   const deepContext = await browser.newContext(contextOptions(viewpoint));
   await deepContext.addInitScript(() => { window.__phase4r2PersistedPageShow = false; addEventListener("pageshow", (event) => { if (event.persisted) window.__phase4r2PersistedPageShow = true; }); });
   const deepPage = await deepContext.newPage();
-  await deepPage.goto(new URL("#entry", options.url).toString(), { waitUntil: "networkidle", timeout: options.timeoutMs });
+  await deepPage.goto(new URL("#entry", options.url).toString(), { waitUntil: "domcontentloaded", timeout: options.timeoutMs });
   const directDeepLink = await deepPage.evaluate(() => { const mode = document.documentElement.dataset.cinematicMode ?? null; return { hash: location.hash, mode, entryPresent: Boolean(document.querySelector("#entry")), status: location.hash === "#entry" && mode !== "enhanced" ? "PASS" : "FAIL" }; });
-  await deepPage.goto(new URL("/about/", options.url).toString(), { waitUntil: "networkidle", timeout: options.timeoutMs });
-  await deepPage.goBack({ waitUntil: "networkidle", timeout: options.timeoutMs });
+  await deepPage.goto(new URL("/about/", options.url).toString(), { waitUntil: "domcontentloaded", timeout: options.timeoutMs });
+  await deepPage.goBack({ waitUntil: "domcontentloaded", timeout: options.timeoutMs });
   const bfcache = await deepPage.evaluate(() => ({ available: "onpageshow" in window, observed: Boolean(window.__phase4r2PersistedPageShow), urlHash: location.hash }));
   await deepContext.close();
   if (directDeepLink.status !== "PASS" || !directDeepLink.entryPresent) throw new Error("Direct deep-link regression failed");
@@ -841,18 +843,20 @@ async function captureOperationalQa(browser, options) {
     await session.send("Network.setCacheDisabled", { cacheDisabled: profile.cacheDisabled });
     if (profile.latency) await session.send("Network.emulateNetworkConditions", { offline: false, latency: profile.latency, downloadThroughput: profile.throughput, uploadThroughput: profile.throughput });
     const started = Date.now();
-    await profilePage.goto(options.url, { waitUntil: "networkidle", timeout: options.timeoutMs });
+    await profilePage.goto(options.url, { waitUntil: "domcontentloaded", timeout: options.timeoutMs });
+    await settleEnhanced(profilePage, options.timeoutMs);
     coldWarm.push({ profile: profile.id === "cold-then-warm" ? "cold" : profile.id, elapsedMs: Date.now() - started, status: "PASS" });
     if (profile.id === "cold-then-warm") {
       const warmStarted = Date.now();
-      await profilePage.reload({ waitUntil: "networkidle", timeout: options.timeoutMs });
+      await profilePage.reload({ waitUntil: "domcontentloaded", timeout: options.timeoutMs });
+      await settleEnhanced(profilePage, options.timeoutMs);
       coldWarm.push({ profile: "warm", elapsedMs: Date.now() - warmStarted, status: "PASS" });
     }
     await profileContext.close();
   }
   const touchContext = await browser.newContext(contextOptions(VIEWPOINTS.find((item) => item.id === "mobile-390x844"), { hasTouch: true, isMobile: true }));
   const touchPage = await touchContext.newPage();
-  await touchPage.goto(options.url, { waitUntil: "networkidle", timeout: options.timeoutMs });
+  await touchPage.goto(options.url, { waitUntil: "domcontentloaded", timeout: options.timeoutMs });
   await settleEnhanced(touchPage, options.timeoutMs);
   const touchSession = await touchContext.newCDPSession(touchPage);
   await touchSession.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: 195, y: 700 }] });
@@ -892,6 +896,9 @@ async function selfTest() {
     authorization: { humanAccepted: false, phase5Authorized: false, mainMerged: false },
   }, Buffer.from("fixture"));
   if (deploymentProjectionFixture.repository?.main?.headSha !== MAIN_SHA || deploymentProjectionFixture.repository?.main?.requiredHeadSha !== MAIN_SHA) throw new Error("Deployment projection frozen-main preservation self-test failed");
+  const captureSource = await readFile(path.join(ROOT, SCRIPT_RELATIVE), "utf8");
+  const forbiddenGenericWait = ['waitUntil: "', "network", "idle", '"'].join("");
+  if (captureSource.includes(forbiddenGenericWait)) throw new Error("Long-lived media capture must use explicit runtime readiness rather than generic network-idle self-test failed");
   if (Object.keys(HUMAN_REVIEW_GATES).join("|") !== "PHYSICAL → DIGITAL CONTINUITY|NATIVE SCROLL + REVERSE INTEGRITY|RESPONSIVE + ACCESSIBLE INTEGRATION|MEDIA + PERFORMANCE SAFETY|OPERATING FIELD REGRESSION") throw new Error("Gate identity self-test failed");
   process.stdout.write(stableJson({ schema: `${SCHEMA}.self-test`, status: "PASS", outputContract: { sheets: 16, recordings: 7, reports: 10 } }));
 }
