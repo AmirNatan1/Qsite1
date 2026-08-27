@@ -255,7 +255,11 @@ async function executable(candidate) {
 }
 
 function assertNoPrivateText(bytes, label) {
-  if (PRIVATE_TEXT.test(bytes.toString("latin1"))) throw new Error(`Privacy/secrets scan failed: ${label}`);
+  if (PRIVATE_TEXT.test(String(label))) throw new Error(`Privacy/secrets scan failed in payload path: ${label}`);
+  const extension = path.extname(String(label)).toLowerCase();
+  if (TEXT_EXTENSIONS.has(extension) && PRIVATE_TEXT.test(bytes.toString("utf8"))) {
+    throw new Error(`Privacy/secrets scan failed in human-readable payload: ${label}`);
+  }
 }
 
 async function recursiveFiles(root) {
@@ -874,6 +878,18 @@ async function selfTest() {
   assertAuthorization(AUTHORIZATION, "Self-test");
   assertHumanGates(JSON.parse(stableJson(HUMAN_REVIEW_GATES)));
   assertAuthorization(JSON.parse(stableJson(AUTHORIZATION)), "Stable JSON self-test");
+  // Compressed image/video bytes are arbitrary and can coincidentally contain
+  // path-like byte runs. Scan their public relative path, while limiting byte
+  // scanning to the human-readable payload types the review package exposes.
+  assertNoPrivateText(Buffer.from("\\\\compressed-binary\\collision"), "sheets/privacy-binary-negative.png");
+  for (const [bytes, label] of [
+    [Buffer.from("source=C:\\Users\\example\\private"), "reports/privacy-text-negative.json"],
+    [Buffer.from("safe"), "reports/C:/Users/example/private.json"],
+  ]) {
+    let rejected = false;
+    try { assertNoPrivateText(bytes, label); } catch { rejected = true; }
+    if (!rejected) throw new Error("Privacy scanner negative self-test failed");
+  }
   for (const invalidGates of [{ ...HUMAN_REVIEW_GATES, EXTRA: "PENDING HUMAN REVIEW" }, { ...HUMAN_REVIEW_GATES, "OPERATING FIELD REGRESSION": "PASS" }]) {
     let rejected = false;
     try { assertHumanGates(invalidGates); } catch { rejected = true; }
