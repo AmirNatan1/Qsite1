@@ -498,7 +498,13 @@ See \`MANIFEST.json\` for the exhaustive hash/size ledger.
 
 function projectAuthorityPart(source, authority, sourcePath, sourceSchema) {
   const statuslessSchemas = new Set(["quantum-hub.phase-4-r2.production-media-manifest.v1", "quantum-hub.phase-4-r2.frame-manifest.v1", "quantum-hub.phase-4-r2.master-visual-verdict.v1", "quantum-hub.phase-4-r2.encode-visual-verdict.v1"]);
-  const acceptedStatus = sourcePath === "@ledger" ? source.status === "RENDERING_COMPLETE" : statuslessSchemas.has(sourceSchema) ? source.status === undefined : source.status === "PASS";
+  const acceptedStatus = sourcePath === "@ledger"
+    ? source.status === "RENDERING_COMPLETE"
+    : statuslessSchemas.has(sourceSchema)
+      ? source.status === undefined
+      : sourceSchema === "quantum-hub.phase-4-r2.encode-quality-report.v1"
+        ? source.status === "SELECTED_VISUAL_PASS"
+        : source.status === "PASS";
   if (source.schema !== sourceSchema || !acceptedStatus) throw new Error(`Authority schema/completion differs: ${sourcePath}`);
   const keysBySchema = {
     "quantum-hub.phase-4-r2.production-media-manifest.v1": ["sourceBlendSha256", "physicalTimeline", "selectionSha256", "qualityReportSha256", "masterVisualVerdictSha256", "encodeVisualVerdictSha256", "deliveryResolutionDecisions", "codecDeterminismReports", "assets", "authorization"],
@@ -890,6 +896,13 @@ async function selfTest() {
     try { assertNoPrivateText(bytes, label); } catch { rejected = true; }
     if (!rejected) throw new Error("Privacy scanner negative self-test failed");
   }
+  const qualitySchema = "quantum-hub.phase-4-r2.encode-quality-report.v1";
+  const qualitySource = { schema: qualitySchema, status: "SELECTED_VISUAL_PASS", sourceBlendSha256: "a".repeat(64) };
+  const qualityProjection = projectAuthorityPart(qualitySource, { byteSize: 1, sha256: "b".repeat(64) }, "reports/phase-4r2-encode-quality-report.json", qualitySchema);
+  if (qualityProjection.source.status !== "SELECTED_VISUAL_PASS") throw new Error("Encode-quality completion self-test failed");
+  let genericPassRejected = false;
+  try { projectAuthorityPart({ ...qualitySource, status: "PASS" }, { byteSize: 1, sha256: "b".repeat(64) }, "reports/phase-4r2-encode-quality-report.json", qualitySchema); } catch { genericPassRejected = true; }
+  if (!genericPassRejected) throw new Error("Encode-quality generic-PASS negative self-test failed");
   for (const invalidGates of [{ ...HUMAN_REVIEW_GATES, EXTRA: "PENDING HUMAN REVIEW" }, { ...HUMAN_REVIEW_GATES, "OPERATING FIELD REGRESSION": "PASS" }]) {
     let rejected = false;
     try { assertHumanGates(invalidGates); } catch { rejected = true; }
