@@ -383,11 +383,20 @@ function contextOptions(viewpoint, extras = {}) {
 }
 
 function observePage(page) {
-  const state = { requests: [], consoleErrors: [], pageErrors: [], failedRequests: [], responseErrors: [] };
-  page.on("request", (request) => { const url = new URL(request.url()); state.requests.push({ path: url.pathname, origin: url.origin, resourceType: request.resourceType() }); });
+  const state = { requests: [], decoderBlobRequests: [], decoderBlobAborts: [], consoleErrors: [], pageErrors: [], failedRequests: [], responseErrors: [] };
+  page.on("request", (request) => {
+    const raw = request.url();
+    if (raw.startsWith("blob:")) { state.decoderBlobRequests.push({ resourceType: request.resourceType() }); return; }
+    const url = new URL(raw);
+    state.requests.push({ path: url.pathname, origin: url.origin, resourceType: request.resourceType() });
+  });
   page.on("console", (message) => { if (message.type() === "error") state.consoleErrors.push(message.text()); });
   page.on("pageerror", (error) => state.pageErrors.push(String(error.message || error)));
-  page.on("requestfailed", (request) => state.failedRequests.push(new URL(request.url()).pathname));
+  page.on("requestfailed", (request) => {
+    const raw = request.url();
+    if (raw.startsWith("blob:")) { state.decoderBlobAborts.push({ resourceType: request.resourceType(), errorText: request.failure()?.errorText ?? null }); return; }
+    state.failedRequests.push(new URL(raw).pathname);
+  });
   page.on("response", (response) => { if (response.status() >= 400) state.responseErrors.push({ path: new URL(response.url()).pathname, status: response.status() }); });
   return state;
 }
@@ -434,6 +443,8 @@ async function runtimeState(page) {
       mediaDelivery: shell?.getAttribute("data-media-delivery") ?? null,
       mediaState: shell?.getAttribute("data-media-state") ?? null,
       decoderSourceScheme: media instanceof HTMLVideoElement && media.currentSrc ? new URL(media.currentSrc).protocol.replace(":", "") : null,
+      cinematicDecoderCount: document.querySelectorAll("[data-cinematic-media]").length,
+      totalVideoCount: document.querySelectorAll("video").length,
       mediaReady: Boolean(window.quantumPhase4?.mediaReady),
       currentTime: media instanceof HTMLVideoElement ? media.currentTime : null,
       duration: media instanceof HTMLVideoElement && Number.isFinite(media.duration) ? media.duration : null,
@@ -565,6 +576,7 @@ async function captureViewpoint(browser, options, viewpoint) {
         expectedFamily: state.mediaFamily === viewpoint.family,
         exactNestedMediaPath: typeof state.mediaSourcePath === "string" && state.mediaSourcePath.startsWith(`${DEPLOYED_ASSET_PREFIX}media/`) && !state.mediaSourcePath.slice(`${DEPLOYED_ASSET_PREFIX}media/`.length).includes("/"),
         blobDecoderDelivery: state.mediaDelivery === "blob" && state.decoderSourceScheme === "blob",
+        singleDecoderNode: state.cinematicDecoderCount === 1 && state.totalVideoCount === 1,
         enhancedReady: state.mode === "enhanced" && state.fallback === null && state.mediaReady && state.mediaState === "ready",
         exactViewport: state.document.width === viewpoint.width && state.document.height === viewpoint.height && state.document.devicePixelRatio === 1,
         noHorizontalOverflow: state.document.scrollWidth <= viewpoint.width + 2,
@@ -580,7 +592,7 @@ async function captureViewpoint(browser, options, viewpoint) {
   const manifestRequests = diagnostics.requests.filter((request) => request.path === DEPLOYED_MANIFEST_PATH);
   const mediaRequests = diagnostics.requests.filter((request) => request.path.startsWith(`${DEPLOYED_ASSET_PREFIX}media/`));
   const uniqueMediaPaths = [...new Set(mediaRequests.map((request) => request.path))];
-  if (manifestRequests.length !== 1 || mediaRequests.length !== 1 || uniqueMediaPaths.length !== 1 || uniqueMediaPaths[0] !== states[0]?.state.mediaSourcePath) throw new Error(`${viewpoint.id} single-manifest/single-media request contract failed`);
+  if (manifestRequests.length !== 1 || mediaRequests.length !== 1 || uniqueMediaPaths.length !== 1 || uniqueMediaPaths[0] !== states[0]?.state.mediaSourcePath || diagnostics.decoderBlobRequests.length < 1) throw new Error(`${viewpoint.id} single-manifest/single-media/Blob-decoder contract failed`);
   if (diagnostics.consoleErrors.length || diagnostics.pageErrors.length || diagnostics.failedRequests.length || diagnostics.responseErrors.length) throw new Error(`${viewpoint.id} browser diagnostics failed: ${JSON.stringify(diagnostics)}`);
   return { viewpoint, states, diagnostics };
 }
@@ -910,6 +922,7 @@ async function selfTest() {
   const forbiddenGenericWait = ['waitUntil: "', "network", "idle", '"'].join("");
   if (captureSource.includes(forbiddenGenericWait)) throw new Error("Long-lived media capture must use explicit runtime readiness rather than generic network-idle self-test failed");
   if (!captureSource.includes('shell?.getAttribute("data-media-source")') || !captureSource.includes('state.mediaDelivery === "blob" && state.decoderSourceScheme === "blob"')) throw new Error("Hash-named fetch authority and Blob decoder separation self-test failed");
+  if (!captureSource.includes('raw.startsWith("blob:")') || !captureSource.includes("state.cinematicDecoderCount === 1 && state.totalVideoCount === 1")) throw new Error("Blob seek telemetry and single decoder-node self-test failed");
   if (Object.keys(HUMAN_REVIEW_GATES).join("|") !== "PHYSICAL → DIGITAL CONTINUITY|NATIVE SCROLL + REVERSE INTEGRITY|RESPONSIVE + ACCESSIBLE INTEGRATION|MEDIA + PERFORMANCE SAFETY|OPERATING FIELD REGRESSION") throw new Error("Gate identity self-test failed");
   process.stdout.write(stableJson({ schema: `${SCHEMA}.self-test`, status: "PASS", outputContract: { sheets: 16, recordings: 7, reports: 10 } }));
 }
