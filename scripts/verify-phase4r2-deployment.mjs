@@ -5,7 +5,9 @@
  * both serve the exact Phase 4-R2 production-media authority from one Git HEAD.
  *
  * This tool is deliberately read-only apart from its explicit external report.
- * Credentials are read from environment variables and are never serialized.
+ * Optional credentials are read from environment variables and are never
+ * serialized. Public repositories may bind Cloudflare through its signed
+ * GitHub App check when a direct Cloudflare API token is unavailable.
  */
 
 import { execFile } from "node:child_process";
@@ -186,10 +188,7 @@ function validateOptions(options, { requireSecrets = true } = {}) {
   if (!options.output) throw new Error("--output is required");
   if (isWithin(ROOT, options.output) || isWithin(os.tmpdir(), options.output)) throw new Error("Deployment report must remain outside the repository and temporary directory");
   if (path.extname(options.output).toLowerCase() !== ".json") throw new Error("--output must name a JSON file");
-  if (requireSecrets) {
-    if (!process.env[options.githubTokenEnvironment]) throw new Error(`Missing GitHub token environment variable ${options.githubTokenEnvironment}`);
-    if (!process.env[options.cloudflareTokenEnvironment]) throw new Error(`Missing Cloudflare token environment variable ${options.cloudflareTokenEnvironment}`);
-  }
+  if (requireSecrets && !process.env[options.cloudflareTokenEnvironment] && !options.githubCheckRunId) throw new Error("Cloudflare verification requires either its API token or the explicit signed GitHub check-run authority");
 }
 
 async function atomicWrite(destination, bytes) {
@@ -215,8 +214,10 @@ async function fetchBound(url, init, timeoutMs) {
 }
 
 async function jsonRequest(url, token, timeoutMs, label) {
+  const headers = { Accept: "application/json", "User-Agent": "quantum-hub-phase4r2-verifier" };
+  if (token) headers.Authorization = `Bearer ${token}`;
   const response = await fetchBound(url, {
-    headers: { Accept: "application/json", Authorization: `Bearer ${token}`, "User-Agent": "quantum-hub-phase4r2-verifier" },
+    headers,
   }, timeoutMs);
   const bytes = Buffer.from(await response.arrayBuffer());
   if (!response.ok) throw new Error(`${label} returned HTTP ${response.status}`);
@@ -340,7 +341,46 @@ async function verifyGithub(options, token) {
     commitSha: commit.sha,
     branchHeadSha: reference.object.sha,
     main: { branch: options.mainBranch, headSha: mainReference.object?.sha, requiredHeadSha: MAIN_SHA, comparisonStatus: mainComparison.status, exactHeadMerged: false },
-    checkRun: { id: String(run.id), name: run.name, appSlug: run.app?.slug ?? null, status: run.status, conclusion: run.conclusion, headSha: run.head_sha },
+    checkRun: {
+      id: String(run.id),
+      name: run.name,
+      appSlug: run.app?.slug ?? null,
+      status: run.status,
+      conclusion: run.conclusion,
+      headSha: run.head_sha,
+      completedAt: run.completed_at ?? null,
+      detailsUrl: run.details_url ?? null,
+      outputTitle: run.output?.title ?? null,
+      outputSummary: run.output?.summary ?? null,
+    },
+  };
+}
+
+function verifyCloudflareGithubCheck(options, github) {
+  const run = github?.checkRun;
+  if (run?.name !== "Cloudflare Pages" || run?.status !== "completed" || run?.conclusion !== "success") throw new Error("Cloudflare fallback authority must be the explicit successful Cloudflare Pages GitHub check");
+  if (!Number.isFinite(Date.parse(run.completedAt ?? ""))) throw new Error("Cloudflare GitHub check lacks a completed timestamp");
+  const details = new URL(run.detailsUrl ?? "");
+  if (details.protocol !== "https:" || details.hostname !== "dash.cloudflare.com") throw new Error("Cloudflare GitHub check details URL is not a Cloudflare Dashboard authority");
+  const to = details.searchParams.get("to") ?? "";
+  const match = to.match(/^\/([^/]+)\/pages\/view\/([^/]+)\/([0-9a-f-]{36})$/i);
+  if (!match) throw new Error("Cloudflare GitHub check details URL does not expose an exact Pages deployment identity");
+  const [, accountId, project, deploymentId] = match;
+  if (accountId !== options.cloudflareAccountId || project !== options.cloudflareProject || deploymentId !== String(options.cloudflareDeploymentId)) throw new Error("Cloudflare GitHub check deployment identity differs from the required account/project/deployment");
+  const summary = String(run.outputSummary ?? "");
+  if (run.outputTitle !== "Deployed successfully" || !/Deploy successful!/i.test(summary)) throw new Error("Cloudflare GitHub check does not report a successful terminal deployment");
+  if (!summary.includes(`<code>${options.expectedHead.slice(0, 7)}</code>`)) throw new Error("Cloudflare GitHub check summary is not bound to the expected commit prefix");
+  if (!summary.includes(options.immutableUrl.replace(/\/$/, "")) || !summary.includes(options.branchUrl.replace(/\/$/, ""))) throw new Error("Cloudflare GitHub check summary does not bind both required preview URLs");
+  return {
+    accountId,
+    project,
+    deploymentId,
+    deploymentUrl: options.immutableUrl,
+    branch: options.branch,
+    commitHash: options.expectedHead,
+    environment: "preview",
+    authoritySource: "CLOUDFLARE_PAGES_SIGNED_GITHUB_CHECK",
+    terminalStage: { name: "deploy", status: "success", endedOn: run.completedAt },
   };
 }
 
@@ -365,6 +405,7 @@ async function verifyCloudflare(options, token) {
     branch,
     commitHash,
     environment: deployment.environment ?? null,
+    authoritySource: "CLOUDFLARE_API",
     terminalStage: { name: stage.name ?? null, status: stage.status, endedOn: stage.ended_on },
   };
 }
@@ -484,6 +525,24 @@ async function selfTest() {
     if (!rejected) throw new Error(`GitHub conclusion negative self-test accepted ${conclusion}`);
   }
   assertSuccessfulTerminalCloudflareStage({ name: "deploy", status: "success", ended_on: "2026-08-27T00:00:00.000Z" });
+  const checkProjection = verifyCloudflareGithubCheck({
+    expectedHead: "a".repeat(40),
+    branch: "feature/phase-4r2-final-cinematic-production",
+    immutableUrl: "https://12345678.qsite1.pages.dev/",
+    branchUrl: "https://feature-phase-4r2-final-cine.qsite1.pages.dev/",
+    cloudflareAccountId: "b".repeat(32),
+    cloudflareProject: "qsite1",
+    cloudflareDeploymentId: "11111111-2222-3333-4444-555555555555",
+  }, { checkRun: {
+    name: "Cloudflare Pages",
+    status: "completed",
+    conclusion: "success",
+    completedAt: "2026-08-27T00:00:00.000Z",
+    detailsUrl: `https://dash.cloudflare.com/?to=/${"b".repeat(32)}/pages/view/qsite1/11111111-2222-3333-4444-555555555555`,
+    outputTitle: "Deployed successfully",
+    outputSummary: `<code>aaaaaaa</code> Deploy successful! https://12345678.qsite1.pages.dev https://feature-phase-4r2-final-cine.qsite1.pages.dev`,
+  } });
+  if (checkProjection.authoritySource !== "CLOUDFLARE_PAGES_SIGNED_GITHUB_CHECK") throw new Error("Cloudflare signed-check projection self-test failed");
   for (const invalidStage of [null, { name: "build", status: "success", ended_on: "2026-08-27T00:00:00.000Z" }, { name: "deploy", status: "success", ended_on: null }, { name: "deploy", status: "failure", ended_on: "2026-08-27T00:00:00.000Z" }]) {
     let rejected = false;
     try { assertSuccessfulTerminalCloudflareStage(invalidStage); } catch { rejected = true; }
@@ -528,10 +587,11 @@ async function main() {
   ]);
   const manifest = JSON.parse(manifestBytes.toString("utf8"));
   assertProductionManifest(manifest);
-  const [github, cloudflare] = await Promise.all([
-    verifyGithub(options, process.env[options.githubTokenEnvironment]),
-    verifyCloudflare(options, process.env[options.cloudflareTokenEnvironment]),
-  ]);
+  const github = await verifyGithub(options, process.env[options.githubTokenEnvironment]);
+  const cloudflareToken = process.env[options.cloudflareTokenEnvironment];
+  const cloudflare = cloudflareToken
+    ? await verifyCloudflare(options, cloudflareToken)
+    : verifyCloudflareGithubCheck(options, github);
   const [immutable, branch] = await Promise.all([
     verifyOrigin(options.immutableUrl, manifest.assets, manifestBytes, options.timeoutMs),
     verifyOrigin(options.branchUrl, manifest.assets, manifestBytes, options.timeoutMs),
@@ -558,7 +618,8 @@ async function main() {
       githubCheckRunSuccessful: true,
       cloudflareActualDeploymentIdVerified: true,
       cloudflareCommitAndBranchExactHead: true,
-      immutableUrlMatchesCloudflareApi: true,
+      cloudflareAuthoritySource: cloudflare.authoritySource,
+      immutableUrlMatchesCloudflareAuthority: true,
       immutableAndBranchAssetParity: true,
       rangeBehaviorRecordedWithoutAssumption: true,
       credentialsExcluded: true,

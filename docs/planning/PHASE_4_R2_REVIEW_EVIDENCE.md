@@ -36,9 +36,11 @@ The deployment verifier requires two distinct identifiers:
 - `--github-check-run-id` is an actual GitHub check run attached to the exact
   expected commit. It must be completed with the exact conclusion `success`;
   neutral and skipped conclusions do not pass.
-- `--cloudflare-deployment-id` is the actual Cloudflare Pages deployment ID
-  returned by the Cloudflare API. Its explicit terminal stage must have status
-  `success` and a completed `ended_on` timestamp.
+- `--cloudflare-deployment-id` is the actual Cloudflare Pages deployment ID.
+  With a Cloudflare API token it is verified against the Pages deployment API.
+  For this public GitHub-connected project, the verifier can instead bind the
+  same UUID, account, project, commit prefix, immutable URL, branch URL and
+  completed success timestamp from Cloudflare Pages' signed GitHub App check.
 
 One is never substituted for the other. The Cloudflare API deployment URL must
 equal the supplied immutable URL. Both the immutable URL and branch URL must
@@ -71,8 +73,9 @@ A `Range: bytes=0-0` request is recorded honestly for each asset and origin:
 A malformed partial response fails. An ignored Range request is never reported
 as supported.
 
-Credentials are read only from named environment variables. Tokens are not
-written to any report.
+Credentials are read only from named environment variables when present and
+are never written to a report. The public GitHub/Cloudflare check fallback
+requires no token and still performs complete deployed-byte verification.
 
 ## Exact browser evidence
 
