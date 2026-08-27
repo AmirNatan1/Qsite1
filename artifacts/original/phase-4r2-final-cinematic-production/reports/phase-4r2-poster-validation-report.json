@@ -1,0 +1,254 @@
+{
+  "derivation": "F1 16-bit sRGB/full -> selected-video BT.709 limited yuv420p round trip -> 8-bit RGB PNG",
+  "families": {
+    "desktop": {
+      "bytes": 2096854,
+      "comparisons": {
+        "decodedH264F1": {
+          "lumaGlobalSsim": 0.9999998172152814,
+          "rgbPsnrDb": 95.03491139921495,
+          "status": "PASS"
+        },
+        "decodedVP9F1": {
+          "lumaGlobalSsim": 0.999999852412713,
+          "rgbPsnrDb": 95.81250496154985,
+          "status": "PASS"
+        },
+        "masterF1": {
+          "lumaGlobalSsim": 0.9999995322338678,
+          "rgbPsnrDb": 96.82123012306991,
+          "status": "PASS"
+        }
+      },
+      "derivationAuthority": {
+        "filter": "zscale=w=1920:h=1200:f=lanczos:rin=full:r=limited:min=gbr:m=bt709:tin=iec61966-2-1:t=bt709:pin=bt709:p=bt709:d=error_diffusion,format=yuv420p,zscale=w=1920:h=1200:f=lanczos:rin=limited:r=full:min=bt709:m=gbr:tin=bt709:t=iec61966-2-1:pin=bt709:p=bt709:d=error_diffusion,format=gbrp",
+        "output": {
+          "alpha": false,
+          "bitDepth": 8,
+          "codec": "png",
+          "colorType": "RGB",
+          "compressionLevel": 9,
+          "prediction": "mixed"
+        },
+        "resolution": [
+          1920,
+          1200
+        ],
+        "sourceFormat": "16-bit RGB PNG",
+        "sourceFrame": 1
+      },
+      "derivationAuthoritySha256": "2d52200233475fcd2b82ed149a4736e5abc940b603f48ce1a8e470b669e9c257",
+      "externalRelativePath": "posters/desktop/phase-4r2-desktop-poster-8dc538810811.png",
+      "family": "desktop",
+      "file": "phase-4r2-desktop-poster-8dc538810811.png",
+      "kind": "poster",
+      "masterF1Sha256": "085e438d222a38fdcf76987d0512b4c02f88b0567b76dafd777dec4bcf32da6d",
+      "masterFrameManifestSha256": "2fe77bcd4e1e39402881b0d98aff6f5c3f5fed81d0404e53fcc6d2c8edb5875c",
+      "probe": {
+        "codec_name": "png",
+        "codec_type": "video",
+        "color_primaries": "bt709",
+        "color_range": "pc",
+        "color_space": "gbr",
+        "color_transfer": "iec61966-2-1",
+        "disposition": {
+          "attached_pic": 0,
+          "captions": 0,
+          "clean_effects": 0,
+          "comment": 0,
+          "default": 0,
+          "dependent": 0,
+          "descriptions": 0,
+          "dub": 0,
+          "forced": 0,
+          "hearing_impaired": 0,
+          "karaoke": 0,
+          "lyrics": 0,
+          "metadata": 0,
+          "multilayer": 0,
+          "non_diegetic": 0,
+          "original": 0,
+          "still_image": 0,
+          "timed_thumbnails": 0,
+          "visual_impaired": 0
+        },
+        "height": 1200,
+        "pix_fmt": "rgb24",
+        "width": 1920
+      },
+      "resolution": [
+        1920,
+        1200
+      ],
+      "sha256": "8dc5388108116da7202a6b8b24ea8fccb42ebc4cdfb50b861427488436e35979",
+      "status": "PASS"
+    },
+    "landscape": {
+      "bytes": 1212306,
+      "comparisons": {
+        "decodedH264F1": {
+          "lumaGlobalSsim": 0.9999998138373875,
+          "rgbPsnrDb": 94.88603427708078,
+          "status": "PASS"
+        },
+        "decodedVP9F1": {
+          "lumaGlobalSsim": 0.99999984328947,
+          "rgbPsnrDb": 95.45761529024354,
+          "status": "PASS"
+        },
+        "masterF1": {
+          "lumaGlobalSsim": 0.9999995207560887,
+          "rgbPsnrDb": 96.7782587374864,
+          "status": "PASS"
+        }
+      },
+      "derivationAuthority": {
+        "filter": "zscale=w=1688:h=780:f=lanczos:rin=full:r=limited:min=gbr:m=bt709:tin=iec61966-2-1:t=bt709:pin=bt709:p=bt709:d=error_diffusion,format=yuv420p,zscale=w=1688:h=780:f=lanczos:rin=limited:r=full:min=bt709:m=gbr:tin=bt709:t=iec61966-2-1:pin=bt709:p=bt709:d=error_diffusion,format=gbrp",
+        "output": {
+          "alpha": false,
+          "bitDepth": 8,
+          "codec": "png",
+          "colorType": "RGB",
+          "compressionLevel": 9,
+          "prediction": "mixed"
+        },
+        "resolution": [
+          1688,
+          780
+        ],
+        "sourceFormat": "16-bit RGB PNG",
+        "sourceFrame": 1
+      },
+      "derivationAuthoritySha256": "a625342694e21ea0e0b5e17021f5b6ccb98869f24646411d25c702f9d99a0275",
+      "externalRelativePath": "posters/landscape/phase-4r2-landscape-poster-5692f67493fa.png",
+      "family": "landscape",
+      "file": "phase-4r2-landscape-poster-5692f67493fa.png",
+      "kind": "poster",
+      "masterF1Sha256": "9610bd573e9ac0f257357d96ee8adb97d3f33b0677a4cb92c323908bfb51fb67",
+      "masterFrameManifestSha256": "7b8af3afaf3cb4e03bd5bb69f71fc7ffd5c5e97db505370495a9714988072517",
+      "probe": {
+        "codec_name": "png",
+        "codec_type": "video",
+        "color_primaries": "bt709",
+        "color_range": "pc",
+        "color_space": "gbr",
+        "color_transfer": "iec61966-2-1",
+        "disposition": {
+          "attached_pic": 0,
+          "captions": 0,
+          "clean_effects": 0,
+          "comment": 0,
+          "default": 0,
+          "dependent": 0,
+          "descriptions": 0,
+          "dub": 0,
+          "forced": 0,
+          "hearing_impaired": 0,
+          "karaoke": 0,
+          "lyrics": 0,
+          "metadata": 0,
+          "multilayer": 0,
+          "non_diegetic": 0,
+          "original": 0,
+          "still_image": 0,
+          "timed_thumbnails": 0,
+          "visual_impaired": 0
+        },
+        "height": 780,
+        "pix_fmt": "rgb24",
+        "width": 1688
+      },
+      "resolution": [
+        1688,
+        780
+      ],
+      "sha256": "5692f67493faf34844a6e2eaa838999babbaaf6d1c7d10e51505587daeb1d679",
+      "status": "PASS"
+    },
+    "portrait": {
+      "bytes": 1146148,
+      "comparisons": {
+        "decodedH264F1": {
+          "lumaGlobalSsim": 0.9999998293172762,
+          "rgbPsnrDb": 95.5826873364085,
+          "status": "PASS"
+        },
+        "decodedVP9F1": {
+          "lumaGlobalSsim": 0.9999998518043338,
+          "rgbPsnrDb": 96.03371065611397,
+          "status": "PASS"
+        },
+        "masterF1": {
+          "lumaGlobalSsim": 0.9999995519220443,
+          "rgbPsnrDb": 96.93045401753936,
+          "status": "PASS"
+        }
+      },
+      "derivationAuthority": {
+        "filter": "zscale=w=780:h=1688:f=lanczos:rin=full:r=limited:min=gbr:m=bt709:tin=iec61966-2-1:t=bt709:pin=bt709:p=bt709:d=error_diffusion,format=yuv420p,zscale=w=780:h=1688:f=lanczos:rin=limited:r=full:min=bt709:m=gbr:tin=bt709:t=iec61966-2-1:pin=bt709:p=bt709:d=error_diffusion,format=gbrp",
+        "output": {
+          "alpha": false,
+          "bitDepth": 8,
+          "codec": "png",
+          "colorType": "RGB",
+          "compressionLevel": 9,
+          "prediction": "mixed"
+        },
+        "resolution": [
+          780,
+          1688
+        ],
+        "sourceFormat": "16-bit RGB PNG",
+        "sourceFrame": 1
+      },
+      "derivationAuthoritySha256": "1885a5773c15dd47db1456ccdf0896a9bfaf5dec0eb9f399f85c990ded8e10ae",
+      "externalRelativePath": "posters/portrait/phase-4r2-portrait-poster-e104fe5e3d0e.png",
+      "family": "portrait",
+      "file": "phase-4r2-portrait-poster-e104fe5e3d0e.png",
+      "kind": "poster",
+      "masterF1Sha256": "5b30031e51a268f8c90c75166e790a627885d8b7161808469a640ce7977337f1",
+      "masterFrameManifestSha256": "09ed1008a156117a071377c35f3c1c798cb5c01935263f2a004872b16fe62c7b",
+      "probe": {
+        "codec_name": "png",
+        "codec_type": "video",
+        "color_primaries": "bt709",
+        "color_range": "pc",
+        "color_space": "gbr",
+        "color_transfer": "iec61966-2-1",
+        "disposition": {
+          "attached_pic": 0,
+          "captions": 0,
+          "clean_effects": 0,
+          "comment": 0,
+          "default": 0,
+          "dependent": 0,
+          "descriptions": 0,
+          "dub": 0,
+          "forced": 0,
+          "hearing_impaired": 0,
+          "karaoke": 0,
+          "lyrics": 0,
+          "metadata": 0,
+          "multilayer": 0,
+          "non_diegetic": 0,
+          "original": 0,
+          "still_image": 0,
+          "timed_thumbnails": 0,
+          "visual_impaired": 0
+        },
+        "height": 1688,
+        "pix_fmt": "rgb24",
+        "width": 780
+      },
+      "resolution": [
+        780,
+        1688
+      ],
+      "sha256": "e104fe5e3d0e471df2059919eb26eca7bb493929eca1000d8ab6ce95a611dee9",
+      "status": "PASS"
+    }
+  },
+  "schema": "quantum-hub.phase-4-r2.poster-validation-report.v1",
+  "sourceBlendSha256": "b0c9c7c1cf5a1642870cf03a36791cc50ec31ac207aeae794fbea83c856a79c0",
+  "status": "PASS"
+}

@@ -1,0 +1,241 @@
+{
+  "auditedAt": "2026-08-27T10:31:38.518Z",
+  "families": {
+    "desktop": {
+      "ffprobe": {
+        "avg_frame_rate": "30/1",
+        "codec_type": "video",
+        "color_primaries": "bt709",
+        "color_range": "pc",
+        "color_space": "gbr",
+        "color_transfer": "iec61966-2-1",
+        "height": 1200,
+        "nb_read_frames": "500",
+        "pix_fmt": "rgb48be",
+        "r_frame_rate": "30/1",
+        "width": 1920
+      },
+      "fullPngDecode": "PASS",
+      "independentFfmpegDecode": "PASS",
+      "inventory": {
+        "duplicate": 0,
+        "expected": 500,
+        "extra": 0,
+        "missing": 0,
+        "valid": 500
+      },
+      "ledgerParity": "PASS",
+      "manifest": {
+        "basename": "phase-4r2-desktop-frame-manifest.json",
+        "bytes": 126988,
+        "deterministicTwoRunCheck": "PASS",
+        "sha256": "2fe77bcd4e1e39402881b0d98aff6f5c3f5fed81d0404e53fcc6d2c8edb5875c"
+      },
+      "status": "PASS",
+      "visualSample": {
+        "frames": [
+          1,
+          25,
+          50,
+          75,
+          76,
+          100,
+          106,
+          125,
+          150,
+          166,
+          175,
+          180,
+          200,
+          225,
+          250,
+          275,
+          285,
+          300,
+          320,
+          325,
+          350,
+          356,
+          360,
+          370,
+          375,
+          390,
+          400,
+          405,
+          425,
+          450,
+          475,
+          480,
+          500
+        ],
+        "status": "PENDING_REVIEW"
+      }
+    },
+    "landscape": {
+      "ffprobe": {
+        "avg_frame_rate": "30/1",
+        "codec_type": "video",
+        "color_primaries": "bt709",
+        "color_range": "pc",
+        "color_space": "gbr",
+        "color_transfer": "iec61966-2-1",
+        "height": 780,
+        "nb_read_frames": "500",
+        "pix_fmt": "rgb48be",
+        "r_frame_rate": "30/1",
+        "width": 1688
+      },
+      "fullPngDecode": "PASS",
+      "independentFfmpegDecode": "PASS",
+      "inventory": {
+        "duplicate": 0,
+        "expected": 500,
+        "extra": 0,
+        "missing": 0,
+        "valid": 500
+      },
+      "ledgerParity": "PASS",
+      "manifest": {
+        "basename": "phase-4r2-landscape-frame-manifest.json",
+        "bytes": 126491,
+        "deterministicTwoRunCheck": "PASS",
+        "sha256": "7b8af3afaf3cb4e03bd5bb69f71fc7ffd5c5e97db505370495a9714988072517"
+      },
+      "status": "PASS",
+      "visualSample": {
+        "frames": [
+          1,
+          25,
+          50,
+          75,
+          76,
+          100,
+          106,
+          125,
+          150,
+          166,
+          175,
+          180,
+          200,
+          225,
+          250,
+          275,
+          285,
+          300,
+          320,
+          325,
+          350,
+          356,
+          360,
+          370,
+          375,
+          390,
+          400,
+          405,
+          425,
+          450,
+          475,
+          480,
+          500
+        ],
+        "status": "PENDING_REVIEW"
+      }
+    },
+    "portrait": {
+      "ffprobe": {
+        "avg_frame_rate": "30/1",
+        "codec_type": "video",
+        "color_primaries": "bt709",
+        "color_range": "pc",
+        "color_space": "gbr",
+        "color_transfer": "iec61966-2-1",
+        "height": 1688,
+        "nb_read_frames": "500",
+        "pix_fmt": "rgb48be",
+        "r_frame_rate": "30/1",
+        "width": 780
+      },
+      "fullPngDecode": "PASS",
+      "independentFfmpegDecode": "PASS",
+      "inventory": {
+        "duplicate": 0,
+        "expected": 500,
+        "extra": 0,
+        "missing": 0,
+        "valid": 500
+      },
+      "ledgerParity": "PASS",
+      "manifest": {
+        "basename": "phase-4r2-portrait-frame-manifest.json",
+        "bytes": 126487,
+        "deterministicTwoRunCheck": "PASS",
+        "sha256": "09ed1008a156117a071377c35f3c1c798cb5c01935263f2a004872b16fe62c7b"
+      },
+      "status": "PASS",
+      "visualSample": {
+        "frames": [
+          1,
+          25,
+          50,
+          75,
+          76,
+          100,
+          106,
+          125,
+          150,
+          166,
+          175,
+          180,
+          200,
+          225,
+          250,
+          275,
+          285,
+          300,
+          320,
+          325,
+          350,
+          356,
+          360,
+          370,
+          375,
+          390,
+          400,
+          405,
+          425,
+          450,
+          475,
+          480,
+          500
+        ],
+        "status": "PENDING_REVIEW"
+      }
+    }
+  },
+  "invocationFamilies": [
+    "desktop",
+    "landscape",
+    "portrait"
+  ],
+  "schema": "quantum-hub.phase-4-r2.frame-completion-audit.v1",
+  "sourceBlendSha256": "b0c9c7c1cf5a1642870cf03a36791cc50ec31ac207aeae794fbea83c856a79c0",
+  "status": "PASS",
+  "toolchain": {
+    "ffmpeg": {
+      "basename": "ffmpeg.exe",
+      "bytes": 102856192,
+      "sha256": "72a489eccd008c2ec2c0a5856c5c75bc3d8bbfa90166c4566865c246445e6aa3",
+      "version": "ffmpeg version 9.0.1-essentials_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers"
+    },
+    "ffprobe": {
+      "basename": "ffprobe.exe",
+      "bytes": 102652416,
+      "sha256": "19202b23c0043f15ad1b7bce2344f406fd52bd6efd8f995ce02e7392a1cec52f",
+      "version": "ffprobe version 9.0.1-essentials_build-www.gyan.dev Copyright (c) 2007-2026 the FFmpeg developers"
+    },
+    "sharp": {
+      "libvips": "8.18.3",
+      "version": "0.35.3"
+    }
+  }
+}

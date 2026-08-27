@@ -1,0 +1,1349 @@
+{
+  "assets": [
+    {
+      "bytes": 3634248,
+      "codec": "h264",
+      "deliveryDecision": {
+        "cohort": "desktop-native-1920x1200-v1",
+        "deliveryResolution": [
+          1920,
+          1200
+        ],
+        "masterResolution": [
+          1920,
+          1200
+        ],
+        "rationale": "Evaluate and retain the authored 1920x1200 desktop master first; a visual-PASS candidate below the strict asset gate avoids any desktop wall/Q/current resolution loss."
+      },
+      "deliveryResolution": [
+        1920,
+        1200
+      ],
+      "durationSeconds": 16.666666666666668,
+      "encode": {
+        "argv": [
+          "<FFMPEG>",
+          "-hide_banner",
+          "-nostdin",
+          "-y",
+          "-v",
+          "warning",
+          "-xerror",
+          "-f",
+          "image2",
+          "-framerate",
+          "30",
+          "-start_number",
+          "1",
+          "-i",
+          "<EXTERNAL_ROOT>/masters/desktop/frames/F%03d.png",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "500",
+          "-an",
+          "-map_metadata",
+          "-1",
+          "-map_chapters",
+          "-1",
+          "-vf",
+          "zscale=w=1920:h=1200:f=lanczos:rin=full:r=limited:min=gbr:m=bt709:tin=iec61966-2-1:t=bt709:pin=bt709:p=bt709:d=error_diffusion,format=yuv420p",
+          "-r",
+          "30",
+          "-fps_mode",
+          "cfr",
+          "-pix_fmt",
+          "yuv420p",
+          "-color_range",
+          "tv",
+          "-colorspace",
+          "bt709",
+          "-color_trc",
+          "bt709",
+          "-color_primaries",
+          "bt709",
+          "-fflags",
+          "+bitexact",
+          "-metadata",
+          "encoder=",
+          "-metadata:s:v:0",
+          "encoder=",
+          "-c:v",
+          "libx264",
+          "-preset",
+          "slow",
+          "-crf",
+          "22",
+          "-profile:v",
+          "high",
+          "-g",
+          "12",
+          "-keyint_min",
+          "12",
+          "-sc_threshold",
+          "0",
+          "-flags:v",
+          "+cgop+bitexact",
+          "-x264-params",
+          "keyint=12:min-keyint=12:scenecut=0:open-gop=0:aq-mode=3:aq-strength=1.0",
+          "-threads:v",
+          "8",
+          "-movflags",
+          "+faststart",
+          "-video_track_timescale",
+          "30000",
+          "-f",
+          "mp4",
+          "<EXTERNAL_ROOT>/media-production/candidates/desktop/desktop-h264-smaller/desktop-h264-smaller.partial-9f9993c3-e4d4-4ee7-a698-52a08983a7ec.mp4"
+        ],
+        "argvSha256": "292e6c3237bd6da943dbcf26b60f3b3551211bdeaeb35f4fef61cd55325790dd",
+        "commonSettingsAuthoritySha256": "ac0b8214e85d1763733d1baed2cb2ad161c44ea4d3baa9cd9489e41d3c1fc8d3",
+        "crf": 22,
+        "qualityLevel": "smaller",
+        "settings": {
+          "codec": "libx264",
+          "crfs": [
+            16,
+            19,
+            22
+          ],
+          "extra": [
+            "-c:v",
+            "libx264",
+            "-preset",
+            "slow",
+            "-crf",
+            "<CRF>",
+            "-profile:v",
+            "high",
+            "-g",
+            "12",
+            "-keyint_min",
+            "12",
+            "-sc_threshold",
+            "0",
+            "-flags:v",
+            "+cgop+bitexact",
+            "-x264-params",
+            "keyint=12:min-keyint=12:scenecut=0:open-gop=0:aq-mode=3:aq-strength=1.0",
+            "-threads:v",
+            "8",
+            "-movflags",
+            "+faststart",
+            "-video_track_timescale",
+            "30000",
+            "-f",
+            "mp4"
+          ],
+          "preset": "slow"
+        },
+        "settingsAuthority": "h264-v1",
+        "settingsAuthoritySha256": "897a942a5c431431312ebfb19fc0e084236604b29f406ad8b6b82a79ec9f4f78"
+      },
+      "family": "desktop",
+      "file": "media/phase-4r2-desktop-h264-5c973d7d754d.mp4",
+      "fps": 30,
+      "frames": 500,
+      "kind": "video",
+      "masterFrameManifestSha256": "2fe77bcd4e1e39402881b0d98aff6f5c3f5fed81d0404e53fcc6d2c8edb5875c",
+      "masterResolution": [
+        1920,
+        1200
+      ],
+      "quality": {
+        "psnrDb": 47.844093,
+        "ssim": 0.994348
+      },
+      "resolution": [
+        1920,
+        1200
+      ],
+      "selectionReason": "Evaluate and retain the authored 1920x1200 desktop master first; a visual-PASS candidate below the strict asset gate avoids any desktop wall/Q/current resolution loss. Selected the smallest complete machine-valid and visual-PASS H264 candidate in that native cohort.",
+      "sha256": "5c973d7d754de08bb7954a256b829e1b1e9f9513b34d31d0e0ffd725498c49de",
+      "sourceMaster": {
+        "family": "desktop",
+        "format": "16-bit RGB PNG sequence",
+        "frameRange": [
+          1,
+          500
+        ],
+        "resolution": [
+          1920,
+          1200
+        ],
+        "sequenceSha256": "3ecfbac9acae67b16aae0712313d30c9478aa9e57ecef91c7b8157bbfd93eeb3",
+        "totalBytes": 3412593744
+      }
+    },
+    {
+      "bytes": 6064027,
+      "codec": "vp9",
+      "deliveryDecision": {
+        "cohort": "desktop-native-1920x1200-v1",
+        "deliveryResolution": [
+          1920,
+          1200
+        ],
+        "masterResolution": [
+          1920,
+          1200
+        ],
+        "rationale": "Evaluate and retain the authored 1920x1200 desktop master first; a visual-PASS candidate below the strict asset gate avoids any desktop wall/Q/current resolution loss."
+      },
+      "deliveryResolution": [
+        1920,
+        1200
+      ],
+      "durationSeconds": 16.666666666666668,
+      "encode": {
+        "argv": [
+          "<FFMPEG>",
+          "-hide_banner",
+          "-nostdin",
+          "-y",
+          "-v",
+          "warning",
+          "-xerror",
+          "-f",
+          "image2",
+          "-framerate",
+          "30",
+          "-start_number",
+          "1",
+          "-i",
+          "<EXTERNAL_ROOT>/masters/desktop/frames/F%03d.png",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "500",
+          "-an",
+          "-map_metadata",
+          "-1",
+          "-map_chapters",
+          "-1",
+          "-vf",
+          "zscale=w=1920:h=1200:f=lanczos:rin=full:r=limited:min=gbr:m=bt709:tin=iec61966-2-1:t=bt709:pin=bt709:p=bt709:d=error_diffusion,format=yuv420p",
+          "-r",
+          "30",
+          "-fps_mode",
+          "cfr",
+          "-pix_fmt",
+          "yuv420p",
+          "-color_range",
+          "tv",
+          "-colorspace",
+          "bt709",
+          "-color_trc",
+          "bt709",
+          "-color_primaries",
+          "bt709",
+          "-fflags",
+          "+bitexact",
+          "-metadata",
+          "encoder=",
+          "-metadata:s:v:0",
+          "encoder=",
+          "-c:v",
+          "libvpx-vp9",
+          "-deadline",
+          "good",
+          "-cpu-used",
+          "1",
+          "-crf",
+          "28",
+          "-b:v",
+          "0",
+          "-g",
+          "12",
+          "-keyint_min",
+          "12",
+          "-lag-in-frames",
+          "0",
+          "-auto-alt-ref",
+          "0",
+          "-row-mt",
+          "1",
+          "-tile-columns",
+          "2",
+          "-frame-parallel",
+          "0",
+          "-aq-mode",
+          "1",
+          "-threads:v",
+          "8",
+          "-flags:v",
+          "+bitexact",
+          "-cues_to_front",
+          "1",
+          "-cluster_time_limit",
+          "400",
+          "-write_crc32",
+          "1",
+          "-f",
+          "webm",
+          "<EXTERNAL_ROOT>/media-production/candidates/desktop/desktop-vp9-smaller/desktop-vp9-smaller.partial-a1fbda9f-0233-4941-a7a2-c0d086298f22.webm"
+        ],
+        "argvSha256": "779b8399bd33164f658357b2e3e5ef3756630545b447de64df1730b90bdc0a6b",
+        "commonSettingsAuthoritySha256": "ac0b8214e85d1763733d1baed2cb2ad161c44ea4d3baa9cd9489e41d3c1fc8d3",
+        "crf": 28,
+        "qualityLevel": "smaller",
+        "settings": {
+          "codec": "libvpx-vp9",
+          "cpuUsed": 1,
+          "crfs": [
+            20,
+            24,
+            28
+          ],
+          "deadline": "good",
+          "extra": [
+            "-c:v",
+            "libvpx-vp9",
+            "-deadline",
+            "good",
+            "-cpu-used",
+            "1",
+            "-crf",
+            "<CRF>",
+            "-b:v",
+            "0",
+            "-g",
+            "12",
+            "-keyint_min",
+            "12",
+            "-lag-in-frames",
+            "0",
+            "-auto-alt-ref",
+            "0",
+            "-row-mt",
+            "1",
+            "-tile-columns",
+            "2",
+            "-frame-parallel",
+            "0",
+            "-aq-mode",
+            "1",
+            "-threads:v",
+            "8",
+            "-flags:v",
+            "+bitexact",
+            "-cues_to_front",
+            "1",
+            "-cluster_time_limit",
+            "400",
+            "-write_crc32",
+            "1",
+            "-f",
+            "webm"
+          ]
+        },
+        "settingsAuthority": "vp9-v1",
+        "settingsAuthoritySha256": "2ea809c3632dd106716c996537496ae4fae40c68bd304ef0667fa39f044cce61"
+      },
+      "family": "desktop",
+      "file": "media/phase-4r2-desktop-vp9-c2670cd331ec.webm",
+      "fps": 30,
+      "frames": 500,
+      "kind": "video",
+      "masterFrameManifestSha256": "2fe77bcd4e1e39402881b0d98aff6f5c3f5fed81d0404e53fcc6d2c8edb5875c",
+      "masterResolution": [
+        1920,
+        1200
+      ],
+      "quality": {
+        "psnrDb": 30.594908,
+        "ssim": 0.975279
+      },
+      "resolution": [
+        1920,
+        1200
+      ],
+      "selectionReason": "Evaluate and retain the authored 1920x1200 desktop master first; a visual-PASS candidate below the strict asset gate avoids any desktop wall/Q/current resolution loss. Selected the smallest complete machine-valid and visual-PASS VP9 candidate in that native cohort.",
+      "sha256": "c2670cd331ecebabb9fde760d752eef7e3dc82a174f086b8fb74feb51758ec3b",
+      "sourceMaster": {
+        "family": "desktop",
+        "format": "16-bit RGB PNG sequence",
+        "frameRange": [
+          1,
+          500
+        ],
+        "resolution": [
+          1920,
+          1200
+        ],
+        "sequenceSha256": "3ecfbac9acae67b16aae0712313d30c9478aa9e57ecef91c7b8157bbfd93eeb3",
+        "totalBytes": 3412593744
+      }
+    },
+    {
+      "bytes": 2481214,
+      "codec": "h264",
+      "deliveryDecision": {
+        "cohort": "landscape-native-1688x780-v1",
+        "deliveryResolution": [
+          1688,
+          780
+        ],
+        "masterResolution": [
+          1688,
+          780
+        ],
+        "rationale": "Retain the authored 1688x780 mobile-landscape master when a visual-PASS candidate fits, preserving the exact 844x390 authority at 2x review density without resampling."
+      },
+      "deliveryResolution": [
+        1688,
+        780
+      ],
+      "durationSeconds": 16.666666666666668,
+      "encode": {
+        "argv": [
+          "<FFMPEG>",
+          "-hide_banner",
+          "-nostdin",
+          "-y",
+          "-v",
+          "warning",
+          "-xerror",
+          "-f",
+          "image2",
+          "-framerate",
+          "30",
+          "-start_number",
+          "1",
+          "-i",
+          "<EXTERNAL_ROOT>/masters/landscape/frames/F%03d.png",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "500",
+          "-an",
+          "-map_metadata",
+          "-1",
+          "-map_chapters",
+          "-1",
+          "-vf",
+          "zscale=w=1688:h=780:f=lanczos:rin=full:r=limited:min=gbr:m=bt709:tin=iec61966-2-1:t=bt709:pin=bt709:p=bt709:d=error_diffusion,format=yuv420p",
+          "-r",
+          "30",
+          "-fps_mode",
+          "cfr",
+          "-pix_fmt",
+          "yuv420p",
+          "-color_range",
+          "tv",
+          "-colorspace",
+          "bt709",
+          "-color_trc",
+          "bt709",
+          "-color_primaries",
+          "bt709",
+          "-fflags",
+          "+bitexact",
+          "-metadata",
+          "encoder=",
+          "-metadata:s:v:0",
+          "encoder=",
+          "-c:v",
+          "libx264",
+          "-preset",
+          "slow",
+          "-crf",
+          "22",
+          "-profile:v",
+          "high",
+          "-g",
+          "12",
+          "-keyint_min",
+          "12",
+          "-sc_threshold",
+          "0",
+          "-flags:v",
+          "+cgop+bitexact",
+          "-x264-params",
+          "keyint=12:min-keyint=12:scenecut=0:open-gop=0:aq-mode=3:aq-strength=1.0",
+          "-threads:v",
+          "8",
+          "-movflags",
+          "+faststart",
+          "-video_track_timescale",
+          "30000",
+          "-f",
+          "mp4",
+          "<EXTERNAL_ROOT>/media-production/candidates/landscape/landscape-h264-smaller/landscape-h264-smaller.partial-60b45137-4675-4fd3-b10e-19e034c900b6.mp4"
+        ],
+        "argvSha256": "38d2692a3b04329d67272f0a612380b345d99c365521aae3fcb4d6fa95fb3dbd",
+        "commonSettingsAuthoritySha256": "ac0b8214e85d1763733d1baed2cb2ad161c44ea4d3baa9cd9489e41d3c1fc8d3",
+        "crf": 22,
+        "qualityLevel": "smaller",
+        "settings": {
+          "codec": "libx264",
+          "crfs": [
+            16,
+            19,
+            22
+          ],
+          "extra": [
+            "-c:v",
+            "libx264",
+            "-preset",
+            "slow",
+            "-crf",
+            "<CRF>",
+            "-profile:v",
+            "high",
+            "-g",
+            "12",
+            "-keyint_min",
+            "12",
+            "-sc_threshold",
+            "0",
+            "-flags:v",
+            "+cgop+bitexact",
+            "-x264-params",
+            "keyint=12:min-keyint=12:scenecut=0:open-gop=0:aq-mode=3:aq-strength=1.0",
+            "-threads:v",
+            "8",
+            "-movflags",
+            "+faststart",
+            "-video_track_timescale",
+            "30000",
+            "-f",
+            "mp4"
+          ],
+          "preset": "slow"
+        },
+        "settingsAuthority": "h264-v1",
+        "settingsAuthoritySha256": "897a942a5c431431312ebfb19fc0e084236604b29f406ad8b6b82a79ec9f4f78"
+      },
+      "family": "landscape",
+      "file": "media/phase-4r2-landscape-h264-78b3780d6936.mp4",
+      "fps": 30,
+      "frames": 500,
+      "kind": "video",
+      "masterFrameManifestSha256": "7b8af3afaf3cb4e03bd5bb69f71fc7ffd5c5e97db505370495a9714988072517",
+      "masterResolution": [
+        1688,
+        780
+      ],
+      "quality": {
+        "psnrDb": 47.07789,
+        "ssim": 0.993495
+      },
+      "resolution": [
+        1688,
+        780
+      ],
+      "selectionReason": "Retain the authored 1688x780 mobile-landscape master when a visual-PASS candidate fits, preserving the exact 844x390 authority at 2x review density without resampling. Selected the smallest complete machine-valid and visual-PASS H264 candidate in that native cohort.",
+      "sha256": "78b3780d6936d8b24ed052053ca94f6fc3f8ca4fc255d38b6c8e9b0d2cebaafb",
+      "sourceMaster": {
+        "family": "landscape",
+        "format": "16-bit RGB PNG sequence",
+        "frameRange": [
+          1,
+          500
+        ],
+        "resolution": [
+          1688,
+          780
+        ],
+        "sequenceSha256": "77f5667e983506c594e46970a3a4d62e63662da4038d95fd5c43c270b7ad5516",
+        "totalBytes": 2048387808
+      }
+    },
+    {
+      "bytes": 3832159,
+      "codec": "vp9",
+      "deliveryDecision": {
+        "cohort": "landscape-native-1688x780-v1",
+        "deliveryResolution": [
+          1688,
+          780
+        ],
+        "masterResolution": [
+          1688,
+          780
+        ],
+        "rationale": "Retain the authored 1688x780 mobile-landscape master when a visual-PASS candidate fits, preserving the exact 844x390 authority at 2x review density without resampling."
+      },
+      "deliveryResolution": [
+        1688,
+        780
+      ],
+      "durationSeconds": 16.666666666666668,
+      "encode": {
+        "argv": [
+          "<FFMPEG>",
+          "-hide_banner",
+          "-nostdin",
+          "-y",
+          "-v",
+          "warning",
+          "-xerror",
+          "-f",
+          "image2",
+          "-framerate",
+          "30",
+          "-start_number",
+          "1",
+          "-i",
+          "<EXTERNAL_ROOT>/masters/landscape/frames/F%03d.png",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "500",
+          "-an",
+          "-map_metadata",
+          "-1",
+          "-map_chapters",
+          "-1",
+          "-vf",
+          "zscale=w=1688:h=780:f=lanczos:rin=full:r=limited:min=gbr:m=bt709:tin=iec61966-2-1:t=bt709:pin=bt709:p=bt709:d=error_diffusion,format=yuv420p",
+          "-r",
+          "30",
+          "-fps_mode",
+          "cfr",
+          "-pix_fmt",
+          "yuv420p",
+          "-color_range",
+          "tv",
+          "-colorspace",
+          "bt709",
+          "-color_trc",
+          "bt709",
+          "-color_primaries",
+          "bt709",
+          "-fflags",
+          "+bitexact",
+          "-metadata",
+          "encoder=",
+          "-metadata:s:v:0",
+          "encoder=",
+          "-c:v",
+          "libvpx-vp9",
+          "-deadline",
+          "good",
+          "-cpu-used",
+          "1",
+          "-crf",
+          "28",
+          "-b:v",
+          "0",
+          "-g",
+          "12",
+          "-keyint_min",
+          "12",
+          "-lag-in-frames",
+          "0",
+          "-auto-alt-ref",
+          "0",
+          "-row-mt",
+          "1",
+          "-tile-columns",
+          "2",
+          "-frame-parallel",
+          "0",
+          "-aq-mode",
+          "1",
+          "-threads:v",
+          "8",
+          "-flags:v",
+          "+bitexact",
+          "-cues_to_front",
+          "1",
+          "-cluster_time_limit",
+          "400",
+          "-write_crc32",
+          "1",
+          "-f",
+          "webm",
+          "<EXTERNAL_ROOT>/media-production/candidates/landscape/landscape-vp9-smaller/landscape-vp9-smaller.partial-ec8b021c-75fd-43ac-bedd-011cc34b4a29.webm"
+        ],
+        "argvSha256": "be36c49146540dd32ac4841d4964930abdf472b18c5d84a57ac1bd118ef7923b",
+        "commonSettingsAuthoritySha256": "ac0b8214e85d1763733d1baed2cb2ad161c44ea4d3baa9cd9489e41d3c1fc8d3",
+        "crf": 28,
+        "qualityLevel": "smaller",
+        "settings": {
+          "codec": "libvpx-vp9",
+          "cpuUsed": 1,
+          "crfs": [
+            20,
+            24,
+            28
+          ],
+          "deadline": "good",
+          "extra": [
+            "-c:v",
+            "libvpx-vp9",
+            "-deadline",
+            "good",
+            "-cpu-used",
+            "1",
+            "-crf",
+            "<CRF>",
+            "-b:v",
+            "0",
+            "-g",
+            "12",
+            "-keyint_min",
+            "12",
+            "-lag-in-frames",
+            "0",
+            "-auto-alt-ref",
+            "0",
+            "-row-mt",
+            "1",
+            "-tile-columns",
+            "2",
+            "-frame-parallel",
+            "0",
+            "-aq-mode",
+            "1",
+            "-threads:v",
+            "8",
+            "-flags:v",
+            "+bitexact",
+            "-cues_to_front",
+            "1",
+            "-cluster_time_limit",
+            "400",
+            "-write_crc32",
+            "1",
+            "-f",
+            "webm"
+          ]
+        },
+        "settingsAuthority": "vp9-v1",
+        "settingsAuthoritySha256": "2ea809c3632dd106716c996537496ae4fae40c68bd304ef0667fa39f044cce61"
+      },
+      "family": "landscape",
+      "file": "media/phase-4r2-landscape-vp9-9f69c4120f46.webm",
+      "fps": 30,
+      "frames": 500,
+      "kind": "video",
+      "masterFrameManifestSha256": "7b8af3afaf3cb4e03bd5bb69f71fc7ffd5c5e97db505370495a9714988072517",
+      "masterResolution": [
+        1688,
+        780
+      ],
+      "quality": {
+        "psnrDb": 30.56842,
+        "ssim": 0.974027
+      },
+      "resolution": [
+        1688,
+        780
+      ],
+      "selectionReason": "Retain the authored 1688x780 mobile-landscape master when a visual-PASS candidate fits, preserving the exact 844x390 authority at 2x review density without resampling. Selected the smallest complete machine-valid and visual-PASS VP9 candidate in that native cohort.",
+      "sha256": "9f69c4120f46cdf2b942fa3a94a6ccf0c3aabd3529a4ddb2bee3bd1cb679fbb2",
+      "sourceMaster": {
+        "family": "landscape",
+        "format": "16-bit RGB PNG sequence",
+        "frameRange": [
+          1,
+          500
+        ],
+        "resolution": [
+          1688,
+          780
+        ],
+        "sequenceSha256": "77f5667e983506c594e46970a3a4d62e63662da4038d95fd5c43c270b7ad5516",
+        "totalBytes": 2048387808
+      }
+    },
+    {
+      "bytes": 1931456,
+      "codec": "h264",
+      "deliveryDecision": {
+        "cohort": "portrait-native-780x1688-v1",
+        "deliveryResolution": [
+          780,
+          1688
+        ],
+        "masterResolution": [
+          780,
+          1688
+        ],
+        "rationale": "Retain the authored 780x1688 portrait master when a visual-PASS candidate fits, preserving the exact 390x844 composition at 2x review density without resampling."
+      },
+      "deliveryResolution": [
+        780,
+        1688
+      ],
+      "durationSeconds": 16.666666666666668,
+      "encode": {
+        "argv": [
+          "<FFMPEG>",
+          "-hide_banner",
+          "-nostdin",
+          "-y",
+          "-v",
+          "warning",
+          "-xerror",
+          "-f",
+          "image2",
+          "-framerate",
+          "30",
+          "-start_number",
+          "1",
+          "-i",
+          "<EXTERNAL_ROOT>/masters/portrait/frames/F%03d.png",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "500",
+          "-an",
+          "-map_metadata",
+          "-1",
+          "-map_chapters",
+          "-1",
+          "-vf",
+          "zscale=w=780:h=1688:f=lanczos:rin=full:r=limited:min=gbr:m=bt709:tin=iec61966-2-1:t=bt709:pin=bt709:p=bt709:d=error_diffusion,format=yuv420p",
+          "-r",
+          "30",
+          "-fps_mode",
+          "cfr",
+          "-pix_fmt",
+          "yuv420p",
+          "-color_range",
+          "tv",
+          "-colorspace",
+          "bt709",
+          "-color_trc",
+          "bt709",
+          "-color_primaries",
+          "bt709",
+          "-fflags",
+          "+bitexact",
+          "-metadata",
+          "encoder=",
+          "-metadata:s:v:0",
+          "encoder=",
+          "-c:v",
+          "libx264",
+          "-preset",
+          "slow",
+          "-crf",
+          "22",
+          "-profile:v",
+          "high",
+          "-g",
+          "12",
+          "-keyint_min",
+          "12",
+          "-sc_threshold",
+          "0",
+          "-flags:v",
+          "+cgop+bitexact",
+          "-x264-params",
+          "keyint=12:min-keyint=12:scenecut=0:open-gop=0:aq-mode=3:aq-strength=1.0",
+          "-threads:v",
+          "8",
+          "-movflags",
+          "+faststart",
+          "-video_track_timescale",
+          "30000",
+          "-f",
+          "mp4",
+          "<EXTERNAL_ROOT>/media-production/candidates/portrait/portrait-h264-smaller/portrait-h264-smaller.partial-dbfb8af2-7f74-4be8-90b8-19b015f3103b.mp4"
+        ],
+        "argvSha256": "53e76fb5e0bd94093b65ed58e03f706dd1634e2907e2075f6d19ab520de81965",
+        "commonSettingsAuthoritySha256": "ac0b8214e85d1763733d1baed2cb2ad161c44ea4d3baa9cd9489e41d3c1fc8d3",
+        "crf": 22,
+        "qualityLevel": "smaller",
+        "settings": {
+          "codec": "libx264",
+          "crfs": [
+            16,
+            19,
+            22
+          ],
+          "extra": [
+            "-c:v",
+            "libx264",
+            "-preset",
+            "slow",
+            "-crf",
+            "<CRF>",
+            "-profile:v",
+            "high",
+            "-g",
+            "12",
+            "-keyint_min",
+            "12",
+            "-sc_threshold",
+            "0",
+            "-flags:v",
+            "+cgop+bitexact",
+            "-x264-params",
+            "keyint=12:min-keyint=12:scenecut=0:open-gop=0:aq-mode=3:aq-strength=1.0",
+            "-threads:v",
+            "8",
+            "-movflags",
+            "+faststart",
+            "-video_track_timescale",
+            "30000",
+            "-f",
+            "mp4"
+          ],
+          "preset": "slow"
+        },
+        "settingsAuthority": "h264-v1",
+        "settingsAuthoritySha256": "897a942a5c431431312ebfb19fc0e084236604b29f406ad8b6b82a79ec9f4f78"
+      },
+      "family": "portrait",
+      "file": "media/phase-4r2-portrait-h264-b713acabce50.mp4",
+      "fps": 30,
+      "frames": 500,
+      "kind": "video",
+      "masterFrameManifestSha256": "09ed1008a156117a071377c35f3c1c798cb5c01935263f2a004872b16fe62c7b",
+      "masterResolution": [
+        780,
+        1688
+      ],
+      "quality": {
+        "psnrDb": 49.328834,
+        "ssim": 0.994486
+      },
+      "resolution": [
+        780,
+        1688
+      ],
+      "selectionReason": "Retain the authored 780x1688 portrait master when a visual-PASS candidate fits, preserving the exact 390x844 composition at 2x review density without resampling. Selected the smallest complete machine-valid and visual-PASS H264 candidate in that native cohort.",
+      "sha256": "b713acabce506c8d48377eb90221840b2dfb30263310058fc7a7092749ab7fe0",
+      "sourceMaster": {
+        "family": "portrait",
+        "format": "16-bit RGB PNG sequence",
+        "frameRange": [
+          1,
+          500
+        ],
+        "resolution": [
+          780,
+          1688
+        ],
+        "sequenceSha256": "9a73386d868e590a6f17c955150366f04753dab077d9428952ea0d09b5fb8ccc",
+        "totalBytes": 1848953026
+      }
+    },
+    {
+      "bytes": 3444231,
+      "codec": "vp9",
+      "deliveryDecision": {
+        "cohort": "portrait-native-780x1688-v1",
+        "deliveryResolution": [
+          780,
+          1688
+        ],
+        "masterResolution": [
+          780,
+          1688
+        ],
+        "rationale": "Retain the authored 780x1688 portrait master when a visual-PASS candidate fits, preserving the exact 390x844 composition at 2x review density without resampling."
+      },
+      "deliveryResolution": [
+        780,
+        1688
+      ],
+      "durationSeconds": 16.666666666666668,
+      "encode": {
+        "argv": [
+          "<FFMPEG>",
+          "-hide_banner",
+          "-nostdin",
+          "-y",
+          "-v",
+          "warning",
+          "-xerror",
+          "-f",
+          "image2",
+          "-framerate",
+          "30",
+          "-start_number",
+          "1",
+          "-i",
+          "<EXTERNAL_ROOT>/masters/portrait/frames/F%03d.png",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "500",
+          "-an",
+          "-map_metadata",
+          "-1",
+          "-map_chapters",
+          "-1",
+          "-vf",
+          "zscale=w=780:h=1688:f=lanczos:rin=full:r=limited:min=gbr:m=bt709:tin=iec61966-2-1:t=bt709:pin=bt709:p=bt709:d=error_diffusion,format=yuv420p",
+          "-r",
+          "30",
+          "-fps_mode",
+          "cfr",
+          "-pix_fmt",
+          "yuv420p",
+          "-color_range",
+          "tv",
+          "-colorspace",
+          "bt709",
+          "-color_trc",
+          "bt709",
+          "-color_primaries",
+          "bt709",
+          "-fflags",
+          "+bitexact",
+          "-metadata",
+          "encoder=",
+          "-metadata:s:v:0",
+          "encoder=",
+          "-c:v",
+          "libvpx-vp9",
+          "-deadline",
+          "good",
+          "-cpu-used",
+          "1",
+          "-crf",
+          "28",
+          "-b:v",
+          "0",
+          "-g",
+          "12",
+          "-keyint_min",
+          "12",
+          "-lag-in-frames",
+          "0",
+          "-auto-alt-ref",
+          "0",
+          "-row-mt",
+          "1",
+          "-tile-columns",
+          "2",
+          "-frame-parallel",
+          "0",
+          "-aq-mode",
+          "1",
+          "-threads:v",
+          "8",
+          "-flags:v",
+          "+bitexact",
+          "-cues_to_front",
+          "1",
+          "-cluster_time_limit",
+          "400",
+          "-write_crc32",
+          "1",
+          "-f",
+          "webm",
+          "<EXTERNAL_ROOT>/media-production/candidates/portrait/portrait-vp9-smaller/portrait-vp9-smaller.partial-48650e4c-99c2-483c-a34e-6eb882622b7b.webm"
+        ],
+        "argvSha256": "9308a57d531ca5e2c3d373273b2fb6e21983fed4be9ea26f5b663daa9fa4248a",
+        "commonSettingsAuthoritySha256": "ac0b8214e85d1763733d1baed2cb2ad161c44ea4d3baa9cd9489e41d3c1fc8d3",
+        "crf": 28,
+        "qualityLevel": "smaller",
+        "settings": {
+          "codec": "libvpx-vp9",
+          "cpuUsed": 1,
+          "crfs": [
+            20,
+            24,
+            28
+          ],
+          "deadline": "good",
+          "extra": [
+            "-c:v",
+            "libvpx-vp9",
+            "-deadline",
+            "good",
+            "-cpu-used",
+            "1",
+            "-crf",
+            "<CRF>",
+            "-b:v",
+            "0",
+            "-g",
+            "12",
+            "-keyint_min",
+            "12",
+            "-lag-in-frames",
+            "0",
+            "-auto-alt-ref",
+            "0",
+            "-row-mt",
+            "1",
+            "-tile-columns",
+            "2",
+            "-frame-parallel",
+            "0",
+            "-aq-mode",
+            "1",
+            "-threads:v",
+            "8",
+            "-flags:v",
+            "+bitexact",
+            "-cues_to_front",
+            "1",
+            "-cluster_time_limit",
+            "400",
+            "-write_crc32",
+            "1",
+            "-f",
+            "webm"
+          ]
+        },
+        "settingsAuthority": "vp9-v1",
+        "settingsAuthoritySha256": "2ea809c3632dd106716c996537496ae4fae40c68bd304ef0667fa39f044cce61"
+      },
+      "family": "portrait",
+      "file": "media/phase-4r2-portrait-vp9-2925fe164a70.webm",
+      "fps": 30,
+      "frames": 500,
+      "kind": "video",
+      "masterFrameManifestSha256": "09ed1008a156117a071377c35f3c1c798cb5c01935263f2a004872b16fe62c7b",
+      "masterResolution": [
+        780,
+        1688
+      ],
+      "quality": {
+        "psnrDb": 30.580776,
+        "ssim": 0.972216
+      },
+      "resolution": [
+        780,
+        1688
+      ],
+      "selectionReason": "Retain the authored 780x1688 portrait master when a visual-PASS candidate fits, preserving the exact 390x844 composition at 2x review density without resampling. Selected the smallest complete machine-valid and visual-PASS VP9 candidate in that native cohort.",
+      "sha256": "2925fe164a70428de1cdd045b9f2441523eb69907858ec1918b6d793ac0bf9dc",
+      "sourceMaster": {
+        "family": "portrait",
+        "format": "16-bit RGB PNG sequence",
+        "frameRange": [
+          1,
+          500
+        ],
+        "resolution": [
+          780,
+          1688
+        ],
+        "sequenceSha256": "9a73386d868e590a6f17c955150366f04753dab077d9428952ea0d09b5fb8ccc",
+        "totalBytes": 1848953026
+      }
+    },
+    {
+      "bytes": 2096854,
+      "deliveryDecision": {
+        "cohort": "desktop-native-1920x1200-v1",
+        "deliveryResolution": [
+          1920,
+          1200
+        ],
+        "masterResolution": [
+          1920,
+          1200
+        ],
+        "rationale": "Evaluate and retain the authored 1920x1200 desktop master first; a visual-PASS candidate below the strict asset gate avoids any desktop wall/Q/current resolution loss."
+      },
+      "deliveryResolution": [
+        1920,
+        1200
+      ],
+      "derivationAuthority": {
+        "filter": "zscale=w=1920:h=1200:f=lanczos:rin=full:r=limited:min=gbr:m=bt709:tin=iec61966-2-1:t=bt709:pin=bt709:p=bt709:d=error_diffusion,format=yuv420p,zscale=w=1920:h=1200:f=lanczos:rin=limited:r=full:min=bt709:m=gbr:tin=bt709:t=iec61966-2-1:pin=bt709:p=bt709:d=error_diffusion,format=gbrp",
+        "output": {
+          "alpha": false,
+          "bitDepth": 8,
+          "codec": "png",
+          "colorType": "RGB",
+          "compressionLevel": 9,
+          "prediction": "mixed"
+        },
+        "resolution": [
+          1920,
+          1200
+        ],
+        "sourceFormat": "16-bit RGB PNG",
+        "sourceFrame": 1
+      },
+      "derivationAuthoritySha256": "2d52200233475fcd2b82ed149a4736e5abc940b603f48ce1a8e470b669e9c257",
+      "family": "desktop",
+      "file": "posters/phase-4r2-desktop-poster-8dc538810811.png",
+      "kind": "poster",
+      "masterF1Sha256": "085e438d222a38fdcf76987d0512b4c02f88b0567b76dafd777dec4bcf32da6d",
+      "masterFrameManifestSha256": "2fe77bcd4e1e39402881b0d98aff6f5c3f5fed81d0404e53fcc6d2c8edb5875c",
+      "masterResolution": [
+        1920,
+        1200
+      ],
+      "resolution": [
+        1920,
+        1200
+      ],
+      "sha256": "8dc5388108116da7202a6b8b24ea8fccb42ebc4cdfb50b861427488436e35979"
+    },
+    {
+      "bytes": 1212306,
+      "deliveryDecision": {
+        "cohort": "landscape-native-1688x780-v1",
+        "deliveryResolution": [
+          1688,
+          780
+        ],
+        "masterResolution": [
+          1688,
+          780
+        ],
+        "rationale": "Retain the authored 1688x780 mobile-landscape master when a visual-PASS candidate fits, preserving the exact 844x390 authority at 2x review density without resampling."
+      },
+      "deliveryResolution": [
+        1688,
+        780
+      ],
+      "derivationAuthority": {
+        "filter": "zscale=w=1688:h=780:f=lanczos:rin=full:r=limited:min=gbr:m=bt709:tin=iec61966-2-1:t=bt709:pin=bt709:p=bt709:d=error_diffusion,format=yuv420p,zscale=w=1688:h=780:f=lanczos:rin=limited:r=full:min=bt709:m=gbr:tin=bt709:t=iec61966-2-1:pin=bt709:p=bt709:d=error_diffusion,format=gbrp",
+        "output": {
+          "alpha": false,
+          "bitDepth": 8,
+          "codec": "png",
+          "colorType": "RGB",
+          "compressionLevel": 9,
+          "prediction": "mixed"
+        },
+        "resolution": [
+          1688,
+          780
+        ],
+        "sourceFormat": "16-bit RGB PNG",
+        "sourceFrame": 1
+      },
+      "derivationAuthoritySha256": "a625342694e21ea0e0b5e17021f5b6ccb98869f24646411d25c702f9d99a0275",
+      "family": "landscape",
+      "file": "posters/phase-4r2-landscape-poster-5692f67493fa.png",
+      "kind": "poster",
+      "masterF1Sha256": "9610bd573e9ac0f257357d96ee8adb97d3f33b0677a4cb92c323908bfb51fb67",
+      "masterFrameManifestSha256": "7b8af3afaf3cb4e03bd5bb69f71fc7ffd5c5e97db505370495a9714988072517",
+      "masterResolution": [
+        1688,
+        780
+      ],
+      "resolution": [
+        1688,
+        780
+      ],
+      "sha256": "5692f67493faf34844a6e2eaa838999babbaaf6d1c7d10e51505587daeb1d679"
+    },
+    {
+      "bytes": 1146148,
+      "deliveryDecision": {
+        "cohort": "portrait-native-780x1688-v1",
+        "deliveryResolution": [
+          780,
+          1688
+        ],
+        "masterResolution": [
+          780,
+          1688
+        ],
+        "rationale": "Retain the authored 780x1688 portrait master when a visual-PASS candidate fits, preserving the exact 390x844 composition at 2x review density without resampling."
+      },
+      "deliveryResolution": [
+        780,
+        1688
+      ],
+      "derivationAuthority": {
+        "filter": "zscale=w=780:h=1688:f=lanczos:rin=full:r=limited:min=gbr:m=bt709:tin=iec61966-2-1:t=bt709:pin=bt709:p=bt709:d=error_diffusion,format=yuv420p,zscale=w=780:h=1688:f=lanczos:rin=limited:r=full:min=bt709:m=gbr:tin=bt709:t=iec61966-2-1:pin=bt709:p=bt709:d=error_diffusion,format=gbrp",
+        "output": {
+          "alpha": false,
+          "bitDepth": 8,
+          "codec": "png",
+          "colorType": "RGB",
+          "compressionLevel": 9,
+          "prediction": "mixed"
+        },
+        "resolution": [
+          780,
+          1688
+        ],
+        "sourceFormat": "16-bit RGB PNG",
+        "sourceFrame": 1
+      },
+      "derivationAuthoritySha256": "1885a5773c15dd47db1456ccdf0896a9bfaf5dec0eb9f399f85c990ded8e10ae",
+      "family": "portrait",
+      "file": "posters/phase-4r2-portrait-poster-e104fe5e3d0e.png",
+      "kind": "poster",
+      "masterF1Sha256": "5b30031e51a268f8c90c75166e790a627885d8b7161808469a640ce7977337f1",
+      "masterFrameManifestSha256": "09ed1008a156117a071377c35f3c1c798cb5c01935263f2a004872b16fe62c7b",
+      "masterResolution": [
+        780,
+        1688
+      ],
+      "resolution": [
+        780,
+        1688
+      ],
+      "sha256": "e104fe5e3d0e471df2059919eb26eca7bb493929eca1000d8ab6ce95a611dee9"
+    }
+  ],
+  "authorization": {
+    "mergeMain": false,
+    "phase5": false
+  },
+  "codecDeterminismReports": {
+    "desktop": {
+      "bytes": 11136,
+      "sha256": "93a2e190da169228e663c617b4ce3cc4e867e1aaf117a9ef1154cf1d06365873"
+    },
+    "landscape": {
+      "bytes": 11182,
+      "sha256": "8287856d600d03e2ba2bc455a6d8676e8636a6f07d98fba0aee88ce2c08b89dc"
+    },
+    "portrait": {
+      "bytes": 11157,
+      "sha256": "d7800a2b78af682af870c2f1259172b22ed1015cc005d6b43141856be24133a4"
+    }
+  },
+  "deliveryResolutionDecisions": {
+    "desktop": {
+      "cohort": "desktop-native-1920x1200-v1",
+      "deliveryResolution": [
+        1920,
+        1200
+      ],
+      "masterResolution": [
+        1920,
+        1200
+      ],
+      "rationale": "Evaluate and retain the authored 1920x1200 desktop master first; a visual-PASS candidate below the strict asset gate avoids any desktop wall/Q/current resolution loss."
+    },
+    "landscape": {
+      "cohort": "landscape-native-1688x780-v1",
+      "deliveryResolution": [
+        1688,
+        780
+      ],
+      "masterResolution": [
+        1688,
+        780
+      ],
+      "rationale": "Retain the authored 1688x780 mobile-landscape master when a visual-PASS candidate fits, preserving the exact 844x390 authority at 2x review density without resampling."
+    },
+    "portrait": {
+      "cohort": "portrait-native-780x1688-v1",
+      "deliveryResolution": [
+        780,
+        1688
+      ],
+      "masterResolution": [
+        780,
+        1688
+      ],
+      "rationale": "Retain the authored 780x1688 portrait master when a visual-PASS candidate fits, preserving the exact 390x844 composition at 2x review density without resampling."
+    }
+  },
+  "encodeVisualVerdictSha256": "80caf62c8f2d0d098a6a76db4bf123ba3a6d4ab89cc79a0461d07887f5c63c69",
+  "masterVisualVerdictSha256": "047c0ee6b837041fd4fa03144206735f8d8af0d6a432e1decde75c4e165ae2a0",
+  "physicalTimeline": {
+    "durationRational": "50/3",
+    "fps": 30,
+    "frames": 500
+  },
+  "qualityReportSha256": "5ca87d04c02be6f67e75a809c59116a3fa41ef314251071fec1c098d4aa3b317",
+  "schema": "quantum-hub.phase-4-r2.production-media-manifest.v1",
+  "selectionSha256": "c7a1b2a0d1931310f88874ca8523cda87427f2bfbbec3ed1febb5ca6eddf4b00",
+  "sourceBlendSha256": "b0c9c7c1cf5a1642870cf03a36791cc50ec31ac207aeae794fbea83c856a79c0"
+}

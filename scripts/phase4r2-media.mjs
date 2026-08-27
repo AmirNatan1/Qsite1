@@ -508,6 +508,18 @@ function containsPrivatePath(value) {
   return /(?:[A-Za-z]:[\\/]|\/Users\/[^/\s]+|\/home\/[^/\s]+|OneDrive|AppData)/i.test(normalized);
 }
 
+function containsPrivateContainerPath(payload) {
+  // Compressed video bytes routinely contain random three-byte sequences such
+  // as `b:\\` or `Q:/`. Treating every drive-prefix-shaped byte triplet as a
+  // path makes a false positive virtually certain in a multi-megabyte encode.
+  // Container metadata is independently probed above; this binary scan remains
+  // defense in depth and therefore requires an actual structured absolute path
+  // (or a known private-root marker) in either common text encoding.
+  const decoded = [payload.toString("latin1"), payload.toString("utf16le")];
+  return decoded.some((text) =>
+    /(?:[A-Za-z]:[\\/](?:Users|Documents and Settings)[\\/][^\0\r\n]{1,256}|\/(?:Users|home)\/[^\0\r\n/]{1,128}|(?:OneDrive|AppData)(?:[\\/]|$)|[A-Za-z]:[\\/][A-Za-z0-9._ -]{2,128}[\\/][A-Za-z0-9._ -]{2,128})/i.test(text));
+}
+
 async function runTool(config, label, executable, args, options = {}) {
   const logDirectory = path.join(config.mediaRoot, "logs");
   await mkdir(logDirectory, { recursive: true });
@@ -1485,8 +1497,7 @@ async function validateCandidate(config, family, codec, candidatePath) {
     throw new Error("Candidate metadata leaks a private local path");
   }
   const payload = await readFile(candidatePath);
-  const binaryPrivacyText = `${payload.toString("latin1")}\n${payload.toString("utf16le")}`;
-  if (containsPrivatePath(binaryPrivacyText)) {
+  if (containsPrivateContainerPath(payload)) {
     throw new Error("Candidate container bytes leak a private local path");
   }
   let container;
