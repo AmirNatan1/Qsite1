@@ -325,7 +325,7 @@ function deploymentProjection(source, bytes) {
     status: "PASS",
     generatedAt: source.generatedAt,
     sourceReport: { bytes: bytes.length, sha256: sha256(bytes) },
-    repository: { head: source.repository?.head, branch: source.repository?.branch, clean: source.repository?.clean },
+    repository: { head: source.repository?.head, branch: source.repository?.branch, clean: source.repository?.clean, main: source.repository?.main },
     github: {
       repository: source.github?.repository,
       branch: source.github?.branch,
@@ -882,6 +882,16 @@ async function selfTest() {
   if (RECORDINGS.map((item) => item.id).join("|") !== "desktop-forward|desktop-reverse|desktop-fast-jump|mobile-390x844-forward|mobile-landscape-844x390-forward|narrow-320x800-forward|tablet-portrait-768x1024-forward") throw new Error("Recording identity self-test failed");
   const nestedFixture = { file: "media/desktop.mp4" };
   if (`${DEPLOYED_ASSET_PREFIX}${nestedFixture.file}` !== "/media/cinematic/phase-4r2/media/desktop.mp4" || DEPLOYED_MANIFEST_PATH !== "/media/cinematic/phase-4r2/manifests/phase-4r2-production-media-manifest.json") throw new Error("Nested deployment path self-test failed");
+  const deploymentProjectionFixture = deploymentProjection({
+    schema: DEPLOYMENT_SCHEMA,
+    status: "PASS",
+    generatedAt: "2026-01-01T00:00:00.000Z",
+    repository: { head: "a".repeat(40), branch: "fixture", clean: true, main: { headSha: MAIN_SHA, requiredHeadSha: MAIN_SHA } },
+    github: { main: { headSha: MAIN_SHA, requiredHeadSha: MAIN_SHA } },
+    humanReviewGates: HUMAN_REVIEW_GATES,
+    authorization: { humanAccepted: false, phase5Authorized: false, mainMerged: false },
+  }, Buffer.from("fixture"));
+  if (deploymentProjectionFixture.repository?.main?.headSha !== MAIN_SHA || deploymentProjectionFixture.repository?.main?.requiredHeadSha !== MAIN_SHA) throw new Error("Deployment projection frozen-main preservation self-test failed");
   if (Object.keys(HUMAN_REVIEW_GATES).join("|") !== "PHYSICAL → DIGITAL CONTINUITY|NATIVE SCROLL + REVERSE INTEGRITY|RESPONSIVE + ACCESSIBLE INTEGRATION|MEDIA + PERFORMANCE SAFETY|OPERATING FIELD REGRESSION") throw new Error("Gate identity self-test failed");
   process.stdout.write(stableJson({ schema: `${SCHEMA}.self-test`, status: "PASS", outputContract: { sheets: 16, recordings: 7, reports: 10 } }));
 }
