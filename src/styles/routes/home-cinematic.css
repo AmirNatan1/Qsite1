@@ -4,7 +4,8 @@
   --cinematic-header-px: clamp(100.25px, calc(9.024vw + 1px), 121.32px);
   --cinematic-progress: 0;
   --cinematic-film-progress: 0;
-  --cinematic-takeover: 0;
+  --cinematic-black: 0;
+  --cinematic-black-breath: 0;
   --cinematic-semantic: 0;
   --cinematic-media-ready: 0;
   --cinematic-object-x: 48%;
@@ -46,14 +47,15 @@
   object-position: var(--cinematic-object-x, 50%) var(--cinematic-object-y, 50%);
 }
 
+.cinematic-poster {
+  z-index: 1;
+  background: #050708;
+  opacity: calc(1 - var(--cinematic-media-ready));
+}
+
 .cinematic-poster img {
   object-fit: cover;
   object-position: inherit;
-}
-
-.cinematic-poster {
-  z-index: 1;
-  opacity: calc(1 - var(--cinematic-media-ready));
 }
 
 .cinematic-media {
@@ -67,9 +69,9 @@
   z-index: 3;
   display: block;
   background:
-    linear-gradient(114deg, rgba(30, 39, 40, 0.72) 0 35%, transparent 35% 65%, rgba(44, 10, 25, 0.48) 65%),
-    #090c0d;
-  opacity: var(--cinematic-takeover);
+    radial-gradient(circle at 50% 50%, rgba(21, 27, 28, calc(var(--cinematic-black-breath) * 0.12)), transparent 42%),
+    #050708;
+  opacity: var(--cinematic-black);
 }
 
 .cinematic-shell > .entry-field {
@@ -100,7 +102,7 @@ html[data-cinematic-mode="enhanced"][data-cinematic-header="concealed"] .home-pa
 
 html[data-cinematic-mode="candidate"] .cinematic-shell,
 html[data-cinematic-mode="enhanced"] .cinematic-shell {
-  --cinematic-travel-px: 365svh;
+  --cinematic-travel-px: 625svh;
   margin-top: calc(-1 * var(--cinematic-header-px));
   padding-top: calc(var(--cinematic-travel-px) + var(--cinematic-header-px));
 }
@@ -164,7 +166,7 @@ html[data-cinematic-mode="enhanced"] .cinematic-shell[data-cinematic-interactive
 
   html[data-cinematic-mode="candidate"] .cinematic-shell,
   html[data-cinematic-mode="enhanced"] .cinematic-shell {
-    --cinematic-travel-px: 300svh;
+    --cinematic-travel-px: 485svh;
   }
 }
 
@@ -179,12 +181,17 @@ html[data-cinematic-mode="enhanced"] .cinematic-shell[data-cinematic-interactive
     --cinematic-object-x: 53%;
     --cinematic-object-y: 48%;
   }
+
+  html[data-cinematic-mode="candidate"] .cinematic-shell,
+  html[data-cinematic-mode="enhanced"] .cinematic-shell {
+    --cinematic-travel-px: 510svh;
+  }
 }
 
 @media (max-height: 43.999rem) and (min-width: 56.26rem) {
   html[data-cinematic-mode="candidate"] .cinematic-shell,
   html[data-cinematic-mode="enhanced"] .cinematic-shell {
-    --cinematic-travel-px: 335svh;
+    --cinematic-travel-px: 545svh;
   }
 }
 

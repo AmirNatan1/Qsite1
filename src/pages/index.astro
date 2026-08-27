@@ -21,6 +21,37 @@ import "../styles/routes/home-responsive.css";
 const title = "Industrial innovation tested in the real world";
 const description =
   "Quantum brings industry and technology together to define real needs, test solutions and turn evidence into decisions.";
+const fallbackPosters = {
+  desktop: "/media/cinematic/phase-3-dormant-desktop-03f5490ab11a.png",
+  portrait: "/media/cinematic/phase-3-dormant-mobile-9d5c19b1a5e2.png",
+  landscape: "/media/cinematic/phase-3-dormant-narrow-451d05bcc3d5.png",
+} as const;
+let cinematicPosters = fallbackPosters;
+try {
+  const authorities = import.meta.glob(
+    "../../artifacts/original/phase-4r2-final-cinematic-production/manifests/phase-4r2-production-media-manifest.json",
+    { eager: true, query: "?raw", import: "default" },
+  );
+  const payload = Object.values(authorities)[0];
+  if (typeof payload !== "string") throw new Error("final manifest is absent");
+  const manifest = JSON.parse(payload) as {
+    schema?: string;
+    assets?: Array<{ file?: string; kind?: string; family?: string; bytes?: number; sha256?: string }>;
+  };
+  const posters = Object.fromEntries((manifest.assets ?? [])
+    .filter((asset) => asset.kind === "poster" && ["desktop", "portrait", "landscape"].includes(asset.family ?? ""))
+    .map((asset) => [asset.family!, `/media/cinematic/phase-4r2/${asset.file}`]));
+  if (
+    manifest.schema !== "quantum-hub.phase-4-r2.production-media-manifest.v1"
+    || Object.keys(posters).length !== 3
+    || !["desktop", "portrait", "landscape"].every((family) => typeof posters[family] === "string")
+  ) throw new Error("final poster authority is incomplete");
+  cinematicPosters = posters as typeof fallbackPosters;
+} catch (error) {
+  if (import.meta.env.PHASE4R2_FINAL_AUTHORITY === "1") {
+    throw new Error(`Phase 4-R2 final authority was required but unavailable: ${error instanceof Error ? error.message : error}`);
+  }
+}
 
 const processSteps = [
   { title: "Frame", description: "Define the operational problem, owner and success criteria." },
@@ -95,19 +126,19 @@ if (!maradinOpening || !maradinClimax) {
   <div class="cinematic-shell" data-cinematic-shell data-cinematic-interactive="false">
     <div class="cinematic-runway" aria-hidden="true">
       <div class="cinematic-stage" data-cinematic-stage>
-        <picture class="cinematic-poster" data-cinematic-poster>
+        <picture class="cinematic-poster" data-cinematic-poster aria-hidden="true">
           <source
-            media="(max-width: 350px) and (orientation: portrait)"
-            srcset="/media/cinematic/phase-3-dormant-narrow-451d05bcc3d5.png"
+            media="(max-width: 800px) and (orientation: portrait)"
+            srcset={cinematicPosters.portrait}
           />
           <source
-            media="(max-width: 800px) and (orientation: portrait), (max-width: 900px) and (max-height: 480px)"
-            srcset="/media/cinematic/phase-3-dormant-mobile-9d5c19b1a5e2.png"
+            media="(max-width: 900px) and (max-height: 480px) and (orientation: landscape)"
+            srcset={cinematicPosters.landscape}
           />
           <img
-            src="/media/cinematic/phase-3-dormant-desktop-03f5490ab11a.png"
-            width="1440"
-            height="900"
+            src={cinematicPosters.desktop}
+            width="1920"
+            height="1200"
             alt=""
             loading="eager"
             decoding="sync"
