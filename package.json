@@ -10,11 +10,12 @@
     "unifont": "0.7.4"
   },
   "scripts": {
-    "stage:phase4-media": "node scripts/stage-phase4-media.mjs",
+    "stage:phase4-media": "node scripts/stage-phase4-media.mjs && node scripts/stage-phase4r2-runtime-media.mjs",
     "dev": "npm run stage:phase4-media && astro dev",
-    "check": "npm run stage:phase4-media && astro check && node --test tests/phase1-publication.test.mjs && node scripts/verify-phase4-source.mjs",
-    "test": "node --test tests/phase1-publication.test.mjs",
-    "build": "npm run stage:phase4-media && astro build && node scripts/verify-phase4-output.mjs",
+    "check": "npm run stage:phase4-media && astro check && node --test tests/phase1-publication.test.mjs tests/phase4r2-runtime.test.mjs && node scripts/verify-phase4-source.mjs",
+    "test": "node --test tests/phase1-publication.test.mjs tests/phase4r2-runtime.test.mjs",
+    "build": "node scripts/run-phase4-build.mjs",
+    "build:phase4r2-final": "node scripts/run-phase4r2-final-build.mjs",
     "qa:browser": "node scripts/qa-phase4-browser.mjs --server-mode astro-preview --base-url http://127.0.0.1:4334",
     "qa:visual": "node scripts/create-phase1-contact-sheets.mjs",
     "qa:phase1": "node --test tests/phase1-publication.test.mjs",

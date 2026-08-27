@@ -5,6 +5,7 @@ import path from "node:path";
 const ROOT = process.cwd();
 const DELIVERY_ROOT = path.join(ROOT, "artifacts", "original", "phase-3-crt-opening");
 const OUTPUT_ROOT = path.join(ROOT, "public", "media", "cinematic");
+const FINAL_AUTHORITY_EXPECTED = process.env.PHASE4R2_FINAL_AUTHORITY === "1";
 
 const assets = Object.freeze([
   {
@@ -75,8 +76,25 @@ async function outputMatches(outputPath, asset) {
 }
 
 await mkdir(OUTPUT_ROOT, { recursive: true });
+if (FINAL_AUTHORITY_EXPECTED) {
+  // A release candidate may ship the R2 cinematic authority only. This
+  // deliberately leaves the isolated R2 subtree for its manifest reconciler
+  // and removes every legacy flat cinematic payload before Astro copies public.
+  let pruned = 0;
+  for (const entry of await readdir(OUTPUT_ROOT, { withFileTypes: true })) {
+    if (entry.name === "phase-4r2") continue;
+    if (!entry.isFile()) throw new Error(`Unexpected directory in final cinematic staging: ${entry.name}`);
+    await unlink(path.join(OUTPUT_ROOT, entry.name));
+    pruned += 1;
+  }
+  console.log(`Pruned ${pruned} legacy cinematic payload${pruned === 1 ? "" : "s"} for the Phase 4-R2 final build.`);
+  process.exit(0);
+}
 const expectedOutputs = new Set(assets.map(({ output }) => output));
 for (const entry of await readdir(OUTPUT_ROOT, { withFileTypes: true })) {
+  // Phase 4-R2 has its own manifest-addressed directory. The legacy Stage 4
+  // assets remain available for historical evidence, but must not erase it.
+  if (entry.isDirectory() && entry.name === "phase-4r2") continue;
   if (expectedOutputs.has(entry.name)) continue;
   if (!entry.isFile()) throw new Error(`Unexpected directory in generated Phase 4 media staging: ${entry.name}`);
   await unlink(path.join(OUTPUT_ROOT, entry.name));

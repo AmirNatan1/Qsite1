@@ -4,8 +4,16 @@ import { readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 
 import { ALL_HTML_ROUTES, PUBLIC_INDUSTRY_NAMES } from "./phase1-qa-config.mjs";
+import {
+  loadAndValidatePhase4R2Authority,
+  PHASE4R2_AUTHORITY_RELATIVE,
+  PHASE4R2_MANIFEST_RELATIVE,
+  PHASE4R2_SOURCE_BLEND_BYTES,
+  PHASE4R2_SOURCE_BLEND_SHA256,
+} from "./stage-phase4r2-runtime-media.mjs";
 
 const ROOT = process.cwd();
+const FINAL_AUTHORITY_EXPECTED = process.env.PHASE4R2_FINAL_AUTHORITY === "1";
 const ACCEPTED_PHASE3 = "2fdee6feb9664578c6c8243d1b80ea885235279f";
 const REQUIRED_ANCESTORS = Object.freeze([
   ["Phase 2B", "b54f3a83b6180466127589a8d028f94dab892d17"],
@@ -66,8 +74,6 @@ const MEDIA_ASSETS = Object.freeze([
     sha256: "451d05bcc3d53a8c451e01751bdbb5dc3ddd7d68d9cd6e208a69dc58e4684366",
   },
 ]);
-const VIDEO_OUTPUTS = MEDIA_ASSETS.filter(({ output }) => /\.(?:mp4|webm)$/.test(output));
-const POSTER_OUTPUTS = MEDIA_ASSETS.filter(({ output }) => /\.png$/.test(output));
 const SUPPORTING_ROUTES = ALL_HTML_ROUTES.filter(({ path: routePath }) => routePath !== "/");
 const ALLOWED_PRODUCTION_CHANGES = Object.freeze([
   /^src\/components\/home\/EntryField\.astro$/,
@@ -161,6 +167,14 @@ const operatingController = await readOrFail("src/scripts/home-operating-field.t
 const cinematicCss = await readOrFail("src/styles/routes/home-cinematic.css", "cinematic-css-missing");
 const chromeEvidenceCapture = await readOrFail("scripts/capture-phase4r1-chrome-evidence.mjs", "chrome-capture-missing");
 const stageSource = await readOrFail("scripts/stage-phase4-media.mjs", "media-stage-missing");
+const stageR2Source = await readOrFail("scripts/stage-phase4r2-runtime-media.mjs", "media-stage-missing");
+const buildDispatcherSource = await readOrFail("scripts/run-phase4-build.mjs", "build-dispatcher-missing");
+const finalBuildSource = await readOrFail("scripts/run-phase4r2-final-build.mjs", "final-build-missing");
+const outputVerifierSource = await readOrFail("scripts/verify-phase4-output.mjs", "output-verifier-missing");
+const packageSource = await readOrFail("package.json", "package-missing");
+const r2EvidenceCapture = await readOrFail("scripts/capture-phase4r2-production-evidence.mjs", "r2-capture-missing");
+const r2DeploymentVerifier = await readOrFail("scripts/verify-phase4r2-deployment.mjs", "r2-deployment-missing");
+const r2HumanReviewPackager = await readOrFail("scripts/package-phase4r2-human-review.mjs", "r2-package-missing");
 const cloudflareHeaders = await readOrFail("public/_headers", "cloudflare-headers-missing");
 const componentSources = new Map();
 for (const component of HOME_COMPONENTS) {
@@ -235,12 +249,10 @@ if (videos[0]) {
   for (const name of ["autoplay", "controls", "loop"]) check(attribute(tag, name) === undefined, "cinematic-video-playback", "src/pages/index.astro", `scroll-rendering video must not include ${name}`);
 }
 check(matches(indexSource, /<picture\b/gi) === 1, "poster-picture", "src/pages/index.astro", "cinematic shell must contain one poster picture");
-const indexCinematicPaths = [...indexSource.matchAll(/["'](\/media\/cinematic\/[^"']+)["']/g)].map((match) => match[1]);
-const expectedPosterPaths = POSTER_OUTPUTS.map(({ output }) => `/media/cinematic/${output}`).sort();
-check(JSON.stringify([...new Set(indexCinematicPaths)].sort()) === JSON.stringify(expectedPosterPaths), "poster-inventory", "src/pages/index.astro", "SSR Home may reference exactly the three accepted dormant posters", indexCinematicPaths);
-const controllerCinematicPaths = [...cinematicController.matchAll(/["'](\/media\/cinematic\/[^"']+\.(?:mp4|webm))["']/g)].map((match) => match[1]);
-const expectedVideoPaths = VIDEO_OUTPUTS.map(({ output }) => `/media/cinematic/${output}`).sort();
-check(JSON.stringify([...new Set(controllerCinematicPaths)].sort()) === JSON.stringify(expectedVideoPaths), "controller-media-inventory", "src/scripts/home-cinematic-integration.ts", "controller must contain exactly the four accepted video candidates", controllerCinematicPaths);
+check(/cinematicPosters\.portrait/.test(indexSource) && /cinematicPosters\.landscape/.test(indexSource) && /cinematicPosters\.desktop/.test(indexSource), "poster-inventory", "src/pages/index.astro", "SSR Home must bind desktop, portrait, and landscape final-authority posters with a safe development fallback");
+check(/phase-4r2-production-media-manifest\.json/.test(indexSource) && /PHASE4R2_FINAL_AUTHORITY/.test(indexSource), "poster-manifest-authority", "src/pages/index.astro", "final-authority builds must bind SSR posters from the final R2 manifest and fail closed when it is required");
+check(/phase-4r2-production-media-manifest\.json/.test(cinematicController) && /selectedMediaSource/.test(cinematicController), "controller-media-inventory", "src/scripts/home-cinematic-integration.ts", "controller must resolve exactly one R2 family/codec asset from the staged final manifest");
+check(/fetch\(MANIFEST_PATH, \{ cache: "no-cache"/.test(cinematicController) && /fetch\(source, \{ cache: "force-cache"/.test(cinematicController) && /selectedManifestAsset/.test(cinematicController) && /SOURCE_BLEND_SHA256/.test(cinematicController), "controller-authority-cache", "src/scripts/home-cinematic-integration.ts", "runtime must revalidate the stable manifest, validate its fixed source/timeline/denials/inventory, and cache only hash-named payloads immutably");
 
 check(/prefers-reduced-motion:\s*reduce/.test(indexSource), "reduced-motion-bootstrap", "src/pages/index.astro", "Home must decide reduced motion before loading the cinematic controller");
 check(/<Fragment\s+slot=["']head["']>[\s\S]*?dataset\.cinematicMode\s*=\s*candidate\s*\?\s*["']candidate["']\s*:\s*["']static["'][\s\S]*?<\/Fragment>/.test(indexSource), "head-bootstrap", "src/pages/index.astro", "cinematic candidate/static eligibility must be established through BaseLayout's head slot before body parsing");
@@ -255,31 +267,33 @@ check(matches(indexSource, /import\(["']\.\.\/scripts\/home-cinematic-integratio
 check(indexSource.indexOf("prefers-reduced-motion: reduce") < indexSource.indexOf("home-cinematic-integration"), "reduced-motion-order", "src/pages/index.astro", "reduced-motion gate must precede the cinematic import");
 check(/root\.dataset\.cinematicMode\s*===\s*["']candidate["']/.test(indexSource), "capability-gated-import", "src/pages/index.astro", "cinematic import must be gated by candidate mode");
 check(
-  matches(cinematicController, /fetch\(selectedSource/g) === 1
+  matches(cinematicController, /fetch\(source/g) === 1
     && matches(cinematicController, /video\.src\s*=/g) === 1
     && /response\.blob\(\)/.test(cinematicController)
-    && /mediaObjectUrl\s*=\s*URL\.createObjectURL\(mediaBlob\)/.test(cinematicController)
-    && /video\.src\s*=\s*mediaObjectUrl/.test(cinematicController),
+    && /objectUrl\s*=\s*URL\.createObjectURL\(blob\)/.test(cinematicController)
+    && /video\.src\s*=\s*objectUrl/.test(cinematicController),
   "runtime-media-selection",
   "src/scripts/home-cinematic-integration.ts",
   "exactly one selected asset must be fetched and assigned through one seekable Blob URL without source hot-swaps",
 );
-check(/URL\.revokeObjectURL\(mediaObjectUrl\)/.test(cinematicController) && /mediaAbortController\.abort\(\)/.test(cinematicController), "runtime-media-cleanup", "src/scripts/home-cinematic-integration.ts", "Blob media delivery must be aborted and revoked during fail-open or teardown");
+check(/URL\.revokeObjectURL\(objectUrl\)/.test(cinematicController) && /mediaAbortController\.abort\(\)/.test(cinematicController), "runtime-media-cleanup", "src/scripts/home-cinematic-integration.ts", "Blob media delivery must be aborted and revoked during fail-open or teardown");
 check(!/createElement\(\s*["'](?:video|source)["']/.test(cinematicController), "single-decoder", "src/scripts/home-cinematic-integration.ts", "controller must not create additional video/source elements");
 const reducedGate = cinematicController.indexOf("motion.matches || !codec || !portalFits()");
-const mediaFetch = cinematicController.indexOf("fetch(selectedSource");
-const sourceAssignment = cinematicController.indexOf("video.src = mediaObjectUrl");
+const mediaFetch = cinematicController.indexOf("fetch(source");
+const sourceAssignment = cinematicController.indexOf("video.src = objectUrl");
 check(reducedGate >= 0 && mediaFetch > reducedGate && sourceAssignment > mediaFetch, "load-gate-order", "src/scripts/home-cinematic-integration.ts", "reduced-motion, codec, and portal-fit gates must run before the selected asset fetch and Blob source assignment");
-check(/FRAME_COUNT\s*=\s*270/.test(cinematicController) && /FRAME_RATE\s*=\s*30/.test(cinematicController), "timeline-authority", "src/scripts/home-cinematic-integration.ts", "controller must retain the accepted 270-frame, 30fps timeline");
-check(/interpolatePiecewise/.test(cinematicController) && /targetFrame\s*=\s*Math\.round\(cinematicProgress\s*\*\s*FINAL_FRAME_INDEX\)/.test(cinematicController) && /targetTime\s*=\s*targetFrame\s*\/\s*FRAME_RATE/.test(cinematicController), "deterministic-mapping", "src/scripts/home-cinematic-integration.ts", "document progress must map deterministically through a piecewise timeline to frame time");
+check(/PHYSICAL_FRAME_COUNT\s*=\s*500/.test(cinematicController) && /CONCEPTUAL_FRAME_COUNT\s*=\s*540/.test(cinematicController) && /BLACK_START_U\s*=\s*500/.test(cinematicController) && /ENTRY_START_U\s*=\s*513/.test(cinematicController) && /FRAME_RATE\s*=\s*30/.test(cinematicController), "timeline-authority", "src/scripts/home-cinematic-integration.ts", "controller must retain the u=0..540, 500 physical + 13 black + 27 semantic-frame, 30fps timeline");
+check(/interpolatePiecewise/.test(cinematicController) && /conceptualCoordinateFor/.test(cinematicController) && /physicalFrameFor/.test(cinematicController) && /targetTime\s*=\s*\(targetPhysicalFrame\s*-\s*1\)\s*\/\s*FRAME_RATE/.test(cinematicController), "deterministic-mapping", "src/scripts/home-cinematic-integration.ts", "continuous u progress must map to frame-quantized physical seek time");
 check(/video\.pause\(\)/.test(cinematicController) && /video\.currentTime\s*=\s*targetTime/.test(cinematicController), "paused-seek-surface", "src/scripts/home-cinematic-integration.ts", "video must remain paused and render direct scroll-derived seeks");
 check(/video\.seeking/.test(cinematicController) && /addEventListener\(\s*["']seeked["'][\s\S]{0,180}requestCurrentFrame\(\)/.test(cinematicController), "latest-seek-coalescing", "src/scripts/home-cinematic-integration.ts", "an in-flight decoder seek must collapse subsequent updates to the newest pending frame");
 check(!/\.play\s*\(/.test(cinematicController), "autoplay-prohibited", "src/scripts/home-cinematic-integration.ts", "cinematic controller must never start linear playback");
 check(/const\s+settled\s*=\s*scrollProgress\s*>=\s*0\.9995/.test(cinematicController) && /setSettledInteraction\(settled\)/.test(cinematicController), "chrome-release-boundary", "src/scripts/home-cinematic-integration.ts", "header and ENTRY interaction may release only at scrollProgress >= 0.9995");
 check(/header\.setAttribute\(["']inert["']/.test(cinematicController) && /entry\.setAttribute\(["']inert["']/.test(cinematicController) && /header\.removeAttribute\(["']inert["']/.test(cinematicController) && /entry\.removeAttribute\(["']inert["']/.test(cinematicController), "settled-inert-state", "src/scripts/home-cinematic-integration.ts", "header and ENTRY must be inert before settlement and released together at settlement/fallback");
-check(/mobileMenu\.removeAttribute\(["']open["']\)/.test(cinematicController), "reverse-menu-close", "src/scripts/home-cinematic-integration.ts", "reverse concealment must close the mobile menu");
+check(/mobileMenu\?\.removeAttribute\(["']open["']\)/.test(cinematicController), "reverse-menu-close", "src/scripts/home-cinematic-integration.ts", "reverse concealment must close the mobile menu");
 check(/skipLink\.focus\(\{\s*preventScroll:\s*true\s*\}\)/.test(cinematicController), "reverse-focus-safety", "src/scripts/home-cinematic-integration.ts", "reverse concealment must move hidden header/ENTRY focus to the permitted skip link without scrolling");
 check(/skipLink\.addEventListener\(["']click["'],\s*handleSkip/.test(cinematicController) && /entry\.focus\(\{\s*preventScroll:\s*true\s*\}\)/.test(cinematicController), "native-skip-settle", "src/scripts/home-cinematic-integration.ts", "the native #entry skip must synchronously settle, release, and focus ENTRY without waiting for media");
+check(/const\s+releaseMissingDom/.test(cinematicController) && /cinematicFallback\s*=\s*["']required-dom["']/.test(cinematicController), "required-dom-fallback", "src/scripts/home-cinematic-integration.ts", "missing required DOM must synchronously release candidate concealment and inert states");
+check(/pagehide[\s\S]{0,800}cancelAnimationFrame\(animationFrame\)[\s\S]{0,120}animationFrame\s*=\s*0/.test(cinematicController), "bfcache-frame-reset", "src/scripts/home-cinematic-integration.ts", "BFCache/pagehide cancellation must reset the requestAnimationFrame handle");
 check(/history\.replaceState\([\s\S]*?quantumHomeCinematic:\s*\{\s*version:\s*1,\s*settledOrLower\s*\}/.test(cinematicController), "restored-scroll-metadata", "src/scripts/home-cinematic-integration.ts", "pagehide must persist only settled/lower metadata in the current history entry");
 check(!/localStorage|sessionStorage|document\.cookie|cookieStore/.test(`${indexSource}\n${cinematicController}`), "no-persistent-skip", "Home cinematic bootstrap/controller", "cinematic eligibility must not use cookies or persistent web storage");
 check(!/cinematicFocus|cinematicDeepLink|preserveGeometry|cinematicHeader\s*=\s*["']visible["']/.test(`${indexSource}\n${cinematicController}\n${cinematicCss}`), "superseded-chrome-state", "Home cinematic integration", "focus reveals, enhanced deep links, partial fail-open geometry, and early visible header states are prohibited");
@@ -346,10 +360,16 @@ check(/producerAuthorities\s*=\s*\{[\s\S]{0,900}captureScript:[\s\S]{0,300}artif
 check(/Refusing to overwrite existing evidence directory/.test(chromeEvidenceCapture) && /Chrome evidence must be external to Git/.test(chromeEvidenceCapture), "chrome-external-output", "scripts/capture-phase4r1-chrome-evidence.mjs", "capture must write only to a new external directory without overwriting evidence");
 check(/workingTreeClean[\s\S]{0,500}headMatchesUpstream[\s\S]{0,200}headMatchesRemote/.test(chromeEvidenceCapture) && /ls-remote/.test(chromeEvidenceCapture), "chrome-git-authority", "scripts/capture-phase4r1-chrome-evidence.mjs", "final capture must fail closed unless HEAD is clean and independently matches upstream/remote");
 check(
-  /^\/media\/cinematic\/\*\s+Cache-Control:\s*public,\s*max-age=31556952,\s*immutable\s*$/m.test(cloudflareHeaders.replace(/\r?\n\s+/g, " ")),
-  "cinematic-cache-policy",
+  /^\/media\/cinematic\/phase-4r2\/manifests\/\*\s+Cache-Control:\s*public,\s*max-age=0,\s*must-revalidate\s*$/m.test(cloudflareHeaders.replace(/\r?\n[ \t]+/g, " ")),
+  "cinematic-manifest-cache-policy",
   "public/_headers",
-  "content-addressed cinematic assets must receive the immutable Cloudflare Pages browser-cache policy",
+  "the stable Phase 4-R2 manifest must revalidate instead of retaining stale authority",
+);
+for (const nested of ["media", "posters"]) check(
+  new RegExp(`^/media/cinematic/phase-4r2/${nested}/\\*\\s+Cache-Control:\\s*public,\\s*max-age=31556952,\\s*immutable\\s*$`, "m").test(cloudflareHeaders.replace(/\r?\n[ \t]+/g, " ")),
+  "cinematic-immutable-cache-policy",
+  "public/_headers",
+  `hash-named Phase 4-R2 ${nested} must retain long immutable caching`,
 );
 
 for (const route of SUPPORTING_ROUTES) {
@@ -383,19 +403,70 @@ try {
 // The staging recipe and both authoritative/staged inventories are independently pinned.
 check(matches(stageSource, /\bsource:\s*["']/g) === MEDIA_ASSETS.length && matches(stageSource, /\boutput:\s*["']/g) === MEDIA_ASSETS.length, "stage-inventory-count", "scripts/stage-phase4-media.mjs", "media staging recipe must contain exactly seven source/output records");
 check(/readdir\(OUTPUT_ROOT/.test(stageSource) && /expectedOutputs/.test(stageSource) && /unlink\(/.test(stageSource), "stage-prunes-extras", "scripts/stage-phase4-media.mjs", "media staging must remove unexpected generated files");
+check(/PHASE4R2_FINAL_AUTHORITY/.test(stageSource) && /Pruned .*legacy cinematic/.test(stageSource) && /entry\.name === "phase-4r2"/.test(stageSource), "stage-final-prune", "scripts/stage-phase4-media.mjs", "final R2 staging must remove every flat legacy cinematic payload while retaining only the isolated R2 subtree");
+check(/PHASE4R2_FINAL_AUTHORITY/.test(stageR2Source) && /path escapes authority root/.test(stageR2Source) && /Cartesian product/.test(stageR2Source) && /source Blender SHA-256 mismatch/.test(stageR2Source) && /merge-to-main and Phase 5/.test(stageR2Source) && /rename\(tempRoot, outputRoot\)/.test(stageR2Source) && /media\//.test(stageR2Source) && /posters\//.test(stageR2Source), "stage-r2-authority", "scripts/stage-phase4r2-runtime-media.mjs", "R2 staging must validate the complete source/report/media authority graph, exact nested inventory, denials, and atomic output");
+check(/AUTHORITY_ROOT/.test(buildDispatcherSource) && /AUTHORITY_MANIFEST/.test(buildDispatcherSource) && /resolveBuildMode/.test(buildDispatcherSource) && /run-phase4r2-final-build\.mjs/.test(buildDispatcherSource) && /stage-phase4-media\.mjs/.test(buildDispatcherSource), "default-build-dispatch", "scripts/run-phase4-build.mjs", "the default build dispatcher must select mandatory final authority whenever CP5 has created the tracked R2 authority, otherwise preserve development fallback");
+check(/PHASE4R2_FINAL_AUTHORITY: "1"/.test(finalBuildSource) && /stage-phase4-media\.mjs/.test(finalBuildSource) && /stage-phase4r2-runtime-media\.mjs/.test(finalBuildSource) && /node_modules\/astro\/bin\/astro\.mjs/.test(finalBuildSource) && /verify-phase4-output\.mjs/.test(finalBuildSource), "final-build-contract", "scripts/run-phase4r2-final-build.mjs", "the explicit R2 final build must set final authority and run legacy pruning, R2 staging, Astro build, and output verification in order");
+check(/r2CinematicInventory/.test(outputVerifierSource) && /phase4r2-final-inventory/.test(outputVerifierSource) && /phase4r2-final-no-fallback/.test(outputVerifierSource) && /phase4r2-final-poster-binding/.test(outputVerifierSource) && /phase4r2-runtime-binding/.test(outputVerifierSource) && /phase4r2-manifest-byte-parity/.test(outputVerifierSource) && /loadAndValidatePhase4R2Authority/.test(outputVerifierSource) && /FINAL_AUTHORITY_EXPECTED \? \[\] : MEDIA_ASSETS/.test(outputVerifierSource), "final-output-contract", "scripts/verify-phase4-output.mjs", "final output verification must require the complete tracked R2 authority graph, exact emitted manifest bytes, nine nested assets, runtime bindings, and no legacy fallback");
+
+// These are structural cross-checks only: the authoritative capture, deployment,
+// and human-review tools retain their own full self-tests.
+const r2GateNames = ["PHYSICAL → DIGITAL CONTINUITY", "NATIVE SCROLL + REVERSE INTEGRITY", "RESPONSIVE + ACCESSIBLE INTEGRATION", "MEDIA + PERFORMANCE SAFETY", "OPERATING FIELD REGRESSION"];
+for (const [label, source, location] of [
+  ["capture", r2EvidenceCapture, "scripts/capture-phase4r2-production-evidence.mjs"],
+  ["deployment", r2DeploymentVerifier, "scripts/verify-phase4r2-deployment.mjs"],
+  ["human-review", r2HumanReviewPackager, "scripts/package-phase4r2-human-review.mjs"],
+]) check(/HUMAN_REVIEW_GATES/.test(source) && r2GateNames.every((gate) => source.includes(gate)), "r2-human-gates", location, `${label} contract must retain the five canonical human-review gates`);
+check(/FRAME_COUNT = 540/.test(r2EvidenceCapture) && /PHYSICAL_FRAME_END = 500/.test(r2EvidenceCapture) && matches(r2EvidenceCapture, /^  \{ id: ".*", width:/gm) === 13 && /frame: 500/.test(r2EvidenceCapture) && /frame: 501/.test(r2EvidenceCapture) && /frame: 513/.test(r2EvidenceCapture) && /frame: 514/.test(r2EvidenceCapture) && /frame: 540/.test(r2EvidenceCapture), "r2-capture-contract", "scripts/capture-phase4r2-production-evidence.mjs", "R2 capture must retain the 540-coordinate, 500+13+27 milestone and 13-viewpoint contract");
+check(/MANIFEST_RELATIVE = "artifacts\/original\/phase-4r2-final-cinematic-production\/manifests\/phase-4r2-production-media-manifest\.json"/.test(r2DeploymentVerifier) && /DEPLOYED_ASSET_PREFIX = "\/media\/cinematic\/phase-4r2\/"/.test(r2DeploymentVerifier), "r2-deployment-path-contract", "scripts/verify-phase4r2-deployment.mjs", "deployment verification must retain the canonical nested R2 authority and deployed prefix");
+check(r2HumanReviewPackager.includes('const ARCHIVE_FILENAME = "phase-4r2-final-cinematic-production-human-review.zip";') && r2HumanReviewPackager.includes("const EXPECTED_COUNTS = Object.freeze({ sheets: 16, recordings: 7, reports: 17, payloads: 40, archiveEntries: 42 });") && /VIEWPOINT_MILESTONE_FRAMES/.test(r2HumanReviewPackager) && /500, 501/.test(r2HumanReviewPackager) && /513, 514/.test(r2HumanReviewPackager) && r2HumanReviewPackager.includes("540") && r2HumanReviewPackager.includes('const DEPLOYED_ASSET_PREFIX = "/media/cinematic/phase-4r2/";'), "r2-package-contract", "scripts/package-phase4r2-human-review.mjs", "human-review packaging must retain its canonical ZIP basename, exact inventory, threshold milestones, and nested path model");
+try {
+  const packageManifest = JSON.parse(packageSource);
+  check(packageManifest.scripts?.build === "node scripts/run-phase4-build.mjs" && packageManifest.scripts?.["build:phase4r2-final"] === "node scripts/run-phase4r2-final-build.mjs", "final-build-script", "package.json", "package.json must dispatch ordinary Pages builds to final authority after CP5 and expose the explicit portable Phase 4-R2 final build command");
+} catch (error) {
+  check(false, "package-json", "package.json", `package manifest must remain valid JSON: ${error.message}`);
+}
+
+// CP5 is optional until it exists. From the first authority pathname onward,
+// however, the complete graph must validate and every governed file must be
+// tracked. A partial, stale, renamed, or merely untracked authority cannot be
+// mistaken for release input.
+const r2AuthorityRoot = path.resolve(ROOT, ...PHASE4R2_AUTHORITY_RELATIVE.split("/"));
+let r2AuthorityPresent = false;
+try {
+  const info = await stat(r2AuthorityRoot);
+  r2AuthorityPresent = true;
+  check(info.isDirectory(), "r2-authority-root", PHASE4R2_AUTHORITY_RELATIVE, "final R2 authority root must be a directory");
+} catch (error) {
+  if (error?.code !== "ENOENT") check(false, "r2-authority-root", PHASE4R2_AUTHORITY_RELATIVE, `could not inspect final R2 authority root: ${error.message}`);
+}
+check(!FINAL_AUTHORITY_EXPECTED || r2AuthorityPresent, "r2-final-authority-required", PHASE4R2_MANIFEST_RELATIVE, "final-authority source verification requires the complete tracked R2 authority");
+if (r2AuthorityPresent) {
+  try {
+    const authority = await loadAndValidatePhase4R2Authority({ authorityRoot: r2AuthorityRoot, repositoryRoot: ROOT });
+    const expectedTracked = authority.expectedAuthorityPaths.map((relative) => `${PHASE4R2_AUTHORITY_RELATIVE}/${relative}`).sort();
+    const observedTracked = lines(git("ls-files", "--", PHASE4R2_AUTHORITY_RELATIVE)).map((relative) => relative.replaceAll("\\", "/")).sort();
+    check(JSON.stringify(observedTracked) === JSON.stringify(expectedTracked), "r2-authority-tracked", PHASE4R2_AUTHORITY_RELATIVE, "every and only complete final R2 authority payload/report path must be tracked", { expected: expectedTracked, observed: observedTracked });
+    const blendRelative = "artifacts/original/phase-4r1-1-periphery-current-mobile-crt/source/quantum-signal-television-phase4r1-1-periphery-current-mobile-crt.blend";
+    const blendPayload = await readFile(path.join(ROOT, ...blendRelative.split("/")));
+    check(blendPayload.length === PHASE4R2_SOURCE_BLEND_BYTES && sha256(blendPayload) === PHASE4R2_SOURCE_BLEND_SHA256, "r2-source-blend", blendRelative, "final manifest sourceBlendSha256 must resolve to the exact accepted frozen R1.1 Blender bytes", { bytes: blendPayload.length, sha256: sha256(blendPayload) });
+  } catch (error) {
+    check(false, "r2-authority-graph", PHASE4R2_AUTHORITY_RELATIVE, `final R2 authority failed complete source/report/media validation: ${error.message}`);
+  }
+}
 for (const asset of MEDIA_ASSETS) {
   const normalizedStage = stageSource.replaceAll("_", "");
   check(stageSource.includes(`source: "${asset.source}"`) && stageSource.includes(`output: "${asset.output}"`) && normalizedStage.includes(`bytes: ${asset.bytes}`) && stageSource.includes(asset.sha256), "stage-asset-authority", "scripts/stage-phase4-media.mjs", `staging recipe must pin the path, byte size, and hash for ${asset.output}`);
   await verifyFile(`artifacts/original/phase-3-crt-opening/${asset.source}`, asset, "accepted Phase 3 source");
-  await verifyFile(`public/media/cinematic/${asset.output}`, asset, "staged Phase 4 production asset");
+  if (!FINAL_AUTHORITY_EXPECTED) await verifyFile(`public/media/cinematic/${asset.output}`, asset, "staged Phase 4 production asset");
 }
 try {
   const outputRoot = path.join(ROOT, "public", "media", "cinematic");
   const entries = await readdir(outputRoot, { withFileTypes: true });
   const observed = entries.map(({ name }) => name).sort();
-  const expected = MEDIA_ASSETS.map(({ output }) => output).sort();
-  check(entries.every((entry) => entry.isFile()), "staged-media-shape", "public/media/cinematic", "generated cinematic media root must contain files only");
-  check(JSON.stringify(observed) === JSON.stringify(expected), "staged-media-inventory", "public/media/cinematic", "generated cinematic media root must contain exactly the seven accepted files", observed);
+  const expected = (FINAL_AUTHORITY_EXPECTED ? [] : MEDIA_ASSETS.map(({ output }) => output)).sort();
+  check(entries.every((entry) => entry.isFile() || entry.name === "phase-4r2"), "staged-media-shape", "public/media/cinematic", "generated cinematic media root may contain legacy files and the isolated R2 directory only");
+  check(JSON.stringify(observed.filter((name) => name !== "phase-4r2")) === JSON.stringify(expected), "staged-media-inventory", "public/media/cinematic", FINAL_AUTHORITY_EXPECTED ? "final staging must contain no flat legacy cinematic payloads" : "development staging must contain exactly the seven accepted legacy files plus optional isolated R2 authority", observed);
 } catch (error) {
   check(false, "staged-media-root", "public/media/cinematic", `generated media inventory is unavailable; run the Phase 4 staging script: ${error.message}`);
 }
@@ -433,5 +504,5 @@ if (failures.length > 0) {
   }
   process.exitCode = 1;
 } else {
-  console.log(`Verified Phase 4 source: exact seven-chapter Phase 2B semantics, one inert SSR video, seven hash-pinned media assets, native-scroll-only controllers, supporting-route isolation, and bounded authored integration (${cinematicControllerBytes.toLocaleString("en-US")} B TS + ${cinematicCssBytes.toLocaleString("en-US")} B CSS).`);
+  console.log(`Verified Phase 4-R2 source: exact seven-chapter semantics, responsive manifest-bound SSR posters, 500+13+27 timeline authority, native-scroll-only controllers, and bounded authored integration (${cinematicControllerBytes.toLocaleString("en-US")} B TS + ${cinematicCssBytes.toLocaleString("en-US")} B CSS).`);
 }

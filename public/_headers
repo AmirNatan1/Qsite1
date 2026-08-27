@@ -1,2 +1,11 @@
-/media/cinematic/*
+/media/cinematic/phase-4r2/manifests/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/media/cinematic/phase-4r2/media/*
+  Cache-Control: public, max-age=31556952, immutable
+
+/media/cinematic/phase-4r2/posters/*
+  Cache-Control: public, max-age=31556952, immutable
+
+/media/cinematic/phase-3-*
   Cache-Control: public, max-age=31556952, immutable

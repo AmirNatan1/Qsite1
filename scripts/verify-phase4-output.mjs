@@ -4,9 +4,15 @@ import path from "node:path";
 import { gzipSync } from "node:zlib";
 
 import { ALL_HTML_ROUTES, INTENDED_PUBLIC_ASSETS, PUBLIC_INDUSTRY_NAMES } from "./phase1-qa-config.mjs";
+import {
+  loadAndValidatePhase4R2Authority,
+  PHASE4R2_AUTHORITY_RELATIVE,
+  PHASE4R2_MANIFEST_RELATIVE,
+} from "./stage-phase4r2-runtime-media.mjs";
 
 const ROOT = process.cwd();
 const DIST = path.join(ROOT, "dist");
+const FINAL_AUTHORITY_EXPECTED = process.env.PHASE4R2_FINAL_AUTHORITY === "1";
 const ACCEPTED_PHASE2B_CSS_RAW = 49_478;
 const HOME_CHAPTERS = Object.freeze([
   { id: "entry", label: "home-title", heading: "h1" },
@@ -55,7 +61,6 @@ const MEDIA_ASSETS = Object.freeze([
   },
 ]);
 const VIDEO_ASSETS = MEDIA_ASSETS.filter(({ output }) => /\.(?:mp4|webm)$/.test(output));
-const POSTER_ASSETS = MEDIA_ASSETS.filter(({ output }) => /\.png$/.test(output));
 const SUPPORTING_ROUTES = ALL_HTML_ROUTES.filter(({ path: routePath }) => routePath !== "/");
 const failures = [];
 
@@ -264,7 +269,8 @@ for (const media of ["/media/maradin/maradin-field-aperture-poster-approved.jpg"
 check(/\bSPARK\b/.test(homeText) && /\bCHAMP\b/.test(homeText) && homeText.includes("Applications closed"), "programme-content", "dist/index.html", "PROGRAMMES must retain governed SPARK/CHAMP content and closed status");
 for (const href of ["/contact/#for-industry", "/contact/#for-startups", "/contact/#general"]) check(tags(homeHtml, "a").some((tag) => attribute(tag, "href") === href), "conversion-route", "dist/index.html", `CONVERSION is missing ${href}`);
 
-// A no-JS/reduced-motion response exposes a poster and one inert decorative decoder, never a video URL.
+// A no-JS/reduced-motion response exposes a local dormant surface and one inert
+// decorative decoder, never a cinematic network URL.
 const videos = elements(homeHtml, "video");
 check(videos.length === 1 && tags(homeHtml, "video").length === 1, "cinematic-video-count", "dist/index.html", `built Home must contain exactly one video decoder; observed ${videos.length}`);
 if (videos[0]) {
@@ -278,21 +284,20 @@ if (videos[0]) {
   for (const name of ["autoplay", "controls", "loop"]) check(attribute(tag, name) === undefined, "cinematic-video-playback", "dist/index.html", `scroll-rendering video must not include ${name}`);
 }
 for (const { output } of VIDEO_ASSETS) check(!homeHtml.includes(`/media/cinematic/${output}`), "no-ssr-video-url", "dist/index.html", `SSR HTML must not disclose or preload video candidate ${output}`);
-const posterPicture = elements(homeHtml, "picture").find(({ tag }) => (attribute(tag, "class") ?? "").split(/\s+/).includes("cinematic-poster"));
-check(Boolean(posterPicture), "cinematic-poster", "dist/index.html", "built Home must contain the cinematic dormant poster picture");
-if (posterPicture) {
-  const sourcePaths = tags(posterPicture.inner, "source").map((tag) => attribute(tag, "srcset"));
-  const imagePaths = tags(posterPicture.inner, "img").map((tag) => attribute(tag, "src"));
-  const observed = [...sourcePaths, ...imagePaths].sort();
-  const expected = POSTER_ASSETS.map(({ output }) => `/media/cinematic/${output}`).sort();
-  check(sourcePaths.length === 2 && imagePaths.length === 1 && JSON.stringify(observed) === JSON.stringify(expected), "poster-inventory", "dist/index.html", "poster picture must reference exactly the three accepted dormant images", observed);
+const dormantPicture = elements(homeHtml, "picture").find(({ tag }) => (attribute(tag, "class") ?? "").split(/\s+/).includes("cinematic-poster"));
+if (dormantPicture) {
+  const posterSources = tags(dormantPicture.inner, "source").map((tag) => attribute(tag, "srcset"));
+  const posterImage = tags(dormantPicture.inner, "img").map((tag) => attribute(tag, "src"));
+  check(attribute(dormantPicture.tag, "aria-hidden") === "true" && posterSources.length === 2 && posterImage.length === 1, "cinematic-poster", "dist/index.html", "built Home must contain an inert responsive desktop/portrait/landscape dormant poster picture");
+} else {
+  check(false, "cinematic-poster", "dist/index.html", "built Home must contain an inert responsive desktop/portrait/landscape dormant poster picture");
 }
 
 // Traverse the actual emitted module graph so dynamic imports count toward isolation and budgets.
 const homeInitialJs = referencedJavaScript(homeHtml);
 const homeJsClosure = moduleClosure(homeInitialJs, byPath);
 for (const reference of homeJsClosure) check(byPath.has(reference), "module-reference", "dist/index.html", `referenced JavaScript module is missing: ${reference}`);
-const cinematicChunkRecords = records.filter((record) => /\.(?:js|mjs)$/.test(record.path) && VIDEO_ASSETS.every(({ output }) => record.text.includes(`/media/cinematic/${output}`)));
+const cinematicChunkRecords = records.filter((record) => /\.(?:js|mjs)$/.test(record.path) && record.text.includes("phase-4r2-production-media-manifest.json"));
 check(cinematicChunkRecords.length === 1, "cinematic-runtime-chunk", "dist/_astro", `build must emit exactly one cinematic runtime chunk; observed ${cinematicChunkRecords.length}`);
 const cinematicChunk = cinematicChunkRecords[0];
 if (cinematicChunk) {
@@ -313,6 +318,7 @@ if (cinematicChunk) {
   check(/replaceState\(/.test(cinematicChunk.text) && /quantumHomeCinematic/.test(cinematicChunk.text), "restored-scroll-metadata", `dist/${cinematicChunk.path}`, "built controller must bind settled/lower restoration metadata to the current history entry");
   check(!/localStorage|sessionStorage|cookieStore|document\.cookie/.test(cinematicChunk.text), "no-persistent-skip", `dist/${cinematicChunk.path}`, "built controller must not use cookies or persistent storage to skip the cinematic");
   check(!/cinematicFocus|cinematicDeepLink|preserveGeometry|cinematicHeader=["']visible["']/.test(cinematicChunk.text), "superseded-chrome-state", `dist/${cinematicChunk.path}`, "built controller must not retain focus-reveal, enhanced deep-link, partial failure, or early-visible header states");
+  check(/phase-4r2-production-media-manifest\.json/.test(cinematicChunk.text) && /media\//.test(cinematicChunk.text), "phase4r2-runtime-binding", `dist/${cinematicChunk.path}`, "built controller must preserve the manifest-addressed nested R2 media binding");
 }
 const homeCssReferences = referencedStylesheets(homeHtml);
 for (const reference of homeCssReferences) check(byPath.has(reference), "stylesheet-reference", "dist/index.html", `referenced stylesheet is missing: ${reference}`);
@@ -344,26 +350,89 @@ for (const route of SUPPORTING_ROUTES) {
 // Exact cinematic subtree: no review derivatives, duplicate sources, or extra decoders ship.
 const cinematicPrefix = "media/cinematic/";
 const cinematicRecords = records.filter((record) => record.path.startsWith(cinematicPrefix));
+const phase4r2ManifestPath = "media/cinematic/phase-4r2/manifests/phase-4r2-production-media-manifest.json";
+const phase4r2ManifestRecord = byPath.get(phase4r2ManifestPath);
+let phase4r2Assets = [];
+let phase4r2Authority = null;
+check(!FINAL_AUTHORITY_EXPECTED || Boolean(phase4r2ManifestRecord), "phase4r2-final-authority", `dist/${phase4r2ManifestPath}`, "final-authority builds must include the final Phase 4-R2 manifest and all nine declared assets");
+if (phase4r2ManifestRecord || FINAL_AUTHORITY_EXPECTED) {
+  try {
+    phase4r2Authority = await loadAndValidatePhase4R2Authority({
+      authorityRoot: path.resolve(ROOT, ...PHASE4R2_AUTHORITY_RELATIVE.split("/")),
+      repositoryRoot: ROOT,
+    });
+    const trackedManifest = phase4r2Authority.records.get(PHASE4R2_MANIFEST_RELATIVE)?.payload;
+    check(
+      Boolean(phase4r2ManifestRecord && trackedManifest && phase4r2ManifestRecord.contents.equals(trackedManifest)),
+      "phase4r2-manifest-byte-parity",
+      `dist/${phase4r2ManifestPath}`,
+      "emitted Phase 4-R2 manifest bytes must exactly equal the complete tracked authority manifest",
+    );
+    phase4r2Assets = phase4r2Authority.assets;
+  } catch (error) {
+    check(false, "phase4r2-authority-graph", `artifacts/original/${PHASE4R2_AUTHORITY_RELATIVE.split("/").at(-1)}`, `tracked source/report/media authority graph is incomplete or counterfeit: ${error.message}`);
+  }
+}
+check(!FINAL_AUTHORITY_EXPECTED || phase4r2Assets.length === 9, "phase4r2-final-inventory", `dist/${phase4r2ManifestPath}`, "final-authority output must derive exactly six videos and three posters from the required R2 manifest");
+check(!FINAL_AUTHORITY_EXPECTED || !/phase-3-dormant-|phase-3-(?:desktop|mobile)-/.test(homeHtml), "phase4r2-final-no-fallback", "dist/index.html", "final-authority Home must bind only R2 dormant posters and never disclose Phase 3 cinematic fallback paths");
+if (FINAL_AUTHORITY_EXPECTED && phase4r2Assets.length === 9) {
+  const finalPosterUrls = phase4r2Assets.filter(({ kind }) => kind === "poster").map(({ file }) => `/media/cinematic/phase-4r2/${file}`);
+  check(finalPosterUrls.length === 3 && finalPosterUrls.every((url) => homeHtml.includes(url)), "phase4r2-final-poster-binding", "dist/index.html", "final-authority SSR picture must bind all three manifest-declared R2 poster URLs");
+}
+for (const asset of phase4r2Assets) {
+  const record = byPath.get(`media/cinematic/phase-4r2/${asset.file}`);
+  check(Boolean(record), "phase4r2-media-missing", `dist/media/cinematic/phase-4r2/${asset.file}`, "manifest-declared Phase 4-R2 runtime asset is missing");
+  if (record) {
+    check(record.contents.length === asset.bytes, "phase4r2-media-bytes", `dist/${record.path}`, "manifest-declared Phase 4-R2 runtime asset has unexpected bytes", record.contents.length);
+    check(sha256(record.contents) === asset.sha256, "phase4r2-media-hash", `dist/${record.path}`, "manifest-declared Phase 4-R2 runtime asset has unexpected SHA-256", sha256(record.contents));
+  }
+}
 const cloudflareHeadersRecord = byPath.get("_headers");
 check(
-  Boolean(cloudflareHeadersRecord?.text.match(/^\/media\/cinematic\/\*\s+Cache-Control:\s*public,\s*max-age=31556952,\s*immutable\s*$/m)),
-  "cinematic-cache-policy",
+  Boolean(cloudflareHeadersRecord?.text.match(/^\/media\/cinematic\/phase-4r2\/manifests\/\*\s+Cache-Control:\s*public,\s*max-age=0,\s*must-revalidate\s*$/m)),
+  "cinematic-manifest-cache-policy",
   "dist/_headers",
-  "Cloudflare Pages output must apply immutable caching to content-addressed cinematic assets",
+  "the stable Phase 4-R2 manifest path must revalidate on every reuse",
+);
+for (const nested of ["media", "posters"]) check(
+  Boolean(cloudflareHeadersRecord?.text.match(new RegExp(`^/media/cinematic/phase-4r2/${nested}/\\*\\s+Cache-Control:\\s*public,\\s*max-age=31556952,\\s*immutable\\s*$`, "m"))),
+  "cinematic-immutable-cache-policy",
+  "dist/_headers",
+  `content-hash-named Phase 4-R2 ${nested} must retain long immutable caching`,
 );
 const observedCinematic = cinematicRecords.map((record) => record.path.slice(cinematicPrefix.length)).sort();
-const expectedCinematic = MEDIA_ASSETS.map(({ output }) => output).sort();
-check(JSON.stringify(observedCinematic) === JSON.stringify(expectedCinematic), "cinematic-media-inventory", "dist/media/cinematic", "production output must contain exactly the seven accepted cinematic files", observedCinematic);
-for (const asset of MEDIA_ASSETS) {
-  const record = byPath.get(`${cinematicPrefix}${asset.output}`);
-  check(Boolean(record), "cinematic-media-missing", `dist/${cinematicPrefix}${asset.output}`, "accepted cinematic production asset is missing");
-  if (record) {
-    check(record.contents.length === asset.bytes, "cinematic-media-bytes", `dist/${record.path}`, `asset must be exactly ${asset.bytes.toLocaleString("en-US")} bytes`, record.contents.length);
-    check(sha256(record.contents) === asset.sha256, "cinematic-media-hash", `dist/${record.path}`, "asset SHA-256 must match the accepted Phase 3 authority", sha256(record.contents));
+const r2CinematicInventory = phase4r2ManifestRecord
+  ? ["phase-4r2/manifests/phase-4r2-production-media-manifest.json", ...phase4r2Assets.map(({ file }) => `phase-4r2/${file}`)]
+  : [];
+const expectedCinematic = [
+  ...(FINAL_AUTHORITY_EXPECTED ? [] : MEDIA_ASSETS.map(({ output }) => output)),
+  ...r2CinematicInventory,
+].sort();
+check(
+  JSON.stringify(observedCinematic) === JSON.stringify(expectedCinematic),
+  "cinematic-media-inventory",
+  "dist/media/cinematic",
+  FINAL_AUTHORITY_EXPECTED
+    ? "final-authority output must contain only the R2 manifest, six videos, and three posters in their nested phase-4r2 paths"
+    : "development output must contain the accepted legacy inventory plus, when present, the exact staged R2 authority",
+  observedCinematic,
+);
+if (!FINAL_AUTHORITY_EXPECTED) {
+  for (const asset of MEDIA_ASSETS) {
+    const record = byPath.get(`${cinematicPrefix}${asset.output}`);
+    check(Boolean(record), "cinematic-media-missing", `dist/${cinematicPrefix}${asset.output}`, "accepted cinematic production asset is missing");
+    if (record) {
+      check(record.contents.length === asset.bytes, "cinematic-media-bytes", `dist/${record.path}`, `asset must be exactly ${asset.bytes.toLocaleString("en-US")} bytes`, record.contents.length);
+      check(sha256(record.contents) === asset.sha256, "cinematic-media-hash", `dist/${record.path}`, "asset SHA-256 must match the accepted Phase 3 authority", sha256(record.contents));
+    }
   }
 }
 const approvedLegacyVideo = INTENDED_PUBLIC_ASSETS.filter(({ path: assetPath }) => /\.(?:mp4|webm)$/.test(assetPath)).map(({ path: assetPath }) => assetPath);
-const expectedVideoInventory = [...approvedLegacyVideo, ...VIDEO_ASSETS.map(({ output }) => `${cinematicPrefix}${output}`)].sort();
+const expectedVideoInventory = [
+  ...approvedLegacyVideo,
+  ...(FINAL_AUTHORITY_EXPECTED ? [] : VIDEO_ASSETS.map(({ output }) => `${cinematicPrefix}${output}`)),
+  ...phase4r2Assets.filter(({ kind }) => kind === "video").map(({ file }) => `media/cinematic/phase-4r2/${file}`),
+].sort();
 const observedVideoInventory = records.filter((record) => /\.(?:mp4|webm)$/.test(record.path)).map(({ path: recordPath }) => recordPath).sort();
 check(JSON.stringify(observedVideoInventory) === JSON.stringify(expectedVideoInventory), "production-video-inventory", "dist/media", "production output must not ship unapproved video files", observedVideoInventory);
 for (const record of records.filter((item) => /\.(?:mp4|webm)$/.test(item.path))) check(record.contents.length <= 25 * 1024 * 1024, "cloudflare-file-limit", `dist/${record.path}`, `individual media must remain below 25 MiB; observed ${formatBytes(record.contents.length)}`);
@@ -405,5 +474,5 @@ if (failures.length > 0) {
   }
   process.exitCode = 1;
 } else {
-  console.log(`Verified Phase 4 output: seven ordered Home chapters, one inert SSR video, exact seven-file cinematic inventory, isolated supporting routes, and realistic bundles (cinematic JS ${formatBytes(cinematicJavaScript.raw)} raw/${formatBytes(cinematicJavaScript.gzip)} gzip; total JS ${formatBytes(totalJavaScript.raw)} raw/${formatBytes(totalJavaScript.gzip)} gzip; CSS delta ${formatBytes(addedCssRaw)}).`);
+  console.log(`Verified Phase 4 output: seven ordered Home chapters, one inert SSR video, ${FINAL_AUTHORITY_EXPECTED ? "R2-only final cinematic authority" : "development cinematic authority"}, isolated supporting routes, and realistic bundles (cinematic JS ${formatBytes(cinematicJavaScript.raw)} raw/${formatBytes(cinematicJavaScript.gzip)} gzip; total JS ${formatBytes(totalJavaScript.raw)} raw/${formatBytes(totalJavaScript.gzip)} gzip; CSS delta ${formatBytes(addedCssRaw)}).`);
 }
