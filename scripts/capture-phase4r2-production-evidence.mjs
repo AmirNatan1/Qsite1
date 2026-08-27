@@ -757,13 +757,18 @@ async function captureFallbackQa(browser, options) {
   await zoomContext.close();
 
   const skipContext = await browser.newContext(contextOptions(viewpoint));
-  await skipContext.route("**/media/cinematic/phase-4r2/media/**", async (route) => { await new Promise((resolve) => setTimeout(resolve, 3_000)); await route.abort("timedout").catch(() => {}); });
+  await skipContext.route("**/media/cinematic/phase-4r2/media/**", async (route) => { await new Promise((resolve) => setTimeout(resolve, 10_000)); await route.abort("timedout").catch(() => {}); });
   const skipPage = await skipContext.newPage();
   await skipPage.goto(options.url, { waitUntil: "domcontentloaded", timeout: options.timeoutMs });
+  await skipPage.waitForFunction(() => {
+    const mode = document.documentElement.dataset.cinematicMode ?? null;
+    const mediaState = document.querySelector("[data-cinematic-shell]")?.getAttribute("data-media-state") ?? null;
+    return ["candidate", "enhanced"].includes(mode) && mediaState === "loading";
+  }, null, { timeout: Math.min(options.timeoutMs, 8_000) });
   await skipPage.keyboard.press("Tab");
   const focusedHref = await skipPage.evaluate(() => document.activeElement?.getAttribute("href"));
   const pending = await skipPage.evaluate(() => ({ mode: document.documentElement.dataset.cinematicMode ?? null, mediaState: document.querySelector("[data-cinematic-shell]")?.getAttribute("data-media-state") ?? null }));
-  if (focusedHref !== "#entry" || !["candidate", "enhanced"].includes(pending.mode) || pending.mediaState !== "loading") throw new Error("Skip-link pending state is not first keyboard focus");
+  if (focusedHref !== "#entry" || !["candidate", "enhanced"].includes(pending.mode) || pending.mediaState !== "loading") throw new Error(`Skip-link pending state is not first keyboard focus: ${JSON.stringify({ focusedHref, pending })}`);
   screenshots.skipPending = await qaScreenshot(skipPage, ["keyboard focus on #entry", `pending ${pending.mode}/${pending.mediaState}`]);
   await skipPage.keyboard.press("Enter");
   await twoFrames(skipPage);
@@ -936,6 +941,7 @@ async function selfTest() {
   if (!captureSource.includes('shell?.getAttribute("data-media-source")') || !captureSource.includes('state.mediaDelivery === "blob" && state.decoderSourceScheme === "blob"')) throw new Error("Hash-named fetch authority and Blob decoder separation self-test failed");
   if (!captureSource.includes('raw.startsWith("blob:")') || !captureSource.includes("state.cinematicDecoderCount === 1 && state.totalVideoCount === 1")) throw new Error("Blob seek telemetry and single decoder-node self-test failed");
   if (!captureSource.includes('await page.keyboard.press("PageDown");\n  await twoFrames(page);')) throw new Error("Input sampling must wait for the runtime animation-frame write self-test failed");
+  if (!captureSource.includes('mediaState === "loading";\n  }, null, { timeout: Math.min(options.timeoutMs, 8_000) });')) throw new Error("Pending skip-link focus must wait for the documented loading state self-test failed");
   if (Object.keys(HUMAN_REVIEW_GATES).join("|") !== "PHYSICAL → DIGITAL CONTINUITY|NATIVE SCROLL + REVERSE INTEGRITY|RESPONSIVE + ACCESSIBLE INTEGRATION|MEDIA + PERFORMANCE SAFETY|OPERATING FIELD REGRESSION") throw new Error("Gate identity self-test failed");
   process.stdout.write(stableJson({ schema: `${SCHEMA}.self-test`, status: "PASS", outputContract: { sheets: 16, recordings: 7, reports: 10 } }));
 }
