@@ -790,6 +790,7 @@ async function captureOperationalQa(browser, options) {
   const initial = await runtimeState(page);
   await page.mouse.wheel(0, 400);
   await page.keyboard.press("PageDown");
+  await twoFrames(page);
   const afterKeyboard = await runtimeState(page);
   await page.goto(options.url, { waitUntil: "domcontentloaded", timeout: options.timeoutMs });
   await settleEnhanced(page, options.timeoutMs);
@@ -813,7 +814,18 @@ async function captureOperationalQa(browser, options) {
   const performance = await page.evaluate(() => ({ metrics: window.__phase4r2Metrics, cls: window.__phase4r2Metrics.layoutShifts.reduce((sum, item) => sum + item.value, 0), memory: performance.memory ? { usedJSHeapSize: performance.memory.usedJSHeapSize, jsHeapSizeLimit: performance.memory.jsHeapSizeLimit } : { available: false }, resources: performance.getEntriesByType("resource").map((entry) => ({ path: new URL(entry.name).pathname, duration: entry.duration, transferSize: entry.transferSize })) }));
   const accessibility = await page.evaluate(() => ({ htmlLang: document.documentElement.lang, title: document.title, mainCount: document.querySelectorAll("main").length, h1Count: document.querySelectorAll("h1").length, duplicateIds: [...document.querySelectorAll("[id]")].map((node) => node.id).filter((id, index, all) => all.indexOf(id) !== index), unlabeledControls: [...document.querySelectorAll("button,input,select,textarea")].filter((node) => !node.getAttribute("aria-label") && !node.getAttribute("aria-labelledby") && !(node.textContent || "").trim()).length }));
   const operatingField = await page.evaluate(() => { const nodes = [...document.querySelectorAll(".operating-chapter")]; return { present: nodes.length > 0, chapterCount: nodes.length, enhanced: document.documentElement.dataset.operatingField === "enhanced", dimensions: nodes.map((node) => { const rect = node.getBoundingClientRect(); return { className: node.className, width: rect.width, height: rect.height }; }) }; });
-  if (initial.conceptualFrame !== 1 || afterKeyboard.conceptualFrame <= initial.conceptualFrame || rootReload.mode !== "enhanced" || deepReload.hash !== "#entry" || deepReload.mode === "enhanced" || !deepReload.entryPresent || accessibility.mainCount !== 1 || accessibility.h1Count < 1 || accessibility.duplicateIds.length || accessibility.unlabeledControls || !operatingField.present) throw new Error("Publication/accessibility/Operating Field regression contract failed");
+  const publicationChecks = {
+    initialFrame: initial.conceptualFrame === 1,
+    inputAdvanced: afterKeyboard.conceptualFrame > initial.conceptualFrame,
+    enhancedRootReload: rootReload.mode === "enhanced",
+    staticDeepReload: deepReload.hash === "#entry" && deepReload.mode !== "enhanced" && deepReload.entryPresent,
+    oneMain: accessibility.mainCount === 1,
+    headingPresent: accessibility.h1Count >= 1,
+    uniqueIds: accessibility.duplicateIds.length === 0,
+    labeledControls: accessibility.unlabeledControls === 0,
+    operatingFieldPresent: operatingField.present,
+  };
+  if (Object.values(publicationChecks).some((passed) => !passed)) throw new Error(`Publication/accessibility/Operating Field regression contract failed: ${JSON.stringify({ publicationChecks, initial, afterKeyboard, rootReload, deepReload, accessibility, operatingField })}`);
   await context.close();
 
   const deepContext = await browser.newContext(contextOptions(viewpoint));
@@ -923,6 +935,7 @@ async function selfTest() {
   if (captureSource.includes(forbiddenGenericWait)) throw new Error("Long-lived media capture must use explicit runtime readiness rather than generic network-idle self-test failed");
   if (!captureSource.includes('shell?.getAttribute("data-media-source")') || !captureSource.includes('state.mediaDelivery === "blob" && state.decoderSourceScheme === "blob"')) throw new Error("Hash-named fetch authority and Blob decoder separation self-test failed");
   if (!captureSource.includes('raw.startsWith("blob:")') || !captureSource.includes("state.cinematicDecoderCount === 1 && state.totalVideoCount === 1")) throw new Error("Blob seek telemetry and single decoder-node self-test failed");
+  if (!captureSource.includes('await page.keyboard.press("PageDown");\n  await twoFrames(page);')) throw new Error("Input sampling must wait for the runtime animation-frame write self-test failed");
   if (Object.keys(HUMAN_REVIEW_GATES).join("|") !== "PHYSICAL → DIGITAL CONTINUITY|NATIVE SCROLL + REVERSE INTEGRITY|RESPONSIVE + ACCESSIBLE INTEGRATION|MEDIA + PERFORMANCE SAFETY|OPERATING FIELD REGRESSION") throw new Error("Gate identity self-test failed");
   process.stdout.write(stableJson({ schema: `${SCHEMA}.self-test`, status: "PASS", outputContract: { sheets: 16, recordings: 7, reports: 10 } }));
 }
@@ -958,10 +971,10 @@ async function main() {
   let fallbackQa;
   let operationalQa;
   try {
-    captures = [];
-    for (const viewpoint of VIEWPOINTS) captures.push(await captureViewpoint(browser, options, viewpoint));
     fallbackQa = await captureFallbackQa(browser, options);
     operationalQa = await captureOperationalQa(browser, options);
+    captures = [];
+    for (const viewpoint of VIEWPOINTS) captures.push(await captureViewpoint(browser, options, viewpoint));
     recordings = [];
     for (const scenario of RECORDINGS) recordings.push(await recordScenario(browser, options, scenario, rawRoot));
   } finally {
