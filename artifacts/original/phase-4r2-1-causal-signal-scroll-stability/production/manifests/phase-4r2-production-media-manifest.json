@@ -514,7 +514,7 @@
     "removeUnlistedFiles": true
   },
   "authorityMaterialization": {
-    "trackedRoot": "artifacts/original/phase-4r2-1-causal-signal-scroll-stability/production",
+    "trackedRoot": "phase-4r2-1-causal-signal-scroll-stability/production",
     "sourceSubdirectory": "delivery",
     "exactFiles": [
       "manifests/phase-4r2-desktop-frame-manifest.json",

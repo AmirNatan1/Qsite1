@@ -43,7 +43,10 @@ export const ACTIVE_MANIFEST_SCHEMA = "quantum-hub.phase-4-r2.production-media-m
 export const ACTIVE_FRAME_MANIFEST_SCHEMA = "quantum-hub.phase-4-r2.frame-manifest.v1";
 export const ACTIVE_MANIFEST_RELATIVE = "manifests/phase-4r2-production-media-manifest.json";
 export const ACTIVE_PUBLIC_ROOT_RELATIVE = "public/media/cinematic/phase-4r2";
-export const ACTIVE_AUTHORITY_ROOT_RELATIVE = "artifacts/original/phase-4r2-1-causal-signal-scroll-stability/production";
+// Public manifests identify the tracked authority without exposing its
+// repository-internal artifacts/original path. Filesystem consumers retain
+// their own pinned local root separately.
+export const ACTIVE_AUTHORITY_ROOT_RELATIVE = "phase-4r2-1-causal-signal-scroll-stability/production";
 export const ACTIVE_MAX_ASSET_BYTES = 25 * 1024 * 1024;
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");

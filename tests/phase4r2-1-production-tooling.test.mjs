@@ -130,6 +130,7 @@ test("R2.1 finalize contract binds the active runtime to exactly three H.264 vid
   assert.deepEqual(manifest.authorityMaterialization.exactFiles, activeAuthorityFileInventory(manifest));
   assert.equal(manifest.authorityMaterialization.exactFiles.length, 10, "tracked authority gets one manifest, three frame manifests, and six payloads");
   assert.doesNotMatch(JSON.stringify(manifest), /(?:vp9|webm)/i);
+  assert.doesNotMatch(JSON.stringify(manifest), /artifacts[\\/]original/i, "public manifest must not expose repository-internal authority paths");
 
   const missingFrameRate = structuredClone(manifest);
   missingFrameRate.assets.find(({ kind }) => kind === "video").fps = undefined;
