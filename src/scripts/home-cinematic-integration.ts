@@ -31,12 +31,8 @@ const FRAME_RATE = 30;
 export const FIRST_CHANGED_FRAME = 46;
 export const ARRIVAL_FRAME = 285;
 export const STABLE_Q_FRAME = 370;
-export const WAKE_DURATION_SECONDS = (STABLE_Q_FRAME - ARRIVAL_FRAME) / FRAME_RATE;
 const FIRST_CHANGED_U = FIRST_CHANGED_FRAME - 1;
 const ARRIVAL_U = ARRIVAL_FRAME - 1;
-const STABLE_Q_U = STABLE_Q_FRAME - 1;
-const ARRIVAL_TIME = ARRIVAL_U / FRAME_RATE;
-const STABLE_Q_TIME = STABLE_Q_U / FRAME_RATE;
 const LOAD_TIMEOUT_MS = 12_000;
 const MAX_ASSET_BYTES = 25 * 1024 * 1024;
 const SOURCE_BLEND_SHA256 = "58f5479484dd8da342556abad1e58c96a660f30e6a9d6d5215927056b5cbc516";
@@ -52,7 +48,7 @@ const smoothstep = (value: number) => {
 };
 
 function interpolatePiecewise(value: number, input: readonly number[], output: readonly number[]) {
-  const progress = clamp(value);
+  const progress = Math.min(input.at(-1) ?? 1, Math.max(input[0] ?? 0, value));
   for (let index = 1; index < input.length; index += 1) {
     const inputStart = input[index - 1]!;
     const inputEnd = input[index]!;
@@ -63,16 +59,87 @@ function interpolatePiecewise(value: number, input: readonly number[], output: r
   return output.at(-1) ?? 1;
 }
 
-function scrollAnchors(family: MediaFamily, shortDesktop: boolean) {
-  if (family === "portrait" || family === "landscape") {
-    return [0, 0.04, 0.3267, 0.6133, 1] as const;
-  }
-  return shortDesktop ? [0, 0.0358, 0.3343, 0.6269, 1] as const : [0, 0.0411, 0.3425, 0.6301, 1] as const;
+export type CinematicSegmentId =
+  | "top-dormancy"
+  | "current-orbit"
+  | "crt-arrival"
+  | "indicator"
+  | "phosphor-line"
+  | "raster-expansion"
+  | "raster-settling"
+  | "q-appearance"
+  | "q-hold"
+  | "frontal-approach"
+  | "physical-threshold"
+  | "digital-breathing"
+  | "entry-reveal";
+
+/**
+ * Physical/editorial authority from the accepted F1-F500 film. Coordinates are
+ * zero-based so physical frame F285 is u=284. Browser-owned black and ENTRY
+ * follow the physical threshold without loading another decoder.
+ */
+export const CINEMATIC_SEGMENTS = [
+  { id: "top-dormancy", startU: 0, endU: 0, physical: "F1" },
+  { id: "current-orbit", startU: FIRST_CHANGED_U, endU: ARRIVAL_U - 1, physical: "F46-F284" },
+  { id: "crt-arrival", startU: ARRIVAL_U, endU: ARRIVAL_U, physical: "F285" },
+  { id: "indicator", startU: 285, endU: 298, physical: "F286-F299" },
+  { id: "phosphor-line", startU: 299, endU: 314, physical: "F300-F315" },
+  { id: "raster-expansion", startU: 315, endU: 334, physical: "F316-F335" },
+  { id: "raster-settling", startU: 335, endU: 354, physical: "F336-F355" },
+  { id: "q-appearance", startU: 355, endU: 368, physical: "F356-F369" },
+  { id: "q-hold", startU: 369, endU: 404, physical: "F370-F405" },
+  { id: "frontal-approach", startU: 405, endU: 479, physical: "F406-F480" },
+  { id: "physical-threshold", startU: 480, endU: 499, physical: "F481-F500" },
+  { id: "digital-breathing", startU: 500, endU: 512, physical: "F500 hold" },
+  { id: "entry-reveal", startU: 513, endU: CONCEPTUAL_FRAME_COUNT, physical: "F500 hold" },
+] as const satisfies readonly { id: CinematicSegmentId; startU: number; endU: number; physical: string }[];
+
+/** Explicit authored landmarks; no undifferentiated scroll-percent multiplier. */
+const PIECEWISE_COORDINATES = [
+  FIRST_CHANGED_U,
+  54,
+  226.8,
+  ARRIVAL_U,
+  285,
+  291,
+  299,
+  315,
+  335,
+  355,
+  369,
+  405,
+  421.2,
+  480,
+  500,
+  513,
+  CONCEPTUAL_FRAME_COUNT,
+] as const;
+
+const PIECEWISE_PROGRESS = {
+  desktop: [0, 0.038056, 0.31713, 0.395484, 0.396854, 0.405073, 0.416031, 0.437949, 0.465346, 0.492743, 0.51192, 0.640396, 0.691074, 0.835542, 0.884681, 0.922159, 1],
+  shortDesktop: [0, 0.032792, 0.306208, 0.385067, 0.386445, 0.394717, 0.405747, 0.427806, 0.455379, 0.482952, 0.502253, 0.631556, 0.684481, 0.834058, 0.884934, 0.922331, 1],
+  portrait: [0, 0.036262, 0.296167, 0.372615, 0.373951, 0.381971, 0.392662, 0.414046, 0.440776, 0.467506, 0.486217, 0.611566, 0.665562, 0.827041, 0.881966, 0.920328, 1],
+  landscape: [0, 0.036429, 0.29753, 0.37433, 0.375672, 0.383729, 0.39447, 0.415951, 0.442805, 0.469658, 0.488455, 0.614381, 0.667706, 0.82718, 0.881423, 0.919961, 1],
+} as const;
+
+function scrollProfile(family: MediaFamily, shortDesktop: boolean): readonly number[] {
+  return family === "desktop" && shortDesktop ? PIECEWISE_PROGRESS.shortDesktop : PIECEWISE_PROGRESS[family];
+}
+
+function piecewiseOffsets(travel: number, family: MediaFamily, shortDesktop: boolean) {
+  const extent = Math.max(1, Math.round(travel));
+  const offsets = scrollProfile(family, shortDesktop).map((progress) => Math.round(progress * extent));
+  const arrivalIndex = PIECEWISE_COORDINATES.indexOf(ARRIVAL_U);
+  const activationIndex = PIECEWISE_COORDINATES.indexOf(285);
+  // F285 owns the exact arrival coordinate. The next positive document pixel
+  // owns F286, so there is no hidden gesture or dead interval at the CRT.
+  offsets[activationIndex] = Math.min(extent, offsets[arrivalIndex]! + 1);
+  return offsets;
 }
 
 export function arrivalScrollProgress(family: MediaFamily, shortDesktop: boolean) {
-  const input = scrollAnchors(family, shortDesktop);
-  return mix(input[2], input[3], ((ARRIVAL_U / CONCEPTUAL_FRAME_COUNT) - 0.42) / 0.36);
+  return scrollProfile(family, shortDesktop)[PIECEWISE_COORDINATES.indexOf(ARRIVAL_U)]!;
 }
 
 export function arrivalScrollOffset(travel: number, family: MediaFamily, shortDesktop: boolean) {
@@ -84,13 +151,21 @@ export function conceptualCoordinateForScroll(scrollOffset: number, travel: numb
   const extent = Math.max(1, Math.round(travel));
   const offset = Math.min(extent, Math.max(0, Math.round(scrollOffset)));
   if (offset === 0) return 0;
-  const input = scrollAnchors(family, shortDesktop);
-  const arrival = arrivalScrollOffset(extent, family, shortDesktop);
-  const anchors = input.map((value) => Math.round(value * extent));
-  if (offset < arrival) return interpolatePiecewise(offset / arrival, [0, anchors[1]! / arrival, anchors[2]! / arrival, 1], [FIRST_CHANGED_U, 54, 226.8, ARRIVAL_U]);
-  if (offset === arrival) return ARRIVAL_U;
-  const postExtent = Math.max(extent - arrival - 1, 1);
-  return interpolatePiecewise((offset - arrival - 1) / postExtent, [0, Math.max(0, anchors[3]! - arrival - 1) / postExtent, 1], [STABLE_Q_U + 1, 421.2, CONCEPTUAL_FRAME_COUNT]);
+  return interpolatePiecewise(offset, piecewiseOffsets(extent, family, shortDesktop), PIECEWISE_COORDINATES);
+}
+
+export function scrollOffsetForFrame(frame: number, travel: number, family: MediaFamily, shortDesktop: boolean) {
+  if (frame >= CONCEPTUAL_FRAME_COUNT) return Math.max(1, Math.round(travel));
+  const targetU = Math.min(CONCEPTUAL_FRAME_COUNT, Math.max(0, Math.floor(frame) - 1));
+  if (targetU === 0) return 0;
+  const offsets = piecewiseOffsets(travel, family, shortDesktop);
+  return Math.round(interpolatePiecewise(targetU, PIECEWISE_COORDINATES, offsets));
+}
+
+export function cinematicSegmentForCoordinate(coordinate: number): CinematicSegmentId {
+  if (coordinate === 0) return "top-dormancy";
+  const segment = CINEMATIC_SEGMENTS.find(({ startU, endU }) => coordinate >= startU && coordinate <= endU);
+  return segment?.id ?? "entry-reveal";
 }
 
 /** Normalized compatibility surface; runtime uses the integer-offset authority above. */
@@ -107,9 +182,9 @@ export function chooseFamily(width: number, height: number): MediaFamily {
 }
 
 export function travelViewportHeights(family: MediaFamily, shortDesktop: boolean) {
-  if (family === "portrait") return 4.85;
-  if (family === "landscape") return 5.1;
-  return shortDesktop ? 5.45 : 6.25;
+  if (family === "portrait") return 5.35;
+  if (family === "landscape") return 5.6;
+  return shortDesktop ? 5.95 : 6.75;
 }
 
 export type CinematicDocumentPhase = "physical" | "black" | "entry" | "settled";
@@ -174,92 +249,6 @@ export function conceptualCoordinateFor(progress: number) {
 
 export function physicalFrameFor(conceptualCoordinate: number) {
   return Math.min(PHYSICAL_FRAME_COUNT, Math.max(1, Math.floor(conceptualCoordinate) + 1));
-}
-
-export function arrivalCrossingDirection(previousOffset: number, currentOffset: number, arrivalOffset: number, geometryChanged = false): -1 | 0 | 1 {
-  if (geometryChanged) return 0;
-  if (previousOffset < arrivalOffset && currentOffset >= arrivalOffset) return 1;
-  if (previousOffset > arrivalOffset && currentOffset <= arrivalOffset) return -1;
-  return 0;
-}
-
-export function scrollIntentFor(eventSequence: number, handledSequence: number, previousScrollY: number, currentScrollY: number, previousOffset: number, currentOffset: number, arrivalOffset: number) {
-  const observed = eventSequence !== handledSequence;
-  return {
-    observed,
-    direction: (observed ? Math.sign(currentScrollY - previousScrollY) : 0) as -1 | 0 | 1,
-    arrivalCrossing: arrivalCrossingDirection(previousOffset, currentOffset, arrivalOffset, !observed),
-  };
-}
-
-export type ReactionState = "pending" | "pre-arrival" | "wake-armed" | "wake-forward" | "stable-hold" | "post-arrival" | "wake-reverse" | "failed";
-export type ReactionEvent = "READY_PRE" | "RESTORE_POST" | "ARRIVE" | "ARRIVAL_PRESENTED" | "STABLE_PRESENTED" | "OUTRUN" | "RETREAT" | "UNWOUND" | "FAIL";
-
-export function transitionReaction(state: ReactionState, event: ReactionEvent): ReactionState {
-  if (event === "FAIL") return "failed";
-  if (event === "RESTORE_POST" || event === "OUTRUN") return "post-arrival";
-  if (event === "READY_PRE" || event === "UNWOUND") return "pre-arrival";
-  if (event === "ARRIVE" && (state === "pre-arrival" || state === "wake-reverse")) return "wake-armed";
-  if (event === "ARRIVAL_PRESENTED" && state === "wake-armed") return "wake-forward";
-  if (event === "STABLE_PRESENTED" && state === "wake-forward") return "stable-hold";
-  if (event === "RETREAT" && ["wake-armed", "wake-forward", "stable-hold", "post-arrival"].includes(state)) return "wake-reverse";
-  return state;
-}
-
-export type ReactionDecisionEvent = "GEOMETRY" | "CROSS_FORWARD" | "FORWARD" | "REVERSE" | "PRESENTED" | "SKIP" | "SUSPEND_PRE" | "SUSPEND_POST" | "FAIL";
-export type ReactionCommand = "none" | "arm" | "play" | "stop-stable" | "seek-latest" | "reverse" | "cancel" | "fail";
-export type ReactionDecisionInput = {
-  state: ReactionState;
-  event: ReactionDecisionEvent;
-  presentedFrame: number;
-  requestedFrame: number;
-  scrollTargetFrame: number;
-};
-
-/** Pure arbitration authority. Requested/pending frames never become reverse anchors. */
-export function decideReaction(input: ReactionDecisionInput): { state: ReactionState; command: ReactionCommand; reverseStartFrame: number } {
-  const actual = Math.min(PHYSICAL_FRAME_COUNT, Math.max(1, Math.floor(input.presentedFrame)));
-  const idle = (state = input.state, command: ReactionCommand = "none") => ({ state, command, reverseStartFrame: actual });
-  if (input.event === "FAIL") return idle("failed", "fail");
-  if (input.event === "SKIP" || input.event === "SUSPEND_POST") return idle("post-arrival", "cancel");
-  if (input.event === "SUSPEND_PRE") return idle("pre-arrival", "cancel");
-  if (input.event === "GEOMETRY") return idle();
-  if (input.event === "PRESENTED") {
-    if (input.state === "wake-armed" && actual === ARRIVAL_FRAME) return idle("wake-forward", "play");
-    if (input.state === "wake-forward" && actual >= STABLE_Q_FRAME) return idle("stable-hold", "stop-stable");
-    return idle();
-  }
-  if (input.event === "CROSS_FORWARD" && (input.state === "pre-arrival" || input.state === "wake-reverse")) return idle("wake-armed", "arm");
-  if (input.event === "FORWARD" && ["wake-armed", "wake-forward", "stable-hold"].includes(input.state) && input.scrollTargetFrame > ARRIVAL_FRAME) return idle("post-arrival", "seek-latest");
-  if (input.event === "REVERSE" && ["wake-armed", "wake-forward", "stable-hold", "post-arrival", "wake-reverse"].includes(input.state)) {
-    if (input.scrollTargetFrame >= actual) return idle(input.scrollTargetFrame > ARRIVAL_FRAME ? "post-arrival" : "pre-arrival", "seek-latest");
-    return idle("wake-reverse", "reverse");
-  }
-  return idle();
-}
-
-export function reverseFrameForElapsed(startFrame: number, floorFrame: number, elapsedSeconds: number) {
-  const start = Math.min(PHYSICAL_FRAME_COUNT, Math.max(1, Math.floor(startFrame)));
-  const floor = Math.min(start, Math.max(1, Math.floor(floorFrame)));
-  const elapsed = Math.max(0, elapsedSeconds);
-  if (start <= ARRIVAL_FRAME) return Math.max(floor, start - Math.floor(elapsed * 90));
-  const postFrames = Math.max(0, start - STABLE_Q_FRAME);
-  const authoredStart = Math.min(start, STABLE_Q_FRAME);
-  const postSeconds = postFrames / 90;
-  const authoredSeconds = (authoredStart - ARRIVAL_FRAME) / FRAME_RATE;
-  if (elapsed < postSeconds) return Math.max(floor, start - Math.floor(elapsed * 90));
-  if (elapsed < postSeconds + authoredSeconds) return Math.max(floor, authoredStart - Math.floor((elapsed - postSeconds) * FRAME_RATE));
-  return Math.max(floor, ARRIVAL_FRAME - Math.floor((elapsed - postSeconds - authoredSeconds) * 90));
-}
-
-export type ReversePlan = { startFrame: number; floorFrame: number; startedAt: number };
-
-/** Later retreat input may extend the floor, but it must not starve the active reverse clock. */
-export function reviseReversePlan(current: ReversePlan | null, presentedFrame: number, targetFrame: number, now: number, replaceFloor = false): ReversePlan {
-  const actual = Math.min(PHYSICAL_FRAME_COUNT, Math.max(1, Math.floor(presentedFrame)));
-  const floor = Math.min(actual, Math.max(1, Math.floor(targetFrame)));
-  if (!current) return { startFrame: actual, floorFrame: floor, startedAt: now };
-  return { ...current, floorFrame: replaceFloor ? Math.min(current.startFrame, floor) : Math.min(current.floorFrame, floor) };
 }
 
 export function supportsH264(canPlayType: (mimeType: string) => string) {
@@ -383,19 +372,6 @@ export function initHomeCinematicIntegration() {
   let scrollTargetPhysicalFrame = 1;
   let presentedPhysicalFrame = 1;
   let currentScrollOffset = 0;
-  let currentArrivalOffset = 1;
-  let scrollEventSequence = 0;
-  let handledScrollEventSequence = 0;
-  let lastIntentScrollY = window.scrollY;
-  let initialWrite = true;
-  let pendingArrival = history.state?.quantumHomeCinematic?.arrivalOrBeyond === true;
-  let reactionState: ReactionState = "pending";
-  let reactionGeneration = 0;
-  let reactionFrame = 0;
-  let videoFrameCallback = 0;
-  let reverseStartedAt = 0;
-  let reverseStartFrame = 1;
-  let reverseFloorFrame = 1;
   let persistedRestorationState = "";
 
   /**
@@ -417,12 +393,7 @@ export function initHomeCinematicIntegration() {
     root.dataset.cinematicMethodGeometry = "committed";
   };
 
-  const cancelReaction = () => {
-    reactionGeneration += 1;
-    if (reactionFrame) window.cancelAnimationFrame(reactionFrame);
-    reactionFrame = 0;
-    if (videoFrameCallback && video.cancelVideoFrameCallback) video.cancelVideoFrameCallback(videoFrameCallback);
-    videoFrameCallback = 0;
+  const pauseDecoder = () => {
     video.pause();
   };
 
@@ -432,17 +403,17 @@ export function initHomeCinematicIntegration() {
   };
   const releaseMedia = () => {
     mediaAbortController.abort();
-    cancelReaction();
+    pauseDecoder();
     video.removeAttribute("src");
     video.load();
     if (objectUrl) URL.revokeObjectURL(objectUrl);
     objectUrl = null;
   };
-  const persistRestorationState = (settledOrLower: boolean, arrivalOrBeyond: boolean) => {
-    const key = `${settledOrLower}:${arrivalOrBeyond}`;
+  const persistRestorationState = (settledOrLower: boolean) => {
+    const key = String(settledOrLower);
     if (persistedRestorationState === key) return;
     try {
-      history.replaceState({ ...(history.state && typeof history.state === "object" ? history.state : {}), quantumHomeCinematic: { version: 2, settledOrLower, arrivalOrBeyond } }, document.title);
+      history.replaceState({ ...(history.state && typeof history.state === "object" ? history.state : {}), quantumHomeCinematic: { version: 3, settledOrLower } }, document.title);
       persistedRestorationState = key;
     } catch { /* History state is advisory. */ }
   };
@@ -471,7 +442,6 @@ export function initHomeCinematicIntegration() {
     const disposition = cinematicFailureDisposition(reason, root.dataset.cinematicMode === "enhanced");
     if (mediaFailed && disposition === "preserve-runway") return;
     clearTimer();
-    reactionState = decideReaction({ state: reactionState, event: "FAIL", presentedFrame: presentedPhysicalFrame, requestedFrame: targetPhysicalFrame, scrollTargetFrame: scrollTargetPhysicalFrame }).state;
     root.dataset.cinematicFallback = reason;
     if (disposition === "preserve-runway") {
       mediaFailed = true;
@@ -479,10 +449,10 @@ export function initHomeCinematicIntegration() {
       mediaReady = false;
       releaseMedia();
       shell.dataset.mediaState = "failed-preserve-runway";
-      shell.dataset.cinematicReaction = "failed";
+      shell.dataset.cinematicControl = "scroll-addressed";
       shell.style.setProperty("--cinematic-media-ready", "0");
       needsMeasurement = true;
-      Object.assign(publicState, { mode: "enhanced", mediaReady: false, reactionState });
+      Object.assign(publicState, { mode: "enhanced", mediaReady: false });
       schedule();
       return;
     }
@@ -514,7 +484,8 @@ export function initHomeCinematicIntegration() {
   const publicState = {
     mode: "enhanced", mediaFamily: initialFamily, codec, delivery: "blob" as const,
     scrollProgress: 0, cinematicProgress: 0, conceptualFrame: 1, targetFrame: 1, targetTime: 0,
-    blackProgress: 0, semanticProgress: 0, mediaReady: false, reactionState, presentedFrame: 1,
+    blackProgress: 0, semanticProgress: 0, mediaReady: false, control: "scroll-addressed" as const,
+    segment: "top-dormancy" as CinematicSegmentId, scrollOffset: 0, presentedFrame: 1,
   };
   window.quantumPhase4 = publicState;
   root.dataset.cinematicMode = "enhanced";
@@ -522,6 +493,7 @@ export function initHomeCinematicIntegration() {
   shell.dataset.mediaCodec = codec;
   shell.dataset.mediaDelivery = "blob";
   shell.dataset.mediaState = "loading";
+  shell.dataset.cinematicControl = "scroll-addressed";
   video.preload = "auto";
 
   const measure = () => {
@@ -531,18 +503,16 @@ export function initHomeCinematicIntegration() {
     shellTop = shell.getBoundingClientRect().top + window.scrollY;
     entryTop = entry.getBoundingClientRect().top + window.scrollY;
     travel = Math.max(entryTop - headerHeight - shellTop, 1);
-    currentArrivalOffset = arrivalScrollOffset(travel, initialFamily, initialShortDesktop);
     needsMeasurement = false;
   };
   const requestCurrentFrame = (replacePending = false) => {
-    if (!metadataReady || mediaFailed || failed || document.hidden || reactionState === "wake-forward" || (!replacePending && video.seeking) || targetPhysicalFrame === latestPhysicalFrame) return;
+    if (!metadataReady || mediaFailed || failed || document.hidden || (!replacePending && video.seeking) || targetPhysicalFrame === latestPhysicalFrame) return;
     latestPhysicalFrame = targetPhysicalFrame;
     try { video.pause(); video.currentTime = targetTime; } catch { failOpen("seek"); }
   };
-  const publishReaction = () => {
-    shell.dataset.cinematicReaction = reactionState;
+  const publishPresentedFrame = () => {
     shell.dataset.presentedFrame = String(presentedPhysicalFrame);
-    Object.assign(publicState, { reactionState, presentedFrame: presentedPhysicalFrame });
+    Object.assign(publicState, { presentedFrame: presentedPhysicalFrame });
   };
   const targetFrame = (frame: number, replacePending = false) => {
     targetPhysicalFrame = Math.min(PHYSICAL_FRAME_COUNT, Math.max(1, Math.floor(frame)));
@@ -550,206 +520,22 @@ export function initHomeCinematicIntegration() {
     requestCurrentFrame(replacePending);
   };
   const frameAtTime = (time: number) => Math.min(PHYSICAL_FRAME_COUNT, Math.max(1, Math.floor(time * FRAME_RATE + 0.001) + 1));
-  const reactionDecision = (event: ReactionDecisionEvent) => decideReaction({ state: reactionState, event, presentedFrame: presentedPhysicalFrame, requestedFrame: targetPhysicalFrame, scrollTargetFrame: scrollTargetPhysicalFrame });
-  const finishWake = (generation: number, observedFrame = presentedPhysicalFrame) => {
-    if (generation !== reactionGeneration || reactionState !== "wake-forward") return;
-    const decision = decideReaction({ state: reactionState, event: "PRESENTED", presentedFrame: observedFrame, requestedFrame: targetPhysicalFrame, scrollTargetFrame: scrollTargetPhysicalFrame });
-    if (decision.command !== "stop-stable") return;
-    cancelReaction();
-    reactionState = decision.state;
-    latestPhysicalFrame = -1;
-    if (currentScrollOffset > currentArrivalOffset) {
-      reactionState = decideReaction({ state: reactionState, event: "FORWARD", presentedFrame: presentedPhysicalFrame, requestedFrame: targetPhysicalFrame, scrollTargetFrame: scrollTargetPhysicalFrame }).state;
-      targetFrame(scrollTargetPhysicalFrame, true);
-    } else targetFrame(STABLE_Q_FRAME, true);
-    publishReaction();
-  };
-  const watchWake = (generation: number) => {
-    if (generation !== reactionGeneration || reactionState !== "wake-forward") return;
-    const observe = (mediaTime: number, presentationProven: boolean) => {
-      if (generation !== reactionGeneration || reactionState !== "wake-forward") return;
-      const observedFrame = frameAtTime(mediaTime);
-      if (presentationProven) { presentedPhysicalFrame = observedFrame; publishReaction(); }
-      if (mediaTime >= STABLE_Q_TIME - 0.5 / FRAME_RATE) finishWake(generation, observedFrame);
-      else watchWake(generation);
-    };
-    if (video.requestVideoFrameCallback) {
-      videoFrameCallback = video.requestVideoFrameCallback((_now, metadata) => { videoFrameCallback = 0; observe(metadata.mediaTime, true); });
-    } else {
-      reactionFrame = requestAnimationFrame(() => { reactionFrame = 0; observe(video.currentTime, false); });
-    }
-  };
-  const beginWake = () => {
-    if (reactionState !== "wake-armed" || failed || document.hidden) return;
-    const decision = reactionDecision("PRESENTED");
-    if (decision.command !== "play") return;
-    cancelReaction();
-    reactionState = decision.state;
-    const generation = reactionGeneration;
-    publishReaction();
-    const playback = video.play();
-    watchWake(generation);
-    void playback.catch(() => { if (generation === reactionGeneration) failOpen("playback"); });
-  };
-  const armWake = () => {
-    const decision = reactionDecision("CROSS_FORWARD");
-    if (decision.command !== "arm") return;
-    cancelReaction();
-    reactionState = decision.state;
-    latestPhysicalFrame = -1;
-    targetFrame(ARRIVAL_FRAME, true);
-    publishReaction();
-    if (!video.seeking && presentedPhysicalFrame === ARRIVAL_FRAME && Math.abs(video.currentTime - ARRIVAL_TIME) <= 0.5 / FRAME_RATE) beginWake();
-  };
-  const finishReverseIfPresented = () => {
-    if (reactionState !== "wake-reverse" || targetPhysicalFrame > reverseFloorFrame || video.seeking || Math.abs(video.currentTime - targetTime) > 0.5 / FRAME_RATE) return;
-    reactionState = transitionReaction(reactionState, currentScrollOffset > currentArrivalOffset ? "OUTRUN" : "UNWOUND");
-    latestPhysicalFrame = -1;
-    targetFrame(reactionState === "post-arrival" ? Math.max(STABLE_Q_FRAME, scrollTargetPhysicalFrame) : scrollTargetPhysicalFrame, true);
-    publishReaction();
-  };
-  const tickReverse = (generation: number, now: number) => {
-    if (generation !== reactionGeneration || reactionState !== "wake-reverse") return;
-    const elapsed = (now - reverseStartedAt) / 1000;
-    const frame = reverseFrameForElapsed(reverseStartFrame, reverseFloorFrame, elapsed);
-    targetFrame(frame);
-    if (frame <= reverseFloorFrame) { finishReverseIfPresented(); return; }
-    reactionFrame = requestAnimationFrame((timestamp) => { reactionFrame = 0; tickReverse(generation, timestamp); });
-  };
-  const resumeReverseTick = () => {
-    if (reactionState !== "wake-reverse" || reactionFrame || document.hidden) return;
-    const generation = reactionGeneration;
-    reactionFrame = requestAnimationFrame((timestamp) => { reactionFrame = 0; tickReverse(generation, timestamp); });
-  };
-  const startReverse = () => {
-    const decision = reactionDecision("REVERSE");
-    if (decision.command !== "reverse" && decision.command !== "seek-latest") return;
-    if (reactionState === "wake-reverse" && decision.command === "reverse") {
-      const plan = reviseReversePlan(
-        { startFrame: reverseStartFrame, floorFrame: reverseFloorFrame, startedAt: reverseStartedAt },
-        decision.reverseStartFrame,
-        scrollTargetPhysicalFrame,
-        performance.now(),
-      );
-      reverseStartFrame = plan.startFrame;
-      reverseFloorFrame = plan.floorFrame;
-      reverseStartedAt = plan.startedAt;
-      publishReaction();
-      return;
-    }
-    cancelReaction();
-    reactionState = decision.state;
-    if (decision.command === "seek-latest") {
-      targetFrame(scrollTargetPhysicalFrame, true);
-      publishReaction();
-      return;
-    }
-    const plan = reviseReversePlan(null, decision.reverseStartFrame, scrollTargetPhysicalFrame, performance.now());
-    reverseStartFrame = plan.startFrame;
-    reverseFloorFrame = plan.floorFrame;
-    reverseStartedAt = plan.startedAt;
-    latestPhysicalFrame = -1;
-    targetFrame(reverseStartFrame, true);
-    publishReaction();
-    const generation = reactionGeneration;
-    reactionFrame = requestAnimationFrame((timestamp) => { reactionFrame = 0; tickReverse(generation, timestamp); });
-  };
-  const restorePostArrival = () => {
-    cancelReaction();
-    reactionState = transitionReaction(reactionState, "RESTORE_POST");
-    latestPhysicalFrame = -1;
-    targetFrame(Math.max(STABLE_Q_FRAME, scrollTargetPhysicalFrame), true);
-    pendingArrival = false;
-    publishReaction();
-  };
-  const suspendReactionForRestore = () => {
-    cancelReaction();
-    if (!["wake-armed", "wake-forward", "wake-reverse"].includes(reactionState)) return;
-    if (currentScrollOffset >= currentArrivalOffset) {
-      reactionState = reactionDecision("SUSPEND_POST").state;
-      targetPhysicalFrame = Math.max(STABLE_Q_FRAME, scrollTargetPhysicalFrame);
-      targetTime = (targetPhysicalFrame - 1) / FRAME_RATE;
-      latestPhysicalFrame = -1;
-      pendingArrival = true;
-    } else {
-      reactionState = reactionDecision("SUSPEND_PRE").state;
-      targetPhysicalFrame = scrollTargetPhysicalFrame;
-      targetTime = (targetPhysicalFrame - 1) / FRAME_RATE;
-      latestPhysicalFrame = -1;
-    }
-    publishReaction();
-  };
   const write = () => {
     if (failed || document.hidden) return;
     rememberCommittedMethodGeometry();
     if (needsMeasurement) measure();
     const scrollExtent = Math.max(1, Math.round(travel));
     const nativeScrollY = window.scrollY;
-    const previousIntentOffset = Math.min(scrollExtent, Math.max(0, Math.round(lastIntentScrollY - shellTop)));
     currentScrollOffset = Math.min(scrollExtent, Math.max(0, Math.round(nativeScrollY - shellTop)));
-    currentArrivalOffset = arrivalScrollOffset(scrollExtent, initialFamily, initialShortDesktop);
     const documentState = cinematicDocumentStateForScroll(currentScrollOffset, scrollExtent, initialFamily, initialShortDesktop);
     const { scrollProgress, conceptualCoordinate, conceptualFrame, black, blackBreath, semantic, settled, phase } = documentState;
     const cinematicProgress = conceptualCoordinate / CONCEPTUAL_FRAME_COUNT;
     scrollTargetPhysicalFrame = documentState.physicalFrame;
-    const scrollIntent = scrollIntentFor(scrollEventSequence, handledScrollEventSequence, lastIntentScrollY, nativeScrollY, previousIntentOffset, currentScrollOffset, currentArrivalOffset);
-    const hasScrollIntent = scrollIntent.observed;
-    const arrivalCrossing = scrollIntent.arrivalCrossing;
-    const crossedForward = arrivalCrossing === 1;
-    const crossedReverse = arrivalCrossing === -1;
-    const movingForward = scrollIntent.direction === 1;
-    const movingBackward = scrollIntent.direction === -1;
-    if (!hasScrollIntent && reactionState === "wake-reverse") {
-      const plan = reviseReversePlan(
-        { startFrame: reverseStartFrame, floorFrame: reverseFloorFrame, startedAt: reverseStartedAt },
-        presentedPhysicalFrame,
-        scrollTargetPhysicalFrame,
-        performance.now(),
-        true,
-      );
-      reverseFloorFrame = plan.floorFrame;
-    }
+    const segment = cinematicSegmentForCoordinate(conceptualCoordinate);
     if (mediaFailed) {
       targetPhysicalFrame = scrollTargetPhysicalFrame;
       targetTime = (targetPhysicalFrame - 1) / FRAME_RATE;
-    } else if (!mediaReady) {
-      pendingArrival = currentScrollOffset >= currentArrivalOffset && (pendingArrival || initialWrite || crossedForward);
-      targetFrame(pendingArrival ? Math.max(STABLE_Q_FRAME, scrollTargetPhysicalFrame) : scrollTargetPhysicalFrame);
-    } else {
-      if (reactionState === "pending") {
-        if (pendingArrival || (initialWrite && currentScrollOffset >= currentArrivalOffset)) restorePostArrival();
-        else { reactionState = transitionReaction(reactionState, "READY_PRE"); publishReaction(); }
-      }
-      if (reactionState === "pre-arrival") {
-        if (crossedForward) armWake();
-        else if (hasScrollIntent && currentScrollOffset > currentArrivalOffset) { reactionState = transitionReaction(reactionState, "OUTRUN"); targetFrame(scrollTargetPhysicalFrame, true); publishReaction(); }
-        else targetFrame(currentScrollOffset > currentArrivalOffset ? ARRIVAL_FRAME : scrollTargetPhysicalFrame, movingBackward);
-      } else if (reactionState === "wake-armed" || reactionState === "wake-forward") {
-        if (movingBackward) startReverse();
-        else if (movingForward && currentScrollOffset > currentArrivalOffset) {
-          const decision = reactionDecision("FORWARD");
-          cancelReaction(); reactionState = decision.state; targetFrame(scrollTargetPhysicalFrame, true); publishReaction();
-        }
-      } else if (reactionState === "stable-hold") {
-        if (movingBackward) startReverse();
-        else if (movingForward && currentScrollOffset > currentArrivalOffset) {
-          const decision = reactionDecision("FORWARD");
-          reactionState = decision.state; targetFrame(scrollTargetPhysicalFrame, true); publishReaction();
-        }
-      } else if (reactionState === "post-arrival") {
-        if (movingBackward || crossedReverse) startReverse();
-        else targetFrame(Math.max(STABLE_Q_FRAME, scrollTargetPhysicalFrame));
-      } else if (reactionState === "wake-reverse") {
-        if (crossedForward) armWake();
-        else if (movingForward) {
-          cancelReaction();
-          reactionState = transitionReaction(reactionState, currentScrollOffset > currentArrivalOffset ? "OUTRUN" : "UNWOUND");
-          targetFrame(scrollTargetPhysicalFrame, true);
-          publishReaction();
-        }
-        else if (movingBackward) startReverse();
-      }
-    }
+    } else targetFrame(scrollTargetPhysicalFrame, true);
     // u=[500,513) is browser-owned digital black; semantic ENTRY begins at u=513.
     shell.style.setProperty("--cinematic-progress", scrollProgress.toFixed(4));
     shell.style.setProperty("--cinematic-film-progress", cinematicProgress.toFixed(4));
@@ -763,14 +549,13 @@ export function initHomeCinematicIntegration() {
     shell.dataset.cinematicProgress = cinematicProgress.toFixed(4);
     shell.dataset.conceptualCoordinate = conceptualCoordinate.toFixed(4);
     shell.dataset.conceptualFrame = String(conceptualFrame);
+    shell.dataset.cinematicSegment = segment;
     shell.dataset.targetFrame = String(targetPhysicalFrame);
     shell.dataset.targetTime = targetTime.toFixed(4);
     setSettledInteraction(settled);
-    persistRestorationState(settled, currentScrollOffset >= currentArrivalOffset);
+    persistRestorationState(settled);
     requestCurrentFrame();
-    Object.assign(publicState, { mode: root.dataset.cinematicMode ?? "enhanced", scrollProgress: rounded(scrollProgress), cinematicProgress: rounded(cinematicProgress), conceptualFrame, targetFrame: targetPhysicalFrame, targetTime: rounded(targetTime), blackProgress: rounded(black), semanticProgress: rounded(semantic), mediaReady, reactionState, presentedFrame: presentedPhysicalFrame });
-    if (hasScrollIntent) { handledScrollEventSequence = scrollEventSequence; lastIntentScrollY = nativeScrollY; }
-    initialWrite = false;
+    Object.assign(publicState, { mode: root.dataset.cinematicMode ?? "enhanced", scrollProgress: rounded(scrollProgress), cinematicProgress: rounded(cinematicProgress), conceptualFrame, targetFrame: targetPhysicalFrame, targetTime: rounded(targetTime), blackProgress: rounded(black), semanticProgress: rounded(semantic), mediaReady, segment, scrollOffset: currentScrollOffset, presentedFrame: presentedPhysicalFrame });
   };
   const schedule = () => {
     if (animationFrame || document.hidden || failed) return;
@@ -789,10 +574,7 @@ export function initHomeCinematicIntegration() {
     schedule();
   };
   const handleSkip = () => {
-    const decision = reactionDecision("SKIP");
-    cancelReaction();
-    reactionState = decision.state;
-    publishReaction();
+    pauseDecoder();
     shell.style.setProperty("--cinematic-progress", "1");
     shell.style.setProperty("--cinematic-film-progress", "1");
     shell.style.setProperty("--cinematic-black", "1");
@@ -801,7 +583,7 @@ export function initHomeCinematicIntegration() {
     shell.dataset.cinematicPhase = "settled";
     shell.dataset.cinematicInteractive = "true";
     setSettledInteraction(true);
-    persistRestorationState(true, true);
+    persistRestorationState(true);
     entry.focus({ preventScroll: true });
   };
   const loadSelectedMedia = async () => {
@@ -825,7 +607,7 @@ export function initHomeCinematicIntegration() {
   resizeObserver.observe(shell);
   resizeObserver.observe(entry);
   if (methodField) resizeObserver.observe(methodField);
-  window.addEventListener("scroll", () => { scrollEventSequence += 1; schedule(); }, { passive: true, signal });
+  window.addEventListener("scroll", schedule, { passive: true, signal });
   window.addEventListener("resize", invalidate, { passive: true, signal });
   window.addEventListener("pageshow", invalidate, { passive: true, signal });
   skipLink.addEventListener("click", handleSkip, { signal });
@@ -834,7 +616,7 @@ export function initHomeCinematicIntegration() {
     if (document.hidden) {
       if (animationFrame) cancelAnimationFrame(animationFrame);
       animationFrame = 0;
-      suspendReactionForRestore();
+      pauseDecoder();
     }
     else invalidate();
   }, { signal });
@@ -842,23 +624,19 @@ export function initHomeCinematicIntegration() {
   video.addEventListener("loadeddata", revealUsableFrame, { signal });
   video.addEventListener("seeked", () => {
     presentedPhysicalFrame = frameAtTime(video.currentTime);
-    publishReaction();
+    publishPresentedFrame();
     revealUsableFrame();
-    if (reactionState === "wake-armed" && Math.abs(video.currentTime - ARRIVAL_TIME) <= 0.5 / FRAME_RATE) beginWake();
-    else {
-      finishReverseIfPresented();
-      // A newer retreat/geometry target may have lowered the floor while this seek was in flight.
-      resumeReverseTick();
-    }
+    // A seek that completed after newer input immediately yields to the latest
+    // document-derived target. No playback clock or directional latch exists.
     requestCurrentFrame();
   }, { signal });
   video.addEventListener("error", () => failOpen("media"), { signal });
   void document.fonts?.ready.then(invalidate);
   window.addEventListener("pagehide", (event) => {
-    persistRestorationState(shell.dataset.cinematicPhase === "settled" || window.scrollY >= entryTop - headerHeight - 1, currentScrollOffset >= currentArrivalOffset);
+    persistRestorationState(shell.dataset.cinematicPhase === "settled" || window.scrollY >= entryTop - headerHeight - 1);
     if (animationFrame) cancelAnimationFrame(animationFrame);
     animationFrame = 0;
-    suspendReactionForRestore();
+    pauseDecoder();
     if (event.persisted) return;
     clearTimer(); releaseMedia(); resizeObserver.disconnect(); abortController.abort();
   }, { signal });
@@ -873,7 +651,8 @@ declare global {
     quantumPhase4?: Readonly<{
       mode: string; mediaFamily: MediaFamily; codec: Codec; delivery: "blob"; scrollProgress: number;
       cinematicProgress: number; conceptualFrame: number; targetFrame: number; targetTime: number;
-      blackProgress: number; semanticProgress: number; mediaReady: boolean; reactionState: ReactionState; presentedFrame: number;
+      blackProgress: number; semanticProgress: number; mediaReady: boolean; control: "scroll-addressed";
+      segment: CinematicSegmentId; scrollOffset: number; presentedFrame: number;
     }>;
   }
 }

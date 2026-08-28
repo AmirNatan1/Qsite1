@@ -87,7 +87,7 @@ if (!maradinOpening || !maradinClimax) {
             "requestAnimationFrame" in window;
           const directDeepLink = window.location.hash.length > 1;
           const restoredState = window.history.state?.quantumHomeCinematic;
-          const restoredSettled = restoredState?.version === 1 && restoredState.settledOrLower === true;
+          const restoredSettled = restoredState?.version === 3 && restoredState.settledOrLower === true;
           const viewportScale = window.visualViewport?.scale ?? 1;
           const rootFontSize = Number.parseFloat(getComputedStyle(root).fontSize);
           const chromeRatio = window.innerWidth > 0 && window.outerWidth > 0

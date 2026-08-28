@@ -339,31 +339,33 @@ test("Phase 4-R2 locks the three authored initial-load cohorts", () => {
   assert.equal(chooseFamily(844, 390), "landscape");
   assert.equal(chooseFamily(900, 480), "landscape");
   assert.equal(chooseFamily(900, 481), "desktop");
-  assert.equal(travelViewportHeights("desktop", false), 6.25);
-  assert.equal(travelViewportHeights("desktop", true), 5.45);
-  assert.equal(travelViewportHeights("portrait", false), 4.85);
-  assert.equal(travelViewportHeights("landscape", false), 5.1);
+  assert.equal(travelViewportHeights("desktop", false), 6.75);
+  assert.equal(travelViewportHeights("desktop", true), 5.95);
+  assert.equal(travelViewportHeights("portrait", false), 5.35);
+  assert.equal(travelViewportHeights("landscape", false), 5.6);
 });
 
-test("Phase 4-R2.1 has no first-scroll dead zone and reserves exactly one bounded wake interval", () => {
+test("Phase 5A keeps zero-dead-zone onset and scroll-addresses every CRT startup landmark", () => {
   const {
     ARRIVAL_FRAME,
+    CINEMATIC_SEGMENTS,
     STABLE_Q_FRAME,
-    WAKE_DURATION_SECONDS,
     arrivalScrollOffset,
+    cinematicSegmentForCoordinate,
     conceptualCoordinateFor,
     conceptualCoordinateForScroll,
     conceptualFrameFor,
     mapCinematicProgress,
     physicalFrameFor,
+    scrollOffsetForFrame,
   } = loadRuntime();
   const viewports = [
-    [5625, "desktop", false, 2403],
-    [3543, "desktop", true, 1489],
-    [4093, "portrait", false, 1682],
-    [3880, "portrait", false, 1595],
-    [4966, "portrait", false, 2041],
-    [1989, "landscape", false, 818],
+    [6075, "desktop", false, 2403],
+    [3868, "desktop", true, 1489],
+    [4515, "portrait", false, 1682],
+    [4280, "portrait", false, 1595],
+    [5478, "portrait", false, 2041],
+    [2184, "landscape", false, 818],
   ];
   for (const [travel, family, shortDesktop, expectedArrival] of viewports) {
     const arrival = arrivalScrollOffset(travel, family, shortDesktop);
@@ -373,16 +375,34 @@ test("Phase 4-R2.1 has no first-scroll dead zone and reserves exactly one bounde
     const onsetFrames = [15, 30, 60].map((offset) => physicalFrameFor(conceptualCoordinateForScroll(offset, travel, family, shortDesktop)));
     assert.ok(onsetFrames[0] >= 46 && onsetFrames[1] >= onsetFrames[0] && onsetFrames[2] > onsetFrames[0], "15/30/60px probes must react immediately and advance monotonically");
     assert.equal(physicalFrameFor(conceptualCoordinateForScroll(arrival, travel, family, shortDesktop)), ARRIVAL_FRAME);
-    assert.equal(physicalFrameFor(conceptualCoordinateForScroll(arrival + 1, travel, family, shortDesktop)), STABLE_Q_FRAME + 1, "scroll resumes after the decoder-owned wake");
+    assert.equal(physicalFrameFor(conceptualCoordinateForScroll(arrival + 1, travel, family, shortDesktop)), ARRIVAL_FRAME + 1, "the next document pixel after arrival must own F286");
+    const landmarks = [292, 300, 316, 336, 356, 370, 406, 481, 501, 514, 540];
+    for (const frame of landmarks) {
+      const offset = scrollOffsetForFrame(frame, travel, family, shortDesktop);
+      assert.equal(Math.min(540, Math.floor(conceptualCoordinateForScroll(offset, travel, family, shortDesktop)) + 1), frame, `F${frame} must have an explicit scroll address`);
+    }
+    const samples = Array.from({ length: travel + 1 }, (_unused, offset) => conceptualCoordinateForScroll(offset, travel, family, shortDesktop));
+    samples.forEach((coordinate, index) => {
+      if (index) assert.ok(coordinate >= samples[index - 1], "forward mapping must be monotonic");
+    });
+    const reversed = [...samples].reverse();
+    reversed.forEach((coordinate, index) => assert.equal(coordinate, samples[travel - index], "reverse uses the identical single-valued map"));
     assert.equal(conceptualCoordinateForScroll(travel, travel, family, shortDesktop), 540);
   }
   for (const [family, shortDesktop, inputs] of [
-    ["desktop", false, [0, 0.0411, 0.3425, 0.6301, 1]],
-    ["desktop", true, [0, 0.0358, 0.3343, 0.6269, 1]],
-    ["portrait", false, [0, 0.04, 0.3267, 0.6133, 1]],
-    ["landscape", false, [0, 0.04, 0.3267, 0.6133, 1]],
+    ["desktop", false, [0, 0.038056, 0.31713, 0.691074, 1]],
+    ["desktop", true, [0, 0.032792, 0.306208, 0.684481, 1]],
+    ["portrait", false, [0, 0.036262, 0.296167, 0.665562, 1]],
+    ["landscape", false, [0, 0.036429, 0.29753, 0.667706, 1]],
   ]) inputs.forEach((input, index) => assert.ok(Math.abs(mapCinematicProgress(input, family, shortDesktop) - [0, 0.1, 0.42, 0.78, 1][index]) < 1e-6));
-  assert.equal(WAKE_DURATION_SECONDS, 85 / 30);
+  assert.deepEqual(CINEMATIC_SEGMENTS.map(({ id }) => id), [
+    "top-dormancy", "current-orbit", "crt-arrival", "indicator", "phosphor-line", "raster-expansion", "raster-settling",
+    "q-appearance", "q-hold", "frontal-approach", "physical-threshold", "digital-breathing", "entry-reveal",
+  ]);
+  assert.equal(cinematicSegmentForCoordinate(284), "crt-arrival");
+  assert.equal(cinematicSegmentForCoordinate(299), "phosphor-line");
+  assert.equal(cinematicSegmentForCoordinate(315), "raster-expansion");
+  assert.equal(cinematicSegmentForCoordinate(355), "q-appearance");
   assert.equal(conceptualFrameFor(0), 1);
   assert.equal(conceptualFrameFor(500 / 540), 501);
   assert.equal(conceptualFrameFor(513 / 540), 514);
@@ -395,50 +415,22 @@ test("Phase 4-R2.1 has no first-scroll dead zone and reserves exactly one bounde
   assert.equal(physicalFrameFor(539.9), 500);
 });
 
-test("Phase 4-R2.1 reaction reducer covers arrival, override, reverse, re-entry, restore, and failure", () => {
-  const { arrivalCrossingDirection, decideReaction, reverseFrameForElapsed, reviseReversePlan, scrollIntentFor, transitionReaction } = loadRuntime();
-  assert.equal(arrivalCrossingDirection(2390, 2410, 2403), 1, "one overshooting input is still the causal forward crossing");
-  assert.equal(arrivalCrossingDirection(2410, 2390, 2403), -1);
-  assert.equal(arrivalCrossingDirection(2390, 2410, 2403, true), 0, "resize remeasurement must not fabricate a crossing");
-  assert.deepEqual(scrollIntentFor(4, 4, 2400, 2400, 2390, 2410, 2403), { observed: false, direction: 0, arrivalCrossing: 0 }, "geometry-only offset changes carry no user intent");
-  assert.deepEqual(scrollIntentFor(5, 4, 2390, 2410, 2390, 2410, 2403), { observed: true, direction: 1, arrivalCrossing: 1 });
-  assert.equal(transitionReaction("pending", "READY_PRE"), "pre-arrival");
-  assert.equal(transitionReaction("pre-arrival", "ARRIVE"), "wake-armed");
-  assert.equal(transitionReaction("wake-armed", "ARRIVAL_PRESENTED"), "wake-forward");
-  assert.equal(transitionReaction("wake-forward", "STABLE_PRESENTED"), "stable-hold");
-  assert.equal(transitionReaction("wake-forward", "OUTRUN"), "post-arrival");
-  assert.equal(transitionReaction("stable-hold", "RETREAT"), "wake-reverse");
-  assert.equal(transitionReaction("wake-reverse", "ARRIVE"), "wake-armed", "re-entry rearms exactly one wake");
-  assert.equal(transitionReaction("wake-reverse", "UNWOUND"), "pre-arrival");
-  assert.equal(transitionReaction("pending", "RESTORE_POST"), "post-arrival");
-  assert.equal(transitionReaction("wake-forward", "FAIL"), "failed");
-
-  const decision = (state, event, presentedFrame, requestedFrame, scrollTargetFrame) => decideReaction({ state, event, presentedFrame, requestedFrame, scrollTargetFrame });
-  assert.deepEqual(decision("wake-forward", "GEOMETRY", 320, 350, 410), { state: "wake-forward", command: "none", reverseStartFrame: 320 }, "resize/font/pageshow work cannot cancel decoder playback");
-  assert.deepEqual(decision("wake-armed", "REVERSE", 274, 285, 260), { state: "wake-reverse", command: "reverse", reverseStartFrame: 274 }, "armed reverse anchors to the last presented frame, not F285");
-  assert.deepEqual(decision("wake-forward", "REVERSE", 320, 350, 280), { state: "wake-reverse", command: "reverse", reverseStartFrame: 320 });
-  assert.deepEqual(decision("post-arrival", "REVERSE", 370, 450, 420), { state: "post-arrival", command: "seek-latest", reverseStartFrame: 370 }, "a pending F450 seek cannot become a fake reverse origin");
-  assert.deepEqual(decision("post-arrival", "REVERSE", 370, 450, 340), { state: "wake-reverse", command: "reverse", reverseStartFrame: 370 });
-  assert.equal(decision("wake-armed", "PRESENTED", 284, 285, 285).command, "none");
-  assert.equal(decision("wake-armed", "PRESENTED", 285, 285, 285).command, "play");
-  assert.equal(decision("wake-forward", "PRESENTED", 369, 370, 285).command, "none");
-  assert.deepEqual(decision("wake-forward", "PRESENTED", 370, 370, 285), { state: "stable-hold", command: "stop-stable", reverseStartFrame: 370 }, "rVFC F370 is terminal authority");
-  assert.equal(decision("wake-forward", "SKIP", 330, 370, 330).command, "cancel");
-  assert.equal(decision("wake-forward", "SUSPEND_POST", 330, 370, 371).state, "post-arrival");
-  assert.equal(decision("wake-forward", "SUSPEND_PRE", 330, 370, 270).state, "pre-arrival");
-  assert.equal(decision("wake-forward", "FAIL", 330, 370, 330).state, "failed");
-  assert.equal(reverseFrameForElapsed(274, 250, 0), 274, "armed reverse below arrival begins at the proven frame without a forward jump");
-  assert.equal(reverseFrameForElapsed(274, 250, 0.1), 265);
-  assert.equal(reverseFrameForElapsed(400, 200, 1 / 3), 370);
-  assert.equal(reverseFrameForElapsed(400, 200, 1 / 3 + 85 / 30), 285);
-  let reversePlan = reviseReversePlan(null, 370, 360, 1_000);
-  for (const [now, target] of [[1_010, 355], [1_020, 350], [1_030, 345], [1_040, 340], [1_050, 335], [1_060, 330]]) {
-    reversePlan = reviseReversePlan(reversePlan, 370, target, now);
+test("Phase 5A startup allocation stays legible in every authored viewport family", () => {
+  const { arrivalScrollOffset, scrollOffsetForFrame } = loadRuntime();
+  const viewports = [
+    { height: 900, travel: 6075, family: "desktop", shortDesktop: false, minimum: 0.75, maximum: 1 },
+    { height: 650, travel: 3868, family: "desktop", shortDesktop: true, minimum: 0.65, maximum: 0.85 },
+    { height: 844, travel: 4515, family: "portrait", shortDesktop: false, minimum: 0.6, maximum: 0.8 },
+    { height: 800, travel: 4280, family: "portrait", shortDesktop: false, minimum: 0.6, maximum: 0.8 },
+    { height: 1024, travel: 5478, family: "portrait", shortDesktop: false, minimum: 0.6, maximum: 0.8 },
+    { height: 390, travel: 2184, family: "landscape", shortDesktop: false, minimum: 0.6, maximum: 0.8 },
+  ];
+  for (const viewport of viewports) {
+    const arrival = arrivalScrollOffset(viewport.travel, viewport.family, viewport.shortDesktop);
+    const stable = scrollOffsetForFrame(370, viewport.travel, viewport.family, viewport.shortDesktop);
+    const allocationVh = (stable - arrival) / viewport.height;
+    assert.ok(allocationVh >= viewport.minimum && allocationVh <= viewport.maximum, `${viewport.family} startup allocation ${allocationVh.toFixed(4)}vh is in target range`);
   }
-  assert.deepEqual(reversePlan, { startFrame: 370, floorFrame: 330, startedAt: 1_000 }, "60 Hz retreat input extends the floor without restarting the 30 fps unwind clock");
-  assert.equal(reverseFrameForElapsed(reversePlan.startFrame, reversePlan.floorFrame, (1_060 - reversePlan.startedAt) / 1_000), 369, "reverse presentation continues advancing while retreat input remains active");
-  reversePlan = reviseReversePlan(reversePlan, 369, 352, 1_070, true);
-  assert.deepEqual(reversePlan, { startFrame: 370, floorFrame: 352, startedAt: 1_000 }, "geometry-only remeasurement retargets the floor without restarting the unwind clock");
 });
 
 test("Phase 4-R2.1 late media failure preserves document geometry while early eligibility failures stay compact", () => {
@@ -481,7 +473,7 @@ test("Phase 4-R2.1 late media failure preserves document geometry while early el
   assert.ok(entry && entry.phase === "entry" && entry.semantic > 0, "semantic ENTRY continues from native document progress after a late timeout");
 });
 
-test("Phase 4-R2.1 runtime keeps one decoder, native scroll, presentation authority, and fail-open safeguards", () => {
+test("Phase 5A runtime keeps one paused decoder, native scroll, latest-position authority, and fail-open safeguards", () => {
   const source = readFileSync(path.join(process.cwd(), "src", "scripts", "home-cinematic-integration.ts"), "utf8");
   const cinematicCss = readFileSync(path.join(process.cwd(), "src", "styles", "routes", "home-cinematic.css"), "utf8");
   const frozenOperatingField = readFileSync(path.join(process.cwd(), "src", "scripts", "home-operating-field.ts"), "utf8");
@@ -491,21 +483,17 @@ test("Phase 4-R2.1 runtime keeps one decoder, native scroll, presentation author
   assert.match(source, /const handleSkip[\s\S]*?setSettledInteraction\(true\)[\s\S]*?entry\.focus\(\{ preventScroll: true \}\)/);
   assert.match(source, /pagehide[\s\S]{0,800}cancelAnimationFrame\(animationFrame\)[\s\S]{0,120}animationFrame = 0/);
   assert.match(source, /const documentState = cinematicDocumentStateForScroll\(currentScrollOffset, scrollExtent/);
-  assert.match(source, /requestVideoFrameCallback/);
-  assert.match(source, /cancelVideoFrameCallback/);
-  assert.match(source, /const playback = video\.play\(\)/);
-  assert.match(source, /mediaTime >= STABLE_Q_TIME - 0\.5 \/ FRAME_RATE/);
-  assert.match(source, /reactionState === "wake-forward"/);
-  assert.match(source, /if \(crossedForward\) armWake\(\)/, "the first threshold-crossing event must arm even when it overshoots the exact pixel");
-  assert.match(source, /if \(currentScrollOffset > currentArrivalOffset\)[\s\S]{0,500}targetFrame\(scrollTargetPhysicalFrame, true\)/, "a completed overshoot wake must resume at its recorded post target");
-  assert.match(source, /if \(movingBackward\) startReverse\(\)/, "a backward event must cancel/unwind the active reaction");
-  assert.match(source, /arrivalOrBeyond/);
-  assert.match(source, /scrollIntentFor\(scrollEventSequence, handledScrollEventSequence/);
-  assert.match(source, /reviseReversePlan\(null, decision\.reverseStartFrame/);
-  assert.match(source, /!hasScrollIntent && reactionState === "wake-reverse"/);
-  assert.match(source, /seeked[\s\S]{0,500}finishReverseIfPresented\(\);[\s\S]{0,220}resumeReverseTick\(\)/, "an in-flight obsolete floor seek must resume the reverse clock after seeked");
-  assert.equal([...source.matchAll(/presentedPhysicalFrame\s*=(?!=)/g)].length, 3, "presented authority is initialized once, then updated only by rVFC/fallback and seeked");
-  assert.doesNotMatch(source.match(/const armWake[\s\S]*?const finishReverseIfPresented/)?.[0] ?? "", /presentedPhysicalFrame\s*=(?!=)/);
+  assert.match(source, /PIECEWISE_COORDINATES/);
+  assert.match(source, /PIECEWISE_PROGRESS/);
+  assert.match(source, /offsets\[activationIndex\] = Math\.min\(extent, offsets\[arrivalIndex\]! \+ 1\)/);
+  assert.match(source, /const segment = cinematicSegmentForCoordinate\(conceptualCoordinate\)/);
+  assert.match(source, /else targetFrame\(scrollTargetPhysicalFrame, true\)/, "every direction and fast jump must target the latest document-derived physical frame");
+  assert.match(source, /seeked[\s\S]{0,500}requestCurrentFrame\(\)/, "a completed stale seek must yield to the latest scroll target");
+  assert.equal([...source.matchAll(/presentedPhysicalFrame\s*=(?!=)/g)].length, 2, "presented authority is initialized once and then updated only by seeked");
+  assert.doesNotMatch(source, /\.play\s*\(/, "the decoder must never autonomously play");
+  assert.doesNotMatch(source, /\b(?:wake-armed|wake-forward|wake-reverse|stable-hold)\b/);
+  assert.doesNotMatch(source, /requestVideoFrameCallback|cancelVideoFrameCallback/);
+  assert.doesNotMatch(source, /arrivalOrBeyond|scrollIntentFor|reverseFrameForElapsed|reviseReversePlan/);
   assert.doesNotMatch(source, /createElement\(\s*["'](?:video|source)["']/);
   assert.doesNotMatch(source, /\b(?:vp9|webm)\b/i, "active runtime must not probe, select, or request the historical VP9 delivery");
   assert.match(source, /manifest\.assets\.length !== 6/);
@@ -521,6 +509,7 @@ test("Phase 4-R2.1 runtime keeps one decoder, native scroll, presentation author
   assert.doesNotMatch(source, /querySelectorAll\(["']source["']\)[\s\S]{0,160}removeAttribute\(["']srcset["']\)/, "late failure must retain the still poster while releasing only video\/Blob resources");
   assert.doesNotMatch(source, /\bpreventDefault\s*\(/);
   assert.doesNotMatch(source, /(?:window\.)?scroll(?:To|By)\s*\(/);
+  assert.match(source, /setTimeout\(\(\) => \{ if \(!mediaReady\) failOpen/, "the only timer is the bounded media load watchdog");
   assert.match(source, /BLACK_START_U = 500/);
   assert.match(source, /ENTRY_START_U = 513/);
 });
