@@ -29,6 +29,7 @@ import {
 } from "../scripts/phase4r2-1-evidence-contract.mjs";
 import {
   REPORT_SCHEMAS,
+  normalizedElementScreenshotRegion,
   parseArguments,
   portalTimelineResult,
   recordingDurationResult,
@@ -146,6 +147,11 @@ test("timeout geometry rejects the historical collapse, scroll jump, and CLS bou
 });
 
 test("pixel, recording-duration, loop, and portal contracts reject self-declared false greens", () => {
+  assert.deepEqual(normalizedElementScreenshotRegion(1440, 901, 1440, 900), { left: 0, top: 0, width: 1440, height: 900, requiresCrop: true });
+  assert.deepEqual(normalizedElementScreenshotRegion(390, 844, 390, 844), { left: 0, top: 0, width: 390, height: 844, requiresCrop: false });
+  assert.throws(() => normalizedElementScreenshotRegion(1440, 915, 1440, 900), /materially/);
+  assert.throws(() => normalizedElementScreenshotRegion(1439, 900, 1440, 900), /materially/);
+
   assert.equal(visiblePixelChangeResult({ pixels: 1_000_000, changedPixelsAtLeast2: 24, maximumAbsoluteChannel: 2, meanAbsoluteMaximumChannel: 0.0001 }).visiblyChanged, false);
   assert.equal(visiblePixelChangeResult({ pixels: 1_000_000, changedPixelsAtLeast2: 500, maximumAbsoluteChannel: 8, meanAbsoluteMaximumChannel: 0.01 }).visiblyChanged, true);
 

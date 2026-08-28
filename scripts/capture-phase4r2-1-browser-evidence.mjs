@@ -606,10 +606,27 @@ async function chapterScrollY(page, id) {
   }, id);
 }
 
+export function normalizedElementScreenshotRegion(actualWidth, actualHeight, desiredWidth, desiredHeight) {
+  const values = [actualWidth, actualHeight, desiredWidth, desiredHeight];
+  if (values.some((value) => !Number.isInteger(value) || value <= 0)) throw new Error("element screenshot dimensions must be positive integers");
+  const extraWidth = actualWidth - desiredWidth;
+  const extraHeight = actualHeight - desiredHeight;
+  if (extraWidth < 0 || extraHeight < 0 || extraWidth > 1 || extraHeight > 1) {
+    throw new Error(`element screenshot geometry differs materially: ${actualWidth}x${actualHeight} vs ${desiredWidth}x${desiredHeight}`);
+  }
+  return { left: 0, top: 0, width: desiredWidth, height: desiredHeight, requiresCrop: extraWidth !== 0 || extraHeight !== 0 };
+}
+
 async function screenshot(page, selector = null) {
   if (selector) {
     const locator = page.locator(selector).first();
-    if (await locator.count()) return locator.screenshot({ type: "png", animations: "disabled" });
+    if (await locator.count()) {
+      const desired = await locator.evaluate((node) => ({ width: node.clientWidth, height: node.clientHeight }));
+      const bytes = await locator.screenshot({ type: "png", animations: "disabled", scale: "css" });
+      const metadata = await sharp(bytes).metadata();
+      const region = normalizedElementScreenshotRegion(metadata.width, metadata.height, desired.width, desired.height);
+      return region.requiresCrop ? sharp(bytes).extract(region).png({ compressionLevel: 9 }).toBuffer() : bytes;
+    }
   }
   return page.screenshot({ type: "png", animations: "disabled" });
 }
