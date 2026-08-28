@@ -113,6 +113,7 @@
     }
   ],
   "layerConclusions": {
+    "sourceRepairRequired": true,
     "layerA_Blender": "Cable indices, normalized arc ordering, energized prefix, and F285 alpha coverage pass mathematically. Bright-front spatial reading and final visible continuity fail; a narrow source repair is required.",
     "layerB_RGB16": "The full-resolution masters faithfully contain the source visibility defects. Replacement master frames are required for the affected ranges.",
     "layerC_H264_VP9": "Neither codec introduces ordering. Both carry the source visibility defects; VP9 severely degrades several active-current frames and is larger. H.264 is the required active codec.",
