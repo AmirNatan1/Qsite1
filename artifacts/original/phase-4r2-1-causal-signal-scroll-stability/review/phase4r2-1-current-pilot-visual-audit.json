@@ -1,0 +1,111 @@
+{
+  "schema": "quantum-hub.phase-4-r2-1.current-pilot-visual-audit.v1",
+  "status": "PASS",
+  "acceptedDerivative": {
+    "path": "source/quantum-signal-television-phase4r2-1-causal-current.blend",
+    "bytes": 3619698,
+    "sha256": "58f5479484dd8da342556abad1e58c96a660f30e6a9d6d5215927056b5cbc516"
+  },
+  "acceptedCreativePilots": [
+    {
+      "relativePath": "pilots/iteration-02/desktop/F225.png",
+      "bytes": 1947701,
+      "sha256": "0a9a65e2d97fef289753fded4c8085f252878f9e688cc7d02eb41d9d8f34fbe2"
+    },
+    {
+      "relativePath": "pilots/iteration-02/desktop/F261.png",
+      "bytes": 2035923,
+      "sha256": "9324ff0d43312a4d18f56ce847e58a272cceee4a6da0eda17bd8758e5c993c21"
+    },
+    {
+      "relativePath": "pilots/iteration-02/desktop/F285.png",
+      "bytes": 1810186,
+      "sha256": "bebc49d961c9a382e704970edf1245b0bfd4b31fa4df876ca13bd10fa89994eb"
+    },
+    {
+      "relativePath": "pilots/iteration-02/portrait/F285.png",
+      "bytes": 917074,
+      "sha256": "604a5bcdecb6eb8938529129c55630cbf043c3efc9e79f8bfd0d9db318337797"
+    },
+    {
+      "relativePath": "pilots/iteration-02/landscape/F285.png",
+      "bytes": 1125715,
+      "sha256": "357f4c739b198a759419f5838585ac19aadfbe52a93091d8eb315dbe3f57588a"
+    }
+  ],
+  "priorRgb16MasterReferences": [
+    {
+      "relativePath": "desktop/frames/F225.png",
+      "bytes": 6995207,
+      "sha256": "150890721402b57ffa1306b8e0e7e4fbb77b33b825fc356d784f06cff27e6907"
+    },
+    {
+      "relativePath": "desktop/frames/F261.png",
+      "bytes": 7416406,
+      "sha256": "2251f41f974ff7057446af9149921fb4872bf8cb5174aca87f75cdffc443af84"
+    },
+    {
+      "relativePath": "desktop/frames/F285.png",
+      "bytes": 6643604,
+      "sha256": "579f45457e177c174f41afd5e44f2b3794b294c14cfc00c520bcf462cc7e67c0"
+    },
+    {
+      "relativePath": "portrait/frames/F285.png",
+      "bytes": 3522223,
+      "sha256": "e62bda9e0939056b76f4ed4dd8fe5b0741d2aadcb380bb21dc5e26464ce7d779"
+    },
+    {
+      "relativePath": "landscape/frames/F285.png",
+      "bytes": 4052050,
+      "sha256": "d51e2f430731afb6ff4d7dda84dded173db022a4f336ec65da140a83441ddad9"
+    }
+  ],
+  "independentVisualInspection": {
+    "desktopF225": "Reached outer-route sections read as a soft continuous trail. The unreached suffix remains graphite-dark; no second spatially separated bright activation boundary is visible.",
+    "desktopF261": "One localized bright leading front is visible on the lower-left route. Earlier reached turns retain a softer channel and current-related floor response remains constrained; the unreached inner suffix does not read as powered.",
+    "desktopF285": "The thin channel is continuous across every unobscured reached turn at the authored exposure, including the previously ambiguous large foreground/lower-right turn and inner lead. The graphite sheath remains visibly black around the channel. Breaks at the CRT are physical occlusions, not current gaps.",
+    "portraitF285": "The authored portrait camera shows only narrow side/rear cable portions because the CRT occludes most of the route. Every unobscured portion carries the repaired channel; full coverage is established by the isolated diagnostic and analytic segment audit.",
+    "landscapeF285": "The thin channel remains continuous across all unobscured large and foreground turns while retaining visible graphite sides and a restrained response.",
+    "comparisonToPriorMasters": "The frozen RGB16 masters exhibit the reported perceptual double-front/dark-channel behavior. Iteration-02 removes those readings without changing the route, cameras, arrival order, CRT, Q, hall, or timeline authority. The defect therefore originates in the frozen current material/front/spill source and master pixels, not in H.264/VP9 encoding alone."
+  },
+  "isolatedDiagnostic": {
+    "report": "diagnostics/iteration-02-report.json",
+    "reportSha256": "372c1a3dae3a7789dbfea859a4aab9cb5c0a83e3b977d329968e1e5b474d7f63",
+    "method": "Actual repaired current material and actual graphite sheath retained; hall, CRT, compositor, and all accepted local-response lights suppressed; neutral inspection lighting added in memory only.",
+    "desktopCoverage": "160/160 ordered segments energized; minimum alpha 0.44; zero surface separation",
+    "portraitCoverage": "144/144 ordered segments energized; minimum alpha 0.44; zero surface separation",
+    "landscapeCoverage": "152/152 ordered segments energized; minimum alpha 0.44; zero surface separation",
+    "arrivalClose": "Desktop F284-F286 diagnostic crop shows continuous progression into the terminal with no newly introduced dark interval."
+  },
+  "blackBoundaryParity": {
+    "report": "pilots/black-boundary-production-report.json",
+    "reportSha256": "f182b35dc533878a7c70b7f1327e8d92c5438fd3984b6223d520fd5b83abc9df",
+    "frames": "F495 and F500 for desktop, portrait, and landscape",
+    "settings": "Exact authored production resolution, 192 Cycles samples, 0.018 adaptive threshold, OIDN, RGB16",
+    "result": "All six derivative renders are exact RGB black and decoded-pixel identical to their frozen RGB16 masters: zero differing RGB samples and maximum absolute difference 0.0."
+  },
+  "rejectedIteration": {
+    "relativeRoot": "rejected/iteration-01-rotating-bevel",
+    "status": "REJECTED_AND_EXCLUDED_FROM_ACCEPTED_AUTHORITY",
+    "reason": "The offset bevel profile rotated with curve tilt and left the desktop F285 foreground/lower-right turn visually incomplete. Its pilots and its earlier partial boundary proof are superseded."
+  },
+  "affectedFrameConclusion": {
+    "reuseUnchanged": [
+      "F1-F45",
+      "F495-F500"
+    ],
+    "replacementRequired": "F46-F494 for all three camera families",
+    "basis": "Current alpha and local-response energy are zero through F45; material/front/spill changes can affect visible cable from F46 through F494; exact production boundary pilots prove derivative/master parity at F495 and F500."
+  },
+  "limitations": [
+    "The five creative pilots are bounded 50%-linear-resolution, 64-sample Cycles diagnostics; they are not replacement RGB16 masters and cannot authorize delivery encoding.",
+    "The portrait production camera physically occludes most of the cable at F285, so its complete route coverage relies on the current/sheath-only diagnostic and analytic ordered-segment audit in addition to the production-camera pilot.",
+    "No F46-F494 production range render, master-sequence patch, H.264 encode, runtime integration, or deployment was performed during CP2."
+  ],
+  "authorization": {
+    "fullOrPartialProductionRangeRenderStarted": false,
+    "encodingStarted": false,
+    "runtimeIntegrationStarted": false,
+    "phase5Authorized": false
+  }
+}

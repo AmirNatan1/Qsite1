@@ -1,0 +1,168 @@
+{
+  "schema": "quantum-hub.phase-4-r2-1.current-pilot-render.v1",
+  "status": "PASS",
+  "source": {
+    "path": "quantum-signal-television-phase4r2-1-causal-current.blend",
+    "bytes": 3619698,
+    "sha256": "58f5479484dd8da342556abad1e58c96a660f30e6a9d6d5215927056b5cbc516"
+  },
+  "plan": {
+    "desktop": [
+      225,
+      261,
+      285
+    ],
+    "portrait": [
+      285
+    ],
+    "landscape": [
+      285
+    ]
+  },
+  "settings": {
+    "engine": "CYCLES",
+    "mode": "bounded-creative-pilot",
+    "samples": 64,
+    "adaptiveThreshold": 0.03,
+    "denoiser": "OPENIMAGEDENOISE",
+    "motionBlur": true,
+    "viewTransform": "AgX",
+    "look": "AgX - Medium High Contrast",
+    "exposure": 1.0,
+    "image": {
+      "format": "PNG",
+      "mode": "RGB",
+      "depth": 16
+    },
+    "resolutions": {
+      "desktop": [
+        960,
+        600
+      ],
+      "portrait": [
+        390,
+        844
+      ],
+      "landscape": [
+        844,
+        390
+      ]
+    },
+    "device": {
+      "backend": "OPTIX",
+      "sceneDevice": "GPU",
+      "devices": [
+        {
+          "name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+          "type": "OPTIX",
+          "use": true
+        },
+        {
+          "name": "13th Gen Intel Core i7-13700H",
+          "type": "CPU",
+          "use": false
+        },
+        {
+          "name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+          "type": "CUDA",
+          "use": false
+        }
+      ],
+      "attempts": [
+        {
+          "backend": "OPTIX",
+          "deviceCount": 1
+        }
+      ]
+    }
+  },
+  "outputs": [
+    {
+      "family": "desktop",
+      "frame": 225,
+      "relativePath": "desktop/F225.png",
+      "bytes": 1947701,
+      "sha256": "0a9a65e2d97fef289753fded4c8085f252878f9e688cc7d02eb41d9d8f34fbe2",
+      "pixels": {
+        "width": 960,
+        "height": 600,
+        "minimumRgb": 0.0,
+        "maximumRgb": 0.2918781042,
+        "nonBlackRgbSamples": 1725460,
+        "totalRgbSamples": 1728000,
+        "exactBlackRgb": false
+      }
+    },
+    {
+      "family": "desktop",
+      "frame": 261,
+      "relativePath": "desktop/F261.png",
+      "bytes": 2035923,
+      "sha256": "9324ff0d43312a4d18f56ce847e58a272cceee4a6da0eda17bd8758e5c993c21",
+      "pixels": {
+        "width": 960,
+        "height": 600,
+        "minimumRgb": 0.0,
+        "maximumRgb": 0.8489781022,
+        "nonBlackRgbSamples": 1715365,
+        "totalRgbSamples": 1728000,
+        "exactBlackRgb": false
+      }
+    },
+    {
+      "family": "desktop",
+      "frame": 285,
+      "relativePath": "desktop/F285.png",
+      "bytes": 1810186,
+      "sha256": "bebc49d961c9a382e704970edf1245b0bfd4b31fa4df876ca13bd10fa89994eb",
+      "pixels": {
+        "width": 960,
+        "height": 600,
+        "minimumRgb": 0.0,
+        "maximumRgb": 0.7362962365,
+        "nonBlackRgbSamples": 1681009,
+        "totalRgbSamples": 1728000,
+        "exactBlackRgb": false
+      }
+    },
+    {
+      "family": "portrait",
+      "frame": 285,
+      "relativePath": "portrait/F285.png",
+      "bytes": 917074,
+      "sha256": "604a5bcdecb6eb8938529129c55630cbf043c3efc9e79f8bfd0d9db318337797",
+      "pixels": {
+        "width": 390,
+        "height": 844,
+        "minimumRgb": 0.0,
+        "maximumRgb": 0.6666601896,
+        "nonBlackRgbSamples": 915864,
+        "totalRgbSamples": 987480,
+        "exactBlackRgb": false
+      }
+    },
+    {
+      "family": "landscape",
+      "frame": 285,
+      "relativePath": "landscape/F285.png",
+      "bytes": 1125715,
+      "sha256": "357f4c739b198a759419f5838585ac19aadfbe52a93091d8eb315dbe3f57588a",
+      "pixels": {
+        "width": 844,
+        "height": 390,
+        "minimumRgb": 0.0,
+        "maximumRgb": 0.7351068854,
+        "nonBlackRgbSamples": 956232,
+        "totalRgbSamples": 987480,
+        "exactBlackRgb": false
+      }
+    }
+  ],
+  "outputsSha256": "ed94ab3032d8a80328e3900ade23da77ef5323fb91e8dfc2769786091fe213a1",
+  "authorization": {
+    "boundedPilotsOnly": true,
+    "productionRenderStarted": false,
+    "encodingStarted": false,
+    "sourceSavedByRenderer": false
+  }
+}

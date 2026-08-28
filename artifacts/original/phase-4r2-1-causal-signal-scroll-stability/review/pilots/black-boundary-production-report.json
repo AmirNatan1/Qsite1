@@ -1,0 +1,239 @@
+{
+  "schema": "quantum-hub.phase-4-r2-1.current-pilot-render.v1",
+  "status": "PASS",
+  "source": {
+    "path": "quantum-signal-television-phase4r2-1-causal-current.blend",
+    "bytes": 3619698,
+    "sha256": "58f5479484dd8da342556abad1e58c96a660f30e6a9d6d5215927056b5cbc516"
+  },
+  "plan": {
+    "desktop": [
+      495,
+      500
+    ],
+    "portrait": [
+      495,
+      500
+    ],
+    "landscape": [
+      495,
+      500
+    ]
+  },
+  "settings": {
+    "engine": "CYCLES",
+    "mode": "exact-production-black-boundary",
+    "samples": 192,
+    "adaptiveThreshold": 0.018,
+    "denoiser": "OPENIMAGEDENOISE",
+    "motionBlur": true,
+    "viewTransform": "AgX",
+    "look": "AgX - Medium High Contrast",
+    "exposure": 1.0,
+    "image": {
+      "format": "PNG",
+      "mode": "RGB",
+      "depth": 16
+    },
+    "resolutions": {
+      "desktop": [
+        1920,
+        1200
+      ],
+      "portrait": [
+        780,
+        1688
+      ],
+      "landscape": [
+        1688,
+        780
+      ]
+    },
+    "device": {
+      "backend": "OPTIX",
+      "sceneDevice": "GPU",
+      "devices": [
+        {
+          "name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+          "type": "OPTIX",
+          "use": true
+        },
+        {
+          "name": "13th Gen Intel Core i7-13700H",
+          "type": "CPU",
+          "use": false
+        },
+        {
+          "name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+          "type": "CUDA",
+          "use": false
+        }
+      ],
+      "attempts": [
+        {
+          "backend": "OPTIX",
+          "deviceCount": 1
+        }
+      ]
+    }
+  },
+  "outputs": [
+    {
+      "family": "desktop",
+      "frame": 495,
+      "relativePath": "desktop/F495.png",
+      "bytes": 61241,
+      "sha256": "83f1f24f87c70d3f8fa143beb102d3e2ab876a43abda49e6cd390a58ffdccd45",
+      "pixels": {
+        "width": 1920,
+        "height": 1200,
+        "minimumRgb": 0.0,
+        "maximumRgb": 0.0,
+        "nonBlackRgbSamples": 0,
+        "totalRgbSamples": 6912000,
+        "exactBlackRgb": true
+      },
+      "masterComparison": {
+        "masterRelativePath": "desktop/frames/F495.png",
+        "masterBytes": 61253,
+        "masterSha256": "df224c133230f2abb7c9fb1ee1d09cae9a3b2900a5ece5008c763c8664c4a2a9",
+        "decodedRgbSamples": 6912000,
+        "differentRgbSamples": 0,
+        "maximumAbsoluteRgbDifference": 0.0,
+        "zeroPixelDifference": true
+      }
+    },
+    {
+      "family": "desktop",
+      "frame": 500,
+      "relativePath": "desktop/F500.png",
+      "bytes": 61241,
+      "sha256": "05bff63fab89aef15916b8d41201bf5d050dde27f93eb6a3637ebc01eefc2758",
+      "pixels": {
+        "width": 1920,
+        "height": 1200,
+        "minimumRgb": 0.0,
+        "maximumRgb": 0.0,
+        "nonBlackRgbSamples": 0,
+        "totalRgbSamples": 6912000,
+        "exactBlackRgb": true
+      },
+      "masterComparison": {
+        "masterRelativePath": "desktop/frames/F500.png",
+        "masterBytes": 61253,
+        "masterSha256": "c9c4562fc2890bba5e680acf5578223f90b520a63790d6e2674b3e31bf658be8",
+        "decodedRgbSamples": 6912000,
+        "differentRgbSamples": 0,
+        "maximumAbsoluteRgbDifference": 0.0,
+        "zeroPixelDifference": true
+      }
+    },
+    {
+      "family": "portrait",
+      "frame": 495,
+      "relativePath": "portrait/F495.png",
+      "bytes": 35347,
+      "sha256": "b2a92b47b685a5a51fe2a723578d6789188bdb634f05d0beb14443dd862482fe",
+      "pixels": {
+        "width": 780,
+        "height": 1688,
+        "minimumRgb": 0.0,
+        "maximumRgb": 0.0,
+        "nonBlackRgbSamples": 0,
+        "totalRgbSamples": 3949920,
+        "exactBlackRgb": true
+      },
+      "masterComparison": {
+        "masterRelativePath": "portrait/frames/F495.png",
+        "masterBytes": 35359,
+        "masterSha256": "d585a75ef4ac300ce2a58e8d40d991e08bb0dfbb595dfc49b9eb2494f5e67b4f",
+        "decodedRgbSamples": 3949920,
+        "differentRgbSamples": 0,
+        "maximumAbsoluteRgbDifference": 0.0,
+        "zeroPixelDifference": true
+      }
+    },
+    {
+      "family": "portrait",
+      "frame": 500,
+      "relativePath": "portrait/F500.png",
+      "bytes": 35347,
+      "sha256": "2a7a6c841ffed49d477b7b5b974f8f84da9c716f3c56984b24b832aa215ea513",
+      "pixels": {
+        "width": 780,
+        "height": 1688,
+        "minimumRgb": 0.0,
+        "maximumRgb": 0.0,
+        "nonBlackRgbSamples": 0,
+        "totalRgbSamples": 3949920,
+        "exactBlackRgb": true
+      },
+      "masterComparison": {
+        "masterRelativePath": "portrait/frames/F500.png",
+        "masterBytes": 35359,
+        "masterSha256": "312a27910b912baf53b7c593c0a777f46df2ea3cc1981df080718d0fb07633bd",
+        "decodedRgbSamples": 3949920,
+        "differentRgbSamples": 0,
+        "maximumAbsoluteRgbDifference": 0.0,
+        "zeroPixelDifference": true
+      }
+    },
+    {
+      "family": "landscape",
+      "frame": 495,
+      "relativePath": "landscape/F495.png",
+      "bytes": 35346,
+      "sha256": "7e8dc5544869345f71155ccd86029a44dc8e26935136a92e96fa2141b9e41873",
+      "pixels": {
+        "width": 1688,
+        "height": 780,
+        "minimumRgb": 0.0,
+        "maximumRgb": 0.0,
+        "nonBlackRgbSamples": 0,
+        "totalRgbSamples": 3949920,
+        "exactBlackRgb": true
+      },
+      "masterComparison": {
+        "masterRelativePath": "landscape/frames/F495.png",
+        "masterBytes": 35358,
+        "masterSha256": "8af08d618d9e3dfc9a4c505deb34e9d409d52e4142ce09f7ad0653dea849daf8",
+        "decodedRgbSamples": 3949920,
+        "differentRgbSamples": 0,
+        "maximumAbsoluteRgbDifference": 0.0,
+        "zeroPixelDifference": true
+      }
+    },
+    {
+      "family": "landscape",
+      "frame": 500,
+      "relativePath": "landscape/F500.png",
+      "bytes": 35346,
+      "sha256": "58cd17e70ee8161bb7885964d9de9b79bc3bcb6fc24c898074fc228793917c31",
+      "pixels": {
+        "width": 1688,
+        "height": 780,
+        "minimumRgb": 0.0,
+        "maximumRgb": 0.0,
+        "nonBlackRgbSamples": 0,
+        "totalRgbSamples": 3949920,
+        "exactBlackRgb": true
+      },
+      "masterComparison": {
+        "masterRelativePath": "landscape/frames/F500.png",
+        "masterBytes": 35358,
+        "masterSha256": "7dd91567e4020120407fc32dde729bb788c3a2b19ad8756695fb2dae53e13b6b",
+        "decodedRgbSamples": 3949920,
+        "differentRgbSamples": 0,
+        "maximumAbsoluteRgbDifference": 0.0,
+        "zeroPixelDifference": true
+      }
+    }
+  ],
+  "outputsSha256": "cd349dfa0982801dfdfff7b86b7fcf49f4f5e82b340c349e9cf13015e89bea69",
+  "authorization": {
+    "boundedPilotsOnly": true,
+    "productionRenderStarted": false,
+    "encodingStarted": false,
+    "sourceSavedByRenderer": false
+  }
+}

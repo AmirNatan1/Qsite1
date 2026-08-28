@@ -1,0 +1,1090 @@
+{
+  "schema": "quantum-hub.phase-4-r2-1.current-source-build.v1",
+  "status": "PASS",
+  "source": {
+    "path": "quantum-signal-television-phase4r1-1-periphery-current-mobile-crt.blend",
+    "bytes": 3600194,
+    "sha256": "b0c9c7c1cf5a1642870cf03a36791cc50ec31ac207aeae794fbea83c856a79c0"
+  },
+  "derivative": {
+    "path": "quantum-signal-television-phase4r2-1-causal-current.blend",
+    "bytes": 3619698,
+    "sha256": "58f5479484dd8da342556abad1e58c96a660f30e6a9d6d5215927056b5cbc516"
+  },
+  "timeline": {
+    "frameStart": 1,
+    "frameEnd": 540,
+    "fps": 30,
+    "fpsBase": 1.0
+  },
+  "parameters": {
+    "channelSurface": {
+      "type": "narrow global-up cap on the accepted round current overlay",
+      "overlayRadiusMeters": 0.0305,
+      "sheathTopOffsetMeters": 0.029,
+      "radialSeparationMeters": 0.0015,
+      "visibilityNormalZ": [
+        0.9,
+        0.985
+      ],
+      "coreNormalZ": [
+        0.955,
+        0.998
+      ],
+      "curveTiltDependent": false,
+      "raisedTerminalFallback": {
+        "positionZMeters": [
+          0.075,
+          0.15
+        ],
+        "viewVisibility": [
+          0.72,
+          0.92
+        ],
+        "viewCore": [
+          0.88,
+          0.98
+        ]
+      }
+    },
+    "material": {
+      "name": "Phase4R1V2_ExactArcLengthCurrentSurface",
+      "emissionStrength": 1.15,
+      "housingColor": "#030505",
+      "housingRoughness": 0.82,
+      "objectColorTint": [
+        0.86,
+        0.58,
+        0.82,
+        1.0
+      ],
+      "backfaceCulling": false,
+      "globalUpCap": true
+    },
+    "front": {
+      "arrivalTimingPreserved": true,
+      "firstArrival": 46,
+      "lastArrival": 285,
+      "durationBeforeFrames": 13,
+      "durationAfterFrames": 6,
+      "trailAlphaPreserved": 0.44
+    },
+    "localResponse": {
+      "peakBeforeWatts": 18.0,
+      "trailBeforeWatts": 4.0,
+      "peakAfterWatts": 6.0,
+      "trailAfterWatts": 0.65,
+      "cutoffMeters": 0.55,
+      "softSizeMeters": 0.12
+    }
+  },
+  "mutations": {
+    "whitelist": [
+      "the existing current material node graph",
+      "one post-arrival trail key per color channel on each current object action",
+      "energy curve and attenuation properties on the twelve accepted local-response lights"
+    ],
+    "acceptedRoundOverlay": {
+      "before": {
+        "curveCount": 456,
+        "overlayRadiusMeters": 0.0305,
+        "bevelResolution": 8,
+        "sha256": "85ec3fbbf3d502d04f97cd48344461defacb5e5facff1afc03739750087e54f2"
+      },
+      "after": {
+        "curveCount": 456,
+        "overlayRadiusMeters": 0.0305,
+        "bevelResolution": 8,
+        "sha256": "85ec3fbbf3d502d04f97cd48344461defacb5e5facff1afc03739750087e54f2"
+      },
+      "reopened": {
+        "curveCount": 456,
+        "overlayRadiusMeters": 0.0305,
+        "bevelResolution": 8,
+        "sha256": "85ec3fbbf3d502d04f97cd48344461defacb5e5facff1afc03739750087e54f2"
+      },
+      "unchanged": true
+    },
+    "front": {
+      "changedObjectCount": 456,
+      "frontDurationBefore": 13,
+      "frontDurationAfter": 6,
+      "changedSha256": "9c1c7ace86ea6ad5f20944ee1ebeffa527c973d661fa00b36527950da351d612"
+    },
+    "lights": {
+      "changedLightCount": 12,
+      "records": [
+        {
+          "object": "Phase4R1V2_Desktop_LocalResponse_00",
+          "arrival": 89,
+          "peakW": 6.0,
+          "trailW": 0.65,
+          "cutoffM": 0.55
+        },
+        {
+          "object": "Phase4R1V2_Desktop_LocalResponse_01",
+          "arrival": 146,
+          "peakW": 6.0,
+          "trailW": 0.65,
+          "cutoffM": 0.55
+        },
+        {
+          "object": "Phase4R1V2_Desktop_LocalResponse_02",
+          "arrival": 209,
+          "peakW": 6.0,
+          "trailW": 0.65,
+          "cutoffM": 0.55
+        },
+        {
+          "object": "Phase4R1V2_Desktop_LocalResponse_03",
+          "arrival": 261,
+          "peakW": 6.0,
+          "trailW": 0.65,
+          "cutoffM": 0.55
+        },
+        {
+          "object": "Phase4R1V2_Mobile_LocalResponse_00",
+          "arrival": 89,
+          "peakW": 6.0,
+          "trailW": 0.65,
+          "cutoffM": 0.55
+        },
+        {
+          "object": "Phase4R1V2_Mobile_LocalResponse_01",
+          "arrival": 146,
+          "peakW": 6.0,
+          "trailW": 0.65,
+          "cutoffM": 0.55
+        },
+        {
+          "object": "Phase4R1V2_Mobile_LocalResponse_02",
+          "arrival": 209,
+          "peakW": 6.0,
+          "trailW": 0.65,
+          "cutoffM": 0.55
+        },
+        {
+          "object": "Phase4R1V2_Mobile_LocalResponse_03",
+          "arrival": 261,
+          "peakW": 6.0,
+          "trailW": 0.65,
+          "cutoffM": 0.55
+        },
+        {
+          "object": "Phase4R1V2_Landscape_LocalResponse_00",
+          "arrival": 89,
+          "peakW": 6.0,
+          "trailW": 0.65,
+          "cutoffM": 0.55
+        },
+        {
+          "object": "Phase4R1V2_Landscape_LocalResponse_01",
+          "arrival": 146,
+          "peakW": 6.0,
+          "trailW": 0.65,
+          "cutoffM": 0.55
+        },
+        {
+          "object": "Phase4R1V2_Landscape_LocalResponse_02",
+          "arrival": 209,
+          "peakW": 6.0,
+          "trailW": 0.65,
+          "cutoffM": 0.55
+        },
+        {
+          "object": "Phase4R1V2_Landscape_LocalResponse_03",
+          "arrival": 261,
+          "peakW": 6.0,
+          "trailW": 0.65,
+          "cutoffM": 0.55
+        }
+      ],
+      "sha256": "34e6239ce89145832d338a160440279e92f634e23ba47ddc8e8726a1eef5c77b"
+    },
+    "inventoryDelta": {
+      "objects": {
+        "added": [],
+        "removed": []
+      },
+      "collections": {
+        "added": [],
+        "removed": []
+      },
+      "curves": {
+        "added": [],
+        "removed": []
+      },
+      "materials": {
+        "added": [],
+        "removed": []
+      },
+      "lights": {
+        "added": [],
+        "removed": []
+      },
+      "actions": {
+        "added": [],
+        "removed": []
+      },
+      "cameras": {
+        "added": [],
+        "removed": []
+      },
+      "images": {
+        "added": [],
+        "removed": []
+      },
+      "scenes": {
+        "added": [],
+        "removed": []
+      },
+      "worlds": {
+        "added": [],
+        "removed": []
+      }
+    }
+  },
+  "validation": {
+    "routeAuthority": {
+      "before": "1bc186de358addbbc361b66a042257171d190bd70aa61d4664a4e1bbd661f1d0",
+      "after": "1bc186de358addbbc361b66a042257171d190bd70aa61d4664a4e1bbd661f1d0",
+      "reopened": "1bc186de358addbbc361b66a042257171d190bd70aa61d4664a4e1bbd661f1d0",
+      "unchanged": true
+    },
+    "arrivalAuthority": {
+      "before": {
+        "desktop": {
+          "count": 160,
+          "first": 46,
+          "last": 285,
+          "monotonic": true,
+          "rowsSha256": "d199fcee18fc811fb5b7c87c6f6908efc0649881c93eee38e250507b5625fbb2"
+        },
+        "mobile": {
+          "count": 144,
+          "first": 46,
+          "last": 285,
+          "monotonic": true,
+          "rowsSha256": "56d8ed5188731add9d18e2f0151acedb79777f4c4ac6bde98d00b315630275e2"
+        },
+        "landscape": {
+          "count": 152,
+          "first": 46,
+          "last": 285,
+          "monotonic": true,
+          "rowsSha256": "3d50ebf7772f2a1a704ad7f3fb0557eb63fc04ea5e067f1a3d31d0cca8377b05"
+        }
+      },
+      "after": {
+        "desktop": {
+          "count": 160,
+          "first": 46,
+          "last": 285,
+          "monotonic": true,
+          "rowsSha256": "d199fcee18fc811fb5b7c87c6f6908efc0649881c93eee38e250507b5625fbb2"
+        },
+        "mobile": {
+          "count": 144,
+          "first": 46,
+          "last": 285,
+          "monotonic": true,
+          "rowsSha256": "56d8ed5188731add9d18e2f0151acedb79777f4c4ac6bde98d00b315630275e2"
+        },
+        "landscape": {
+          "count": 152,
+          "first": 46,
+          "last": 285,
+          "monotonic": true,
+          "rowsSha256": "3d50ebf7772f2a1a704ad7f3fb0557eb63fc04ea5e067f1a3d31d0cca8377b05"
+        }
+      },
+      "reopened": {
+        "desktop": {
+          "count": 160,
+          "first": 46,
+          "last": 285,
+          "monotonic": true,
+          "rowsSha256": "d199fcee18fc811fb5b7c87c6f6908efc0649881c93eee38e250507b5625fbb2"
+        },
+        "mobile": {
+          "count": 144,
+          "first": 46,
+          "last": 285,
+          "monotonic": true,
+          "rowsSha256": "56d8ed5188731add9d18e2f0151acedb79777f4c4ac6bde98d00b315630275e2"
+        },
+        "landscape": {
+          "count": 152,
+          "first": 46,
+          "last": 285,
+          "monotonic": true,
+          "rowsSha256": "3d50ebf7772f2a1a704ad7f3fb0557eb63fc04ea5e067f1a3d31d0cca8377b05"
+        }
+      },
+      "unchanged": true
+    },
+    "frozenCategories": {
+      "before": {
+        "nonCurrentObjects": "89c1a3f5c9112e6f8212cedbf73616879f916e1e66a61bfcb0e3d2da7e8ce1d3",
+        "nonCurrentMaterials": "77c24598ff58cd163d2f5ed48f2474e44baebcbfa7f0bfe05f30f7c5ab9c1bbd",
+        "nonCurrentActions": "74c4cf84a682f00c838755e074e6e3bfaa4a357d47746a837f1ac8297c66d7ac",
+        "originalCollections": "afc4effc6d2e17612181fcf27507f9d86fd21cc6c6bf92b1499756489072bf6c",
+        "scenes": "f7838cccb4ed3493d8b5e4423eb73e528f3e4348f0d5dcf922b3162b4491c92c",
+        "worlds": "b12afa92df8abd56f5d3a88dab6149a277536374bd36e0c11c032246908326e2",
+        "exactQ": "762243ea290ed40ed3f3d2c97c20bb5958ed893b38b3b62345f84c094c58336d",
+        "periphery": "beb266cc5e30b20a6eafafd1c4c9949d67e1f4d80327187953886e5120d11f15",
+        "cameras": "2c5cb3ab60815df663ceb4aa83d470a98b01c6c5210406be7bebffeff6456c31"
+      },
+      "after": {
+        "nonCurrentObjects": "89c1a3f5c9112e6f8212cedbf73616879f916e1e66a61bfcb0e3d2da7e8ce1d3",
+        "nonCurrentMaterials": "77c24598ff58cd163d2f5ed48f2474e44baebcbfa7f0bfe05f30f7c5ab9c1bbd",
+        "nonCurrentActions": "74c4cf84a682f00c838755e074e6e3bfaa4a357d47746a837f1ac8297c66d7ac",
+        "originalCollections": "afc4effc6d2e17612181fcf27507f9d86fd21cc6c6bf92b1499756489072bf6c",
+        "scenes": "f7838cccb4ed3493d8b5e4423eb73e528f3e4348f0d5dcf922b3162b4491c92c",
+        "worlds": "b12afa92df8abd56f5d3a88dab6149a277536374bd36e0c11c032246908326e2",
+        "exactQ": "762243ea290ed40ed3f3d2c97c20bb5958ed893b38b3b62345f84c094c58336d",
+        "periphery": "beb266cc5e30b20a6eafafd1c4c9949d67e1f4d80327187953886e5120d11f15",
+        "cameras": "2c5cb3ab60815df663ceb4aa83d470a98b01c6c5210406be7bebffeff6456c31"
+      },
+      "reopened": {
+        "nonCurrentObjects": "89c1a3f5c9112e6f8212cedbf73616879f916e1e66a61bfcb0e3d2da7e8ce1d3",
+        "nonCurrentMaterials": "77c24598ff58cd163d2f5ed48f2474e44baebcbfa7f0bfe05f30f7c5ab9c1bbd",
+        "nonCurrentActions": "74c4cf84a682f00c838755e074e6e3bfaa4a357d47746a837f1ac8297c66d7ac",
+        "originalCollections": "afc4effc6d2e17612181fcf27507f9d86fd21cc6c6bf92b1499756489072bf6c",
+        "scenes": "f7838cccb4ed3493d8b5e4423eb73e528f3e4348f0d5dcf922b3162b4491c92c",
+        "worlds": "b12afa92df8abd56f5d3a88dab6149a277536374bd36e0c11c032246908326e2",
+        "exactQ": "762243ea290ed40ed3f3d2c97c20bb5958ed893b38b3b62345f84c094c58336d",
+        "periphery": "beb266cc5e30b20a6eafafd1c4c9949d67e1f4d80327187953886e5120d11f15",
+        "cameras": "2c5cb3ab60815df663ceb4aa83d470a98b01c6c5210406be7bebffeff6456c31"
+      },
+      "unchanged": true
+    },
+    "materialGraphSha256": {
+      "after": "fcbb91c754348698c9e4c0302e7d4ab5746e9037c19f07bfbfeb99d0f9f58972",
+      "reopened": "fcbb91c754348698c9e4c0302e7d4ab5746e9037c19f07bfbfeb99d0f9f58972",
+      "unchangedAfterReopen": true
+    },
+    "exactQ": {
+      "before": {
+        "name": "Phase4R1V2_ExactQuantumQ_PreCRTEffect_2048",
+        "filepath": "//q-fidelity/quantum-icon-pre-crt-effect.png",
+        "packedFilepath": "//q-fidelity/quantum-icon-pre-crt-effect.png",
+        "bytes": 69348,
+        "sha256": "009c494df3b301470ab539f23e02b375f0c1fcec9b4b18cf07fc853b95fd03c5",
+        "repositoryRelativeFallbackAuthority": "artifacts/original/phase-4r1-1-periphery-current-mobile-crt/source/q-fidelity/quantum-icon-pre-crt-effect.png"
+      },
+      "reopened": {
+        "name": "Phase4R1V2_ExactQuantumQ_PreCRTEffect_2048",
+        "filepath": "//../../phase-4r1-1-periphery-current-mobile-crt/source/q-fidelity/quantum-icon-pre-crt-effect.png",
+        "packedFilepath": "//q-fidelity/quantum-icon-pre-crt-effect.png",
+        "bytes": 69348,
+        "sha256": "009c494df3b301470ab539f23e02b375f0c1fcec9b4b18cf07fc853b95fd03c5",
+        "repositoryRelativeFallbackAuthority": "artifacts/original/phase-4r1-1-periphery-current-mobile-crt/source/q-fidelity/quantum-icon-pre-crt-effect.png"
+      },
+      "packedBytesUnchanged": true,
+      "packedSha256Unchanged": true,
+      "resolvedFallbackAuthorityUnchanged": true,
+      "saveAsPathRebase": {
+        "occurred": true,
+        "reason": "Blender rebases the blend-relative unpacked fallback spelling when Save-As moves the derivative to a sibling artifact directory; the packed payload and resolved fallback authority are unchanged."
+      }
+    },
+    "logicalCoverageAfter": {
+      "desktop": [
+        {
+          "frame": 45,
+          "energized": 0,
+          "dark": 160,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.0,
+          "maximumAlpha": 0.0,
+          "origin": false,
+          "connection": false
+        },
+        {
+          "frame": 46,
+          "energized": 1,
+          "dark": 159,
+          "brightFront": 1,
+          "minimumEnergizedAlpha": 1.0,
+          "maximumAlpha": 1.0,
+          "origin": true,
+          "connection": false
+        },
+        {
+          "frame": 225,
+          "energized": 120,
+          "dark": 40,
+          "brightFront": 4,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 1.0,
+          "origin": true,
+          "connection": false
+        },
+        {
+          "frame": 261,
+          "energized": 144,
+          "dark": 16,
+          "brightFront": 4,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 1.0,
+          "origin": true,
+          "connection": false
+        },
+        {
+          "frame": 284,
+          "energized": 159,
+          "dark": 1,
+          "brightFront": 4,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.90666664,
+          "origin": true,
+          "connection": false
+        },
+        {
+          "frame": 285,
+          "energized": 160,
+          "dark": 0,
+          "brightFront": 4,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 1.0,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 286,
+          "energized": 160,
+          "dark": 0,
+          "brightFront": 3,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.90666664,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 370,
+          "energized": 160,
+          "dark": 0,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.44,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 494,
+          "energized": 160,
+          "dark": 0,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.44,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 495,
+          "energized": 160,
+          "dark": 0,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.44,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 500,
+          "energized": 160,
+          "dark": 0,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.44,
+          "origin": true,
+          "connection": true
+        }
+      ],
+      "portrait": [
+        {
+          "frame": 45,
+          "energized": 0,
+          "dark": 144,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.0,
+          "maximumAlpha": 0.0,
+          "origin": false,
+          "connection": false
+        },
+        {
+          "frame": 46,
+          "energized": 1,
+          "dark": 143,
+          "brightFront": 1,
+          "minimumEnergizedAlpha": 1.0,
+          "maximumAlpha": 1.0,
+          "origin": true,
+          "connection": false
+        },
+        {
+          "frame": 225,
+          "energized": 108,
+          "dark": 36,
+          "brightFront": 4,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 1.0,
+          "origin": true,
+          "connection": false
+        },
+        {
+          "frame": 261,
+          "energized": 129,
+          "dark": 15,
+          "brightFront": 3,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.90666664,
+          "origin": true,
+          "connection": false
+        },
+        {
+          "frame": 284,
+          "energized": 143,
+          "dark": 1,
+          "brightFront": 3,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.90666664,
+          "origin": true,
+          "connection": false
+        },
+        {
+          "frame": 285,
+          "energized": 144,
+          "dark": 0,
+          "brightFront": 4,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 1.0,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 286,
+          "energized": 144,
+          "dark": 0,
+          "brightFront": 3,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.90666664,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 370,
+          "energized": 144,
+          "dark": 0,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.44,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 494,
+          "energized": 144,
+          "dark": 0,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.44,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 495,
+          "energized": 144,
+          "dark": 0,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.44,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 500,
+          "energized": 144,
+          "dark": 0,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.44,
+          "origin": true,
+          "connection": true
+        }
+      ],
+      "landscape": [
+        {
+          "frame": 45,
+          "energized": 0,
+          "dark": 152,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.0,
+          "maximumAlpha": 0.0,
+          "origin": false,
+          "connection": false
+        },
+        {
+          "frame": 46,
+          "energized": 1,
+          "dark": 151,
+          "brightFront": 1,
+          "minimumEnergizedAlpha": 1.0,
+          "maximumAlpha": 1.0,
+          "origin": true,
+          "connection": false
+        },
+        {
+          "frame": 225,
+          "energized": 114,
+          "dark": 38,
+          "brightFront": 4,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 1.0,
+          "origin": true,
+          "connection": false
+        },
+        {
+          "frame": 261,
+          "energized": 137,
+          "dark": 15,
+          "brightFront": 4,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 1.0,
+          "origin": true,
+          "connection": false
+        },
+        {
+          "frame": 284,
+          "energized": 151,
+          "dark": 1,
+          "brightFront": 4,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.90666664,
+          "origin": true,
+          "connection": false
+        },
+        {
+          "frame": 285,
+          "energized": 152,
+          "dark": 0,
+          "brightFront": 4,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 1.0,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 286,
+          "energized": 152,
+          "dark": 0,
+          "brightFront": 3,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.90666664,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 370,
+          "energized": 152,
+          "dark": 0,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.44,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 494,
+          "energized": 152,
+          "dark": 0,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.44,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 495,
+          "energized": 152,
+          "dark": 0,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.44,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 500,
+          "energized": 152,
+          "dark": 0,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.44,
+          "origin": true,
+          "connection": true
+        }
+      ]
+    },
+    "logicalCoverageReopened": {
+      "desktop": [
+        {
+          "frame": 45,
+          "energized": 0,
+          "dark": 160,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.0,
+          "maximumAlpha": 0.0,
+          "origin": false,
+          "connection": false
+        },
+        {
+          "frame": 46,
+          "energized": 1,
+          "dark": 159,
+          "brightFront": 1,
+          "minimumEnergizedAlpha": 1.0,
+          "maximumAlpha": 1.0,
+          "origin": true,
+          "connection": false
+        },
+        {
+          "frame": 225,
+          "energized": 120,
+          "dark": 40,
+          "brightFront": 4,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 1.0,
+          "origin": true,
+          "connection": false
+        },
+        {
+          "frame": 261,
+          "energized": 144,
+          "dark": 16,
+          "brightFront": 4,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 1.0,
+          "origin": true,
+          "connection": false
+        },
+        {
+          "frame": 284,
+          "energized": 159,
+          "dark": 1,
+          "brightFront": 4,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.90666664,
+          "origin": true,
+          "connection": false
+        },
+        {
+          "frame": 285,
+          "energized": 160,
+          "dark": 0,
+          "brightFront": 4,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 1.0,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 286,
+          "energized": 160,
+          "dark": 0,
+          "brightFront": 3,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.90666664,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 370,
+          "energized": 160,
+          "dark": 0,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.44,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 494,
+          "energized": 160,
+          "dark": 0,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.44,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 495,
+          "energized": 160,
+          "dark": 0,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.44,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 500,
+          "energized": 160,
+          "dark": 0,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.44,
+          "origin": true,
+          "connection": true
+        }
+      ],
+      "portrait": [
+        {
+          "frame": 45,
+          "energized": 0,
+          "dark": 144,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.0,
+          "maximumAlpha": 0.0,
+          "origin": false,
+          "connection": false
+        },
+        {
+          "frame": 46,
+          "energized": 1,
+          "dark": 143,
+          "brightFront": 1,
+          "minimumEnergizedAlpha": 1.0,
+          "maximumAlpha": 1.0,
+          "origin": true,
+          "connection": false
+        },
+        {
+          "frame": 225,
+          "energized": 108,
+          "dark": 36,
+          "brightFront": 4,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 1.0,
+          "origin": true,
+          "connection": false
+        },
+        {
+          "frame": 261,
+          "energized": 129,
+          "dark": 15,
+          "brightFront": 3,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.90666664,
+          "origin": true,
+          "connection": false
+        },
+        {
+          "frame": 284,
+          "energized": 143,
+          "dark": 1,
+          "brightFront": 3,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.90666664,
+          "origin": true,
+          "connection": false
+        },
+        {
+          "frame": 285,
+          "energized": 144,
+          "dark": 0,
+          "brightFront": 4,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 1.0,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 286,
+          "energized": 144,
+          "dark": 0,
+          "brightFront": 3,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.90666664,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 370,
+          "energized": 144,
+          "dark": 0,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.44,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 494,
+          "energized": 144,
+          "dark": 0,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.44,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 495,
+          "energized": 144,
+          "dark": 0,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.44,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 500,
+          "energized": 144,
+          "dark": 0,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.44,
+          "origin": true,
+          "connection": true
+        }
+      ],
+      "landscape": [
+        {
+          "frame": 45,
+          "energized": 0,
+          "dark": 152,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.0,
+          "maximumAlpha": 0.0,
+          "origin": false,
+          "connection": false
+        },
+        {
+          "frame": 46,
+          "energized": 1,
+          "dark": 151,
+          "brightFront": 1,
+          "minimumEnergizedAlpha": 1.0,
+          "maximumAlpha": 1.0,
+          "origin": true,
+          "connection": false
+        },
+        {
+          "frame": 225,
+          "energized": 114,
+          "dark": 38,
+          "brightFront": 4,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 1.0,
+          "origin": true,
+          "connection": false
+        },
+        {
+          "frame": 261,
+          "energized": 137,
+          "dark": 15,
+          "brightFront": 4,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 1.0,
+          "origin": true,
+          "connection": false
+        },
+        {
+          "frame": 284,
+          "energized": 151,
+          "dark": 1,
+          "brightFront": 4,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.90666664,
+          "origin": true,
+          "connection": false
+        },
+        {
+          "frame": 285,
+          "energized": 152,
+          "dark": 0,
+          "brightFront": 4,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 1.0,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 286,
+          "energized": 152,
+          "dark": 0,
+          "brightFront": 3,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.90666664,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 370,
+          "energized": 152,
+          "dark": 0,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.44,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 494,
+          "energized": 152,
+          "dark": 0,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.44,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 495,
+          "energized": 152,
+          "dark": 0,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.44,
+          "origin": true,
+          "connection": true
+        },
+        {
+          "frame": 500,
+          "energized": 152,
+          "dark": 0,
+          "brightFront": 0,
+          "minimumEnergizedAlpha": 0.44,
+          "maximumAlpha": 0.44,
+          "origin": true,
+          "connection": true
+        }
+      ]
+    },
+    "saveReopen": "PASS"
+  },
+  "priorCableAuthority": {
+    "cableFamilyCollectionState": "5047e94d5b7b2d999503512da7fa8980cc00b1a0d8412adf9d5bbeb78d9b0c11",
+    "cableContactProfileGeometry": "0cc65dc5372a7ae4135044cd92be3a2003eaf92475c42bea01b8bd98540b07f9",
+    "cableRouteGeometryAndTopology": "d9bdee507517607cfd8e3909cca2057f12fd3fd1e9f378a7483bf0f9acb9ede3",
+    "cableCurrentProgressionActions": "436e990b4710a31de6dba37e6d2249837957ac0b7c6fe59598341ed51b351789",
+    "cableMaterialBindings": "fc50155b81f5a239728a9575aa088dbb5393e022e8c25d23f366b6e2e321569d",
+    "cableLocalResponseAuthority": "3883c9df674d0fed64096013a824d3267b9d3185ec845a921e0d01bf49d346a8"
+  },
+  "affectedFrameProof": {
+    "F1ToF45": "unchanged: all current alphas and local-response energies remain zero",
+    "F46ToF494": "potentially changed by the repaired current surface/front/local floor response",
+    "F495ToF500": "requires compositor-black pilot/pixel proof before reuse is authorized",
+    "productionRenderStarted": false
+  },
+  "authorization": {
+    "fullOrPartialProductionRenderStarted": false,
+    "encodingStarted": false,
+    "runtimeIntegrationStartedByThisScript": false,
+    "phase5Authorized": false
+  }
+}
