@@ -218,7 +218,7 @@ async function repositoryAuthority(options) {
     git("ls-remote", "--heads", "origin", options.expectedBranch),
     git("ls-files", "--error-unmatch", "--", SCRIPT_RELATIVE),
     git("ls-files", "--error-unmatch", "--", CONTRACT_RELATIVE),
-    git("diff", "--name-only", BASE_SHA, "HEAD", "--", "src/components/home", "src/styles/routes/home.css"),
+    git("diff", "--name-only", BASE_SHA, "HEAD", "--", "src/scripts/home-operating-field.ts", "src/components/home", "src/styles/routes/home.css", "src/styles/routes/home-method.css"),
   ]);
   const liveHead = liveRemote.split(/\s+/)[0] ?? "";
   if (head !== options.expectedHead || branch !== options.expectedBranch || main !== MAIN_SHA || statusText || upstream !== head || liveHead !== head) throw new Error("repository/remote authority differs from exact clean expected HEAD");
@@ -439,11 +439,33 @@ async function settleEnhanced(page, timeoutMs, { resetScroll = true } = {}) {
   await twoFrames(page);
 }
 
+/**
+ * Chrome may retain a revoked Blob URL in currentSrc after the media element is
+ * unloaded. Treat that string as diagnostic identity, not proof of a live
+ * decoder payload; declared sources, ready/network state, and Blob lifecycle
+ * are the release authority.
+ */
+export function mediaPayloadReleaseResult(video, blobLifecycle = {}) {
+  if (!video) return { hasDeclaredSource: false, hasActivePayload: false, networkReleased: false, blobReleased: false, payloadReleased: false };
+  const hasDeclaredSource = Boolean(video.srcAttribute) || Number(video.sourceElementCount ?? 0) > 0;
+  const networkState = Number(video.networkState);
+  const readyState = Number(video.readyState);
+  const currentSelectionActive = Boolean(video.currentSrc) && (networkState === 1 || networkState === 2);
+  const decoderHasData = readyState > 0;
+  const hasActivePayload = hasDeclaredSource || currentSelectionActive || decoderHasData;
+  const networkReleased = networkState === 0 || networkState === 3;
+  const blobReleased = Number(blobLifecycle?.live ?? 0) === 0;
+  return { hasDeclaredSource, hasActivePayload, networkReleased, blobReleased, payloadReleased: !hasActivePayload && networkReleased && blobReleased };
+}
+
 async function runtimeState(page) {
-  return page.evaluate(() => {
+  const state = await page.evaluate(() => {
+    const root = document.documentElement;
     const shell = document.querySelector("[data-cinematic-shell]");
     const video = document.querySelector("[data-cinematic-media]");
     const poster = document.querySelector("[data-cinematic-poster]");
+    const method = document.querySelector("[data-method-section]");
+    const methodStages = [...(method?.querySelectorAll("[data-method-stage]") ?? [])];
     const entry = document.querySelector("[data-home-scene='entry']");
     const h1 = entry?.querySelector("h1");
     const routes = [...(entry?.querySelectorAll(".entry-path") ?? [])];
@@ -459,9 +481,9 @@ async function runtimeState(page) {
     const shellTop = shell ? shell.getBoundingClientRect().top + scrollY : 0;
     const travel = Number.parseFloat(shell?.style.getPropertyValue("--cinematic-travel-px") || "0");
     return {
-      mode: document.documentElement.dataset.cinematicMode ?? null,
-      fallback: document.documentElement.dataset.cinematicFallback ?? null,
-      headerMode: document.documentElement.dataset.cinematicHeader ?? null,
+      mode: root.dataset.cinematicMode ?? null,
+      fallback: root.dataset.cinematicFallback ?? null,
+      headerMode: root.dataset.cinematicHeader ?? null,
       phase: shell?.getAttribute("data-cinematic-phase") ?? null,
       mediaState: shell?.getAttribute("data-media-state") ?? null,
       mediaFamily: publicState.mediaFamily ?? shell?.getAttribute("data-media-family") ?? null,
@@ -485,10 +507,26 @@ async function runtimeState(page) {
       shellTop,
       travel,
       settledY: shellTop + travel,
-      video: video instanceof HTMLVideoElement ? { currentTime: video.currentTime, paused: video.paused, readyState: video.readyState, hasSource: Boolean(video.currentSrc || video.src), sourcePath: video.currentSrc.startsWith("blob:") ? "<BLOB>" : video.currentSrc ? new URL(video.currentSrc).pathname : null, box: rect(video) } : null,
+      video: video instanceof HTMLVideoElement ? {
+        currentTime: video.currentTime,
+        paused: video.paused,
+        readyState: video.readyState,
+        networkState: video.networkState,
+        srcAttribute: (() => { const value = video.getAttribute("src"); return value?.startsWith("blob:") ? "<BLOB>" : value ? new URL(value, location.href).pathname : null; })(),
+        sourceElementCount: [...video.querySelectorAll("source[src]")].filter((source) => Boolean(source.getAttribute("src")?.trim())).length,
+        currentSrc: video.currentSrc.startsWith("blob:") ? "<BLOB>" : video.currentSrc ? new URL(video.currentSrc).pathname : null,
+        sourcePath: video.currentSrc.startsWith("blob:") ? "<BLOB>" : video.currentSrc ? new URL(video.currentSrc).pathname : null,
+        box: rect(video),
+      } : null,
       poster: poster ? { box: rect(poster), sourcePath: (() => { const image = poster.querySelector("img"); return image?.currentSrc ? new URL(image.currentSrc, location.href).pathname : null; })() } : null,
       videoElements: document.querySelectorAll("video").length,
       blobLifecycle: window.__phase4r21BlobLifecycle ?? { created: 0, revoked: 0, live: 0 },
+      method: method ? {
+        sticky: method.getAttribute("data-method-sticky"),
+        committedGeometry: root.dataset.cinematicMethodGeometry ?? null,
+        committedStageMinHeight: root.style.getPropertyValue("--cinematic-committed-method-stage-min-height") || null,
+        stageHeights: methodStages.map((stage) => rect(stage)?.height ?? 0),
+      } : null,
       chapter: chapter?.getAttribute("data-home-scene") ?? null,
       chapterBox: rect(chapter),
       entry: { box: rect(entry), h1: rect(h1), routes: routes.map(rect), h1Text: h1?.textContent?.trim() ?? null },
@@ -496,6 +534,11 @@ async function runtimeState(page) {
       horizontalOverflow: document.documentElement.scrollWidth > innerWidth + 2,
     };
   });
+  if (state.video) {
+    const payload = mediaPayloadReleaseResult(state.video, state.blobLifecycle);
+    Object.assign(state.video, payload, { hasSource: payload.hasActivePayload });
+  }
+  return state;
 }
 
 function arrivalProgress(family, shortDesktop) {
@@ -1174,6 +1217,14 @@ function timeoutInitScript() {
 }
 
 export function timeoutGeometryResult(before, after, clsDuringTimeout) {
+  const beforeMethodStages = before.method?.stageHeights;
+  const afterMethodStages = after.method?.stageHeights;
+  const methodGeometryComparable = Array.isArray(beforeMethodStages) && beforeMethodStages.length > 0
+    ? Array.isArray(afterMethodStages) && afterMethodStages.length === beforeMethodStages.length
+    : !Array.isArray(afterMethodStages) || afterMethodStages.length === 0;
+  const methodStageHeightDeltas = methodGeometryComparable && Array.isArray(beforeMethodStages) && Array.isArray(afterMethodStages)
+    ? beforeMethodStages.map((height, index) => afterMethodStages[index] - height)
+    : null;
   const geometry = {
     documentHeightDelta: after.documentHeight - before.documentHeight,
     scrollYDelta: after.scrollY - before.scrollY,
@@ -1182,6 +1233,7 @@ export function timeoutGeometryResult(before, after, clsDuringTimeout) {
     chapterTopDelta: before.chapterBox && after.chapterBox ? after.chapterBox.top - before.chapterBox.top : null,
     entryTopDelta: before.entry?.box && after.entry?.box ? after.entry.box.top - before.entry.box.top : null,
     headerTopDelta: before.header && after.header ? after.header.top - before.header.top : null,
+    methodStageHeightDeltas,
     clsDuringTimeout,
   };
   const posterAuthorityRetained = Boolean(
@@ -1202,12 +1254,13 @@ export function timeoutGeometryResult(before, after, clsDuringTimeout) {
     chapterPositionStable: geometry.chapterTopDelta === null || Math.abs(geometry.chapterTopDelta) <= 1,
     entryPositionStable: geometry.entryTopDelta === null || Math.abs(geometry.entryTopDelta) <= 1,
     headerPositionStable: geometry.headerTopDelta === null || Math.abs(geometry.headerTopDelta) <= 1,
+    methodStageGeometryStable: methodGeometryComparable && (methodStageHeightDeltas === null || methodStageHeightDeltas.every((delta) => Math.abs(delta) <= 1)),
     constrainedClsBelowPointOne: geometry.clsDuringTimeout < 0.1,
     chromeStateStable: before.headerMode === after.headerMode,
     semanticContentPresent: Boolean(after.entry?.box),
     posterAuthorityRetained,
     posterPresentationMatchesPhase,
-    decoderPayloadReleased: after.video?.hasSource === false && (after.blobLifecycle?.live ?? 0) === 0,
+    decoderPayloadReleased: after.video?.payloadReleased === true && (after.blobLifecycle?.live ?? 0) === 0,
   };
   return { geometry, checks, pass: Object.values(checks).every(Boolean) };
 }
@@ -1454,6 +1507,7 @@ async function captureFallbackAccessibility(browser, options, panels) {
   const lateMotionContext = await browser.newContext(contextOptions(desktop));
   await lateMotionContext.addInitScript(timeoutInitScript);
   const lateMotionPage = await lateMotionContext.newPage();
+  await observePage(lateMotionPage);
   await lateMotionPage.goto(options.url, { waitUntil: "domcontentloaded", timeout: options.timeoutMs });
   await settleEnhanced(lateMotionPage, options.timeoutMs);
   await scrollToFrame(lateMotionPage, 166, { presented: true });
@@ -1466,11 +1520,25 @@ async function captureFallbackAccessibility(browser, options, panels) {
   const lateMotionAfter = await runtimeState(lateMotionPage);
   const lateMotionAfterCls = await lateMotionPage.evaluate(() => (window.__phase4r21TimeoutMetrics?.layoutShifts ?? []).reduce((sum, item) => sum + item.value, 0));
   const lateMotionGeometry = timeoutGeometryResult(lateMotionBefore, lateMotionAfter, lateMotionAfterCls - lateMotionBeforeCls);
+  const lateMotionMethodGeometry = {
+    committedBefore: lateMotionBefore.method?.committedGeometry === "committed",
+    committedAfter: lateMotionAfter.method?.committedGeometry === "committed",
+    stickyBefore: lateMotionBefore.method?.sticky === "true",
+    stickyMotionDisabledAfter: lateMotionAfter.method?.sticky !== "true",
+    stageHeightDeltas: lateMotionGeometry.geometry.methodStageHeightDeltas,
+  };
+  lateMotionMethodGeometry.pass = lateMotionMethodGeometry.committedBefore
+    && lateMotionMethodGeometry.committedAfter
+    && lateMotionMethodGeometry.stickyBefore
+    && lateMotionMethodGeometry.stickyMotionDisabledAfter
+    && Array.isArray(lateMotionMethodGeometry.stageHeightDeltas)
+    && lateMotionMethodGeometry.stageHeightDeltas.length === 5
+    && lateMotionMethodGeometry.stageHeightDeltas.every((delta) => Math.abs(delta) <= 1);
   const lateMotionUnlockedScroll = await exerciseUnlockedWheelScroll(lateMotionPage);
   const lateMotionAfterImage = await screenshot(lateMotionPage);
   addPanel(panels, "14-reduced-motion", lateMotionBeforeImage, "LATE PREFERENCE · BEFORE", ["enhanced runway committed", `F${lateMotionBefore.presentedFrame}`, `scrollY ${lateMotionBefore.scrollY.toFixed(1)}`]);
   addPanel(panels, "14-reduced-motion", lateMotionAfterImage, "LATE PREFERENCE · PRESERVE RUNWAY", [`height Δ ${lateMotionGeometry.geometry.documentHeightDelta}px`, `scroll Δ ${lateMotionGeometry.geometry.scrollYDelta.toFixed(2)}px`, `CLS ${lateMotionGeometry.geometry.clsDuringTimeout.toFixed(6)}`]);
-  if (!lateMotionGeometry.pass || lateMotionAfter.fallback !== "reduced-motion-change" || !lateMotionUnlockedScroll.pass) throw new Error(`late reduced-motion failure did not preserve enhanced geometry: ${JSON.stringify({ lateMotionGeometry, lateMotionUnlockedScroll, fallback: lateMotionAfter.fallback })}`);
+  if (!lateMotionGeometry.pass || !lateMotionMethodGeometry.pass || lateMotionAfter.fallback !== "reduced-motion-change" || !lateMotionUnlockedScroll.pass) throw new Error(`late reduced-motion failure did not preserve enhanced geometry: ${JSON.stringify({ lateMotionGeometry, lateMotionMethodGeometry, lateMotionUnlockedScroll, fallback: lateMotionAfter.fallback })}`);
   await lateMotionContext.close();
 
   const noJsContext = await browser.newContext(contextOptions(desktop, { javaScriptEnabled: false }));
@@ -1579,11 +1647,12 @@ async function captureFallbackAccessibility(browser, options, panels) {
       return route.fulfill({ status: 200, contentType: "video/mp4", body: Buffer.alloc(desktopVideoAsset.bytes, 0) });
     });
     const page = await context.newPage();
+    await observePage(page);
     await page.goto(options.url, { waitUntil: "domcontentloaded", timeout: options.timeoutMs });
     await waitStaticOrFailure(page, options.timeoutMs);
     const state = await runtimeState(page);
     const unlockedScroll = await exerciseUnlockedWheelScroll(page);
-    const preservedVisual = state.mode !== "enhanced" || Boolean(state.mediaState === "failed-preserve-runway" && state.poster?.sourcePath && state.poster.box?.opacity >= 0.99 && state.video?.hasSource === false && (state.blobLifecycle?.live ?? 0) === 0);
+    const preservedVisual = state.mode !== "enhanced" || Boolean(state.mediaState === "failed-preserve-runway" && state.poster?.sourcePath && state.poster.box?.opacity >= 0.99 && state.video?.payloadReleased === true && (state.blobLifecycle?.live ?? 0) === 0);
     const checks = { failedOpen: state.mode === "static" || state.mediaState === "failed-preserve-runway", lateFailuresPreserveRunwayPoster: kind === "unsupported" ? state.mode === "static" || preservedVisual : state.mode === "enhanced" && preservedVisual, actualDecodePathReached: kind !== "decode" || (state.blobLifecycle?.created === 1 && state.blobLifecycle?.revoked === 1 && state.blobLifecycle?.live === 0), semanticEntryPresent: Boolean(state.entry.box), pageUsable: state.documentHeight > 0, noScrollLock: unlockedScroll.pass };
     if (Object.values(checks).some((passed) => !passed)) throw new Error(`${kind} media failure failed open`);
     mediaFailures.push({ kind, state, unlockedScroll, checks, status: "PASS" });
@@ -1654,7 +1723,7 @@ async function captureFallbackAccessibility(browser, options, panels) {
   await accessibilityContext.close();
 
   return {
-    reducedMotion: { earlyStatic: { ...reduced, videoRequests: 0 }, latePreferenceChange: { before: lateMotionBefore, after: lateMotionAfter, geometry: lateMotionGeometry, unlockedScroll: lateMotionUnlockedScroll }, status: "PASS" },
+    reducedMotion: { earlyStatic: { ...reduced, videoRequests: 0 }, latePreferenceChange: { before: lateMotionBefore, after: lateMotionAfter, geometry: lateMotionGeometry, methodGeometry: lateMotionMethodGeometry, unlockedScroll: lateMotionUnlockedScroll }, status: "PASS" },
     noJavaScript: { ...noJavaScript, status: "PASS" },
     zoom200: { ...zoom200, status: "PASS" },
     skip: { focusedHref, ...skip, status: "PASS" },
@@ -1804,7 +1873,7 @@ async function selfTest() {
   if (mediaUrlPath("/media/cinematic/phase-4r2/manifests/active.json", "media/family.mp4") !== "/media/cinematic/phase-4r2/media/family.mp4") throw new Error("public media path self-test failed");
   if (normalizeTargetUrl("http://127.0.0.1:4321/", "local") !== "http://127.0.0.1:4321/" || normalizeTargetUrl("https://12345678.qsite1.pages.dev/", "deployed") !== "https://12345678.qsite1.pages.dev/") throw new Error("target URL self-test failed");
   const before = { documentHeight: 10_000, scrollY: 2_000, chapter: "entry", chapterBox: { top: 0 }, entry: { box: { top: 0 } }, header: { top: 0 }, headerMode: "released" };
-  const after = { ...structuredClone(before), mode: "enhanced", mediaState: "failed-preserve-runway", poster: { sourcePath: "/poster.png", box: { display: "block", visibility: "visible", opacity: 1, width: 100, height: 100 } }, video: { hasSource: false }, blobLifecycle: { live: 0 } };
+  const after = { ...structuredClone(before), mode: "enhanced", mediaState: "failed-preserve-runway", poster: { sourcePath: "/poster.png", box: { display: "block", visibility: "visible", opacity: 1, width: 100, height: 100 } }, video: { hasSource: false, payloadReleased: true }, blobLifecycle: { live: 0 } };
   if (!timeoutGeometryResult(before, after, 0).pass || timeoutGeometryResult(before, { ...after, documentHeight: 5_000 }, 0).pass || timeoutGeometryResult(before, after, 0.1).pass) throw new Error("timeout geometry positive/negative self-test failed");
   if (visiblePixelChangeResult({ pixels: 1_000_000, changedPixelsAtLeast2: 24, maximumAbsoluteChannel: 2, meanAbsoluteMaximumChannel: 0.0001 }).visiblyChanged
     || !visiblePixelChangeResult({ pixels: 1_000_000, changedPixelsAtLeast2: 500, maximumAbsoluteChannel: 8, meanAbsoluteMaximumChannel: 0.01 }).visiblyChanged) throw new Error("visible pixel-change self-test failed");

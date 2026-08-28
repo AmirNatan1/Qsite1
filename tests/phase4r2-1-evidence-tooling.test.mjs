@@ -29,6 +29,7 @@ import {
 } from "../scripts/phase4r2-1-evidence-contract.mjs";
 import {
   REPORT_SCHEMAS,
+  mediaPayloadReleaseResult,
   normalizedElementScreenshotRegion,
   parseArguments,
   portalTimelineResult,
@@ -137,10 +138,10 @@ test("capture command requires exact final authorities through CLI inputs", () =
 
 test("timeout geometry rejects the historical collapse, scroll jump, and CLS bound", () => {
   const before = { phase: "physical", documentHeight: 19_740, scrollY: 8_000, chapter: "entry", chapterBox: { top: 0 }, entry: { box: { top: 0 } }, header: { top: 0 }, headerMode: "released" };
-  const after = { ...structuredClone(before), mode: "enhanced", mediaState: "failed-preserve-runway", poster: { sourcePath: "/poster.png", box: { display: "block", visibility: "visible", opacity: 1, width: 100, height: 100 } }, video: { hasSource: false }, blobLifecycle: { live: 0 } };
+  const after = { ...structuredClone(before), mode: "enhanced", mediaState: "failed-preserve-runway", poster: { sourcePath: "/poster.png", box: { display: "block", visibility: "visible", opacity: 1, width: 100, height: 100 } }, video: { hasSource: false, payloadReleased: true }, blobLifecycle: { live: 0 } };
   assert.equal(timeoutGeometryResult(before, after, 0).pass, true);
   const settledBefore = { ...structuredClone(before), phase: "settled", poster: { sourcePath: "/poster.png", box: { display: "block", visibility: "hidden", opacity: 1, width: 100, height: 100 } } };
-  const settledAfter = { ...structuredClone(settledBefore), mode: "enhanced", mediaState: "failed-preserve-runway", video: { hasSource: false }, blobLifecycle: { live: 0 } };
+  const settledAfter = { ...structuredClone(settledBefore), mode: "enhanced", mediaState: "failed-preserve-runway", video: { hasSource: false, payloadReleased: true }, blobLifecycle: { live: 0 } };
   assert.equal(timeoutGeometryResult(settledBefore, settledAfter, 0).pass, true);
   assert.equal(timeoutGeometryResult(before, { ...after, documentHeight: 14_763 }, 0).pass, false);
   assert.equal(timeoutGeometryResult(before, { ...after, scrollY: 7_998 }, 0).pass, false);
@@ -149,7 +150,23 @@ test("timeout geometry rejects the historical collapse, scroll jump, and CLS bou
   assert.equal(timeoutGeometryResult(before, { ...after, poster: { ...after.poster, box: { ...after.poster.box, visibility: "hidden" } } }, 0).pass, false);
   assert.equal(timeoutGeometryResult(settledBefore, { ...settledAfter, poster: { ...settledAfter.poster, box: { ...settledAfter.poster.box, visibility: "visible" } } }, 0).pass, false);
   assert.equal(timeoutGeometryResult(before, { ...after, poster: null }, 0).pass, false);
-  assert.equal(timeoutGeometryResult(before, { ...after, video: { hasSource: true } }, 0).pass, false);
+  assert.equal(timeoutGeometryResult(before, { ...after, video: { hasSource: true, payloadReleased: false } }, 0).pass, false);
+});
+
+test("decoder release telemetry distinguishes Chrome's stale currentSrc from an active payload", () => {
+  const active = mediaPayloadReleaseResult({ srcAttribute: "<BLOB>", sourceElementCount: 0, currentSrc: "<BLOB>", readyState: 4, networkState: 1 }, { live: 1 });
+  assert.equal(active.payloadReleased, false);
+  assert.equal(active.hasActivePayload, true);
+
+  const staleChromeIdentity = mediaPayloadReleaseResult({ srcAttribute: null, sourceElementCount: 0, currentSrc: "<BLOB>", readyState: 0, networkState: 0 }, { created: 1, revoked: 1, live: 0 });
+  assert.equal(staleChromeIdentity.payloadReleased, true, "revoked Blob identity may remain in currentSrc after NETWORK_EMPTY");
+  assert.equal(staleChromeIdentity.hasActivePayload, false);
+
+  assert.equal(mediaPayloadReleaseResult({ srcAttribute: null, sourceElementCount: 0, currentSrc: "<BLOB>", readyState: 0, networkState: 3 }, { live: 0 }).payloadReleased, true, "NETWORK_NO_SOURCE is also terminal");
+  assert.equal(mediaPayloadReleaseResult({ srcAttribute: null, sourceElementCount: 0, currentSrc: "<BLOB>", readyState: 0, networkState: 1 }, { live: 0 }).payloadReleased, false, "NETWORK_IDLE with a selected identity remains active");
+  assert.equal(mediaPayloadReleaseResult({ srcAttribute: null, sourceElementCount: 0, currentSrc: "<BLOB>", readyState: 0, networkState: 2 }, { live: 0 }).payloadReleased, false, "NETWORK_LOADING remains active");
+  assert.equal(mediaPayloadReleaseResult({ srcAttribute: null, sourceElementCount: 0, currentSrc: null, readyState: 1, networkState: 0 }, { live: 0 }).payloadReleased, false, "decoded metadata remains an active payload");
+  assert.equal(mediaPayloadReleaseResult({ srcAttribute: null, sourceElementCount: 1, currentSrc: null, readyState: 0, networkState: 0 }, { live: 0 }).payloadReleased, false, "a declared source child remains active");
 });
 
 test("pixel, recording-duration, loop, and portal contracts reject self-declared false greens", () => {
