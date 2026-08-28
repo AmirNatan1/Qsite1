@@ -191,7 +191,7 @@ async function removeOwnedRawRecordingRoot(candidate) {
   if (!isWithin(resolvedTemporaryRoot, resolvedCandidate) || !path.basename(resolvedCandidate).startsWith("phase4r2-1-browser-recordings-")) {
     throw new Error("refusing to remove an unowned raw recording root");
   }
-  await rm(resolvedCandidate, { recursive: true, force: true });
+  await rm(resolvedCandidate, { recursive: true, force: true, maxRetries: process.platform === "win32" ? 12 : 0, retryDelay: 100 });
 }
 
 async function writeSafeJson(destination, value) {
