@@ -1,0 +1,51 @@
+{
+  "schema": "qh.phase5a.supporting-route-capture-plan.v1",
+  "canary": "QH_PHASE5A_ROUTE_LAB_ONLY",
+  "routes": [
+    "for-industry",
+    "for-startups",
+    "industries",
+    "proof",
+    "maradin",
+    "spark",
+    "about",
+    "contact",
+    "404"
+  ],
+  "viewports": [
+    { "id": "desktop", "width": 1440, "height": 900 },
+    { "id": "short-desktop", "width": 1366, "height": 650 },
+    { "id": "tablet-landscape", "width": 1024, "height": 768 },
+    { "id": "portrait", "width": 768, "height": 1024 },
+    { "id": "mobile", "width": 390, "height": 844 },
+    { "id": "mobile-narrow", "width": 320, "height": 800 },
+    { "id": "mobile-landscape", "width": 844, "height": 390 }
+  ],
+  "requiredRouteArtifacts": [
+    "route-brief.md",
+    "desktop-storyboard--1440x900.png",
+    "responsive-contact-sheet.png",
+    "mobile-storyboard--390x844.png",
+    "short-landscape--844x390.png",
+    "signature-motion-states.png",
+    "representative-transition-states.png",
+    "material-detail-board.png",
+    "typography-hierarchy.png",
+    "reduced-motion.png",
+    "no-js.png",
+    "media-requirements.md",
+    "publication-constraints.md",
+    "performance-plan.md",
+    "implementation-risks.md"
+  ],
+  "rules": {
+    "publicExposure": false,
+    "externalNetwork": false,
+    "cinematicReplay": false,
+    "cinematicRunway": false,
+    "stickyChapter": false,
+    "thirdPartyRuntime": false,
+    "generatedReviewMediaTracked": false,
+    "phase5BAuthorized": false
+  }
+}
