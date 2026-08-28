@@ -136,12 +136,18 @@ test("capture command requires exact final authorities through CLI inputs", () =
 });
 
 test("timeout geometry rejects the historical collapse, scroll jump, and CLS bound", () => {
-  const before = { documentHeight: 19_740, scrollY: 8_000, chapter: "entry", chapterBox: { top: 0 }, entry: { box: { top: 0 } }, header: { top: 0 }, headerMode: "released" };
+  const before = { phase: "physical", documentHeight: 19_740, scrollY: 8_000, chapter: "entry", chapterBox: { top: 0 }, entry: { box: { top: 0 } }, header: { top: 0 }, headerMode: "released" };
   const after = { ...structuredClone(before), mode: "enhanced", mediaState: "failed-preserve-runway", poster: { sourcePath: "/poster.png", box: { display: "block", visibility: "visible", opacity: 1, width: 100, height: 100 } }, video: { hasSource: false }, blobLifecycle: { live: 0 } };
   assert.equal(timeoutGeometryResult(before, after, 0).pass, true);
+  const settledBefore = { ...structuredClone(before), phase: "settled", poster: { sourcePath: "/poster.png", box: { display: "block", visibility: "hidden", opacity: 1, width: 100, height: 100 } } };
+  const settledAfter = { ...structuredClone(settledBefore), mode: "enhanced", mediaState: "failed-preserve-runway", video: { hasSource: false }, blobLifecycle: { live: 0 } };
+  assert.equal(timeoutGeometryResult(settledBefore, settledAfter, 0).pass, true);
   assert.equal(timeoutGeometryResult(before, { ...after, documentHeight: 14_763 }, 0).pass, false);
   assert.equal(timeoutGeometryResult(before, { ...after, scrollY: 7_998 }, 0).pass, false);
   assert.equal(timeoutGeometryResult(before, after, 0.1).pass, false);
+  assert.equal(timeoutGeometryResult(before, { ...after, phase: "settled" }, 0).pass, false);
+  assert.equal(timeoutGeometryResult(before, { ...after, poster: { ...after.poster, box: { ...after.poster.box, visibility: "hidden" } } }, 0).pass, false);
+  assert.equal(timeoutGeometryResult(settledBefore, { ...settledAfter, poster: { ...settledAfter.poster, box: { ...settledAfter.poster.box, visibility: "visible" } } }, 0).pass, false);
   assert.equal(timeoutGeometryResult(before, { ...after, poster: null }, 0).pass, false);
   assert.equal(timeoutGeometryResult(before, { ...after, video: { hasSource: true } }, 0).pass, false);
 });

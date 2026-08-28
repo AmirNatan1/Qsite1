@@ -1184,8 +1184,18 @@ export function timeoutGeometryResult(before, after, clsDuringTimeout) {
     headerTopDelta: before.header && after.header ? after.header.top - before.header.top : null,
     clsDuringTimeout,
   };
+  const posterAuthorityRetained = Boolean(
+    after.poster?.sourcePath && after.poster?.box
+    && after.poster.box.display !== "none"
+    && after.poster.box.opacity >= 0.99
+    && after.poster.box.width > 0 && after.poster.box.height > 0,
+  );
+  const posterPresentationMatchesPhase = after.phase === "settled"
+    ? before.phase === "settled" && after.poster?.box?.visibility === before.poster?.box?.visibility
+    : after.poster?.box?.visibility !== "hidden";
   const checks = {
     enhancedGeometryPreserved: after.mode === "enhanced" && after.mediaState === "failed-preserve-runway",
+    cinematicPhaseStable: before.phase === after.phase,
     documentHeightStable: Math.abs(geometry.documentHeightDelta) <= 1,
     scrollPositionStable: Math.abs(geometry.scrollYDelta) <= 1,
     chapterStable: before.chapter === after.chapter,
@@ -1195,7 +1205,8 @@ export function timeoutGeometryResult(before, after, clsDuringTimeout) {
     constrainedClsBelowPointOne: geometry.clsDuringTimeout < 0.1,
     chromeStateStable: before.headerMode === after.headerMode,
     semanticContentPresent: Boolean(after.entry?.box),
-    posterRetainedAndVisible: Boolean(after.poster?.box && after.poster.box.display !== "none" && after.poster.box.visibility !== "hidden" && after.poster.box.opacity >= 0.99 && after.poster.box.width > 0 && after.poster.box.height > 0 && after.poster.sourcePath),
+    posterAuthorityRetained,
+    posterPresentationMatchesPhase,
     decoderPayloadReleased: after.video?.hasSource === false && (after.blobLifecycle?.live ?? 0) === 0,
   };
   return { geometry, checks, pass: Object.values(checks).every(Boolean) };
