@@ -335,6 +335,8 @@ export function initHomeCinematicIntegration() {
   const header = document.querySelector<HTMLElement>(".site-header");
   const skipLink = document.querySelector<HTMLAnchorElement>(".skip-link[href='#entry']");
   const mobileMenu = header?.querySelector<HTMLDetailsElement>("[data-mobile-nav]");
+  const methodField = document.querySelector<HTMLElement>("[data-method-section]");
+  const methodStages = Array.from(methodField?.querySelectorAll<HTMLElement>("[data-method-stage]") ?? []);
   const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   const releaseMissingDom = () => {
@@ -395,6 +397,25 @@ export function initHomeCinematicIntegration() {
   let reverseStartFrame = 1;
   let reverseFloorFrame = 1;
   let persistedRestorationState = "";
+
+  /**
+   * The accepted Operating Field owns its motion preference response and stays
+   * byte-frozen. Once its five-stage desktop geometry has actually committed,
+   * remember the authored computed minimum so a later accessibility preference
+   * can stop sticky motion without collapsing the already-entered document.
+   */
+  const rememberCommittedMethodGeometry = () => {
+    if (
+      root.dataset.cinematicMethodGeometry === "committed"
+      || methodField?.dataset.methodSticky !== "true"
+      || methodStages.length !== 5
+    ) return;
+    const minimums = methodStages.map((stage) => Number.parseFloat(getComputedStyle(stage).minHeight));
+    if (minimums.some((value) => !Number.isFinite(value) || value <= 0)) return;
+    if (Math.max(...minimums) - Math.min(...minimums) > 0.5) return;
+    root.style.setProperty("--cinematic-committed-method-stage-min-height", `${minimums[0]!.toFixed(2)}px`);
+    root.dataset.cinematicMethodGeometry = "committed";
+  };
 
   const cancelReaction = () => {
     reactionGeneration += 1;
@@ -660,6 +681,7 @@ export function initHomeCinematicIntegration() {
   };
   const write = () => {
     if (failed || document.hidden) return;
+    rememberCommittedMethodGeometry();
     if (needsMeasurement) measure();
     const scrollExtent = Math.max(1, Math.round(travel));
     const nativeScrollY = window.scrollY;
@@ -802,6 +824,7 @@ export function initHomeCinematicIntegration() {
   const resizeObserver = new ResizeObserver(invalidate);
   resizeObserver.observe(shell);
   resizeObserver.observe(entry);
+  if (methodField) resizeObserver.observe(methodField);
   window.addEventListener("scroll", () => { scrollEventSequence += 1; schedule(); }, { passive: true, signal });
   window.addEventListener("resize", invalidate, { passive: true, signal });
   window.addEventListener("pageshow", invalidate, { passive: true, signal });

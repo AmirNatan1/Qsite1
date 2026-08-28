@@ -483,6 +483,9 @@ test("Phase 4-R2.1 late media failure preserves document geometry while early el
 
 test("Phase 4-R2.1 runtime keeps one decoder, native scroll, presentation authority, and fail-open safeguards", () => {
   const source = readFileSync(path.join(process.cwd(), "src", "scripts", "home-cinematic-integration.ts"), "utf8");
+  const cinematicCss = readFileSync(path.join(process.cwd(), "src", "styles", "routes", "home-cinematic.css"), "utf8");
+  const frozenOperatingField = readFileSync(path.join(process.cwd(), "src", "scripts", "home-operating-field.ts"), "utf8");
+  assert.equal(digest(frozenOperatingField), "b8a3af5dc4f5ad24ad2eb1e8c2c800385da718ae439133efc6a652bd5fdf84a2", "the accepted Operating Field controller remains byte-frozen");
   assert.match(source, /const releaseMissingDom/);
   assert.match(source, /cinematicFallback = "required-dom"/);
   assert.match(source, /const handleSkip[\s\S]*?setSettledInteraction\(true\)[\s\S]*?entry\.focus\(\{ preventScroll: true \}\)/);
@@ -509,6 +512,12 @@ test("Phase 4-R2.1 runtime keeps one decoder, native scroll, presentation author
   assert.match(source, /completeH264Inventory/);
   assert.match(source, /failed-preserve-runway/);
   assert.match(source, /cinematicDocumentStateForScroll/);
+  assert.match(source, /methodField\?\.dataset\.methodSticky !== "true"/);
+  assert.match(source, /getComputedStyle\(stage\)\.minHeight/);
+  assert.match(source, /--cinematic-committed-method-stage-min-height/);
+  assert.match(source, /resizeObserver\.observe\(methodField\)/);
+  assert.match(cinematicCss, /prefers-reduced-motion:\s*reduce[\s\S]*?data-cinematic-method-geometry="committed"[\s\S]*?min-height:\s*var\(--cinematic-committed-method-stage-min-height\)/);
+  assert.doesNotMatch(cinematicCss, /data-cinematic-method-geometry[\s\S]{0,240}567px/, "late preference geometry must use the measured authored value, not the 900px-viewport example");
   assert.doesNotMatch(source, /querySelectorAll\(["']source["']\)[\s\S]{0,160}removeAttribute\(["']srcset["']\)/, "late failure must retain the still poster while releasing only video\/Blob resources");
   assert.doesNotMatch(source, /\bpreventDefault\s*\(/);
   assert.doesNotMatch(source, /(?:window\.)?scroll(?:To|By)\s*\(/);

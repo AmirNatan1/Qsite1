@@ -216,4 +216,14 @@ html[data-cinematic-mode="enhanced"] .cinematic-shell[data-media-state="failed-p
   .cinematic-media {
     display: none;
   }
+
+  /*
+   * A preference change after enhanced geometry commits must stop motion while
+   * retaining the visitor's current document position. The value is latched
+   * only when the accepted five-stage sticky layout was genuinely active.
+   */
+  html[data-cinematic-mode="enhanced"][data-cinematic-method-geometry="committed"]
+    .method-stage {
+    min-height: var(--cinematic-committed-method-stage-min-height);
+  }
 }
