@@ -480,7 +480,7 @@ test("Phase 5A runtime keeps one paused decoder, native scroll, latest-position 
   assert.equal(digest(frozenOperatingField), "b8a3af5dc4f5ad24ad2eb1e8c2c800385da718ae439133efc6a652bd5fdf84a2", "the accepted Operating Field controller remains byte-frozen");
   assert.match(source, /const releaseMissingDom/);
   assert.match(source, /cinematicFallback = "required-dom"/);
-  assert.match(source, /const handleSkip[\s\S]*?setSettledInteraction\(true\)[\s\S]*?entry\.focus\(\{ preventScroll: true \}\)/);
+  assert.match(source, /const handleSkip[\s\S]*?setThresholdInteraction\(true, false\)[\s\S]*?entry\.focus\(\{ preventScroll: true \}\)/);
   assert.match(source, /pagehide[\s\S]{0,800}cancelAnimationFrame\(animationFrame\)[\s\S]{0,120}animationFrame = 0/);
   assert.match(source, /const documentState = cinematicDocumentStateForScroll\(currentScrollOffset, scrollExtent/);
   assert.match(source, /PIECEWISE_COORDINATES/);

@@ -23,13 +23,13 @@ const REQUIRED_ANCESTORS = Object.freeze([
   ["Phase 0", "9aec62c1d89ebb2095bbc8903a718f77bbb6dbda"],
 ]);
 const HOME_COMPONENTS = Object.freeze([
-  { tag: "EntryField", file: "EntryField.astro", id: "entry", heading: "h1", label: "home-title" },
-  { tag: "BuiltWithIndustry", file: "BuiltWithIndustry.astro", id: "built-with-industry", heading: "h2", label: "industry-model-title" },
-  { tag: "MethodField", file: "MethodField.astro", id: "method", heading: "h2", label: "method-title" },
-  { tag: "IndustryTerritories", file: "IndustryTerritories.astro", id: "industries", heading: "h2", label: "industries-title" },
-  { tag: "ProofField", file: "ProofField.astro", id: "proof", heading: "h2", label: "proof-title" },
-  { tag: "ProgrammesField", file: "ProgrammesField.astro", id: "programmes", heading: "h2", label: "programmes-title" },
-  { tag: "ConversionField", file: "ConversionField.astro", id: "conversion", heading: "h2", label: "conversion-title" },
+  { tag: "EntryField", file: "EntryField.astro", id: "entry", scene: "manifesto", heading: "h1", label: "home-title" },
+  { tag: "BuiltWithIndustry", file: "BuiltWithIndustry.astro", id: "built-with-industry", scene: "built-with-industry", heading: "h2", label: "industry-model-title" },
+  { tag: "MethodField", file: "MethodField.astro", id: "method", scene: "method", heading: "h2", label: "method-title" },
+  { tag: "IndustryTerritories", file: "IndustryTerritories.astro", id: "industries", scene: "industries", heading: "h2", label: "industries-title" },
+  { tag: "ProofField", file: "ProofField.astro", id: "proof", scene: "proof", heading: "h2", label: "proof-title" },
+  { tag: "ProgrammesField", file: "ProgrammesField.astro", id: "programmes", scene: "programmes", heading: "h2", label: "programmes-title" },
+  { tag: "ConversionField", file: "ConversionField.astro", id: "conversion", scene: "conversion", heading: "h2", label: "conversion-title" },
 ]);
 const MEDIA_ASSETS = Object.freeze([
   {
@@ -81,6 +81,7 @@ const ALLOWED_PRODUCTION_CHANGES = Object.freeze([
   /^src\/layouts\/BaseLayout\.astro$/,
   /^src\/pages\/index\.astro$/,
   /^src\/scripts\/home-cinematic-integration\.ts$/,
+  /^src\/styles\/routes\/home\.css$/,
   /^src\/styles\/routes\/home-cinematic\.css$/,
   /^src\/styles\/routes\/home-responsive\.css$/,
   /^public\/_headers$/,
@@ -202,15 +203,17 @@ for (const component of HOME_COMPONENTS) {
   const source = componentSources.get(component.tag) ?? "";
   h1Count += matches(source, /<h1\b/gi);
   check(new RegExp(`<section\\b[\\s\\S]*?\\bid=["']${component.id}["']`, "i").test(source), "home-chapter-id", `src/components/home/${component.file}`, `chapter must retain id ${component.id}`);
-  check(new RegExp(`data-home-scene=["']${component.id}["']`, "i").test(source), "home-chapter-hook", `src/components/home/${component.file}`, `chapter must retain data-home-scene=${component.id}`);
+  check(new RegExp(`data-home-scene=["']${component.scene}["']`, "i").test(source), "home-chapter-hook", `src/components/home/${component.file}`, `chapter must retain data-home-scene=${component.scene}`);
   check(new RegExp(`aria-labelledby=["']${component.label}["']`, "i").test(source), "home-chapter-label", `src/components/home/${component.file}`, `chapter must be labelled by ${component.label}`);
   check(new RegExp(`<${component.heading}\\b[^>]*\\bid=["']${component.label}["']`, "i").test(source), "home-chapter-heading", `src/components/home/${component.file}`, `chapter must retain its ${component.heading.toUpperCase()} label target`);
 }
 check(h1Count === 1, "home-h1-count", "src/pages/index.astro + src/components/home", `Home must contain exactly one literal H1; observed ${h1Count}`);
 
 const entrySource = componentSources.get("EntryField") ?? "";
-check(/<h1\b[^>]*>[\s\S]*Where do[\s\S]*you enter\?[\s\S]*<\/h1>/i.test(entrySource), "entry-h1", "src/components/home/EntryField.astro", "WHERE DO YOU ENTER? must remain the settled semantic H1");
+check(/<h1\b[^>]*>[\s\S]*We turn[\s\S]*industrial needs[\s\S]*into field[\s\S]*evidence\.[\s\S]*<\/h1>/i.test(entrySource), "manifesto-h1", "src/components/home/EntryField.astro", "the production-authorized manifesto sentence must be the settled semantic H1");
+check(!/<h1\b[^>]*>[\s\S]*Where do[\s\S]*you enter\?[\s\S]*<\/h1>/i.test(entrySource), "superseded-entry-h1", "src/components/home/EntryField.astro", "the superseded audience prompt must not remain an H1");
 check(/<section\b[\s\S]*?\bid=["']entry["'][\s\S]*?\btabindex=["']-1["']/.test(entrySource), "skip-target-focus", "src/components/home/EntryField.astro", "the cinematic skip target must be programmatically focusable");
+check(/<section\b[\s\S]*?\bid=["']audience-routing["'][\s\S]*?data-audience-routing/.test(entrySource), "audience-routing-region", "src/components/home/EntryField.astro", "audience routes must follow the pure manifesto in their own semantic region");
 for (const [href, copy] of [
   ["/for-partners/", "Bring us an operational challenge."],
   ["/for-startups/", "Bring us a technology ready to be tested."],
@@ -302,14 +305,14 @@ check(/video\.seeking/.test(cinematicController) && /targetFrame\(scrollTargetPh
 check(matches(cinematicController, /video\.play\s*\(/g) === 0 && !/requestVideoFrameCallback|cancelVideoFrameCallback|wake-forward|wake-reverse|wake-armed|stable-hold/.test(cinematicController), "no-automatic-wake", "src/scripts/home-cinematic-integration.ts", "the automatic F285-to-F370 playback/reaction state machine must be absent");
 check(/window\.addEventListener\(["']scroll["'],\s*schedule,\s*\{\s*passive:\s*true/.test(cinematicController) && !/arrivalCrossingDirection|scrollIntentFor|reverseFrameForElapsed|reviseReversePlan/.test(cinematicController), "single-scroll-authority", "src/scripts/home-cinematic-integration.ts", "native document position must be the sole single-valued authority in both directions");
 check(matches(cinematicController, /presentedPhysicalFrame\s*=(?!=)/g) === 2 && /addEventListener\(\s*["']seeked["'][\s\S]{0,180}presentedPhysicalFrame\s*=\s*frameAtTime/.test(cinematicController), "presented-frame-authority", "src/scripts/home-cinematic-integration.ts", "presented-frame telemetry may be initialized once and updated only by decoder seek completion");
-check(/const\s+settled\s*=\s*scrollProgress\s*>=\s*0\.9995/.test(cinematicController) && /setSettledInteraction\(settled\)/.test(cinematicController), "chrome-release-boundary", "src/scripts/home-cinematic-integration.ts", "header and ENTRY interaction may release only at scrollProgress >= 0.9995, including after a late media failure");
-check(/header\.setAttribute\(["']inert["']/.test(cinematicController) && /entry\.setAttribute\(["']inert["']/.test(cinematicController) && /header\.removeAttribute\(["']inert["']/.test(cinematicController) && /entry\.removeAttribute\(["']inert["']/.test(cinematicController), "settled-inert-state", "src/scripts/home-cinematic-integration.ts", "header and ENTRY must be inert before settlement and released together at settlement/fallback");
+check(/const\s+settled\s*=\s*scrollProgress\s*>=\s*0\.9995/.test(cinematicController) && /navigationReleasePoint\s*=\s*audienceTop\s*-\s*window\.innerHeight/.test(cinematicController) && /setThresholdInteraction\(settled, navigationReleased\)/.test(cinematicController), "manifesto-chrome-boundary", "src/scripts/home-cinematic-integration.ts", "manifesto settlement and the reversible audience/chrome threshold must remain separate");
+check(/header\.setAttribute\(["']inert["']/.test(cinematicController) && /field\.setAttribute\(["']inert["']/.test(cinematicController) && /header\.removeAttribute\(["']inert["']/.test(cinematicController) && /field\.removeAttribute\(["']inert["']/.test(cinematicController), "threshold-inert-state", "src/scripts/home-cinematic-integration.ts", "header and downstream fields must remain inert through the pure manifesto hold and release at audience entry");
 check(/mobileMenu\?\.removeAttribute\(["']open["']\)/.test(cinematicController), "reverse-menu-close", "src/scripts/home-cinematic-integration.ts", "reverse concealment must close the mobile menu");
-check(/skipLink\.focus\(\{\s*preventScroll:\s*true\s*\}\)/.test(cinematicController), "reverse-focus-safety", "src/scripts/home-cinematic-integration.ts", "reverse concealment must move hidden header/ENTRY focus to the permitted skip link without scrolling");
-check(/skipLink\.addEventListener\(["']click["'],\s*handleSkip/.test(cinematicController) && /entry\.focus\(\{\s*preventScroll:\s*true\s*\}\)/.test(cinematicController), "native-skip-settle", "src/scripts/home-cinematic-integration.ts", "the native #entry skip must synchronously settle, release, and focus ENTRY without waiting for media");
+check(/skipLink\.focus\(\{\s*preventScroll:\s*true\s*\}\)/.test(cinematicController) && /entry\.focus\(\{\s*preventScroll:\s*true\s*\}\)/.test(cinematicController), "reverse-focus-safety", "src/scripts/home-cinematic-integration.ts", "reverse concealment must move focus out of newly hidden regions without scrolling");
+check(/skipLink\.addEventListener\(["']click["'],\s*handleSkip/.test(cinematicController) && /setThresholdInteraction\(true, false\)/.test(cinematicController) && /entry\.focus\(\{\s*preventScroll:\s*true\s*\}\)/.test(cinematicController), "native-skip-settle", "src/scripts/home-cinematic-integration.ts", "the native #entry skip must synchronously settle and focus the manifesto without waiting for media");
 check(/const\s+releaseMissingDom/.test(cinematicController) && /cinematicFallback\s*=\s*["']required-dom["']/.test(cinematicController), "required-dom-fallback", "src/scripts/home-cinematic-integration.ts", "missing required DOM must synchronously release candidate concealment and inert states");
 check(/pagehide[\s\S]{0,800}cancelAnimationFrame\(animationFrame\)[\s\S]{0,120}animationFrame\s*=\s*0/.test(cinematicController), "bfcache-frame-reset", "src/scripts/home-cinematic-integration.ts", "BFCache/pagehide cancellation must reset the requestAnimationFrame handle");
-check(/history\.replaceState\([\s\S]*?quantumHomeCinematic:\s*\{\s*version:\s*3,\s*settledOrLower\s*\}/.test(cinematicController) && /restoredState\?\.version\s*===\s*3/.test(indexSource), "restored-scroll-metadata", "Home cinematic integration", "the current history entry and bootstrap must share the Phase 5A settled-state contract without any wake latch");
+check(/history\.replaceState\([\s\S]*?quantumHomeCinematic:\s*\{\s*version:\s*4,\s*settledOrLower\s*\}/.test(cinematicController) && /restoredState\?\.version\s*===\s*4/.test(indexSource), "restored-scroll-metadata", "Home cinematic integration", "the current history entry and bootstrap must share the Phase 5A-R settled-state contract without stale Phase 5A semantics");
 check(!/localStorage|sessionStorage|document\.cookie|cookieStore/.test(`${indexSource}\n${cinematicController}`), "no-persistent-skip", "Home cinematic bootstrap/controller", "cinematic eligibility must not use cookies or persistent web storage");
 check(!/cinematicFocus|cinematicDeepLink|preserveGeometry|cinematicHeader\s*=\s*["']visible["']/.test(`${indexSource}\n${cinematicController}\n${cinematicCss}`), "superseded-chrome-state", "Home cinematic integration", "focus reveals, enhanced deep links, legacy partial-failure flags, and early visible header states are prohibited");
 check(
@@ -362,10 +365,10 @@ check(!/\btouch-action\s*:\s*none/i.test(homeStyles), "touch-lock", "src/styles/
 check(/data-cinematic-header=["']concealed["'][\s\S]{0,180}\.site-header[\s\S]{0,260}visibility:\s*hidden[\s\S]{0,160}opacity:\s*0[\s\S]{0,160}pointer-events:\s*none/.test(cinematicCss), "concealed-chrome-css", "src/styles/routes/home-cinematic.css", "the complete pre-settled header must be invisible, transparent, and pointer-safe");
 check(!/:focus-within[\s\S]{0,160}(?:site-header|entry-field)|cinematic-focus/.test(cinematicCss), "no-focus-reveal-css", "src/styles/routes/home-cinematic.css", "keyboard focus must never reveal concealed chrome or ENTRY prematurely");
 check(
-  /@media\s*\(max-height:\s*30rem\)\s*and\s*\(min-width:\s*36rem\)[\s\S]*?\.entry-field\s*\{[\s\S]*?min-height:\s*calc\(100svh\s*-\s*var\(--cinematic-header-px\)\s*-\s*1px\)[\s\S]*?\.entry-path\s*\{[\s\S]*?min-height:\s*4\.25rem/.test(homeStyles),
-  "short-landscape-entry-fit",
+  /@media\s*\(max-height:\s*30rem\)\s*and\s*\(min-width:\s*36rem\)[\s\S]*?\.manifesto-field__content\s*\{[\s\S]*?padding-top:\s*clamp\(1\.35rem,\s*7svh,\s*2\.7rem\)[\s\S]*?\.audience-field__content\s*\{/.test(homeStyles),
+  "short-landscape-manifesto-fit",
   "src/styles/routes/home-responsive.css",
-  "the short-landscape-only ENTRY regime must fit the complete settled H1 and both routes below released chrome without changing global desktop or physical media selection",
+  "the short-landscape regime must keep the manifesto top-authored and give the following audience field an intentional composition",
 );
 for (const marker of [
   "quantum-hub.phase-4r1.chrome-evidence.v2",
@@ -434,16 +437,14 @@ try {
 } catch (error) {
   check(false, "layout-baseline", "src/layouts/BaseLayout.astro", `could not compare shared layout with accepted Phase 3: ${error.message}`);
 }
-try {
-  const acceptedEntry = normalizeLineEndings(git("show", `${ACCEPTED_PHASE3}:src/components/home/EntryField.astro`));
-  const expectedEntry = acceptedEntry.replace(
-    '  aria-labelledby="home-title"\n',
-    '  aria-labelledby="home-title"\n  tabindex="-1"\n',
-  );
-  check(normalizeLineEndings(entrySource).trim() === expectedEntry.trim(), "entry-integration-scope", "src/components/home/EntryField.astro", "ENTRY may differ from accepted Phase 2B only by the focusable skip-target attribute");
-} catch (error) {
-  check(false, "entry-baseline", "src/components/home/EntryField.astro", `could not compare ENTRY with accepted Phase 3: ${error.message}`);
-}
+check(
+  /data-manifesto-threshold/.test(entrySource)
+    && /class=["']manifesto-field__content["']/.test(entrySource)
+    && !/manifesto-field__content[\s\S]*?(?:field-label|entry-path|audience-trajectory)/.test(entrySource.match(/<section\b[\s\S]*?<\/section>/)?.[0] ?? ""),
+  "manifesto-integration-scope",
+  "src/components/home/EntryField.astro",
+  "the authorized manifesto section must contain only its H1 content and keep audience routing in the following section",
+);
 
 // The staging recipe and both authoritative/staged inventories are independently pinned.
 check(matches(stageSource, /\bsource:\s*["']/g) === MEDIA_ASSETS.length && matches(stageSource, /\boutput:\s*["']/g) === MEDIA_ASSETS.length, "stage-inventory-count", "scripts/stage-phase4-media.mjs", "media staging recipe must contain exactly seven source/output records");

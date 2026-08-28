@@ -320,8 +320,11 @@ export function initHomeCinematicIntegration() {
   const stage = shell?.querySelector<HTMLElement>("[data-cinematic-stage]");
   const video = shell?.querySelector<HTMLVideoElement>("[data-cinematic-media]");
   const entry = shell?.querySelector<HTMLElement>("#entry");
-  const entryContent = shell?.querySelector<HTMLElement>(".entry-field__content");
+  const manifestoContent = shell?.querySelector<HTMLElement>(".manifesto-field__content");
+  const audienceRouting = shell?.querySelector<HTMLElement>("[data-audience-routing]");
   const header = document.querySelector<HTMLElement>(".site-header");
+  const footer = document.querySelector<HTMLElement>(".site-footer");
+  const downstreamFields = Array.from(document.querySelectorAll<HTMLElement>("[data-field-section]"));
   const skipLink = document.querySelector<HTMLAnchorElement>(".skip-link[href='#entry']");
   const mobileMenu = header?.querySelector<HTMLDetailsElement>("[data-mobile-nav]");
   const methodField = document.querySelector<HTMLElement>("[data-method-section]");
@@ -335,13 +338,17 @@ export function initHomeCinematicIntegration() {
     root.dataset.cinematicHeader = "released";
     document.querySelector<HTMLElement>(".site-header")?.removeAttribute("inert");
     document.querySelector<HTMLElement>("#entry")?.removeAttribute("inert");
+    document.querySelector<HTMLElement>("[data-audience-routing]")?.removeAttribute("inert");
+    document.querySelector<HTMLElement>(".site-footer")?.removeAttribute("inert");
+    for (const field of document.querySelectorAll<HTMLElement>("[data-field-section]")) field.removeAttribute("inert");
     if (shell) {
       shell.dataset.cinematicInteractive = "true";
+      shell.dataset.routeNavigation = "released";
       shell.dataset.cinematicPhase = "fallback";
       shell.dataset.mediaState = "failed";
     }
   };
-  if (!shell || !stage || !video || !entry || !entryContent || !header || !skipLink) {
+  if (!shell || !stage || !video || !entry || !manifestoContent || !audienceRouting || !header || !skipLink) {
     releaseMissingDom();
     return;
   }
@@ -367,6 +374,7 @@ export function initHomeCinematicIntegration() {
   let needsMeasurement = true;
   let shellTop = 0;
   let entryTop = 1;
+  let audienceTop = 2;
   let headerHeight = 0;
   let travel = 1;
   let scrollTargetPhysicalFrame = 1;
@@ -413,28 +421,44 @@ export function initHomeCinematicIntegration() {
     const key = String(settledOrLower);
     if (persistedRestorationState === key) return;
     try {
-      history.replaceState({ ...(history.state && typeof history.state === "object" ? history.state : {}), quantumHomeCinematic: { version: 3, settledOrLower } }, document.title);
+      history.replaceState({ ...(history.state && typeof history.state === "object" ? history.state : {}), quantumHomeCinematic: { version: 4, settledOrLower } }, document.title);
       persistedRestorationState = key;
     } catch { /* History state is advisory. */ }
   };
-  const setSettledInteraction = (settled: boolean) => {
-    if (settled) {
+  const setThresholdInteraction = (manifestoSettled: boolean, navigationReleased: boolean) => {
+    if (navigationReleased) {
       header.removeAttribute("inert");
       entry.removeAttribute("inert");
+      footer?.removeAttribute("inert");
+      for (const field of downstreamFields) field.removeAttribute("inert");
       root.dataset.cinematicHeader = "released";
       shell.dataset.cinematicInteractive = "true";
+      shell.dataset.routeNavigation = "released";
       return;
     }
     mobileMenu?.removeAttribute("open");
     const focused = document.activeElement;
-    if (focused instanceof Node && (header.contains(focused) || entry.contains(focused))) skipLink.focus({ preventScroll: true });
     header.setAttribute("inert", "");
-    entry.setAttribute("inert", "");
+    footer?.setAttribute("inert", "");
+    for (const field of downstreamFields) field.setAttribute("inert", "");
     root.dataset.cinematicHeader = "concealed";
+    shell.dataset.routeNavigation = "concealed";
+    if (manifestoSettled) {
+      entry.removeAttribute("inert");
+      shell.dataset.cinematicInteractive = "manifesto";
+      if (focused instanceof Node && (header.contains(focused) || footer?.contains(focused) || downstreamFields.some((field) => field.contains(focused)))) {
+        entry.focus({ preventScroll: true });
+      }
+      return;
+    }
+    entry.setAttribute("inert", "");
     shell.dataset.cinematicInteractive = "false";
+    if (focused instanceof Node && (header.contains(focused) || entry.contains(focused) || footer?.contains(focused) || downstreamFields.some((field) => field.contains(focused)))) {
+      skipLink.focus({ preventScroll: true });
+    }
   };
   const clearCinematicStyles = () => {
-    for (const property of ["--cinematic-header-px", "--cinematic-travel-px", "--cinematic-progress", "--cinematic-film-progress", "--cinematic-black", "--cinematic-black-breath", "--cinematic-semantic", "--cinematic-media-ready"]) shell.style.removeProperty(property);
+    for (const property of ["--cinematic-header-px", "--cinematic-travel-px", "--cinematic-progress", "--cinematic-film-progress", "--cinematic-black", "--cinematic-black-breath", "--cinematic-semantic", "--cinematic-media-ready", "--manifesto-anchor-px"]) shell.style.removeProperty(property);
     root.style.removeProperty("--cinematic-semantic");
   };
   const failOpen = (reason: string) => {
@@ -463,16 +487,22 @@ export function initHomeCinematicIntegration() {
     root.dataset.cinematicMode = "static";
     shell.dataset.mediaState = "failed";
     shell.dataset.cinematicPhase = "fallback";
-    setSettledInteraction(true);
+    setThresholdInteraction(true, true);
     clearCinematicStyles();
   };
   const portalFits = () => {
     if (zoomMakesPortalUnsafe() || window.innerHeight < 320) return false;
-    const anchors = [entryContent.querySelector<HTMLElement>("h1"), entryContent.querySelector<HTMLElement>(".entry-paths")];
+    const anchors = [
+      manifestoContent.querySelector<HTMLElement>("h1"),
+      ...manifestoContent.querySelectorAll<HTMLElement>(".manifesto-line"),
+      ...audienceRouting.querySelectorAll<HTMLElement>(".audience-trajectory"),
+    ];
     return anchors.every((anchor) => {
       if (!anchor) return false;
       const bounds = anchor.getBoundingClientRect();
-      return bounds.left >= -3 && bounds.right <= window.innerWidth + 3;
+      return bounds.left >= -3
+        && bounds.right <= window.innerWidth + 3
+        && anchor.scrollWidth <= anchor.clientWidth + 3;
     }) && Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) <= window.innerWidth + 3;
   };
 
@@ -502,6 +532,7 @@ export function initHomeCinematicIntegration() {
     shell.style.setProperty("--cinematic-travel-px", `${authoredTravel.toFixed(2)}px`);
     shellTop = shell.getBoundingClientRect().top + window.scrollY;
     entryTop = entry.getBoundingClientRect().top + window.scrollY;
+    audienceTop = audienceRouting.getBoundingClientRect().top + window.scrollY;
     travel = Math.max(entryTop - headerHeight - shellTop, 1);
     needsMeasurement = false;
   };
@@ -542,6 +573,7 @@ export function initHomeCinematicIntegration() {
     shell.style.setProperty("--cinematic-black", black.toFixed(4));
     shell.style.setProperty("--cinematic-black-breath", blackBreath.toFixed(4));
     shell.style.setProperty("--cinematic-semantic", semantic.toFixed(4));
+    shell.style.setProperty("--manifesto-anchor-px", `${Math.min(0, currentScrollOffset - scrollExtent).toFixed(2)}px`);
     shell.style.setProperty("--cinematic-media-ready", mediaReady && !mediaFailed ? "1" : "0");
     root.style.setProperty("--cinematic-semantic", semantic.toFixed(4));
     shell.dataset.cinematicPhase = phase;
@@ -552,10 +584,12 @@ export function initHomeCinematicIntegration() {
     shell.dataset.cinematicSegment = segment;
     shell.dataset.targetFrame = String(targetPhysicalFrame);
     shell.dataset.targetTime = targetTime.toFixed(4);
-    setSettledInteraction(settled);
+    const navigationReleasePoint = audienceTop - window.innerHeight;
+    const navigationReleased = settled && nativeScrollY >= navigationReleasePoint;
+    setThresholdInteraction(settled, navigationReleased);
     persistRestorationState(settled);
     requestCurrentFrame();
-    Object.assign(publicState, { mode: root.dataset.cinematicMode ?? "enhanced", scrollProgress: rounded(scrollProgress), cinematicProgress: rounded(cinematicProgress), conceptualFrame, targetFrame: targetPhysicalFrame, targetTime: rounded(targetTime), blackProgress: rounded(black), semanticProgress: rounded(semantic), mediaReady, segment, scrollOffset: currentScrollOffset, presentedFrame: presentedPhysicalFrame });
+    Object.assign(publicState, { mode: root.dataset.cinematicMode ?? "enhanced", scrollProgress: rounded(scrollProgress), cinematicProgress: rounded(cinematicProgress), conceptualFrame, targetFrame: targetPhysicalFrame, targetTime: rounded(targetTime), blackProgress: rounded(black), semanticProgress: rounded(semantic), mediaReady, segment, scrollOffset: currentScrollOffset, presentedFrame: presentedPhysicalFrame, manifestoSettled: settled, navigationReleased });
   };
   const schedule = () => {
     if (animationFrame || document.hidden || failed) return;
@@ -579,10 +613,10 @@ export function initHomeCinematicIntegration() {
     shell.style.setProperty("--cinematic-film-progress", "1");
     shell.style.setProperty("--cinematic-black", "1");
     shell.style.setProperty("--cinematic-semantic", "1");
+    shell.style.setProperty("--manifesto-anchor-px", "0px");
     root.style.setProperty("--cinematic-semantic", "1");
     shell.dataset.cinematicPhase = "settled";
-    shell.dataset.cinematicInteractive = "true";
-    setSettledInteraction(true);
+    setThresholdInteraction(true, false);
     persistRestorationState(true);
     entry.focus({ preventScroll: true });
   };
@@ -606,6 +640,7 @@ export function initHomeCinematicIntegration() {
   const resizeObserver = new ResizeObserver(invalidate);
   resizeObserver.observe(shell);
   resizeObserver.observe(entry);
+  resizeObserver.observe(audienceRouting);
   if (methodField) resizeObserver.observe(methodField);
   window.addEventListener("scroll", schedule, { passive: true, signal });
   window.addEventListener("resize", invalidate, { passive: true, signal });

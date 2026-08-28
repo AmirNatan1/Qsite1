@@ -16,13 +16,14 @@ const DIST = path.join(ROOT, "dist");
 const FINAL_AUTHORITY_EXPECTED = process.env.PHASE4R2_FINAL_AUTHORITY === "1";
 const ACCEPTED_PHASE2B_CSS_RAW = 49_478;
 const HOME_CHAPTERS = Object.freeze([
-  { id: "entry", label: "home-title", heading: "h1" },
-  { id: "built-with-industry", label: "industry-model-title", heading: "h2" },
-  { id: "method", label: "method-title", heading: "h2" },
-  { id: "industries", label: "industries-title", heading: "h2" },
-  { id: "proof", label: "proof-title", heading: "h2" },
-  { id: "programmes", label: "programmes-title", heading: "h2" },
-  { id: "conversion", label: "conversion-title", heading: "h2" },
+  { id: "entry", scene: "manifesto", label: "home-title", heading: "h1" },
+  { id: "audience-routing", scene: "audience-routing", label: "audience-routing-title", heading: "h2" },
+  { id: "built-with-industry", scene: "built-with-industry", label: "industry-model-title", heading: "h2" },
+  { id: "method", scene: "method", label: "method-title", heading: "h2" },
+  { id: "industries", scene: "industries", label: "industries-title", heading: "h2" },
+  { id: "proof", scene: "proof", label: "proof-title", heading: "h2" },
+  { id: "programmes", scene: "programmes", label: "programmes-title", heading: "h2" },
+  { id: "conversion", scene: "conversion", label: "conversion-title", heading: "h2" },
 ]);
 const MEDIA_ASSETS = Object.freeze([
   {
@@ -234,14 +235,15 @@ for (const chapter of HOME_CHAPTERS) {
   check(Boolean(section), "home-chapter", "dist/index.html", `chapter ${chapter.id} is missing`);
   if (section) {
     check(attribute(section, "aria-labelledby") === chapter.label, "home-chapter-label", "dist/index.html", `${chapter.id} must be labelled by ${chapter.label}`);
-    check(attribute(section, "data-home-scene") === chapter.id, "home-chapter-hook", "dist/index.html", `${chapter.id} must retain its scene identity`);
+    check(attribute(section, "data-home-scene") === chapter.scene, "home-chapter-hook", "dist/index.html", `${chapter.id} must retain its scene identity`);
   }
   const heading = tags(homeHtml, chapter.heading).find((tag) => attribute(tag, "id") === chapter.label);
   check(Boolean(heading), "home-chapter-heading", "dist/index.html", `${chapter.id} must retain its ${chapter.heading.toUpperCase()} label target`);
 }
 const h1Elements = elements(homeHtml, "h1");
 check(h1Elements.length === 1, "home-h1-count", "dist/index.html", `built Home must contain exactly one H1; observed ${h1Elements.length}`);
-check(normalized(visibleText(h1Elements[0]?.inner ?? "")).toLowerCase() === "where do you enter?", "entry-h1", "dist/index.html", "settled ENTRY H1 must be WHERE DO YOU ENTER?");
+check(normalized(visibleText(h1Elements[0]?.inner ?? "")).toLowerCase() === "we turn industrial needs into field evidence.", "manifesto-h1", "dist/index.html", "the settled manifesto H1 must use the production-authorized sentence exactly");
+check(!/where do you enter\?/i.test(normalized(visibleText(h1Elements[0]?.inner ?? ""))), "superseded-entry-h1", "dist/index.html", "the superseded audience prompt must not remain the H1");
 const entrySection = tags(homeHtml, "section").find((tag) => attribute(tag, "id") === "entry");
 check(attribute(entrySection ?? "", "tabindex") === "-1", "skip-target-focus", "dist/index.html", "ENTRY skip target must be programmatically focusable");
 
@@ -254,12 +256,13 @@ const eligibilityBootstrap = homeHtml.indexOf("cinematicEligibility");
 const headerMarkup = tags(homeHtml, "header").find((tag) => (attribute(tag, "class") ?? "").split(/\s+/).includes("site-header"));
 check(eligibilityBootstrap >= 0 && bodyStart >= 0 && eligibilityBootstrap < bodyStart, "head-bootstrap-order", "dist/index.html", "cinematic eligibility and concealment must execute in head before the header can be parsed or painted");
 check(/cinematicMode\s*=\s*\w+\s*\?\s*["']candidate["']\s*:\s*["']static["']/.test(homeHtml) && /cinematicHeader\s*=\s*\w+\s*\?\s*["']concealed["']\s*:\s*["']released["']/.test(homeHtml), "bootstrap-chrome-states", "dist/index.html", "built bootstrap must emit only candidate/concealed or static/released initial states");
-check(attribute(headerMarkup ?? "", "inert") === undefined && attribute(entrySection ?? "", "inert") === undefined, "no-js-chrome-release", "dist/index.html", "SSR must not make header or ENTRY inert when JavaScript is unavailable");
+const audienceSection = tags(homeHtml, "section").find((tag) => attribute(tag, "id") === "audience-routing");
+check(attribute(headerMarkup ?? "", "inert") === undefined && attribute(entrySection ?? "", "inert") === undefined && attribute(audienceSection ?? "", "inert") === undefined, "no-js-chrome-release", "dist/index.html", "SSR must keep header, manifesto, and audience routing available when JavaScript is unavailable");
 for (const [href, copy] of [
   ["/for-partners/", "Bring us an operational challenge."],
   ["/for-startups/", "Bring us a technology ready to be tested."],
 ]) {
-  check(tags(homeHtml, "a").some((tag) => attribute(tag, "href") === href) && homeText.includes(copy), "entry-route", "dist/index.html", `ENTRY must retain ${href} and its accepted proposition`);
+  check(tags(homeHtml, "a").some((tag) => attribute(tag, "href") === href) && homeText.includes(copy), "audience-route", "dist/index.html", `audience routing must retain ${href} and its accepted proposition`);
 }
 const methodList = elements(homeHtml, "ol").find(({ tag }) => (attribute(tag, "class") ?? "").split(/\s+/).includes("method-stages"));
 const methodOrder = methodList ? elements(methodList.inner, "h3").map(({ inner }) => normalized(visibleText(inner))) : [];
@@ -315,7 +318,7 @@ if (cinematicChunk) {
   check(/addEventListener\(["'`]scroll["'`][\s\S]{0,120}passive:!0/.test(cinematicChunk.text), "passive-scroll", `dist/${cinematicChunk.path}`, "production cinematic scroll listener must remain passive");
   check(/requestAnimationFrame\(/.test(cinematicChunk.text) && /ResizeObserver/.test(cinematicChunk.text), "controller-coalescing", `dist/${cinematicChunk.path}`, "production controller must retain rAF coalescing and resize invalidation");
   check(/fetch\(/.test(cinematicChunk.text) && /\.blob\(\)/.test(cinematicChunk.text) && /URL\.createObjectURL\(/.test(cinematicChunk.text) && /URL\.revokeObjectURL\(/.test(cinematicChunk.text), "seekable-media-delivery", `dist/${cinematicChunk.path}`, "production controller must turn the single selected immutable response into one lifecycle-managed seekable Blob URL");
-  check(/>=\.9995/.test(cinematicChunk.text) && /setAttribute\(["'`]inert["'`]/.test(cinematicChunk.text) && /removeAttribute\(["'`]inert["'`]/.test(cinematicChunk.text), "settled-chrome-boundary", `dist/${cinematicChunk.path}`, "built controller must gate inert header/ENTRY release at the exact settled boundary");
+  check(/>=\.9995/.test(cinematicChunk.text) && /window\.innerHeight/.test(cinematicChunk.text) && /routeNavigation/.test(cinematicChunk.text) && /--manifesto-anchor-px/.test(cinematicChunk.text) && /setAttribute\(["'`]inert["'`]/.test(cinematicChunk.text) && /removeAttribute\(["'`]inert["'`]/.test(cinematicChunk.text), "manifesto-chrome-boundary", `dist/${cinematicChunk.path}`, "built controller must settle the anchored manifesto before releasing chrome at audience entry");
   check(/replaceState\(/.test(cinematicChunk.text) && /quantumHomeCinematic/.test(cinematicChunk.text), "restored-scroll-metadata", `dist/${cinematicChunk.path}`, "built controller must bind settled/lower restoration metadata to the current history entry");
   check(!/localStorage|sessionStorage|cookieStore|document\.cookie/.test(cinematicChunk.text), "no-persistent-skip", `dist/${cinematicChunk.path}`, "built controller must not use cookies or persistent storage to skip the cinematic");
   check(!/cinematicFocus|cinematicDeepLink|preserveGeometry|cinematicHeader=["']visible["']/.test(cinematicChunk.text), "superseded-chrome-state", `dist/${cinematicChunk.path}`, "built controller must not retain focus-reveal, enhanced deep-link, partial failure, or early-visible header states");
@@ -344,7 +347,7 @@ for (const route of SUPPORTING_ROUTES) {
   const css = [...cssReferences].map((reference) => byPath.get(reference)?.text ?? "").join("\n");
   const js = [...jsClosure].map((reference) => byPath.get(reference)?.text ?? "").join("\n");
   check(!/data-cinematic|\/media\/cinematic\/|home-cinematic|home-operating-field/.test(`${html}\n${js}`), "supporting-route-isolation", `dist/${route.output}`, `${route.path} must not load or reference cinematic/Home runtime`);
-  check(!/\.cinematic-shell|\.cinematic-media|\.entry-field|\.method-field/.test(css), "supporting-style-isolation", `dist/${route.output}`, `${route.path} must not load Home-only styles`);
+  check(!/\.cinematic-shell|\.cinematic-media|\.manifesto-field|\.audience-field|\.method-field/.test(css), "supporting-style-isolation", `dist/${route.output}`, `${route.path} must not load Home-only styles`);
   const supportingSkip = tags(html, "a").find((tag) => (attribute(tag, "class") ?? "").split(/\s+/).includes("skip-link"));
   check(attribute(supportingSkip ?? "", "href") === "#main-content", "supporting-skip-target", `dist/${route.output}`, `${route.path} must retain the standard main-content skip target`);
   supportingIsolation[route.path] = { javascript: [...jsClosure].sort(), stylesheets: [...cssReferences].sort() };

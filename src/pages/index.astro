@@ -87,7 +87,7 @@ if (!maradinOpening || !maradinClimax) {
             "requestAnimationFrame" in window;
           const directDeepLink = window.location.hash.length > 1;
           const restoredState = window.history.state?.quantumHomeCinematic;
-          const restoredSettled = restoredState?.version === 3 && restoredState.settledOrLower === true;
+          const restoredSettled = restoredState?.version === 4 && restoredState.settledOrLower === true;
           const viewportScale = window.visualViewport?.scale ?? 1;
           const rootFontSize = Number.parseFloat(getComputedStyle(root).fontSize);
           const chromeRatio = window.innerWidth > 0 && window.outerWidth > 0
@@ -123,7 +123,7 @@ if (!maradinOpening || !maradinClimax) {
     </script>
   </Fragment>
 
-  <div class="cinematic-shell" data-cinematic-shell data-cinematic-interactive="false">
+  <div class="cinematic-shell" data-cinematic-shell data-cinematic-interactive="false" data-route-navigation="concealed">
     <div class="cinematic-runway" aria-hidden="true">
       <div class="cinematic-stage" data-cinematic-stage>
         <picture class="cinematic-poster" data-cinematic-poster aria-hidden="true">
@@ -166,13 +166,18 @@ if (!maradinOpening || !maradinClimax) {
         const root = document.documentElement;
         const shell = document.querySelector("[data-cinematic-shell]");
         const header = document.querySelector(".site-header");
+        const footer = document.querySelector(".site-footer");
         const entry = shell?.querySelector("#entry");
+        const downstreamFields = document.querySelectorAll("[data-field-section]");
         const concealed = root.dataset.cinematicMode === "candidate"
           && root.dataset.cinematicHeader === "concealed";
         header?.toggleAttribute("inert", concealed);
+        footer?.toggleAttribute("inert", concealed);
         entry?.toggleAttribute("inert", concealed);
+        downstreamFields.forEach((field) => field.toggleAttribute("inert", concealed));
         if (!concealed && shell) {
           shell.dataset.cinematicInteractive = "true";
+          shell.dataset.routeNavigation = "released";
           shell.dataset.cinematicPhase = "fallback";
         }
       })();
@@ -189,10 +194,13 @@ if (!maradinOpening || !maradinClimax) {
             root.dataset.cinematicHeader = "released";
             root.dataset.cinematicEligibility = "bypass";
             document.querySelector(".site-header")?.removeAttribute("inert");
+            document.querySelector(".site-footer")?.removeAttribute("inert");
             document.querySelector("#entry")?.removeAttribute("inert");
+            document.querySelectorAll("[data-field-section]").forEach((field) => field.removeAttribute("inert"));
             const shell = document.querySelector("[data-cinematic-shell]");
             if (shell instanceof HTMLElement) {
               shell.dataset.cinematicInteractive = "true";
+              shell.dataset.routeNavigation = "released";
               shell.dataset.cinematicPhase = "fallback";
             }
           });

@@ -8,6 +8,7 @@
   --cinematic-black-breath: 0;
   --cinematic-semantic: 0;
   --cinematic-media-ready: 0;
+  --manifesto-anchor-px: 0px;
   --cinematic-object-x: 48%;
   --cinematic-object-y: 50%;
   position: relative;
@@ -74,7 +75,7 @@
   opacity: var(--cinematic-black);
 }
 
-.cinematic-shell > .entry-field {
+.cinematic-shell > .manifesto-field {
   z-index: 3;
   scroll-margin-top: var(--cinematic-header-px);
 }
@@ -124,24 +125,25 @@ html[data-cinematic-mode="enhanced"] .cinematic-stage {
   height: 100svh;
 }
 
-html[data-cinematic-mode="candidate"] .cinematic-shell > .entry-field,
-html[data-cinematic-mode="enhanced"] .cinematic-shell > .entry-field {
+html[data-cinematic-mode="candidate"] .cinematic-shell > .manifesto-field,
+html[data-cinematic-mode="enhanced"] .cinematic-shell > .manifesto-field {
+  min-height: calc(170svh - var(--cinematic-header-px));
   background: transparent;
   pointer-events: none;
 }
 
-html[data-cinematic-mode="candidate"] .cinematic-shell > .entry-field .entry-field__residual,
-html[data-cinematic-mode="enhanced"] .cinematic-shell > .entry-field .entry-field__residual {
-  opacity: 0;
-}
-
-html[data-cinematic-mode="candidate"] .cinematic-shell > .entry-field .entry-field__content,
-html[data-cinematic-mode="enhanced"] .cinematic-shell > .entry-field .entry-field__content {
+html[data-cinematic-mode="candidate"] .cinematic-shell > .manifesto-field .manifesto-field__content,
+html[data-cinematic-mode="enhanced"] .cinematic-shell > .manifesto-field .manifesto-field__content {
+  position: relative;
+  top: calc(var(--manifesto-anchor-px) - var(--cinematic-header-px));
+  filter: blur(calc((1 - var(--cinematic-semantic)) * 0.65px));
   opacity: var(--cinematic-semantic);
 }
 
-html[data-cinematic-mode="candidate"] .cinematic-shell[data-cinematic-interactive="true"] > .entry-field,
-html[data-cinematic-mode="enhanced"] .cinematic-shell[data-cinematic-interactive="true"] > .entry-field {
+html[data-cinematic-mode="candidate"] .cinematic-shell[data-cinematic-interactive="manifesto"] > .manifesto-field,
+html[data-cinematic-mode="enhanced"] .cinematic-shell[data-cinematic-interactive="manifesto"] > .manifesto-field,
+html[data-cinematic-mode="candidate"] .cinematic-shell[data-cinematic-interactive="true"] > .manifesto-field,
+html[data-cinematic-mode="enhanced"] .cinematic-shell[data-cinematic-interactive="true"] > .manifesto-field {
   pointer-events: auto;
 }
 
@@ -149,12 +151,8 @@ html[data-cinematic-mode="enhanced"] .cinematic-shell[data-cinematic-interactive
   visibility: hidden;
 }
 
-.cinematic-shell[data-cinematic-phase="settled"] > .entry-field {
+.cinematic-shell[data-cinematic-phase="settled"] > .manifesto-field {
   background: var(--field-black);
-}
-
-.cinematic-shell[data-cinematic-phase="settled"] > .entry-field .entry-field__residual {
-  opacity: 1;
 }
 
 /* A late decoder/delivery failure keeps the committed runway and a still F1
@@ -179,6 +177,11 @@ html[data-cinematic-mode="enhanced"] .cinematic-shell[data-media-state="failed-p
   html[data-cinematic-mode="enhanced"] .cinematic-shell {
     --cinematic-travel-px: 485svh;
   }
+
+  html[data-cinematic-mode="candidate"] .cinematic-shell > .manifesto-field,
+  html[data-cinematic-mode="enhanced"] .cinematic-shell > .manifesto-field {
+    min-height: calc(168svh - var(--cinematic-header-px));
+  }
 }
 
 @media (max-width: 21.875rem) and (orientation: portrait) {
@@ -196,6 +199,11 @@ html[data-cinematic-mode="enhanced"] .cinematic-shell[data-media-state="failed-p
   html[data-cinematic-mode="candidate"] .cinematic-shell,
   html[data-cinematic-mode="enhanced"] .cinematic-shell {
     --cinematic-travel-px: 510svh;
+  }
+
+  html[data-cinematic-mode="candidate"] .cinematic-shell > .manifesto-field,
+  html[data-cinematic-mode="enhanced"] .cinematic-shell > .manifesto-field {
+    min-height: calc(164svh - var(--cinematic-header-px));
   }
 }
 

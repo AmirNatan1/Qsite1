@@ -1,33 +1,51 @@
 <section
   id="entry"
-  class="operating-chapter entry-field"
+  class="operating-chapter manifesto-field"
   aria-labelledby="home-title"
   tabindex="-1"
-  data-home-scene="entry"
+  data-home-scene="manifesto"
+  data-manifesto-threshold
+>
+  <div class="manifesto-field__content">
+    <h1 id="home-title">
+      <span class="manifesto-line">
+        <span class="manifesto-mobile-line">We turn</span>{" "}<span class="manifesto-mobile-line">industrial needs</span>
+      </span>{" "}<span class="manifesto-line">
+        <span class="manifesto-mobile-line">into field</span>{" "}<span class="manifesto-mobile-line">evidence.</span>
+      </span>
+    </h1>
+  </div>
+</section>
+
+<section
+  id="audience-routing"
+  class="operating-chapter audience-field"
+  aria-labelledby="audience-routing-title"
+  tabindex="-1"
+  data-home-scene="audience-routing"
+  data-audience-routing
   data-field-section
 >
-  <div class="entry-field__residual" aria-hidden="true">
-    <span class="entry-field__raster"></span>
-    <span class="entry-field__boundary entry-field__boundary--left"></span>
-    <span class="entry-field__boundary entry-field__boundary--right"></span>
-    <span class="entry-field__current"></span>
-  </div>
+  <div class="operating-shell audience-field__content">
+    <header class="audience-field__heading">
+      <p class="field-label">Entry coordinates</p>
+      <h2 id="audience-routing-title">One operating field. Two trajectories.</h2>
+    </header>
 
-  <div class="operating-shell entry-field__content">
-    <p class="field-label">Two ways in</p>
-    <h1 id="home-title"><span>Where do</span>{" "}<span>you enter?</span></h1>
+    <nav class="audience-trajectories" aria-label="Audience routes">
+      <a class="audience-trajectory audience-trajectory--industry" href="/for-partners/" data-entry-path="industry">
+        <span class="audience-trajectory__index" aria-hidden="true">01</span>
+        <span class="audience-trajectory__audience">For industry</span>
+        <span class="audience-trajectory__statement">Bring us an operational challenge.</span>
+        <span class="audience-trajectory__direction" aria-hidden="true">Enter the field&nbsp;↗</span>
+      </a>
 
-    <div class="entry-paths" aria-label="Choose your route">
-      <a class="entry-path entry-path--industry" href="/for-partners/" data-entry-path="industry">
-        <span class="entry-path__audience">For industry</span>
-        <span class="entry-path__statement">Bring us an operational challenge.</span>
-        <span class="entry-path__direction" aria-hidden="true">Explore</span>
+      <a class="audience-trajectory audience-trajectory--startup" href="/for-startups/" data-entry-path="startup">
+        <span class="audience-trajectory__index" aria-hidden="true">02</span>
+        <span class="audience-trajectory__audience">For startups</span>
+        <span class="audience-trajectory__statement">Bring us a technology ready to be tested.</span>
+        <span class="audience-trajectory__direction" aria-hidden="true">Enter the field&nbsp;↗</span>
       </a>
-      <a class="entry-path entry-path--startup" href="/for-startups/" data-entry-path="startup">
-        <span class="entry-path__audience">For startups</span>
-        <span class="entry-path__statement">Bring us a technology ready to be tested.</span>
-        <span class="entry-path__direction" aria-hidden="true">Explore</span>
-      </a>
-    </div>
+    </nav>
   </div>
 </section>
