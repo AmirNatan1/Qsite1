@@ -1147,7 +1147,10 @@ async function recordStandardScenario(browser, options, scenario, rawRoot, panel
     await twoFrames(page);
     const settled = await runtimeState(page);
     await page.evaluate(() => window.scrollTo(0, 0));
-    await page.waitForFunction(() => window.quantumPhase4?.conceptualFrame === 1 && (window.quantumPhase4?.presentedFrame ?? 500) <= 1, null, { timeout: 5_000 });
+    await page.waitForFunction(() => {
+      const state = window.quantumPhase4;
+      return state?.conceptualFrame === 1 && state.targetFrame <= 1 && state.presentedFrame <= 1 && state.reactionState === "pre-arrival";
+    }, null, { timeout: Math.min(options.timeoutMs, 10_000) });
     await twoFrames(page);
     const top = await runtimeState(page);
     checks = { settledReached: settled.phase === "settled" && settled.presentedFrame >= PHYSICAL_FRAME_COUNT, topReached: top.conceptualFrame === 1 && top.presentedFrame <= 1 && Math.abs(top.scrollY) <= 0.5 };

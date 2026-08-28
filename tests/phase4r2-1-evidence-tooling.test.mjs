@@ -191,6 +191,7 @@ test("capture harness contains no stale immutable deployment and performs no imp
   assert.match(source, /Network\.emulateNetworkConditions/);
   assert.match(source, /physicalFrameCount:\s*PHYSICAL_FRAME_COUNT/);
   assert.match(source, /scenario\.kind === "full-reverse"[\s\S]*?conceptualFrame === 1 && state\.targetFrame <= 1 && state\.presentedFrame <= 1 && state\.reactionState === "pre-arrival"[\s\S]*?timeout: Math\.min\(options\.timeoutMs, 10_000\)/);
+  assert.match(source, /scenario\.kind === "fast-jump"[\s\S]*?conceptualFrame === 1 && state\.targetFrame <= 1 && state\.presentedFrame <= 1 && state\.reactionState === "pre-arrival"[\s\S]*?timeout: Math\.min\(options\.timeoutMs, 10_000\)/);
   assert.doesNotMatch(source, /page\.waitForFunction\(\(\{ frame, presented \}\).*PHYSICAL_FRAME_COUNT/s);
   assert.doesNotMatch(source, /noScrollLock:\s*true/);
   assert.doesNotMatch(source, /color-contrast["']:\s*\{\s*enabled:\s*false/);
