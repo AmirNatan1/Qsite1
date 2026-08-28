@@ -1,0 +1,122 @@
+{
+  "schema": "quantum-hub.phase-4-r2-1.signal-root-cause-matrix.v1",
+  "baseline": {
+    "branch": "feature/phase-4r2-final-cinematic-production",
+    "head": "af0b196e2b1e81925c6cefdc477df6fcb94b4a41",
+    "immutableDeployment": "https://b513942a.qsite1.pages.dev/",
+    "sourceBlendSha256": "b0c9c7c1cf5a1642870cf03a36791cc50ec31ac207aeae794fbea83c856a79c0",
+    "diagnosisOnly": true,
+    "sourceModified": false,
+    "mastersModified": false,
+    "mediaModified": false
+  },
+  "statusSemantics": "PASS means the defect is absent at that layer. FAIL means the defect is present or introduced at that layer. A faithful delivery encode can therefore be FAIL when it accurately carries a source/master defect.",
+  "matrix": [
+    {
+      "defect": "outer/inner loop appear to activate together",
+      "blender": "FAIL",
+      "rgb16Master": "FAIL",
+      "h264": "FAIL",
+      "vp9": "FAIL",
+      "browserMapping": "PASS",
+      "rootCause": "The Blender mask is one contiguous prefix, but its bright suffix lasts 13 frames and spans approximately 5.3-5.6% of the complete route. Near turn boundaries that physically contiguous interval remains bright on the end of one loop while entering the adjacent loop, creating two spatially separated bright readings. Four keyed local-response lights can reinforce adjacent-loop spill. RGB16 contains the reading. H.264 faithfully carries it; VP9 additionally loses substantial current-frame fidelity. Browser mapping is monotonic and does not reorder source frames, although normal input can skip intermediate evidence.",
+      "evidence": {
+        "sourceAudit": "artifacts/reports/phase-4r2-1/phase-4r2-1-source-signal-audit.json",
+        "sourceFrontWidthNormalized": {
+          "desktop": 0.05625,
+          "portrait": 0.05555556,
+          "landscape": 0.05263158
+        },
+        "sourceActiveFrontIntervalCount": 1,
+        "sourceEnergizedPrefixIntervalCount": 1,
+        "sourceEmissionAheadOfFront": 0,
+        "selectedEncodeCurrentFrameExamples": {
+          "desktopF261": {
+            "h264": { "psnrDb": 45.81, "ssim": 0.992945 },
+            "vp9": { "psnrDb": 28.60, "ssim": 0.926392 }
+          },
+          "portraitF261": {
+            "h264": { "psnrDb": 47.70, "ssim": 0.990106 },
+            "vp9": { "psnrDb": 22.42, "ssim": 0.789499 }
+          },
+          "landscapeF261": {
+            "h264": { "psnrDb": 45.37, "ssim": 0.991657 },
+            "vp9": { "psnrDb": 25.50, "ssim": 0.899034 }
+          }
+        }
+      }
+    },
+    {
+      "defect": "dark signal sections at arrival",
+      "blender": "FAIL",
+      "rgb16Master": "FAIL",
+      "h264": "FAIL",
+      "vp9": "FAIL",
+      "browserMapping": "PASS",
+      "rootCause": "At F285 all segment alphas are energized as one interval, but the R1.1 material exposes the circular overlay only through narrow view-facing windows (outer 0.64-0.80, core 0.88-0.96) and front faces. Curved orientations are therefore materially powered but visually dark. Full-resolution RGB16 production views show these gaps. Both encodes carry them, with VP9 degrading the active-current range more strongly. Browser frame selection does not create the gaps.",
+      "evidence": {
+        "materialMaskAtF285": {
+          "desktop": { "totalSamples": 160, "energizedSamples": 160, "darkSamples": 0, "intervalCount": 1 },
+          "portrait": { "totalSamples": 144, "energizedSamples": 144, "darkSamples": 0, "intervalCount": 1 },
+          "landscape": { "totalSamples": 152, "energizedSamples": 152, "darkSamples": 0, "intervalCount": 1 }
+        },
+        "productionVisibility": "FAIL",
+        "shaderAuthority": "front-facing-only narrow view-facing windows",
+        "sourceRepairRequired": true
+      }
+    },
+    {
+      "defect": "CRT needs more scroll after arrival",
+      "blender": "PASS",
+      "rgb16Master": "PASS",
+      "h264": "PASS",
+      "vp9": "PASS",
+      "browserMapping": "FAIL",
+      "rootCause": "The authored film correctly contains arrival at F285, activation beginning at F286, and stable Q at F370. The runtime is a paused seek surface: every target is derived only from scroll, and requestCurrentFrame always pauses before seeking. There is no bounded playback/reaction state. At 1440x900 the current mapping consumes approximately another 707 px from arrival to stable Q. A deployed no-input hold remained at F286 for 3.2 seconds with unchanged scrollY and video time.",
+      "evidence": {
+        "F_ARRIVAL": 285,
+        "F_STABLE_Q": 370,
+        "authoredWakeFrames": 85,
+        "authoredWakeSeconds": 2.8333333333,
+        "deployedNoInputHold": {
+          "viewport": "1440x900",
+          "scrollY": 2418.3999,
+          "targetFrameBefore": 286,
+          "targetFrameAfter": 286,
+          "videoTimeBefore": 9.5,
+          "videoTimeAfter": 9.5,
+          "waitSeconds": 3.2
+        }
+      }
+    },
+    {
+      "defect": "first-scroll dead zone",
+      "blender": "N/A",
+      "rgb16Master": "N/A",
+      "h264": "N/A",
+      "vp9": "N/A",
+      "browserMapping": "FAIL",
+      "rootCause": "The master is effectively unchanged from F1 through F45 and first changes measurably at F46. The deployed mapping nevertheless maps the opening scroll interval to conceptual u=0..54. At 1440x900, 15.2 px targets F4, 30 px targets F8, 60 px targets F15, and a 100 px wheel targets F24; every result remains perceptually identical to F1. The first visible frame requires about 193 px at that viewport.",
+      "evidence": {
+        "firstChangedMasterFrame": 46,
+        "desktopMasterF1ToF45Maximum8BitDifference": 1,
+        "desktopMasterF1ToF46MeanAbsolute8BitDifference": 0.18865,
+        "desktopMasterF1ToF46PixelsDifferentByAtLeast4Percent": 1.0384,
+        "deployed1440x900": [
+          { "scrollY": 0, "targetFrame": 1 },
+          { "scrollY": 15.2, "targetFrame": 4 },
+          { "scrollY": 30, "targetFrame": 8 },
+          { "scrollY": 60, "targetFrame": 15 },
+          { "scrollY": 100, "targetFrame": 24 }
+        ]
+      }
+    }
+  ],
+  "layerConclusions": {
+    "layerA_Blender": "Cable indices, normalized arc ordering, energized prefix, and F285 alpha coverage pass mathematically. Bright-front spatial reading and final visible continuity fail; a narrow source repair is required.",
+    "layerB_RGB16": "The full-resolution masters faithfully contain the source visibility defects. Replacement master frames are required for the affected ranges.",
+    "layerC_H264_VP9": "Neither codec introduces ordering. Both carry the source visibility defects; VP9 severely degrades several active-current frames and is larger. H.264 is the required active codec.",
+    "layerD_Browser": "Mapping is monotonic but has a deliberate dormant scroll band, paused-only arrival behavior, VP9-first selection, and coarse seek coalescing. It requires a zero-dead-zone map and bounded one-decoder reaction state machine."
+  },
+  "status": "PASS"
+}

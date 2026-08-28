@@ -1,0 +1,63 @@
+{
+  "schema": "quantum-hub.phase-4-r2-1.integration-root-cause.v1",
+  "baselineHead": "af0b196e2b1e81925c6cefdc477df6fcb94b4a41",
+  "shortLandscape": {
+    "status": "FAIL",
+    "cause": "The short-landscape rule fixes ENTRY min-height at 31rem (496px), while an 844x390 viewport has only 289.75px below its measured 100.25px header. The capture harness also accepted conceptual frame 540 before the distinct settled/chrome boundary.",
+    "before844x390": {
+      "headerHeightPx": 100.25,
+      "entryTopPx": 106.25,
+      "entryBottomPx": 602.25,
+      "clippedPx": 212.25,
+      "chromeReleased": false
+    },
+    "repairScope": "short-landscape-only ENTRY height, content spacing, route geometry, and settled capture gate; physical landscape film remains frozen"
+  },
+  "slowNetworkGeometry": {
+    "status": "FAIL",
+    "cause": "All late media failures use compact failOpen, switch enhanced to static, and clear --cinematic-travel-px. The enhanced runway disappears after geometry has been committed.",
+    "measured2Mbps200ms": {
+      "documentHeightBeforePx": 19740,
+      "documentHeightAfterPx": 14763,
+      "documentHeightDeltaPx": -4977,
+      "scrollYBeforePx": 18840,
+      "scrollYAfterPx": 13863,
+      "scrollYDeltaPx": -4977,
+      "cls": 1.0000022287460348
+    },
+    "requiredRepair": "late failures release media resources but preserve enhanced runway geometry and continue semantic/chrome mapping"
+  },
+  "codec": {
+    "status": "FAIL",
+    "cause": "chooseCodec prefers VP9 whenever Chromium reports probably, and the active manifest/stager deploy all six videos even though H.264 is both smaller and more faithful.",
+    "historicalManifest": {
+      "path": "artifacts/original/phase-4r2-final-cinematic-production/manifests/phase-4r2-production-media-manifest.json",
+      "bytes": 38800,
+      "sha256": "b8ceea224c84d507e22c99be9f70f2502b640105bc76d108e75543b9c57c2584",
+      "videoCount": 6,
+      "posterCount": 3
+    },
+    "h264": {
+      "totalBytes": 8046918,
+      "assets": {
+        "desktop": { "bytes": 3634248, "sha256": "5c973d7d754de08bb7954a256b829e1b1e9f9513b34d31d0e0ffd725498c49de" },
+        "portrait": { "bytes": 1931456, "sha256": "b713acabce506c8d48377eb90221840b2dfb30263310058fc7a7092749ab7fe0" },
+        "landscape": { "bytes": 2481214, "sha256": "78b3780d6936d8b24ed052053ca94f6fc3f8ca4fc255d38b6c8e9b0d2cebaafb" }
+      }
+    },
+    "vp9": {
+      "totalBytes": 13340417,
+      "largerThanH264Bytes": 5293499,
+      "largerPercent": 39.68
+    },
+    "requiredRepair": "preserve the nine-asset historical authority, derive an exact six-asset active H.264/poster manifest, stage no WebM into active public/dist, and request exactly one H.264"
+  },
+  "acceptedFallbacksToPreserve": [
+    "initial reduced motion uses compact static mode with zero video requests",
+    "no-JS exposes semantic ENTRY and skip semantics without a video source",
+    "deep links and settled history restoration bypass dormancy",
+    "skip focuses ENTRY and releases inert state",
+    "decorative video remains muted, inaccessible, control-free, and non-focusable"
+  ],
+  "status": "PASS"
+}

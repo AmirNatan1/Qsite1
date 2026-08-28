@@ -1,0 +1,128 @@
+{
+  "schema": "quantum-hub.phase-4-r2-1.current-mapping-diagnosis.v1",
+  "baselineHead": "af0b196e2b1e81925c6cefdc477df6fcb94b4a41",
+  "conceptualTimeline": {
+    "frames": 540,
+    "physicalFrames": 500,
+    "fps": 30,
+    "mapping": "u = mapCinematicProgress(scrollProgress) * 540; physical frame = clamp(floor(u) + 1, 1, 500)",
+    "physicalLandmarks": {
+      "top": 1,
+      "firstVisibleCurrent": 46,
+      "arrival": 285,
+      "activationBegins": 286,
+      "stableQ": 370,
+      "threshold": 500
+    }
+  },
+  "currentPiecewiseAnchors": {
+    "outputProgress": [0, 0.1, 0.42, 0.78, 1],
+    "outputCoordinateU": [0, 54, 226.8, 421.2, 540],
+    "inputProgress": {
+      "desktop": [0, 0.0411, 0.3425, 0.6301, 1],
+      "shortDesktop": [0, 0.0358, 0.3343, 0.6269, 1],
+      "portrait": [0, 0.04, 0.3267, 0.6133, 1],
+      "landscape": [0, 0.04, 0.3267, 0.6133, 1]
+    }
+  },
+  "authoredTravelViewportHeights": {
+    "desktop": 6.25,
+    "shortDesktop": 5.45,
+    "portrait": 4.85,
+    "landscape": 5.1
+  },
+  "diagnosticViewports": [
+    {
+      "viewport": "1440x900",
+      "family": "desktop",
+      "travelPx": 5625,
+      "firstVisibleApproxScrollPx": 193,
+      "arrivalApproxScrollPx": 2403,
+      "stableQApproxScrollPx": 3110,
+      "extraScrollArrivalToStableQPx": 707,
+      "targets": { "15px": 4, "30px": 8, "60px": 15 }
+    },
+    {
+      "viewport": "1366x650",
+      "family": "desktop-short",
+      "travelPx": 3542.5,
+      "firstVisibleApproxScrollPx": 106,
+      "arrivalApproxScrollPx": 1489,
+      "stableQApproxScrollPx": 1942,
+      "extraScrollArrivalToStableQPx": 453
+    },
+    {
+      "viewport": "390x844",
+      "family": "portrait",
+      "travelPx": 4093.4,
+      "firstVisibleApproxScrollPx": 136,
+      "arrivalApproxScrollPx": 1683,
+      "stableQApproxScrollPx": 2195,
+      "extraScrollArrivalToStableQPx": 513,
+      "targets": { "15px": 5, "30px": 10, "60px": 20 }
+    },
+    {
+      "viewport": "320x800",
+      "family": "portrait",
+      "travelPx": 3880,
+      "firstVisibleApproxScrollPx": 129,
+      "arrivalApproxScrollPx": 1595,
+      "stableQApproxScrollPx": 2081,
+      "extraScrollArrivalToStableQPx": 486,
+      "targets": { "15px": 6, "30px": 11, "60px": 21 }
+    },
+    {
+      "viewport": "768x1024",
+      "family": "portrait",
+      "travelPx": 4966.4,
+      "firstVisibleApproxScrollPx": 166,
+      "arrivalApproxScrollPx": 2041,
+      "stableQApproxScrollPx": 2664,
+      "extraScrollArrivalToStableQPx": 622,
+      "targets": { "15px": 5, "30px": 9, "60px": 17 }
+    },
+    {
+      "viewport": "844x390",
+      "family": "landscape",
+      "travelPx": 1989,
+      "firstVisibleApproxScrollPx": 66,
+      "arrivalApproxScrollPx": 818,
+      "stableQApproxScrollPx": 1067,
+      "extraScrollArrivalToStableQPx": 249,
+      "targets": { "15px": 11, "30px": 21, "60px": 41 }
+    }
+  ],
+  "deployedBrowserMeasurements": {
+    "deployment": "https://b513942a.qsite1.pages.dev/",
+    "browser": "Codex in-app Chromium",
+    "viewport": "1440x900",
+    "documentHeightPx": 19740,
+    "mediaFamily": "desktop",
+    "selectedCodec": "vp9",
+    "selectedSource": "/media/cinematic/phase-4r2/media/phase-4r2-desktop-vp9-c2670cd331ec.webm",
+    "firstInput": [
+      { "input": "15px root scroll", "actualScrollY": 15.2, "targetFrame": 4, "targetTime": 0.1, "visibleChange": false },
+      { "input": "30px root scroll", "actualScrollY": 30, "targetFrame": 8, "targetTime": 0.233333, "visibleChange": false },
+      { "input": "60px root scroll", "actualScrollY": 60, "targetFrame": 15, "targetTime": 0.466666, "visibleChange": false },
+      { "input": "100px wheel-equivalent scroll", "actualScrollY": 100, "targetFrame": 24, "targetTime": 0.766666, "visibleChange": false }
+    ],
+    "arrivalNoInput": {
+      "scrollY": 2418.3999,
+      "targetFrame": 286,
+      "targetTime": 9.5,
+      "waitSeconds": 3.2,
+      "frameAfterWait": 286,
+      "videoTimeAfterWait": 9.5,
+      "automaticWake": false
+    }
+  },
+  "repairRequirements": {
+    "top": "exact scroll offset 0 remains dormant F1",
+    "firstPositiveScroll": "the first positive integer offset targets the first visibly changed current state (F46 region)",
+    "conduction": "reallocate removed dormancy across meaningful current/orbit travel through F285",
+    "automaticBand": "remove F286-F369 from ordinary forward scroll authority; the bounded reaction owns it",
+    "postArrival": "the first post-arrival offset targets F370 or later; fast forward may override reaction",
+    "totalTravel": "unchanged per family"
+  },
+  "status": "PASS"
+}
