@@ -1133,6 +1133,11 @@ async function recordStandardScenario(browser, options, scenario, rawRoot, panel
     await page.evaluate((y) => window.scrollTo(0, y), methodY);
     await page.waitForTimeout(700);
     await animateScroll(page, 0, 12_000);
+    await page.waitForFunction(() => {
+      const state = window.quantumPhase4;
+      return state?.conceptualFrame === 1 && state.targetFrame <= 1 && state.presentedFrame <= 1 && state.reactionState === "pre-arrival";
+    }, null, { timeout: Math.min(options.timeoutMs, 10_000) });
+    await twoFrames(page);
     const end = await runtimeState(page);
     checks = { dormancyReached: end.conceptualFrame === 1 && end.presentedFrame <= 1, exactTop: Math.abs(end.scrollY) <= 0.5 };
   } else if (scenario.kind === "fast-jump") {
