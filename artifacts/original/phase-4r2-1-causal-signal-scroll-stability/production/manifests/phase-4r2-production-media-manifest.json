@@ -1,0 +1,533 @@
+{
+  "schema": "quantum-hub.phase-4-r2.production-media-manifest.v1",
+  "status": "PASS",
+  "sourceBlendSha256": "58f5479484dd8da342556abad1e58c96a660f30e6a9d6d5215927056b5cbc516",
+  "blackBoundaryReportSha256": "f182b35dc533878a7c70b7f1327e8d92c5438fd3984b6223d520fd5b83abc9df",
+  "physicalTimeline": {
+    "frames": 500,
+    "fps": 30,
+    "durationRational": "50/3"
+  },
+  "frameManifests": {
+    "desktop": {
+      "file": "manifests/phase-4r2-desktop-frame-manifest.json",
+      "bytes": 126988,
+      "sha256": "cf0a70e6b6092b344c2dc2c28e9089a99cb0750acbf55443adf375fb9797faf2",
+      "sequenceSha256": "56fa7438ae8b1c1ecf662c04372a37fa91f55712c3e016c54643adc7decc53c3",
+      "frames": 500,
+      "fps": 30,
+      "resolution": [
+        1920,
+        1200
+      ],
+      "firstFrameSha256": "085e438d222a38fdcf76987d0512b4c02f88b0567b76dafd777dec4bcf32da6d"
+    },
+    "portrait": {
+      "file": "manifests/phase-4r2-portrait-frame-manifest.json",
+      "bytes": 126487,
+      "sha256": "d7bd38e38367d2e0368fbfda604edd61c2449f5eecbfc639cbb6d0042d57fb12",
+      "sequenceSha256": "47abf310caa6c5ba9f59f473b747fee5b7ebb903e6f853054ba22d196cbd13aa",
+      "frames": 500,
+      "fps": 30,
+      "resolution": [
+        780,
+        1688
+      ],
+      "firstFrameSha256": "5b30031e51a268f8c90c75166e790a627885d8b7161808469a640ce7977337f1"
+    },
+    "landscape": {
+      "file": "manifests/phase-4r2-landscape-frame-manifest.json",
+      "bytes": 126491,
+      "sha256": "26c73dc511536e5a3c59fc6753377a59bf0b31fb8e4584c474cd80de2216daf2",
+      "sequenceSha256": "002d16f1c59c7c35cf6f50b76d4d8e2b9209920ffd0b82803ba9496beb2ebacd",
+      "frames": 500,
+      "fps": 30,
+      "resolution": [
+        1688,
+        780
+      ],
+      "firstFrameSha256": "9610bd573e9ac0f257357d96ee8adb97d3f33b0677a4cb92c323908bfb51fb67"
+    }
+  },
+  "toolchain": {
+    "ffmpeg": {
+      "basename": "ffmpeg.exe",
+      "bytes": 102856192,
+      "sha256": "72a489eccd008c2ec2c0a5856c5c75bc3d8bbfa90166c4566865c246445e6aa3",
+      "version": "9.0.1-essentials_build"
+    },
+    "ffprobe": {
+      "basename": "ffprobe.exe",
+      "bytes": 102652416,
+      "sha256": "19202b23c0043f15ad1b7bce2344f406fd52bd6efd8f995ce02e7392a1cec52f",
+      "version": "9.0.1-essentials_build"
+    }
+  },
+  "assets": [
+    {
+      "bytes": 3582307,
+      "codec": "h264",
+      "durationSeconds": 16.666666666666668,
+      "family": "desktop",
+      "file": "media/phase-4r2-desktop-h264-f31b0d4582af.mp4",
+      "fps": 30,
+      "frames": 500,
+      "kind": "video",
+      "masterFrameManifestSha256": "cf0a70e6b6092b344c2dc2c28e9089a99cb0750acbf55443adf375fb9797faf2",
+      "resolution": [
+        1920,
+        1200
+      ],
+      "crf": 22,
+      "sha256": "f31b0d4582af6c54e722e628f72601ea851d8886dde36aca9379bd2bfddee2d3",
+      "validation": {
+        "codec": "h264",
+        "profile": "High",
+        "container": [
+          "mov",
+          "mp4",
+          "m4a",
+          "3gp",
+          "3g2",
+          "mj2"
+        ],
+        "pixelFormat": "yuv420p",
+        "resolution": [
+          1920,
+          1200
+        ],
+        "averageFrameRate": "30/1",
+        "frames": 500,
+        "durationSeconds": 16.666667,
+        "audioStreams": 0,
+        "color": {
+          "range": "tv",
+          "space": "bt709",
+          "transfer": "bt709",
+          "primaries": "bt709"
+        },
+        "keyframeInterval": 12,
+        "keyframeIndexes": [
+          0,
+          12,
+          24,
+          36,
+          48,
+          60,
+          72,
+          84,
+          96,
+          108,
+          120,
+          132,
+          144,
+          156,
+          168,
+          180,
+          192,
+          204,
+          216,
+          228,
+          240,
+          252,
+          264,
+          276,
+          288,
+          300,
+          312,
+          324,
+          336,
+          348,
+          360,
+          372,
+          384,
+          396,
+          408,
+          420,
+          432,
+          444,
+          456,
+          468,
+          480,
+          492
+        ],
+        "fullDecode": "PASS"
+      }
+    },
+    {
+      "bytes": 1903588,
+      "codec": "h264",
+      "durationSeconds": 16.666666666666668,
+      "family": "portrait",
+      "file": "media/phase-4r2-portrait-h264-eff1d8c39a99.mp4",
+      "fps": 30,
+      "frames": 500,
+      "kind": "video",
+      "masterFrameManifestSha256": "d7bd38e38367d2e0368fbfda604edd61c2449f5eecbfc639cbb6d0042d57fb12",
+      "resolution": [
+        780,
+        1688
+      ],
+      "crf": 22,
+      "sha256": "eff1d8c39a9987c24a1c1cf176b5ddc7c4daeca0f992991d59a505cdf47950db",
+      "validation": {
+        "codec": "h264",
+        "profile": "High",
+        "container": [
+          "mov",
+          "mp4",
+          "m4a",
+          "3gp",
+          "3g2",
+          "mj2"
+        ],
+        "pixelFormat": "yuv420p",
+        "resolution": [
+          780,
+          1688
+        ],
+        "averageFrameRate": "30/1",
+        "frames": 500,
+        "durationSeconds": 16.666667,
+        "audioStreams": 0,
+        "color": {
+          "range": "tv",
+          "space": "bt709",
+          "transfer": "bt709",
+          "primaries": "bt709"
+        },
+        "keyframeInterval": 12,
+        "keyframeIndexes": [
+          0,
+          12,
+          24,
+          36,
+          48,
+          60,
+          72,
+          84,
+          96,
+          108,
+          120,
+          132,
+          144,
+          156,
+          168,
+          180,
+          192,
+          204,
+          216,
+          228,
+          240,
+          252,
+          264,
+          276,
+          288,
+          300,
+          312,
+          324,
+          336,
+          348,
+          360,
+          372,
+          384,
+          396,
+          408,
+          420,
+          432,
+          444,
+          456,
+          468,
+          480,
+          492
+        ],
+        "fullDecode": "PASS"
+      }
+    },
+    {
+      "bytes": 2528269,
+      "codec": "h264",
+      "durationSeconds": 16.666666666666668,
+      "family": "landscape",
+      "file": "media/phase-4r2-landscape-h264-b3f197b17edd.mp4",
+      "fps": 30,
+      "frames": 500,
+      "kind": "video",
+      "masterFrameManifestSha256": "26c73dc511536e5a3c59fc6753377a59bf0b31fb8e4584c474cd80de2216daf2",
+      "resolution": [
+        1688,
+        780
+      ],
+      "crf": 22,
+      "sha256": "b3f197b17edd060195b15e5652ff23343d895bdbb32457ad183b62f1906f2dae",
+      "validation": {
+        "codec": "h264",
+        "profile": "High",
+        "container": [
+          "mov",
+          "mp4",
+          "m4a",
+          "3gp",
+          "3g2",
+          "mj2"
+        ],
+        "pixelFormat": "yuv420p",
+        "resolution": [
+          1688,
+          780
+        ],
+        "averageFrameRate": "30/1",
+        "frames": 500,
+        "durationSeconds": 16.666667,
+        "audioStreams": 0,
+        "color": {
+          "range": "tv",
+          "space": "bt709",
+          "transfer": "bt709",
+          "primaries": "bt709"
+        },
+        "keyframeInterval": 12,
+        "keyframeIndexes": [
+          0,
+          12,
+          24,
+          36,
+          48,
+          60,
+          72,
+          84,
+          96,
+          108,
+          120,
+          132,
+          144,
+          156,
+          168,
+          180,
+          192,
+          204,
+          216,
+          228,
+          240,
+          252,
+          264,
+          276,
+          288,
+          300,
+          312,
+          324,
+          336,
+          348,
+          360,
+          372,
+          384,
+          396,
+          408,
+          420,
+          432,
+          444,
+          456,
+          468,
+          480,
+          492
+        ],
+        "fullDecode": "PASS"
+      }
+    },
+    {
+      "bytes": 2096854,
+      "deliveryDecision": {
+        "cohort": "desktop-native-1920x1200-v1",
+        "deliveryResolution": [
+          1920,
+          1200
+        ],
+        "masterResolution": [
+          1920,
+          1200
+        ],
+        "rationale": "Evaluate and retain the authored 1920x1200 desktop master first; a visual-PASS candidate below the strict asset gate avoids any desktop wall/Q/current resolution loss."
+      },
+      "deliveryResolution": [
+        1920,
+        1200
+      ],
+      "derivationAuthority": {
+        "filter": "zscale=w=1920:h=1200:f=lanczos:rin=full:r=limited:min=gbr:m=bt709:tin=iec61966-2-1:t=bt709:pin=bt709:p=bt709:d=error_diffusion,format=yuv420p,zscale=w=1920:h=1200:f=lanczos:rin=limited:r=full:min=bt709:m=gbr:tin=bt709:t=iec61966-2-1:pin=bt709:p=bt709:d=error_diffusion,format=gbrp",
+        "output": {
+          "alpha": false,
+          "bitDepth": 8,
+          "codec": "png",
+          "colorType": "RGB",
+          "compressionLevel": 9,
+          "prediction": "mixed"
+        },
+        "resolution": [
+          1920,
+          1200
+        ],
+        "sourceFormat": "16-bit RGB PNG",
+        "sourceFrame": 1
+      },
+      "derivationAuthoritySha256": "2d52200233475fcd2b82ed149a4736e5abc940b603f48ce1a8e470b669e9c257",
+      "family": "desktop",
+      "file": "posters/phase-4r2-desktop-poster-8dc538810811.png",
+      "kind": "poster",
+      "masterF1Sha256": "085e438d222a38fdcf76987d0512b4c02f88b0567b76dafd777dec4bcf32da6d",
+      "masterFrameManifestSha256": "cf0a70e6b6092b344c2dc2c28e9089a99cb0750acbf55443adf375fb9797faf2",
+      "masterResolution": [
+        1920,
+        1200
+      ],
+      "resolution": [
+        1920,
+        1200
+      ],
+      "sha256": "8dc5388108116da7202a6b8b24ea8fccb42ebc4cdfb50b861427488436e35979"
+    },
+    {
+      "bytes": 1146148,
+      "deliveryDecision": {
+        "cohort": "portrait-native-780x1688-v1",
+        "deliveryResolution": [
+          780,
+          1688
+        ],
+        "masterResolution": [
+          780,
+          1688
+        ],
+        "rationale": "Retain the authored 780x1688 portrait master when a visual-PASS candidate fits, preserving the exact 390x844 composition at 2x review density without resampling."
+      },
+      "deliveryResolution": [
+        780,
+        1688
+      ],
+      "derivationAuthority": {
+        "filter": "zscale=w=780:h=1688:f=lanczos:rin=full:r=limited:min=gbr:m=bt709:tin=iec61966-2-1:t=bt709:pin=bt709:p=bt709:d=error_diffusion,format=yuv420p,zscale=w=780:h=1688:f=lanczos:rin=limited:r=full:min=bt709:m=gbr:tin=bt709:t=iec61966-2-1:pin=bt709:p=bt709:d=error_diffusion,format=gbrp",
+        "output": {
+          "alpha": false,
+          "bitDepth": 8,
+          "codec": "png",
+          "colorType": "RGB",
+          "compressionLevel": 9,
+          "prediction": "mixed"
+        },
+        "resolution": [
+          780,
+          1688
+        ],
+        "sourceFormat": "16-bit RGB PNG",
+        "sourceFrame": 1
+      },
+      "derivationAuthoritySha256": "1885a5773c15dd47db1456ccdf0896a9bfaf5dec0eb9f399f85c990ded8e10ae",
+      "family": "portrait",
+      "file": "posters/phase-4r2-portrait-poster-e104fe5e3d0e.png",
+      "kind": "poster",
+      "masterF1Sha256": "5b30031e51a268f8c90c75166e790a627885d8b7161808469a640ce7977337f1",
+      "masterFrameManifestSha256": "d7bd38e38367d2e0368fbfda604edd61c2449f5eecbfc639cbb6d0042d57fb12",
+      "masterResolution": [
+        780,
+        1688
+      ],
+      "resolution": [
+        780,
+        1688
+      ],
+      "sha256": "e104fe5e3d0e471df2059919eb26eca7bb493929eca1000d8ab6ce95a611dee9"
+    },
+    {
+      "bytes": 1212306,
+      "deliveryDecision": {
+        "cohort": "landscape-native-1688x780-v1",
+        "deliveryResolution": [
+          1688,
+          780
+        ],
+        "masterResolution": [
+          1688,
+          780
+        ],
+        "rationale": "Retain the authored 1688x780 mobile-landscape master when a visual-PASS candidate fits, preserving the exact 844x390 authority at 2x review density without resampling."
+      },
+      "deliveryResolution": [
+        1688,
+        780
+      ],
+      "derivationAuthority": {
+        "filter": "zscale=w=1688:h=780:f=lanczos:rin=full:r=limited:min=gbr:m=bt709:tin=iec61966-2-1:t=bt709:pin=bt709:p=bt709:d=error_diffusion,format=yuv420p,zscale=w=1688:h=780:f=lanczos:rin=limited:r=full:min=bt709:m=gbr:tin=bt709:t=iec61966-2-1:pin=bt709:p=bt709:d=error_diffusion,format=gbrp",
+        "output": {
+          "alpha": false,
+          "bitDepth": 8,
+          "codec": "png",
+          "colorType": "RGB",
+          "compressionLevel": 9,
+          "prediction": "mixed"
+        },
+        "resolution": [
+          1688,
+          780
+        ],
+        "sourceFormat": "16-bit RGB PNG",
+        "sourceFrame": 1
+      },
+      "derivationAuthoritySha256": "a625342694e21ea0e0b5e17021f5b6ccb98869f24646411d25c702f9d99a0275",
+      "family": "landscape",
+      "file": "posters/phase-4r2-landscape-poster-5692f67493fa.png",
+      "kind": "poster",
+      "masterF1Sha256": "9610bd573e9ac0f257357d96ee8adb97d3f33b0677a4cb92c323908bfb51fb67",
+      "masterFrameManifestSha256": "26c73dc511536e5a3c59fc6753377a59bf0b31fb8e4584c474cd80de2216daf2",
+      "masterResolution": [
+        1688,
+        780
+      ],
+      "resolution": [
+        1688,
+        780
+      ],
+      "sha256": "5692f67493faf34844a6e2eaa838999babbaaf6d1c7d10e51505587daeb1d679"
+    }
+  ],
+  "deliveryPolicy": {
+    "h264Only": true,
+    "activeVideoCount": 3,
+    "activePosterCount": 3,
+    "inactiveCodecPayloadCount": 0
+  },
+  "authorization": {
+    "mergeMain": false,
+    "phase5": false
+  },
+  "runtimeStaging": {
+    "publicRoot": "public/media/cinematic/phase-4r2",
+    "manifestPath": "manifests/phase-4r2-production-media-manifest.json",
+    "exactFiles": [
+      "manifests/phase-4r2-production-media-manifest.json",
+      "media/phase-4r2-desktop-h264-f31b0d4582af.mp4",
+      "media/phase-4r2-landscape-h264-b3f197b17edd.mp4",
+      "media/phase-4r2-portrait-h264-eff1d8c39a99.mp4",
+      "posters/phase-4r2-desktop-poster-8dc538810811.png",
+      "posters/phase-4r2-landscape-poster-5692f67493fa.png",
+      "posters/phase-4r2-portrait-poster-e104fe5e3d0e.png"
+    ],
+    "replaceAuthorityRootAtomically": true,
+    "removeUnlistedFiles": true
+  },
+  "authorityMaterialization": {
+    "trackedRoot": "artifacts/original/phase-4r2-1-causal-signal-scroll-stability/production",
+    "sourceSubdirectory": "delivery",
+    "exactFiles": [
+      "manifests/phase-4r2-desktop-frame-manifest.json",
+      "manifests/phase-4r2-landscape-frame-manifest.json",
+      "manifests/phase-4r2-portrait-frame-manifest.json",
+      "manifests/phase-4r2-production-media-manifest.json",
+      "media/phase-4r2-desktop-h264-f31b0d4582af.mp4",
+      "media/phase-4r2-landscape-h264-b3f197b17edd.mp4",
+      "media/phase-4r2-portrait-h264-eff1d8c39a99.mp4",
+      "posters/phase-4r2-desktop-poster-8dc538810811.png",
+      "posters/phase-4r2-landscape-poster-5692f67493fa.png",
+      "posters/phase-4r2-portrait-poster-e104fe5e3d0e.png"
+    ],
+    "removeUnlistedFiles": true
+  }
+}
