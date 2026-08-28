@@ -974,7 +974,11 @@ async function captureCurrentOrder(browser, options, authorities, panels) {
   const matrix = authorities.reports.rootCause.content.matrix;
   for (const item of matrix) addPanel(panels, "02-root-cause-matrix", null, item.defect.toUpperCase(), [`Blender ${item.blender} · RGB16 ${item.rgb16Master}`, `H.264 ${item.h264} · VP9 ${item.vp9}`, `browser ${item.browserMapping}`, String(item.rootCause).slice(0, 150)]);
   for (const item of coverage) addPanel(panels, "04-full-arrival-cable", null, `${item.family.toUpperCase()} · SOURCE COVERAGE`, [`${item.energizedSamples}/${item.totalSamples} energized`, `${item.darkSamples} dark gaps`, `${item.coveragePercent.toFixed(0)}% one contiguous interval`]);
-  const diagnosticRoot = path.dirname(path.resolve(ROOT, options.reports.current));
+  const diagnosticReport = path.resolve(ROOT, options.reports.current);
+  const diagnosticRoot = path.join(
+    path.dirname(diagnosticReport),
+    path.basename(diagnosticReport, path.extname(diagnosticReport)).replace(/-report$/, ""),
+  );
   const desktopDiagnostic = authorities.reports.current.content.outputs?.find((item) => item.family === "desktop" && item.frame === ARRIVAL_FRAME && item.relativePath?.startsWith("current-sheath/"));
   if (desktopDiagnostic) {
     const bytes = await readVerifiedDiagnostic(diagnosticRoot, desktopDiagnostic, "desktop arrival");
