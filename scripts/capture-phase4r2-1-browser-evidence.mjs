@@ -556,11 +556,11 @@ async function frameScrollY(page, frame) {
 async function scrollToFrame(page, frame, { presented = false, timeoutMs = 8_000 } = {}) {
   const y = await frameScrollY(page, frame);
   await page.evaluate((target) => window.scrollTo(0, target), y);
-  await page.waitForFunction(({ frame, presented }) => {
+  await page.waitForFunction(({ frame, presented, physicalFrameCount }) => {
     const state = window.quantumPhase4;
     if (!state || state.conceptualFrame < frame) return false;
-    return !presented || state.presentedFrame >= Math.min(frame, PHYSICAL_FRAME_COUNT);
-  }, { frame, presented }, { timeout: timeoutMs });
+    return !presented || state.presentedFrame >= Math.min(frame, physicalFrameCount);
+  }, { frame, presented, physicalFrameCount: PHYSICAL_FRAME_COUNT }, { timeout: timeoutMs });
   await twoFrames(page);
   return { requestedY: y, state: await runtimeState(page) };
 }
