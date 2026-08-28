@@ -1,5 +1,5 @@
 export type MediaFamily = "desktop" | "portrait" | "landscape";
-export type Codec = "vp9" | "h264";
+export type Codec = "h264";
 
 type ProductionAsset = {
   file: string;
@@ -39,7 +39,7 @@ const ARRIVAL_TIME = ARRIVAL_U / FRAME_RATE;
 const STABLE_Q_TIME = STABLE_Q_U / FRAME_RATE;
 const LOAD_TIMEOUT_MS = 12_000;
 const MAX_ASSET_BYTES = 25 * 1024 * 1024;
-const SOURCE_BLEND_SHA256 = "b0c9c7c1cf5a1642870cf03a36791cc50ec31ac207aeae794fbea83c856a79c0";
+const SOURCE_BLEND_SHA256 = "58f5479484dd8da342556abad1e58c96a660f30e6a9d6d5215927056b5cbc516";
 const MANIFEST_PATH = "/media/cinematic/phase-4r2/manifests/phase-4r2-production-media-manifest.json";
 const MEDIA_ROOT = "/media/cinematic/phase-4r2/";
 
@@ -110,6 +110,57 @@ export function travelViewportHeights(family: MediaFamily, shortDesktop: boolean
   if (family === "portrait") return 4.85;
   if (family === "landscape") return 5.1;
   return shortDesktop ? 5.45 : 6.25;
+}
+
+export type CinematicDocumentPhase = "physical" | "black" | "entry" | "settled";
+export type CinematicDocumentState = {
+  scrollOffset: number;
+  scrollProgress: number;
+  conceptualCoordinate: number;
+  conceptualFrame: number;
+  physicalFrame: number;
+  black: number;
+  blackBreath: number;
+  semantic: number;
+  settled: boolean;
+  phase: CinematicDocumentPhase;
+};
+
+/** Document progress remains authoritative even after late media delivery fails. */
+export function cinematicDocumentStateForScroll(
+  scrollOffset: number,
+  travel: number,
+  family: MediaFamily,
+  shortDesktop: boolean,
+): CinematicDocumentState {
+  const scrollExtent = Math.max(1, Math.round(travel));
+  const offset = Math.min(scrollExtent, Math.max(0, Math.round(scrollOffset)));
+  const scrollProgress = offset / scrollExtent;
+  const conceptualCoordinate = conceptualCoordinateForScroll(offset, scrollExtent, family, shortDesktop);
+  const conceptualFrame = Math.min(CONCEPTUAL_FRAME_COUNT, Math.max(1, Math.floor(conceptualCoordinate) + 1));
+  const physicalFrame = physicalFrameFor(conceptualCoordinate);
+  const black = conceptualCoordinate >= BLACK_START_U ? 1 : 0;
+  const blackOffset = conceptualCoordinate - BLACK_START_U;
+  const blackBreath = blackOffset >= 0 && blackOffset < BLACK_FRAME_COUNT
+    ? 0.5 - 0.5 * Math.cos((blackOffset / BLACK_FRAME_COUNT) * Math.PI * 2)
+    : 0;
+  const semantic = smoothstep((conceptualCoordinate - ENTRY_START_U) / (CONCEPTUAL_FRAME_COUNT - ENTRY_START_U));
+  const settled = scrollProgress >= 0.9995;
+  const phase: CinematicDocumentPhase = settled
+    ? "settled"
+    : conceptualCoordinate >= ENTRY_START_U
+      ? "entry"
+      : conceptualCoordinate >= BLACK_START_U
+        ? "black"
+        : "physical";
+  return { scrollOffset: offset, scrollProgress, conceptualCoordinate, conceptualFrame, physicalFrame, black, blackBreath, semantic, settled, phase };
+}
+
+export type CinematicFailureDisposition = "static" | "preserve-runway";
+
+/** Compact flow is an eligibility decision only; committed enhanced geometry is immutable for this document lifetime. */
+export function cinematicFailureDisposition(_reason: string, enhancedCommitted: boolean): CinematicFailureDisposition {
+  return enhancedCommitted ? "preserve-runway" : "static";
 }
 
 export function conceptualFrameFor(progress: number) {
@@ -211,10 +262,13 @@ export function reviseReversePlan(current: ReversePlan | null, presentedFrame: n
   return { ...current, floorFrame: replaceFloor ? Math.min(current.startFrame, floor) : Math.min(current.floorFrame, floor) };
 }
 
+export function supportsH264(canPlayType: (mimeType: string) => string) {
+  const support = canPlayType('video/mp4; codecs="avc1.640028"');
+  return support === "probably" || support === "maybe";
+}
+
 function chooseCodec(video: HTMLVideoElement): Codec | null {
-  if (video.canPlayType('video/webm; codecs="vp09.00.10.08"') === "probably") return "vp9";
-  const h264 = video.canPlayType('video/mp4; codecs="avc1.640028"') || video.canPlayType('video/mp4; codecs="avc1.42E01E"');
-  return h264 ? "h264" : null;
+  return supportsH264((mimeType) => video.canPlayType(mimeType)) ? "h264" : null;
 }
 
 function zoomMakesPortalUnsafe() {
@@ -231,6 +285,10 @@ function mediaUrl(file: string) {
 const isSha256 = (value: unknown): value is string => typeof value === "string" && /^[a-f0-9]{64}$/.test(value);
 
 function selectedManifestAsset(manifest: ProductionManifest, family: MediaFamily, codec: Codec) {
+  const completeH264Inventory = Array.isArray(manifest.assets) && (["desktop", "portrait", "landscape"] as const).every((candidate) =>
+    manifest.assets!.filter((asset) => asset.kind === "video" && asset.family === candidate && asset.codec === "h264").length === 1
+    && manifest.assets!.filter((asset) => asset.kind === "poster" && asset.family === candidate && asset.codec === undefined).length === 1
+  );
   if (
     manifest.schema !== "quantum-hub.phase-4-r2.production-media-manifest.v1"
     || manifest.sourceBlendSha256 !== SOURCE_BLEND_SHA256
@@ -240,11 +298,11 @@ function selectedManifestAsset(manifest: ProductionManifest, family: MediaFamily
     || manifest.authorization?.mergeMain !== false
     || manifest.authorization?.phase5 !== false
     || !Array.isArray(manifest.assets)
-    || manifest.assets.length !== 9
+    || manifest.assets.length !== 6
+    || !completeH264Inventory
   ) throw 0;
   const selected = manifest.assets.filter((asset) => asset.kind === "video" && asset.family === family && asset.codec === codec);
   const asset = selected[0];
-  const extension = codec === "vp9" ? "webm" : "mp4";
   if (
     selected.length !== 1
     || !asset
@@ -252,7 +310,7 @@ function selectedManifestAsset(manifest: ProductionManifest, family: MediaFamily
     || (asset.bytes ?? 0) <= 0
     || (asset.bytes ?? MAX_ASSET_BYTES) >= MAX_ASSET_BYTES
     || !isSha256(asset.sha256)
-    || asset.file !== `media/phase-4r2-${family}-${codec}-${asset.sha256.slice(0, 12)}.${extension}`
+    || asset.file !== `media/phase-4r2-${family}-${codec}-${asset.sha256.slice(0, 12)}.mp4`
     || asset.frames !== PHYSICAL_FRAME_COUNT
     || asset.fps !== FRAME_RATE
   ) throw 0;
@@ -309,6 +367,7 @@ export function initHomeCinematicIntegration() {
   let loadTimer = 0;
   let metadataReady = false;
   let mediaReady = false;
+  let mediaFailed = false;
   let failed = false;
   let latestPhysicalFrame = -1;
   let targetPhysicalFrame = 1;
@@ -388,12 +447,27 @@ export function initHomeCinematicIntegration() {
   };
   const failOpen = (reason: string) => {
     if (failed) return;
-    failed = true;
+    const disposition = cinematicFailureDisposition(reason, root.dataset.cinematicMode === "enhanced");
+    if (mediaFailed && disposition === "preserve-runway") return;
     clearTimer();
     reactionState = decideReaction({ state: reactionState, event: "FAIL", presentedFrame: presentedPhysicalFrame, requestedFrame: targetPhysicalFrame, scrollTargetFrame: scrollTargetPhysicalFrame }).state;
+    root.dataset.cinematicFallback = reason;
+    if (disposition === "preserve-runway") {
+      mediaFailed = true;
+      metadataReady = false;
+      mediaReady = false;
+      releaseMedia();
+      shell.dataset.mediaState = "failed-preserve-runway";
+      shell.dataset.cinematicReaction = "failed";
+      shell.style.setProperty("--cinematic-media-ready", "0");
+      needsMeasurement = true;
+      Object.assign(publicState, { mode: "enhanced", mediaReady: false, reactionState });
+      schedule();
+      return;
+    }
+    failed = true;
     releaseMedia();
     if (animationFrame) window.cancelAnimationFrame(animationFrame);
-    root.dataset.cinematicFallback = reason;
     root.dataset.cinematicEligibility = "bypass";
     root.dataset.cinematicMode = "static";
     shell.dataset.mediaState = "failed";
@@ -440,7 +514,7 @@ export function initHomeCinematicIntegration() {
     needsMeasurement = false;
   };
   const requestCurrentFrame = (replacePending = false) => {
-    if (!metadataReady || failed || document.hidden || reactionState === "wake-forward" || (!replacePending && video.seeking) || targetPhysicalFrame === latestPhysicalFrame) return;
+    if (!metadataReady || mediaFailed || failed || document.hidden || reactionState === "wake-forward" || (!replacePending && video.seeking) || targetPhysicalFrame === latestPhysicalFrame) return;
     latestPhysicalFrame = targetPhysicalFrame;
     try { video.pause(); video.currentTime = targetTime; } catch { failOpen("seek"); }
   };
@@ -592,11 +666,10 @@ export function initHomeCinematicIntegration() {
     const previousIntentOffset = Math.min(scrollExtent, Math.max(0, Math.round(lastIntentScrollY - shellTop)));
     currentScrollOffset = Math.min(scrollExtent, Math.max(0, Math.round(nativeScrollY - shellTop)));
     currentArrivalOffset = arrivalScrollOffset(scrollExtent, initialFamily, initialShortDesktop);
-    const scrollProgress = currentScrollOffset / scrollExtent;
-    const conceptualCoordinate = conceptualCoordinateForScroll(currentScrollOffset, scrollExtent, initialFamily, initialShortDesktop);
+    const documentState = cinematicDocumentStateForScroll(currentScrollOffset, scrollExtent, initialFamily, initialShortDesktop);
+    const { scrollProgress, conceptualCoordinate, conceptualFrame, black, blackBreath, semantic, settled, phase } = documentState;
     const cinematicProgress = conceptualCoordinate / CONCEPTUAL_FRAME_COUNT;
-    const conceptualFrame = Math.min(CONCEPTUAL_FRAME_COUNT, Math.max(1, Math.floor(conceptualCoordinate) + 1));
-    scrollTargetPhysicalFrame = physicalFrameFor(conceptualCoordinate);
+    scrollTargetPhysicalFrame = documentState.physicalFrame;
     const scrollIntent = scrollIntentFor(scrollEventSequence, handledScrollEventSequence, lastIntentScrollY, nativeScrollY, previousIntentOffset, currentScrollOffset, currentArrivalOffset);
     const hasScrollIntent = scrollIntent.observed;
     const arrivalCrossing = scrollIntent.arrivalCrossing;
@@ -614,7 +687,10 @@ export function initHomeCinematicIntegration() {
       );
       reverseFloorFrame = plan.floorFrame;
     }
-    if (!mediaReady) {
+    if (mediaFailed) {
+      targetPhysicalFrame = scrollTargetPhysicalFrame;
+      targetTime = (targetPhysicalFrame - 1) / FRAME_RATE;
+    } else if (!mediaReady) {
       pendingArrival = currentScrollOffset >= currentArrivalOffset && (pendingArrival || initialWrite || crossedForward);
       targetFrame(pendingArrival ? Math.max(STABLE_Q_FRAME, scrollTargetPhysicalFrame) : scrollTargetPhysicalFrame);
     } else {
@@ -653,21 +729,14 @@ export function initHomeCinematicIntegration() {
       }
     }
     // u=[500,513) is browser-owned digital black; semantic ENTRY begins at u=513.
-    const black = conceptualCoordinate >= BLACK_START_U ? 1 : 0;
-    const blackOffset = conceptualCoordinate - BLACK_START_U;
-    const blackBreath = blackOffset >= 0 && blackOffset < BLACK_FRAME_COUNT
-      ? 0.5 - 0.5 * Math.cos((blackOffset / BLACK_FRAME_COUNT) * Math.PI * 2)
-      : 0;
-    const semantic = smoothstep((conceptualCoordinate - ENTRY_START_U) / (CONCEPTUAL_FRAME_COUNT - ENTRY_START_U));
     shell.style.setProperty("--cinematic-progress", scrollProgress.toFixed(4));
     shell.style.setProperty("--cinematic-film-progress", cinematicProgress.toFixed(4));
     shell.style.setProperty("--cinematic-black", black.toFixed(4));
     shell.style.setProperty("--cinematic-black-breath", blackBreath.toFixed(4));
     shell.style.setProperty("--cinematic-semantic", semantic.toFixed(4));
-    shell.style.setProperty("--cinematic-media-ready", mediaReady ? "1" : "0");
+    shell.style.setProperty("--cinematic-media-ready", mediaReady && !mediaFailed ? "1" : "0");
     root.style.setProperty("--cinematic-semantic", semantic.toFixed(4));
-    const settled = scrollProgress >= 0.9995;
-    shell.dataset.cinematicPhase = settled ? "settled" : conceptualCoordinate >= ENTRY_START_U ? "entry" : conceptualCoordinate >= BLACK_START_U ? "black" : "physical";
+    shell.dataset.cinematicPhase = phase;
     shell.dataset.scrollProgress = scrollProgress.toFixed(4);
     shell.dataset.cinematicProgress = cinematicProgress.toFixed(4);
     shell.dataset.conceptualCoordinate = conceptualCoordinate.toFixed(4);
@@ -691,7 +760,7 @@ export function initHomeCinematicIntegration() {
     else schedule();
   };
   const revealUsableFrame = () => {
-    if (failed || !metadataReady || Math.abs(video.currentTime - targetTime) > 2 / FRAME_RATE) return;
+    if (failed || mediaFailed || !metadataReady || Math.abs(video.currentTime - targetTime) > 2 / FRAME_RATE) return;
     mediaReady = true;
     shell.dataset.mediaState = "ready";
     clearTimer();
@@ -721,8 +790,7 @@ export function initHomeCinematicIntegration() {
       const response = await fetch(source, { cache: "force-cache", signal: mediaAbortController.signal });
       if (!response.ok) throw new Error(`media response ${response.status}`);
       const blob = await response.blob();
-      const expectedMime = codec === "vp9" ? "video/webm" : "video/mp4";
-      if (blob.size !== asset.bytes || blob.type.split(";", 1)[0] !== expectedMime) throw Error("media");
+      if (blob.size !== asset.bytes || blob.type.split(";", 1)[0] !== "video/mp4") throw Error("media");
       objectUrl = URL.createObjectURL(blob);
       video.src = objectUrl;
       video.load();

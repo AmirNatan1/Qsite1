@@ -13,14 +13,27 @@ import {
   PHASE4R2_FAMILIES,
   PHASE4R2_AUTHORITY_RELATIVE,
   PHASE4R2_MANIFEST_RELATIVE,
-  PHASE4R2_OUTPUT_RELATIVE,
   PHASE4R2_SETTINGS_AUTHORITIES,
   PHASE4R2_SOURCE_BLEND_RELATIVE,
   PHASE4R2_SOURCE_BLEND_SHA256,
+  PHASE4R21_AUTHORITY_RELATIVE,
+  PHASE4R21_MANIFEST_RELATIVE,
+  PHASE4R21_OUTPUT_RELATIVE,
+  PHASE4R21_SOURCE_BLEND_RELATIVE,
   buildPhase4R2CanonicalEncodeArgv,
+  loadAndValidatePhase4R21Authority,
   stagePhase4R2RuntimeMedia,
   validatePhase4R2AuthorityRecords,
 } from "../scripts/stage-phase4r2-runtime-media.mjs";
+import {
+  BOUNDARY_REPORT_SHA256,
+  FAMILIES as PHASE4R21_FAMILIES,
+  SOURCE_SHA256 as PHASE4R21_SOURCE_BLEND_SHA256,
+  activePosterRelativePath,
+  activeVideoRelativePath,
+  buildActiveFrameManifest,
+  buildActiveProductionManifest,
+} from "../scripts/phase4r2-1-production.mjs";
 
 function loadRuntime() {
   const filename = path.join(process.cwd(), "src", "scripts", "home-cinematic-integration.ts");
@@ -226,15 +239,95 @@ function makeAuthorityFixture() {
   return records;
 }
 
-function writeAuthorityFixture(root, records) {
-  const authorityRoot = path.join(root, ...PHASE4R2_AUTHORITY_RELATIVE.split("/"));
+function makeActiveAuthorityFixture() {
+  const records = new Map();
+  const putJson = (relative, json) => { const record = recordJson(relative, json); records.set(relative, record); return record; };
+  const putBinary = (relative, payload) => { const record = recordBinary(relative, payload); records.set(relative, record); return record; };
+  const frameManifests = {};
+  const assets = [];
+  for (const [family, authority] of Object.entries(PHASE4R21_FAMILIES)) {
+    const frames = Array.from({ length: 500 }, (_unused, index) => ({
+      bitDepth: 16,
+      bytes: index + 1,
+      colorType: 2,
+      file: `F${String(index + 1).padStart(3, "0")}.png`,
+      frame: index + 1,
+      height: authority.height,
+      sha256: digest(`r2.1-${family}-F${index + 1}`),
+      width: authority.width,
+    }));
+    const activeFrameManifest = buildActiveFrameManifest(family, {
+      schema: "quantum-hub.phase-4-r2-1.frame-manifest.v1",
+      family,
+      source: {
+        blendSha256: PHASE4R21_SOURCE_BLEND_SHA256,
+        blackBoundaryReportSha256: BOUNDARY_REPORT_SHA256,
+        settingsSha256: digest(`r2.1-${family}-settings`),
+      },
+      frames,
+    });
+    const frameRecord = putJson(`manifests/phase-4r2-${family}-frame-manifest.json`, activeFrameManifest);
+    frameManifests[family] = {
+      file: frameRecord.relative,
+      bytes: frameRecord.bytes,
+      sha256: frameRecord.sha256,
+      sequenceSha256: activeFrameManifest.master.sequenceSha256,
+      firstFrameSha256: activeFrameManifest.frames[0].sha256,
+      frames: 500,
+      fps: 30,
+      resolution: [authority.width, authority.height],
+    };
+
+    const videoPayload = videoFixture("h264", `r2.1-${family}-h264`);
+    const videoHash = digest(videoPayload);
+    const videoFile = activeVideoRelativePath(family, videoHash);
+    putBinary(videoFile, videoPayload);
+    assets.push({
+      file: videoFile,
+      kind: "video",
+      family,
+      codec: "h264",
+      resolution: [authority.width, authority.height],
+      fps: 30,
+      frames: 500,
+      durationSeconds: 50 / 3,
+      bytes: videoPayload.length,
+      sha256: videoHash,
+      masterFrameManifestSha256: frameRecord.sha256,
+    });
+
+    const posterPayload = pngFixture(authority.width, authority.height, `r2.1-${family}`);
+    const posterHash = digest(posterPayload);
+    const posterFile = activePosterRelativePath(family, posterHash);
+    putBinary(posterFile, posterPayload);
+    assets.push({
+      file: posterFile,
+      kind: "poster",
+      family,
+      resolution: [authority.width, authority.height],
+      bytes: posterPayload.length,
+      sha256: posterHash,
+      masterF1Sha256: activeFrameManifest.frames[0].sha256,
+      masterFrameManifestSha256: frameRecord.sha256,
+    });
+  }
+  putJson(PHASE4R21_MANIFEST_RELATIVE, buildActiveProductionManifest({
+    frameManifests,
+    toolchain: { fixture: true },
+    assets,
+  }));
+  return records;
+}
+
+function writeActiveAuthorityFixture(root, records) {
+  const authorityRoot = path.join(root, ...PHASE4R21_AUTHORITY_RELATIVE.split("/"));
   for (const record of records.values()) {
     const destination = path.join(authorityRoot, ...record.relative.split("/"));
     mkdirSync(path.dirname(destination), { recursive: true });
     writeFileSync(destination, record.payload);
   }
-  const source = path.join(process.cwd(), ...PHASE4R2_SOURCE_BLEND_RELATIVE.split("/"));
-  const destination = path.join(root, ...PHASE4R2_SOURCE_BLEND_RELATIVE.split("/"));
+  const source = path.join(process.cwd(), ...PHASE4R21_SOURCE_BLEND_RELATIVE.split("/"));
+  const destination = path.join(root, ...PHASE4R21_SOURCE_BLEND_RELATIVE.split("/"));
   mkdirSync(path.dirname(destination), { recursive: true });
   copyFileSync(source, destination);
 }
@@ -348,13 +441,53 @@ test("Phase 4-R2.1 reaction reducer covers arrival, override, reverse, re-entry,
   assert.deepEqual(reversePlan, { startFrame: 370, floorFrame: 352, startedAt: 1_000 }, "geometry-only remeasurement retargets the floor without restarting the unwind clock");
 });
 
+test("Phase 4-R2.1 late media failure preserves document geometry while early eligibility failures stay compact", () => {
+  const {
+    arrivalScrollOffset,
+    cinematicDocumentStateForScroll,
+    cinematicFailureDisposition,
+    supportsH264,
+  } = loadRuntime();
+  assert.equal(cinematicFailureDisposition("load-timeout", false), "static", "a timeout before enhanced geometry commits may use compact document flow");
+  for (const reason of ["load-timeout", "decode-timeout", "media", "seek", "playback", "typography-fit", "reduced-motion-change", "late-unsupported-state"]) {
+    assert.equal(cinematicFailureDisposition(reason, true), "preserve-runway", `${reason} after commit must preserve the runway`);
+  }
+
+  const calls = [];
+  assert.equal(supportsH264((mime) => { calls.push(mime); return "maybe"; }), true, "Safari-style maybe support is sufficient");
+  assert.deepEqual(calls, ['video/mp4; codecs="avc1.640028"'], "capability selection must make one H.264 query and no fallback query");
+  assert.equal(supportsH264(() => "probably"), true);
+  assert.equal(supportsH264(() => ""), false);
+
+  const travel = 1_989;
+  const arrival = arrivalScrollOffset(travel, "landscape", false);
+  const states = [0, arrival, Math.round(travel * 0.9), travel].map((offset) => cinematicDocumentStateForScroll(offset, travel, "landscape", false));
+  assert.equal(states[0].scrollOffset, 0);
+  assert.equal(states[0].scrollProgress, 0);
+  assert.equal(states[0].conceptualFrame, 1);
+  assert.equal(states[0].phase, "physical");
+  assert.equal(states[1].physicalFrame, 285);
+  assert.equal(states[1].phase, "physical");
+  assert.equal(states[3].scrollOffset, travel);
+  assert.equal(states[3].scrollProgress, 1);
+  assert.equal(states[3].semantic, 1);
+  assert.equal(states[3].phase, "settled");
+  assert.equal(states[3].settled, true);
+
+  const sampled = Array.from({ length: travel + 1 }, (_unused, offset) => cinematicDocumentStateForScroll(offset, travel, "landscape", false));
+  const black = sampled.find((state) => state.conceptualCoordinate >= 500 && state.conceptualCoordinate < 513);
+  const entry = sampled.find((state) => state.conceptualCoordinate > 513 && !state.settled);
+  assert.ok(black && black.phase === "black" && black.black === 1 && black.semantic === 0, "the browser-owned black interval survives a late timeout");
+  assert.ok(entry && entry.phase === "entry" && entry.semantic > 0, "semantic ENTRY continues from native document progress after a late timeout");
+});
+
 test("Phase 4-R2.1 runtime keeps one decoder, native scroll, presentation authority, and fail-open safeguards", () => {
   const source = readFileSync(path.join(process.cwd(), "src", "scripts", "home-cinematic-integration.ts"), "utf8");
   assert.match(source, /const releaseMissingDom/);
   assert.match(source, /cinematicFallback = "required-dom"/);
   assert.match(source, /const handleSkip[\s\S]*?setSettledInteraction\(true\)[\s\S]*?entry\.focus\(\{ preventScroll: true \}\)/);
   assert.match(source, /pagehide[\s\S]{0,800}cancelAnimationFrame\(animationFrame\)[\s\S]{0,120}animationFrame = 0/);
-  assert.match(source, /const conceptualCoordinate = conceptualCoordinateForScroll\(currentScrollOffset, scrollExtent/);
+  assert.match(source, /const documentState = cinematicDocumentStateForScroll\(currentScrollOffset, scrollExtent/);
   assert.match(source, /requestVideoFrameCallback/);
   assert.match(source, /cancelVideoFrameCallback/);
   assert.match(source, /const playback = video\.play\(\)/);
@@ -371,13 +504,19 @@ test("Phase 4-R2.1 runtime keeps one decoder, native scroll, presentation author
   assert.equal([...source.matchAll(/presentedPhysicalFrame\s*=(?!=)/g)].length, 3, "presented authority is initialized once, then updated only by rVFC/fallback and seeked");
   assert.doesNotMatch(source.match(/const armWake[\s\S]*?const finishReverseIfPresented/)?.[0] ?? "", /presentedPhysicalFrame\s*=(?!=)/);
   assert.doesNotMatch(source, /createElement\(\s*["'](?:video|source)["']/);
+  assert.doesNotMatch(source, /\b(?:vp9|webm)\b/i, "active runtime must not probe, select, or request the historical VP9 delivery");
+  assert.match(source, /manifest\.assets\.length !== 6/);
+  assert.match(source, /completeH264Inventory/);
+  assert.match(source, /failed-preserve-runway/);
+  assert.match(source, /cinematicDocumentStateForScroll/);
+  assert.doesNotMatch(source, /querySelectorAll\(["']source["']\)[\s\S]{0,160}removeAttribute\(["']srcset["']\)/, "late failure must retain the still poster while releasing only video\/Blob resources");
   assert.doesNotMatch(source, /\bpreventDefault\s*\(/);
   assert.doesNotMatch(source, /(?:window\.)?scroll(?:To|By)\s*\(/);
   assert.match(source, /BLACK_START_U = 500/);
   assert.match(source, /ENTRY_START_U = 513/);
 });
 
-test("Phase 4-R2 final build is fail-closed and ships only nested R2 cinematic authority", () => {
+test("Phase 4-R2.1 final build is fail-closed and ships only the active nested H.264 authority", () => {
   const root = process.cwd();
   const packageManifest = JSON.parse(readFileSync(path.join(root, "package.json"), "utf8"));
   const finalBuild = readFileSync(path.join(root, "scripts", "run-phase4r2-final-build.mjs"), "utf8");
@@ -394,16 +533,17 @@ test("Phase 4-R2 final build is fail-closed and ships only nested R2 cinematic a
   assert.match(finalBuild, /verify-phase4-output\.mjs/);
   assert.match(legacyStage, /FINAL_AUTHORITY_EXPECTED/);
   assert.match(legacyStage, /Pruned .*legacy cinematic/);
-  assert.match(r2Stage, /MANIFEST_RELATIVE = "manifests\/phase-4r2-production-media-manifest\.json"/);
-  assert.match(r2Stage, /source Blender SHA-256 mismatch/);
-  assert.match(r2Stage, /Cartesian product/);
-  assert.match(r2Stage, /merge-to-main and Phase 5/);
+  assert.match(r2Stage, /PHASE4R21_MANIFEST_RELATIVE/);
+  assert.match(r2Stage, /loadAndValidatePhase4R21Authority/);
+  assert.match(r2Stage, /active tracked authority must contain exactly ten files/);
+  assert.match(r2Stage, /strict six-asset H\.264 authority/);
+  assert.match(r2Stage, /rename\(tempRoot, outputRoot\)/);
   assert.match(outputVerifier, /phase4r2-final-inventory/);
   assert.match(outputVerifier, /phase4r2-final-no-fallback/);
   assert.match(outputVerifier, /phase4r2-final-poster-binding/);
   assert.match(outputVerifier, /phase4r2-runtime-binding/);
   assert.match(outputVerifier, /phase4r2-manifest-byte-parity/);
-  assert.match(outputVerifier, /loadAndValidatePhase4R2Authority/);
+  assert.match(outputVerifier, /loadAndValidatePhase4R21Authority/);
   assert.match(outputVerifier, /FINAL_AUTHORITY_EXPECTED \? \[\] : MEDIA_ASSETS/);
 });
 
@@ -454,16 +594,28 @@ test("Phase 4-R2 counterfeit authorities fail closed", () => {
   }
 });
 
-test("Phase 4-R2 staging rejects a counterfeit before replacing valid runtime bytes", async () => {
+test("Phase 4-R2.1 staging atomically replaces stale codecs and rejects a counterfeit before replacing valid runtime bytes", async () => {
   const temporary = mkdtempSync(path.join(os.tmpdir(), "phase4r2-counterfeit-stage-"));
   try {
-    const records = makeAuthorityFixture();
-    writeAuthorityFixture(temporary, records);
+    const records = makeActiveAuthorityFixture();
+    writeActiveAuthorityFixture(temporary, records);
+    const authority = await loadAndValidatePhase4R21Authority({
+      authorityRoot: path.join(temporary, ...PHASE4R21_AUTHORITY_RELATIVE.split("/")),
+      repositoryRoot: temporary,
+    });
+    assert.equal(authority.assets.length, 6);
+    assert.equal(authority.expectedAuthorityPaths.length, 10);
+    assert.equal(authority.runtimePaths.length, 7);
+    const outputRoot = path.join(temporary, ...PHASE4R21_OUTPUT_RELATIVE.split("/"));
+    mkdirSync(path.join(outputRoot, "media"), { recursive: true });
+    writeFileSync(path.join(outputRoot, "media", "stale-vp9.webm"), videoFixture("vp9", "stale"));
     await stagePhase4R2RuntimeMedia({ root: temporary, finalAuthorityExpected: true });
-    const emittedManifest = path.join(temporary, ...PHASE4R2_OUTPUT_RELATIVE.split("/"), ...PHASE4R2_MANIFEST_RELATIVE.split("/"));
+    const emittedManifest = path.join(outputRoot, ...PHASE4R21_MANIFEST_RELATIVE.split("/"));
     const acceptedBytes = readFileSync(emittedManifest);
+    assert.equal(readFileSync(path.join(outputRoot, ...PHASE4R21_MANIFEST_RELATIVE.split("/")), "utf8").includes("webm"), false);
+    assert.equal(spawnSync(process.execPath, ["-e", `const{readdirSync,statSync}=require('fs'),p=require('path');let n=0;const w=d=>{for(const x of readdirSync(d)){const q=p.join(d,x);statSync(q).isDirectory()?w(q):n++}};w(${JSON.stringify(outputRoot)});process.stdout.write(String(n))`], { encoding: "utf8" }).stdout, "7", "atomic runtime tree must contain exactly the manifest plus six assets");
 
-    const sourceBlend = path.join(temporary, ...PHASE4R2_SOURCE_BLEND_RELATIVE.split("/"));
+    const sourceBlend = path.join(temporary, ...PHASE4R21_SOURCE_BLEND_RELATIVE.split("/"));
     const acceptedSource = readFileSync(sourceBlend);
     const corruptSource = Buffer.from(acceptedSource);
     corruptSource[0] ^= 0x01;
@@ -471,20 +623,20 @@ test("Phase 4-R2 staging rejects a counterfeit before replacing valid runtime by
     writeFileSync(sourceBlend, corruptSource);
     await assert.rejects(
       stagePhase4R2RuntimeMedia({ root: temporary, finalAuthorityExpected: true }),
-      /frozen R1\.1 Blender source bytes\/SHA-256 mismatch/,
+      /R2\.1 source Blender SHA-256 mismatch/,
     );
     assert.deepEqual(readFileSync(emittedManifest), acceptedBytes, "corrupt frozen source must not replace an already accepted runtime tree");
     writeFileSync(sourceBlend, acceptedSource);
 
-    const manifest = structuredClone(records.get(PHASE4R2_MANIFEST_RELATIVE).json);
+    const manifest = structuredClone(records.get(PHASE4R21_MANIFEST_RELATIVE).json);
     manifest.sourceBlendSha256 = digest("counterfeit-source");
-    const counterfeit = recordJson(PHASE4R2_MANIFEST_RELATIVE, manifest);
-    records.set(PHASE4R2_MANIFEST_RELATIVE, counterfeit);
-    writeFileSync(path.join(temporary, ...PHASE4R2_AUTHORITY_RELATIVE.split("/"), ...PHASE4R2_MANIFEST_RELATIVE.split("/")), counterfeit.payload);
+    const counterfeit = recordJson(PHASE4R21_MANIFEST_RELATIVE, manifest);
+    records.set(PHASE4R21_MANIFEST_RELATIVE, counterfeit);
+    writeFileSync(path.join(temporary, ...PHASE4R21_AUTHORITY_RELATIVE.split("/"), ...PHASE4R21_MANIFEST_RELATIVE.split("/")), counterfeit.payload);
 
     await assert.rejects(
       stagePhase4R2RuntimeMedia({ root: temporary, finalAuthorityExpected: true }),
-      /source Blender SHA-256 mismatch/,
+      /active six-asset H\.264 manifest mismatch/,
     );
     assert.deepEqual(readFileSync(emittedManifest), acceptedBytes, "failed validation must not replace an already accepted runtime tree");
   } finally {
@@ -511,7 +663,7 @@ test("Phase 4-R2 build dispatcher selects final authority and retains pre-CP5 de
   ]);
 });
 
-test("Phase 4-R2 explicit final staging fails without authority while development mode remains selectable", () => {
+test("Phase 4-R2.1 explicit final staging fails without authority while development mode remains selectable", () => {
   const temporary = mkdtempSync(path.join(os.tmpdir(), "phase4r2-final-authority-"));
   try {
     const result = spawnSync(process.execPath, [path.join(process.cwd(), "scripts", "stage-phase4r2-runtime-media.mjs")], {
@@ -520,7 +672,7 @@ test("Phase 4-R2 explicit final staging fails without authority while developmen
       encoding: "utf8",
     });
     assert.notEqual(result.status, 0);
-    assert.match(`${result.stdout}\n${result.stderr}`, /final media authority is required but not staged/);
+    assert.match(`${result.stdout}\n${result.stderr}`, /active media authority is required but not staged/);
   } finally {
     rmSync(temporary, { recursive: true, force: true });
   }

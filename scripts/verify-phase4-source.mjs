@@ -5,11 +5,12 @@ import path from "node:path";
 
 import { ALL_HTML_ROUTES, PUBLIC_INDUSTRY_NAMES } from "./phase1-qa-config.mjs";
 import {
-  loadAndValidatePhase4R2Authority,
-  PHASE4R2_AUTHORITY_RELATIVE,
-  PHASE4R2_MANIFEST_RELATIVE,
-  PHASE4R2_SOURCE_BLEND_BYTES,
-  PHASE4R2_SOURCE_BLEND_SHA256,
+  loadAndValidatePhase4R21Authority,
+  PHASE4R21_AUTHORITY_RELATIVE,
+  PHASE4R21_MANIFEST_RELATIVE,
+  PHASE4R21_SOURCE_BLEND_BYTES,
+  PHASE4R21_SOURCE_BLEND_RELATIVE,
+  PHASE4R21_SOURCE_BLEND_SHA256,
 } from "./stage-phase4r2-runtime-media.mjs";
 
 const ROOT = process.cwd();
@@ -81,6 +82,7 @@ const ALLOWED_PRODUCTION_CHANGES = Object.freeze([
   /^src\/pages\/index\.astro$/,
   /^src\/scripts\/home-cinematic-integration\.ts$/,
   /^src\/styles\/routes\/home-cinematic\.css$/,
+  /^src\/styles\/routes\/home-responsive\.css$/,
   /^public\/_headers$/,
 ]);
 const failures = [];
@@ -250,7 +252,7 @@ if (videos[0]) {
 }
 check(matches(indexSource, /<picture\b/gi) === 1, "poster-picture", "src/pages/index.astro", "cinematic shell must contain one poster picture");
 check(/cinematicPosters\.portrait/.test(indexSource) && /cinematicPosters\.landscape/.test(indexSource) && /cinematicPosters\.desktop/.test(indexSource), "poster-inventory", "src/pages/index.astro", "SSR Home must bind desktop, portrait, and landscape final-authority posters with a safe development fallback");
-check(/phase-4r2-production-media-manifest\.json/.test(indexSource) && /PHASE4R2_FINAL_AUTHORITY/.test(indexSource), "poster-manifest-authority", "src/pages/index.astro", "final-authority builds must bind SSR posters from the final R2 manifest and fail closed when it is required");
+check(/phase-4r2-1-causal-signal-scroll-stability\/production\/manifests\/phase-4r2-production-media-manifest\.json/.test(indexSource) && /PHASE4R2_FINAL_AUTHORITY/.test(indexSource), "poster-manifest-authority", "src/pages/index.astro", "final-authority builds must bind SSR posters from the active R2.1 tracked manifest and fail closed when it is required");
 check(/phase-4r2-production-media-manifest\.json/.test(cinematicController) && /selectedMediaSource/.test(cinematicController), "controller-media-inventory", "src/scripts/home-cinematic-integration.ts", "controller must resolve exactly one R2 family/codec asset from the staged final manifest");
 check(/fetch\(MANIFEST_PATH, \{ cache: "no-cache"/.test(cinematicController) && /fetch\(source, \{ cache: "force-cache"/.test(cinematicController) && /selectedManifestAsset/.test(cinematicController) && /SOURCE_BLEND_SHA256/.test(cinematicController), "controller-authority-cache", "src/scripts/home-cinematic-integration.ts", "runtime must revalidate the stable manifest, validate its fixed source/timeline/denials/inventory, and cache only hash-named payloads immutably");
 
@@ -276,6 +278,16 @@ check(
   "src/scripts/home-cinematic-integration.ts",
   "exactly one selected asset must be fetched and assigned through one seekable Blob URL without source hot-swaps",
 );
+check(
+  /export\s+type\s+Codec\s*=\s*["']h264["']/.test(cinematicController)
+    && /supportsH264/.test(cinematicController)
+    && /manifest\.assets\.length\s*!==\s*6/.test(cinematicController)
+    && /completeH264Inventory/.test(cinematicController)
+    && !/\b(?:vp9|webm)\b/i.test(cinematicController),
+  "runtime-h264-only",
+  "src/scripts/home-cinematic-integration.ts",
+  "active runtime delivery must make one H.264 capability decision and select exactly three H.264 videos plus three posters without a VP9/WebM branch",
+);
 check(/URL\.revokeObjectURL\(objectUrl\)/.test(cinematicController) && /mediaAbortController\.abort\(\)/.test(cinematicController), "runtime-media-cleanup", "src/scripts/home-cinematic-integration.ts", "Blob media delivery must be aborted and revoked during fail-open or teardown");
 check(!/createElement\(\s*["'](?:video|source)["']/.test(cinematicController), "single-decoder", "src/scripts/home-cinematic-integration.ts", "controller must not create additional video/source elements");
 const reducedGate = cinematicController.indexOf("motion.matches || !codec || !portalFits()");
@@ -291,7 +303,7 @@ check(/transitionReaction/.test(cinematicController) && /wake-reverse/.test(cine
 check(/decideReaction/.test(cinematicController) && /Requested\/pending frames never become reverse anchors/.test(cinematicController) && /reviseReversePlan\(null,\s*decision\.reverseStartFrame/.test(cinematicController) && /Later retreat input may extend the floor, but it must not starve the active reverse clock/.test(cinematicController) && matches(cinematicController, /presentedPhysicalFrame\s*=(?!=)/g) === 3, "presented-frame-authority", "src/scripts/home-cinematic-integration.ts", "reverse must anchor only to the last frame proven by seeked or decoder presentation; repeated retreat input must not restart its clock");
 check(/scrollIntentFor\(scrollEventSequence, handledScrollEventSequence/.test(cinematicController) && /scrollEventSequence\s*\+=\s*1/.test(cinematicController) && /arrivalCrossingDirection\(previousOffset, currentOffset, arrivalOffset, !observed\)/.test(cinematicController), "scroll-intent-authority", "src/scripts/home-cinematic-integration.ts", "only an observed native scroll event may drive forward/reverse transitions; geometry remeasurement must carry zero reaction intent");
 check(/seeked[\s\S]{0,500}finishReverseIfPresented\(\);[\s\S]{0,220}resumeReverseTick\(\)/.test(cinematicController), "reverse-floor-race", "src/scripts/home-cinematic-integration.ts", "an obsolete floor seek must resume the monotonic reverse clock when retreat or geometry lowers the target during the in-flight seek");
-check(/const\s+settled\s*=\s*scrollProgress\s*>=\s*0\.9995/.test(cinematicController) && /setSettledInteraction\(settled\)/.test(cinematicController), "chrome-release-boundary", "src/scripts/home-cinematic-integration.ts", "header and ENTRY interaction may release only at scrollProgress >= 0.9995");
+check(/const\s+settled\s*=\s*scrollProgress\s*>=\s*0\.9995/.test(cinematicController) && /setSettledInteraction\(settled\)/.test(cinematicController), "chrome-release-boundary", "src/scripts/home-cinematic-integration.ts", "header and ENTRY interaction may release only at scrollProgress >= 0.9995, including after a late media failure");
 check(/header\.setAttribute\(["']inert["']/.test(cinematicController) && /entry\.setAttribute\(["']inert["']/.test(cinematicController) && /header\.removeAttribute\(["']inert["']/.test(cinematicController) && /entry\.removeAttribute\(["']inert["']/.test(cinematicController), "settled-inert-state", "src/scripts/home-cinematic-integration.ts", "header and ENTRY must be inert before settlement and released together at settlement/fallback");
 check(/mobileMenu\?\.removeAttribute\(["']open["']\)/.test(cinematicController), "reverse-menu-close", "src/scripts/home-cinematic-integration.ts", "reverse concealment must close the mobile menu");
 check(/skipLink\.focus\(\{\s*preventScroll:\s*true\s*\}\)/.test(cinematicController), "reverse-focus-safety", "src/scripts/home-cinematic-integration.ts", "reverse concealment must move hidden header/ENTRY focus to the permitted skip link without scrolling");
@@ -300,8 +312,26 @@ check(/const\s+releaseMissingDom/.test(cinematicController) && /cinematicFallbac
 check(/pagehide[\s\S]{0,800}cancelAnimationFrame\(animationFrame\)[\s\S]{0,120}animationFrame\s*=\s*0/.test(cinematicController), "bfcache-frame-reset", "src/scripts/home-cinematic-integration.ts", "BFCache/pagehide cancellation must reset the requestAnimationFrame handle");
 check(/history\.replaceState\([\s\S]*?quantumHomeCinematic:\s*\{\s*version:\s*2,\s*settledOrLower,\s*arrivalOrBeyond\s*\}/.test(cinematicController), "restored-scroll-metadata", "src/scripts/home-cinematic-integration.ts", "the current history entry must record whether restored position is at/beyond arrival so reload never replays the wake");
 check(!/localStorage|sessionStorage|document\.cookie|cookieStore/.test(`${indexSource}\n${cinematicController}`), "no-persistent-skip", "Home cinematic bootstrap/controller", "cinematic eligibility must not use cookies or persistent web storage");
-check(!/cinematicFocus|cinematicDeepLink|preserveGeometry|cinematicHeader\s*=\s*["']visible["']/.test(`${indexSource}\n${cinematicController}\n${cinematicCss}`), "superseded-chrome-state", "Home cinematic integration", "focus reveals, enhanced deep links, partial fail-open geometry, and early visible header states are prohibited");
-check(/root\.dataset\.cinematicMode\s*=\s*["']static["'][\s\S]{0,180}clearCinematicStyles\(\)/.test(cinematicController), "media-fail-open", "src/scripts/home-cinematic-integration.ts", "every media/controller failure must fully fail open to static/released document flow");
+check(!/cinematicFocus|cinematicDeepLink|preserveGeometry|cinematicHeader\s*=\s*["']visible["']/.test(`${indexSource}\n${cinematicController}\n${cinematicCss}`), "superseded-chrome-state", "Home cinematic integration", "focus reveals, enhanced deep links, legacy partial-failure flags, and early visible header states are prohibited");
+check(
+  /cinematicFailureDisposition/.test(cinematicController)
+    && /failed-preserve-runway/.test(cinematicController)
+    && /releaseMedia\(\)/.test(cinematicController)
+    && /cinematicDocumentStateForScroll/.test(cinematicController)
+    && /return enhancedCommitted \? "preserve-runway" : "static"/.test(cinematicController)
+    && /root\.dataset\.cinematicMode\s*=\s*["']static["'][\s\S]{0,220}clearCinematicStyles\(\)/.test(cinematicController)
+    && !/querySelectorAll\(["']source["']\)[\s\S]{0,160}removeAttribute\(["']srcset["']\)/.test(cinematicController),
+  "media-failure-geometry",
+  "src/scripts/home-cinematic-integration.ts",
+  "only pre-commit failures may use compact static flow; every post-commit failure or preference/typography change must release video/Blob resources while retaining the poster, enhanced runway, and native document progress",
+);
+check(
+  /failed-preserve-runway["']\]\s+\.cinematic-poster\s*\{[\s\S]{0,180}display:\s*block[\s\S]{0,180}opacity:\s*1/.test(cinematicCss)
+    && /failed-preserve-runway["']\]\s+\.cinematic-media\s*\{[\s\S]{0,120}display:\s*none/.test(cinematicCss),
+  "media-failure-poster",
+  "src/styles/routes/home-cinematic.css",
+  "geometry-preserving failure must visibly retain the static poster while hiding the released decoder surface",
+);
 
 for (const [relative, controller] of [
   ["src/scripts/home-cinematic-integration.ts", cinematicController],
@@ -332,6 +362,12 @@ check(!/(?:^|[;{])\s*overflow\s*:[^;}]*\b(?:auto|scroll)\b/im.test(homeStyles), 
 check(!/\btouch-action\s*:\s*none/i.test(homeStyles), "touch-lock", "src/styles/routes/home*.css", "Home must not suppress native touch scrolling");
 check(/data-cinematic-header=["']concealed["'][\s\S]{0,180}\.site-header[\s\S]{0,260}visibility:\s*hidden[\s\S]{0,160}opacity:\s*0[\s\S]{0,160}pointer-events:\s*none/.test(cinematicCss), "concealed-chrome-css", "src/styles/routes/home-cinematic.css", "the complete pre-settled header must be invisible, transparent, and pointer-safe");
 check(!/:focus-within[\s\S]{0,160}(?:site-header|entry-field)|cinematic-focus/.test(cinematicCss), "no-focus-reveal-css", "src/styles/routes/home-cinematic.css", "keyboard focus must never reveal concealed chrome or ENTRY prematurely");
+check(
+  /@media\s*\(max-height:\s*30rem\)\s*and\s*\(min-width:\s*36rem\)[\s\S]*?\.entry-field\s*\{[\s\S]*?min-height:\s*calc\(100svh\s*-\s*var\(--cinematic-header-px\)\s*-\s*1px\)[\s\S]*?\.entry-path\s*\{[\s\S]*?min-height:\s*4\.25rem/.test(homeStyles),
+  "short-landscape-entry-fit",
+  "src/styles/routes/home-responsive.css",
+  "the short-landscape-only ENTRY regime must fit the complete settled H1 and both routes below released chrome without changing global desktop or physical media selection",
+);
 for (const marker of [
   "quantum-hub.phase-4r1.chrome-evidence.v2",
   "current-runtime chrome-state proxy — R1 physical runtime integration not authorized",
@@ -414,10 +450,10 @@ try {
 check(matches(stageSource, /\bsource:\s*["']/g) === MEDIA_ASSETS.length && matches(stageSource, /\boutput:\s*["']/g) === MEDIA_ASSETS.length, "stage-inventory-count", "scripts/stage-phase4-media.mjs", "media staging recipe must contain exactly seven source/output records");
 check(/readdir\(OUTPUT_ROOT/.test(stageSource) && /expectedOutputs/.test(stageSource) && /unlink\(/.test(stageSource), "stage-prunes-extras", "scripts/stage-phase4-media.mjs", "media staging must remove unexpected generated files");
 check(/PHASE4R2_FINAL_AUTHORITY/.test(stageSource) && /Pruned .*legacy cinematic/.test(stageSource) && /entry\.name === "phase-4r2"/.test(stageSource), "stage-final-prune", "scripts/stage-phase4-media.mjs", "final R2 staging must remove every flat legacy cinematic payload while retaining only the isolated R2 subtree");
-check(/PHASE4R2_FINAL_AUTHORITY/.test(stageR2Source) && /path escapes authority root/.test(stageR2Source) && /Cartesian product/.test(stageR2Source) && /source Blender SHA-256 mismatch/.test(stageR2Source) && /merge-to-main and Phase 5/.test(stageR2Source) && /rename\(tempRoot, outputRoot\)/.test(stageR2Source) && /media\//.test(stageR2Source) && /posters\//.test(stageR2Source), "stage-r2-authority", "scripts/stage-phase4r2-runtime-media.mjs", "R2 staging must validate the complete source/report/media authority graph, exact nested inventory, denials, and atomic output");
-check(/AUTHORITY_ROOT/.test(buildDispatcherSource) && /AUTHORITY_MANIFEST/.test(buildDispatcherSource) && /resolveBuildMode/.test(buildDispatcherSource) && /run-phase4r2-final-build\.mjs/.test(buildDispatcherSource) && /stage-phase4-media\.mjs/.test(buildDispatcherSource), "default-build-dispatch", "scripts/run-phase4-build.mjs", "the default build dispatcher must select mandatory final authority whenever CP5 has created the tracked R2 authority, otherwise preserve development fallback");
+check(/PHASE4R2_FINAL_AUTHORITY/.test(stageR2Source) && /loadAndValidatePhase4R21Authority/.test(stageR2Source) && /expectedPaths\.length === 10/.test(stageR2Source) && /runtimePaths\.length === 7/.test(stageR2Source) && /replaceAuthorityRootAtomically/.test(stageR2Source) && /removeUnlistedFiles/.test(stageR2Source) && /rename\(tempRoot, outputRoot\)/.test(stageR2Source) && /strict six-asset H\.264 authority/.test(stageR2Source), "stage-r2-authority", "scripts/stage-phase4r2-runtime-media.mjs", "active R2.1 staging must validate the exact ten-file tracked authority, exact seven-file public tree, H.264-only inventory, source hash, and atomic replacement/cleanup contract");
+check(/AUTHORITY_ROOT/.test(buildDispatcherSource) && /phase-4r2-1-causal-signal-scroll-stability/.test(buildDispatcherSource) && /AUTHORITY_MANIFEST/.test(buildDispatcherSource) && /resolveBuildMode/.test(buildDispatcherSource) && /run-phase4r2-final-build\.mjs/.test(buildDispatcherSource) && /stage-phase4-media\.mjs/.test(buildDispatcherSource), "default-build-dispatch", "scripts/run-phase4-build.mjs", "the default build dispatcher must select mandatory final authority whenever CP3 has materialized the tracked active R2.1 authority, otherwise preserve development fallback");
 check(/PHASE4R2_FINAL_AUTHORITY: "1"/.test(finalBuildSource) && /stage-phase4-media\.mjs/.test(finalBuildSource) && /stage-phase4r2-runtime-media\.mjs/.test(finalBuildSource) && /node_modules\/astro\/bin\/astro\.mjs/.test(finalBuildSource) && /verify-phase4-output\.mjs/.test(finalBuildSource), "final-build-contract", "scripts/run-phase4r2-final-build.mjs", "the explicit R2 final build must set final authority and run legacy pruning, R2 staging, Astro build, and output verification in order");
-check(/r2CinematicInventory/.test(outputVerifierSource) && /phase4r2-final-inventory/.test(outputVerifierSource) && /phase4r2-final-no-fallback/.test(outputVerifierSource) && /phase4r2-final-poster-binding/.test(outputVerifierSource) && /phase4r2-runtime-binding/.test(outputVerifierSource) && /phase4r2-manifest-byte-parity/.test(outputVerifierSource) && /loadAndValidatePhase4R2Authority/.test(outputVerifierSource) && /FINAL_AUTHORITY_EXPECTED \? \[\] : MEDIA_ASSETS/.test(outputVerifierSource), "final-output-contract", "scripts/verify-phase4-output.mjs", "final output verification must require the complete tracked R2 authority graph, exact emitted manifest bytes, nine nested assets, runtime bindings, and no legacy fallback");
+check(/r2CinematicInventory/.test(outputVerifierSource) && /phase4r2-final-inventory/.test(outputVerifierSource) && /phase4r2-final-no-fallback/.test(outputVerifierSource) && /phase4r2-final-poster-binding/.test(outputVerifierSource) && /phase4r2-runtime-binding/.test(outputVerifierSource) && /phase4r2-manifest-byte-parity/.test(outputVerifierSource) && /loadAndValidatePhase4R21Authority/.test(outputVerifierSource) && /FINAL_AUTHORITY_EXPECTED \? \[\] : MEDIA_ASSETS/.test(outputVerifierSource), "final-output-contract", "scripts/verify-phase4-output.mjs", "final output verification must require the active tracked R2.1 authority, exact emitted manifest bytes, three H.264 videos, three posters, runtime bindings, and no legacy fallback/VP9 payload");
 
 // These are structural cross-checks only: the authoritative capture, deployment,
 // and human-review tools retain their own full self-tests.
@@ -441,27 +477,27 @@ try {
 // however, the complete graph must validate and every governed file must be
 // tracked. A partial, stale, renamed, or merely untracked authority cannot be
 // mistaken for release input.
-const r2AuthorityRoot = path.resolve(ROOT, ...PHASE4R2_AUTHORITY_RELATIVE.split("/"));
+const r2AuthorityRoot = path.resolve(ROOT, ...PHASE4R21_AUTHORITY_RELATIVE.split("/"));
 let r2AuthorityPresent = false;
 try {
   const info = await stat(r2AuthorityRoot);
   r2AuthorityPresent = true;
-  check(info.isDirectory(), "r2-authority-root", PHASE4R2_AUTHORITY_RELATIVE, "final R2 authority root must be a directory");
+  check(info.isDirectory(), "r2-authority-root", PHASE4R21_AUTHORITY_RELATIVE, "active R2.1 authority root must be a directory");
 } catch (error) {
-  if (error?.code !== "ENOENT") check(false, "r2-authority-root", PHASE4R2_AUTHORITY_RELATIVE, `could not inspect final R2 authority root: ${error.message}`);
+  if (error?.code !== "ENOENT") check(false, "r2-authority-root", PHASE4R21_AUTHORITY_RELATIVE, `could not inspect active R2.1 authority root: ${error.message}`);
 }
-check(!FINAL_AUTHORITY_EXPECTED || r2AuthorityPresent, "r2-final-authority-required", PHASE4R2_MANIFEST_RELATIVE, "final-authority source verification requires the complete tracked R2 authority");
+check(!FINAL_AUTHORITY_EXPECTED || r2AuthorityPresent, "r2-final-authority-required", PHASE4R21_MANIFEST_RELATIVE, "final-authority source verification requires the complete tracked active R2.1 authority");
 if (r2AuthorityPresent) {
   try {
-    const authority = await loadAndValidatePhase4R2Authority({ authorityRoot: r2AuthorityRoot, repositoryRoot: ROOT });
-    const expectedTracked = authority.expectedAuthorityPaths.map((relative) => `${PHASE4R2_AUTHORITY_RELATIVE}/${relative}`).sort();
-    const observedTracked = lines(git("ls-files", "--", PHASE4R2_AUTHORITY_RELATIVE)).map((relative) => relative.replaceAll("\\", "/")).sort();
-    check(JSON.stringify(observedTracked) === JSON.stringify(expectedTracked), "r2-authority-tracked", PHASE4R2_AUTHORITY_RELATIVE, "every and only complete final R2 authority payload/report path must be tracked", { expected: expectedTracked, observed: observedTracked });
-    const blendRelative = "artifacts/original/phase-4r1-1-periphery-current-mobile-crt/source/quantum-signal-television-phase4r1-1-periphery-current-mobile-crt.blend";
+    const authority = await loadAndValidatePhase4R21Authority({ authorityRoot: r2AuthorityRoot, repositoryRoot: ROOT });
+    const expectedTracked = authority.expectedAuthorityPaths.map((relative) => `${PHASE4R21_AUTHORITY_RELATIVE}/${relative}`).sort();
+    const observedTracked = lines(git("ls-files", "--", PHASE4R21_AUTHORITY_RELATIVE)).map((relative) => relative.replaceAll("\\", "/")).sort();
+    check(JSON.stringify(observedTracked) === JSON.stringify(expectedTracked), "r2-authority-tracked", PHASE4R21_AUTHORITY_RELATIVE, "every and only active R2.1 manifest/frame-manifest/H.264/poster authority path must be tracked", { expected: expectedTracked, observed: observedTracked });
+    const blendRelative = PHASE4R21_SOURCE_BLEND_RELATIVE;
     const blendPayload = await readFile(path.join(ROOT, ...blendRelative.split("/")));
-    check(blendPayload.length === PHASE4R2_SOURCE_BLEND_BYTES && sha256(blendPayload) === PHASE4R2_SOURCE_BLEND_SHA256, "r2-source-blend", blendRelative, "final manifest sourceBlendSha256 must resolve to the exact accepted frozen R1.1 Blender bytes", { bytes: blendPayload.length, sha256: sha256(blendPayload) });
+    check(blendPayload.length === PHASE4R21_SOURCE_BLEND_BYTES && sha256(blendPayload) === PHASE4R21_SOURCE_BLEND_SHA256, "r2-source-blend", blendRelative, "active manifest sourceBlendSha256 must resolve to the exact cumulative R2.1 Blender bytes", { bytes: blendPayload.length, sha256: sha256(blendPayload) });
   } catch (error) {
-    check(false, "r2-authority-graph", PHASE4R2_AUTHORITY_RELATIVE, `final R2 authority failed complete source/report/media validation: ${error.message}`);
+    check(false, "r2-authority-graph", PHASE4R21_AUTHORITY_RELATIVE, `active R2.1 authority failed complete source/frame-manifest/runtime-media validation: ${error.message}`);
   }
 }
 for (const asset of MEDIA_ASSETS) {
@@ -503,7 +539,7 @@ try {
 
 const cinematicControllerBytes = cinematicController ? (await stat(path.join(ROOT, "src", "scripts", "home-cinematic-integration.ts"))).size : 0;
 const cinematicCssBytes = cinematicCss ? (await stat(path.join(ROOT, "src", "styles", "routes", "home-cinematic.css"))).size : 0;
-check(cinematicControllerBytes <= 40 * 1024, "controller-source-budget", "src/scripts/home-cinematic-integration.ts", `the R2.1 reaction and lifecycle controller must remain at or below 40 KiB; observed ${cinematicControllerBytes.toLocaleString("en-US")} bytes`);
+check(cinematicControllerBytes <= 44 * 1024, "controller-source-budget", "src/scripts/home-cinematic-integration.ts", `the R2.1 reaction, late-failure, and lifecycle controller must remain at or below 44 KiB; observed ${cinematicControllerBytes.toLocaleString("en-US")} bytes`);
 check(cinematicCssBytes <= 15 * 1024, "cinematic-css-source-budget", "src/styles/routes/home-cinematic.css", `authored cinematic CSS must remain at or below 15 KiB; observed ${cinematicCssBytes.toLocaleString("en-US")} bytes`);
 
 if (failures.length > 0) {

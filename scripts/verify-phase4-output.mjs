@@ -5,9 +5,10 @@ import { gzipSync } from "node:zlib";
 
 import { ALL_HTML_ROUTES, INTENDED_PUBLIC_ASSETS, PUBLIC_INDUSTRY_NAMES } from "./phase1-qa-config.mjs";
 import {
-  loadAndValidatePhase4R2Authority,
-  PHASE4R2_AUTHORITY_RELATIVE,
-  PHASE4R2_MANIFEST_RELATIVE,
+  loadAndValidatePhase4R21Authority,
+  PHASE4R21_AUTHORITY_RELATIVE,
+  PHASE4R21_MANIFEST_RELATIVE,
+  PHASE4R21_SOURCE_BLEND_SHA256,
 } from "./stage-phase4r2-runtime-media.mjs";
 
 const ROOT = process.cwd();
@@ -308,9 +309,9 @@ if (cinematicChunk) {
     [/(?:\b(?:scrollTo|scrollBy)\(|(?:window|document\.(?:documentElement|body))\.scroll\()/, "programmatic scrolling"],
     [/\.scrollTop\s*=/, "scrollTop mutation"],
     [/\bsetInterval\(/, "queued/perpetual timeline"],
-    [/\.play\(/, "linear video playback"],
     [/\b(?:ScrollTrigger|Lenis|LocomotiveScroll|gsap)\b/, "third-party/custom scroll engine"],
   ]) check(!prohibited[0].test(cinematicChunk.text), "native-scroll-authority", `dist/${cinematicChunk.path}`, `${prohibited[1]} is prohibited in the production controller`);
+  check((cinematicChunk.text.match(/\.play\(/g) ?? []).length === 1 && /requestVideoFrameCallback/.test(cinematicChunk.text), "bounded-auto-wake", `dist/${cinematicChunk.path}`, "production output may retain exactly one decoder play path for the bounded F285-to-F370 automatic CRT wake");
   check(/addEventListener\(["'`]scroll["'`][\s\S]{0,120}passive:!0/.test(cinematicChunk.text), "passive-scroll", `dist/${cinematicChunk.path}`, "production cinematic scroll listener must remain passive");
   check(/requestAnimationFrame\(/.test(cinematicChunk.text) && /ResizeObserver/.test(cinematicChunk.text), "controller-coalescing", `dist/${cinematicChunk.path}`, "production controller must retain rAF coalescing and resize invalidation");
   check(/fetch\(/.test(cinematicChunk.text) && /\.blob\(\)/.test(cinematicChunk.text) && /URL\.createObjectURL\(/.test(cinematicChunk.text) && /URL\.revokeObjectURL\(/.test(cinematicChunk.text), "seekable-media-delivery", `dist/${cinematicChunk.path}`, "production controller must turn the single selected immutable response into one lifecycle-managed seekable Blob URL");
@@ -318,7 +319,8 @@ if (cinematicChunk) {
   check(/replaceState\(/.test(cinematicChunk.text) && /quantumHomeCinematic/.test(cinematicChunk.text), "restored-scroll-metadata", `dist/${cinematicChunk.path}`, "built controller must bind settled/lower restoration metadata to the current history entry");
   check(!/localStorage|sessionStorage|cookieStore|document\.cookie/.test(cinematicChunk.text), "no-persistent-skip", `dist/${cinematicChunk.path}`, "built controller must not use cookies or persistent storage to skip the cinematic");
   check(!/cinematicFocus|cinematicDeepLink|preserveGeometry|cinematicHeader=["']visible["']/.test(cinematicChunk.text), "superseded-chrome-state", `dist/${cinematicChunk.path}`, "built controller must not retain focus-reveal, enhanced deep-link, partial failure, or early-visible header states");
-  check(/phase-4r2-production-media-manifest\.json/.test(cinematicChunk.text) && /media\//.test(cinematicChunk.text), "phase4r2-runtime-binding", `dist/${cinematicChunk.path}`, "built controller must preserve the manifest-addressed nested R2 media binding");
+  check(/phase-4r2-production-media-manifest\.json/.test(cinematicChunk.text) && /media\//.test(cinematicChunk.text) && cinematicChunk.text.includes(PHASE4R21_SOURCE_BLEND_SHA256), "phase4r2-runtime-binding", `dist/${cinematicChunk.path}`, "built controller must preserve the manifest-addressed active R2.1 media binding and exact cumulative source hash");
+  check(/failed-preserve-runway/.test(cinematicChunk.text) && !/\b(?:vp9|webm)\b/i.test(cinematicChunk.text), "phase4r2-runtime-delivery", `dist/${cinematicChunk.path}`, "built controller must preserve every post-commit failure runway and expose only the active H.264 delivery path");
 }
 const homeCssReferences = referencedStylesheets(homeHtml);
 for (const reference of homeCssReferences) check(byPath.has(reference), "stylesheet-reference", "dist/index.html", `referenced stylesheet is missing: ${reference}`);
@@ -331,6 +333,7 @@ check(!/(?:^|[;{])overflow:[^;}]*\b(?:auto|scroll)\b/i.test(emittedHomeCss), "ne
 check(!/touch-action:none/i.test(emittedHomeCss), "touch-lock", "Home CSS output", "built Home must not suppress native touch scrolling");
 check(/data-cinematic-header=(?:["']?concealed["']?)[^}]*\.site-header[^}]*\{[^}]*visibility:hidden[^}]*opacity:0[^}]*pointer-events:none/.test(emittedHomeCss), "concealed-chrome-css", "Home CSS output", "built pre-settled header must be fully invisible and pointer-safe");
 check(!/:focus-within[^}]*\{[^}]*(?:opacity:1|visibility:visible|pointer-events:auto)/.test(emittedHomeCss), "no-focus-reveal-css", "Home CSS output", "built CSS must not reveal cinematic chrome or ENTRY from focus alone");
+check(/failed-preserve-runway/.test(emittedHomeCss) && /cinematic-poster\{(?=[^}]*display:block)(?=[^}]*opacity:1)/.test(emittedHomeCss) && /cinematic-media\{display:none/.test(emittedHomeCss), "phase4r2-failure-poster", "Home CSS output", "post-commit media failure must show the retained poster while hiding the released decoder surface");
 
 const supportingIsolation = {};
 for (const route of SUPPORTING_ROUTES) {
@@ -354,28 +357,28 @@ const phase4r2ManifestPath = "media/cinematic/phase-4r2/manifests/phase-4r2-prod
 const phase4r2ManifestRecord = byPath.get(phase4r2ManifestPath);
 let phase4r2Assets = [];
 let phase4r2Authority = null;
-check(!FINAL_AUTHORITY_EXPECTED || Boolean(phase4r2ManifestRecord), "phase4r2-final-authority", `dist/${phase4r2ManifestPath}`, "final-authority builds must include the final Phase 4-R2 manifest and all nine declared assets");
+check(!FINAL_AUTHORITY_EXPECTED || Boolean(phase4r2ManifestRecord), "phase4r2-final-authority", `dist/${phase4r2ManifestPath}`, "final-authority builds must include the active Phase 4-R2.1 manifest and all six declared assets");
 if (phase4r2ManifestRecord || FINAL_AUTHORITY_EXPECTED) {
   try {
-    phase4r2Authority = await loadAndValidatePhase4R2Authority({
-      authorityRoot: path.resolve(ROOT, ...PHASE4R2_AUTHORITY_RELATIVE.split("/")),
+    phase4r2Authority = await loadAndValidatePhase4R21Authority({
+      authorityRoot: path.resolve(ROOT, ...PHASE4R21_AUTHORITY_RELATIVE.split("/")),
       repositoryRoot: ROOT,
     });
-    const trackedManifest = phase4r2Authority.records.get(PHASE4R2_MANIFEST_RELATIVE)?.payload;
+    const trackedManifest = phase4r2Authority.records.get(PHASE4R21_MANIFEST_RELATIVE)?.payload;
     check(
       Boolean(phase4r2ManifestRecord && trackedManifest && phase4r2ManifestRecord.contents.equals(trackedManifest)),
       "phase4r2-manifest-byte-parity",
       `dist/${phase4r2ManifestPath}`,
-      "emitted Phase 4-R2 manifest bytes must exactly equal the complete tracked authority manifest",
+      "emitted Phase 4-R2.1 manifest bytes must exactly equal the active tracked authority manifest",
     );
     phase4r2Assets = phase4r2Authority.assets;
   } catch (error) {
-    check(false, "phase4r2-authority-graph", `artifacts/original/${PHASE4R2_AUTHORITY_RELATIVE.split("/").at(-1)}`, `tracked source/report/media authority graph is incomplete or counterfeit: ${error.message}`);
+    check(false, "phase4r2-authority-graph", PHASE4R21_AUTHORITY_RELATIVE, `active tracked R2.1 source/frame-manifest/media authority is incomplete or counterfeit: ${error.message}`);
   }
 }
-check(!FINAL_AUTHORITY_EXPECTED || phase4r2Assets.length === 9, "phase4r2-final-inventory", `dist/${phase4r2ManifestPath}`, "final-authority output must derive exactly six videos and three posters from the required R2 manifest");
+check(!FINAL_AUTHORITY_EXPECTED || phase4r2Assets.length === 6, "phase4r2-final-inventory", `dist/${phase4r2ManifestPath}`, "final-authority output must derive exactly three H.264 videos and three posters from the required active R2.1 manifest");
 check(!FINAL_AUTHORITY_EXPECTED || !/phase-3-dormant-|phase-3-(?:desktop|mobile)-/.test(homeHtml), "phase4r2-final-no-fallback", "dist/index.html", "final-authority Home must bind only R2 dormant posters and never disclose Phase 3 cinematic fallback paths");
-if (FINAL_AUTHORITY_EXPECTED && phase4r2Assets.length === 9) {
+if (FINAL_AUTHORITY_EXPECTED && phase4r2Assets.length === 6) {
   const finalPosterUrls = phase4r2Assets.filter(({ kind }) => kind === "poster").map(({ file }) => `/media/cinematic/phase-4r2/${file}`);
   check(finalPosterUrls.length === 3 && finalPosterUrls.every((url) => homeHtml.includes(url)), "phase4r2-final-poster-binding", "dist/index.html", "final-authority SSR picture must bind all three manifest-declared R2 poster URLs");
 }
@@ -419,8 +422,8 @@ check(
   "cinematic-media-inventory",
   "dist/media/cinematic",
   FINAL_AUTHORITY_EXPECTED
-    ? "final-authority output must contain only the R2 manifest, six videos, and three posters in their nested phase-4r2 paths"
-    : "development output must contain the accepted legacy inventory plus, when present, the exact staged R2 authority",
+    ? "final-authority output must contain only the R2.1 manifest, three H.264 videos, and three posters in their nested phase-4r2 paths"
+    : "development output must contain the accepted legacy inventory plus, when present, the exact staged active R2.1 authority",
   observedCinematic,
 );
 if (!FINAL_AUTHORITY_EXPECTED) {
@@ -441,6 +444,7 @@ const expectedVideoInventory = [
 ].sort();
 const observedVideoInventory = records.filter((record) => /\.(?:mp4|webm)$/.test(record.path)).map(({ path: recordPath }) => recordPath).sort();
 check(JSON.stringify(observedVideoInventory) === JSON.stringify(expectedVideoInventory), "production-video-inventory", "dist/media", "production output must not ship unapproved video files", observedVideoInventory);
+check(!records.some((record) => record.path.startsWith("media/cinematic/phase-4r2/") && /\.(?:webm)$/i.test(record.path)), "phase4r2-no-inactive-codec", "dist/media/cinematic/phase-4r2", "active R2.1 output must contain no VP9/WebM payload");
 for (const record of records.filter((item) => /\.(?:mp4|webm)$/.test(item.path))) check(record.contents.length <= 25 * 1024 * 1024, "cloudflare-file-limit", `dist/${record.path}`, `individual media must remain below 25 MiB; observed ${formatBytes(record.contents.length)}`);
 
 for (const record of records) {
@@ -464,10 +468,10 @@ const totalJavaScript = sizes([...javascriptRecords.map(({ contents }) => conten
 const totalCss = sizes(cssRecords.map(({ contents }) => contents));
 const cinematicJavaScript = sizes(cinematicChunkRecords.map(({ contents }) => contents));
 const addedCssRaw = Math.max(0, totalCss.raw - ACCEPTED_PHASE2B_CSS_RAW);
-check(cinematicJavaScript.raw <= 9 * 1024, "cinematic-js-budget", "dist/_astro", `Phase 4 cinematic runtime with R1 chrome safety must remain at or below 9 KiB raw; observed ${formatBytes(cinematicJavaScript.raw)}`);
-check(cinematicJavaScript.gzip <= 3.5 * 1024, "cinematic-js-gzip-budget", "dist/_astro", `Phase 4 cinematic runtime must remain at or below 3.5 KiB gzip; observed ${formatBytes(cinematicJavaScript.gzip)}`);
-check(totalJavaScript.raw <= 20 * 1024, "total-js-budget", "dist/_astro + Home inline scripts", `total production JavaScript must remain at or below 20 KiB raw; observed ${formatBytes(totalJavaScript.raw)}`);
-check(totalJavaScript.gzip <= 8 * 1024, "total-js-gzip-budget", "dist/_astro + Home inline scripts", `total production JavaScript must remain at or below 8 KiB gzip; observed ${formatBytes(totalJavaScript.gzip)}`);
+check(cinematicJavaScript.raw <= 18 * 1024, "cinematic-js-budget", "dist/_astro", `Phase 4-R2.1 causal reaction, chrome safety, and late-failure runtime must remain at or below 18 KiB raw; observed ${formatBytes(cinematicJavaScript.raw)}`);
+check(cinematicJavaScript.gzip <= 6.5 * 1024, "cinematic-js-gzip-budget", "dist/_astro", `Phase 4-R2.1 cinematic runtime must remain at or below 6.5 KiB gzip; observed ${formatBytes(cinematicJavaScript.gzip)}`);
+check(totalJavaScript.raw <= 28 * 1024, "total-js-budget", "dist/_astro + Home inline scripts", `total production JavaScript must remain at or below 28 KiB raw; observed ${formatBytes(totalJavaScript.raw)}`);
+check(totalJavaScript.gzip <= 11 * 1024, "total-js-gzip-budget", "dist/_astro + Home inline scripts", `total production JavaScript must remain at or below 11 KiB gzip; observed ${formatBytes(totalJavaScript.gzip)}`);
 check(addedCssRaw <= 15 * 1024, "phase4-css-budget", "dist/_astro", `CSS added above the accepted Phase 2B baseline must remain at or below 15 KiB raw; observed ${formatBytes(addedCssRaw)}`);
 check(totalCss.raw <= ACCEPTED_PHASE2B_CSS_RAW + 15 * 1024, "total-css-budget", "dist/_astro", `total CSS must remain within the accepted Phase 2B baseline plus 15 KiB; observed ${formatBytes(totalCss.raw)}`);
 check(totalCss.gzip <= 20 * 1024, "total-css-gzip-budget", "dist/_astro", `total CSS must remain at or below 20 KiB gzip; observed ${formatBytes(totalCss.gzip)}`);

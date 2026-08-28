@@ -4,6 +4,21 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { inflateSync } from "node:zlib";
 
+import {
+  ACTIVE_FRAME_MANIFEST_SCHEMA as PHASE4R21_FRAME_MANIFEST_SCHEMA,
+  ACTIVE_MANIFEST_RELATIVE as PHASE4R21_ACTIVE_MANIFEST_RELATIVE,
+  ACTIVE_MANIFEST_SCHEMA as PHASE4R21_ACTIVE_MANIFEST_SCHEMA,
+  ACTIVE_PUBLIC_ROOT_RELATIVE as PHASE4R21_ACTIVE_PUBLIC_ROOT_RELATIVE,
+  FAMILIES as PHASE4R21_FAMILIES,
+  FRAME_COUNT as PHASE4R21_FRAME_COUNT,
+  FPS as PHASE4R21_FPS,
+  SOURCE_BYTES as PHASE4R21_ACTIVE_SOURCE_BYTES,
+  SOURCE_SHA256 as PHASE4R21_ACTIVE_SOURCE_SHA256,
+  activeFrameManifestRelativePath,
+  activeRuntimeFileInventory,
+  validateActiveProductionManifest,
+} from "./phase4r2-1-production.mjs";
+
 export const PHASE4R2_SOURCE_BLEND_SHA256 = "b0c9c7c1cf5a1642870cf03a36791cc50ec31ac207aeae794fbea83c856a79c0";
 export const PHASE4R2_SOURCE_BLEND_BYTES = 3_600_194;
 export const PHASE4R2_SOURCE_BLEND_RELATIVE = "artifacts/original/phase-4r1-1-periphery-current-mobile-crt/source/quantum-signal-television-phase4r1-1-periphery-current-mobile-crt.blend";
@@ -11,6 +26,17 @@ export const PHASE4R2_MANIFEST_RELATIVE = "manifests/phase-4r2-production-media-
 export const PHASE4R2_AUTHORITY_RELATIVE = "artifacts/original/phase-4r2-final-cinematic-production";
 export const PHASE4R2_OUTPUT_RELATIVE = "public/media/cinematic/phase-4r2";
 export const PHASE4R2_MAX_ASSET_BYTES = 25 * 1024 * 1024;
+
+export const PHASE4R21_SOURCE_BLEND_SHA256 = PHASE4R21_ACTIVE_SOURCE_SHA256;
+export const PHASE4R21_SOURCE_BLEND_BYTES = PHASE4R21_ACTIVE_SOURCE_BYTES;
+export const PHASE4R21_SOURCE_BLEND_RELATIVE = "artifacts/original/phase-4r2-1-causal-signal-scroll-stability/source/quantum-signal-television-phase4r2-1-causal-current.blend";
+export const PHASE4R21_MANIFEST_RELATIVE = PHASE4R21_ACTIVE_MANIFEST_RELATIVE;
+export const PHASE4R21_AUTHORITY_RELATIVE = "artifacts/original/phase-4r2-1-causal-signal-scroll-stability/production";
+export const PHASE4R21_OUTPUT_RELATIVE = PHASE4R21_ACTIVE_PUBLIC_ROOT_RELATIVE;
+export const PHASE4R21_FIXED_AUTHORITY_PATHS = Object.freeze([
+  PHASE4R21_MANIFEST_RELATIVE,
+  ...Object.keys(PHASE4R21_FAMILIES).map(activeFrameManifestRelativePath),
+]);
 
 const FRAME_COUNT = 500;
 const FPS = 30;
@@ -473,6 +499,141 @@ export async function loadAndValidatePhase4R2Authority({ authorityRoot, reposito
   return { ...validatePhase4R2AuthorityRecords(records), records, authorityRoot, sourceBlend };
 }
 
+export async function validatePhase4R21SourceBlend({ repositoryRoot }) {
+  const absolute = path.resolve(repositoryRoot, ...PHASE4R21_SOURCE_BLEND_RELATIVE.split("/"));
+  const info = await regularFile(absolute, "Phase 4-R2.1 cumulative Blender source");
+  const payload = await readFile(absolute);
+  assertAuthority(
+    info.size === PHASE4R21_SOURCE_BLEND_BYTES
+      && payload.length === PHASE4R21_SOURCE_BLEND_BYTES
+      && sha256(payload) === PHASE4R21_SOURCE_BLEND_SHA256,
+    "R2.1 source Blender SHA-256 mismatch",
+  );
+  return { path: PHASE4R21_SOURCE_BLEND_RELATIVE, bytes: payload.length, sha256: PHASE4R21_SOURCE_BLEND_SHA256 };
+}
+
+function validatePhase4R21FrameManifest(family, record, summary) {
+  const authority = PHASE4R21_FAMILIES[family];
+  const manifest = record.json;
+  assertAuthority(Boolean(authority), `${family} is not an active R2.1 family`);
+  assertAuthority(
+    record.bytes === summary.bytes
+      && record.sha256 === summary.sha256
+      && summary.file === activeFrameManifestRelativePath(family)
+      && summary.frames === PHASE4R21_FRAME_COUNT
+      && summary.fps === PHASE4R21_FPS
+      && same(summary.resolution, [authority.width, authority.height]),
+    `${family} standard frame-manifest record mismatch`,
+  );
+  assertAuthority(
+    exactKeys(manifest, ["family", "frames", "master", "schema", "source"])
+      && manifest.schema === PHASE4R21_FRAME_MANIFEST_SCHEMA
+      && manifest.family === family
+      && exactKeys(manifest.source, ["blendSha256", "camera", "settingsSha256"])
+      && manifest.source.blendSha256 === PHASE4R21_SOURCE_BLEND_SHA256
+      && manifest.source.camera === authority.camera
+      && hex256(manifest.source.settingsSha256)
+      && exactKeys(manifest.master, ["fps", "frameCount", "frameRange", "resolution", "sequenceSha256", "totalBytes"])
+      && manifest.master.fps === PHASE4R21_FPS
+      && manifest.master.frameCount === PHASE4R21_FRAME_COUNT
+      && same(manifest.master.frameRange, [1, PHASE4R21_FRAME_COUNT])
+      && same(manifest.master.resolution, [authority.width, authority.height])
+      && Array.isArray(manifest.frames)
+      && manifest.frames.length === PHASE4R21_FRAME_COUNT,
+    `${family} standard frame-manifest structure mismatch`,
+  );
+  for (let index = 0; index < manifest.frames.length; index += 1) {
+    const frame = index + 1;
+    const item = manifest.frames[index];
+    assertAuthority(
+      exactKeys(item, ["bitDepth", "bytes", "colorType", "file", "frame", "height", "sha256", "width"])
+        && item.frame === frame
+        && item.file === `F${String(frame).padStart(3, "0")}.png`
+        && Number.isInteger(item.bytes)
+        && item.bytes > 0
+        && hex256(item.sha256)
+        && item.width === authority.width
+        && item.height === authority.height
+        && item.bitDepth === 16
+        && item.colorType === 2,
+      `${family} standard frame-manifest F${String(frame).padStart(3, "0")} mismatch`,
+    );
+  }
+  const sequenceValue = manifest.frames.map((item) => (
+    `${item.frame}|${item.file}|${item.bytes}|${item.sha256}|${item.width}|${item.height}|${item.bitDepth}|${item.colorType}\n`
+  )).join("");
+  const sequenceSha256 = createHash("sha256").update(sequenceValue, "utf8").digest("hex");
+  const totalBytes = manifest.frames.reduce((total, item) => total + item.bytes, 0);
+  assertAuthority(
+    manifest.master.sequenceSha256 === sequenceSha256
+      && manifest.master.totalBytes === totalBytes
+      && summary.sequenceSha256 === sequenceSha256
+      && summary.firstFrameSha256 === manifest.frames[0].sha256,
+    `${family} standard frame-manifest sequence authority mismatch`,
+  );
+  return manifest;
+}
+
+export async function loadAndValidatePhase4R21Authority({ authorityRoot, repositoryRoot = path.resolve(authorityRoot, "..", "..", "..", "..") }) {
+  const rootInfo = await lstat(authorityRoot);
+  assertAuthority(rootInfo.isDirectory() && !rootInfo.isSymbolicLink(), "R2.1 authority root must be a real directory, not a symlink");
+  const sourceBlend = await validatePhase4R21SourceBlend({ repositoryRoot });
+  const manifestAbsolute = under(authorityRoot, PHASE4R21_MANIFEST_RELATIVE);
+  await regularFile(manifestAbsolute, "Phase 4-R2.1 active production manifest");
+  const manifestPayload = await readFile(manifestAbsolute);
+  const manifestRecord = jsonRecord(PHASE4R21_MANIFEST_RELATIVE, manifestPayload);
+  const manifest = manifestRecord.json;
+  try {
+    validateActiveProductionManifest(manifest);
+  } catch (error) {
+    assertAuthority(false, `active six-asset H.264 manifest mismatch: ${error.message}`);
+  }
+  assertAuthority(
+    manifest.schema === PHASE4R21_ACTIVE_MANIFEST_SCHEMA
+      && manifest.sourceBlendSha256 === PHASE4R21_SOURCE_BLEND_SHA256
+      && manifest.runtimeStaging.publicRoot === PHASE4R21_OUTPUT_RELATIVE,
+    "active manifest/runtime source cross-contract mismatch",
+  );
+  const runtimePaths = activeRuntimeFileInventory(manifest);
+  assertAuthority(
+    runtimePaths.length === 7
+      && same(runtimePaths, manifest.runtimeStaging.exactFiles)
+      && manifest.runtimeStaging.replaceAuthorityRootAtomically === true
+      && manifest.runtimeStaging.removeUnlistedFiles === true,
+    "active manifest atomic public cleanup descriptor mismatch",
+  );
+  const expectedPaths = [...new Set([...PHASE4R21_FIXED_AUTHORITY_PATHS, ...runtimePaths])].sort();
+  assertAuthority(expectedPaths.length === 10, "active tracked authority must contain exactly ten files");
+  const observedPaths = await filesUnder(authorityRoot);
+  assertAuthority(same(observedPaths, expectedPaths), `active tracked authority inventory mismatch: observed ${observedPaths.join(", ")}`);
+  const records = await loadRecords(authorityRoot, expectedPaths);
+  const frameRecords = {};
+  for (const family of Object.keys(PHASE4R21_FAMILIES)) {
+    const relative = activeFrameManifestRelativePath(family);
+    const record = records.get(relative);
+    assertAuthority(Boolean(record), `${family} standard frame manifest is missing`);
+    frameRecords[family] = validatePhase4R21FrameManifest(family, record, manifest.frameManifests[family]);
+  }
+  for (const asset of manifest.assets) {
+    const record = records.get(asset.file);
+    assertAuthority(Boolean(record), `active runtime payload is missing: ${asset.file}`);
+    assertAuthority(record.bytes === asset.bytes && record.sha256 === asset.sha256, `${asset.file} payload bytes/SHA-256 mismatch`);
+    if (asset.kind === "video") assertVideoContainer(record.payload, "h264", asset.file);
+    else assertPng(record.payload, asset.resolution[0], asset.resolution[1], asset.file);
+  }
+  return {
+    manifest,
+    manifestRecord: { path: manifestRecord.relative, bytes: manifestRecord.bytes, sha256: manifestRecord.sha256 },
+    assets: manifest.assets,
+    expectedAuthorityPaths: expectedPaths,
+    runtimePaths,
+    records,
+    frameRecords,
+    authorityRoot,
+    sourceBlend,
+  };
+}
+
 async function exactCopy(authorityRoot, tempRoot, record) {
   const source = under(authorityRoot, record.file);
   await regularFile(source, `Phase 4-R2 authority ${record.file}`);
@@ -516,21 +677,23 @@ async function removeStaleOutput(outputRoot) {
 }
 
 export async function stagePhase4R2RuntimeMedia({ root = process.cwd(), finalAuthorityExpected = process.env.PHASE4R2_FINAL_AUTHORITY === "1" } = {}) {
-  const authorityRoot = path.resolve(root, ...PHASE4R2_AUTHORITY_RELATIVE.split("/"));
-  const outputRoot = path.resolve(root, ...PHASE4R2_OUTPUT_RELATIVE.split("/"));
-  try { await regularFile(under(authorityRoot, PHASE4R2_MANIFEST_RELATIVE), "Phase 4-R2 production manifest"); }
+  const authorityRoot = path.resolve(root, ...PHASE4R21_AUTHORITY_RELATIVE.split("/"));
+  const outputRoot = path.resolve(root, ...PHASE4R21_OUTPUT_RELATIVE.split("/"));
+  try { await regularFile(under(authorityRoot, PHASE4R21_MANIFEST_RELATIVE), "Phase 4-R2.1 active production manifest"); }
   catch (error) {
     if (error?.code !== "ENOENT") throw error;
     await removeStaleOutput(outputRoot);
-    if (finalAuthorityExpected) throw new Error("Phase 4-R2 final media authority is required but not staged");
-    console.log("Phase 4-R2 final media authority is not staged; runtime will use accepted dormant development posters.");
+    if (finalAuthorityExpected) throw new Error("Phase 4-R2.1 active media authority is required but not staged");
+    console.log("Phase 4-R2.1 active media authority is not staged; runtime will use accepted dormant development posters.");
     return null;
   }
-  const authority = await loadAndValidatePhase4R2Authority({ authorityRoot, repositoryRoot: root });
-  const manifestRecord = authority.records.get(PHASE4R2_MANIFEST_RELATIVE);
-  const runtimeRecords = [{ file: PHASE4R2_MANIFEST_RELATIVE, bytes: manifestRecord.bytes, sha256: manifestRecord.sha256 }, ...authority.assets.map((asset) => ({ file: asset.file, bytes: asset.bytes, sha256: asset.sha256 }))];
+  const authority = await loadAndValidatePhase4R21Authority({ authorityRoot, repositoryRoot: root });
+  const runtimeRecords = authority.runtimePaths.map((file) => {
+    const record = authority.records.get(file);
+    return { file, bytes: record.bytes, sha256: record.sha256 };
+  });
   await reconcile(authorityRoot, outputRoot, runtimeRecords);
-  console.log(`Staged exactly ${runtimeRecords.length} hash-verified Phase 4-R2 runtime files from one complete source/report/media authority graph.`);
+  console.log(`Staged exactly ${runtimeRecords.length} hash-verified Phase 4-R2.1 runtime files from the strict six-asset H.264 authority.`);
   return authority;
 }
 

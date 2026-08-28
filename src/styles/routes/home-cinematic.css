@@ -157,6 +157,17 @@ html[data-cinematic-mode="enhanced"] .cinematic-shell[data-cinematic-interactive
   opacity: 1;
 }
 
+/* A late decoder/delivery failure keeps the committed runway and a still F1
+   poster while releasing the Blob-backed decoder surface. */
+html[data-cinematic-mode="enhanced"] .cinematic-shell[data-media-state="failed-preserve-runway"] .cinematic-poster {
+  display: block;
+  opacity: 1;
+}
+
+html[data-cinematic-mode="enhanced"] .cinematic-shell[data-media-state="failed-preserve-runway"] .cinematic-media {
+  display: none;
+}
+
 @media (max-width: 50rem) and (orientation: portrait),
   (max-width: 56.25rem) and (max-height: 30rem) {
   .cinematic-shell {
