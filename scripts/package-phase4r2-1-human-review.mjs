@@ -97,7 +97,7 @@ const VIDEO_EXTENSIONS = new Set([".mp4"]);
 const TEXT_EXTENSIONS = new Set([".json", ".md", ".txt", ".csv", ".svg"]);
 const HASH40 = /^[0-9a-f]{40}$/;
 const HASH64 = /^[0-9a-f]{64}$/;
-const PRIVATE_OR_SECRET_TEXT = /(?:[a-z]:[\\/]users[\\/]|(?:^|[^a-z])onedrive(?:[^a-z]|$)|appdata|localcache|(?:^|[\\/])\.codex(?:[\\/]|$)|file:\/\/|\\\\[^\\\s]+[\\][^\\\s]+|github_pat_[a-z0-9_]+|gh[opusr]_[a-z0-9]{20,}|sk-[a-z0-9_-]{20,}|(?:password|api[_-]?key|client[_-]?secret|access[_-]?token|refresh[_-]?token|authorization|bearer)\s*[:=]\s*["']?[a-z0-9_./+:-]{12,})/i;
+const PRIVATE_OR_SECRET_TEXT = /(?:[a-z]:[\\/]users[\\/]|(?:^|[^a-z])onedrive(?:[^a-z]|$)|appdata|localcache|(?:^|[\\/])\.codex(?:[\\/]|$)|file:\/\/|\\\\[^\\\s]+[\\][^\\\s]+|github_pat_[a-z0-9_]+|gh[opusr]_[a-z0-9]{20,}|sk-[a-z0-9_-]{20,}|(?:password|api[_-]?key|client[_-]?secret|access[_-]?token|refresh[_-]?token|authorization|bearer)\s*[:=]\s*["']?(?:bearer\s+)?[a-z0-9_./+:-]{12,})/i;
 const FORBIDDEN_ENTRY = /(?:^|\/)(?:raw|masters?|frames?|receipts?|logs?|cache|caches|quarantine|rejected|candidates?|candidate-ladder|browser-recorder|autosaves?|__pycache__|node_modules|\.git)(?:\/|$)|(?:^|\/)\.(?:env|ds_store)(?:\.|$)|\.(?:blend\d*|exr|tiff?|mov|webm|mkv|avi|zip|7z|rar|pem|key|p12|pfx|log)$/i;
 const CRC32_TABLE = Object.freeze(Array.from({ length: 256 }, (_unused, value) => {
   let crc = value;
@@ -334,7 +334,31 @@ async function repositoryAuthority(options, authorityFiles) {
 
 export function assertNoPrivateText(bytes, relativePath) {
   if (PRIVATE_OR_SECRET_TEXT.test(String(relativePath))) throw new Error(`privacy/secrets scan failed in package path: ${relativePath}`);
-  if (TEXT_EXTENSIONS.has(path.extname(relativePath).toLowerCase()) && PRIVATE_OR_SECRET_TEXT.test(Buffer.from(bytes).toString("utf8"))) throw new Error(`privacy/secrets scan failed in human-readable payload: ${relativePath}`);
+  const extension = path.extname(relativePath).toLowerCase();
+  if (!TEXT_EXTENSIONS.has(extension)) return;
+  const raw = Buffer.from(bytes).toString("utf8");
+  let semantic = raw;
+  if (extension === ".json") {
+    try {
+      const lines = [];
+      const visit = (value, key = "") => {
+        if (typeof value === "string") {
+          lines.push(value);
+          if (key) lines.push(`${key}: ${value}`);
+        } else if (Array.isArray(value)) {
+          for (const item of value) visit(item, key);
+        } else if (value && typeof value === "object") {
+          for (const [childKey, child] of Object.entries(value)) {
+            lines.push(childKey);
+            visit(child, childKey);
+          }
+        } else if (key && value !== undefined && value !== null) lines.push(`${key}: ${String(value)}`);
+      };
+      visit(JSON.parse(raw));
+      semantic = lines.join("\n");
+    } catch { /* Invalid JSON is scanned byte-for-byte and rejected elsewhere. */ }
+  }
+  if (PRIVATE_OR_SECRET_TEXT.test(semantic)) throw new Error(`privacy/secrets scan failed in human-readable payload: ${relativePath}`);
 }
 
 export function assertAllowedEntry(relativePath) {

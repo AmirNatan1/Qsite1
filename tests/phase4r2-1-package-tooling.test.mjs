@@ -288,7 +288,10 @@ test("paths, secrets, raw masters, rejected media, Blender, VP9, and caches fail
   for (const value of ["raw/F046.png", "masters/desktop/F046.png", "frames/F046.png", "rejected/test.mp4", "authority/source.blend", "recordings/test.webm", "cache/data.json", ".env"]) assert.throws(() => assertAllowedEntry(value));
   assert.doesNotThrow(() => assertAllowedEntry("recordings/A-first-input-response.mp4"));
   assert.doesNotThrow(() => assertNoPrivateText(Buffer.from('{"authorization":{"phase5Authorized":false}}'), "reports/safe.json"));
+  assert.doesNotThrow(() => assertNoPrivateText(Buffer.from(JSON.stringify({ diagram: "\\--retreat---/\n" })), "reports/diagram.json"), "JSON escaping must not turn a single diagram stroke into a false UNC path");
   for (const value of ["C:\\Users\\person\\private", "source=OneDrive/private", "token=sk-example_secret_abcdefghijklmnopqrstuvwxyz"]) assert.throws(() => assertNoPrivateText(Buffer.from(value), "reports/private.json"));
+  assert.throws(() => assertNoPrivateText(Buffer.from(JSON.stringify({ path: "\\\\server\\share\\private.json" })), "reports/private.json"), "a real UNC path must still fail after semantic JSON decoding");
+  assert.throws(() => assertNoPrivateText(Buffer.from(JSON.stringify({ authorization: "Bearer abcdefghijklmnopqrstuvwxyz" })), "reports/private.json"), "structured credentials must still fail after semantic JSON decoding");
   assert.throws(() => assertExternalPath(ROOT));
   assert.doesNotThrow(() => assertExternalPath(path.resolve(ROOT, "..", ARCHIVE_FILENAME)));
   assert.doesNotThrow(() => assertDurableReviewLocation(path.resolve(ROOT, "..", ARCHIVE_FILENAME)));
