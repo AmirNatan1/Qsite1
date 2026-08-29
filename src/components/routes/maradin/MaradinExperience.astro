@@ -1,0 +1,110 @@
+---
+import { maradinProofRecord } from "../../../content";
+import RouteKicker from "../shared/RouteKicker.astro";
+import RouteLink from "../shared/RouteLink.astro";
+
+const [fieldPoster, contactVideo, projectionFrame, fieldStill] = maradinProofRecord.media;
+const fieldVideo = maradinProofRecord.heroMedia;
+
+if (!fieldPoster || !contactVideo || !projectionFrame || !fieldStill) {
+  throw new Error("The complete approved Maradin media set is required.");
+}
+---
+
+<article class="maradin-record" aria-labelledby="maradin-title" data-maradin-record data-route-architecture="documentary-record" data-route-production="maradin" data-route-motion="static">
+  <section class="maradin-act maradin-reality" data-route-region="reality" data-route-act="reality" data-route-reveal data-route-resolved="true" aria-labelledby="maradin-title">
+    <figure class="maradin-player maradin-player--aperture" data-maradin-player data-video-state="dormant">
+      <video id="maradin-field-video" controls tabindex="-1" muted playsinline preload="none" poster={fieldPoster.src} width={fieldVideo.width} height={fieldVideo.height} data-maradin-video data-src={fieldVideo.src} aria-label={fieldVideo.alt} aria-describedby="maradin-field-caption"></video>
+      <button class="maradin-player__launch" type="button" data-maradin-play data-maradin-video-trigger aria-controls="maradin-field-video" aria-label="Play Maradin field footage"><span aria-hidden="true">▶</span> Play field footage</button>
+      <figcaption id="maradin-field-caption">{fieldVideo.alt}</figcaption>
+    </figure>
+    <div class="maradin-reality__matte">
+      <RouteKicker>proof / field record</RouteKicker>
+      <h1 id="maradin-title"><span>Maradin —</span><span>Dynamic Ground</span><span>Projection</span></h1>
+      <p>{maradinProofRecord.summary}</p>
+      <div class="maradin-reality__context" aria-label="Record context"><span>Maradin</span><span>Dynamic ground projection</span><span>Real-world field test</span></div>
+      <div class="maradin-reality__record">
+        <RouteKicker>field record</RouteKicker>
+        <h2>Condition, test and evidence.</h2>
+        <p>The record connects the operating need to the tested conditions, the observations produced and what followed.</p>
+      </div>
+      <span class="maradin-act__count" aria-hidden="true">01 / 06</span>
+    </div>
+  </section>
+
+  <section class="maradin-act maradin-problem" data-route-region="problem" data-route-act="problem" data-route-reveal data-route-resolved="true" aria-labelledby="maradin-problem-title">
+    <div class="maradin-copy maradin-copy--problem">
+      <RouteKicker>Challenge</RouteKicker>
+      <h2 id="maradin-problem-title">The communication need</h2>
+      <p>{maradinProofRecord.challenge}</p>
+      <span class="maradin-act__count" aria-hidden="true">02 / 06</span>
+    </div>
+    <figure class="maradin-still maradin-still--field">
+      <img src={fieldStill.src} alt={fieldStill.alt} width={fieldStill.width} height={fieldStill.height} loading="lazy" />
+      <figcaption>A field-test vehicle documented in the Maradin record.</figcaption>
+    </figure>
+  </section>
+
+  <section class="maradin-act maradin-technology" data-route-region="technology" data-route-act="technology" data-route-reveal data-route-resolved="true" aria-labelledby="maradin-technology-title">
+    <figure class="maradin-still maradin-still--projection">
+      <img src={projectionFrame.src} alt={projectionFrame.alt} width={projectionFrame.width} height={projectionFrame.height} loading="lazy" />
+      <figcaption>A projected stop-hand symbol observed on the road surface during field testing.</figcaption>
+    </figure>
+    <div class="maradin-copy maradin-copy--technology">
+      <RouteKicker>Technology</RouteKicker>
+      <h2 id="maradin-technology-title">The match</h2>
+      <p>{maradinProofRecord.technology}</p>
+      <span class="maradin-act__count" aria-hidden="true">03 / 06</span>
+    </div>
+  </section>
+
+  <section class="maradin-act maradin-test" data-route-region="test" data-route-act="test" data-route-reveal data-route-resolved="true" aria-labelledby="maradin-test-title">
+    <div class="maradin-test__matte" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="maradin-copy maradin-copy--test">
+      <RouteKicker>Test design</RouteKicker>
+      <h2 id="maradin-test-title">Conditions that matter</h2>
+      <p>{maradinProofRecord.testDesign}</p>
+      <div class="maradin-test__execution"><RouteKicker>Execution</RouteKicker><h3>Into the field</h3><p>{maradinProofRecord.execution}</p></div>
+      <span class="maradin-act__count" aria-hidden="true">04 / 06</span>
+    </div>
+    <figure class="maradin-player maradin-player--contact" data-maradin-player data-video-state="dormant">
+      <video id="maradin-contact-video" controls tabindex="-1" muted playsinline preload="none" poster={fieldStill.src} width={contactVideo.width} height={contactVideo.height} data-maradin-video data-src={contactVideo.src} aria-label={contactVideo.alt} aria-describedby="maradin-contact-caption"></video>
+      <button class="maradin-player__launch" type="button" data-maradin-play data-maradin-video-trigger aria-controls="maradin-contact-video" aria-label="Play vehicle-mounted field footage"><span aria-hidden="true">▶</span> Play test footage</button>
+      <figcaption id="maradin-contact-caption">Vehicle-mounted testing in the operating environment.</figcaption>
+    </figure>
+  </section>
+
+  <section class="maradin-act maradin-observation" data-route-region="observation" data-route-act="observation" data-route-reveal data-route-resolved="true" aria-labelledby="maradin-observation-title">
+    <div class="maradin-observation__evidence" aria-hidden="true">
+      <span style={`--maradin-observation-image: url("${fieldPoster.src}")`}></span>
+      <span style={`--maradin-observation-image: url("${projectionFrame.src}")`}></span>
+    </div>
+    <div class="maradin-copy maradin-copy--observation">
+      <RouteKicker>Evidence</RouteKicker>
+      <h2 id="maradin-observation-title">What the POC produced</h2>
+      <p>{maradinProofRecord.evidence}</p>
+      <div class="maradin-observation__capability"><RouteKicker>related capabilities</RouteKicker><h3>Work around the test.</h3><p>POC design, field execution and evidence synthesis kept the test connected to its operating question.</p></div>
+      <ul aria-label="Related capabilities">{maradinProofRecord.relatedCapabilities.map((capability) => <li>{capability}</li>)}</ul>
+      <span class="maradin-act__count" aria-hidden="true">05 / 06</span>
+    </div>
+  </section>
+
+  <section class="maradin-act maradin-restraint" data-route-region="restraint" data-route-act="restraint" data-route-reveal data-route-resolved="true" aria-labelledby="maradin-restraint-title">
+    <div class="maradin-restraint__line" aria-hidden="true"></div>
+    <div class="maradin-copy maradin-copy--restraint">
+      <RouteKicker>Next step</RouteKicker>
+      <h2 id="maradin-restraint-title">What followed</h2>
+      <p>{maradinProofRecord.nextStep}</p>
+      <div class="maradin-restraint__closing"><h3>Start with the evidence question.</h3><p>A useful POC is designed around what the operating context needs to reveal.</p></div>
+      <nav class="maradin-restraint__links" aria-label="Field record next steps">
+        <RouteLink href="/pocs/">Return to Proof</RouteLink>
+        <RouteLink href="/contact/#for-industry">Bring an industrial challenge</RouteLink>
+      </nav>
+      <span class="maradin-act__count" aria-hidden="true">06 / 06</span>
+    </div>
+  </section>
+</article>
+
+<script>
+  import "../../../scripts/routes/maradin-documentary";
+</script>

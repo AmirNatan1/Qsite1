@@ -1,104 +1,14 @@
 ---
+import ProofExperience from "../components/routes/proof/ProofExperience.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import ClosingCta from "../components/ClosingCta.astro";
-import PageHero from "../components/PageHero.astro";
-import { maradinProofRecord, publicProofRecords } from "../content";
-import "../styles/routes/standard.css";
+import "../styles/routes/proof-production.css";
 
 const title = "Proof — evidence before scale";
 const description =
   "Quantum structures POCs around real operating questions, field conditions and evidence for an appropriate next step.";
 
-if (publicProofRecords.length !== 1) {
-  throw new Error("The public Proof overview must contain exactly one approved record.");
-}
-
-const maradinPoster = maradinProofRecord.media[0];
-if (!maradinPoster) throw new Error("The approved Maradin poster is required on Proof.");
 ---
 
 <BaseLayout {title} {description} bodyClass="proof-page">
-  <PageHero
-    eyebrow="proof"
-    title="Evidence before scale."
-    intro="A POC should reduce a specific uncertainty. Quantum connects the original need, field conditions and evidence in one structured record."
-  />
-
-  <section class="editorial-section" aria-labelledby="philosophy-title">
-    <div class="container">
-      <div class="editorial-section__intro">
-        <p class="eyebrow">evidence philosophy</p>
-        <div>
-          <h2 id="philosophy-title">Test the question that matters.</h2>
-          <p>
-            A convincing demonstration is not automatically useful evidence.
-            Quantum starts by defining the operational question, the environment
-            that gives it meaning and the observations needed to understand what
-            should happen next.
-          </p>
-        </div>
-      </div>
-      <div class="editorial-copy">
-        <p>
-          Technology fit is assessed before the test. The POC is then bounded so
-          its design stays connected to the operating question, relevant
-          conditions and evidence needed for a next-step decision.
-        </p>
-        <p>
-          Evidence is reported with its context and limits intact, giving the
-          parties a clearer basis for the next-step decision.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <section class="editorial-section" aria-labelledby="proof-process-title">
-    <div class="container">
-      <div class="editorial-section__intro">
-        <p class="eyebrow">structured poc</p>
-        <div>
-          <h2 id="proof-process-title">From condition to evidence.</h2>
-          <p>A useful field record keeps the challenge, technology, test design, execution and evidence distinct.</p>
-        </div>
-      </div>
-      <ul class="feature-list">
-        <li><h3>Define the condition</h3><p>State the operating need and the uncertainty the test should address.</p></li>
-        <li><h3>Match the technology</h3><p>Assess relevance and readiness before entering the field.</p></li>
-        <li><h3>Design the test</h3><p>Select conditions and observations that make the POC informative.</p></li>
-        <li><h3>Record the evidence</h3><p>Separate what was observed from the questions the POC did not answer.</p></li>
-      </ul>
-    </div>
-  </section>
-
-  <section class="editorial-section" aria-labelledby="record-title">
-    <div class="container">
-      <article class="proof-feature">
-        <img
-          class="proof-feature__media"
-          src={maradinPoster.src}
-          alt={maradinPoster.alt}
-          width={maradinPoster.width}
-          height={maradinPoster.height}
-          loading="lazy"
-        />
-        <div class="proof-feature__copy">
-          <p class="eyebrow">field record</p>
-          <h2 id="record-title">{maradinProofRecord.title}</h2>
-          <p>{maradinProofRecord.summary}</p>
-          <a class="text-link" href="/pocs/maradin/">Open the field record</a>
-        </div>
-      </article>
-    </div>
-  </section>
-
-  <ClosingCta
-    title="Define what the test must answer."
-    copy="Start with the uncertainty that matters in the operating environment."
-  >
-    <a class="button button--primary" href="/contact/#for-industry" aria-label="Bring an industrial challenge">
-      <span class="button__label--full">Bring an industrial challenge</span>
-      <span class="button__label--compact" aria-hidden="true">Industry challenge</span>
-    </a>
-    <a class="button button--secondary" href="/contact/#for-startups">Introduce a technology</a>
-  </ClosingCta>
+  <ProofExperience />
 </BaseLayout>

@@ -17,6 +17,10 @@ test("Phase 5B route contract freezes authority, nine routes, budgets and six pe
   assert.equal(RESPONSIVE_MATRIX.length, 13);
   assert.equal(PHASE5B_HUMAN_GATES.length, 6);
   assert.deepEqual(PHASE5B_ROUTES.filter((route) => route.jsBudget === 0).map((route) => route.id), ["contact", "404"]);
+  assert.deepEqual(PHASE5B_ROUTES.filter((route) => ["proof", "maradin"].includes(route.id)).map(({ id, acts, regions, mode }) => ({ id, acts, regions, mode })), [
+    { id: "proof", acts: 2, regions: 2, mode: "B" },
+    { id: "maradin", acts: 6, regions: 6, mode: "B" },
+  ]);
 });
 
 test("shared production primitives do not impose a universal route skeleton", async () => {
@@ -55,6 +59,14 @@ test("bounded observer is one-shot and contains no scroll loop or scroll writes"
   assert.match(source, /IntersectionObserver/);
   assert.match(source, /observer\.unobserve/);
   assert.doesNotMatch(source, /requestAnimationFrame|addEventListener\(["'](?:scroll|wheel)|scrollTo|scrollBy/);
+});
+
+test("Mode B observer is bounded, reversible, and scroll-loop free", async () => {
+  const source = await read("src/scripts/routes/reversible-reveal.ts");
+  assert.match(source, /IntersectionObserver/);
+  assert.match(source, /entry\.isIntersecting \? "true" : "false"/);
+  assert.match(source, /prefers-reduced-motion: reduce/);
+  assert.doesNotMatch(source, /observer\.unobserve|requestAnimationFrame|addEventListener\(["'](?:scroll|wheel)|scrollTo|scrollBy/);
 });
 
 test("long-task baseline parser and summary are deterministic", () => {

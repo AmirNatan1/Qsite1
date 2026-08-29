@@ -78,6 +78,27 @@ test("Industries production keeps four territories and subordinate technology ca
   assert.doesNotMatch(component, /<button\b|<select\b|role="tab"|carousel|filter/i);
 });
 
+test("Proof production exposes exactly the one approved Maradin record", () => {
+  const proof = read("src/components/routes/proof/ProofExperience.astro");
+  const records = read("src/content/proofs.ts");
+  assert.match(records, /publicProofRecords = Object\.freeze\(\[maradinProofRecord\]/);
+  assert.match(proof, /maradinProofRecord/);
+  assert.equal([...proof.matchAll(/href="\/pocs\/maradin\/"/g)].length, 1);
+  assert.equal([...proof.matchAll(/<img\b/g)].length, 1);
+  assert.doesNotMatch(proof, /publicProofRecords\.map|search|filter|confidential|anonymous|coming soon|placeholder|case library|metric/i);
+});
+
+test("Maradin production stays inside the approved qualified record", () => {
+  const component = read("src/components/routes/maradin/MaradinExperience.astro");
+  const records = read("src/content/proofs.ts");
+  const approvedNextStep = "Following an EcoMotion showcase, Maradin was selected for Hyundai’s OI Lounge exhibition in Korea. A more advanced iteration was integrated into the vehicle’s front grille for that event.";
+  assert.ok(records.includes(approvedNextStep));
+  assert.match(component, /maradinProofRecord\.(?:challenge|technology|testDesign|execution|evidence|nextStep)/);
+  assert.doesNotMatch(component, /commercial success|mass production|procurement (?:success|agreement)|sales results?|contracts?|deployment claims?|Hyundai endorsement|guaranteed outcome/i);
+  assert.equal([...component.matchAll(/data-maradin-video-trigger/g)].length, 2);
+  assert.doesNotMatch(component, /autoplay|<source\b/);
+});
+
 test("speculative route labs and preproduction canaries cannot leak into public source or configuration", () => {
   const productionRoots = ["src", "public"].flatMap((relative) => walk(path.join(ROOT, relative)));
   const productionText = productionRoots

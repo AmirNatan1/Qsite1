@@ -1,0 +1,81 @@
+---
+import { maradinProofRecord, publicProofRecords } from "../../../content";
+
+if (publicProofRecords.length !== 1) {
+  throw new Error("The public Proof overview must contain exactly one approved record.");
+}
+
+const maradinPoster = maradinProofRecord.media[0];
+if (!maradinPoster || maradinPoster.kind !== "image") {
+  throw new Error("The approved Maradin poster is required on Proof.");
+}
+
+const proofStages = [
+  ["Define the condition", "State the operating need and the uncertainty the test should address."],
+  ["Match the technology", "Assess relevance and readiness before entering the field."],
+  ["Design the test", "Select conditions and observations that make the POC informative."],
+  ["Record the evidence", "Separate what was observed from the questions the POC did not answer."],
+] as const;
+---
+
+<article class="proof-route" data-route-production="proof" data-route-architecture="archive-threshold" data-route-motion="static">
+  <section class="proof-act proof-threshold" data-route-act="threshold" data-route-region="threshold" aria-labelledby="proof-title">
+    <div class="proof-threshold__boundary" aria-hidden="true"></div>
+    <div class="proof-threshold__copy">
+      <p class="proof-kicker">proof</p>
+      <h1 id="proof-title">Evidence before scale.</h1>
+      <p class="proof-intro">A POC should reduce a specific uncertainty. Quantum connects the original need, field conditions and evidence in one structured record.</p>
+    </div>
+  </section>
+
+  <section class="proof-act proof-record" data-route-act="record" data-route-region="record" aria-labelledby="record-title">
+    <div class="proof-record__lead">
+      <figure class="proof-poster" data-route-geometry="record-aperture" data-route-reveal>
+        <img src={maradinPoster.src} alt={maradinPoster.alt} width={maradinPoster.width} height={maradinPoster.height} loading="eager" fetchpriority="high" decoding="async" />
+      </figure>
+      <div class="proof-record__copy">
+        <p class="proof-kicker">field record</p>
+        <h2 id="record-title">{maradinProofRecord.title}</h2>
+        <p>{maradinProofRecord.summary}</p>
+        <a class="proof-record__link" href="/pocs/maradin/">Open the field record</a>
+      </div>
+    </div>
+
+    <div class="proof-discipline" aria-labelledby="philosophy-title">
+      <div class="proof-philosophy">
+        <p class="proof-kicker">evidence philosophy</p>
+        <h2 id="philosophy-title">Test the question that matters.</h2>
+        <div class="proof-philosophy__copy">
+          <p>A convincing demonstration is not automatically useful evidence. Quantum starts by defining the operational question, the environment that gives it meaning and the observations needed to understand what should happen next.</p>
+          <p>Technology fit is assessed before the test. The POC is then bounded so its design stays connected to the operating question, relevant conditions and evidence needed for a next-step decision.</p>
+          <p>Evidence is reported with its context and limits intact, giving the parties a clearer basis for the next-step decision.</p>
+        </div>
+      </div>
+
+      <div class="proof-process" aria-labelledby="proof-process-title">
+        <div>
+          <p class="proof-kicker">structured poc</p>
+          <h2 id="proof-process-title">From condition to evidence.</h2>
+          <p>A useful field record keeps the challenge, technology, test design, execution and evidence distinct.</p>
+        </div>
+        <ol aria-label="Structured POC discipline">
+          {proofStages.map(([stage, detail]) => <li><h3>{stage}</h3><p>{detail}</p></li>)}
+        </ol>
+      </div>
+    </div>
+
+    <div class="proof-release">
+      <div><h2>Define what the test must answer.</h2><p>Start with the uncertainty that matters in the operating environment.</p></div>
+      <nav aria-label="Proof starting contexts">
+        <a class="button button--primary" href="/contact/#for-industry" aria-label="Bring an industrial challenge">
+          <span class="button__label--full">Bring an industrial challenge</span><span class="button__label--compact" aria-hidden="true">Industry challenge</span>
+        </a>
+        <a class="button button--secondary" href="/contact/#for-startups">Introduce a technology</a>
+      </nav>
+    </div>
+  </section>
+</article>
+
+<script>
+  import "../../../scripts/routes/proof-threshold";
+</script>

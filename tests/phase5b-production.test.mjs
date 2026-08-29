@@ -149,6 +149,82 @@ const acceptedIndustriesCopy = [
   "Start with the challenge",
 ];
 
+const acceptedProofCopy = [
+  "Proof — evidence before scale",
+  "Quantum structures POCs around real operating questions, field conditions and evidence for an appropriate next step.",
+  "proof",
+  "Evidence before scale.",
+  "A POC should reduce a specific uncertainty. Quantum connects the original need, field conditions and evidence in one structured record.",
+  "evidence philosophy",
+  "Test the question that matters.",
+  "A convincing demonstration is not automatically useful evidence. Quantum starts by defining the operational question, the environment that gives it meaning and the observations needed to understand what should happen next.",
+  "Technology fit is assessed before the test. The POC is then bounded so its design stays connected to the operating question, relevant conditions and evidence needed for a next-step decision.",
+  "Evidence is reported with its context and limits intact, giving the parties a clearer basis for the next-step decision.",
+  "structured poc",
+  "From condition to evidence.",
+  "A useful field record keeps the challenge, technology, test design, execution and evidence distinct.",
+  "Define the condition",
+  "State the operating need and the uncertainty the test should address.",
+  "Match the technology",
+  "Assess relevance and readiness before entering the field.",
+  "Design the test",
+  "Select conditions and observations that make the POC informative.",
+  "Record the evidence",
+  "Separate what was observed from the questions the POC did not answer.",
+  "field record",
+  "Maradin — Dynamic Ground Projection",
+  "A real-world field test of Maradin’s MEMS-based laser scanning technology for vehicle‑to‑road visual communication.",
+  "Open the field record",
+  "Define what the test must answer.",
+  "Start with the uncertainty that matters in the operating environment.",
+  "Bring an industrial challenge",
+  "Introduce a technology",
+];
+
+const acceptedMaradinCopy = [
+  "Maradin — Dynamic Ground Projection",
+  "A Quantum field record of Maradin’s MEMS-based laser scanning technology tested for vehicle-to-road visual communication.",
+  "proof / field record",
+  "A real-world field test of Maradin’s MEMS-based laser scanning technology for vehicle‑to‑road visual communication.",
+  "Maradin",
+  "Dynamic ground projection",
+  "Real-world field test",
+  "A projected stop-hand symbol observed on the road surface during field testing.",
+  "Vehicle-mounted testing in the operating environment.",
+  "A field-test vehicle documented in the Maradin record.",
+  "field record",
+  "Condition, test and evidence.",
+  "The record connects the operating need to the tested conditions, the observations produced and what followed.",
+  "Challenge",
+  "The communication need",
+  "A need for clearer visual communication between vehicles and nearby road users across real-world operating conditions.",
+  "Technology",
+  "The match",
+  "Maradin’s MEMS-based laser scanning dynamic ground projection.",
+  "Test design",
+  "Conditions that matter",
+  "Vehicle-mounted field testing across projector positions, road surfaces, lighting conditions and weather conditions.",
+  "Execution",
+  "Into the field",
+  "The field test compared brightness, image distortion and clarity across varying operating conditions.",
+  "Evidence",
+  "What the POC produced",
+  "The field evidence showed how brightness, image distortion and clarity varied across projector positions, road surfaces, lighting and weather conditions.",
+  "Next step",
+  "What followed",
+  "Following an EcoMotion showcase, Maradin was selected for Hyundai’s OI Lounge exhibition in Korea. A more advanced iteration was integrated into the vehicle’s front grille for that event.",
+  "related capabilities",
+  "Work around the test.",
+  "POC design, field execution and evidence synthesis kept the test connected to its operating question.",
+  "POC design",
+  "Field-test execution",
+  "Evidence synthesis",
+  "Start with the evidence question.",
+  "A useful POC is designed around what the operating context needs to reveal.",
+  "Bring an industrial challenge",
+  "Return to Proof",
+];
+
 test("CP2 pages load only their route-owned composition and styles", async () => {
   const industry = await read("src/pages/for-partners.astro");
   const startups = await read("src/pages/for-startups.astro");
@@ -208,14 +284,62 @@ test("Industries is a six-region threshold, four territories, and context coda",
   assert.match(source, /href="\/contact\/#for-industry"/);
 });
 
-test("CP2 preserves the complete accepted public-copy authority", async () => {
+test("CP4 pages load only their documentary route-owned compositions", async () => {
+  const proof = await read("src/pages/pocs.astro");
+  const maradin = await read("src/pages/pocs/maradin.astro");
+  assert.match(proof, /ProofExperience/);
+  assert.match(proof, /routes\/proof-production\.css/);
+  assert.doesNotMatch(proof, /MaradinExperience|routes\/maradin\.css/);
+  assert.match(maradin, /MaradinExperience/);
+  assert.match(maradin, /routes\/maradin\.css/);
+  assert.doesNotMatch(maradin, /ProofExperience|proof-production\.css/);
+  for (const source of [proof, maradin]) {
+    assert.doesNotMatch(source, /PageHero|ClosingCta|standard\.css|SupportingRoute|editorial-section|feature-list|proof-feature|record-chapter-list/);
+  }
+});
+
+test("Proof is a two-act archive threshold with one governed record", async () => {
+  const source = await read("src/components/routes/proof/ProofExperience.astro");
+  assert.match(source, /<article[\s\S]*data-route-architecture="archive-threshold"/);
+  assert.equal(count(source, /data-route-region=/g), 2);
+  assert.deepEqual([...source.matchAll(/data-route-region="([^"]+)"/g)].map((match) => match[1]), ["threshold", "record"]);
+  assert.deepEqual([...source.matchAll(/data-route-act="([^"]+)"/g)].map((match) => match[1]), ["threshold", "record"]);
+  assert.equal(count(source, /<h1\b/g), 1);
+  assert.equal(count(source, /<img\b/g), 1);
+  assert.match(source, /loading="eager"/);
+  assert.match(source, /fetchpriority="high"/);
+  assert.match(source, /href="\/pocs\/maradin\/"/);
+  assert.doesNotMatch(source, /search|filter|confidential|coming soon|placeholder|card/i);
+});
+
+test("Maradin is a six-act governed documentary record", async () => {
+  const source = await read("src/components/routes/maradin/MaradinExperience.astro");
+  assert.match(source, /<article[\s\S]*data-route-architecture="documentary-record"/);
+  assert.equal(count(source, /data-route-region=/g), 6);
+  assert.deepEqual([...source.matchAll(/data-route-region="([^"]+)"/g)].map((match) => match[1]), ["reality", "problem", "technology", "test", "observation", "restraint"]);
+  assert.deepEqual([...source.matchAll(/data-route-act="([^"]+)"/g)].map((match) => match[1]), ["reality", "problem", "technology", "test", "observation", "restraint"]);
+  assert.equal(count(source, /<h1\b/g), 1);
+  assert.equal(count(source, /<video\b/g), 2);
+  assert.equal(count(source, /data-maradin-video-trigger/g), 2);
+  assert.doesNotMatch(source, /<source\b|autoplay|record-chapter-list|proof-feature|card/i);
+  assert.match(source, /preload="none"/);
+  assert.match(await read("src/scripts/routes/maradin-documentary.ts"), /enhanceReversibleReveals/);
+  assert.notEqual(normalize(source.match(/<article[\s\S]*<\/article>/)?.[0] ?? ""), normalize(await read("src/components/routes/proof/ProofExperience.astro")));
+});
+
+test("implemented routes preserve the complete accepted public-copy authority", async () => {
   const programmes = await read("src/content/programmes.ts");
   const industry = normalize(`${await read("src/pages/for-partners.astro")} ${await read("src/components/routes/industry/IndustryExperience.astro")} ${programmes}`);
   const startups = normalize(`${await read("src/pages/for-startups.astro")} ${await read("src/components/routes/startups/StartupExperience.astro")} ${programmes}`);
   const industries = normalize(`${await read("src/pages/industries.astro")} ${await read("src/components/routes/industries/IndustriesExperience.astro")} ${await read("src/content/industries.ts")}`);
+  const proofs = await read("src/content/proofs.ts");
+  const proof = normalize(`${await read("src/pages/pocs.astro")} ${await read("src/components/routes/proof/ProofExperience.astro")} ${proofs}`);
+  const maradin = normalize(`${await read("src/pages/pocs/maradin.astro")} ${await read("src/components/routes/maradin/MaradinExperience.astro")} ${proofs}`);
   for (const phrase of acceptedIndustryCopy) assert.ok(industry.includes(phrase), `missing accepted Industry copy: ${phrase}`);
   for (const phrase of acceptedStartupCopy) assert.ok(startups.includes(phrase), `missing accepted Startup copy: ${phrase}`);
   for (const phrase of acceptedIndustriesCopy) assert.ok(industries.includes(phrase), `missing accepted Industries copy: ${phrase}`);
+  for (const phrase of acceptedProofCopy) assert.ok(proof.includes(phrase), `missing accepted Proof copy: ${phrase}`);
+  for (const phrase of acceptedMaradinCopy) assert.ok(maradin.includes(phrase), `missing accepted Maradin copy: ${phrase}`);
 });
 
 test("CP2 has no lab copy, media, form, sticky scene, or scroll interception", async () => {
@@ -243,6 +367,23 @@ test("CP2 has no lab copy, media, form, sticky scene, or scroll interception", a
   assert.match(helper, /preference\.addEventListener\("change", syncPreference\)/);
   assert.match(helper, /event\.persisted\) stop\(\)/);
   assert.match(helper, /event\.persisted && !disposed\) syncPreference\(\)/);
+});
+
+test("CP4 has no lab copy, template rows, sticky scene, autoplay, or scroll interception", async () => {
+  const files = [
+    "src/components/routes/proof/ProofExperience.astro",
+    "src/components/routes/maradin/MaradinExperience.astro",
+    "src/styles/routes/proof-production.css",
+    "src/styles/routes/maradin.css",
+    "src/scripts/routes/reversible-reveal.ts",
+  ];
+  const joined = (await Promise.all(files.map(read))).join("\n");
+  assert.doesNotMatch(joined, /QH_PHASE5AR_ROUTE_LAB_ONLY|PREPRODUCTION|approved content map|public route unchanged|Phase 5B unauthorized|human review/i);
+  assert.doesNotMatch(joined, /position\s*:\s*(?:sticky|fixed)|scroll-snap|overflow-[xy]\s*:\s*(?:auto|scroll)|addEventListener\(["'](?:scroll|wheel)|preventDefault\(|scrollTo\(|scrollBy\(|scrollIntoView\(|requestAnimationFrame|setInterval\(|setTimeout\(/i);
+  assert.doesNotMatch(joined, /<form\b|<input\b|autoplay|client-side router/i);
+  const helper = await read("src/scripts/routes/reversible-reveal.ts");
+  assert.match(helper, /IntersectionObserver/);
+  assert.match(helper, /entry\.isIntersecting \? "true" : "false"/);
 });
 
 test("CP2 responsive CSS exposes overflow instead of clipping copy and constrains grid min-content", async () => {
@@ -282,7 +423,22 @@ test("CP2 source budgets and route contract remain bounded", async () => {
   assert.match(verifier, /pageScriptSurfaceRaw/);
   assert.match(verifier, /inlineSharedRaw/);
   assert.match(verifier, /inherited inline JS contains a (?:forbidden route|media request) surface/);
-  assert.match(verifier, /sharedProgressHelper/);
+  assert.match(verifier, /sharedModeHelper/);
+  assert.match(verifier, /MARADIN_MEDIA/);
+  assert.match(verifier, /governed media hash mismatch/);
+});
+
+test("CP4 authored sources stay bounded before production minification", async () => {
+  const helperBytes = (await stat(path.join(root, "src/scripts/routes/reversible-reveal.ts"))).size;
+  for (const [id, css, component, ceiling] of [
+    ["proof", "src/styles/routes/proof-production.css", "src/components/routes/proof/ProofExperience.astro", 10_000],
+    ["maradin", "src/styles/routes/maradin.css", "src/components/routes/maradin/MaradinExperience.astro", 15_000],
+  ]) {
+    const cssBytes = (await stat(path.join(root, css))).size;
+    const componentBytes = (await stat(path.join(root, component))).size;
+    assert.ok(cssBytes <= ceiling, `${id} authored CSS unexpectedly expanded: ${cssBytes}`);
+    assert.ok(helperBytes + componentBytes <= 16_000, `${id} authored component/controller surface unexpectedly expanded`);
+  }
 });
 
 test("CP2 no-JS and reduced-motion states resolve geometry without controller work", async () => {
@@ -293,7 +449,21 @@ test("CP2 no-JS and reduced-motion states resolve geometry without controller wo
   ]) {
     assert.match(await read(component), /data-route-motion="static"/);
     const styles = await read(css);
-    assert.match(styles, /@media \(scripting: none\), \(prefers-reduced-motion: reduce\)/);
+    assert.match(styles, /@media[^\{]*(?:scripting: none|prefers-reduced-motion: reduce)/);
+    assert.match(styles, /scripting: none/);
+    assert.match(styles, /prefers-reduced-motion: reduce/);
+  }
+});
+
+test("CP4 no-JS and reduced-motion states resolve documentary compositions", async () => {
+  for (const [component, css] of [
+    ["src/components/routes/proof/ProofExperience.astro", "src/styles/routes/proof-production.css"],
+    ["src/components/routes/maradin/MaradinExperience.astro", "src/styles/routes/maradin.css"],
+  ]) {
+    assert.match(await read(component), /data-route-motion="static"/);
+    const styles = await read(css);
+    assert.match(styles, /scripting: none/);
+    assert.match(styles, /prefers-reduced-motion: reduce/);
   }
 });
 

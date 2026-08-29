@@ -1,0 +1,95 @@
+.maradin-record { background: #020203; }
+.maradin-act { position: relative; min-width: 0; overflow: clip; border-bottom: 1px solid rgba(231, 223, 212, 0.1); }
+.maradin-act > *, .maradin-copy, .maradin-player, .maradin-still { min-width: 0; }
+.maradin-copy { position: relative; z-index: 2; }
+.maradin-copy h2 { max-width: none; margin-block: 0.65rem 1.3rem; font-size: clamp(3rem, 5vw, 6rem); line-height: 0.88; }
+.maradin-copy > p, .maradin-reality__matte > p { max-width: 52ch; font-size: clamp(1.05rem, 1.35vw, 1.3rem); line-height: 1.55; }
+.maradin-act__count { display: block; margin-top: 2.5rem; color: rgba(231, 223, 212, 0.48); font-family: var(--font-ui); font-size: 0.68rem; letter-spacing: 0.12em; }
+.maradin-player, .maradin-still { position: relative; margin: 0; background: #080809; }
+.maradin-player video, .maradin-still img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.maradin-player figcaption, .maradin-still figcaption { position: absolute; right: 0; bottom: 0; max-width: min(31rem, 82%); padding: 0.7rem 0.9rem; background: rgba(2, 2, 3, 0.86); color: #c8c1b8; font-family: var(--font-ui); font-size: 0.68rem; line-height: 1.45; }
+.maradin-player__launch { position: absolute; z-index: 3; right: clamp(1rem, 3vw, 3rem); bottom: clamp(3.5rem, 9vh, 7rem); display: inline-flex; min-width: 8rem; min-height: 2.75rem; align-items: center; justify-content: center; gap: 0.7rem; border: 1px solid rgba(255, 255, 255, 0.48); border-radius: 0; background: rgba(3, 3, 4, 0.84); color: #fff; font: 600 0.78rem/1 var(--font-ui); letter-spacing: 0.03em; cursor: pointer; }
+.maradin-player__launch:hover, .maradin-player__launch:focus-visible { border-color: var(--q-magenta-soft); background: #111115; }
+.maradin-reality { background: #050506; }
+.maradin-player--aperture { position: absolute; inset: 0; }
+.maradin-player--aperture::after { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0, 0, 0, 0.93) 0 9%, rgba(0, 0, 0, 0.7) 43%, rgba(0, 0, 0, 0.05) 78%); content: ""; pointer-events: none; }
+.maradin-player--aperture video { object-position: center 48%; }
+.maradin-reality__matte { position: relative; z-index: 2; display: flex; min-height: calc(100svh - var(--header-height)); max-width: min(63rem, 70vw); flex-direction: column; justify-content: center; padding: clamp(3rem, 8vh, 7rem) var(--gutter); background: linear-gradient(92deg, rgba(2, 2, 3, 0.96), rgba(2, 2, 3, 0.75) 76%, transparent); clip-path: polygon(0 0, 92% 0, 78% 100%, 0 100%); }
+.maradin-reality h1 { max-width: none; margin-block: 1rem 1.5rem; font-size: min(7.5vw, 8.8rem); line-height: 0.82; }
+.maradin-reality h1 span { display: block; }
+.maradin-reality__context { display: flex; flex-wrap: wrap; gap: 0.35rem 1rem; margin-top: 1.5rem; color: #c8c1b8; font-family: var(--font-ui); font-size: 0.72rem; }
+.maradin-reality__record { max-width: 40rem; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(231, 223, 212, 0.16); }
+.maradin-reality__record h2 { max-width: none; margin-block: 0.35rem; font-size: clamp(1.4rem, 2.1vw, 2.2rem); }
+.maradin-reality__record p { max-width: 54ch; font-size: 0.88rem; line-height: 1.45; }
+.maradin-problem { display: grid; min-height: 92svh; grid-template-columns: minmax(18rem, 0.66fr) minmax(0, 1.34fr); align-items: center; gap: 7vw; padding: clamp(4rem, 9vh, 8rem) var(--gutter); }
+.maradin-copy--problem { align-self: end; padding-bottom: 8vh; }
+.maradin-still--field { height: min(65vw, 47rem); transform: rotate(2.2deg); }
+.maradin-still--field img { object-position: 50% 42%; }
+.maradin-technology { display: grid; min-height: 96svh; grid-template-columns: minmax(0, 1.22fr) minmax(20rem, 0.78fr); align-items: center; gap: 6vw; padding: clamp(4rem, 8vh, 7rem) var(--gutter); background: #050506; }
+.maradin-still--projection { height: min(57vw, 43rem); }
+.maradin-still--projection img { object-position: center 64%; }
+.maradin-test { display: grid; min-height: 110svh; grid-template-columns: minmax(0, 0.82fr) minmax(19rem, 0.52fr) minmax(0, 0.9fr); align-items: center; gap: 4vw; padding: clamp(4rem, 9vh, 8rem) var(--gutter); }
+.maradin-test__matte { position: relative; align-self: stretch; }
+.maradin-test__matte span { position: absolute; top: 10%; bottom: 10%; width: 29%; background: linear-gradient(180deg, #24242a, #0a0a0c); }
+.maradin-test__matte span:first-child { left: 0; }
+.maradin-test__matte span:nth-child(2) { left: 35%; top: 16%; bottom: 5%; }
+.maradin-test__matte span:last-child { right: 0; top: 25%; bottom: 14%; }
+.maradin-test__execution, .maradin-observation__capability, .maradin-restraint__closing { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(231, 223, 212, 0.14); }
+.maradin-test__execution h3, .maradin-observation__capability h3, .maradin-restraint__closing h3 { margin-block: 0.35rem 0.7rem; font-size: clamp(1.4rem, 2.2vw, 2.3rem); }
+.maradin-test__execution p, .maradin-observation__capability p, .maradin-restraint__closing p { max-width: 50ch; line-height: 1.5; }
+.maradin-player--contact { height: min(50vw, 38rem); align-self: stretch; }
+.maradin-player--contact video { object-position: center; }
+.maradin-observation { display: grid; min-height: 106svh; grid-template-columns: repeat(2,minmax(0,1fr)); align-items: center; gap: 4vw; padding: clamp(4rem, 9vh, 8rem) var(--gutter); background: #040405; }
+.maradin-observation__evidence { display: grid; height: min(60vw, 48rem); grid-template-columns: minmax(0, 1.2fr) minmax(9rem, 0.8fr); align-items: end; gap: 1rem; }
+.maradin-observation__evidence span { height: 86%; background: #080809 var(--maradin-observation-image) center / cover no-repeat; }
+.maradin-observation__evidence span:last-child { height: 52%; }
+.maradin-copy--observation ul { display: flex; flex-wrap: wrap; gap: 0; padding: 0; margin: 2rem 0 0; list-style: none; }
+.maradin-copy--observation li { padding: 0.65rem 0.85rem; border-block: 1px solid rgba(231, 223, 212, 0.15); color: #bbb4ac; font-family: var(--font-ui); font-size: 0.75rem; }
+.maradin-restraint { display: grid; min-height: 88svh; grid-template-columns: minmax(0, 0.6fr) minmax(22rem, 0.85fr) minmax(0, 0.55fr); align-items: center; padding: clamp(5rem, 12vh, 10rem) var(--gutter); background: radial-gradient(circle at 74% 52%, rgba(231, 223, 212, 0.06), transparent 25rem), #020203; }
+.maradin-restraint__line { width: 80%; height: 1px; background: linear-gradient(90deg, transparent, var(--q-magenta-soft)); }
+.maradin-copy--restraint { grid-column: 2; }
+.maradin-restraint__links { display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; margin-top: 2.5rem; }
+html[data-route-enhanced="true"] [data-route-reveal] .maradin-copy, html[data-route-enhanced="true"] [data-route-reveal] .maradin-reality__matte, html[data-route-enhanced="true"] [data-route-reveal] .maradin-player, html[data-route-enhanced="true"] [data-route-reveal] .maradin-still, html[data-route-enhanced="true"] [data-route-reveal] .maradin-observation__evidence { transition: opacity 420ms ease, transform 560ms cubic-bezier(0.2, 0.72, 0.2, 1), clip-path 560ms cubic-bezier(0.2, 0.72, 0.2, 1); }
+html[data-route-enhanced="true"] [data-route-resolved="false"] .maradin-copy { opacity: 0.28; transform: translate3d(0, 1.25rem, 0); }
+html[data-route-enhanced="true"] [data-route-resolved="false"] .maradin-player, html[data-route-enhanced="true"] [data-route-resolved="false"] .maradin-still, html[data-route-enhanced="true"] [data-route-resolved="false"] .maradin-observation__evidence { opacity: 0.42; }
+html[data-route-enhanced="true"] [data-route-resolved="false"] .maradin-reality__matte { clip-path: polygon(0 0, 72% 0, 64% 100%, 0 100%); }
+@media (max-width: 62rem) {
+  .maradin-problem, .maradin-technology, .maradin-test, .maradin-observation, .maradin-restraint { grid-template-columns: minmax(0, 1fr); }
+  .maradin-reality__matte { max-width: 82vw; }
+  .maradin-copy--problem { align-self: auto; padding-bottom: 0; }
+  .maradin-still--field, .maradin-still--projection, .maradin-player--contact { height: auto; min-height: 0; aspect-ratio: 4 / 3; }
+  .maradin-technology .maradin-copy { order: -1; }
+  .maradin-test__matte { display: none; }
+  .maradin-observation__evidence { height: min(105vw, 46rem); }
+  .maradin-copy--restraint { grid-column: 1; }
+  .maradin-restraint__line { margin-bottom: 4rem; }
+}
+@media (max-width: 42.5rem) {
+  .maradin-player--aperture video { object-position: 61% center; }
+  .maradin-player--aperture::after { background: linear-gradient(180deg, rgba(0, 0, 0, 0.32), rgba(0, 0, 0, 0.82) 68%, #020203); }
+  .maradin-reality__matte { min-height: calc(100svh - var(--header-height)); max-width: none; justify-content: flex-end; padding-block: 5rem 1.5rem; background: transparent; clip-path: none; }
+  .maradin-reality h1 { font-size: min(11vw, 4.8rem); }
+  .maradin-reality__matte > .route-kicker { max-width: 8rem; }
+  .maradin-player--aperture figcaption { top: 0; bottom: auto; }
+  .maradin-player--aperture .maradin-player__launch { bottom: auto; top: 3.5rem; }
+  .maradin-problem, .maradin-technology, .maradin-test, .maradin-observation, .maradin-restraint { min-height: auto; gap: 3rem; padding-block: 5rem; }
+  .maradin-copy h2 { font-size: min(11vw, 4.6rem); }
+  .maradin-copy--problem h2 { font-size: 7vw; }
+  .maradin-copy--test h2 { font-size: 10vw; }
+  .maradin-still--field { transform: rotate(1deg); }
+  .maradin-observation__evidence { height: 125vw; grid-template-columns: minmax(0, 1fr) minmax(6.5rem, 0.55fr); }
+  .maradin-copy--observation { order: -1; }
+  .maradin-restraint { min-height: 82svh; }
+}
+@media (max-height: 34rem) and (min-width: 42.51rem) and (orientation: landscape) {
+  .maradin-reality__matte { max-width: 68vw; padding-block: 1.25rem; }
+  .maradin-reality h1 { margin-block: 0.5rem; font-size: min(6vw, 3.7rem); line-height: 0.82; }
+  .maradin-reality__matte > p { max-width: 48ch; font-size: 0.86rem; line-height: 1.3; }
+  .maradin-reality__matte .maradin-act__count { margin-top: 0.75rem; }
+  .maradin-player--aperture figcaption { max-width: 32%; }
+  .maradin-player--aperture .maradin-player__launch { bottom: 3.5rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-route-reveal] *, [data-route-reveal]::before, [data-route-reveal]::after { transition: none !important; }
+}
+@media (scripting: none) { .maradin-player__launch { display: none; } }
