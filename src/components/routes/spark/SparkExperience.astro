@@ -1,0 +1,98 @@
+---
+import { sparkProgramme } from "../../../content";
+
+const programmeSteps = [
+  ["Readiness", "Establish that the technology, team and use case can support an industrial process."],
+  ["Need", "Connect the capability to a relevant operational challenge and stakeholder context."],
+  ["Fit", "Assess technical relevance, implementation conditions and the questions a POC should address."],
+  ["Design", "Shape a bounded field test with clear conditions and evidence criteria."],
+  ["Evidence", "Use the POC record to understand an appropriate next step without a guaranteed outcome."],
+] as const;
+
+const participantValue = [
+  ["Industrial context", "Understand the need, stakeholders and constraints that make a technology relevant."],
+  ["Use-case refinement", "Translate a broad capability into a focused application and evidence question."],
+  ["Domain feedback", "Learn how operating requirements affect readiness, fit and implementation."],
+  ["POC preparation", "Develop a bounded plan for test conditions, roles and useful observations."],
+] as const;
+
+const questions = [
+  ["Who is SPARK for?", "Startups with MVP+ technology, a clear industrial use case, a team able to engage in field work and a practical view of what value should be measured."],
+  ["Is a POC guaranteed?", "No. The pathway develops relevant opportunities and structured POCs, but participation does not guarantee a pilot, procurement agreement or investment."],
+  ["Can I apply now?", "No. Applications are closed, and this site does not offer an application, waiting-list or registration route."],
+] as const;
+---
+
+<article class="spark" data-route-production="spark" data-route-architecture="sealed-programme-runway" data-route-motion="static">
+  <section class="sp-act sp-runway" data-route-act="runway" data-route-region="runway" aria-labelledby="spark-title">
+    <div class="sp-overture">
+      <header class="sp-opening">
+        <p class="meta-label sp-k">spark programme</p>
+        <h1 id="spark-title">A runway from MVP+ to industrial POC.</h1>
+        <p class="sp-intro">SPARK helps ready technologies connect their capabilities to relevant industrial needs and prepare a structured route toward field evidence.</p>
+      </header>
+
+      <div class="sp-gate" data-route-geometry="sealed-runway" data-route-reveal>
+        <div class="sp-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+        <p><span>programme status</span><strong>{sparkProgramme.status}</strong></p>
+      </div>
+    </div>
+
+    <div class="sp-track" data-route-reveal>
+      <div class="sp-track-title">
+        <p class="meta-label sp-k">programme route</p>
+        <h2>From capability to evidence question.</h2>
+        <p>Each stage adds context so a potential POC is relevant to both the startup and the industrial need.</p>
+      </div>
+      <ol aria-label="SPARK programme route">
+        {programmeSteps.map(([title, description], index) => (
+          <li><span aria-hidden="true">0{index + 1}</span><h3>{title}</h3><p>{description}</p></li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="sp-act sp-closed" data-route-act="closed" data-route-region="closed" aria-labelledby="status-title">
+    <div class="sp-seal" data-route-geometry="institutional-gate" data-route-reveal aria-hidden="true"><i></i><i></i></div>
+    <div class="sp-status">
+      <p class="meta-label sp-k">status</p>
+      <h2 id="status-title">{sparkProgramme.status}</h2>
+      <p>SPARK is not accepting applications. No future cohort date, registration route or waiting list is being published at this stage.</p>
+    </div>
+
+    <div class="sp-proposition">
+      <p class="meta-label sp-k">proposition</p>
+      <h2>Industrial relevance is developed, not assumed.</h2>
+      <p>SPARK creates a structured context for startups to test how their technology connects to an operational need. The work begins with readiness and relevance, then narrows toward a POC question that can be examined in meaningful conditions.</p>
+      <p>The intended audience is a startup with MVP+ technology, a clear industrial use case, a deployable team and the ability to engage with the processes of a large organisation.</p>
+      <p>Eligibility is about preparedness for the work: a functioning capability, measurable value hypothesis and willingness to adapt the POC design around the actual environment.</p>
+    </div>
+  </section>
+
+  <section class="sp-act sp-context" data-route-act="context" data-route-region="context" aria-labelledby="value-title">
+    <div class="sp-value">
+      <div class="sp-value-head">
+        <p class="meta-label sp-k">participant value</p>
+        <h2 id="value-title">Context, feedback and test discipline.</h2>
+        <p>The value sits in better questions and a more credible route into real operating conditions.</p>
+      </div>
+      <ul>
+        {participantValue.map(([title, description]) => <li><h3>{title}</h3><p>{description}</p></li>)}
+      </ul>
+    </div>
+
+    <div class="sp-faq">
+      <div><p class="meta-label sp-k">faq</p><h2>Programme questions.</h2></div>
+      <div>{questions.map(([question, answer]) => <details><summary>{question}</summary><p>{answer}</p></details>)}</div>
+    </div>
+
+    <footer class="sp-release">
+      <div><h2>Follow the startup route.</h2><p>General technology introductions can begin through the non-application startup contact path.</p></div>
+      <a href="/contact/#for-startups">Introduce your technology <span aria-hidden="true">↗</span></a>
+    </footer>
+  </section>
+</article>
+
+<script>
+  import "../../../scripts/routes/spark-threshold";
+</script>

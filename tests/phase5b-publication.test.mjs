@@ -99,6 +99,26 @@ test("Maradin production stays inside the approved qualified record", () => {
   assert.doesNotMatch(component, /autoplay|<source\b/);
 });
 
+test("SPARK production remains closed without an application affordance", () => {
+  const component = read("src/components/routes/spark/SparkExperience.astro");
+  const programmes = read("src/content/programmes.ts");
+  assert.match(programmes, /status: "Applications closed"/);
+  assert.match(programmes, /applicationOpen: false/);
+  assert.match(component, /sparkProgramme\.status/);
+  assert.match(component, /SPARK is not accepting applications/);
+  assert.match(component, /href="\/contact\/#for-startups"/);
+  assert.doesNotMatch(component, /<(?:form|input|textarea|select)\b/i);
+  assert.doesNotMatch(component, /href="[^"]*(?:apply|application|register|registration|waitlist|waiting-list)/i);
+});
+
+test("About production stays inside the approved institutional boundary", () => {
+  const component = read("src/components/routes/about/AboutExperience.astro");
+  assert.equal([...component.matchAll(/href="\/(?:for-partners|for-startups)\/"/g)].length, 2);
+  assert.match(component, /Based in Herzliya, Quantum is positioned close to the technology ecosystem while keeping the work anchored in industrial application\./);
+  assert.doesNotMatch(component, /qFund|team member|leadership|found(?:ed|ing)\s+(?:in|date)|timeline|milestone|campus|facility|laboratory|partner logo|client logo|metric/i);
+  assert.doesNotMatch(component, /<(?:img|picture|video|audio|source|canvas|svg)\b|\/media\//i);
+});
+
 test("speculative route labs and preproduction canaries cannot leak into public source or configuration", () => {
   const productionRoots = ["src", "public"].flatMap((relative) => walk(path.join(ROOT, relative)));
   const productionText = productionRoots

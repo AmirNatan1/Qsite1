@@ -9,9 +9,18 @@ import { PHASE5B_ROUTES } from "./phase5b-route-contract.mjs";
 
 const ROOT = process.cwd();
 const DIST = path.join(ROOT, "dist");
-const IMPLEMENTED_IDS = new Set(["for-industry", "for-startups", "industries", "proof", "maradin"]);
+const IMPLEMENTED_IDS = new Set(["for-industry", "for-startups", "industries", "proof", "maradin", "spark", "about"]);
 const IMPLEMENTED = PHASE5B_ROUTES.filter(({ id }) => IMPLEMENTED_IDS.has(id));
 const ROUTE_BY_ID = new Map(PHASE5B_ROUTES.map((route) => [route.id, route]));
+const ARCHITECTURE_BY_ID = new Map([
+  ["for-industry", "pressure-system"],
+  ["for-startups", "conditional-corridor"],
+  ["industries", "four-territory-threshold"],
+  ["proof", "archive-threshold"],
+  ["maradin", "documentary-record"],
+  ["spark", "sealed-programme-runway"],
+  ["about", "institutional-interlock"],
+]);
 const MARADIN_MEDIA = Object.freeze({
   "/media/maradin/maradin-field-aperture-poster-approved.jpg": "6afc1a69570f2541b89b4f6a5074bec04a5d607743d91670321f550b4d6364bd",
   "/media/maradin/maradin-prove-field-frame-approved.jpg": "b85f1bd5413b6fe7da235e5217e16b106ae4ff0763e8deb9db6e509dbc0b8b8c",
@@ -117,6 +126,12 @@ async function verifyRoute(route) {
   const html = await readFile(distHtml(route), "utf8");
   const main = html.match(/<main\b[^>]*\bid="main-content"[^>]*>([\s\S]*?)<\/main>/i)?.[1] ?? "";
   assert(main, `${route.id}: main-content region is missing`);
+  const article = tags(main, "article").find((attributes) => attribute(attributes, "data-route-production") === route.id);
+  assert(article, `${route.id}: route production root is missing`);
+  assert(attribute(article, "data-route-architecture") === ARCHITECTURE_BY_ID.get(route.id), `${route.id}: route architecture changed`);
+  assert(tags(main, "h1").length === 1, `${route.id}: expected exactly one H1`);
+  assert([...main.matchAll(/\bdata-route-act="/g)].length === route.acts, `${route.id}: route act count changed`);
+  if (route.regions !== undefined) assert([...main.matchAll(/\bdata-route-region="/g)].length === route.regions, `${route.id}: route region count changed`);
   if (route.media === "none") {
     assert(!/<(?:img|picture|video|audio|source|canvas|svg)\b/i.test(main), `${route.id}: zero-media route contains a media element`);
     assert(!/\/media\//i.test(main), `${route.id}: zero-media route references media`);

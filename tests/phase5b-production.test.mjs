@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = (relative) => readFile(path.join(root, relative), "utf8");
 const count = (source, pattern) => [...source.matchAll(pattern)].length;
-const normalize = (source) => source.replace(/\s+/g, " ");
+const normalize = (source) => source.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
 
 const acceptedIndustryCopy = [
   "For industry — turn needs into testable decisions",
@@ -225,6 +225,90 @@ const acceptedMaradinCopy = [
   "Return to Proof",
 ];
 
+const acceptedSparkCopy = [
+  "SPARK — from MVP+ to industrial POC",
+  "SPARK is a pathway for MVP+ technologies to develop industrial relevance and prepare structured POCs. Applications are closed.",
+  "spark programme",
+  "A runway from MVP+ to industrial POC.",
+  "SPARK helps ready technologies connect their capabilities to relevant industrial needs and prepare a structured route toward field evidence.",
+  "Applications closed",
+  "proposition",
+  "Industrial relevance is developed, not assumed.",
+  "SPARK creates a structured context for startups to test how their technology connects to an operational need. The work begins with readiness and relevance, then narrows toward a POC question that can be examined in meaningful conditions.",
+  "The intended audience is a startup with MVP+ technology, a clear industrial use case, a deployable team and the ability to engage with the processes of a large organisation.",
+  "Eligibility is about preparedness for the work: a functioning capability, measurable value hypothesis and willingness to adapt the POC design around the actual environment.",
+  "programme route",
+  "From capability to evidence question.",
+  "Each stage adds context so a potential POC is relevant to both the startup and the industrial need.",
+  "Readiness",
+  "Establish that the technology, team and use case can support an industrial process.",
+  "Need",
+  "Connect the capability to a relevant operational challenge and stakeholder context.",
+  "Fit",
+  "Assess technical relevance, implementation conditions and the questions a POC should address.",
+  "Design",
+  "Shape a bounded field test with clear conditions and evidence criteria.",
+  "Evidence",
+  "Use the POC record to understand an appropriate next step without a guaranteed outcome.",
+  "participant value",
+  "Context, feedback and test discipline.",
+  "The value sits in better questions and a more credible route into real operating conditions.",
+  "Industrial context",
+  "Understand the need, stakeholders and constraints that make a technology relevant.",
+  "Use-case refinement",
+  "Translate a broad capability into a focused application and evidence question.",
+  "Domain feedback",
+  "Learn how operating requirements affect readiness, fit and implementation.",
+  "POC preparation",
+  "Develop a bounded plan for test conditions, roles and useful observations.",
+  "status",
+  "SPARK is not accepting applications. No future cohort date, registration route or waiting list is being published at this stage.",
+  "faq",
+  "Programme questions.",
+  "Who is SPARK for?",
+  "Startups with MVP+ technology, a clear industrial use case, a team able to engage in field work and a practical view of what value should be measured.",
+  "Is a POC guaranteed?",
+  "No. The pathway develops relevant opportunities and structured POCs, but participation does not guarantee a pilot, procurement agreement or investment.",
+  "Can I apply now?",
+  "No. Applications are closed, and this site does not offer an application, waiting-list or registration route.",
+  "Follow the startup route.",
+  "General technology introductions can begin through the non-application startup contact path.",
+  "Introduce your technology",
+  "A pathway for MVP+ technologies to develop relevant opportunities and structured POCs in real operating contexts.",
+];
+
+const acceptedAboutCopy = [
+  "About Quantum",
+  "Quantum is an industrial innovation platform in Herzliya, working between operational needs, technology assessment and real-world POCs.",
+  "about quantum",
+  "Built between industry and technology.",
+  "Quantum creates a practical place for industrial needs and emerging technologies to meet through structured assessment, field testing and evidence.",
+  "purpose",
+  "Make the connection testable.",
+  "Industry and technology often begin from different frames. One side holds an operational need shaped by systems, constraints and owners. The other holds a capability seeking the right use case and field conditions. Quantum works in the space between them.",
+  "The role is practical: define the challenge, source and assess relevant technologies, design a bounded POC and keep the evidence connected to the original question.",
+  "This is not a promise that every introduction becomes a test or every test becomes implementation. It is a disciplined way to understand fit before a larger commitment is made.",
+  "institutional model",
+  "An industry‑led operating context.",
+  "Quantum’s model begins with industry relationships and real needs. Technology is brought into that context through assessment and POC design, so relevance is judged against operating conditions rather than a generic innovation brief.",
+  "The resulting field record distinguishes challenge, technology, test design, execution and evidence. That structure helps all parties see what was learned and what remains unresolved.",
+  "Based in Herzliya, Quantum is positioned close to the technology ecosystem while keeping the work anchored in industrial application.",
+  "working principles",
+  "Need. Context. Test. Evidence.",
+  "Need before novelty",
+  "Begin with the operational problem and the people who own it.",
+  "Context before claims",
+  "Assess technology against the environment where it must perform.",
+  "Evidence before scale",
+  "Use a structured POC to reduce uncertainty without overstating the result.",
+  "Clarity before expansion",
+  "Define the next step from what the field record can responsibly support.",
+  "Enter through the real need.",
+  "Choose the path that matches your role in the work.",
+  "For industry",
+  "For startups",
+];
+
 test("CP2 pages load only their route-owned composition and styles", async () => {
   const industry = await read("src/pages/for-partners.astro");
   const startups = await read("src/pages/for-startups.astro");
@@ -298,6 +382,20 @@ test("CP4 pages load only their documentary route-owned compositions", async () 
   }
 });
 
+test("CP5 pages load only their route-owned institutional compositions", async () => {
+  const spark = await read("src/pages/spark.astro");
+  const about = await read("src/pages/about.astro");
+  assert.match(spark, /SparkExperience/);
+  assert.match(spark, /routes\/spark-production\.css/);
+  assert.doesNotMatch(spark, /AboutExperience|routes\/about\.css/);
+  assert.match(about, /AboutExperience/);
+  assert.match(about, /routes\/about\.css/);
+  assert.doesNotMatch(about, /SparkExperience|spark-production\.css/);
+  for (const source of [spark, about]) {
+    assert.doesNotMatch(source, /PageHero|ClosingCta|ProcessList|standard\.css|SupportingRoute|editorial-section|feature-list/);
+  }
+});
+
 test("Proof is a two-act archive threshold with one governed record", async () => {
   const source = await read("src/components/routes/proof/ProofExperience.astro");
   assert.match(source, /<article[\s\S]*data-route-architecture="archive-threshold"/);
@@ -327,6 +425,31 @@ test("Maradin is a six-act governed documentary record", async () => {
   assert.notEqual(normalize(source.match(/<article[\s\S]*<\/article>/)?.[0] ?? ""), normalize(await read("src/components/routes/proof/ProofExperience.astro")));
 });
 
+test("SPARK is a three-act sealed programme runway", async () => {
+  const source = await read("src/components/routes/spark/SparkExperience.astro");
+  assert.match(source, /<article[\s\S]*data-route-architecture="sealed-programme-runway"/);
+  assert.deepEqual([...source.matchAll(/data-route-region="([^"]+)"/g)].map((match) => match[1]), ["runway", "closed", "context"]);
+  assert.deepEqual([...source.matchAll(/data-route-act="([^"]+)"/g)].map((match) => match[1]), ["runway", "closed", "context"]);
+  assert.equal(count(source, /<h1\b/g), 1);
+  assert.match(source, /sparkProgramme\.status/);
+  assert.match(source, /<details\b/);
+  assert.match(source, /href="\/contact\/#for-startups"/);
+  assert.doesNotMatch(source, /<(?:form|input|textarea|select|img|picture|video|audio|source|canvas|svg)\b/i);
+  assert.doesNotMatch(source, /href="[^"]*(?:apply|register|waitlist)/i);
+});
+
+test("About is a three-act institutional interlock", async () => {
+  const source = await read("src/components/routes/about/AboutExperience.astro");
+  assert.match(source, /<article[\s\S]*data-route-architecture="institutional-interlock"/);
+  assert.deepEqual([...source.matchAll(/data-route-region="([^"]+)"/g)].map((match) => match[1]), ["worlds", "interlock", "position"]);
+  assert.deepEqual([...source.matchAll(/data-route-act="([^"]+)"/g)].map((match) => match[1]), ["worlds", "interlock", "position"]);
+  assert.equal(count(source, /<h1\b/g), 1);
+  assert.match(source, /Based in Herzliya/);
+  assert.match(source, /href="\/for-partners\/"/);
+  assert.match(source, /href="\/for-startups\/"/);
+  assert.doesNotMatch(source, /<(?:img|picture|video|audio|source|canvas|svg)\b|qFund|team member|founding date|timeline|milestone|partner logo/i);
+});
+
 test("implemented routes preserve the complete accepted public-copy authority", async () => {
   const programmes = await read("src/content/programmes.ts");
   const industry = normalize(`${await read("src/pages/for-partners.astro")} ${await read("src/components/routes/industry/IndustryExperience.astro")} ${programmes}`);
@@ -335,11 +458,15 @@ test("implemented routes preserve the complete accepted public-copy authority", 
   const proofs = await read("src/content/proofs.ts");
   const proof = normalize(`${await read("src/pages/pocs.astro")} ${await read("src/components/routes/proof/ProofExperience.astro")} ${proofs}`);
   const maradin = normalize(`${await read("src/pages/pocs/maradin.astro")} ${await read("src/components/routes/maradin/MaradinExperience.astro")} ${proofs}`);
+  const spark = normalize(`${await read("src/pages/spark.astro")} ${await read("src/components/routes/spark/SparkExperience.astro")} ${programmes}`);
+  const about = normalize(`${await read("src/pages/about.astro")} ${await read("src/components/routes/about/AboutExperience.astro")}`);
   for (const phrase of acceptedIndustryCopy) assert.ok(industry.includes(phrase), `missing accepted Industry copy: ${phrase}`);
   for (const phrase of acceptedStartupCopy) assert.ok(startups.includes(phrase), `missing accepted Startup copy: ${phrase}`);
   for (const phrase of acceptedIndustriesCopy) assert.ok(industries.includes(phrase), `missing accepted Industries copy: ${phrase}`);
   for (const phrase of acceptedProofCopy) assert.ok(proof.includes(phrase), `missing accepted Proof copy: ${phrase}`);
   for (const phrase of acceptedMaradinCopy) assert.ok(maradin.includes(phrase), `missing accepted Maradin copy: ${phrase}`);
+  for (const phrase of acceptedSparkCopy) assert.ok(spark.includes(phrase), `missing accepted SPARK copy: ${phrase}`);
+  for (const phrase of acceptedAboutCopy) assert.ok(about.includes(phrase), `missing accepted About copy: ${phrase}`);
 });
 
 test("CP2 has no lab copy, media, form, sticky scene, or scroll interception", async () => {
@@ -384,6 +511,21 @@ test("CP4 has no lab copy, template rows, sticky scene, autoplay, or scroll inte
   const helper = await read("src/scripts/routes/reversible-reveal.ts");
   assert.match(helper, /IntersectionObserver/);
   assert.match(helper, /entry\.isIntersecting \? "true" : "false"/);
+});
+
+test("CP5 has no lab copy, generic template, media, application UI, or scroll interception", async () => {
+  const files = [
+    "src/components/routes/spark/SparkExperience.astro",
+    "src/components/routes/about/AboutExperience.astro",
+    "src/styles/routes/spark-production.css",
+    "src/styles/routes/about.css",
+    "src/scripts/routes/spark-threshold.ts",
+    "src/scripts/routes/about-interlock.ts",
+  ];
+  const joined = (await Promise.all(files.map(read))).join("\n");
+  assert.doesNotMatch(joined, /QH_PHASE5AR_ROUTE_LAB_ONLY|PREPRODUCTION|approved content map|public route unchanged|Phase 5B unauthorized|human review/i);
+  assert.doesNotMatch(joined, /position\s*:\s*(?:sticky|fixed)|scroll-snap|overflow-[xy]\s*:\s*(?:auto|scroll)|addEventListener\(["'](?:scroll|wheel)|preventDefault\(|scrollTo\(|scrollBy\(|scrollIntoView\(|requestAnimationFrame|setInterval\(|setTimeout\(/i);
+  assert.doesNotMatch(joined, /<(?:form|input|textarea|select|img|picture|video|audio|source|canvas|svg)\b|\/media\//i);
 });
 
 test("CP2 responsive CSS exposes overflow instead of clipping copy and constrains grid min-content", async () => {
@@ -441,6 +583,21 @@ test("CP4 authored sources stay bounded before production minification", async (
   }
 });
 
+test("CP5 authored sources stay bounded before production minification", async () => {
+  const helperBytes = (await stat(path.join(root, "src/scripts/routes/reversible-reveal.ts"))).size;
+  for (const [id, css, component, controller] of [
+    ["spark", "src/styles/routes/spark-production.css", "src/components/routes/spark/SparkExperience.astro", "src/scripts/routes/spark-threshold.ts"],
+    ["about", "src/styles/routes/about.css", "src/components/routes/about/AboutExperience.astro", "src/scripts/routes/about-interlock.ts"],
+  ]) {
+    const cssBytes = (await stat(path.join(root, css))).size;
+    const componentBytes = (await stat(path.join(root, component))).size;
+    const controllerBytes = (await stat(path.join(root, controller))).size;
+    assert.ok(cssBytes <= 12_000, `${id} authored CSS unexpectedly expanded: ${cssBytes}`);
+    assert.ok(helperBytes + controllerBytes <= 4_000, `${id} authored controller closure unexpectedly expanded`);
+    assert.ok(componentBytes <= 16_000, `${id} authored component unexpectedly expanded`);
+  }
+});
+
 test("CP2 no-JS and reduced-motion states resolve geometry without controller work", async () => {
   for (const [component, css] of [
     ["src/components/routes/industry/IndustryExperience.astro", "src/styles/routes/industry.css"],
@@ -459,6 +616,18 @@ test("CP4 no-JS and reduced-motion states resolve documentary compositions", asy
   for (const [component, css] of [
     ["src/components/routes/proof/ProofExperience.astro", "src/styles/routes/proof-production.css"],
     ["src/components/routes/maradin/MaradinExperience.astro", "src/styles/routes/maradin.css"],
+  ]) {
+    assert.match(await read(component), /data-route-motion="static"/);
+    const styles = await read(css);
+    assert.match(styles, /scripting: none/);
+    assert.match(styles, /prefers-reduced-motion: reduce/);
+  }
+});
+
+test("CP5 no-JS and reduced-motion states resolve institutional compositions", async () => {
+  for (const [component, css] of [
+    ["src/components/routes/spark/SparkExperience.astro", "src/styles/routes/spark-production.css"],
+    ["src/components/routes/about/AboutExperience.astro", "src/styles/routes/about.css"],
   ]) {
     assert.match(await read(component), /data-route-motion="static"/);
     const styles = await read(css);

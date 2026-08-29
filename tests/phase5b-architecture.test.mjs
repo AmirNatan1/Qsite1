@@ -21,6 +21,10 @@ test("Phase 5B route contract freezes authority, nine routes, budgets and six pe
     { id: "proof", acts: 2, regions: 2, mode: "B" },
     { id: "maradin", acts: 6, regions: 6, mode: "B" },
   ]);
+  assert.deepEqual(PHASE5B_ROUTES.filter((route) => ["spark", "about"].includes(route.id)).map(({ id, acts, regions, mode }) => ({ id, acts, regions, mode })), [
+    { id: "spark", acts: 3, regions: 3, mode: "B" },
+    { id: "about", acts: 3, regions: 3, mode: "B" },
+  ]);
 });
 
 test("shared production primitives do not impose a universal route skeleton", async () => {

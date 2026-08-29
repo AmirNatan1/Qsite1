@@ -1,8 +1,7 @@
 ---
+import AboutExperience from "../components/routes/about/AboutExperience.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import ClosingCta from "../components/ClosingCta.astro";
-import PageHero from "../components/PageHero.astro";
-import "../styles/routes/standard.css";
+import "../styles/routes/about.css";
 
 const title = "About Quantum";
 const description =
@@ -10,89 +9,5 @@ const description =
 ---
 
 <BaseLayout {title} {description} bodyClass="about-page">
-  <PageHero
-    eyebrow="about quantum"
-    title="Built between industry and technology."
-    intro="Quantum creates a practical place for industrial needs and emerging technologies to meet through structured assessment, field testing and evidence."
-  />
-
-  <section class="editorial-section" aria-labelledby="purpose-title">
-    <div class="container">
-      <div class="editorial-section__intro">
-        <p class="eyebrow">purpose</p>
-        <div>
-          <h2 id="purpose-title">Make the connection testable.</h2>
-          <p>
-            Industry and technology often begin from different frames. One side
-            holds an operational need shaped by systems, constraints and owners.
-            The other holds a capability seeking the right use case and field
-            conditions. Quantum works in the space between them.
-          </p>
-        </div>
-      </div>
-      <div class="editorial-copy">
-        <p>
-          The role is practical: define the challenge, source and assess relevant
-          technologies, design a bounded POC and keep the evidence connected to the
-          original question.
-        </p>
-        <p>
-          This is not a promise that every introduction becomes a test or every
-          test becomes implementation. It is a disciplined way to understand fit
-          before a larger commitment is made.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <section class="editorial-section" aria-labelledby="model-title">
-    <div class="container">
-      <div class="editorial-section__intro">
-        <p class="eyebrow">institutional model</p>
-        <div>
-          <h2 id="model-title">An industry‑led operating context.</h2>
-          <p>
-            Quantum’s model begins with industry relationships and real needs.
-            Technology is brought into that context through assessment and POC
-            design, so relevance is judged against operating conditions rather
-            than a generic innovation brief.
-          </p>
-        </div>
-      </div>
-      <div class="editorial-copy">
-        <p>
-          The resulting field record distinguishes challenge, technology, test
-          design, execution and evidence. That structure helps all parties see what
-          was learned and what remains unresolved.
-        </p>
-        <p>
-          Based in Herzliya, Quantum is positioned close to the technology
-          ecosystem while keeping the work anchored in industrial application.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <section class="editorial-section" aria-labelledby="principles-title">
-    <div class="container">
-      <div class="editorial-section__intro">
-        <p class="eyebrow">working principles</p>
-        <div><h2 id="principles-title">Need. Context. Test. Evidence.</h2></div>
-      </div>
-      <ul class="feature-list">
-        <li><h3>Need before novelty</h3><p>Begin with the operational problem and the people who own it.</p></li>
-        <li><h3>Context before claims</h3><p>Assess technology against the environment where it must perform.</p></li>
-        <li><h3>Evidence before scale</h3><p>Use a structured POC to reduce uncertainty without overstating the result.</p></li>
-        <li><h3>Clarity before expansion</h3><p>Define the next step from what the field record can responsibly support.</p></li>
-      </ul>
-    </div>
-  </section>
-
-  <ClosingCta
-    title="Enter through the real need."
-    copy="Choose the path that matches your role in the work."
-  >
-    <a class="button button--primary" href="/for-partners/">For industry</a>
-    <a class="button button--secondary" href="/for-startups/">For startups</a>
-  </ClosingCta>
+  <AboutExperience />
 </BaseLayout>

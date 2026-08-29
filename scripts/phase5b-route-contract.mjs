@@ -7,8 +7,8 @@ export const PHASE5B_ROUTES = Object.freeze([
   { id: "industries", path: "/industries/", acts: 4, regions: 6, mode: "C", cssBudget: 10_000, jsBudget: 4_000, media: "none" },
   { id: "proof", path: "/pocs/", acts: 2, regions: 2, mode: "B", cssBudget: 6_000, jsBudget: 1_500, media: "governed-poster" },
   { id: "maradin", path: "/pocs/maradin/", acts: 6, regions: 6, mode: "B", cssBudget: 9_000, jsBudget: 2_000, media: "governed-documentary" },
-  { id: "spark", path: "/spark/", acts: 3, mode: "B", cssBudget: 6_000, jsBudget: 1_500, media: "none" },
-  { id: "about", path: "/about/", acts: 3, mode: "B", cssBudget: 6_000, jsBudget: 1_500, media: "none" },
+  { id: "spark", path: "/spark/", acts: 3, regions: 3, mode: "B", cssBudget: 6_000, jsBudget: 1_500, media: "none" },
+  { id: "about", path: "/about/", acts: 3, regions: 3, mode: "B", cssBudget: 6_000, jsBudget: 1_500, media: "none" },
   { id: "contact", path: "/contact/", acts: 1, mode: "A", cssBudget: 4_000, jsBudget: 0, media: "none" },
   { id: "404", path: "/__phase5b-intentional-404__/", sourcePath: "/404.html", acts: 1, mode: "A", cssBudget: 2_000, jsBudget: 0, media: "none" },
 ]);
