@@ -54,7 +54,6 @@ html {
 
 body {
   margin: 0;
-  overflow-x: clip;
   background: var(--void);
   color: var(--body);
   font-family: "Inter", Arial, sans-serif;
@@ -133,7 +132,7 @@ h3 {
   border-bottom: 1px solid rgba(212, 32, 120, 0.35);
   background: #080609;
   color: #c2b8be;
-  font-size: 0.59rem;
+  font-size: 0.625rem;
   letter-spacing: 0.13em;
   text-transform: uppercase;
 }
@@ -148,7 +147,7 @@ h3 {
   min-height: 78px;
   align-items: center;
   justify-content: space-between;
-  gap: 2rem;
+  gap: clamp(16px, 2vw, 32px);
   padding: 0.8rem var(--gutter);
   border-bottom: 1px solid var(--line);
   background: #070708;
@@ -156,11 +155,14 @@ h3 {
 
 .wordmark {
   display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
   align-items: center;
-  gap: 0.72rem;
+  justify-content: center;
+  gap: 12px;
   color: var(--ink);
   font-family: "Syne", Arial, sans-serif;
-  font-size: 0.9rem;
+  font-size: 14px;
   font-weight: 800;
   letter-spacing: -0.035em;
   text-decoration: none;
@@ -182,7 +184,7 @@ h3 {
 .mobile-nav ul {
   display: flex;
   align-items: center;
-  gap: clamp(0.6rem, 1.35vw, 1.45rem);
+  gap: clamp(10px, 1.35vw, 23px);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -190,8 +192,13 @@ h3 {
 
 .desktop-nav a,
 .mobile-nav a {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
   color: #99958f;
-  font-size: 0.62rem;
+  font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.09em;
   text-decoration: none;
@@ -216,7 +223,23 @@ h3 {
 
 .repair-page {
   position: relative;
+  width: 100%;
+  min-width: 0;
   isolation: isolate;
+}
+
+.repair-page article,
+.repair-page header,
+.repair-page section,
+.repair-page footer,
+.repair-page .title-block {
+  min-width: 0;
+}
+
+.repair-page h1,
+.repair-page h2,
+.repair-page h3 {
+  max-inline-size: 100%;
 }
 
 .kicker {
@@ -245,7 +268,7 @@ h3 {
   gap: 0.35rem 0.85rem;
   margin: 0;
   color: #77736f;
-  font-size: 0.57rem;
+  font-size: 0.625rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -266,7 +289,7 @@ h3 {
 .act-map span {
   margin-right: 0.7rem;
   color: var(--magenta);
-  font-size: 0.56rem;
+  font-size: 0.625rem;
   font-weight: 600;
   letter-spacing: 0.12em;
 }
@@ -313,16 +336,16 @@ h3 {
   z-index: 3;
   display: flex;
   min-height: calc(100svh - var(--head-offset));
-  max-width: min(58rem, 63vw);
+  max-width: min(60rem, 72vw);
   flex-direction: column;
   justify-content: center;
   padding: 6vh 0;
 }
 
 .industry-act--pressure h1 {
-  max-width: 10ch;
+  max-width: 100%;
   margin-bottom: clamp(1.4rem, 3vh, 2.6rem);
-  font-size: clamp(3.5rem, 8.3vw, 9rem);
+  font-size: clamp(54px, 6.6vw, 116px);
 }
 
 .industry-load {
@@ -342,12 +365,14 @@ h3 {
 }
 
 .industry-load > span:first-child {
-  left: -20%;
+  left: 0;
+  width: 31%;
   transform: skewY(5deg);
 }
 
 .industry-load > span:nth-child(2) {
-  right: -18%;
+  right: 0;
+  width: 31%;
   transform: skewY(-4deg);
 }
 
@@ -381,15 +406,15 @@ h3 {
 }
 
 .industry-act__copy h2 {
-  max-width: 11ch;
+  max-width: 100%;
   margin-bottom: 1.5rem;
-  font-size: clamp(2.6rem, 5.4vw, 6.8rem);
+  font-size: clamp(38px, 4.05vw, 83px);
 }
 
 .industry-act--frame {
   display: grid;
   min-height: 92svh;
-  grid-template-columns: minmax(0, 1.25fr) minmax(20rem, 0.75fr);
+  grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
   align-items: center;
   gap: 6vw;
   padding: clamp(5rem, 12vh, 10rem) var(--gutter);
@@ -451,7 +476,7 @@ h3 {
 .industry-act--decision {
   display: grid;
   min-height: 88svh;
-  grid-template-columns: minmax(19rem, 0.75fr) minmax(0, 1.25fr);
+  grid-template-columns: minmax(304px, 0.75fr) minmax(0, 1.25fr);
   align-items: center;
   gap: 7vw;
   padding: clamp(5rem, 11vh, 9rem) var(--gutter);
@@ -502,16 +527,16 @@ h3 {
   z-index: 3;
   display: flex;
   min-height: calc(100svh - var(--head-offset) - 15vh);
-  max-width: min(54rem, 68vw);
+  max-width: min(66rem, calc(100% - 17vw));
   flex-direction: column;
   justify-content: flex-end;
   margin-left: 17vw;
 }
 
 .startup-act--signal h1 {
-  max-width: 9ch;
+  max-width: 100%;
   margin-bottom: 1.6rem;
-  font-size: clamp(3.4rem, 7.8vw, 8.4rem);
+  font-size: clamp(54px, 7.8vw, 134px);
 }
 
 .startup-signal-map {
@@ -523,7 +548,7 @@ h3 {
 
 .startup-signal-map i {
   position: absolute;
-  left: -2rem;
+  left: .75rem;
   top: 64%;
   width: 10px;
   aspect-ratio: 1;
@@ -534,8 +559,8 @@ h3 {
 
 .startup-signal-map span {
   position: absolute;
-  left: 0;
-  width: 88%;
+  left: 1rem;
+  width: min(82%, calc(100% - 2rem));
   height: 1px;
   transform-origin: left;
   background: linear-gradient(90deg, var(--magenta), rgba(226, 217, 205, 0.38), transparent);
@@ -563,14 +588,14 @@ h3 {
 }
 
 .startup-route h2 {
-  max-width: 10ch;
+  max-width: 100%;
   margin-bottom: 1.4rem;
-  font-size: clamp(2.5rem, 5.2vw, 6.2rem);
+  font-size: clamp(39px, 4.15vw, 88px);
 }
 
 .startup-act--conditions {
   min-height: 82svh;
-  grid-template-columns: minmax(0, 1.25fr) minmax(18rem, .75fr);
+  grid-template-columns: minmax(0, 1.1fr) minmax(384px, .9fr);
   gap: 6vw;
 }
 
@@ -600,7 +625,7 @@ h3 {
 
 .startup-act--fit {
   min-height: 92svh;
-  grid-template-columns: minmax(18rem, .72fr) minmax(0, 1.28fr);
+  grid-template-columns: minmax(384px, .9fr) minmax(0, 1.1fr);
   gap: 8vw;
   background: linear-gradient(118deg, transparent 42%, rgba(255,255,255,.025));
 }
@@ -631,7 +656,7 @@ h3 {
 
 .startup-act--field {
   min-height: 82svh;
-  grid-template-columns: minmax(0, 1.4fr) minmax(19rem, .6fr);
+  grid-template-columns: minmax(0, 1.15fr) minmax(384px, .85fr);
   gap: 6vw;
   background: radial-gradient(ellipse at 25% 50%, rgba(225, 215, 200, 0.12), transparent 38rem), #060607;
 }
@@ -667,7 +692,7 @@ h3 {
 .industries-threshold {
   display: grid;
   min-height: calc(82svh - var(--head-offset));
-  grid-template-columns: minmax(0, 1fr) minmax(22rem, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(352px, 1fr);
   align-items: end;
   gap: 6vw;
   padding: 8vh var(--gutter) 6vh;
@@ -675,9 +700,9 @@ h3 {
 }
 
 .industries-threshold h1 {
-  max-width: 9ch;
+  max-width: 100%;
   margin-bottom: 1.4rem;
-  font-size: clamp(3.4rem, 7.6vw, 8.2rem);
+  font-size: clamp(51px, 6vw, 114px);
 }
 
 .territory-threshold {
@@ -715,9 +740,9 @@ h3 {
 }
 
 .territory__copy h2 {
-  max-width: 13ch;
+  max-width: 100%;
   margin-bottom: 1.4rem;
-  font-size: clamp(2.6rem, 5.5vw, 6.5rem);
+  font-size: clamp(36px, 2.9vw, 64px);
 }
 
 .territory__material {
@@ -733,7 +758,7 @@ h3 {
 
 .territory--automotive {
   min-height: 78svh;
-  grid-template-columns: minmax(0, 1.45fr) minmax(18rem, .55fr);
+  grid-template-columns: minmax(0, 1.3fr) minmax(480px, .7fr);
   align-items: end;
   gap: 5vw;
   padding: 6vh var(--gutter) 8vh;
@@ -746,12 +771,12 @@ h3 {
 }
 
 .territory--automotive .territory__material span:first-child { left: 4%; right: 4%; top: 61%; height: 2px; background: rgba(229,221,210,.24); transform: rotate(-4deg); }
-.territory--automotive .territory__material span:nth-child(2) { left: 15%; right: -4%; top: 68%; height: 13%; background: #1c1c21; transform: skewX(-20deg); }
+.territory--automotive .territory__material span:nth-child(2) { left: 18%; right: 8%; top: 68%; height: 13%; background: #1c1c21; transform: skewX(-12deg); }
 .territory--automotive .territory__copy { padding-bottom: 4vh; }
 
 .territory--logistics {
   min-height: 92svh;
-  grid-template-columns: minmax(18rem, .55fr) minmax(0, 1.45fr);
+  grid-template-columns: minmax(384px, .65fr) minmax(0, 1.35fr);
   align-items: center;
   gap: 6vw;
   padding: 8vh var(--gutter);
@@ -767,7 +792,7 @@ h3 {
 
 .territory--manufacturing {
   min-height: 94svh;
-  grid-template-columns: minmax(0, 1.2fr) minmax(20rem, .8fr);
+  grid-template-columns: minmax(0, 1.2fr) minmax(432px, .8fr);
   align-items: center;
   gap: 7vw;
   padding: 8vh var(--gutter);
@@ -784,7 +809,7 @@ h3 {
 
 .territory--energy {
   min-height: 112svh;
-  grid-template-columns: minmax(19rem, .6fr) minmax(0, 1.4fr);
+  grid-template-columns: minmax(432px, .7fr) minmax(0, 1.3fr);
   align-items: center;
   gap: 5vw;
   padding: 8vh var(--gutter);
@@ -802,7 +827,7 @@ h3 {
 .industries-context {
   display: grid;
   min-height: 58svh;
-  grid-template-columns: minmax(0, 1fr) minmax(18rem, .6fr);
+  grid-template-columns: minmax(0, 1fr) minmax(288px, .6fr);
   align-content: center;
   gap: 3rem 8vw;
   padding: clamp(5rem, 12vh, 9rem) var(--gutter);
@@ -815,7 +840,7 @@ h3 {
 .industries-context h2 {
   max-width: 10ch;
   margin: 0;
-  font-size: clamp(2.6rem, 5.6vw, 6.4rem);
+  font-size: clamp(42px, 5.6vw, 102px);
 }
 
 .industries-context .route-ending {
@@ -831,7 +856,7 @@ h3 {
 .proof-act--threshold {
   display: grid;
   min-height: calc(96svh - var(--head-offset));
-  grid-template-columns: minmax(0, 1.25fr) minmax(20rem, .75fr);
+  grid-template-columns: minmax(0, 1.25fr) minmax(320px, .75fr);
   align-items: center;
   gap: 7vw;
   padding: 7vh var(--gutter);
@@ -845,7 +870,7 @@ h3 {
 
 .proof-void::before {
   position: absolute;
-  inset: -9vh -5vw;
+  inset: -6vh 0;
   z-index: -1;
   border: 1px solid rgba(229, 221, 210, .09);
   content: "";
@@ -853,9 +878,9 @@ h3 {
 }
 
 .proof-act--threshold h1 {
-  max-width: 8ch;
+  max-width: 100%;
   margin-bottom: 1.5rem;
-  font-size: clamp(3.6rem, 8vw, 8.6rem);
+  font-size: clamp(53px, 6.4vw, 118px);
 }
 
 .proof-puncture {
@@ -887,7 +912,7 @@ h3 {
   position: relative;
   display: grid;
   min-height: 82svh;
-  grid-template-columns: minmax(0, 1.35fr) minmax(19rem, .65fr);
+  grid-template-columns: minmax(0, 1.35fr) minmax(304px, .65fr);
   align-items: center;
   gap: 7vw;
   padding: 8vh var(--gutter);
@@ -909,8 +934,9 @@ h3 {
 }
 
 .proof-record-copy h2 {
+  max-width: 100%;
   margin-bottom: 1.4rem;
-  font-size: clamp(3rem, 6.4vw, 7rem);
+  font-size: clamp(40px, 4.15vw, 86px);
 }
 
 .record-link,
@@ -977,16 +1003,16 @@ h3 {
   z-index: 3;
   display: flex;
   min-height: calc(100svh - var(--head-offset));
-  max-width: min(52rem, 58vw);
+  max-width: min(58rem, 66vw);
   flex-direction: column;
   justify-content: center;
   padding: 6vh var(--gutter);
 }
 
 .maradin-act--opening h1 {
-  max-width: 11ch;
+  max-width: 100%;
   margin-bottom: 1.5rem;
-  font-size: clamp(3.1rem, 7vw, 7.5rem);
+  font-size: clamp(50px, 6.4vw, 116px);
 }
 
 .maradin-act--challenge,
@@ -1000,7 +1026,7 @@ h3 {
 }
 
 .maradin-act--challenge {
-  grid-template-columns: minmax(19rem, .65fr) minmax(0, 1.35fr);
+  grid-template-columns: minmax(400px, .72fr) minmax(0, 1.28fr);
 }
 
 .maradin-act--challenge .documentary-frame {
@@ -1009,7 +1035,7 @@ h3 {
 }
 
 .maradin-act--technology {
-  grid-template-columns: minmax(0, 1.4fr) minmax(19rem, .6fr);
+  grid-template-columns: minmax(0, 1.25fr) minmax(480px, .75fr);
   background: #080809;
 }
 
@@ -1018,15 +1044,15 @@ h3 {
 }
 
 .maradin-copy h2 {
-  max-width: 10ch;
+  max-width: 100%;
   margin-bottom: 1.4rem;
-  font-size: clamp(2.7rem, 5.7vw, 6.4rem);
+  font-size: clamp(36px, 3.6vw, 80px);
 }
 
 .maradin-act--test {
   display: grid;
   min-height: 78svh;
-  grid-template-columns: minmax(0, 1fr) minmax(20rem, .72fr);
+  grid-template-columns: minmax(0, 1.15fr) minmax(416px, .85fr);
   align-items: center;
   gap: 7vw;
   padding: 7vh var(--gutter);
@@ -1063,7 +1089,7 @@ h3 {
 
 .maradin-act--evidence {
   min-height: 104svh;
-  grid-template-columns: minmax(0, 1.3fr) minmax(19rem, .7fr);
+  grid-template-columns: minmax(0, 1.2fr) minmax(432px, .8fr);
 }
 
 .maradin-evidence-pair {
@@ -1114,15 +1140,15 @@ h3 {
   z-index: 3;
   display: flex;
   min-height: calc(100svh - var(--head-offset) - 14vh);
-  max-width: min(48rem, 58vw);
+  max-width: min(56rem, 64vw);
   flex-direction: column;
   justify-content: center;
 }
 
 .spark-act--runway h1 {
-  max-width: 9ch;
+  max-width: 100%;
   margin-bottom: 1.45rem;
-  font-size: clamp(3.4rem, 7.4vw, 8rem);
+  font-size: clamp(52px, 6.2vw, 114px);
 }
 
 .spark-runway {
@@ -1171,7 +1197,7 @@ h3 {
 .spark-act--closed {
   display: grid;
   min-height: 74svh;
-  grid-template-columns: minmax(0, 1.3fr) minmax(19rem, .7fr);
+  grid-template-columns: minmax(0, 1.15fr) minmax(480px, .85fr);
   align-items: center;
   gap: 7vw;
   padding: 7vh var(--gutter);
@@ -1194,9 +1220,9 @@ h3 {
 }
 
 .spark-act h2 {
-  max-width: 10ch;
+  max-width: 100%;
   margin-bottom: 1.4rem;
-  font-size: clamp(2.8rem, 5.8vw, 6.6rem);
+  font-size: clamp(38px, 3.85vw, 80px);
 }
 
 .closed-copy {
@@ -1213,7 +1239,7 @@ h3 {
 .spark-act--context {
   display: grid;
   min-height: 62svh;
-  grid-template-columns: minmax(0, 1.25fr) minmax(20rem, .75fr);
+  grid-template-columns: minmax(0, 1.15fr) minmax(448px, .85fr);
   align-items: center;
   gap: 7vw;
   padding: 7vh var(--gutter);
@@ -1228,7 +1254,7 @@ h3 {
 .side-release span {
   position: absolute;
   left: 9%;
-  right: -10%;
+  right: 0;
   top: 52%;
   height: 1px;
   background: linear-gradient(90deg, rgba(237,93,166,.55), rgba(229,221,210,.22), transparent);
@@ -1254,16 +1280,16 @@ h3 {
   z-index: 4;
   display: flex;
   min-height: calc(100svh - var(--head-offset) - 14vh);
-  max-width: min(58rem, 70vw);
+  max-width: min(64rem, 76vw);
   flex-direction: column;
   justify-content: center;
   margin: 0 auto;
 }
 
 .about-act--worlds h1 {
-  max-width: 11ch;
+  max-width: 100%;
   margin-bottom: 1.5rem;
-  font-size: clamp(3.5rem, 8vw, 8.5rem);
+  font-size: clamp(54px, 7.2vw, 122px);
 }
 
 .institutional-world {
@@ -1276,12 +1302,14 @@ h3 {
 }
 
 .institutional-world--industry {
-  left: -14%;
+  left: 0;
+  width: 36%;
   clip-path: polygon(0 0, 100% 5%, 82% 94%, 0 100%);
 }
 
 .institutional-world--technology {
-  right: -12%;
+  right: 0;
+  width: 38%;
   clip-path: polygon(18% 5%, 100% 0, 100% 100%, 0 92%);
 }
 
@@ -1308,7 +1336,7 @@ h3 {
 .about-act--interlock {
   display: grid;
   min-height: 78svh;
-  grid-template-columns: minmax(0, 1.35fr) minmax(20rem, .65fr);
+  grid-template-columns: minmax(0, 1.2fr) minmax(448px, .8fr);
   align-items: center;
   gap: 7vw;
   padding: 7vh var(--gutter);
@@ -1331,15 +1359,15 @@ h3 {
 .interlock-cut span:last-child { right: 0; clip-path: polygon(28% 8%, 100% 0, 100% 91%, 0 100%); }
 
 .about-copy h2 {
-  max-width: 10ch;
+  max-width: 100%;
   margin-bottom: 1.4rem;
-  font-size: clamp(2.8rem, 5.8vw, 6.5rem);
+  font-size: clamp(38px, 4vw, 83px);
 }
 
 .about-act--position {
   display: grid;
   min-height: 74svh;
-  grid-template-columns: minmax(18rem, .5fr) minmax(0, 1.5fr);
+  grid-template-columns: minmax(288px, .5fr) minmax(0, 1.5fr);
   align-items: center;
   gap: 8vw;
   padding: 7vh var(--gutter);
@@ -1386,17 +1414,17 @@ h3 {
 .contact-arrival {
   display: grid;
   min-height: calc(100svh - var(--head-offset));
-  grid-template-columns: minmax(18rem, .72fr) minmax(0, 1.28fr);
+  grid-template-columns: minmax(352px, .82fr) minmax(0, 1.18fr);
   grid-template-rows: 1fr auto;
   align-items: center;
-  gap: 4vh 7vw;
+  gap: 4vh 5vw;
   padding: clamp(3rem, 7vh, 6rem) var(--gutter);
 }
 
 .contact-heading h1 {
-  max-width: 8ch;
+  max-width: 100%;
   margin-bottom: 1.4rem;
-  font-size: clamp(3.2rem, 7.2vw, 7.8rem);
+  font-size: clamp(50px, 6vw, 104px);
 }
 
 .intent-field {
@@ -1435,7 +1463,7 @@ h3 {
 
 .intent-rail h2 {
   margin: 0 0 .2rem;
-  font-size: clamp(1.35rem, 2.6vw, 2.8rem);
+  font-size: clamp(22px, 2.6vw, 45px);
 }
 
 .intent-rail p {
@@ -1481,7 +1509,7 @@ h3 {
   position: relative;
   display: grid;
   min-height: calc(100svh - var(--head-offset));
-  grid-template-columns: minmax(0, 1.05fr) minmax(18rem, .95fr);
+  grid-template-columns: minmax(0, 1.05fr) minmax(288px, .95fr);
   align-items: center;
   gap: 6vw;
   padding: clamp(3rem, 8vh, 7rem) var(--gutter);
@@ -1493,9 +1521,9 @@ h3 {
 }
 
 .notfound-copy h1 {
-  max-width: 9ch;
+  max-width: 100%;
   margin-bottom: 1.4rem;
-  font-size: clamp(3.4rem, 7.8vw, 8.2rem);
+  font-size: clamp(50px, 5.25vw, 104px);
 }
 
 .misregistered-plane {
@@ -1505,7 +1533,7 @@ h3 {
   min-height: min(58vw, 620px);
   border: 1px solid rgba(229,221,210,.15);
   background: linear-gradient(150deg, #29292f, #0a0a0c 72%);
-  transform: translate(5%, -3%) rotate(-1.4deg);
+  transform: translate(2%, -3%) rotate(-1.4deg);
 }
 
 .misregistered-plane span {
@@ -1517,8 +1545,8 @@ h3 {
 
 .misregistered-plane::after {
   position: absolute;
-  left: -8%;
-  right: -5%;
+  left: 0;
+  right: 0;
   top: 52%;
   height: 1px;
   background: linear-gradient(90deg, rgba(229,221,210,.17) 0 42%, transparent 42% 55%, rgba(229,221,210,.17) 55%);
@@ -1546,7 +1574,7 @@ h3 {
 .review-board > header,
 .system-board > header {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(18rem, .8fr);
+  grid-template-columns: minmax(0, 1.2fr) minmax(288px, .8fr);
   gap: 1rem 6vw;
   margin-bottom: 3rem;
 }
@@ -1778,6 +1806,14 @@ h3 {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .proof-act--threshold {
+    gap: 2rem;
+  }
+
+  .proof-puncture img {
+    min-height: min(36svh, 320px);
+  }
+
   .industry-act--frame .industry-act__copy,
   .industry-act--decision .industry-act__copy,
   .startup-act--fit > div:last-child,
@@ -1811,7 +1847,7 @@ h3 {
   }
 
   .contact-arrival {
-    grid-template-columns: minmax(0, .75fr) minmax(0, 1.25fr);
+    grid-template-columns: minmax(320px, .85fr) minmax(0, 1.15fr);
   }
 
   .review-board > header,
@@ -1828,6 +1864,32 @@ h3 {
   }
 }
 
+@media (min-width: 681px) and (max-width: 1050px) and (orientation: landscape) {
+  .industries-threshold {
+    min-height: calc(100svh - var(--head-offset));
+    grid-template-columns: minmax(0, 1.15fr) minmax(288px, .85fr);
+    gap: 3vw;
+    padding-top: 4vh;
+    padding-bottom: 4vh;
+  }
+
+  .territory-threshold {
+    min-height: min(45svh, 360px);
+  }
+
+  .proof-act--threshold {
+    min-height: calc(100svh - var(--head-offset));
+    grid-template-columns: minmax(0, 1.15fr) minmax(272px, .65fr);
+    gap: 3vw;
+    padding-top: 4vh;
+    padding-bottom: 4vh;
+  }
+
+  .proof-puncture img {
+    min-height: min(50svh, 420px);
+  }
+}
+
 @media (max-width: 680px) {
   :root {
     --gutter: clamp(1rem, 5vw, 1.45rem);
@@ -1837,7 +1899,7 @@ h3 {
   .lab-notice {
     display: grid;
     gap: .05rem;
-    font-size: .5rem;
+    font-size: .625rem;
   }
 
   .site-head {
@@ -1849,7 +1911,7 @@ h3 {
   }
 
   .kicker {
-    font-size: .58rem;
+    font-size: .625rem;
   }
 
   .act-note {
@@ -1879,12 +1941,37 @@ h3 {
   .contact-heading h1,
   .notfound-copy h1 {
     max-width: 100%;
-    font-size: clamp(2.2rem, 11vw, 4.5rem);
+    font-size: clamp(32px, 9.6vw, 64px);
+    line-height: .96;
   }
 
-  .industry-load > span:first-child { left: -44%; }
-  .industry-load > span:nth-child(2) { right: -45%; }
-  .industry-load > span:nth-child(3) { left: 41%; width: 20%; }
+  .industry-act__copy h2 {
+    font-size: clamp(29px, 8.2vw, 34px);
+  }
+
+  .startup-route h2 {
+    font-size: clamp(29px, 8.2vw, 34px);
+  }
+
+  .territory__copy h2 {
+    font-size: clamp(24px, 7.4vw, 31px);
+  }
+
+  .industries-context h2 {
+    font-size: clamp(28px, 8vw, 36px);
+  }
+
+  .maradin-copy h2 {
+    font-size: clamp(28px, 8.1vw, 34px);
+  }
+
+  .spark-act h2 {
+    font-size: clamp(28px, 8vw, 34px);
+  }
+
+  .industry-load > span:first-child { left: 0; width: 31%; }
+  .industry-load > span:nth-child(2) { right: 0; width: 31%; }
+  .industry-load > span:nth-child(3) { left: 42%; width: 16%; }
   .industry-act--pressure .industry-act__copy { margin-left: 0; }
   .industry-act--test .industry-act__copy { position: relative; top: auto; margin-left: 0; }
 
@@ -1943,13 +2030,18 @@ h3 {
   .proof-act--threshold,
   .proof-act--record {
     min-height: auto;
-    padding-top: 4.5rem;
-    padding-bottom: 4.5rem;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
   }
 
   .proof-puncture {
     order: -1;
     margin-inline: calc(var(--gutter) * -1);
+  }
+
+  .proof-puncture img {
+    height: min(28svh, 236px);
+    min-height: 0;
   }
 
   .proof-record-edge {
@@ -2005,7 +2097,7 @@ h3 {
   }
 
   .spark-runway {
-    inset: 12% -24% 0 18%;
+    inset: 12% 0 0 18%;
     opacity: .72;
   }
 
@@ -2026,8 +2118,8 @@ h3 {
     margin-inline: calc(var(--gutter) * -1);
   }
 
-  .institutional-world--industry { left: -45%; }
-  .institutional-world--technology { right: -44%; }
+  .institutional-world--industry { left: 0; width: 34%; }
+  .institutional-world--technology { right: 0; width: 36%; }
   .about-joint { left: 43%; width: 17%; }
 
   .about-act--interlock,
@@ -2050,11 +2142,36 @@ h3 {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto auto auto;
     align-content: start;
-    padding-top: 3rem;
+    gap: 1rem;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
   }
 
   .intent-field {
     min-height: auto;
+    gap: .35rem;
+  }
+
+  .intent-rail {
+    min-height: 3.75rem;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: .65rem;
+    padding: .5rem .65rem;
+  }
+
+  .intent-rail h2 {
+    font-size: 1.05rem;
+  }
+
+  .intent-rail p {
+    font-size: .6875rem;
+    line-height: 1.3;
+  }
+
+  .endpoint-plane {
+    margin-top: .35rem;
+    padding: .65rem;
+    font-size: .625rem;
   }
 
   .contact-arrival > .route-ending {
@@ -2068,10 +2185,11 @@ h3 {
 
   .misregistered-plane {
     position: absolute;
-    inset: 28% -18% 7% 38%;
+    inset: 28% 1rem 7% 38%;
     z-index: 0;
     min-height: 0;
     opacity: .62;
+    transform: rotate(-1.4deg);
   }
 
   .notfound-copy {
@@ -2098,14 +2216,14 @@ h3 {
 @media (max-height: 540px) and (orientation: landscape) {
   :root {
     --gutter: clamp(1rem, 2.7vw, 1.55rem);
-    --head-offset: 68px;
+    --head-offset: 74px;
   }
 
   .lab-notice {
     min-height: 20px;
     padding-top: .15rem;
     padding-bottom: .15rem;
-    font-size: .46rem;
+    font-size: .625rem;
   }
 
   .site-head {
@@ -2120,35 +2238,35 @@ h3 {
 
   .kicker {
     margin-bottom: .42rem;
-    font-size: .5rem;
+    font-size: .625rem;
   }
 
   .lede {
     max-width: 30rem;
     margin-bottom: .55rem;
-    font-size: .84rem;
-    line-height: 1.15;
+    font-size: .875rem;
+    line-height: 1.2;
   }
 
   .preproduction-status {
     gap: .15rem .55rem;
-    font-size: .43rem;
-    line-height: 1.2;
+    font-size: .625rem;
+    line-height: 1.25;
   }
 
   .act-map {
     margin-bottom: .3rem;
-    font-size: .5rem;
-    line-height: 1.2;
+    font-size: .625rem;
+    line-height: 1.25;
   }
 
   .act-map span {
-    font-size: .44rem;
+    font-size: .625rem;
   }
 
   .act-note {
-    font-size: .72rem;
-    line-height: 1.15;
+    font-size: .75rem;
+    line-height: 1.2;
   }
 
   .industry-act--pressure {
@@ -2158,19 +2276,19 @@ h3 {
 
   .industry-act--pressure .title-block {
     min-height: calc(100svh - var(--head-offset));
-    max-width: 55%;
+    max-width: 58%;
     padding: .55rem 0;
   }
 
   .industry-act--pressure h1 {
-    max-width: 13ch;
+    max-width: 100%;
     margin-bottom: .45rem;
-    font-size: clamp(1.85rem, 4.8vw, 2.55rem);
+    font-size: clamp(32px, 4.2vw, 39px);
     line-height: .91;
   }
 
   .industry-load {
-    inset: 2% -6% 0 43%;
+    inset: 2% 0 0 44%;
   }
 
   .industry-act--pressure .industry-act__copy {
@@ -2184,15 +2302,15 @@ h3 {
 
   .startup-act--signal .title-block {
     min-height: calc(100svh - var(--head-offset) - 1.1rem);
-    max-width: 56%;
+    max-width: 58%;
     justify-content: center;
     margin-left: 3vw;
   }
 
   .startup-act--signal h1 {
-    max-width: 12ch;
+    max-width: 100%;
     margin-bottom: .4rem;
-    font-size: clamp(1.8rem, 4.6vw, 2.45rem);
+    font-size: clamp(31px, 4.1vw, 38px);
   }
 
   .startup-signal-map span:nth-child(2) { top: 64%; transform: rotate(-9deg); }
@@ -2201,25 +2319,30 @@ h3 {
 
   .industries-threshold {
     min-height: calc(100svh - var(--head-offset));
-    grid-template-columns: minmax(0, 1fr) minmax(17rem, .8fr);
+    grid-template-columns: minmax(0, 1fr) minmax(240px, .78fr);
     align-items: center;
-    gap: 1.5rem;
+    gap: 1rem;
     padding: .55rem var(--gutter);
   }
 
   .industries-threshold h1 {
-    max-width: 12ch;
+    max-width: 100%;
     margin-bottom: .4rem;
-    font-size: clamp(1.85rem, 4.8vw, 2.5rem);
+    font-size: clamp(31px, 4.15vw, 39px);
   }
 
   .territory-threshold {
     min-height: calc(100svh - var(--head-offset) - 1.1rem);
   }
 
+  .territory-threshold span {
+    padding: .45rem;
+    font-size: 1.25rem;
+  }
+
   .proof-act--threshold {
     min-height: calc(100svh - var(--head-offset));
-    grid-template-columns: minmax(0, 1.1fr) minmax(12rem, .5fr);
+    grid-template-columns: minmax(0, 1.15fr) minmax(176px, .55fr);
     gap: 1.2rem;
     padding: .5rem var(--gutter);
   }
@@ -2229,9 +2352,9 @@ h3 {
   }
 
   .proof-act--threshold h1 {
-    max-width: 10ch;
+    max-width: 100%;
     margin-bottom: .45rem;
-    font-size: clamp(1.9rem, 5.2vw, 2.7rem);
+    font-size: clamp(32px, 4.35vw, 40px);
   }
 
   .proof-puncture {
@@ -2246,7 +2369,7 @@ h3 {
 
   .proof-puncture figcaption {
     padding-top: .3rem;
-    font-size: .45rem;
+    font-size: .625rem;
   }
 
   .maradin-act--opening {
@@ -2255,15 +2378,15 @@ h3 {
 
   .maradin-act--opening .title-block {
     min-height: calc(100svh - var(--head-offset));
-    max-width: 57%;
+    max-width: 60%;
     justify-content: center;
     padding: .55rem var(--gutter);
   }
 
   .maradin-act--opening h1 {
-    max-width: 14ch;
+    max-width: 100%;
     margin-bottom: .42rem;
-    font-size: clamp(1.65rem, 4.25vw, 2.3rem);
+    font-size: clamp(30px, 3.9vw, 37px);
     line-height: .92;
   }
 
@@ -2278,25 +2401,25 @@ h3 {
 
   .spark-act--runway .title-block {
     min-height: calc(100svh - var(--head-offset) - 1.1rem);
-    max-width: 56%;
+    max-width: 60%;
     justify-content: center;
   }
 
   .spark-act--runway h1 {
-    max-width: 12ch;
+    max-width: 100%;
     margin-bottom: .42rem;
-    font-size: clamp(1.75rem, 4.5vw, 2.4rem);
+    font-size: clamp(31px, 4.05vw, 38px);
   }
 
   .spark-runway {
-    inset: 4% -4% 0 45%;
+    inset: 4% 0 0 46%;
   }
 
   .spark-status {
     right: 4%;
     top: .65rem;
     padding: .45rem .6rem;
-    font-size: .5rem;
+    font-size: .625rem;
   }
 
   .about-act--worlds {
@@ -2306,33 +2429,33 @@ h3 {
 
   .about-act--worlds .title-block {
     min-height: calc(100svh - var(--head-offset) - 1.1rem);
-    max-width: 62%;
+    max-width: 64%;
     justify-content: center;
     margin: 0;
   }
 
   .about-act--worlds h1 {
-    max-width: 12ch;
+    max-width: 100%;
     margin-bottom: .4rem;
-    font-size: clamp(1.8rem, 4.65vw, 2.5rem);
+    font-size: clamp(31px, 4.15vw, 39px);
   }
 
-  .institutional-world--industry { left: -24%; width: 50%; }
-  .institutional-world--technology { right: -17%; width: 52%; }
+  .institutional-world--industry { left: 0; width: 31%; }
+  .institutional-world--technology { right: 0; width: 34%; }
   .about-joint { left: 69%; width: 8%; }
 
   .contact-arrival {
     min-height: calc(100svh - var(--head-offset));
-    grid-template-columns: minmax(14rem, .62fr) minmax(0, 1.38fr);
+    grid-template-columns: minmax(240px, .72fr) minmax(0, 1.28fr);
     grid-template-rows: 1fr auto;
     gap: .35rem 1.4rem;
     padding: .45rem var(--gutter);
   }
 
   .contact-heading h1 {
-    max-width: 10ch;
+    max-width: 100%;
     margin-bottom: .35rem;
-    font-size: clamp(1.8rem, 4.7vw, 2.5rem);
+    font-size: clamp(30px, 3.8vw, 36px);
   }
 
   .contact-heading .act-note,
@@ -2346,42 +2469,43 @@ h3 {
   }
 
   .intent-rail {
-    min-height: 3.2rem;
+    min-height: 3.35rem;
     grid-template-columns: 1.5rem 1fr;
     padding: .3rem .45rem;
   }
 
   .intent-rail h2 {
-    font-size: clamp(.9rem, 2.1vw, 1.2rem);
+    font-size: clamp(1rem, 1.8vw, 1.15rem);
   }
 
   .intent-rail p {
-    font-size: .53rem;
+    font-size: .6875rem;
+    line-height: 1.2;
   }
 
   .endpoint-plane {
     gap: .1rem;
     margin-top: .2rem;
     padding: .4rem;
-    font-size: .47rem;
+    font-size: .625rem;
   }
 
   .contact-arrival > .route-ending {
     grid-column: 1 / -1;
-    font-size: .63rem;
+    font-size: .6875rem;
   }
 
   .notfound-field {
     min-height: calc(100svh - var(--head-offset));
-    grid-template-columns: minmax(0, 1fr) minmax(14rem, .72fr);
+    grid-template-columns: minmax(0, 1fr) minmax(208px, .72fr);
     gap: 1.4rem;
     padding: .5rem var(--gutter);
   }
 
   .notfound-copy h1 {
-    max-width: 12ch;
+    max-width: 100%;
     margin-bottom: .38rem;
-    font-size: clamp(1.8rem, 4.8vw, 2.55rem);
+    font-size: clamp(31px, 4vw, 38px);
   }
 
   .misregistered-plane {
@@ -2394,7 +2518,7 @@ h3 {
   }
 
   .recovery-link {
-    min-height: 38px;
+    min-height: 44px;
     margin-top: .55rem;
     padding: .35rem .65rem;
     font-size: .66rem;
