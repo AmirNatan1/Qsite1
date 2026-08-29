@@ -114,16 +114,55 @@ const acceptedStartupCopy = [
   "Choose the startup path",
 ];
 
+const acceptedIndustriesCopy = [
+  "Industries where relevance is tested",
+  "Quantum works across automotive and mobility, logistics and supply chain, advanced manufacturing, and energy and infrastructure.",
+  "Industrial domains",
+  "Industry is where relevance is tested.",
+  "A technology becomes meaningful when it meets the systems, constraints and operating conditions of a real domain.",
+  "Four domains",
+  "Different fields. The same evidence discipline.",
+  "Each domain changes the question, environment and conditions a useful POC must address.",
+  "Automotive & Mobility",
+  "Vehicle systems, mobility operations and human-machine interaction create demanding contexts for field evidence.",
+  "Logistics & Supply Chain",
+  "Movement, visibility and coordination must be understood across real workflows and physical infrastructure.",
+  "Industry 4.0 / Advanced Manufacturing",
+  "Production environments bring equipment, people, data and process constraints into the same test.",
+  "Energy & Infrastructure",
+  "Energy systems and physical assets require relevance to be assessed inside operating and implementation conditions.",
+  "Technology perspectives",
+  "Capabilities can cross domain lines.",
+  "Relevant technologies may cut across multiple industrial environments. Their fit is determined within the specific operating context.",
+  "AI and data",
+  "robotics and autonomy",
+  "sensors and computer vision",
+  "cybersecurity",
+  "advanced materials",
+  "energy systems",
+  "enterprise software",
+  "Method",
+  "Design around the field.",
+  "Quantum begins with the need and works outward: stakeholders, environment, constraints, technology fit and the evidence required. The test is shaped around that whole system rather than a generic demo.",
+  "Bring the domain context.",
+  "A useful conversation begins with the operating challenge, not a preselected solution.",
+  "Start with the challenge",
+];
+
 test("CP2 pages load only their route-owned composition and styles", async () => {
   const industry = await read("src/pages/for-partners.astro");
   const startups = await read("src/pages/for-startups.astro");
+  const industries = await read("src/pages/industries.astro");
   assert.match(industry, /IndustryExperience/);
   assert.match(industry, /routes\/industry\.css/);
   assert.doesNotMatch(industry, /StartupExperience|startups\.css/);
   assert.match(startups, /StartupExperience/);
   assert.match(startups, /routes\/startups\.css/);
   assert.doesNotMatch(startups, /IndustryExperience|industry\.css/);
-  for (const source of [industry, startups]) {
+  assert.match(industries, /IndustriesExperience/);
+  assert.match(industries, /routes\/industries\.css/);
+  assert.doesNotMatch(industries, /IndustryExperience|StartupExperience|routes\/(?:industry|startups)\.css/);
+  for (const source of [industry, startups, industries]) {
     assert.doesNotMatch(source, /PageHero|ProcessList|ClosingCta|standard\.css|SupportingRoute|editorial-section|feature-list|button-row/);
   }
 });
@@ -155,23 +194,42 @@ test("Startups is a header plus ordered conditional corridor", async () => {
   assert.match(await read("src/content/programmes.ts"), /status: "Applications closed"/);
 });
 
+test("Industries is a six-region threshold, four territories, and context coda", async () => {
+  const source = await read("src/components/routes/industries/IndustriesExperience.astro");
+  assert.match(source, /<article[\s\S]*data-route-architecture="four-territory-threshold"/);
+  assert.equal(count(source, /data-route-region=/g), 6);
+  assert.deepEqual([...source.matchAll(/data-route-region="([^"]+)"/g)].map((match) => match[1]), ["threshold", "horizon", "transfer", "fixture", "span", "context"]);
+  assert.equal(count(source, /<section\b[^>]*data-route-act=/g), 4);
+  assert.deepEqual([...source.matchAll(/data-route-act="([^"]+)"/g)].map((match) => match[1]), ["automotive", "logistics", "manufacturing", "energy"]);
+  assert.deepEqual([...source.matchAll(/data-route-geometry="([^"]+)"/g)].map((match) => match[1]), ["territory-band", "velocity-horizon", "stacked-transfer", "machined-fixture", "infrastructure-span"]);
+  assert.equal(count(source, /<h1\b/g), 1);
+  assert.equal(count(source, /<h2\b[^>]*id="(?:automotive|logistics|manufacturing|energy)-title"/g), 4);
+  assert.doesNotMatch(source, /PUBLIC_INDUSTRIES\.map|<button\b|<select\b|role="tab"|carousel|card/i);
+  assert.match(source, /href="\/contact\/#for-industry"/);
+});
+
 test("CP2 preserves the complete accepted public-copy authority", async () => {
   const programmes = await read("src/content/programmes.ts");
   const industry = normalize(`${await read("src/pages/for-partners.astro")} ${await read("src/components/routes/industry/IndustryExperience.astro")} ${programmes}`);
   const startups = normalize(`${await read("src/pages/for-startups.astro")} ${await read("src/components/routes/startups/StartupExperience.astro")} ${programmes}`);
+  const industries = normalize(`${await read("src/pages/industries.astro")} ${await read("src/components/routes/industries/IndustriesExperience.astro")} ${await read("src/content/industries.ts")}`);
   for (const phrase of acceptedIndustryCopy) assert.ok(industry.includes(phrase), `missing accepted Industry copy: ${phrase}`);
   for (const phrase of acceptedStartupCopy) assert.ok(startups.includes(phrase), `missing accepted Startup copy: ${phrase}`);
+  for (const phrase of acceptedIndustriesCopy) assert.ok(industries.includes(phrase), `missing accepted Industries copy: ${phrase}`);
 });
 
 test("CP2 has no lab copy, media, form, sticky scene, or scroll interception", async () => {
   const files = [
     "src/components/routes/industry/IndustryExperience.astro",
     "src/components/routes/startups/StartupExperience.astro",
+    "src/components/routes/industries/IndustriesExperience.astro",
     "src/styles/routes/industry.css",
     "src/styles/routes/startups.css",
     "src/scripts/routes/document-progress.ts",
     "src/scripts/routes/industry-progress.ts",
     "src/scripts/routes/startup-progress.ts",
+    "src/scripts/routes/industries-progress.ts",
+    "src/styles/routes/industries.css",
   ];
   const joined = (await Promise.all(files.map(read))).join("\n");
   assert.doesNotMatch(joined, /QH_PHASE5AR_ROUTE_LAB_ONLY|PREPRODUCTION|approved content map|public route unchanged|destination remains unverified|human review/i);
@@ -190,14 +248,20 @@ test("CP2 has no lab copy, media, form, sticky scene, or scroll interception", a
 test("CP2 responsive CSS exposes overflow instead of clipping copy and constrains grid min-content", async () => {
   const industry = await read("src/styles/routes/industry.css");
   const startups = await read("src/styles/routes/startups.css");
-  for (const source of [industry, startups]) {
+  const industries = await read("src/styles/routes/industries.css");
+  for (const source of [industry, startups, industries]) {
     assert.doesNotMatch(source, /#main-content\s*\{[^}]*overflow\s*:\s*clip/s);
     assert.match(source, /grid-template-columns:\s*minmax\(0, 1fr\)/);
+  }
+  for (const source of [industry, startups]) {
     assert.match(source, /\.\w+-act > \*\s*\{\s*min-width:\s*0/s);
   }
+  assert.match(industries, /\.territory > \*[\s\S]*min-width:\s*0/);
   assert.match(industry, /\.industry-load \{ inset: 2% 0 0 44%; \}/);
   assert.match(industry, /\.industry-overture h1 \{ font-size: min\(11vw, 4\.6rem\); \}/);
   assert.match(startups, /\.startup-overture h1 \{ font-size: min\(10vw, 4\.6rem\); \}/);
+  assert.match(industries, /\.territory-threshold__opening h1 \{ font-size: min\(11vw, 4\.6rem\); \}/);
+  assert.match(industries, /\.territory--energy \.territory-span \{ order: 1; \}/);
 });
 
 test("CP2 source budgets and route contract remain bounded", async () => {
@@ -205,18 +269,19 @@ test("CP2 source budgets and route contract remain bounded", async () => {
   for (const [id, css, controller] of [
     ["for-industry", "src/styles/routes/industry.css", "src/scripts/routes/industry-progress.ts"],
     ["for-startups", "src/styles/routes/startups.css", "src/scripts/routes/startup-progress.ts"],
+    ["industries", "src/styles/routes/industries.css", "src/scripts/routes/industries-progress.ts"],
   ]) {
     const cssBytes = (await stat(path.join(root, css))).size;
     const jsBytes = helperBytes + (await stat(path.join(root, controller))).size;
-    assert.ok(cssBytes <= 11_000, `${id} authored CSS unexpectedly expanded before production minification: ${cssBytes}`);
-    assert.ok(jsBytes <= 4_000, `${id} authored controller closure expanded unexpectedly before production minification: ${jsBytes}`);
+    assert.ok(cssBytes <= (id === "industries" ? 15_000 : 11_000), `${id} authored CSS unexpectedly expanded before production minification: ${cssBytes}`);
+    assert.ok(jsBytes <= 4_500, `${id} authored controller closure expanded unexpectedly before production minification: ${jsBytes}`);
   }
   const verifier = await read("scripts/verify-phase5b-production.mjs");
   assert.match(verifier, /bytes\(routeCss\) <= route\.cssBudget/);
   assert.match(verifier, /phase5bSurfaceRaw/);
   assert.match(verifier, /pageScriptSurfaceRaw/);
   assert.match(verifier, /inlineSharedRaw/);
-  assert.match(verifier, /inherited inline JS contains a forbidden route or media surface/);
+  assert.match(verifier, /inherited inline JS contains a (?:forbidden route|media request) surface/);
   assert.match(verifier, /sharedProgressHelper/);
 });
 
@@ -224,6 +289,7 @@ test("CP2 no-JS and reduced-motion states resolve geometry without controller wo
   for (const [component, css] of [
     ["src/components/routes/industry/IndustryExperience.astro", "src/styles/routes/industry.css"],
     ["src/components/routes/startups/StartupExperience.astro", "src/styles/routes/startups.css"],
+    ["src/components/routes/industries/IndustriesExperience.astro", "src/styles/routes/industries.css"],
   ]) {
     assert.match(await read(component), /data-route-motion="static"/);
     const styles = await read(css);

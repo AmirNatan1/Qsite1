@@ -1,0 +1,130 @@
+---
+import { PUBLIC_INDUSTRIES } from "../../../content";
+import RouteKicker from "../shared/RouteKicker.astro";
+import RouteLink from "../shared/RouteLink.astro";
+
+const descriptions: Record<(typeof PUBLIC_INDUSTRIES)[number]["id"], string> = {
+  "automotive-mobility": "Vehicle systems, mobility operations and human-machine interaction create demanding contexts for field evidence.",
+  "logistics-supply-chain": "Movement, visibility and coordination must be understood across real workflows and physical infrastructure.",
+  "advanced-manufacturing": "Production environments bring equipment, people, data and process constraints into the same test.",
+  "energy-infrastructure": "Energy systems and physical assets require relevance to be assessed inside operating and implementation conditions.",
+};
+
+const [automotive, logistics, manufacturing, energy] = PUBLIC_INDUSTRIES;
+const technologyCategories = [
+  "AI and data",
+  "robotics and autonomy",
+  "sensors and computer vision",
+  "cybersecurity",
+  "advanced materials",
+  "energy systems",
+  "enterprise software",
+] as const;
+---
+
+<article
+  class="territory-sequence"
+  aria-labelledby="territories-title"
+  data-industries-progress
+  data-route-architecture="four-territory-threshold"
+  data-route-production="industries"
+  data-route-motion="static"
+>
+  <header class="territory-threshold" data-route-region="threshold">
+    <div class="territory-threshold__opening">
+      <RouteKicker>Industrial domains</RouteKicker>
+      <h1 id="territories-title" aria-label="Industry is where relevance is tested.">
+        <span>Industry is where</span>
+        <span>relevance is tested.</span>
+      </h1>
+      <p>
+        A technology becomes meaningful when it meets the systems, constraints and operating
+        conditions of a real domain.
+      </p>
+    </div>
+    <div class="territory-threshold__band" data-route-geometry="territory-band" aria-hidden="true">
+      <span></span><span></span><span></span><span></span>
+    </div>
+    <div class="territory-threshold__premise">
+      <RouteKicker>Four domains</RouteKicker>
+      <h2>Different fields. The same evidence discipline.</h2>
+      <p>Each domain changes the question, environment and conditions a useful POC must address.</p>
+    </div>
+  </header>
+
+  <section class="territory territory--automotive" data-route-region="horizon" data-route-act="automotive" aria-labelledby="automotive-title">
+    <div class="territory-horizon" data-route-geometry="velocity-horizon" aria-hidden="true">
+      <span></span><span></span><i></i>
+    </div>
+    <div class="territory-copy territory-copy--automotive">
+      <span class="territory-index" aria-hidden="true">01</span>
+      <h2 id="automotive-title">{automotive.name}</h2>
+      <p>{descriptions[automotive.id]}</p>
+    </div>
+  </section>
+
+  <section class="territory territory--logistics" data-route-region="transfer" data-route-act="logistics" aria-labelledby="logistics-title">
+    <div class="territory-copy territory-copy--logistics">
+      <span class="territory-index" aria-hidden="true">02</span>
+      <h2 id="logistics-title">{logistics.name}</h2>
+      <p>{descriptions[logistics.id]}</p>
+    </div>
+    <div class="territory-transfer" data-route-geometry="stacked-transfer" aria-hidden="true">
+      <span></span><span></span><span></span>
+    </div>
+  </section>
+
+  <section class="territory territory--manufacturing" data-route-region="fixture" data-route-act="manufacturing" aria-labelledby="manufacturing-title">
+    <div class="territory-fixture" data-route-geometry="machined-fixture" aria-hidden="true">
+      <i></i><i></i><i></i><i></i><span></span><span></span>
+    </div>
+    <div class="territory-copy territory-copy--manufacturing">
+      <span class="territory-index" aria-hidden="true">03</span>
+      <h2 id="manufacturing-title">{manufacturing.name}</h2>
+      <p>{descriptions[manufacturing.id]}</p>
+    </div>
+  </section>
+
+  <section class="territory territory--energy" data-route-region="span" data-route-act="energy" aria-labelledby="energy-title">
+    <div class="territory-copy territory-copy--energy">
+      <span class="territory-index" aria-hidden="true">04</span>
+      <h2 id="energy-title">{energy.name}</h2>
+      <p>{descriptions[energy.id]}</p>
+    </div>
+    <div class="territory-span" data-route-geometry="infrastructure-span" aria-hidden="true">
+      <span></span><span></span><span></span><i></i>
+    </div>
+  </section>
+
+  <section class="territory-context" data-route-region="context" aria-labelledby="perspectives-title">
+    <div class="territory-context__perspectives">
+      <RouteKicker>Technology perspectives</RouteKicker>
+      <h2 id="perspectives-title">Capabilities can cross domain lines.</h2>
+      <p>
+        Relevant technologies may cut across multiple industrial environments. Their fit is
+        determined within the specific operating context.
+      </p>
+      <ul aria-label="Technology categories">
+        {technologyCategories.map((category) => <li>{category}</li>)}
+      </ul>
+    </div>
+    <div class="territory-context__method">
+      <RouteKicker>Method</RouteKicker>
+      <h2>Design around the field.</h2>
+      <p>
+        Quantum begins with the need and works outward: stakeholders, environment, constraints,
+        technology fit and the evidence required. The test is shaped around that whole system
+        rather than a generic demo.
+      </p>
+      <div class="territory-context__ending">
+        <h2>Bring the domain context.</h2>
+        <p>A useful conversation begins with the operating challenge, not a preselected solution.</p>
+        <RouteLink href="/contact/#for-industry">Start with the challenge</RouteLink>
+      </div>
+    </div>
+  </section>
+</article>
+
+<script>
+  import "../../../scripts/routes/industries-progress";
+</script>

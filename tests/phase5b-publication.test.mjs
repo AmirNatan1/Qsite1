@@ -46,7 +46,7 @@ test("Phase 5B retains the deny-by-default supporting-route publication boundary
   const combined = routeSource();
   assert.doesNotMatch(combined, /proving hall|WHERE DO YOU ENTER|data-cinematic|scroll-snap|position:\s*sticky/i);
   assert.doesNotMatch(combined, /<form\b|href\s*=\s*["'](?:mailto:|tel:)|response time|join (?:the )?waitlist/i);
-  assert.doesNotMatch(combined, /defen[cs]e|dual[- ]use/i);
+  assert.doesNotMatch(combined, /defen[cs]e|dual(?:[-\u2010-\u2015 ]+)use/i);
   assert.doesNotMatch(combined, /guaranteed (?:access|pilot|poc|customer|investment)|commercial success|mass production|confidential results?/i);
   assert.match(read("src/pages/contact.astro"), /contactDestination !== null/);
   assert.match(read("src/pages/404.astro"), /noindex/);
@@ -67,6 +67,15 @@ test("public inventories remain exactly four industries, one proof, closed SPARK
     assert.match(collections, new RegExp(`${collection} = filterPublicRecords\\([^,]+, \\[\\]\\)`));
   }
   assert.match(collections, /contactDestination: ContactDestination \| null = null/);
+});
+
+test("Industries production keeps four territories and subordinate technology categories", () => {
+  const component = read("src/components/routes/industries/IndustriesExperience.astro");
+  assert.match(component, /const \[automotive, logistics, manufacturing, energy\] = PUBLIC_INDUSTRIES/);
+  assert.equal([...component.matchAll(/<section\b[^>]*data-route-act=/g)].length, 4);
+  assert.equal([...component.matchAll(/<li>\{category\}<\/li>/g)].length, 1);
+  assert.doesNotMatch(component, /PUBLIC_INDUSTRIES\.map|facility|campus|site tour|client logo|procurement|deployment guarantee|commercial success/i);
+  assert.doesNotMatch(component, /<button\b|<select\b|role="tab"|carousel|filter/i);
 });
 
 test("speculative route labs and preproduction canaries cannot leak into public source or configuration", () => {
