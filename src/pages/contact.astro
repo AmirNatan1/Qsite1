@@ -1,8 +1,8 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import PageHero from "../components/PageHero.astro";
+import ContactExperience from "../components/routes/contact/ContactExperience.astro";
 import { contactDestination } from "../content";
-import "../styles/routes/standard.css";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import "../styles/routes/contact.css";
 
 const title = "Contact Quantum";
 const description =
@@ -14,36 +14,5 @@ if (contactDestination !== null) {
 ---
 
 <BaseLayout {title} {description} bodyClass="contact-page">
-  <PageHero
-    eyebrow="contact"
-    title="Start with the challenge."
-    intro="Choose the path that best matches your reason for speaking with Quantum."
-    compact
-  />
-
-  <section class="editorial-section" aria-labelledby="contact-paths-title">
-    <div class="container">
-      <div class="editorial-section__intro">
-        <p class="eyebrow">intent paths</p>
-        <div>
-          <h2 id="contact-paths-title">Three useful starting points.</h2>
-          <p>Start with an industrial challenge, a technology introduction or a broader ecosystem conversation.</p>
-        </div>
-      </div>
-      <ul class="intent-list">
-        <li id="for-industry">
-          <span class="intent-list__meta">01 / challenge</span>
-          <div><h3>For industry</h3><p>Begin with the operational need, its context and what a useful test should answer.</p></div>
-        </li>
-        <li id="for-startups">
-          <span class="intent-list__meta">02 / technology</span>
-          <div><h3>For startups / technology</h3><p>Begin with the capability, industrial use case, readiness and conditions you can support.</p></div>
-        </li>
-        <li id="general">
-          <span class="intent-list__meta">03 / network</span>
-          <div><h3>General / ecosystem / media</h3><p>Use this context for institutional, ecosystem or media conversations that do not fit the first two paths.</p></div>
-        </li>
-      </ul>
-    </div>
-  </section>
+  <ContactExperience />
 </BaseLayout>

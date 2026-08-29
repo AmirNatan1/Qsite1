@@ -9,7 +9,7 @@ import { PHASE5B_ROUTES } from "./phase5b-route-contract.mjs";
 
 const ROOT = process.cwd();
 const DIST = path.join(ROOT, "dist");
-const IMPLEMENTED_IDS = new Set(["for-industry", "for-startups", "industries", "proof", "maradin", "spark", "about"]);
+const IMPLEMENTED_IDS = new Set(["for-industry", "for-startups", "industries", "proof", "maradin", "spark", "about", "contact", "404"]);
 const IMPLEMENTED = PHASE5B_ROUTES.filter(({ id }) => IMPLEMENTED_IDS.has(id));
 const ROUTE_BY_ID = new Map(PHASE5B_ROUTES.map((route) => [route.id, route]));
 const ARCHITECTURE_BY_ID = new Map([
@@ -20,6 +20,8 @@ const ARCHITECTURE_BY_ID = new Map([
   ["maradin", "documentary-record"],
   ["spark", "sealed-programme-runway"],
   ["about", "institutional-interlock"],
+  ["contact", "intent-field"],
+  ["404", "misregistered-recovery-field"],
 ]);
 const MARADIN_MEDIA = Object.freeze({
   "/media/maradin/maradin-field-aperture-poster-approved.jpg": "6afc1a69570f2541b89b4f6a5074bec04a5d607743d91670321f550b4d6364bd",
@@ -139,11 +141,25 @@ async function verifyRoute(route) {
 
   const cssReferences = references(html, "link", "href", "css");
   const routeCssReferences = cssReferences.filter((reference) => !/\/BaseLayout\./.test(reference));
-  assert(routeCssReferences.length === 1, `${route.id}: expected exactly one route-local stylesheet`);
-  const routeCss = await readFile(distAsset(routeCssReferences[0]), "utf8");
+  const inlineCssBlocks = [...html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi)].map((match) => match[1]);
+  const inlineCss = inlineCssBlocks.join("\n");
+  let routeCss;
+  let inlineSharedCss;
+  let routeCssReportReferences;
+  if (route.mode === "A") {
+    assert(routeCssReferences.length === 0, `${route.id}: Mode A route CSS must remain a single inlined stylesheet`);
+    assert(inlineCssBlocks.length === 1, `${route.id}: expected exactly one inlined route-local stylesheet`);
+    routeCss = inlineCss;
+    inlineSharedCss = "";
+    routeCssReportReferences = ["inline:route"];
+  } else {
+    assert(routeCssReferences.length === 1, `${route.id}: expected exactly one route-local stylesheet`);
+    routeCss = await readFile(distAsset(routeCssReferences[0]), "utf8");
+    inlineSharedCss = inlineCss;
+    routeCssReportReferences = routeCssReferences;
+  }
   assert(bytes(routeCss) <= route.cssBudget, `${route.id}: route CSS is ${bytes(routeCss)} B; budget is ${route.cssBudget} B`);
-  const inlineCss = [...html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi)].map((match) => match[1]).join("\n");
-  if (route.media === "none") assert(!/(?:url|image-set)\(|\.(?:avif|gif|jpe?g|png|svg|webp|mp4|webm)(?:[?#"')]|$)/i.test(routeCss + inlineCss), `${route.id}: zero-media route CSS references an asset payload`);
+  if (route.media === "none") assert(!/(?:url|image-set)\(|\.(?:avif|gif|jpe?g|png|svg|webp|mp4|webm)(?:[?#"')]|$)/i.test(routeCss + inlineSharedCss), `${route.id}: zero-media route CSS references an asset payload`);
 
   const scriptReferences = references(html, "script", "src", "js");
   if (route.mode === "C") assert(scriptReferences.length === 1, `${route.id}: Mode C requires exactly one route-controller entry`);
@@ -161,16 +177,16 @@ async function verifyRoute(route) {
   const inlineJavaScript = [...html.matchAll(/<script\b(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi)].map((match) => match[1]).join("\n");
   assert(!/home-cinematic|phase-4r2/i.test(inlineJavaScript), `${route.id}: inherited inline JS contains a forbidden route surface`);
   if (route.media === "none") assert(!/new\s+(?:Image|Audio)\b|fetch\s*\(|XMLHttpRequest|sendBeacon|MediaSource|createObjectURL|createElement\(["'](?:img|video|audio|source|canvas)["']|<video|\/media\//i.test(inlineJavaScript), `${route.id}: inherited inline JS contains a media request surface`);
-  const media = await verifyGovernedMedia(route, main, routeCss + inlineCss, javascript + inlineJavaScript);
+  const media = await verifyGovernedMedia(route, main, routeCss + inlineSharedCss, javascript + inlineJavaScript);
   const report = {
     css: {
       budgetBasis: "incremental route stylesheet",
       budgetedRaw: bytes(routeCss),
       gzip: gzipSync(routeCss, { level: 9, mtime: 0 }).length,
-      inlineSharedRaw: bytes(inlineCss),
+      inlineSharedRaw: bytes(inlineSharedCss),
       raw: bytes(routeCss),
-      references: routeCssReferences,
-      phase5bSurfaceRaw: bytes(routeCss) + bytes(inlineCss),
+      references: routeCssReportReferences,
+      phase5bSurfaceRaw: bytes(routeCss) + bytes(inlineSharedCss),
     },
     id: route.id,
     js: {

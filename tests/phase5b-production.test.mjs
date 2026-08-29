@@ -309,6 +309,30 @@ const acceptedAboutCopy = [
   "For startups",
 ];
 
+const acceptedContactCopy = [
+  "Contact Quantum",
+  "Choose the Quantum contact context that matches an industrial challenge, a technology introduction or a general ecosystem conversation.",
+  "Start with the challenge.",
+  "Choose the path that best matches your reason for speaking with Quantum.",
+  "Three useful starting points.",
+  "Start with an industrial challenge, a technology introduction or a broader ecosystem conversation.",
+  "For industry",
+  "Begin with the operational need, its context and what a useful test should answer.",
+  "For startups / technology",
+  "Begin with the capability, industrial use case, readiness and conditions you can support.",
+  "General / ecosystem / media",
+  "Use this context for institutional, ecosystem or media conversations that do not fit the first two paths.",
+  "No direct contact destination is currently available.",
+];
+
+const accepted404Copy = [
+  "Page not found",
+  "This Quantum route does not exist.",
+  "Error / Page not found",
+  "The requested route is out of alignment.",
+  "Home",
+];
+
 test("CP2 pages load only their route-owned composition and styles", async () => {
   const industry = await read("src/pages/for-partners.astro");
   const startups = await read("src/pages/for-startups.astro");
@@ -396,6 +420,20 @@ test("CP5 pages load only their route-owned institutional compositions", async (
   }
 });
 
+test("CP6 pages load only their route-owned static compositions", async () => {
+  const contact = await read("src/pages/contact.astro");
+  const notFound = await read("src/pages/404.astro");
+  assert.match(contact, /ContactExperience/);
+  assert.match(contact, /routes\/contact\.css/);
+  assert.doesNotMatch(contact, /NotFoundExperience|404-production\.css/);
+  assert.match(notFound, /NotFoundExperience/);
+  assert.match(notFound, /routes\/404-production\.css/);
+  assert.doesNotMatch(notFound, /ContactExperience|routes\/contact\.css/);
+  for (const source of [contact, notFound]) {
+    assert.doesNotMatch(source, /PageHero|ClosingCta|ProcessList|standard\.css|not-found\.css|SupportingRoute|editorial-section|feature-list/);
+  }
+});
+
 test("Proof is a two-act archive threshold with one governed record", async () => {
   const source = await read("src/components/routes/proof/ProofExperience.astro");
   assert.match(source, /<article[\s\S]*data-route-architecture="archive-threshold"/);
@@ -450,6 +488,41 @@ test("About is a three-act institutional interlock", async () => {
   assert.doesNotMatch(source, /<(?:img|picture|video|audio|source|canvas|svg)\b|qFund|team member|founding date|timeline|milestone|partner logo/i);
 });
 
+test("Contact is one arrival field with three truthful, focusable intent rails", async () => {
+  const page = await read("src/pages/contact.astro");
+  const source = await read("src/components/routes/contact/ContactExperience.astro");
+  const styles = await read("src/styles/routes/contact.css");
+  assert.match(source, /<article[\s\S]*data-route-architecture="intent-field"/);
+  assert.deepEqual([...source.matchAll(/data-route-region="([^"]+)"/g)].map((match) => match[1]), ["arrival"]);
+  assert.deepEqual([...source.matchAll(/data-route-act="([^"]+)"/g)].map((match) => match[1]), ["arrival"]);
+  assert.equal(count(source, /<h1\b/g), 1);
+  assert.equal(count(source, /href="#(?:for-industry|for-startups|general)"/g), 3);
+  assert.deepEqual([...source.matchAll(/<li id="([^"]+)" tabindex="-1">/g)].map((match) => match[1]), ["for-industry", "for-startups", "general"]);
+  assert.match(page, /if \(contactDestination !== null\)/);
+  assert.match(source, /No direct contact destination is currently available\./);
+  assert.match(styles, /scroll-margin-top:/);
+  assert.match(styles, /\.ct-rails li:target/);
+  assert.match(styles, /\.ct-rails li:focus-visible/);
+  assert.doesNotMatch(`${page}\n${source}`, /<(?:form|input|textarea|select|button|img|picture|video|audio|source|canvas|svg|script)\b|href="(?:mailto:|tel:|https?:\/\/)|\b[\w.+-]+@[\w.-]+\.[a-z]{2,}\b/i);
+});
+
+test("404 is one concise misregistered recovery field with a semantic Home route", async () => {
+  const page = await read("src/pages/404.astro");
+  const source = await read("src/components/routes/error/NotFoundExperience.astro");
+  assert.match(source, /<article[\s\S]*data-route-architecture="misregistered-recovery-field"/);
+  assert.deepEqual([...source.matchAll(/data-route-region="([^"]+)"/g)].map((match) => match[1]), ["recovery"]);
+  assert.deepEqual([...source.matchAll(/data-route-act="([^"]+)"/g)].map((match) => match[1]), ["recovery"]);
+  assert.equal(count(source, /<h1\b/g), 1);
+  assert.match(source, /aria-label="The requested route is out of alignment\."/);
+  assert.match(source, /Error \/ Page not found/);
+  assert.equal(count(source, /href="\/"/g), 1);
+  assert.match(source, /<div class="recovery-plane"[^>]*aria-hidden="true"[\s\S]*?<span>404<\/span>/);
+  assert.match(page, /const title = "Page not found"/);
+  assert.match(page, /const description = "This Quantum route does not exist\."/);
+  assert.match(page, /<BaseLayout \{title\} \{description\} noindex/);
+  assert.doesNotMatch(`${page}\n${source}`, /This signal goes nowhere|<(?:img|picture|video|audio|source|canvas|svg|script)\b|\/media\//i);
+});
+
 test("implemented routes preserve the complete accepted public-copy authority", async () => {
   const programmes = await read("src/content/programmes.ts");
   const industry = normalize(`${await read("src/pages/for-partners.astro")} ${await read("src/components/routes/industry/IndustryExperience.astro")} ${programmes}`);
@@ -460,6 +533,8 @@ test("implemented routes preserve the complete accepted public-copy authority", 
   const maradin = normalize(`${await read("src/pages/pocs/maradin.astro")} ${await read("src/components/routes/maradin/MaradinExperience.astro")} ${proofs}`);
   const spark = normalize(`${await read("src/pages/spark.astro")} ${await read("src/components/routes/spark/SparkExperience.astro")} ${programmes}`);
   const about = normalize(`${await read("src/pages/about.astro")} ${await read("src/components/routes/about/AboutExperience.astro")}`);
+  const contact = normalize(`${await read("src/pages/contact.astro")} ${await read("src/components/routes/contact/ContactExperience.astro")}`);
+  const notFound = normalize(`${await read("src/pages/404.astro")} ${await read("src/components/routes/error/NotFoundExperience.astro")}`);
   for (const phrase of acceptedIndustryCopy) assert.ok(industry.includes(phrase), `missing accepted Industry copy: ${phrase}`);
   for (const phrase of acceptedStartupCopy) assert.ok(startups.includes(phrase), `missing accepted Startup copy: ${phrase}`);
   for (const phrase of acceptedIndustriesCopy) assert.ok(industries.includes(phrase), `missing accepted Industries copy: ${phrase}`);
@@ -467,6 +542,8 @@ test("implemented routes preserve the complete accepted public-copy authority", 
   for (const phrase of acceptedMaradinCopy) assert.ok(maradin.includes(phrase), `missing accepted Maradin copy: ${phrase}`);
   for (const phrase of acceptedSparkCopy) assert.ok(spark.includes(phrase), `missing accepted SPARK copy: ${phrase}`);
   for (const phrase of acceptedAboutCopy) assert.ok(about.includes(phrase), `missing accepted About copy: ${phrase}`);
+  for (const phrase of acceptedContactCopy) assert.ok(contact.includes(phrase), `missing accepted Contact copy: ${phrase}`);
+  for (const phrase of accepted404Copy) assert.ok(notFound.includes(phrase), `missing accepted 404 copy: ${phrase}`);
 });
 
 test("CP2 has no lab copy, media, form, sticky scene, or scroll interception", async () => {
@@ -526,6 +603,21 @@ test("CP5 has no lab copy, generic template, media, application UI, or scroll in
   assert.doesNotMatch(joined, /QH_PHASE5AR_ROUTE_LAB_ONLY|PREPRODUCTION|approved content map|public route unchanged|Phase 5B unauthorized|human review/i);
   assert.doesNotMatch(joined, /position\s*:\s*(?:sticky|fixed)|scroll-snap|overflow-[xy]\s*:\s*(?:auto|scroll)|addEventListener\(["'](?:scroll|wheel)|preventDefault\(|scrollTo\(|scrollBy\(|scrollIntoView\(|requestAnimationFrame|setInterval\(|setTimeout\(/i);
   assert.doesNotMatch(joined, /<(?:form|input|textarea|select|img|picture|video|audio|source|canvas|svg)\b|\/media\//i);
+});
+
+test("CP6 has no lab copy, endpoint fabrication, media, route runtime, or scroll interception", async () => {
+  const files = [
+    "src/pages/contact.astro",
+    "src/components/routes/contact/ContactExperience.astro",
+    "src/styles/routes/contact.css",
+    "src/pages/404.astro",
+    "src/components/routes/error/NotFoundExperience.astro",
+    "src/styles/routes/404-production.css",
+  ];
+  const joined = (await Promise.all(files.map(read))).join("\n");
+  assert.doesNotMatch(joined, /QH_PHASE5AR_ROUTE_LAB_ONLY|PREPRODUCTION|approved content map|public route unchanged|Phase 5B unauthorized|human review/i);
+  assert.doesNotMatch(joined, /position\s*:\s*(?:sticky|fixed)|scroll-snap|overflow-[xy]\s*:\s*(?:auto|scroll)|addEventListener\(["'](?:scroll|wheel)|preventDefault\(|scrollTo\(|scrollBy\(|scrollIntoView\(|requestAnimationFrame|setInterval\(|setTimeout\(/i);
+  assert.doesNotMatch(joined, /<(?:form|input|textarea|select|button|img|picture|video|audio|source|canvas|svg|script)\b|\/media\/|href\s*=\s*["'](?:mailto:|tel:|https?:\/\/)|\b[\w.+-]+@[\w.-]+\.[a-z]{2,}\b/i);
 });
 
 test("CP2 responsive CSS exposes overflow instead of clipping copy and constrains grid min-content", async () => {
@@ -598,6 +690,22 @@ test("CP5 authored sources stay bounded before production minification", async (
   }
 });
 
+test("CP6 authored static sources stay bounded before production minification", async () => {
+  for (const [id, css, component, ceiling] of [
+    ["contact", "src/styles/routes/contact.css", "src/components/routes/contact/ContactExperience.astro", 8_000],
+    ["404", "src/styles/routes/404-production.css", "src/components/routes/error/NotFoundExperience.astro", 4_000],
+  ]) {
+    const cssBytes = (await stat(path.join(root, css))).size;
+    const componentBytes = (await stat(path.join(root, component))).size;
+    assert.ok(cssBytes <= ceiling, `${id} authored CSS unexpectedly expanded: ${cssBytes}`);
+    assert.ok(componentBytes <= 8_000, `${id} authored component unexpectedly expanded: ${componentBytes}`);
+  }
+  const verifier = await read("scripts/verify-phase5b-production.mjs");
+  assert.match(verifier, /route\.mode === "A"/);
+  assert.match(verifier, /expected exactly one inlined route-local stylesheet/);
+  assert.match(verifier, /routeCssReportReferences = \["inline:route"\]/);
+});
+
 test("CP2 no-JS and reduced-motion states resolve geometry without controller work", async () => {
   for (const [component, css] of [
     ["src/components/routes/industry/IndustryExperience.astro", "src/styles/routes/industry.css"],
@@ -633,6 +741,17 @@ test("CP5 no-JS and reduced-motion states resolve institutional compositions", a
     const styles = await read(css);
     assert.match(styles, /scripting: none/);
     assert.match(styles, /prefers-reduced-motion: reduce/);
+  }
+});
+
+test("CP6 Mode A routes are complete static compositions without route controllers", async () => {
+  for (const [page, component] of [
+    ["src/pages/contact.astro", "src/components/routes/contact/ContactExperience.astro"],
+    ["src/pages/404.astro", "src/components/routes/error/NotFoundExperience.astro"],
+  ]) {
+    const source = `${await read(page)}\n${await read(component)}`;
+    assert.match(source, /data-route-motion="static"/);
+    assert.doesNotMatch(source, /<script\b|src\/scripts\/routes|IntersectionObserver|requestAnimationFrame|addEventListener\(/);
   }
 });
 

@@ -119,6 +119,30 @@ test("About production stays inside the approved institutional boundary", () => 
   assert.doesNotMatch(component, /<(?:img|picture|video|audio|source|canvas|svg)\b|\/media\//i);
 });
 
+test("Contact production preserves the unresolved endpoint and truthful three-intent boundary", () => {
+  const page = read("src/pages/contact.astro");
+  const component = read("src/components/routes/contact/ContactExperience.astro");
+  const collections = read("src/content/collections.ts");
+  assert.match(collections, /contactDestination: ContactDestination \| null = null/);
+  assert.match(page, /if \(contactDestination !== null\)/);
+  assert.match(component, /No direct contact destination is currently available\./);
+  assert.deepEqual([...component.matchAll(/href="#([^"]+)"/g)].map((match) => match[1]), ["for-industry", "for-startups", "general"]);
+  assert.deepEqual([...component.matchAll(/<li id="([^"]+)" tabindex="-1">/g)].map((match) => match[1]), ["for-industry", "for-startups", "general"]);
+  assert.doesNotMatch(`${page}\n${component}`, /<(?:form|input|textarea|select|button)\b|href\s*=\s*["'](?:mailto:|tel:|https?:\/\/)|\b[\w.+-]+@[\w.-]+\.[a-z]{2,}\b|\b(?:response|reply|turnaround)[ -]time\b|\+?\d[\d(). -]{7,}\d/i);
+});
+
+test("404 production is a serious, concise recovery route without runtime or media", () => {
+  const page = read("src/pages/404.astro");
+  const component = read("src/components/routes/error/NotFoundExperience.astro");
+  assert.match(page, /const title = "Page not found"/);
+  assert.match(page, /const description = "This Quantum route does not exist\."/);
+  assert.match(page, /<BaseLayout \{title\} \{description\} noindex/);
+  assert.match(component, /Error \/ Page not found/);
+  assert.match(component, /The requested route is out of alignment\./);
+  assert.equal([...component.matchAll(/href="\/"/g)].length, 1);
+  assert.doesNotMatch(`${page}\n${component}`, /This signal goes nowhere|<(?:img|picture|video|audio|source|canvas|svg|script)\b|\/media\/|IntersectionObserver|requestAnimationFrame|addEventListener\(/i);
+});
+
 test("speculative route labs and preproduction canaries cannot leak into public source or configuration", () => {
   const productionRoots = ["src", "public"].flatMap((relative) => walk(path.join(ROOT, relative)));
   const productionText = productionRoots
