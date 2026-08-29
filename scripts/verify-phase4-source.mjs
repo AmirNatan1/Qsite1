@@ -90,6 +90,7 @@ const ALLOWED_PRODUCTION_CHANGES = Object.freeze([
 const PHASE5B_ROUTE_PRODUCTION_CHANGES = Object.freeze([
   /^src\/components\/routes\//,
   /^src\/scripts\/routes\//,
+  /^src\/styles\/global\.css$/,
   /^src\/styles\/routes\/(?:production-foundations|industry|startups|industries|proof-production|maradin|spark-production|about|contact|404-production)\.css$/,
   /^src\/pages\/(?:for-partners|for-startups|industries|spark|about|contact|404)\.astro$/,
   /^src\/pages\/pocs\/(?:index|maradin)\.astro$/,

@@ -1,0 +1,130 @@
+---
+import { sparkProgramme } from "../../../content";
+import RouteKicker from "../shared/RouteKicker.astro";
+import RouteLink from "../shared/RouteLink.astro";
+
+const conditions = [
+  ["MVP+ technology", "A working capability that can move beyond a concept-only conversation."],
+  ["Clear industrial use case", "A credible connection between what the technology does and an operational need."],
+  ["Deployable team", "People available to prepare, support and learn from a structured field test."],
+  ["Measurable value", "A practical view of what evidence would make the POC informative."],
+  ["Organisational readiness", "Willingness to work with a large organisation, its processes and its operating environment."],
+] as const;
+
+const fitLines = [
+  ["Relevant industrial access", "Connections shaped around an identified need."],
+  ["Use-case design", "A clearer link between the capability, user and operating problem."],
+  ["POC design", "A bounded plan for what to test, where and why."],
+  ["Domain feedback", "Input grounded in the operating environment."],
+  ["Real operating environments", "Conditions that reveal practical constraints an abstract demo cannot."],
+  ["Evidence‑based next step", "A structured record for what follows the test."],
+] as const;
+
+const startupRoute = [
+  ["Readiness", "Establish the technology, team and use case are ready for an industrial conversation."],
+  ["Relevance", "Connect the capability to a real operational need and operating context."],
+  ["Design", "Define the POC question, environment and evidence criteria with the parties involved."],
+  ["Field", "Run a bounded test and observe how the technology behaves under meaningful conditions."],
+  ["Evidence", "Use what was learned to define an appropriate next step."],
+] as const;
+---
+
+<article
+  class="startup-corridor"
+  aria-labelledby="startup-title"
+  data-route-architecture="conditional-corridor"
+  data-route-production="for-startups"
+  data-startup-progress
+  data-route-motion="static"
+>
+  <header class="startup-act startup-act--signal" data-route-act="signal">
+    <div class="startup-signal-map" data-route-geometry="signal-map" aria-hidden="true"><i></i><span></span><span></span><span></span></div>
+    <div class="startup-overture">
+      <RouteKicker>For startups</RouteKicker>
+      <h1 id="startup-title" aria-label="Bring your technology into the real world.">
+        <span>Bring your</span>
+        <span>technology into</span>
+        <span>the real world.</span>
+      </h1>
+      <p>
+        Move from a promising capability to a relevant industrial question, a structured POC
+        and evidence grounded in operating conditions.
+      </p>
+      <RouteLink href="/contact/#for-startups">Introduce your technology</RouteLink>
+    </div>
+  </header>
+
+  <ol class="startup-route" aria-label="Technology route into an industrial field test">
+    <li class="startup-act startup-act--conditions" data-route-act="conditions" aria-labelledby="startup-conditions-title">
+      <div class="startup-channel-field" data-route-geometry="channel-field" aria-hidden="true"><span></span><span></span></div>
+      <div class="startup-conditions-copy">
+        <RouteKicker>Readiness</RouteKicker>
+        <h2 id="startup-conditions-title">Ready means more than interesting.</h2>
+        <p class="startup-act__lead">
+          A useful industrial test needs a technology, use case and team that can engage with real constraints.
+        </p>
+        <dl class="startup-conditions">
+          {conditions.map(([title, description]) => (
+            <div><dt>{title}</dt><dd>{description}</dd></div>
+          ))}
+        </dl>
+      </div>
+    </li>
+
+    <li class="startup-act startup-act--fit" data-route-act="fit" aria-labelledby="startup-fit-title">
+      <div class="startup-fit-copy">
+        <RouteKicker>What Quantum can provide</RouteKicker>
+        <h2 id="startup-fit-title">Context for a better test.</h2>
+        <p class="startup-act__lead">
+          Quantum connects a technology’s potential to an industrial evidence question.
+        </p>
+        <ul class="startup-fit-lines">
+          {fitLines.map(([title, description]) => (
+            <li><h3>{title}</h3><p>{description}</p></li>
+          ))}
+        </ul>
+      </div>
+      <div class="startup-tolerance" data-route-geometry="tolerance" aria-hidden="true"><span></span><span></span><span></span></div>
+    </li>
+
+    <li class="startup-act startup-act--field" data-route-act="field" aria-labelledby="startup-field-title">
+      <div class="startup-field-threshold" data-route-geometry="field-threshold" aria-hidden="true"><span></span><i></i></div>
+      <div class="startup-field-copy">
+        <RouteKicker>Startup route</RouteKicker>
+        <h2 id="startup-field-title">From readiness to evidence.</h2>
+        <p class="startup-act__lead">The route narrows possibility into a relevant industrial test.</p>
+        <ol class="startup-evidence-route" aria-label="Five-stage startup route">
+          {startupRoute.map(([title, description]) => (
+            <li><strong>{title}</strong><span>{description}</span></li>
+          ))}
+        </ol>
+        <div class="startup-programme">
+          <span>SPARK pathway</span>
+          <h3>{sparkProgramme.name}</h3>
+          <p>{sparkProgramme.summary}</p>
+          <strong>{sparkProgramme.status}</strong>
+          <p>
+            The public pathway is not accepting applications. No future date or alternative
+            registration route is being offered here.
+          </p>
+        </div>
+        <p class="startup-participation">
+          <strong>Participation note:</strong> Quantum develops relevant opportunities and structured
+          POCs; participation does not guarantee a pilot, procurement agreement or investment.
+        </p>
+        <div class="startup-ending">
+          <h3>Introduce the technology.</h3>
+          <p>Start with the capability, industrial use case and the conditions you are ready to test.</p>
+          <div>
+            <RouteLink href="/contact/#for-startups">Choose the startup path</RouteLink>
+            <RouteLink href="/spark/">Explore SPARK</RouteLink>
+          </div>
+        </div>
+      </div>
+    </li>
+  </ol>
+</article>
+
+<script>
+  import "../../../scripts/routes/startup-progress";
+</script>

@@ -28,3 +28,15 @@ const {
   <img {src} {alt} width={displayWidth} height={displayHeight} {loading} {fetchpriority} decoding="async" />
   <figcaption><slot /></figcaption>
 </figure>
+
+<style>
+  .editorial-figure { margin: 0; }
+  .editorial-figure img { display: block; width: 100%; height: auto; }
+  .editorial-figure figcaption {
+    margin-block-start: 0.65rem;
+    color: var(--text-muted);
+    font-family: var(--font-ui);
+    font-size: 0.76rem;
+    line-height: 1.5;
+  }
+</style>

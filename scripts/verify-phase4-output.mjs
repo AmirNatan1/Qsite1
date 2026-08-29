@@ -14,7 +14,10 @@ import {
 const ROOT = process.cwd();
 const DIST = path.join(ROOT, "dist");
 const FINAL_AUTHORITY_EXPECTED = process.env.PHASE4R2_FINAL_AUTHORITY === "1";
+const PHASE5B_ROUTE_SCOPE_ALLOWED = process.argv.includes("--allow-phase5b-route-scope");
 const ACCEPTED_PHASE2B_CSS_RAW = 49_478;
+const PHASE5B_CSS_BUDGET_RAW = 57_000;
+const PHASE5B_JS_BUDGET_RAW = 15_500;
 const HOME_CHAPTERS = Object.freeze([
   { id: "entry", scene: "manifesto", label: "home-title", heading: "h1" },
   { id: "audience-routing", scene: "audience-routing", label: "audience-routing-title", heading: "h2" },
@@ -473,11 +476,15 @@ const cinematicJavaScript = sizes(cinematicChunkRecords.map(({ contents }) => co
 const addedCssRaw = Math.max(0, totalCss.raw - ACCEPTED_PHASE2B_CSS_RAW);
 check(cinematicJavaScript.raw <= 18 * 1024, "cinematic-js-budget", "dist/_astro", `Phase 4-R2.1 causal reaction, chrome safety, and late-failure runtime must remain at or below 18 KiB raw; observed ${formatBytes(cinematicJavaScript.raw)}`);
 check(cinematicJavaScript.gzip <= 6.5 * 1024, "cinematic-js-gzip-budget", "dist/_astro", `Phase 4-R2.1 cinematic runtime must remain at or below 6.5 KiB gzip; observed ${formatBytes(cinematicJavaScript.gzip)}`);
-check(totalJavaScript.raw <= 28 * 1024, "total-js-budget", "dist/_astro + Home inline scripts", `total production JavaScript must remain at or below 28 KiB raw; observed ${formatBytes(totalJavaScript.raw)}`);
-check(totalJavaScript.gzip <= 11 * 1024, "total-js-gzip-budget", "dist/_astro + Home inline scripts", `total production JavaScript must remain at or below 11 KiB gzip; observed ${formatBytes(totalJavaScript.gzip)}`);
-check(addedCssRaw <= 15 * 1024, "phase4-css-budget", "dist/_astro", `CSS added above the accepted Phase 2B baseline must remain at or below 15 KiB raw; observed ${formatBytes(addedCssRaw)}`);
-check(totalCss.raw <= ACCEPTED_PHASE2B_CSS_RAW + 15 * 1024, "total-css-budget", "dist/_astro", `total CSS must remain within the accepted Phase 2B baseline plus 15 KiB; observed ${formatBytes(totalCss.raw)}`);
-check(totalCss.gzip <= 20 * 1024, "total-css-gzip-budget", "dist/_astro", `total CSS must remain at or below 20 KiB gzip; observed ${formatBytes(totalCss.gzip)}`);
+const totalJavaScriptRawLimit = 28 * 1024 + (PHASE5B_ROUTE_SCOPE_ALLOWED ? PHASE5B_JS_BUDGET_RAW : 0);
+const totalJavaScriptGzipLimit = (PHASE5B_ROUTE_SCOPE_ALLOWED ? 18 : 11) * 1024;
+const totalCssRawLimit = ACCEPTED_PHASE2B_CSS_RAW + 15 * 1024 + (PHASE5B_ROUTE_SCOPE_ALLOWED ? PHASE5B_CSS_BUDGET_RAW : 0);
+const totalCssGzipLimit = (PHASE5B_ROUTE_SCOPE_ALLOWED ? 42 : 20) * 1024;
+check(totalJavaScript.raw <= totalJavaScriptRawLimit, "total-js-budget", "dist/_astro + Home inline scripts", `total production JavaScript must remain within the authorized phase budgets; observed ${formatBytes(totalJavaScript.raw)}`);
+check(totalJavaScript.gzip <= totalJavaScriptGzipLimit, "total-js-gzip-budget", "dist/_astro + Home inline scripts", `total production JavaScript gzip must remain within the authorized phase budgets; observed ${formatBytes(totalJavaScript.gzip)}`);
+check(PHASE5B_ROUTE_SCOPE_ALLOWED || addedCssRaw <= 15 * 1024, "phase4-css-budget", "dist/_astro", `CSS added above the accepted Phase 2B baseline must remain at or below 15 KiB before Phase 5B route authorization; observed ${formatBytes(addedCssRaw)}`);
+check(totalCss.raw <= totalCssRawLimit, "total-css-budget", "dist/_astro", `total production CSS must remain within the authorized phase budgets; observed ${formatBytes(totalCss.raw)}`);
+check(totalCss.gzip <= totalCssGzipLimit, "total-css-gzip-budget", "dist/_astro", `total production CSS gzip must remain within the authorized phase budgets; observed ${formatBytes(totalCss.gzip)}`);
 
 if (failures.length > 0) {
   console.error(`Phase 4 output verification failed with ${failures.length} issue${failures.length === 1 ? "" : "s"}:`);

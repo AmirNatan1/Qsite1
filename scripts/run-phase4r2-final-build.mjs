@@ -8,7 +8,8 @@ const steps = [
   ["scripts/stage-phase4-media.mjs"],
   ["scripts/stage-phase4r2-runtime-media.mjs"],
   ["node_modules/astro/bin/astro.mjs", "build"],
-  ["scripts/verify-phase4-output.mjs"],
+  ["scripts/verify-phase4-output.mjs", "--allow-phase5b-route-scope"],
+  ["scripts/verify-phase5b-production.mjs"],
 ];
 
 for (const args of steps) {

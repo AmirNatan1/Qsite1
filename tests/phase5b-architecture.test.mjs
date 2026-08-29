@@ -37,12 +37,17 @@ test("shared production primitives do not impose a universal route skeleton", as
 
 test("legacy Phase 4 verification permits only the explicit Phase 5B route surface", async () => {
   const verifier = await read("scripts/verify-phase4-source.mjs");
+  const outputVerifier = await read("scripts/verify-phase4-output.mjs");
+  const finalBuild = await read("scripts/run-phase4r2-final-build.mjs");
   const packageManifest = JSON.parse(await read("package.json"));
   assert.match(packageManifest.scripts.check, /verify-phase4-source\.mjs --allow-phase5b-route-scope/);
   assert.match(verifier, /PHASE5B_ROUTE_SCOPE_ALLOWED/);
   assert.match(verifier, /src\\\/components\\\/routes/);
+  assert.match(verifier, /src\\\/styles\\\/global\\\.css/);
   assert.match(verifier, /src\\\/pages\\\/pocs/);
   assert.doesNotMatch(verifier, /PHASE5B_ROUTE_PRODUCTION_CHANGES[\s\S]{0,150}\^src\\\/\.\*/);
+  assert.match(outputVerifier, /PHASE5B_ROUTE_SCOPE_ALLOWED/);
+  assert.match(finalBuild, /verify-phase4-output\.mjs", "--allow-phase5b-route-scope/);
 });
 
 test("bounded observer is one-shot and contains no scroll loop or scroll writes", async () => {
