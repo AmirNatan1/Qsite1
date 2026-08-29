@@ -330,6 +330,8 @@ export function initHomeCinematicIntegration() {
   const methodField = document.querySelector<HTMLElement>("[data-method-section]");
   const methodStages = Array.from(methodField?.querySelectorAll<HTMLElement>("[data-method-stage]") ?? []);
   const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const fonts = document.fonts;
+  let fontsReady = !fonts || fonts.status === "loaded";
 
   const releaseMissingDom = () => {
     root.dataset.cinematicFallback = "required-dom";
@@ -491,6 +493,7 @@ export function initHomeCinematicIntegration() {
     clearCinematicStyles();
   };
   const portalFits = () => {
+    if (!fontsReady) return true;
     if (zoomMakesPortalUnsafe() || window.innerHeight < 320) return false;
     const anchors = [
       manifestoContent.querySelector<HTMLElement>("h1"),
@@ -666,7 +669,7 @@ export function initHomeCinematicIntegration() {
     requestCurrentFrame();
   }, { signal });
   video.addEventListener("error", () => failOpen("media"), { signal });
-  void document.fonts?.ready.then(invalidate);
+  void fonts?.ready.then(() => { fontsReady = true; invalidate(); });
   window.addEventListener("pagehide", (event) => {
     persistRestorationState(shell.dataset.cinematicPhase === "settled" || window.scrollY >= entryTop - headerHeight - 1);
     if (animationFrame) cancelAnimationFrame(animationFrame);

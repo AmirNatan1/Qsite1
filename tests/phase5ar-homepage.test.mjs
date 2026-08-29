@@ -45,6 +45,9 @@ test("Phase 5A-R manifesto uses normal-flow hold, anchored reveal, and reversibl
   assert.match(homeCss, /\.manifesto-field__content[\s\S]*?padding-top:\s*clamp\(3\.5rem, 10svh, 7rem\)/);
   assert.match(responsiveCss, /padding-top:\s*clamp\(3\.2rem, 9svh, 5\.5rem\)/);
   assert.match(responsiveCss, /padding-top:\s*clamp\(1\.35rem, 7svh, 2\.7rem\)/);
+  assert.match(responsiveCss, /@media \(max-width:\s*48rem\)[\s\S]*?\.audience-field__content\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/);
+  assert.match(responsiveCss, /@media \(max-width:\s*48rem\)[\s\S]*?\.manifesto-field h1\s*\{[^}]*font-size:\s*clamp\(1\.05rem,\s*5\.6vw,\s*2\.65rem\)/);
+  assert.match(responsiveCss, /@media \(max-width:\s*22rem\)[\s\S]*?\.manifesto-field h1\s*\{[^}]*font-size:\s*clamp\(1\.05rem,\s*5\.6vw,\s*1\.25rem\)/);
 
   assert.match(controller, /--manifesto-anchor-px["'`],\s*`\$\{Math\.min\(0, currentScrollOffset - scrollExtent\)/);
   assert.match(controller, /navigationReleasePoint\s*=\s*audienceTop\s*-\s*window\.innerHeight/);
@@ -52,6 +55,9 @@ test("Phase 5A-R manifesto uses normal-flow hold, anchored reveal, and reversibl
   assert.match(controller, /setThresholdInteraction\(true, false\)/);
   assert.match(controller, /downstreamFields[\s\S]*?field\.setAttribute\("inert"/);
   assert.match(controller, /version:\s*4, settledOrLower/);
+  assert.match(controller, /let fontsReady = !fonts \|\| fonts\.status === "loaded"/);
+  assert.match(controller, /const portalFits = \(\) => \{\s*if \(!fontsReady\) return true;/);
+  assert.match(controller, /fonts\?\.ready\.then\(\(\) => \{ fontsReady = true; invalidate\(\); \}\)/);
 });
 
 test("Phase 5A-R keeps static fallback semantics and the accepted physical mapping authority", async () => {

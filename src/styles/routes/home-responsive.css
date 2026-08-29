@@ -94,7 +94,7 @@
   .manifesto-field h1 {
     width: 100%;
     max-width: 100%;
-    font-size: clamp(1.5rem, 7.65vw, 2.65rem);
+    font-size: clamp(1.05rem, 5.6vw, 2.65rem);
     line-height: 0.88;
   }
 
@@ -112,7 +112,7 @@
   }
 
   .audience-field__content {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 3.5rem;
     padding-block: 4.5rem 5rem;
   }
@@ -500,7 +500,7 @@
 
 @media (max-width: 22rem) {
   .manifesto-field h1 {
-    font-size: clamp(1.5rem, 7.65vw, 1.9rem);
+    font-size: clamp(1.05rem, 5.6vw, 1.25rem);
   }
 
   .audience-trajectory {
