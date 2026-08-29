@@ -1,0 +1,114 @@
+{
+  "schema": "qh.phase5ar.supporting-route-capture-plan.v1",
+  "canary": "QH_PHASE5AR_ROUTE_LAB_ONLY",
+  "routes": [
+    "for-industry",
+    "for-startups",
+    "industries",
+    "proof",
+    "maradin",
+    "spark",
+    "about",
+    "contact",
+    "404"
+  ],
+  "actCounts": {
+    "for-industry": 4,
+    "for-startups": 4,
+    "industries": 4,
+    "proof": 2,
+    "maradin": 6,
+    "spark": 3,
+    "about": 3,
+    "contact": 1,
+    "404": 1
+  },
+  "documentRegions": {
+    "for-industry": 4,
+    "for-startups": 4,
+    "industries": 6,
+    "proof": 2,
+    "maradin": 6,
+    "spark": 3,
+    "about": 3,
+    "contact": 1,
+    "404": 1
+  },
+  "validationViewports": [
+    { "id": "desktop", "width": 1440, "height": 900 },
+    { "id": "short-desktop", "width": 1366, "height": 650 },
+    { "id": "desktop-1280", "width": 1280, "height": 800 },
+    { "id": "tablet-landscape", "width": 1024, "height": 768 },
+    { "id": "tablet-portrait", "width": 768, "height": 1024 },
+    { "id": "mobile", "width": 390, "height": 844 },
+    { "id": "mobile-360", "width": 360, "height": 800 },
+    { "id": "mobile-narrow", "width": 320, "height": 800 },
+    { "id": "landscape-740", "width": 740, "height": 360 },
+    { "id": "landscape-800", "width": 800, "height": 360 },
+    { "id": "landscape-844", "width": 844, "height": 390 },
+    { "id": "landscape-896", "width": 896, "height": 414 },
+    { "id": "landscape-900", "width": 900, "height": 480 }
+  ],
+  "viewports": [
+    { "id": "desktop", "width": 1440, "height": 900 },
+    { "id": "short-desktop", "width": 1366, "height": 650 },
+    { "id": "desktop-1280", "width": 1280, "height": 800 },
+    { "id": "tablet-landscape", "width": 1024, "height": 768 },
+    { "id": "tablet-portrait", "width": 768, "height": 1024 },
+    { "id": "mobile", "width": 390, "height": 844 },
+    { "id": "mobile-360", "width": 360, "height": 800 },
+    { "id": "mobile-narrow", "width": 320, "height": 800 },
+    { "id": "landscape-740", "width": 740, "height": 360 },
+    { "id": "landscape-800", "width": 800, "height": 360 },
+    { "id": "landscape-844", "width": 844, "height": 390 },
+    { "id": "landscape-896", "width": 896, "height": 414 },
+    { "id": "landscape-900", "width": 900, "height": 480 }
+  ],
+  "shortLandscapeViewports": [
+    { "id": "landscape-740", "width": 740, "height": 360 },
+    { "id": "landscape-800", "width": 800, "height": 360 },
+    { "id": "landscape-844", "width": 844, "height": 390 },
+    { "id": "landscape-896", "width": 896, "height": 414 },
+    { "id": "landscape-900", "width": 900, "height": 480 }
+  ],
+  "boardModes": ["page", "signature", "materials"],
+  "requiredRouteArtifacts": [
+    "route-brief-delta.md",
+    "desktop-storyboard--1440x900.png",
+    "mobile-storyboard--390x844.png",
+    "narrow-overture--320x800.png",
+    "short-landscape-overture-sheet.png",
+    "signature-states-sheet.png",
+    "material-board.png"
+  ],
+  "requiredCrossRouteArtifacts": [
+    "PHASE_5A_R_ROUTE_COHERENCE_MATRIX.md",
+    "PHASE_5A_R_ANTI_TEMPLATE_AUDIT.md",
+    "all-routes-desktop-contact-sheet.png",
+    "all-routes-mobile-contact-sheet.png",
+    "all-routes-short-landscape-contact-sheet.png",
+    "motion-comparison-board.png",
+    "material-comparison-board.png"
+  ],
+  "outputSchemas": {
+    "capture": "qh.phase5ar.route-preproduction-capture.v1",
+    "antiTemplateAudit": "qh.phase5ar.anti-template-audit.v1",
+    "manifest": "qh.phase5ar.route-preproduction-manifest.v1"
+  },
+  "rules": {
+    "publicExposure": false,
+    "publicSupportingRoutesChanged": false,
+    "publicRoutesChanged": false,
+    "externalNetwork": false,
+    "cinematicReplay": false,
+    "cinematicRunway": false,
+    "stickyChapter": false,
+    "thirdPartyRuntime": false,
+    "generatedReviewMediaTracked": false,
+    "phase5BAuthorized": false,
+    "rawCapturesPackaged": false,
+    "humanVisualJudgmentAuthoritative": true,
+    "artifactsPerRoute": 7,
+    "crossRouteArtifacts": 7
+  }
+}
