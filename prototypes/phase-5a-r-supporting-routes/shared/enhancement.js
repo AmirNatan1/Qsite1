@@ -30,25 +30,4 @@
     : null;
   if (observer) acts.forEach((act) => observer.observe(act));
 
-  if (motionMode !== "C") return;
-
-  let scheduled = false;
-  const update = () => {
-    scheduled = false;
-    const viewport = Math.max(1, innerHeight);
-    for (const act of acts) {
-      const rect = act.getBoundingClientRect();
-      const travel = Math.max(1, rect.height + viewport);
-      const progress = Math.min(1, Math.max(0, (viewport - rect.top) / travel));
-      act.style.setProperty("--local-progress", progress.toFixed(5));
-    }
-  };
-  const schedule = () => {
-    if (scheduled) return;
-    scheduled = true;
-    requestAnimationFrame(update);
-  };
-  addEventListener("scroll", schedule, { passive: true });
-  addEventListener("resize", schedule, { passive: true });
-  update();
 })();

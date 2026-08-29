@@ -594,13 +594,9 @@ async function runStaticVariant(browser, baseUrl, scenario, viewport, contextOpt
     const route = ROUTE_QA[slug];
     await loadRoute(page, baseUrl, route);
     if (contextOptions.className) {
-      await page.evaluate(({ className, scenarioName }) => {
+      await page.evaluate(({ className }) => {
         document.documentElement.classList.add(className);
-        if (scenarioName === "text-200") document.documentElement.style.setProperty("font-size", "200%", "important");
-        if (scenarioName === "fallback-font") {
-          for (const element of document.querySelectorAll("*")) element.style.setProperty("font-family", "Arial, Helvetica, sans-serif", "important");
-        }
-      }, { className: contextOptions.className, scenarioName: scenario });
+      }, { className: contextOptions.className });
       await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
     }
     const observation = await collectObservation(page, route, scenario, viewport.id);

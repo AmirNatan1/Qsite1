@@ -42,6 +42,15 @@
   --local-progress: 0;
 }
 
+html.qa-text-200 {
+  font-size: 200%;
+}
+
+html.qa-fallback-font,
+html.qa-fallback-font * {
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -267,7 +276,7 @@ h3 {
   flex-wrap: wrap;
   gap: 0.35rem 0.85rem;
   margin: 0;
-  color: #77736f;
+  color: #aaa49e;
   font-size: 0.625rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -1557,7 +1566,7 @@ h3 {
   position: absolute;
   right: 1rem;
   bottom: .4rem;
-  color: rgba(241,235,227,.3);
+  color: var(--ink);
   font-family: "Newsreader", Georgia, serif;
   font-size: clamp(4rem, 9vw, 9rem);
   font-style: italic;
@@ -1601,11 +1610,19 @@ h3 {
 
 .signature-board > ol {
   display: grid;
-  grid-template-columns: repeat(var(--state-count), minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: .75rem;
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+.signature-board > ol[data-state-count="5"] {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.signature-board > ol[data-state-count="6"] {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
 }
 
 .signature-board figure,

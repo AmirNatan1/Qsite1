@@ -174,6 +174,20 @@ test("static-class contracts catch executed no-JS, motion, and missing fallback 
   assert.ok(fallbackCodes.has("fallback-font"));
 });
 
+test("static variants are CSP-safe and never depend on blocked inline styles", async () => {
+  const [qaSource, cssSource, enhancementSource, rendererSource] = await Promise.all([
+    readFile(new URL("../scripts/qa-phase5ar-responsive-routes.mjs", import.meta.url), "utf8"),
+    readFile(new URL("../prototypes/phase-5a-r-supporting-routes/shared/system.css", import.meta.url), "utf8"),
+    readFile(new URL("../prototypes/phase-5a-r-supporting-routes/shared/enhancement.js", import.meta.url), "utf8"),
+    readFile(new URL("../prototypes/phase-5a-r-supporting-routes/render-route.mjs", import.meta.url), "utf8"),
+  ]);
+  assert.doesNotMatch(qaSource, /\.style\.setProperty\(/);
+  assert.match(cssSource, /html\.qa-text-200\s*\{[\s\S]*?font-size:\s*200%/);
+  assert.match(cssSource, /html\.qa-fallback-font/);
+  assert.doesNotMatch(enhancementSource, /\.style\.setProperty\(/);
+  assert.doesNotMatch(rendererSource, /style="/);
+});
+
 test("architecture audit rejects route drift and cross-route template duplication", () => {
   const valid = ROUTE_ORDER.map((route) => ({ route, architecture: ROUTE_QA[route].architecture }));
   assert.deepEqual(validateArchitectureIdentity(valid), []);

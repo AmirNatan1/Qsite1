@@ -263,7 +263,7 @@ function signatureBoard(route) {
   const states = route.signatureStates.map((label, index) => `<li><figure>${stateGlyph(route, index)}<figcaption><span>${String(index + 1).padStart(2, "0")}</span><strong>${escapeHtml(label)}</strong></figcaption></figure></li>`).join("");
   return `<main id="main" class="review-board signature-board" data-board-route="${escapeAttribute(route.slug)}">
     <header>${kicker("signature states / PREPRODUCTION")}<h1>${escapeHtml(route.publicLabel)}</h1><p>${escapeHtml(route.architecture.transitionGrammar)}</p></header>
-    <ol style="--state-count:${route.signatureStates.length}">${states}</ol>
+    <ol data-state-count="${route.signatureStates.length}">${states}</ol>
     <footer><span>${escapeHtml(route.architecture.overtureTopology)}</span><span>${escapeHtml(route.architecture.endingBehavior)}</span><span>No continuous loop</span></footer>
   </main>`;
 }
