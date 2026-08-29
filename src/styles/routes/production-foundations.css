@@ -1,0 +1,57 @@
+.route-kicker {
+  margin: 0;
+  color: var(--color-accent-soft);
+  font-family: var(--font-ui);
+  font-size: clamp(0.68rem, 0.61rem + 0.22vw, 0.82rem);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.route-link {
+  display: inline-flex;
+  min-block-size: 2.75rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  border-block-end: 1px solid color-mix(in srgb, var(--color-text) 24%, transparent);
+  color: var(--color-text);
+  font-family: var(--font-ui);
+  text-decoration: none;
+}
+
+.route-link__arrow {
+  color: var(--color-accent);
+}
+
+.route-link:hover,
+.route-link:focus-visible {
+  border-block-end-color: var(--color-accent);
+}
+
+.editorial-figure {
+  margin: 0;
+}
+
+.editorial-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.editorial-figure figcaption {
+  margin-block-start: 0.65rem;
+  color: var(--color-text-muted);
+  font-family: var(--font-ui);
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-route-production] *,
+  [data-route-production] *::before,
+  [data-route-production] *::after {
+    scroll-behavior: auto !important;
+  }
+}

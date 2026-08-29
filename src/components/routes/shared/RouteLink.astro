@@ -1,0 +1,14 @@
+---
+interface Props {
+  href: string;
+  class?: string;
+  current?: boolean;
+}
+
+const { href, class: className = "", current = false } = Astro.props;
+---
+
+<a class:list={["route-link", className]} {href} aria-current={current ? "page" : undefined}>
+  <span><slot /></span>
+  <span class="route-link__arrow" aria-hidden="true">↗</span>
+</a>
