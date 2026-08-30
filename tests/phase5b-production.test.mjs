@@ -450,6 +450,7 @@ test("Proof is a two-act archive threshold with one governed record", async () =
 
 test("Maradin is a six-act governed documentary record", async () => {
   const source = await read("src/components/routes/maradin/MaradinExperience.astro");
+  const styles = await read("src/styles/routes/maradin.css");
   assert.match(source, /<article[\s\S]*data-route-architecture="documentary-record"/);
   assert.equal(count(source, /data-route-region=/g), 6);
   assert.deepEqual([...source.matchAll(/data-route-region="([^"]+)"/g)].map((match) => match[1]), ["reality", "problem", "technology", "test", "observation", "restraint"]);
@@ -460,6 +461,8 @@ test("Maradin is a six-act governed documentary record", async () => {
   assert.doesNotMatch(source, /<source\b|autoplay|record-chapter-list|proof-feature|card/i);
   assert.match(source, /preload="none"/);
   assert.match(await read("src/scripts/routes/maradin-documentary.ts"), /enhanceReversibleReveals/);
+  assert.match(styles, /\[data-route-resolved="false"\] \.maradin-copy \{ transform:/);
+  assert.doesNotMatch(styles, /\[data-route-resolved="false"\][^{]*\{[^}]*opacity:/);
   assert.notEqual(normalize(source.match(/<article[\s\S]*<\/article>/)?.[0] ?? ""), normalize(await read("src/components/routes/proof/ProofExperience.astro")));
 });
 

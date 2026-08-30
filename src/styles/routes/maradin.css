@@ -49,9 +49,8 @@
 .maradin-restraint__line { width: 80%; height: 1px; background: linear-gradient(90deg, transparent, var(--q-magenta-soft)); }
 .maradin-copy--restraint { grid-column: 2; }
 .maradin-restraint__links { display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; margin-top: 2.5rem; }
-html[data-route-enhanced="true"] [data-route-reveal] .maradin-copy, html[data-route-enhanced="true"] [data-route-reveal] .maradin-reality__matte, html[data-route-enhanced="true"] [data-route-reveal] .maradin-player, html[data-route-enhanced="true"] [data-route-reveal] .maradin-still, html[data-route-enhanced="true"] [data-route-reveal] .maradin-observation__evidence { transition: opacity 420ms ease, transform 560ms cubic-bezier(0.2, 0.72, 0.2, 1), clip-path 560ms cubic-bezier(0.2, 0.72, 0.2, 1); }
-html[data-route-enhanced="true"] [data-route-resolved="false"] .maradin-copy { opacity: 0.28; transform: translate3d(0, 1.25rem, 0); }
-html[data-route-enhanced="true"] [data-route-resolved="false"] .maradin-player, html[data-route-enhanced="true"] [data-route-resolved="false"] .maradin-still, html[data-route-enhanced="true"] [data-route-resolved="false"] .maradin-observation__evidence { opacity: 0.42; }
+html[data-route-enhanced="true"] [data-route-reveal] .maradin-copy, html[data-route-enhanced="true"] [data-route-reveal] .maradin-reality__matte { transition: transform 560ms cubic-bezier(0.2, 0.72, 0.2, 1), clip-path 560ms cubic-bezier(0.2, 0.72, 0.2, 1); }
+html[data-route-enhanced="true"] [data-route-resolved="false"] .maradin-copy { transform: translate3d(0, 1.25rem, 0); }
 html[data-route-enhanced="true"] [data-route-resolved="false"] .maradin-reality__matte { clip-path: polygon(0 0, 72% 0, 64% 100%, 0 100%); }
 @media (max-width: 62rem) {
   .maradin-problem, .maradin-technology, .maradin-test, .maradin-observation, .maradin-restraint { grid-template-columns: minmax(0, 1fr); }

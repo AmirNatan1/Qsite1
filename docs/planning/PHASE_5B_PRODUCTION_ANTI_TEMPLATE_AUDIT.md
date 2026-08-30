@@ -66,7 +66,7 @@ The difference between route-only and full-document lengths is the shared site h
 - **First-overture proposition and topology:** a dormant full-bleed video aperture sits behind a polygonal dark matte, with the H1 set into the matte. It opens as case evidence, not as Proof’s sparse archive index.
 - **Primary layout and dominant geometry:** six named documentary acts—reality, problem, technology, test, observation, restraint—alternate and then recombine media and copy. The test becomes three columns, observation two columns, and restraint a centered close.
 - **Media:** four production media elements are present in the DOM (two videos and two images), with five governed files in the media set. Videos are `preload="none"`, source-gated, user-triggered, and constrained to one active decoder.
-- **Controller and transition grammar:** Mode B reversible reveals plus explicit media activation/release. Opacity resolves over 420 ms and transform/clip changes over 560 ms; there is no autoplay or continuous documentary scrub.
+- **Controller and transition grammar:** Mode B reversible reveals plus explicit media activation/release. Copy translation and the bounded matte clip resolve over 560 ms without dimming documentary text, captions or controls; there is no autoplay or continuous documentary scrub.
 - **Ending:** a restrained “What followed” record, an evidence-question invitation, and return-to-Proof / bring-a-challenge routes.
 
 ### SPARK — sealed programme runway
