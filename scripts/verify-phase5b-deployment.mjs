@@ -879,7 +879,7 @@ export function validateDistRecords(records) {
   }
   const notFound = byPath.get("404.html").bytes.toString("utf8");
   if (!hasNoindex(notFound) || !/data-route-production=["']404["']/i.test(notFound)
-    || !/href=["']\/["']/i.test(notFound)) {
+    || !/href=["']\/#entry["']/i.test(notFound)) {
     throw new Error("real 404 HTML lacks noindex, production identity, or Home recovery");
   }
   const headerPolicies = parseHeadersFile(byPath.get("_headers").bytes.toString("utf8"));

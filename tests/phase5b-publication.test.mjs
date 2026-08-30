@@ -139,7 +139,7 @@ test("404 production is a serious, concise recovery route without runtime or med
   assert.match(page, /<BaseLayout \{title\} \{description\} noindex/);
   assert.match(component, /Error \/ Page not found/);
   assert.match(component, /The requested route is out of alignment\./);
-  assert.equal([...component.matchAll(/href="\/"/g)].length, 1);
+  assert.equal([...component.matchAll(/href="\/#entry"/g)].length, 1);
   assert.doesNotMatch(`${page}\n${component}`, /This signal goes nowhere|<(?:img|picture|video|audio|source|canvas|svg|script)\b|\/media\/|IntersectionObserver|requestAnimationFrame|addEventListener\(/i);
 });
 

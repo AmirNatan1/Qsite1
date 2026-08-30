@@ -518,7 +518,7 @@ test("404 is one concise misregistered recovery field with a semantic Home route
   assert.equal(count(source, /<h1\b/g), 1);
   assert.match(source, /aria-label="The requested route is out of alignment\."/);
   assert.match(source, /Error \/ Page not found/);
-  assert.equal(count(source, /href="\/"/g), 1);
+  assert.equal(count(source, /href="\/#entry"/g), 1);
   assert.match(source, /<div class="recovery-plane"[^>]*aria-hidden="true"[\s\S]*?<span>404<\/span>/);
   assert.match(page, /const title = "Page not found"/);
   assert.match(page, /const description = "This Quantum route does not exist\."/);
