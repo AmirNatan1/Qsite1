@@ -145,7 +145,7 @@ export function arrivalScrollOffset(travel: number, family: MediaFamily, shortDe
 /** Exact top is F1; every positive integer scroll offset enters visible F46+. */
 export function conceptualCoordinateForScroll(scrollOffset: number, travel: number, family: MediaFamily, shortDesktop: boolean) {
   const extent = Math.max(1, Math.round(travel));
-  const offset = Math.min(extent, Math.max(0, Math.round(scrollOffset)));
+  const offset = scrollOffset <= 0 ? 0 : Math.min(extent, Math.max(1, Math.round(scrollOffset)));
   if (offset === 0) return 0;
   return interpolatePiecewise(offset, piecewiseOffsets(extent, family, shortDesktop), PIECEWISE_COORDINATES);
 }
@@ -172,7 +172,7 @@ export function mapCinematicProgress(scrollProgress: number, family: MediaFamily
 
 /** The selected cohort is intentionally locked on initial load. */
 export function chooseFamily(width: number, height: number): MediaFamily {
-  if (width <= 800 && height > width) return "portrait";
+  if (width <= 800 && height >= width) return "portrait";
   if (width <= 900 && height <= 480 && width > height) return "landscape";
   return "desktop";
 }
@@ -205,7 +205,7 @@ export function cinematicDocumentStateForScroll(
   shortDesktop: boolean,
 ): CinematicDocumentState {
   const scrollExtent = Math.max(1, Math.round(travel));
-  const offset = Math.min(scrollExtent, Math.max(0, Math.round(scrollOffset)));
+  const offset = scrollOffset <= 0 ? 0 : Math.min(scrollExtent, Math.max(1, Math.round(scrollOffset)));
   const scrollProgress = offset / scrollExtent;
   const conceptualCoordinate = conceptualCoordinateForScroll(offset, scrollExtent, family, shortDesktop);
   const conceptualFrame = Math.min(CONCEPTUAL_FRAME_COUNT, Math.max(1, Math.floor(conceptualCoordinate) + 1));
@@ -229,8 +229,13 @@ export function cinematicDocumentStateForScroll(
 
 export type CinematicFailureDisposition = "static" | "preserve-runway";
 
-/** Compact flow is an eligibility decision only; committed enhanced geometry is immutable for this document lifetime. */
-export function cinematicFailureDisposition(_reason: string, enhancedCommitted: boolean): CinematicFailureDisposition {
+/** A committed runway collapses only while the document is still safely at its exact top. */
+export function canCollapseCinematicAtFailure(scrollY: number, hash: string, entryIntent?: string) {
+  return scrollY <= 0 && hash !== "#entry" && entryIntent !== "pending";
+}
+
+export function cinematicFailureDisposition(_reason: string, enhancedCommitted: boolean, safeAtTop = false): CinematicFailureDisposition {
+  if (safeAtTop) return "static";
   return enhancedCommitted ? "preserve-runway" : "static";
 }
 
@@ -393,6 +398,7 @@ export function initHomeCinematicIntegration() {
   let presentedPhysicalFrame = 1;
   let currentScrollOffset = 0;
   let persistedRestorationState = "";
+  let resizeObserver: ResizeObserver | null = null;
 
   /**
    * The accepted Operating Field owns its motion preference response and stays
@@ -474,7 +480,13 @@ export function initHomeCinematicIntegration() {
   };
   const failOpen = (reason: string) => {
     if (failed) return;
-    const disposition = cinematicFailureDisposition(reason, root.dataset.cinematicMode === "enhanced");
+    const enhancedCommitted = root.dataset.cinematicMode === "enhanced";
+    const safeAtTop = canCollapseCinematicAtFailure(
+      window.scrollY,
+      window.location.hash,
+      root.dataset.cinematicEntryIntent,
+    );
+    const disposition = cinematicFailureDisposition(reason, enhancedCommitted, safeAtTop);
     if (mediaFailed && disposition === "preserve-runway") return;
     clearTimer();
     root.dataset.cinematicFallback = reason;
@@ -494,17 +506,22 @@ export function initHomeCinematicIntegration() {
     failed = true;
     releaseMedia();
     if (animationFrame) window.cancelAnimationFrame(animationFrame);
+    animationFrame = 0;
     if (manifestoAnimationFrame) window.cancelAnimationFrame(manifestoAnimationFrame);
     manifestoAnimationFrame = 0;
     if (manifestoNavigationFrame) window.cancelAnimationFrame(manifestoNavigationFrame);
     manifestoNavigationFrame = 0;
     root.dataset.cinematicEligibility = "bypass";
     root.dataset.cinematicMode = "static";
+    delete root.dataset.cinematicEntryIntent;
     delete shell.dataset.manifestoReveal;
     shell.dataset.mediaState = "failed";
     shell.dataset.cinematicPhase = "fallback";
     setThresholdInteraction(true, true);
     clearCinematicStyles();
+    if (enhancedCommitted) Object.assign(publicState, { mode: "static", mediaReady: false });
+    resizeObserver?.disconnect();
+    abortController.abort();
   };
   const portalFits = () => {
     if (!fontsReady) return true;
@@ -595,7 +612,7 @@ export function initHomeCinematicIntegration() {
   };
   const replayManifestoAfterNativeHomeNavigation = () => {
     root.dataset.cinematicEntryIntent = "pending";
-    semanticEntryNavigationResolved = true;
+    semanticEntryNavigationResolved = false;
     setManifestoReveal(false);
     if (manifestoNavigationFrame) return;
     manifestoNavigationFrame = window.requestAnimationFrame(() => {
@@ -628,8 +645,8 @@ export function initHomeCinematicIntegration() {
     if (
       root.dataset.cinematicEntryIntent === "pending"
       && semanticEntryNavigationResolved
-      && mediaReady
-      && presentedPhysicalFrame === targetPhysicalFrame
+      && window.scrollY >= entryTop - headerHeight - 1
+      && (mediaFailed || (mediaReady && presentedPhysicalFrame === targetPhysicalFrame))
     ) delete root.dataset.cinematicEntryIntent;
   };
   const publishPresentedFrame = () => {
@@ -649,7 +666,10 @@ export function initHomeCinematicIntegration() {
     if (needsMeasurement) measure();
     const scrollExtent = Math.max(1, Math.round(travel));
     const nativeScrollY = window.scrollY;
-    currentScrollOffset = Math.min(scrollExtent, Math.max(0, Math.round(nativeScrollY - shellTop)));
+    const rawScrollOffset = nativeScrollY - shellTop;
+    currentScrollOffset = rawScrollOffset <= 0
+      ? 0
+      : Math.min(scrollExtent, Math.max(1, Math.round(rawScrollOffset)));
     const documentState = cinematicDocumentStateForScroll(currentScrollOffset, scrollExtent, initialFamily, initialShortDesktop);
     const { scrollProgress, conceptualCoordinate, conceptualFrame, black, blackBreath, semantic, settled, phase } = documentState;
     const manifestoActive = semantic === 1;
@@ -690,6 +710,7 @@ export function initHomeCinematicIntegration() {
     animationFrame = requestAnimationFrame(() => { animationFrame = 0; write(); });
   };
   const invalidate = () => {
+    if (failed) return;
     needsMeasurement = true;
     if (!portalFits()) failOpen("typography-fit");
     else schedule();
@@ -737,7 +758,7 @@ export function initHomeCinematicIntegration() {
     }
   };
 
-  const resizeObserver = new ResizeObserver(invalidate);
+  resizeObserver = new ResizeObserver(invalidate);
   resizeObserver.observe(shell);
   resizeObserver.observe(entry);
   resizeObserver.observe(audienceRouting);
@@ -810,7 +831,7 @@ export function initHomeCinematicIntegration() {
     manifestoNavigationFrame = 0;
     pauseDecoder();
     if (event.persisted) return;
-    clearTimer(); releaseMedia(); resizeObserver.disconnect(); abortController.abort();
+    clearTimer(); releaseMedia(); resizeObserver?.disconnect(); abortController.abort();
   }, { signal });
   loadTimer = window.setTimeout(() => { if (!mediaReady) failOpen(metadataReady ? "decode-timeout" : "load-timeout"); }, LOAD_TIMEOUT_MS);
   void loadSelectedMedia();

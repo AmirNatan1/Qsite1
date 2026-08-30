@@ -156,13 +156,13 @@ test("Phase 5B-R2 controller consumes the prepaint cohort without a second viewp
   assert.match(controllerCohort, /initialCohort === "portrait"[\s\S]*?initialCohort === "landscape"[\s\S]*?: "desktop"/);
   assert.match(controllerCohort, /initialShortDesktop = initialCohort === "short-desktop"/);
   assert.doesNotMatch(controllerCohort, /innerWidth|innerHeight|chooseFamily|matchMedia/);
-  assert.match(index, /window\.innerWidth <= 800 && window\.innerHeight > window\.innerWidth/);
+  assert.match(index, /window\.innerWidth <= 800 && window\.innerHeight >= window\.innerWidth/);
   assert.match(index, /window\.innerWidth <= 900 && window\.innerHeight <= 480 && window\.innerWidth > window\.innerHeight/);
   assert.match(index, /initialFamily === "desktop" && window\.innerHeight < 704/);
   assert.ok(index.indexOf("root.dataset.cinematicCohort = initialCohort") < index.indexOf('root.dataset.cinematicEntryIntent = "pending"'));
 
   const bootstrapCohort = (width, height) => {
-    const family = width <= 800 && height > width
+    const family = width <= 800 && height >= width
       ? "portrait"
       : width <= 900 && height <= 480 && width > height
         ? "landscape"
@@ -189,7 +189,7 @@ test("Phase 5B-R2 controller consumes the prepaint cohort without a second viewp
     [896, 414, "landscape", "landscape", false, 5.6],
     [900, 480, "landscape", "landscape", false, 5.6],
     [800, 801, "portrait", "portrait", false, 5.35],
-    [800, 800, "desktop", "desktop", false, 6.75],
+    [800, 800, "portrait", "portrait", false, 5.35],
     [900, 481, "short-desktop", "desktop", true, 5.95],
     [901, 480, "short-desktop", "desktop", true, 5.95],
     [1366, 703, "short-desktop", "desktop", true, 5.95],

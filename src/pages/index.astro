@@ -87,7 +87,7 @@ if (!maradinOpening || !maradinClimax) {
             "requestAnimationFrame" in window;
           const directDeepLink = window.location.hash.length > 1;
           const semanticHomeIntent = window.location.hash === "#entry";
-          const initialFamily = window.innerWidth <= 800 && window.innerHeight > window.innerWidth
+          const initialFamily = window.innerWidth <= 800 && window.innerHeight >= window.innerWidth
             ? "portrait"
             : window.innerWidth <= 900 && window.innerHeight <= 480 && window.innerWidth > window.innerHeight
               ? "landscape"
@@ -130,6 +130,28 @@ if (!maradinOpening || !maradinClimax) {
           root.dataset.cinematicBootstrap = bypassReason;
           root.dataset.cinematicCohort = initialCohort;
           if (semanticHomeIntent) root.dataset.cinematicEntryIntent = "pending";
+          if (candidate) {
+            window.__quantumHomeControllerWatchdog = window.setTimeout(() => {
+              delete window.__quantumHomeControllerWatchdog;
+              if (root.dataset.cinematicMode !== "candidate") return;
+              root.dataset.cinematicEligibility = "bypass";
+              root.dataset.cinematicMode = "static";
+              root.dataset.cinematicHeader = "released";
+              root.dataset.cinematicFallback = "controller-timeout";
+              delete root.dataset.cinematicEntryIntent;
+              document.querySelector(".site-header")?.removeAttribute("inert");
+              document.querySelector(".site-footer")?.removeAttribute("inert");
+              document.querySelector("#entry")?.removeAttribute("inert");
+              document.querySelectorAll("[data-field-section]").forEach((field) => field.removeAttribute("inert"));
+              const shell = document.querySelector("[data-cinematic-shell]");
+              if (shell instanceof HTMLElement) {
+                shell.dataset.cinematicInteractive = "true";
+                shell.dataset.routeNavigation = "released";
+                shell.dataset.cinematicPhase = "fallback";
+                shell.dataset.mediaState = "failed";
+              }
+            }, 4_000);
+          }
         } catch {
           root.dataset.cinematicEligibility = "bypass";
           root.dataset.cinematicMode = "static";
@@ -202,6 +224,13 @@ if (!maradinOpening || !maradinClimax) {
 
     <script>
       const root = document.documentElement;
+      const watchdogWindow = window as typeof window & { __quantumHomeControllerWatchdog?: number };
+      const controllerWatchdog = watchdogWindow.__quantumHomeControllerWatchdog;
+      if (typeof controllerWatchdog === "number") {
+        window.clearTimeout(controllerWatchdog);
+        delete watchdogWindow.__quantumHomeControllerWatchdog;
+      }
+      root.dataset.cinematicController = "claimed";
       if (root.dataset.cinematicMode === "candidate") {
         void import("../scripts/home-cinematic-integration")
           .then(({ initHomeCinematicIntegration }) => initHomeCinematicIntegration())
@@ -210,6 +239,7 @@ if (!maradinOpening || !maradinClimax) {
             root.dataset.cinematicFallback = "controller";
             root.dataset.cinematicHeader = "released";
             root.dataset.cinematicEligibility = "bypass";
+            delete root.dataset.cinematicEntryIntent;
             document.querySelector(".site-header")?.removeAttribute("inert");
             document.querySelector(".site-footer")?.removeAttribute("inert");
             document.querySelector("#entry")?.removeAttribute("inert");
