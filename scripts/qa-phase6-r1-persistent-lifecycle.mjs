@@ -308,9 +308,23 @@ async function snapshot(page, label) {
   return page.evaluate((sampleLabel) => {
     const shell = document.querySelector("[data-cinematic-shell]");
     const homeVideo = document.querySelector("[data-cinematic-media]");
+    const manifestoContent = shell?.querySelector(".manifesto-field__content");
+    const audienceRouting = document.querySelector("[data-audience-routing]");
+    const partnerLink = audienceRouting?.querySelector("a[href='/for-partners/']");
     const maradinPlayers = [...document.querySelectorAll("[data-maradin-player]")];
     const menu = document.querySelector("[data-mobile-nav]");
     const probe = globalThis.__phase6R1PersistentProbe?.() ?? null;
+    const visibleGeometry = (element) => {
+      if (!(element instanceof Element)) return null;
+      const bounds = element.getBoundingClientRect();
+      return {
+        bottom: Math.round(bounds.bottom * 1_000) / 1_000,
+        top: Math.round(bounds.top * 1_000) / 1_000,
+        visible: bounds.bottom > 0 && bounds.top < innerHeight,
+      };
+    };
+    const manifestoStyle = manifestoContent ? getComputedStyle(manifestoContent) : null;
+    const manifestoBounds = manifestoContent?.getBoundingClientRect();
     return {
       capturedAtEpochMs: Date.now(),
       documentId: probe?.documentId ?? null,
@@ -322,13 +336,31 @@ async function snapshot(page, label) {
       probe,
       home: shell ? {
         mode: document.documentElement.dataset.cinematicMode ?? null,
+        bootstrap: document.documentElement.dataset.cinematicBootstrap ?? null,
+        eligibility: document.documentElement.dataset.cinematicEligibility ?? null,
+        fallback: document.documentElement.dataset.cinematicFallback ?? null,
+        header: document.documentElement.dataset.cinematicHeader ?? null,
         phase: shell.getAttribute("data-cinematic-phase"),
+        interactive: shell.getAttribute("data-cinematic-interactive"),
+        routeNavigation: shell.getAttribute("data-route-navigation"),
         segment: shell.getAttribute("data-cinematic-segment"),
         targetFrame: Number(shell.getAttribute("data-target-frame") ?? 0),
         presentedFrame: Number(shell.getAttribute("data-presented-frame") ?? 0),
         manifestoReveal: shell.getAttribute("data-manifesto-reveal"),
+        manifesto: manifestoContent && manifestoStyle && manifestoBounds ? {
+          rendered: manifestoStyle.display !== "none"
+            && manifestoStyle.visibility !== "hidden"
+            && Number.parseFloat(manifestoStyle.opacity) > 0
+            && manifestoBounds.width > 0
+            && manifestoBounds.height > 0,
+          text: manifestoContent.textContent?.replace(/\s+/g, " ").trim() ?? "",
+        } : null,
         mediaState: shell.getAttribute("data-media-state"),
         source: homeVideo ? { hasSource: Boolean(homeVideo.currentSrc || homeVideo.getAttribute("src")), paused: homeVideo.paused, readyState: homeVideo.readyState } : null,
+        continuation: {
+          audienceRouting: audienceRouting ? { ...visibleGeometry(audienceRouting), inert: audienceRouting.hasAttribute("inert") } : null,
+          partnerLink: visibleGeometry(partnerLink),
+        },
       } : null,
       mobileMenu: menu ? { open: menu.hasAttribute("open"), expanded: menu.querySelector("summary")?.getAttribute("aria-expanded") ?? null } : null,
       maradin: maradinPlayers.map((player) => {
@@ -349,6 +381,57 @@ async function snapshot(page, label) {
       }),
     };
   }, label);
+}
+
+async function waitForRestoredHome(page, timeoutMs) {
+  await page.waitForFunction(() => {
+    const root = document.documentElement;
+    const shell = document.querySelector("[data-cinematic-shell]");
+    if (!shell) return false;
+    const enhancedReady = root.dataset.cinematicMode === "enhanced"
+      && shell.getAttribute("data-media-state") === "ready";
+    const staticRestored = root.dataset.cinematicMode === "static"
+      && root.dataset.cinematicBootstrap === "restored-scroll"
+      && root.dataset.cinematicHeader === "released"
+      && shell.getAttribute("data-cinematic-phase") === "fallback"
+      && shell.getAttribute("data-cinematic-interactive") === "true"
+      && shell.getAttribute("data-route-navigation") === "released";
+    return enhancedReady || staticRestored;
+  }, undefined, { timeout: timeoutMs });
+}
+
+function phase4Resources(state) {
+  return (state?.probe?.resources ?? []).filter(({ url, path: resourcePath }) => phase4MediaUrl(url ?? resourcePath));
+}
+
+export function staticRestorationCoherent(state) {
+  return state?.home?.mode === "static"
+    && state.home.bootstrap === "restored-scroll"
+    && state.home.eligibility === "bypass"
+    && state.home.fallback === null
+    && state.home.header === "released"
+    && state.home.phase === "fallback"
+    && state.home.interactive === "true"
+    && state.home.routeNavigation === "released"
+    && state.home.manifesto?.rendered === true
+    && state.home.manifesto.text === "We turn industrial needs into field evidence."
+    && state.home.continuation?.audienceRouting?.inert === false
+    && state.home.source?.hasSource === false
+    && Number.isFinite(state.scrollY)
+    && Number.isFinite(state.maximumScroll)
+    && state.scrollY > 0
+    && state.scrollY <= state.maximumScroll
+    && phase4Resources(state).length === 0;
+}
+
+function visibleContextRestored(before, after) {
+  const beforeLink = before?.home?.continuation?.partnerLink;
+  const afterLink = after?.home?.continuation?.partnerLink;
+  return beforeLink?.visible === true
+    && afterLink?.visible === true
+    && Number.isFinite(beforeLink.top)
+    && Number.isFinite(afterLink.top)
+    && Math.abs(beforeLink.top - afterLink.top) <= 3;
 }
 
 async function wheelToEnd(page, timeoutMs) {
@@ -374,22 +457,40 @@ async function waitForUrl(page, predicate, timeoutMs) {
 }
 
 export function navigationChecks(states) {
-  const bareCorrect = states.bare.url === "/" && states.bare.scrollY === 0;
-  const bareBackCorrect = states.bareBack.url === "/" && Math.abs(states.bareBack.scrollY - states.bareManifesto.scrollY) <= 2;
-  const bareBackManifestoResolved = states.bareBack.home?.manifestoReveal === "resolved";
+  const bareSameDocument = Boolean(states.bareManifesto.documentId)
+    && states.bareManifesto.documentId === states.bareBack.documentId;
+  const bareExactRestoration = bareSameDocument
+    && Math.abs(states.bareBack.scrollY - states.bareManifesto.scrollY) <= 2;
+  const bareStaticRestoration = !bareSameDocument
+    && staticRestorationCoherent(states.bareBack)
+    && visibleContextRestored(states.bareManifesto, states.bareBack);
+  const bareCorrect = states.bare.url === "/" && states.bare.scrollY === 0
+    && states.bare.probe?.navigation?.type === "navigate";
+  const bareBackCorrect = states.bareBack.url === "/"
+    && states.bareBack.probe?.navigation?.type === "back_forward"
+    && (bareExactRestoration || bareStaticRestoration);
+  const bareBackNoManifestoReplay = bareSameDocument
+    ? states.bareBack.home?.manifestoReveal === "resolved"
+    : staticRestorationCoherent(states.bareBack);
   const bareForwardCorrect = states.supportForward.url === "/for-partners/"
+    && states.supportForward.probe?.navigation?.type === "back_forward"
     && Math.abs(states.supportForward.scrollY - states.supportAfterBare.scrollY) <= 2;
-  const entryCorrect = states.entryResolved.url === "/#entry" && states.entryResolved.home?.manifestoReveal === "resolved";
-  const entryBackCorrect = states.entryBack.url === "/#entry" && Math.abs(states.entryBack.scrollY - states.entryResolved.scrollY) <= 2;
+  const entryCorrect = states.entryResolved.url === "/#entry"
+    && states.entryResolved.probe?.navigation?.type === "navigate"
+    && states.entryResolved.home?.manifestoReveal === "resolved";
+  const entryBackCorrect = states.entryBack.url === "/#entry"
+    && states.entryBack.probe?.navigation?.type === "back_forward"
+    && Math.abs(states.entryBack.scrollY - states.entryResolved.scrollY) <= 2;
   const entryBackManifestoResolved = states.entryBack.home?.manifestoReveal === "resolved";
   const entryForwardCorrect = states.entryForward.url === "/for-partners/"
+    && states.entryForward.probe?.navigation?.type === "back_forward"
     && Math.abs(states.entryForward.scrollY - states.supportAfterEntry.scrollY) <= 2;
   const menuClosed = [states.bareBack, states.supportForward, states.entryBack, states.entryForward]
     .every((state) => state.mobileMenu?.open === false);
   return {
     bareCorrect,
     bareBackCorrect,
-    bareBackManifestoResolved,
+    bareBackNoManifestoReplay,
     bareForwardCorrect,
     entryCorrect,
     entryBackCorrect,
@@ -473,18 +574,24 @@ async function runHistory(page, options) {
   states.bare = await snapshot(page, "bare-home");
   await wheelToEnd(page, options.timeoutMs);
   await page.waitForFunction(() => document.querySelector("[data-cinematic-shell]")?.getAttribute("data-manifesto-reveal") === "resolved", undefined, { timeout: options.timeoutMs });
+  const barePartner = page.locator("[data-audience-routing] a[href='/for-partners/']");
+  await barePartner.scrollIntoViewIfNeeded({ timeout: options.timeoutMs });
+  await settle(page, options.timeoutMs);
   states.bareManifesto = await snapshot(page, "bare-home-manifesto");
-  await page.locator("[data-audience-routing] a[href='/for-partners/']").click({ timeout: options.timeoutMs });
+  await barePartner.click({ timeout: options.timeoutMs });
   await waitForUrl(page, (url) => url.pathname === "/for-partners/", options.timeoutMs);
   states.supportAfterBare = await snapshot(page, "support-after-bare");
   await page.goBack({ waitUntil: "domcontentloaded", timeout: options.timeoutMs });
   await settle(page, options.timeoutMs);
-  await page.waitForFunction(() => document.documentElement.dataset.cinematicMode === "enhanced" && document.querySelector("[data-cinematic-shell]")?.getAttribute("data-media-state") === "ready", undefined, { timeout: options.timeoutMs });
-  await page.waitForFunction(
-    () => document.querySelector("[data-cinematic-shell]")?.getAttribute("data-manifesto-reveal") === "resolved",
-    undefined,
-    { timeout: Math.min(options.timeoutMs, 3_000) },
-  ).catch(() => false);
+  await waitForRestoredHome(page, options.timeoutMs);
+  const bareBackMode = await page.evaluate(() => document.documentElement.dataset.cinematicMode ?? null);
+  if (bareBackMode === "enhanced") {
+    await page.waitForFunction(
+      () => document.querySelector("[data-cinematic-shell]")?.getAttribute("data-manifesto-reveal") === "resolved",
+      undefined,
+      { timeout: Math.min(options.timeoutMs, 3_000) },
+    ).catch(() => false);
+  }
   states.bareBack = await snapshot(page, "bare-back");
   await page.goForward({ waitUntil: "domcontentloaded", timeout: options.timeoutMs });
   await settle(page, options.timeoutMs);
@@ -494,8 +601,11 @@ async function runHistory(page, options) {
   await waitForUrl(page, (url) => url.pathname === "/" && url.hash === "#entry", options.timeoutMs);
   states.entryInitial = await snapshot(page, "entry-initial");
   await page.waitForFunction(() => document.querySelector("[data-cinematic-shell]")?.getAttribute("data-manifesto-reveal") === "resolved", undefined, { timeout: options.timeoutMs });
+  const entryPartner = page.locator("[data-audience-routing] a[href='/for-partners/']");
+  await entryPartner.scrollIntoViewIfNeeded({ timeout: options.timeoutMs });
+  await settle(page, options.timeoutMs);
   states.entryResolved = await snapshot(page, "entry-resolved");
-  await page.locator("[data-audience-routing] a[href='/for-partners/']").click({ timeout: options.timeoutMs });
+  await entryPartner.click({ timeout: options.timeoutMs });
   await waitForUrl(page, (url) => url.pathname === "/for-partners/", options.timeoutMs);
   states.supportAfterEntry = await snapshot(page, "support-after-entry");
   await page.goBack({ waitUntil: "domcontentloaded", timeout: options.timeoutMs });
@@ -563,6 +673,14 @@ export function visibilityTransitionEvidence(transition) {
     checks,
     transitionEvents: events,
   };
+}
+
+export function observedTransitionValue(transition, stateKey, predicate) {
+  if (visibilityTransitionEvidence(transition).status !== STATUS.PASS) return null;
+  const state = transition?.[stateKey];
+  const expectedVisibility = stateKey === "hidden" ? "hidden" : stateKey === "visible" ? "visible" : null;
+  if (!expectedVisibility || state?.visibilityState !== expectedVisibility) return null;
+  return predicate(state);
 }
 
 export function evaluateVisibilityScenario(name, transition, checks) {
@@ -656,9 +774,7 @@ async function runVisibility(context, options) {
       return players.length === 2 && active.length === 1 && Boolean(video?.currentSrc || video?.getAttribute("src")) && video.paused === false && video.readyState >= 2;
     }, undefined, { timeout: options.timeoutMs });
     const maradin = await tabSwitch(primary, background, options, "maradin");
-    const maradinSourceFreeAfterReturn = maradin.visible.visibilityState === "visible"
-      ? maradinSourceFreeState(maradin.visible)
-      : null;
+    const maradinSourceFreeAfterReturn = observedTransitionValue(maradin, "visible", maradinSourceFreeState);
     let retryActive = null;
     let maradinRetry = null;
     if (maradinSourceFreeAfterReturn === true) {
@@ -687,8 +803,8 @@ async function runVisibility(context, options) {
       maradinRetry = await tabSwitch(primary, background, options, "maradin-retry");
     }
 
-    const whenHidden = (transition, predicate) => transition.hidden.visibilityState === "hidden" ? predicate(transition.hidden) : null;
-    const whenVisible = (transition, predicate) => transition.visible.visibilityState === "visible" ? predicate(transition.visible) : null;
+    const whenHidden = (transition, predicate) => observedTransitionValue(transition, "hidden", predicate);
+    const whenVisible = (transition, predicate) => observedTransitionValue(transition, "visible", predicate);
     const activeResourceIsZero = (state, resource) => {
       const active = state.probe?.[resource]?.active;
       return Number.isFinite(active) ? active === 0 : null;
@@ -752,8 +868,17 @@ export function summarizeMediaTelemetry(records, snapshotInput) {
   const homeDocuments = new Map();
   for (const state of snapshots) {
     if (!state.home || !state.documentId) continue;
-    const document = homeDocuments.get(state.documentId) ?? { documentId: state.documentId, labels: new Set(), observations: new Set(), paths: new Set() };
+    const document = homeDocuments.get(state.documentId) ?? {
+      documentId: state.documentId,
+      labels: new Set(),
+      modes: new Set(),
+      observations: new Set(),
+      paths: new Set(),
+      sourceObserved: false,
+    };
     document.labels.add(state.label);
+    if (typeof state.home.mode === "string") document.modes.add(state.home.mode);
+    if (state.home.source?.hasSource === true) document.sourceObserved = true;
     for (const resource of state.probe?.resources ?? []) {
       const mediaUrl = phase4MediaUrl(resource.url ?? resource.path);
       if (!mediaUrl) continue;
@@ -762,17 +887,32 @@ export function summarizeMediaTelemetry(records, snapshotInput) {
     }
     homeDocuments.set(state.documentId, document);
   }
-  const documents = [...homeDocuments.values()].map((document) => ({
-    documentId: document.documentId,
-    labels: [...document.labels].sort(),
-    paths: [...document.paths].sort(),
-    resourceObservations: document.observations.size,
-  })).sort((left, right) => left.documentId.localeCompare(right.documentId));
+  const documents = [...homeDocuments.values()].map((document) => {
+    const modes = [...document.modes].sort();
+    const paths = [...document.paths].sort();
+    const mediaExpected = modes.includes("enhanced") || (modes.length === 0 && paths.length > 0);
+    return {
+      documentId: document.documentId,
+      labels: [...document.labels].sort(),
+      mediaExpected,
+      modes,
+      paths,
+      resourceObservations: document.observations.size,
+      sourceFree: !document.sourceObserved,
+    };
+  }).sort((left, right) => left.documentId.localeCompare(right.documentId));
   const phase4Requests = records.filter(({ path: requestPath }) => phase4MediaUrl(requestPath));
-  const expectedPhase4Present = documents.length > 0
-    && documents.every(({ paths }) => paths.length >= 1)
+  const expectedDocuments = documents.filter(({ mediaExpected }) => mediaExpected);
+  const bypassDocuments = documents.filter(({ mediaExpected }) => !mediaExpected);
+  const expectedPhase4Present = expectedDocuments.length > 0
+    && expectedDocuments.every(({ paths }) => paths.length >= 1)
     && phase4Requests.length >= 1;
-  const noDuplicateSourceWithinDocument = documents.length > 0 && documents.every(({ paths }) => paths.length === 1);
+  const bypassDocumentsSourceFree = bypassDocuments.every(({ modes, paths, sourceFree }) => (
+    modes.length === 1 && modes[0] === "static" && paths.length === 0 && sourceFree
+  ));
+  const noDuplicateSourceWithinDocument = documents.length > 0 && documents.every(({ mediaExpected, paths }) => (
+    mediaExpected ? paths.length === 1 : paths.length === 0
+  ));
   const uniqueNetworkPaths = [...new Set(phase4Requests.map(({ path: requestPath }) => phase4MediaUrl(requestPath)).filter(Boolean))].sort();
   const selectingDocumentsByPath = new Map();
   for (const document of documents) {
@@ -793,7 +933,8 @@ export function summarizeMediaTelemetry(records, snapshotInput) {
   })).sort((left, right) => left.path.localeCompare(right.path));
   const noDuplicateNonRangeRequests = nonRangeSelections.every(({ count, logicalHomeDocuments }) => count <= logicalHomeDocuments);
   return {
-    status: expectedPhase4Present && noDuplicateSourceWithinDocument && noDuplicateNonRangeRequests ? STATUS.PASS : STATUS.FAIL,
+    status: expectedPhase4Present && bypassDocumentsSourceFree && noDuplicateSourceWithinDocument && noDuplicateNonRangeRequests ? STATUS.PASS : STATUS.FAIL,
+    bypassDocumentsSourceFree,
     expectedPhase4Present,
     noDuplicateSourceWithinDocument,
     noDuplicateNonRangeRequests,

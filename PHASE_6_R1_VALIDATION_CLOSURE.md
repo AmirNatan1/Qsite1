@@ -46,7 +46,7 @@ Node `v22.16.0` and npm `10.9.2` were used without changing `.nvmrc`.
 
 - `npm ci`: PASS
 - Astro check: PASS with zero errors and zero warnings
-- Complete test suite: PASS on the pre-commit R1 tooling snapshot; the final tracked state is rerun before handoff
+- Complete test suite: PASS on the final tracked R1 tooling state
 - Production build: PASS, ten pages
 - Phase 4 source verification: PASS
 - Phase 5B/Phase 6 focused regression: PASS
@@ -87,7 +87,14 @@ The persistent-profile probe is fail-closed:
 - Maradin retryability requires a source-free foreground state followed by a second user activation with measured playback progress, then a second source-free release.
 - A cleaned persistent profile is verified absent before the report can state `profileRetained: false`.
 
-The accepted immutable Phase 6 preview timed out at the network layer during the first fresh headed attempt, before page load. No report and no PASS were emitted, and the temporary profile was removed. The final R1 deployed origin is tested after the signed deployment exists; its exact BFCache and visibility statuses belong to the external final verifier/handoff.
+The deployed-origin persistent-profile run completed in headed Chromium with ordinary history `PASS`, media/network `PASS`, profile cleanup `PASS`, BFCache `NOT OBSERVED`, real hidden/visible transition `NOT OBSERVED`, listener stability `NOT OBSERVED`, and overall `LIMITATION`. It observed zero persisted lifecycle events and zero visible → hidden → visible transitions; Chromium exposed no `notRestoredReasons` payload on this host. The report therefore does not promote ordinary Back/Forward behavior, foreground-only snapshots, or clean media telemetry into BFCache, visibility, or listener PASS.
+
+Two fail-closed harness conditions were isolated and repaired without production changes:
+
+- Bare-Home Back intentionally creates a new `back_forward` Document in source-free `static/restored-scroll` mode. The old harness incorrectly waited for `enhanced/ready` and compared pixel positions across different enhanced/static layouts. It now requires the accepted static restoration markers, rendered manifesto, released non-inert audience, no source or Phase 4 resource selection, and the clicked partner link restored at the same visible viewport position. Same-Document enhanced restoration remains a separate strict path and is the only path eligible for BFCache PASS.
+- When Windows kept the primary page `visible` during a tab-front switch, the old harness evaluated Maradin's foreground source as though a hidden transition had occurred. Transition-dependent checks are now unavailable unless ordered native hidden and visible events are observed. The result is `NOT OBSERVED`, never false PASS and never a fabricated failure.
+
+Initial sandboxed attempts either failed before navigation with `ERR_NETWORK_ACCESS_DENIED` or emitted no report on timeout; a later host-permitted run completed. One fresh-profile retry also encountered a transient Windows `Target.createTarget` tab-open error and emitted no report. None of those incomplete attempts is counted as PASS, and every temporary profile was removed.
 
 ## Human evidence and packaging stop
 

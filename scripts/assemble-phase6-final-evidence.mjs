@@ -940,7 +940,7 @@ function lifecycleComponentStatus(component, label, permitted) {
 const R1_HISTORY_CHECKS = Object.freeze([
   "bareCorrect",
   "bareBackCorrect",
-  "bareBackManifestoResolved",
+  "bareBackNoManifestoReplay",
   "bareForwardCorrect",
   "entryCorrect",
   "entryBackCorrect",
@@ -948,6 +948,37 @@ const R1_HISTORY_CHECKS = Object.freeze([
   "entryForwardCorrect",
   "menuClosed",
 ]);
+
+function r1StaticRestorationCoherent(state) {
+  const phase4Resources = (state?.probe?.resources ?? []).filter(({ url, path: resourcePath }) => r1Phase4MediaUrl(url ?? resourcePath));
+  return state?.home?.mode === "static"
+    && state.home.bootstrap === "restored-scroll"
+    && state.home.eligibility === "bypass"
+    && state.home.fallback === null
+    && state.home.header === "released"
+    && state.home.phase === "fallback"
+    && state.home.interactive === "true"
+    && state.home.routeNavigation === "released"
+    && state.home.manifesto?.rendered === true
+    && state.home.manifesto.text === "We turn industrial needs into field evidence."
+    && state.home.continuation?.audienceRouting?.inert === false
+    && state.home.source?.hasSource === false
+    && Number.isFinite(state.scrollY)
+    && Number.isFinite(state.maximumScroll)
+    && state.scrollY > 0
+    && state.scrollY <= state.maximumScroll
+    && phase4Resources.length === 0;
+}
+
+function r1VisibleContextRestored(before, after) {
+  const beforeLink = before?.home?.continuation?.partnerLink;
+  const afterLink = after?.home?.continuation?.partnerLink;
+  return beforeLink?.visible === true
+    && afterLink?.visible === true
+    && Number.isFinite(beforeLink.top)
+    && Number.isFinite(afterLink.top)
+    && Math.abs(beforeLink.top - afterLink.top) <= 3;
+}
 
 const R1_HISTORY_STATES = Object.freeze([
   "bare",
@@ -992,15 +1023,24 @@ function validateR1History(document, status) {
     throw new Error("R1 persistent-lifecycle history event evidence is incomplete");
   }
   exactJson(document.history.events, states.entryForward.probe.events, "R1 persistent-lifecycle history event ledger");
+  const bareSameDocument = Boolean(states.bareManifesto.documentId)
+    && states.bareManifesto.documentId === states.bareBack.documentId;
+  const bareExactRestoration = bareSameDocument
+    && Number.isFinite(states.bareBack.scrollY)
+    && Number.isFinite(states.bareManifesto.scrollY)
+    && Math.abs(states.bareBack.scrollY - states.bareManifesto.scrollY) <= 2;
+  const bareStaticRestoration = !bareSameDocument
+    && r1StaticRestorationCoherent(states.bareBack)
+    && r1VisibleContextRestored(states.bareManifesto, states.bareBack);
   const derived = {
-    bareCorrect: states.bare.url === "/" && states.bare.scrollY === 0,
-    bareBackCorrect: states.bareBack.url === "/" && Number.isFinite(states.bareBack.scrollY) && Number.isFinite(states.bareManifesto.scrollY) && Math.abs(states.bareBack.scrollY - states.bareManifesto.scrollY) <= 2,
-    bareBackManifestoResolved: states.bareBack.home?.manifestoReveal === "resolved",
-    bareForwardCorrect: states.supportForward.url === "/for-partners/" && Number.isFinite(states.supportForward.scrollY) && Number.isFinite(states.supportAfterBare.scrollY) && Math.abs(states.supportForward.scrollY - states.supportAfterBare.scrollY) <= 2,
-    entryCorrect: states.entryResolved.url === "/#entry" && states.entryResolved.home?.manifestoReveal === "resolved",
-    entryBackCorrect: states.entryBack.url === "/#entry" && Number.isFinite(states.entryBack.scrollY) && Number.isFinite(states.entryResolved.scrollY) && Math.abs(states.entryBack.scrollY - states.entryResolved.scrollY) <= 2,
+    bareCorrect: states.bare.url === "/" && states.bare.scrollY === 0 && states.bare.probe?.navigation?.type === "navigate",
+    bareBackCorrect: states.bareBack.url === "/" && states.bareBack.probe?.navigation?.type === "back_forward" && (bareExactRestoration || bareStaticRestoration),
+    bareBackNoManifestoReplay: bareSameDocument ? states.bareBack.home?.manifestoReveal === "resolved" : r1StaticRestorationCoherent(states.bareBack),
+    bareForwardCorrect: states.supportForward.url === "/for-partners/" && states.supportForward.probe?.navigation?.type === "back_forward" && Number.isFinite(states.supportForward.scrollY) && Number.isFinite(states.supportAfterBare.scrollY) && Math.abs(states.supportForward.scrollY - states.supportAfterBare.scrollY) <= 2,
+    entryCorrect: states.entryResolved.url === "/#entry" && states.entryResolved.probe?.navigation?.type === "navigate" && states.entryResolved.home?.manifestoReveal === "resolved",
+    entryBackCorrect: states.entryBack.url === "/#entry" && states.entryBack.probe?.navigation?.type === "back_forward" && Number.isFinite(states.entryBack.scrollY) && Number.isFinite(states.entryResolved.scrollY) && Math.abs(states.entryBack.scrollY - states.entryResolved.scrollY) <= 2,
     entryBackManifestoResolved: states.entryBack.home?.manifestoReveal === "resolved",
-    entryForwardCorrect: states.entryForward.url === "/for-partners/" && Number.isFinite(states.entryForward.scrollY) && Number.isFinite(states.supportAfterEntry.scrollY) && Math.abs(states.entryForward.scrollY - states.supportAfterEntry.scrollY) <= 2,
+    entryForwardCorrect: states.entryForward.url === "/for-partners/" && states.entryForward.probe?.navigation?.type === "back_forward" && Number.isFinite(states.entryForward.scrollY) && Number.isFinite(states.supportAfterEntry.scrollY) && Math.abs(states.entryForward.scrollY - states.supportAfterEntry.scrollY) <= 2,
     menuClosed: [states.bareBack, states.supportForward, states.entryBack, states.entryForward].every((state) => state.mobileMenu?.open === false),
   };
   for (const check of R1_HISTORY_CHECKS) {
@@ -1128,11 +1168,15 @@ function deriveR1VisibilityObservation(transition) {
 }
 
 function r1WhenHidden(transition, predicate) {
-  return transition?.hidden?.visibilityState === "hidden" ? predicate(transition.hidden) : null;
+  return deriveR1VisibilityObservation(transition).status === "PASS" && transition?.hidden?.visibilityState === "hidden"
+    ? predicate(transition.hidden)
+    : null;
 }
 
 function r1WhenVisible(transition, predicate) {
-  return transition?.visible?.visibilityState === "visible" ? predicate(transition.visible) : null;
+  return deriveR1VisibilityObservation(transition).status === "PASS" && transition?.visible?.visibilityState === "visible"
+    ? predicate(transition.visible)
+    : null;
 }
 
 function r1ActiveResourceIsZero(state, resource) {
@@ -1359,10 +1403,14 @@ function deriveR1MediaDocuments(document) {
     const homeDocument = homeDocuments.get(state.documentId) ?? {
       documentId: state.documentId,
       labels: new Set(),
+      modes: new Set(),
       observations: new Set(),
       paths: new Set(),
+      sourceObserved: false,
     };
     homeDocument.labels.add(state.label);
+    if (typeof state.home.mode === "string") homeDocument.modes.add(state.home.mode);
+    if (state.home.source?.hasSource === true) homeDocument.sourceObserved = true;
     for (const resource of state.probe?.resources ?? []) {
       const mediaUrl = r1Phase4MediaUrl(resource?.url ?? resource?.path);
       if (!mediaUrl) continue;
@@ -1371,17 +1419,25 @@ function deriveR1MediaDocuments(document) {
     }
     homeDocuments.set(state.documentId, homeDocument);
   }
-  return [...homeDocuments.values()].map((homeDocument) => ({
-    documentId: homeDocument.documentId,
-    labels: [...homeDocument.labels].sort(lexicalCompare),
-    paths: [...homeDocument.paths].sort(lexicalCompare),
-    resourceObservations: homeDocument.observations.size,
-  })).sort((left, right) => lexicalCompare(left.documentId, right.documentId));
+  return [...homeDocuments.values()].map((homeDocument) => {
+    const modes = [...homeDocument.modes].sort(lexicalCompare);
+    const paths = [...homeDocument.paths].sort(lexicalCompare);
+    const mediaExpected = modes.includes("enhanced") || (modes.length === 0 && paths.length > 0);
+    return {
+      documentId: homeDocument.documentId,
+      labels: [...homeDocument.labels].sort(lexicalCompare),
+      mediaExpected,
+      modes,
+      paths,
+      resourceObservations: homeDocument.observations.size,
+      sourceFree: !homeDocument.sourceObserved,
+    };
+  }).sort((left, right) => lexicalCompare(left.documentId, right.documentId));
 }
 
 function validateR1MediaRequests(document, status) {
   const media = document.mediaRequests;
-  if (![media?.expectedPhase4Present, media?.noDuplicateSourceWithinDocument, media?.noDuplicateNonRangeRequests].every((value) => typeof value === "boolean")
+  if (![media?.expectedPhase4Present, media?.bypassDocumentsSourceFree, media?.noDuplicateSourceWithinDocument, media?.noDuplicateNonRangeRequests].every((value) => typeof value === "boolean")
     || !Array.isArray(media.documents) || !media.network || !Array.isArray(media.network.phase4Requests) || !Array.isArray(media.network.nonRangeSelections)) {
     throw new Error("R1 persistent-lifecycle media-request evidence is incomplete");
   }
@@ -1391,6 +1447,7 @@ function validateR1MediaRequests(document, status) {
   for (const [index, record] of media.documents.entries()) {
     if (typeof record?.documentId !== "string" || !record.documentId || documentIds.has(record.documentId)
       || !Array.isArray(record.labels) || !Array.isArray(record.paths)
+      || typeof record.mediaExpected !== "boolean" || !Array.isArray(record.modes) || typeof record.sourceFree !== "boolean"
       || !Number.isSafeInteger(record.resourceObservations) || record.resourceObservations < 0
       || record.resourceObservations < record.paths.length
       || new Set(record.paths).size !== record.paths.length
@@ -1403,10 +1460,17 @@ function validateR1MediaRequests(document, status) {
   if (phase4Requests.some((request) => !request || r1Phase4MediaUrl(request.path) === null)) {
     throw new Error("R1 persistent-lifecycle raw Phase 4 request ledger differs");
   }
-  const expectedPhase4Present = media.documents.length > 0
-    && media.documents.every(({ paths }) => paths.length >= 1)
+  const expectedDocuments = media.documents.filter(({ mediaExpected }) => mediaExpected);
+  const bypassDocuments = media.documents.filter(({ mediaExpected }) => !mediaExpected);
+  const expectedPhase4Present = expectedDocuments.length > 0
+    && expectedDocuments.every(({ paths }) => paths.length >= 1)
     && phase4Requests.length >= 1;
-  const noDuplicateSourceWithinDocument = media.documents.length > 0 && media.documents.every(({ paths }) => paths.length === 1);
+  const bypassDocumentsSourceFree = bypassDocuments.every(({ modes, paths, sourceFree }) => (
+    modes.length === 1 && modes[0] === "static" && paths.length === 0 && sourceFree
+  ));
+  const noDuplicateSourceWithinDocument = media.documents.length > 0 && media.documents.every(({ mediaExpected, paths }) => (
+    mediaExpected ? paths.length === 1 : paths.length === 0
+  ));
   const uniquePaths = [...new Set(phase4Requests.map(({ path: requestPath }) => r1Phase4MediaUrl(requestPath)))].sort(lexicalCompare);
   const selectingDocumentsByPath = new Map();
   for (const record of media.documents) {
@@ -1435,9 +1499,10 @@ function validateR1MediaRequests(document, status) {
   }
   const noDuplicateNonRangeRequests = nonRangeSelections.every(({ count, logicalHomeDocuments }) => count <= logicalHomeDocuments);
   if (media.expectedPhase4Present !== expectedPhase4Present) throw new Error("R1 persistent-lifecycle expectedPhase4Present contradicts raw documents/requests");
+  if (media.bypassDocumentsSourceFree !== bypassDocumentsSourceFree) throw new Error("R1 persistent-lifecycle bypassDocumentsSourceFree contradicts raw static Home documents");
   if (media.noDuplicateSourceWithinDocument !== noDuplicateSourceWithinDocument) throw new Error("R1 persistent-lifecycle noDuplicateSourceWithinDocument contradicts raw document selections");
   if (media.noDuplicateNonRangeRequests !== noDuplicateNonRangeRequests) throw new Error("R1 persistent-lifecycle noDuplicateNonRangeRequests contradicts raw non-range selections");
-  const expected = expectedPhase4Present && noDuplicateSourceWithinDocument && noDuplicateNonRangeRequests ? "PASS" : "FAIL";
+  const expected = expectedPhase4Present && bypassDocumentsSourceFree && noDuplicateSourceWithinDocument && noDuplicateNonRangeRequests ? "PASS" : "FAIL";
   if (status !== expected) throw new Error(`R1 persistent-lifecycle media-request status must be ${expected}`);
 }
 

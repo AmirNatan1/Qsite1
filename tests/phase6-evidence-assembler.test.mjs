@@ -451,18 +451,18 @@ async function attachR1MachineEvidence(fixture) {
     activeByType: { click: 2, visibilitychange: 1 },
     duplicateAttempts: 0,
   });
-  const lifecycleState = (label, documentId, url, scrollY, manifestoReveal = null, mediaStartTime = null) => ({
+  const lifecycleState = (label, documentId, url, scrollY, manifestoReveal = null, mediaStartTime = null, navigationType = "navigate") => ({
     label,
     documentId,
     url,
     scrollY,
     mobileMenu: { open: false },
-    ...(manifestoReveal === null ? {} : { home: { manifestoReveal } }),
+    ...(manifestoReveal === null ? {} : { home: { manifestoReveal, mode: "enhanced", source: { hasSource: true } } }),
     probe: {
       documentEventSequence: 0,
       events: [],
       listeners: listenerTelemetry(),
-      navigation: { notRestoredReasons: null },
+      navigation: { type: navigationType, notRestoredReasons: null },
       resources: mediaStartTime == null ? [] : [{ url: phase4Path, startTime: mediaStartTime }],
     },
   });
@@ -470,13 +470,13 @@ async function attachR1MachineEvidence(fixture) {
     bare: lifecycleState("bare-home", "bare-document", "/", 0, "hidden", 10),
     bareManifesto: lifecycleState("bare-home-manifesto", "bare-document", "/", 800, "resolved", 10),
     supportAfterBare: lifecycleState("support-after-bare", "support-bare-document", "/for-partners/", 120),
-    bareBack: lifecycleState("bare-back", "bare-document", "/", 800, "resolved", 10),
-    supportForward: lifecycleState("support-forward", "support-bare-document", "/for-partners/", 120),
+    bareBack: lifecycleState("bare-back", "bare-document", "/", 800, "resolved", 10, "back_forward"),
+    supportForward: lifecycleState("support-forward", "support-bare-document", "/for-partners/", 120, null, null, "back_forward"),
     entryInitial: lifecycleState("entry-initial", "entry-document", "/#entry", 900, "hidden", 20),
     entryResolved: lifecycleState("entry-resolved", "entry-document", "/#entry", 900, "resolved", 20),
     supportAfterEntry: lifecycleState("support-after-entry", "support-entry-document", "/for-partners/", 60),
-    entryBack: lifecycleState("entry-back", "entry-document", "/#entry", 900, "resolved", 20),
-    entryForward: lifecycleState("entry-forward", "support-entry-document", "/for-partners/", 60),
+    entryBack: lifecycleState("entry-back", "entry-document", "/#entry", 900, "resolved", 20, "back_forward"),
+    entryForward: lifecycleState("entry-forward", "support-entry-document", "/for-partners/", 60, null, null, "back_forward"),
   };
   const notRestoredReasons = Object.fromEntries(Object.keys(historyStates).map((stateKey) => [stateKey, null]));
   const bfcache = {
@@ -493,7 +493,7 @@ async function attachR1MachineEvidence(fixture) {
   const historyChecks = {
     bareCorrect: true,
     bareBackCorrect: true,
-    bareBackManifestoResolved: true,
+    bareBackNoManifestoReplay: true,
     bareForwardCorrect: true,
     entryCorrect: true,
     entryBackCorrect: true,
@@ -575,12 +575,13 @@ async function attachR1MachineEvidence(fixture) {
     listeners: { status: "PASS", comparisons: listenerComparisons, duplicateDocuments: [], statement: "Same-Document listener telemetry remained stable." },
     mediaRequests: {
       status: "PASS",
+      bypassDocumentsSourceFree: true,
       expectedPhase4Present: true,
       noDuplicateSourceWithinDocument: true,
       noDuplicateNonRangeRequests: true,
       documents: [
-        { documentId: "bare-document", labels: ["bare-back", "bare-home", "bare-home-manifesto"], paths: [phase4Path], resourceObservations: 1 },
-        { documentId: "entry-document", labels: ["entry-back", "entry-initial", "entry-resolved"], paths: [phase4Path], resourceObservations: 1 },
+        { documentId: "bare-document", labels: ["bare-back", "bare-home", "bare-home-manifesto"], mediaExpected: true, modes: ["enhanced"], paths: [phase4Path], resourceObservations: 1, sourceFree: false },
+        { documentId: "entry-document", labels: ["entry-back", "entry-initial", "entry-resolved"], mediaExpected: true, modes: ["enhanced"], paths: [phase4Path], resourceObservations: 1, sourceFree: false },
       ],
       network: {
         phase4Requests: [{ path: phase4Path, range: "bytes=0-1023" }],
@@ -1153,11 +1154,11 @@ test("R1 authority accepts only the repair branch, exact parent, frozen main, 28
   hiddenFailurePromoted.visibility.status = "FAIL";
   assert.throws(() => validateDocumentAuthority(lifecycleRecord, hiddenFailurePromoted, fixture.metadata), /visibility status must be NOT OBSERVED/);
   const hiddenManifestoPromoted = structuredClone(lifecycleReport);
-  hiddenManifestoPromoted.history.checks.bareBackManifestoResolved = false;
-  assert.throws(() => validateDocumentAuthority(lifecycleRecord, hiddenManifestoPromoted, fixture.metadata), /history check bareBackManifestoResolved contradicts raw states/);
+  hiddenManifestoPromoted.history.checks.bareBackNoManifestoReplay = false;
+  assert.throws(() => validateDocumentAuthority(lifecycleRecord, hiddenManifestoPromoted, fixture.metadata), /history check bareBackNoManifestoReplay contradicts raw states/);
   const hiddenManifestoRawContradiction = structuredClone(lifecycleReport);
   hiddenManifestoRawContradiction.history.states.bareBack.home.manifestoReveal = "hidden";
-  assert.throws(() => validateDocumentAuthority(lifecycleRecord, hiddenManifestoRawContradiction, fixture.metadata), /history check bareBackManifestoResolved contradicts raw states/);
+  assert.throws(() => validateDocumentAuthority(lifecycleRecord, hiddenManifestoRawContradiction, fixture.metadata), /history check bareBackNoManifestoReplay contradicts raw states/);
   const duplicateMediaPromoted = structuredClone(lifecycleReport);
   duplicateMediaPromoted.mediaRequests.noDuplicateNonRangeRequests = false;
   assert.throws(() => validateDocumentAuthority(lifecycleRecord, duplicateMediaPromoted, fixture.metadata), /noDuplicateNonRangeRequests contradicts raw non-range selections/);
@@ -1214,6 +1215,43 @@ test("R1 persistent lifecycle rejects every raw-history, BFCache, visibility, li
   const validate = (document) => validateDocumentAuthority(record, document, fixture.metadata);
   assert.doesNotThrow(() => validate(report));
 
+  const staticRestoredHistory = structuredClone(report);
+  staticRestoredHistory.history.states.bareManifesto.home.continuation = { partnerLink: { top: 360, visible: true } };
+  staticRestoredHistory.history.states.bareBack = {
+    ...staticRestoredHistory.history.states.bareBack,
+    documentId: "bare-static-document",
+    maximumScroll: 11_970,
+    scrollY: 1_581,
+    home: {
+      bootstrap: "restored-scroll",
+      continuation: { audienceRouting: { inert: false }, partnerLink: { top: 361, visible: true } },
+      eligibility: "bypass",
+      fallback: null,
+      header: "released",
+      interactive: "true",
+      manifesto: { rendered: true, text: "We turn industrial needs into field evidence." },
+      manifestoReveal: null,
+      mode: "static",
+      phase: "fallback",
+      routeNavigation: "released",
+      source: { hasSource: false },
+    },
+    probe: {
+      ...staticRestoredHistory.history.states.bareBack.probe,
+      navigation: { type: "back_forward", notRestoredReasons: null },
+      resources: [],
+    },
+  };
+  staticRestoredHistory.listeners.comparisons = staticRestoredHistory.listeners.comparisons.filter(({ name }) => name !== "bare-back");
+  const staticRestorationPhase4Path = staticRestoredHistory.mediaRequests.documents.find(({ documentId }) => documentId === "bare-document").paths[0];
+  staticRestoredHistory.mediaRequests.documents = [
+    { documentId: "bare-document", labels: ["bare-home", "bare-home-manifesto"], mediaExpected: true, modes: ["enhanced"], paths: [staticRestorationPhase4Path], resourceObservations: 1, sourceFree: false },
+    { documentId: "bare-static-document", labels: ["bare-back"], mediaExpected: false, modes: ["static"], paths: [], resourceObservations: 0, sourceFree: true },
+    staticRestoredHistory.mediaRequests.documents.find(({ documentId }) => documentId === "entry-document"),
+  ];
+  assert.equal(staticRestoredHistory.bfcache.status, "NOT OBSERVED");
+  assert.doesNotThrow(() => validate(staticRestoredHistory), "intentional static/restored-scroll Back was rejected by the assembler");
+
   const headlessHostAttempt = structuredClone(report);
   headlessHostAttempt.browser.headed = false;
   assert.throws(() => validate(headlessHostAttempt), /schema\/browser\/origin authority differs/);
@@ -1238,7 +1276,7 @@ test("R1 persistent lifecycle rejects every raw-history, BFCache, visibility, li
   const rawHistoryContradictions = {
     bareCorrect: (document) => { document.history.states.bare.url = "/wrong/"; },
     bareBackCorrect: (document) => { document.history.states.bareBack.scrollY += 10; },
-    bareBackManifestoResolved: (document) => { document.history.states.bareBack.home.manifestoReveal = "hidden"; },
+    bareBackNoManifestoReplay: (document) => { document.history.states.bareBack.home.manifestoReveal = "hidden"; },
     bareForwardCorrect: (document) => { document.history.states.supportForward.url = "/wrong/"; },
     entryCorrect: (document) => { document.history.states.entryResolved.url = "/"; },
     entryBackCorrect: (document) => { document.history.states.entryBack.scrollY += 10; },
@@ -1324,7 +1362,7 @@ test("R1 persistent lifecycle rejects every raw-history, BFCache, visibility, li
 
   const reloadedRawState = structuredClone(withPairedBfcache);
   reloadedRawState.history.states.bareBack.documentId = "reloaded-document";
-  assert.throws(() => validate(reloadedRawState), /BFCache paired-restoration ledger contradicts raw evidence|BFCache scenario ledger contradicts raw evidence/);
+  assert.throws(() => validate(reloadedRawState), /history check bareBackCorrect contradicts raw states|BFCache paired-restoration ledger contradicts raw evidence|BFCache scenario ledger contradicts raw evidence/);
 
   const observationPass = {
     status: "PASS",
@@ -1461,8 +1499,11 @@ test("R1 persistent lifecycle rejects every raw-history, BFCache, visibility, li
   noObservedMedia.mediaRequests.documents = noObservedMedia.mediaRequests.documents.map(({ documentId, labels }) => ({
     documentId,
     labels,
+    mediaExpected: true,
+    modes: ["enhanced"],
     paths: [],
     resourceObservations: 0,
+    sourceFree: false,
   }));
   Object.assign(noObservedMedia.mediaRequests.network, {
     phase4Requests: [],

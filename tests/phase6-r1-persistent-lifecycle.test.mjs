@@ -17,6 +17,7 @@ import {
   maradinSourceFreeState,
   navigationChecks,
   normalizeBaseUrl,
+  observedTransitionValue,
   parseArguments,
   profileCleanupResult,
   runSelfTest,
@@ -32,6 +33,7 @@ function probe(documentId, overrides = {}) {
     documentEventSequence: 0,
     events: [],
     listeners: { active: 3, activeByType: { click: 2, visibilitychange: 1 }, duplicateAttempts: 0 },
+    navigation: { type: "navigate", notRestoredReasons: null },
     resources: [],
     ...overrides,
   };
@@ -128,13 +130,13 @@ test("ordinary history requires both Forward destinations, restored manifesto st
   const states = {
     bare: homeState("bare", "bare", "/"),
     bareManifesto: homeState("bare-manifesto", "bare", "/", { scrollY: 800 }),
-    bareBack: homeState("bare-back", "bare", "/", { scrollY: 800 }),
+    bareBack: homeState("bare-back", "bare", "/", { probe: probe("bare", { navigation: { type: "back_forward", notRestoredReasons: null } }), scrollY: 800 }),
     supportAfterBare: snapshot("support-bare", "support-a", { url: "/for-partners/", scrollY: 40 }),
-    supportForward: snapshot("support-forward", "support-a", { url: "/for-partners/", scrollY: 40 }),
+    supportForward: snapshot("support-forward", "support-a", { probe: probe("support-a", { navigation: { type: "back_forward", notRestoredReasons: null } }), url: "/for-partners/", scrollY: 40 }),
     entryResolved: homeState("entry", "entry", "/#entry", { scrollY: 900 }),
-    entryBack: homeState("entry-back", "entry", "/#entry", { scrollY: 900 }),
+    entryBack: homeState("entry-back", "entry", "/#entry", { probe: probe("entry", { navigation: { type: "back_forward", notRestoredReasons: null } }), scrollY: 900 }),
     supportAfterEntry: snapshot("support-entry", "support-b", { url: "/for-partners/", scrollY: 20 }),
-    entryForward: snapshot("entry-forward", "support-b", { url: "/for-partners/", scrollY: 20 }),
+    entryForward: snapshot("entry-forward", "support-b", { probe: probe("support-b", { navigation: { type: "back_forward", notRestoredReasons: null } }), url: "/for-partners/", scrollY: 20 }),
   };
   assert.ok(Object.values(navigationChecks(states)).every(Boolean));
   assert.equal(navigationChecks({ ...states, supportForward: { ...states.supportForward, url: "/wrong/" } }).bareForwardCorrect, false);
@@ -145,7 +147,7 @@ test("ordinary history requires both Forward destinations, restored manifesto st
       home: { manifestoReveal: "hidden", source: { hasSource: true, paused: true } },
       scrollY: 800,
     }),
-  }).bareBackManifestoResolved, false);
+  }).bareBackNoManifestoReplay, false);
   assert.equal(navigationChecks({
     ...states,
     entryBack: homeState("entry-back-hidden", "entry", "/#entry", {
@@ -153,6 +155,53 @@ test("ordinary history requires both Forward destinations, restored manifesto st
       scrollY: 900,
     }),
   }).entryBackManifestoResolved, false);
+});
+
+test("ordinary history accepts only the intentional source-free static restored-scroll continuation after a non-persisted bare-Home Back", () => {
+  const departure = homeState("bare-manifesto", "enhanced-document", "/", {
+    home: {
+      continuation: { partnerLink: { top: 360, visible: true } },
+      manifestoReveal: "resolved",
+      mode: "enhanced",
+      source: { hasSource: true, paused: true },
+    },
+    scrollY: 5_800,
+  });
+  const restored = homeState("bare-back", "restored-document", "/", {
+    home: {
+      bootstrap: "restored-scroll",
+      continuation: { audienceRouting: { inert: false }, partnerLink: { top: 361, visible: true } },
+      eligibility: "bypass",
+      fallback: null,
+      header: "released",
+      interactive: "true",
+      manifesto: { rendered: true, text: "We turn industrial needs into field evidence." },
+      manifestoReveal: null,
+      mode: "static",
+      phase: "fallback",
+      routeNavigation: "released",
+      source: { hasSource: false, paused: true },
+    },
+    probe: probe("restored-document", { navigation: { type: "back_forward", notRestoredReasons: null }, resources: [] }),
+    maximumScroll: 11_970,
+    scrollY: 1_581,
+  });
+  const base = {
+    bare: homeState("bare", "enhanced-document", "/", { scrollY: 0 }),
+    bareManifesto: departure,
+    bareBack: restored,
+    supportAfterBare: snapshot("support-bare", "support-a", { url: "/for-partners/", scrollY: 40 }),
+    supportForward: snapshot("support-forward", "support-a", { probe: probe("support-a", { navigation: { type: "back_forward", notRestoredReasons: null } }), url: "/for-partners/", scrollY: 40 }),
+    entryResolved: homeState("entry", "entry", "/#entry", { scrollY: 900 }),
+    entryBack: homeState("entry-back", "entry", "/#entry", { probe: probe("entry", { navigation: { type: "back_forward", notRestoredReasons: null } }), scrollY: 900 }),
+    supportAfterEntry: snapshot("support-entry", "support-b", { url: "/for-partners/", scrollY: 20 }),
+    entryForward: snapshot("entry-forward", "support-b", { probe: probe("support-b", { navigation: { type: "back_forward", notRestoredReasons: null } }), url: "/for-partners/", scrollY: 20 }),
+  };
+  assert.equal(navigationChecks(base).bareBackCorrect, true);
+  assert.equal(navigationChecks(base).bareBackNoManifestoReplay, true);
+  assert.equal(navigationChecks({ ...base, bareBack: { ...restored, home: { ...restored.home, bootstrap: "eligible" } } }).bareBackNoManifestoReplay, false);
+  assert.equal(navigationChecks({ ...base, bareBack: { ...restored, home: { ...restored.home, source: { hasSource: true } } } }).bareBackCorrect, false);
+  assert.equal(navigationChecks({ ...base, bareBack: { ...restored, home: { ...restored.home, continuation: { partnerLink: { top: 361, visible: false } } } } }).bareBackCorrect, false);
 });
 
 test("BFCache requires an ordered exact-route pagehide/pageshow pair for the restored Home Document", () => {
@@ -192,6 +241,13 @@ test("BFCache requires an ordered exact-route pagehide/pageshow pair for the res
 test("visibility requires an ordered visible-hidden-visible transition for the same Document", () => {
   const transition = visibilityTransition();
   assert.equal(visibilityTransitionEvidence(transition).status, STATUS.PASS);
+  assert.equal(observedTransitionValue(transition, "visible", () => true), true);
+  const neverHidden = {
+    ...transition,
+    hidden: { ...transition.hidden, visibilityState: "visible", probe: probe("visibility-document", { documentEventSequence: 3, events: [] }) },
+    visible: { ...transition.visible, probe: probe("visibility-document", { documentEventSequence: 3, events: [] }) },
+  };
+  assert.equal(observedTransitionValue(neverHidden, "visible", () => false), null, "a visible snapshot without an observed hidden transition must not become FAIL");
   assert.equal(visibilityTransitionEvidence({ ...transition, before: { ...transition.before, visibilityState: "hidden" } }).status, STATUS.NOT_OBSERVED);
   assert.equal(visibilityTransitionEvidence({ ...transition, hidden: { ...transition.hidden, documentId: "other" } }).status, STATUS.NOT_OBSERVED);
   assert.equal(visibilityTransitionEvidence({ ...transition, visible: { ...transition.visible, probe: probe("visibility-document", { documentEventSequence: 5, events: [] }) } }).status, STATUS.NOT_OBSERVED);
@@ -261,6 +317,19 @@ test("logical Phase 4 media telemetry requires presence and ignores repeated ran
     ] }),
   };
   assert.equal(summarizeMediaTelemetry(records, [queryVariantSelection]).status, STATUS.FAIL);
+  const staticRestored = homeState("static-restored", "static-document", "/", {
+    home: { mode: "static", source: { hasSource: false, paused: true } },
+    probe: probe("static-document", { navigation: { type: "back_forward", notRestoredReasons: null }, resources: [] }),
+  });
+  const enhanced = { ...mediaState, home: { ...mediaState.home, mode: "enhanced" } };
+  const withStaticBypass = summarizeMediaTelemetry(records, [enhanced, staticRestored]);
+  assert.equal(withStaticBypass.status, STATUS.PASS);
+  assert.equal(withStaticBypass.bypassDocumentsSourceFree, true);
+  const staticRequestedMedia = {
+    ...staticRestored,
+    probe: probe("static-document", { resources: [{ startTime: 3, url: "/media/cinematic/phase-4r2/media/mobile.mp4" }] }),
+  };
+  assert.equal(summarizeMediaTelemetry(records, [enhanced, staticRequestedMedia]).status, STATUS.FAIL);
 });
 
 test("listener telemetry detects duplicate attempts and same-Document listener growth", () => {
