@@ -16,7 +16,7 @@ export function enhanceReversibleReveals(root: ParentNode = document) {
     for (const entry of entries) {
       (entry.target as HTMLElement).dataset.routeResolved = entry.isIntersecting ? "true" : "false";
     }
-  }, { rootMargin: "-10% 0px -10%", threshold: 0.12 });
+  }, { rootMargin: "-10% 0px -10%", threshold: 0.04 });
 
   targets.forEach((target) => observer.observe(target));
 }
