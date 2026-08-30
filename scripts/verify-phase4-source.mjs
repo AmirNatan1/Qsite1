@@ -16,6 +16,7 @@ import {
 const ROOT = process.cwd();
 const FINAL_AUTHORITY_EXPECTED = process.env.PHASE4R2_FINAL_AUTHORITY === "1";
 const PHASE5B_ROUTE_SCOPE_ALLOWED = process.argv.includes("--allow-phase5b-route-scope");
+const PHASE6_GLOBAL_HARDENING_ALLOWED = process.argv.includes("--allow-phase6-global-hardening");
 const ACCEPTED_PHASE3 = "2fdee6feb9664578c6c8243d1b80ea885235279f";
 const REQUIRED_ANCESTORS = Object.freeze([
   ["Phase 2B", "b54f3a83b6180466127589a8d028f94dab892d17"],
@@ -95,6 +96,9 @@ const PHASE5B_ROUTE_PRODUCTION_CHANGES = Object.freeze([
   /^src\/styles\/routes\/(?:production-foundations|industry|startups|industries|proof-production|maradin|spark-production|about|contact|404-production)\.css$/,
   /^src\/pages\/(?:for-partners|for-startups|industries|spark|about|contact|404)\.astro$/,
   /^src\/pages\/pocs(?:\/maradin)?\.astro$/,
+]);
+const PHASE6_GLOBAL_HARDENING_CHANGES = Object.freeze([
+  /^src\/components\/SiteFooter\.astro$/,
 ]);
 const failures = [];
 
@@ -332,8 +336,12 @@ check(
     && /failed-preserve-runway/.test(cinematicController)
     && /releaseMedia\(\)/.test(cinematicController)
     && /cinematicDocumentStateForScroll/.test(cinematicController)
+    && /if \(safeAtTop\) return "static"/.test(cinematicController)
     && /return enhancedCommitted \? "preserve-runway" : "static"/.test(cinematicController)
-    && /root\.dataset\.cinematicMode\s*=\s*["']static["'][\s\S]{0,220}clearCinematicStyles\(\)/.test(cinematicController)
+    && /export function canCollapseCinematicAtFailure/.test(cinematicController)
+    && /const safeAtTop = canCollapseCinematicAtFailure\(/.test(cinematicController)
+    && /window\.scrollY[\s\S]{0,120}window\.location\.hash[\s\S]{0,120}cinematicEntryIntent/.test(cinematicController)
+    && /root\.dataset\.cinematicMode\s*=\s*["']static["'][\s\S]{0,520}clearCinematicStyles\(\)/.test(cinematicController)
     && !/querySelectorAll\(["']source["']\)[\s\S]{0,160}removeAttribute\(["']srcset["']\)/.test(cinematicController),
   "media-failure-geometry",
   "src/scripts/home-cinematic-integration.ts",
@@ -534,11 +542,17 @@ try {
     ...lines(git("diff", "--name-only", ACCEPTED_PHASE3, "--", "src", "public", "astro.config.mjs")),
     ...lines(git("ls-files", "--others", "--exclude-standard", "--", "src", "public")),
   ].map((file) => file.replaceAll("\\", "/"));
-  const permitted = PHASE5B_ROUTE_SCOPE_ALLOWED ? [...ALLOWED_PRODUCTION_CHANGES, ...PHASE5B_ROUTE_PRODUCTION_CHANGES] : ALLOWED_PRODUCTION_CHANGES;
+  const permitted = [
+    ...ALLOWED_PRODUCTION_CHANGES,
+    ...(PHASE5B_ROUTE_SCOPE_ALLOWED ? PHASE5B_ROUTE_PRODUCTION_CHANGES : []),
+    ...(PHASE6_GLOBAL_HARDENING_ALLOWED ? PHASE6_GLOBAL_HARDENING_CHANGES : []),
+  ];
   const unexpected = [...new Set(changed)].sort().filter((file) => !permitted.some((pattern) => pattern.test(file)));
-  const scopeMessage = PHASE5B_ROUTE_SCOPE_ALLOWED
-    ? "Phase 4 Home changes and the explicit Phase 5B supporting-route production surface are the only permitted production changes"
-    : "Phase 4 may change only the isolated Home integration surface and configurable skip-link shell";
+  const scopeMessage = PHASE6_GLOBAL_HARDENING_ALLOWED
+    ? "Phase 4 Home, Phase 5B supporting routes, and the exact Phase 6 global-hardening surface are the only permitted production changes"
+    : PHASE5B_ROUTE_SCOPE_ALLOWED
+      ? "Phase 4 Home changes and the explicit Phase 5B supporting-route production surface are the only permitted production changes"
+      : "Phase 4 may change only the isolated Home integration surface and configurable skip-link shell";
   check(unexpected.length === 0, "production-scope", "src + public + astro.config.mjs", scopeMessage, unexpected);
 } catch (error) {
   check(false, "production-baseline", "git", `could not compare production source with accepted Phase 3: ${error.message}`);

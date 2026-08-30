@@ -117,6 +117,32 @@ Severity describes user impact, not implementation size. A suspected cross-engin
 - Production repair justified: yes.
 - Final resolution: pending implementation and cross-route navigation verification.
 
+### P6-010 — Exact-top media fallback causes a full-viewport layout shift
+
+- Route/state: fresh bare `/`, exact top, selected H.264 request blocked during enhancement.
+- Engine/viewport: Chromium 151, 1440×900.
+- Reproduction: observe Layout Shift entries, abort the selected cinematic MP4, and wait for the safe exact-top static collapse.
+- Expected: a compact static fallback without catastrophic visual displacement.
+- Observed: the functional P6-003 collapse changed the shell/header compensation after first paint and produced cumulative layout shift `1.0`.
+- Severity: high.
+- Evidence: first full Phase 6 performance/network run, exact-top blocked-media scenario.
+- Probable cause: static failure removed the enhanced shell's negative header compensation and collapsed the absolute runway below one viewport.
+- Production repair justified: yes; failure-only CSS can preserve the painted viewport while still removing the long runway.
+- Final resolution: repaired with failure-specific shell compensation and a one-viewport runway; focused rerun measured CLS `0`.
+
+### P6-011 — Semantic-entry keyboard focus cannot advance into audience navigation
+
+- Route/state: Home skip-link activation to `/#entry`, then native Tab navigation.
+- Engine/viewport: Chromium 151, 1440×900; cross-engine verification pending.
+- Reproduction: Tab to `Skip cinematic intro`, press Enter, then press Tab after native fragment alignment.
+- Expected: the focused manifesto target is followed by usable, visibly focused audience navigation.
+- Observed: the fragment aligned the manifesto with the audience section still roughly `121 px` below the viewport; the entire audience section remained inert, so focus wrapped to the skip link/body instead of advancing into the next semantic choices.
+- Severity: high.
+- Evidence: external Phase 6 accessibility/interaction diagnostic with zero axe violations and one unsuppressed Home keyboard failure.
+- Probable cause: the pure-manifesto interaction state released the focused `#entry` target but kept the immediately following audience navigation inert until further pointer/scroll input.
+- Production repair justified: yes; make only the following audience section keyboard-reachable while preserving the concealed header and inert lower chapters until native scroll reaches the accepted release boundary.
+- Final resolution: implementation complete; cross-engine keyboard verification pending.
+
 ## Investigated issues not currently classified as production defects
 
 ### P6-I01 — Playwright WebKit H.264 failure
@@ -151,4 +177,3 @@ Severity describes user impact, not implementation size. A suspected cross-engin
 
 - Observation: lossless WebP saves 11.8–13.5% per poster but approximately doubles local proxy decode medians; lossless AVIF is slower and lossy candidates alter dark gradients/edges.
 - Decision: `NO PRODUCTION POSTER CHANGE — CURRENT AUTHORITY RETAINED`. See `PHASE_6_POSTER_STUDY.md`.
-

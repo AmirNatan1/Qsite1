@@ -463,6 +463,7 @@ export function initHomeCinematicIntegration() {
     shell.dataset.routeNavigation = "concealed";
     if (manifestoSettled) {
       entry.removeAttribute("inert");
+      audienceRouting.removeAttribute("inert");
       shell.dataset.cinematicInteractive = "manifesto";
       if (focused instanceof Node && (header.contains(focused) || footer?.contains(focused) || downstreamFields.some((field) => field.contains(focused)))) {
         entry.focus({ preventScroll: true });

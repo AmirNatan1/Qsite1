@@ -59,6 +59,7 @@ test("Phase 6 cinematic failures collapse only at a safe top and release failed 
   const source = read("src/scripts/home-cinematic-integration.ts");
   const styles = read("src/styles/routes/home-cinematic.css");
   assert.match(source, /semanticEntryNavigationResolved[\s\S]*?window\.scrollY >= entryTop - headerHeight - 1[\s\S]*?mediaFailed \|\| \(mediaReady && presentedPhysicalFrame === targetPhysicalFrame\)[\s\S]*?delete root\.dataset\.cinematicEntryIntent/);
+  assert.match(source, /if \(manifestoSettled\) \{[\s\S]{0,100}entry\.removeAttribute\("inert"\);[\s\S]{0,100}audienceRouting\.removeAttribute\("inert"\);/);
   assert.match(styles, /data-cinematic-mode="static"\]\[data-cinematic-fallback\][\s\S]*?margin-top:\s*calc\(-1 \* var\(--cinematic-header-px\)\)/);
   assert.match(styles, /data-cinematic-mode="static"\]\[data-cinematic-fallback\][\s\S]*?\.cinematic-runway[\s\S]*?height:\s*100svh/);
 });
@@ -83,4 +84,11 @@ test("Phase 6 home controls use the semantic destination and ratio-correct logo"
   }
   assert.match(footer, /class="brand-link" href="\/#entry"/);
   assert.match(notFound, /class="recovery-link" href="\/#entry"/);
+});
+
+test("Phase 6 keeps the legacy source verifier deny-by-default with one exact global allowance", () => {
+  const verifier = read("scripts/verify-phase4-source.mjs");
+  assert.match(verifier, /PHASE6_GLOBAL_HARDENING_ALLOWED/);
+  assert.match(verifier, /PHASE6_GLOBAL_HARDENING_CHANGES[\s\S]*?SiteFooter\\\.astro/);
+  assert.match(verifier, /if \\\(safeAtTop\\\) return "static"/);
 });
