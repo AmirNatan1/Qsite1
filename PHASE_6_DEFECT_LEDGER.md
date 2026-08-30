@@ -1,6 +1,6 @@
 # Phase 6 defect ledger
 
-Status: open ledger; baseline observations are bound to accepted Phase 5B-R2 SHA `005a36860ecbfd6fedb3d3f2223f168c1edfbb05`.
+Status: verified repair ledger complete; baseline observations are bound to accepted Phase 5B-R2 SHA `005a36860ecbfd6fedb3d3f2223f168c1edfbb05`.
 
 Severity describes user impact, not implementation size. A suspected cross-engine difference is not treated as a defect without a reproducible violation of an accepted contract.
 
@@ -17,7 +17,7 @@ Severity describes user impact, not implementation size. A suspected cross-engin
 - Evidence: external baseline controller-block run; source `src/pages/index.astro` bootstrap/inert/module sequence.
 - Probable cause: prepaint concealment has no inline liveness watchdog.
 - Production repair justified: yes.
-- Final resolution: pending implementation and before/after verification.
+- Final resolution: repaired with a bounded inline watchdog that remains armed through both the outer entry module and the dynamically imported cinematic controller's synchronous initialization. The final live regression covers an aborted outer module at exact top, after 3,000 px of native scroll, and at direct `/#entry`, plus an inner controller chunk stalled beyond the four-second bound. Exact-top and inner-stall cases reach compact `controller-timeout`; progressed and semantic-entry cases release into `controller-timeout-preserve-runway` without moving scroll or geometry (observed CLS `0`). All paths remove inert state, preserve usable H1/navigation, clear the watchdog, and prevent a late resolution or rejection from overwriting the terminal fallback.
 
 ### P6-002 — Failed `/#entry` media keeps reverse traversal hidden
 
@@ -30,7 +30,7 @@ Severity describes user impact, not implementation size. A suspected cross-engin
 - Evidence: external baseline entry-media-failure run.
 - Probable cause: entry-intent release requires `mediaReady` even after terminal media failure.
 - Production repair justified: yes.
-- Final resolution: pending implementation and before/after verification.
+- Final resolution: repaired by allowing terminal media failure to satisfy semantic-entry positioning and clear the pending intent. The live regression reaches scrollY `0` through native reverse wheel input, reveals the governed poster, and retains no media source/decoder.
 
 ### P6-003 — Immediate top-of-page media failure retains an avoidable runway
 
@@ -43,7 +43,7 @@ Severity describes user impact, not implementation size. A suspected cross-engin
 - Evidence: external baseline blocked-media state plus source failure-disposition audit.
 - Probable cause: failure disposition distinguishes only pre/post enhancement, not safe exact-top collapse from unsafe mid-document collapse.
 - Production repair justified: yes, narrowly at exact top with no semantic-entry intent.
-- Final resolution: pending implementation and before/after verification.
+- Final resolution: repaired with a safe-at-exact-top disposition that is prohibited for `#entry`, pending intent, or progressed/restored documents. The live regression observes one blocked H.264 request, static compact geometry of 1,800 px at a 900 px viewport, and no active source/decoder.
 
 ### P6-004 — Maradin pagehide cleanup is consumed after one persisted cycle
 
@@ -55,7 +55,7 @@ Severity describes user impact, not implementation size. A suspected cross-engin
 - Evidence: external baseline lifecycle run with `defectReproduced=true`.
 - Probable cause: `pagehide` was registered with `{ once: true }` and never re-armed.
 - Production repair justified: yes.
-- Final resolution: pending implementation and repeated-cycle verification.
+- Final resolution: repaired with a persistent pagehide handler and non-persisted-only controller abort. Two synthetic persisted pagehide/pageshow cycles each release both sources/decoders and still permit the next user initiation.
 
 ### P6-005 — Maradin media failure leaves an active dead control
 
@@ -67,7 +67,7 @@ Severity describes user impact, not implementation size. A suspected cross-engin
 - Evidence: external baseline failed-video run with `defectReproduced=true`.
 - Probable cause: no video error lifecycle and swallowed `play()` rejection.
 - Production repair justified: yes; hidden-tab release is part of the same bounded lifecycle.
-- Final resolution: pending implementation and failure/visibility verification.
+- Final resolution: repaired with shared release handling for media error, rejected play, hidden visibility, replacement and teardown. A blocked live MP4 returns both players to retryable source-free dormancy (`readyState=0`, `tabIndex=-1`, launches visible).
 
 ### P6-006 — Square viewport selects different poster and video families
 
@@ -79,7 +79,7 @@ Severity describes user impact, not implementation size. A suspected cross-engin
 - Evidence: external baseline request/state run.
 - Probable cause: CSS portrait orientation includes square while JavaScript required `height > width`.
 - Production repair justified: yes; align the boundary without changing authored assets.
-- Final resolution: pending implementation and request verification.
+- Final resolution: repaired by aligning JavaScript portrait selection with CSS (`height >= width`). The live 800×800 regression requests one portrait poster, one portrait H.264 asset and no VP9/WebM authority.
 
 ### P6-007 — Fractional positive scroll can remain F1
 
@@ -91,7 +91,7 @@ Severity describes user impact, not implementation size. A suspected cross-engin
 - Evidence: source arithmetic and focused pure-test target.
 - Probable cause: integer-offset normalization preserved zero after positive fractional input.
 - Production repair justified: yes; preserve exact zero only and clamp positive input to at least one authored offset.
-- Final resolution: pending implementation, pure regression test and human trackpad confirmation.
+- Final resolution: repaired by preserving exact zero while clamping every positive finite offset to at least one authored pixel. Two Playwright `0.25` wheel inputs produced native `scrollY=1`, F46 and a stable paused seek at 1.5 s; physical trackpad confirmation remains pending human review.
 
 ### P6-008 — Logo fallback ratio is incorrect
 
@@ -103,7 +103,7 @@ Severity describes user impact, not implementation size. A suspected cross-engin
 - Evidence: source/intrinsic metadata mismatch; CLS is supporting context only.
 - Probable cause: legacy dimensions survived a taller accepted logo.
 - Production repair justified: yes; ratio-only metadata correction preserves final design.
-- Final resolution: pending implementation and CLS/layout regression.
+- Final resolution: repaired by matching the SVG authority at 242×182 in both shared instances. Live DOM checks pass; final route matrices and the post-repair blocked-media CLS check are clean.
 
 ### P6-009 — Footer and 404 Home intent bypasses the manifesto
 
@@ -115,7 +115,7 @@ Severity describes user impact, not implementation size. A suspected cross-engin
 - Evidence: source href inspection against the accepted navigation contract.
 - Probable cause: Phase 5B-R2 repaired header Home surfaces but not these two intentional Home affordances.
 - Production repair justified: yes.
-- Final resolution: pending implementation and cross-route navigation verification.
+- Final resolution: repaired so the footer brand and real-404 recovery link use `/#entry`. Live shared-DOM checks plus Chromium/WebKit/Firefox route and history matrices pass.
 
 ### P6-010 — Exact-top media fallback causes a full-viewport layout shift
 
@@ -141,7 +141,7 @@ Severity describes user impact, not implementation size. A suspected cross-engin
 - Evidence: external Phase 6 accessibility/interaction diagnostic with zero axe violations and one unsuppressed Home keyboard failure.
 - Probable cause: the pure-manifesto interaction state released the focused `#entry` target but kept the immediately following audience navigation inert until further pointer/scroll input.
 - Production repair justified: yes; make only the following audience section keyboard-reachable while preserving the concealed header and inert lower chapters until native scroll reaches the accepted release boundary.
-- Final resolution: implementation complete; cross-engine keyboard verification pending.
+- Final resolution: repaired by releasing only the immediately following audience section in the settled-manifesto interaction state. Chromium and headed Firefox complete skip activation, native Tab/Shift+Tab focus visibility, mobile-menu Escape/focus return, and history checks; Playwright WebKit link-tabbing is a declared host/engine capability limitation while its 20-route axe matrix remains clean.
 
 ## Investigated issues not currently classified as production defects
 

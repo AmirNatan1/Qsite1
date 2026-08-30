@@ -1,6 +1,6 @@
 # Phase 6 dormant-poster optimization study
 
-Date: 2026-08-30  
+Date: 2026-08-30
 Baseline HEAD: `005a36860ecbfd6fedb3d3f2223f168c1edfbb05`
 
 ## Decision
@@ -46,11 +46,11 @@ Consequences verified from source and the current local preview:
 
 Chromium `151.0.7922.34` and Playwright WebKit `26.5` each requested one portrait poster on a fresh 390×844 reduced-motion load. Resizing that page to 844×390 selected and requested the landscape poster, producing two unique poster requests in the document lifetime. Returning to portrait reused the cached first response. A live orientation transition therefore does not preserve a literal one-poster-request lifetime invariant, although each viewport state has one selected source.
 
-At exactly 800×800, both engines selected the portrait poster because CSS treats the square viewport as portrait, while the inline JavaScript classified the cinematic media cohort as desktop because it requires `innerHeight > innerWidth`. This is a narrow, reproducible selection-boundary mismatch for defect-ledger and cross-engine coverage; it is not by itself authorization for a production repair.
+At baseline, exactly 800×800 selected the portrait poster while the inline JavaScript classified the cinematic media cohort as desktop because it required `innerHeight > innerWidth`. Phase 6 repaired that selection-boundary mismatch by aligning JavaScript with the CSS portrait rule (`height >= width`); the poster assets themselves remain unchanged.
 
 ## Temporary candidate comparison
 
-Candidates were generated under `C:/Users/amir/AppData/Local/Temp/qsite1-poster-study-20260830` with project devDependency Sharp `0.35.3`/libvips `8.18.3`. They remain untracked. Pixel comparison decoded every candidate to three-channel sRGB. Decode figures are nine-run warm medians from the local libvips decoder with cache disabled; they are a relative diagnostic, not browser main-thread attribution.
+Candidates were generated under `<EXTERNAL_TEMP_ROOT>/qsite1-poster-study-20260830` with project devDependency Sharp `0.35.3`/libvips `8.18.3`. They remain untracked. Pixel comparison decoded every candidate to three-channel sRGB. Decode figures are nine-run warm medians from the local libvips decoder with cache disabled; they are a relative diagnostic, not browser main-thread attribution.
 
 | Family | Current PNG | Exact PNG re-encode | Exact lossless WebP | Exact lossless AVIF | Warm decode median: PNG / WebP / AVIF |
 |---|---:|---:|---:|---:|---:|
@@ -90,7 +90,7 @@ Limitations:
 2. High-latency and low-bandwidth comparisons proving that the 134,786–279,922 byte lossless-WebP saving per selected response improves time-to-visible more than its decode cost harms it.
 3. Native-resolution and rendered-size side-by-side plus zero-difference evidence, with calibrated review of dark-gradient banding, wall shadows, cable visibility, CRT silhouette, and high-density presentation.
 4. Normal, reduced-motion, no-JS, failed/blocked media, image failure, offline, Back/Forward, and orientation tests proving one selected request, no competing fallback request, and coherent fallback behavior.
-5. Resolution of or an explicit disposition for the live-orientation second request and the 800×800 family boundary.
+5. Retention of the repaired 800×800 family boundary and explicit acceptance or rejection of the documented second request during a live orientation change.
 6. If accepted, new explicit filenames and hashes plus a controlled manifest/staging/test migration that preserves the original authority and Phase 4 media hashes.
 
 Until that evidence exists, the production-safe result remains:

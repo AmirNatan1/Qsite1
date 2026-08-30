@@ -1,8 +1,8 @@
 # Phase 6 baseline
 
-Status: pre-production-change baseline complete  
-Captured: 2026-08-30 (Europe/Madrid)  
-Accepted site under test: `005a36860ecbfd6fedb3d3f2223f168c1edfbb05`  
+Status: pre-production-change baseline complete
+Captured: 2026-08-30 (Europe/Madrid)
+Accepted site under test: `005a36860ecbfd6fedb3d3f2223f168c1edfbb05`
 Phase 6 branch: `feature/phase-6-global-hardening`
 
 This report records the accepted Phase 5B-R2 site before any Phase 6 production repair. Raw browser reports are external and untracked under the Phase 6 evidence root.
@@ -11,7 +11,7 @@ This report records the accepted Phase 5B-R2 site before any Phase 6 production 
 
 | Item | Baseline value |
 | --- | --- |
-| Repository root | `C:/Users/amir/OneDrive/Documents/Quantum-Hub/Qsite1` |
+| Repository root | `<REPOSITORY_ROOT>` |
 | Initial branch | `repair/phase-5b-r2-home-navigation-manifesto` |
 | Initial / accepted HEAD | `005a36860ecbfd6fedb3d3f2223f168c1edfbb05` |
 | Accepted HEAD direct parent | `ca22ae2f234302e7485803c560866abd7757735e` |
@@ -157,4 +157,3 @@ The baseline reproduced the following before production repair; exact steps and 
 - No persisted BFCache hit was observed locally; normal history restoration did execute.
 - Cold/warm long-task attribution is coarse and Chromium-only at baseline.
 - No Cloudflare Phase 6 deployment existed at baseline.
-

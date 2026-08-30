@@ -1,12 +1,12 @@
 # Phase 6 physical-device handoff
 
-Status: **PENDING HUMAN DEVICE REVIEW**  
+Status: **PENDING HUMAN DEVICE REVIEW**
 Automation is not physical hardware. Playwright WebKit is not an iPhone and headed Playwright Firefox is not a touch/trackpad substitute.
 
 Preview to test after final deployment:
 
-- Branch preview: `https://feature-phase-6-global-hardening.qsite1.pages.dev/`
-- Immutable preview: replace this line with the observed immutable Phase 6 URL from the final deployment report before review.
+- Branch preview: `https://feature-phase-6-global-harde.qsite1.pages.dev/`
+- Immutable preview: use the immutable URL recorded in the final deployment-verification report and handoff field 54.
 
 Use the branch preview for the test script and the immutable preview only to confirm the same opening frame and version. Record the device/OS/browser version and whether Low Power Mode, Reduce Motion or data-saving is enabled.
 
@@ -58,4 +58,3 @@ Provide: one 60–90 s recording and a short note identifying mouse model, OS, b
 ## Review outcome
 
 For each device class, record one of `ACCEPT`, `REPAIR` or `REDIRECT`, link the supplied evidence, and identify the exact step for every failure. Until a human supplies real-device evidence, none of these tests is a machine PASS and all remain **PENDING HUMAN DEVICE REVIEW**.
-
