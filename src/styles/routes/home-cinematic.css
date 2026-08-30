@@ -143,6 +143,16 @@ html[data-cinematic-mode="enhanced"] .cinematic-stage {
   height: 100svh;
 }
 
+/* A top-of-document failure removes the long cinematic runway, but keeps the
+   already-painted viewport and header compensation stable while doing so. */
+html[data-cinematic-mode="static"][data-cinematic-fallback] .cinematic-shell {
+  margin-top: calc(-1 * var(--cinematic-header-px));
+}
+
+html[data-cinematic-mode="static"][data-cinematic-fallback] .cinematic-runway {
+  height: 100svh;
+}
+
 html[data-cinematic-mode="candidate"] .cinematic-shell > .manifesto-field,
 html[data-cinematic-mode="enhanced"] .cinematic-shell > .manifesto-field {
   min-height: 100svh;

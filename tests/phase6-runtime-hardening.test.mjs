@@ -57,7 +57,10 @@ test("Phase 6 cinematic failures collapse only at a safe top and release failed 
   assert.equal(cinematicFailureDisposition("media", true, false), "preserve-runway");
 
   const source = read("src/scripts/home-cinematic-integration.ts");
+  const styles = read("src/styles/routes/home-cinematic.css");
   assert.match(source, /semanticEntryNavigationResolved[\s\S]*?window\.scrollY >= entryTop - headerHeight - 1[\s\S]*?mediaFailed \|\| \(mediaReady && presentedPhysicalFrame === targetPhysicalFrame\)[\s\S]*?delete root\.dataset\.cinematicEntryIntent/);
+  assert.match(styles, /data-cinematic-mode="static"\]\[data-cinematic-fallback\][\s\S]*?margin-top:\s*calc\(-1 \* var\(--cinematic-header-px\)\)/);
+  assert.match(styles, /data-cinematic-mode="static"\]\[data-cinematic-fallback\][\s\S]*?\.cinematic-runway[\s\S]*?height:\s*100svh/);
 });
 
 test("Phase 6 Maradin media teardown survives BFCache and recovers failures", () => {
