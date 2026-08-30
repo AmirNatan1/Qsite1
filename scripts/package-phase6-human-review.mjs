@@ -38,6 +38,30 @@ export const REQUIRED_BRANCH_URL = "https://feature-phase-6-global-harde.qsite1.
 export const REQUIRED_ARCHIVE_FILENAME = "phase-6-global-hardening-human-review.zip";
 export const DEPLOYMENT_VERIFICATION_PATH = "00-provenance/deployment-verification.json";
 export const DEPLOYMENT_VERIFICATION_SCHEMA = "quantum-hub.phase-6.deployment-verification.v1";
+export const R1_PACKAGE_SCHEMA = "quantum-hub.phase-6-r1.validation-closure-human-review.v1";
+export const R1_DETACHED_SCHEMA = `${R1_PACKAGE_SCHEMA}.detached-manifest`;
+export const R1_AUDIT_SCHEMA = `${R1_PACKAGE_SCHEMA}.independent-audit`;
+export const R1_REQUIRED_BRANCH = "repair/phase-6-r1-validation-closure";
+export const R1_REQUIRED_PARENT = "aee036740b129624c54b8f1b878229f955d187ae";
+export const R1_REQUIRED_BRANCH_URL = "https://repair-phase-6-r1-validation.qsite1.pages.dev/";
+export const R1_REQUIRED_ARCHIVE_FILENAME = "phase-6-r1-validation-closure-human-review.zip";
+export const R1_DEPLOYMENT_VERIFICATION_SCHEMA = "quantum-hub.phase-6-r1.deployment-verification.v1";
+export const R1_HUMAN_EVIDENCE_SCHEMA = "quantum-hub.phase-6-r1.human-evidence-ledger.v1";
+export const R1_HUMAN_LEDGER_PATH = "11-physical-device/human-evidence-ledger.json";
+export const R1_REQUIRED_HUMAN_RECORDINGS = Object.freeze([
+  "iphone-safari-opening.mp4",
+  "iphone-safari-maradin.mp4",
+  "physical-scroll-input.mp4",
+  "chrome-200-percent.mp4",
+]);
+const R1_HUMAN_STATUSES = Object.freeze(["PASS", "FAIL", "PENDING HUMAN REVIEW"]);
+const R1_DEVICE_REVIEW_CHECKS = Object.freeze({
+  "iphone-safari-opening.mp4": Object.freeze(["correctDormantOpening", "firstPracticalSwipeResponse", "nativeMomentum", "stopAtPhysicalState", "reverseReconstruction", "lineRasterQ", "autonomousManifestoFade", "noF1FlashFromIntentionalHome", "orientationStability", "backgroundForeground"]),
+  "iphone-safari-maradin.mp4": Object.freeze(["onePlayerLifecycle", "backgroundForeground", "retryableSourceFree", "noPersistentRafOrInterval", "noLiveOrphanBlob"]),
+  "physical-scroll-input.mp4": Object.freeze(["noPositiveInputDeadZone", "nativeInertiaSovereign", "promptReversal", "noCatchUpAnimation", "freezesAtRest", "noForcedSnapping", "supportingRoutesOrdinaryFlow"]),
+});
+const R1_ZOOM_ROUTE_CHECKS = Object.freeze(["completeH1", "completeOpeningProposition", "readableNavigation", "usableMobileMenuWhereApplicable", "noTextClipping", "noInternalWordSplitting", "noHiddenContent", "noHorizontalOverflow", "usableControlsAndLinks", "reasonableDocumentContinuation"]);
+const R1_ZOOM_ROUTES = Object.freeze(["/", "/for-partners/", "/for-startups/", "/industries/", "/pocs/", "/pocs/maradin/", "/spark/", "/about/", "/contact/", "/__phase6-intentional-404__/"]);
 
 export const TOPOLOGY_SECTIONS = Object.freeze([
   "00-provenance",
@@ -79,6 +103,66 @@ export const AUTHORIZATION = Object.freeze({
   phase7Authorized: false,
   mainMerged: false,
 });
+
+const LEGACY_DEPLOYMENT_CHECKS = Object.freeze({
+  exactGitBranchMainAuthority: true,
+  signedSuccessfulDeploymentBindsExactHead: true,
+  allDeployableFilesComparedWhereCloudflarePermits: true,
+  branchImmutableLocalByteParity: true,
+  successfulHttpOutcomes: true,
+  real404StatusAndByteParity: true,
+  requiredHeadersAndCachePolicies: true,
+  canonicalBehavior: true,
+  productionMainUnchangedAndPhase6Unmerged: true,
+});
+
+const R1_DEPLOYMENT_CHECKS = Object.freeze({
+  exactR1BranchParentAndFrozenMain: true,
+  zeroProductionSourceDiff: true,
+  signedSuccessfulDeploymentBindsExactHead: true,
+  immutableLocalByteParity: true,
+  branchLocalByteParity: true,
+  real404HeadersCanonicalAndTenRoutes: true,
+});
+
+const AUTHORITY_PROFILES = Object.freeze({
+  phase6: Object.freeze({
+    id: "phase6",
+    packageSchema: PACKAGE_SCHEMA,
+    detachedSchema: DETACHED_SCHEMA,
+    auditSchema: AUDIT_SCHEMA,
+    branch: REQUIRED_BRANCH,
+    parent: ACCEPTED_PHASE5B_SHA,
+    parentField: "acceptedBase",
+    ancestorField: "acceptedBaseAncestor",
+    branchUrl: REQUIRED_BRANCH_URL,
+    archiveFilename: REQUIRED_ARCHIVE_FILENAME,
+    deploymentSchema: DEPLOYMENT_VERIFICATION_SCHEMA,
+    deploymentChecks: LEGACY_DEPLOYMENT_CHECKS,
+    title: "Phase 6 global-hardening",
+  }),
+  "phase6-r1": Object.freeze({
+    id: "phase6-r1",
+    packageSchema: R1_PACKAGE_SCHEMA,
+    detachedSchema: R1_DETACHED_SCHEMA,
+    auditSchema: R1_AUDIT_SCHEMA,
+    branch: R1_REQUIRED_BRANCH,
+    parent: R1_REQUIRED_PARENT,
+    parentField: "exactParent",
+    ancestorField: "exactParentAncestor",
+    branchUrl: R1_REQUIRED_BRANCH_URL,
+    archiveFilename: R1_REQUIRED_ARCHIVE_FILENAME,
+    deploymentSchema: R1_DEPLOYMENT_VERIFICATION_SCHEMA,
+    deploymentChecks: R1_DEPLOYMENT_CHECKS,
+    title: "Phase 6-R1 validation closure",
+  }),
+});
+
+export function authorityProfileById(id = "phase6") {
+  const profile = AUTHORITY_PROFILES[id];
+  if (!profile) throw new Error(`--authority-profile must be phase6 or phase6-r1, received ${id ?? "missing"}`);
+  return profile;
+}
 
 const HASH40 = /^[0-9a-f]{40}$/;
 const HASH64 = /^[0-9a-f]{64}$/;
@@ -281,13 +365,13 @@ function expectedImmutableUrl(deploymentId) {
   return `https://${deploymentId.slice(0, 8)}.${REQUIRED_CLOUDFLARE_PROJECT}.pages.dev/`;
 }
 
-function validateDeploymentCoordinates(input) {
+function validateDeploymentCoordinates(input, profile = authorityProfileById(input?.authorityProfile)) {
   if (!CLOUDFLARE_UUID.test(input.deploymentId ?? "")) throw new Error("--deployment-id must be a lowercase Cloudflare deployment UUID");
   const immutableUrl = normalizePreviewUrl(input.immutableUrl, "--immutable-url");
   const branchUrl = normalizePreviewUrl(input.branchUrl, "--branch-url");
   const requiredImmutable = expectedImmutableUrl(input.deploymentId);
   if (immutableUrl !== requiredImmutable) throw new Error(`--immutable-url must be exactly ${requiredImmutable}`);
-  if (branchUrl !== REQUIRED_BRANCH_URL) throw new Error(`--branch-url must be exactly ${REQUIRED_BRANCH_URL}`);
+  if (branchUrl !== profile.branchUrl) throw new Error(`--branch-url must be exactly ${profile.branchUrl}`);
   return { id: input.deploymentId, immutableUrl, branchUrl };
 }
 
@@ -307,6 +391,7 @@ export function parseArguments(argv) {
     immutableUrl: null,
     branchUrl: null,
     generatedAt: null,
+    authorityProfile: "phase6",
     selfTest: false,
     dryRun: false,
     help: false,
@@ -322,6 +407,7 @@ export function parseArguments(argv) {
     else if (["--immutable-url", "--observed-immutable-url"].includes(argument)) options.immutableUrl = next();
     else if (["--branch-url", "--observed-branch-url"].includes(argument)) options.branchUrl = next();
     else if (argument === "--generated-at") options.generatedAt = next();
+    else if (argument === "--authority-profile") options.authorityProfile = next();
     else if (argument === "--self-test") options.selfTest = true;
     else if (argument === "--dry-run") options.dryRun = true;
     else if (argument === "--help" || argument === "-h") options.help = true;
@@ -332,6 +418,8 @@ export function parseArguments(argv) {
 
 export function validateOptionShape(input) {
   const options = { ...input };
+  const profile = authorityProfileById(options.authorityProfile ?? "phase6");
+  options.authorityProfile = profile.id;
   for (const [key, flag] of [
     ["evidenceRoot", "--evidence-root"],
     ["output", "--output"],
@@ -344,11 +432,11 @@ export function validateOptionShape(input) {
   ]) if (typeof options[key] !== "string" || !options[key]) throw new Error(`${flag} is required`);
   options.evidenceRoot = path.resolve(options.evidenceRoot);
   options.output = path.resolve(options.output);
-  if (path.basename(options.output) !== REQUIRED_ARCHIVE_FILENAME) throw new Error(`--output basename must be exactly ${REQUIRED_ARCHIVE_FILENAME}`);
+  if (path.basename(options.output) !== profile.archiveFilename) throw new Error(`--output basename must be exactly ${profile.archiveFilename}`);
   if (!HASH40.test(options.expectedHead)) throw new Error("--expected-head must be a 40-character lowercase Git SHA");
-  if ([ACCEPTED_PHASE5B_SHA, FROZEN_MAIN_SHA].includes(options.expectedHead)) throw new Error("--expected-head must identify the new Phase 6 final commit");
-  if (options.branch !== REQUIRED_BRANCH) throw new Error(`--branch must be exactly ${REQUIRED_BRANCH}`);
-  const deployment = validateDeploymentCoordinates(options);
+  if ([profile.parent, FROZEN_MAIN_SHA].includes(options.expectedHead)) throw new Error(`--expected-head must identify the new ${profile.title} final commit`);
+  if (options.branch !== profile.branch) throw new Error(`--branch must be exactly ${profile.branch}`);
+  const deployment = validateDeploymentCoordinates(options, profile);
   options.immutableUrl = deployment.immutableUrl;
   options.branchUrl = deployment.branchUrl;
   options.generatedAt = canonicalTimestamp(options.generatedAt, "--generated-at");
@@ -416,52 +504,179 @@ function normalizePayloadEntries(entries) {
   return normalized;
 }
 
+function aggregateHumanStatuses(statuses) {
+  if (statuses.includes("FAIL")) return "FAIL";
+  if (statuses.every((status) => status === "PASS")) return "PASS";
+  return "PENDING HUMAN REVIEW";
+}
+
+function validateFailureReferences(record, failedChecks, label) {
+  if (!Array.isArray(record.failureReferences)) throw new Error(`${label} failureReferences must be an array`);
+  for (const reference of record.failureReferences) {
+    const hasLocation = [reference?.timestamp, reference?.frame].some((value) => (typeof value === "string" && value.trim()) || Number.isFinite(value)) || Number.isFinite(reference?.timestampSeconds);
+    if (!reference || typeof reference !== "object" || Array.isArray(reference) || typeof reference.check !== "string" || !reference.check.trim() || !hasLocation) {
+      throw new Error(`${label} failure reference requires a check and timestamp or frame`);
+    }
+  }
+  if (record.status === "FAIL" && !record.failureReferences.length) throw new Error(`${label} FAIL requires a timestamp or frame reference`);
+  if (record.status !== "FAIL" && record.failureReferences.length) throw new Error(`${label} non-FAIL cannot contain failure references`);
+  for (const check of failedChecks) {
+    if (!record.failureReferences.some((reference) => reference.check === check)) throw new Error(`${label} false check ${check} lacks a matching failure reference`);
+  }
+}
+
+function validateR1HumanLedgerSemantics(ledger) {
+  if (typeof ledger.createdAt !== "string" || !Number.isFinite(Date.parse(ledger.createdAt)) || new Date(ledger.createdAt).toISOString() !== ledger.createdAt) {
+    throw new Error("R1 human-evidence ledger createdAt is not canonical");
+  }
+  exactJson(ledger.policy, { filePresenceIsPass: false, machineRecordingSubstitutionAllowed: false, failRequiresTimestampOrFrame: true, allFourFilesRequiredBeforePackaging: true }, "R1 human-evidence ledger policy");
+  for (const record of ledger.entries) {
+    const label = `R1 human recording ${record?.filename ?? "unknown"}`;
+    if (!R1_HUMAN_STATUSES.includes(record?.status)
+      || record.evidenceClass !== "PHYSICAL HUMAN RECORDING"
+      || typeof record.device !== "string" || !record.device.trim()
+      || typeof record.os !== "string" || !record.os.trim()
+      || !Object.hasOwn(record, "browserVersion") || (record.browserVersion !== null && (typeof record.browserVersion !== "string" || !record.browserVersion.trim()))
+      || (record.browser !== null && record.browser !== undefined && (typeof record.browser !== "string" || !record.browser.trim()))
+      || !Array.isArray(record.testSteps) || !record.testSteps.length || record.testSteps.some((step) => typeof step !== "string" || !step.trim())
+      || !Array.isArray(record.observations) || !record.observations.length || record.observations.some((observation) => (typeof observation !== "string" || !observation.trim()) && (!observation || typeof observation !== "object" || Array.isArray(observation)))
+      || typeof record.observedResult !== "string" || !record.observedResult.trim()) {
+      throw new Error(`${label} review metadata is incomplete`);
+    }
+    if (record.filename.startsWith("iphone-safari-") && !/safari/i.test(record.browser ?? "")) throw new Error(`${label} browser must identify Safari`);
+    if (record.filename === "chrome-200-percent.mp4" && !/chrome/i.test(record.browser ?? "")) throw new Error(`${label} browser must identify Chrome`);
+    let failedChecks = [];
+    const requiredChecks = R1_DEVICE_REVIEW_CHECKS[record.filename];
+    const hasChecks = record.checks && typeof record.checks === "object" && !Array.isArray(record.checks);
+    if (requiredChecks && (record.status !== "PENDING HUMAN REVIEW" || hasChecks)) {
+      if (!hasChecks || stableJson(Object.keys(record.checks).sort(lexicalCompare)) !== stableJson([...requiredChecks].sort(lexicalCompare))) throw new Error(`${label} physical checks differ`);
+      const results = requiredChecks.map((check) => record.checks[check]);
+      if (results.some((value) => typeof value !== "boolean" && !(record.status === "PENDING HUMAN REVIEW" && value === null))) throw new Error(`${label} physical checks are incomplete`);
+      if (record.status === "PASS" && results.some((value) => value !== true)) throw new Error(`${label} PASS contains a failed check`);
+      if (record.status === "FAIL" && results.every((value) => value !== false)) throw new Error(`${label} FAIL contains no failed check`);
+      if (record.status !== "FAIL" && results.some((value) => value === false)) throw new Error(`${label} contains a false check without FAIL status`);
+      failedChecks = requiredChecks.filter((check) => record.checks[check] === false);
+    }
+    if (record.filename === "chrome-200-percent.mp4") {
+      const hasZoomReview = ["genuineBrowserZoom", "zoomPercent", "proxy", "routeOutcomes"].some((field) => Object.hasOwn(record, field));
+      if (record.status !== "PENDING HUMAN REVIEW" || hasZoomReview) {
+        if (record.genuineBrowserZoom !== true || record.zoomPercent !== 200 || record.proxy !== false || !Array.isArray(record.routeOutcomes) || record.routeOutcomes.length !== R1_ZOOM_ROUTES.length) throw new Error(`${label} genuine 200% review is incomplete`);
+        const routes = new Set();
+        for (const outcome of record.routeOutcomes) {
+          if (!R1_ZOOM_ROUTES.includes(outcome?.route) || routes.has(outcome.route) || !R1_HUMAN_STATUSES.includes(outcome.status)
+            || !outcome.checks || stableJson(Object.keys(outcome.checks).sort(lexicalCompare)) !== stableJson([...R1_ZOOM_ROUTE_CHECKS].sort(lexicalCompare))
+            || R1_ZOOM_ROUTE_CHECKS.some((check) => typeof outcome.checks[check] !== "boolean")) throw new Error(`${label} genuine 200% route review differs`);
+          routes.add(outcome.route);
+          const routeFailures = R1_ZOOM_ROUTE_CHECKS.filter((check) => outcome.checks[check] === false);
+          if (outcome.status === "PASS" && routeFailures.length) throw new Error(`${label} route PASS contains a failed check`);
+          if (outcome.status === "FAIL" && !routeFailures.length) throw new Error(`${label} route FAIL contains no failed check`);
+          if (outcome.status !== "FAIL" && routeFailures.length) throw new Error(`${label} route contains a false check without FAIL status`);
+          validateFailureReferences(outcome, routeFailures, `${label} route ${outcome.route}`);
+        }
+        if (stableJson([...routes].sort(lexicalCompare)) !== stableJson([...R1_ZOOM_ROUTES].sort(lexicalCompare))) throw new Error(`${label} genuine 200% route inventory differs`);
+        if (record.status !== aggregateHumanStatuses(record.routeOutcomes.map(({ status }) => status))) throw new Error(`${label} status differs from route outcomes`);
+      }
+      failedChecks = [];
+    }
+    validateFailureReferences(record, failedChecks, label);
+  }
+  const expectedStatus = aggregateHumanStatuses(ledger.entries.map(({ status }) => status));
+  if (ledger.status !== expectedStatus) throw new Error(`R1 human-evidence ledger status must be ${expectedStatus}`);
+}
+
+export function validateR1HumanEvidencePayload(entries) {
+  const byPath = new Map(entries.map((entry) => [entry.path, entry.data]));
+  const ledgerBytes = byPath.get(R1_HUMAN_LEDGER_PATH);
+  if (!ledgerBytes) throw new Error(`R1 package requires the human-evidence ledger: ${R1_HUMAN_LEDGER_PATH}`);
+  let wrapper;
+  try { wrapper = JSON.parse(ledgerBytes.toString("utf8")); }
+  catch { throw new Error("R1 human-evidence ledger is not valid JSON"); }
+  const ledger = wrapper?.payload;
+  const permittedStatuses = new Set(R1_HUMAN_STATUSES);
+  if (wrapper?.schema !== "quantum-hub.phase-6.final-evidence-assembly.v1.distilled-json"
+    || wrapper.role !== "physical-device-result"
+    || wrapper.selection !== null
+    || !permittedStatuses.has(wrapper.status)
+    || !wrapper.source || !HASH64.test(wrapper.source.sha256 ?? "")
+    || ledger?.schema !== R1_HUMAN_EVIDENCE_SCHEMA
+    || ledger.evidenceClass !== "HUMAN DEVICE EVIDENCE"
+    || ledger.rootExists !== true
+    || ledger.status !== wrapper.status
+    || !Array.isArray(ledger.requiredFilenames)
+    || !Array.isArray(ledger.missingFilenames) || ledger.missingFilenames.length
+    || !Array.isArray(ledger.entries)) {
+    throw new Error("R1 human-evidence ledger authority differs");
+  }
+  const expectedFilenames = [...R1_REQUIRED_HUMAN_RECORDINGS].sort(lexicalCompare);
+  if (stableJson([...ledger.requiredFilenames].sort(lexicalCompare)) !== stableJson(expectedFilenames)
+    || stableJson(ledger.entries.map(({ filename }) => filename).sort(lexicalCompare)) !== stableJson(expectedFilenames)) {
+    throw new Error("R1 human-evidence ledger omits or duplicates a required recording");
+  }
+  validateR1HumanLedgerSemantics(ledger);
+  const physicalVideoPaths = entries
+    .map(({ path: relativePath }) => relativePath)
+    .filter((relativePath) => relativePath.startsWith("11-physical-device/") && path.posix.extname(relativePath).toLowerCase() === ".mp4")
+    .sort(lexicalCompare);
+  const expectedPaths = expectedFilenames.map((filename) => `11-physical-device/recordings/${filename}`).sort(lexicalCompare);
+  if (stableJson(physicalVideoPaths) !== stableJson(expectedPaths)) throw new Error("R1 package physical recording inventory differs");
+  const recordings = ledger.entries.map((record) => {
+    const recordingPath = `11-physical-device/recordings/${record.filename}`;
+    const bytes = byPath.get(recordingPath);
+    if (!bytes || record.evidenceClass !== "PHYSICAL HUMAN RECORDING" || !permittedStatuses.has(record.status)
+      || !Number.isSafeInteger(record.byteSize) || record.byteSize <= 0 || record.byteSize !== bytes.length
+      || !HASH64.test(record.sha256 ?? "") || record.sha256 !== sha256(bytes)) {
+      throw new Error(`R1 human recording is not hash/size/status bound: ${record.filename}`);
+    }
+    if (bytes.length < 12 || bytes.subarray(4, 8).toString("ascii") !== "ftyp") {
+      throw new Error(`R1 human recording MP4 container signature differs: ${record.filename}`);
+    }
+    return { filename: record.filename, path: recordingPath, status: record.status, byteSize: bytes.length, sha256: record.sha256 };
+  }).sort((left, right) => lexicalCompare(left.filename, right.filename));
+  return {
+    status: ledger.status,
+    ledger: { path: R1_HUMAN_LEDGER_PATH, byteSize: ledgerBytes.length, sha256: sha256(ledgerBytes), schema: R1_HUMAN_EVIDENCE_SCHEMA },
+    recordings,
+  };
+}
+
 function exactJson(actual, expected, label) {
   if (stableJson(actual) !== stableJson(expected)) throw new Error(`${label} differs from the required Phase 6 authority`);
 }
 
 function canonicalProvenance(input) {
-  if (!HASH40.test(input?.expectedHead ?? "") || input.expectedHead === ACCEPTED_PHASE5B_SHA || input.expectedHead === FROZEN_MAIN_SHA) {
-    throw new Error("package provenance expectedHead is not the Phase 6 final commit");
+  const profile = authorityProfileById(input?.authorityProfile ?? "phase6");
+  if (!HASH40.test(input?.expectedHead ?? "") || input.expectedHead === profile.parent || input.expectedHead === FROZEN_MAIN_SHA) {
+    throw new Error(`package provenance expectedHead is not the ${profile.title} final commit`);
   }
-  if (input.branch !== REQUIRED_BRANCH || input.observedHead !== input.expectedHead) throw new Error("package provenance branch/HEAD authority differs");
-  if (input.acceptedBase !== ACCEPTED_PHASE5B_SHA || input.expectedMain !== FROZEN_MAIN_SHA) throw new Error("package provenance accepted-base/main authority differs");
+  if (input.branch !== profile.branch || input.observedHead !== input.expectedHead) throw new Error("package provenance branch/HEAD authority differs");
+  if (input[profile.parentField] !== profile.parent || input.expectedMain !== FROZEN_MAIN_SHA) throw new Error("package provenance parent/main authority differs");
   const deployment = validateDeploymentCoordinates({
+    authorityProfile: profile.id,
     deploymentId: input.deployment?.id,
     immutableUrl: input.deployment?.immutableUrl,
     branchUrl: input.deployment?.branchUrl,
-  });
+  }, profile);
   return {
-    branch: REQUIRED_BRANCH,
+    ...(profile.id === "phase6-r1" ? { authorityProfile: profile.id } : {}),
+    branch: profile.branch,
     expectedHead: input.expectedHead,
     observedHead: input.expectedHead,
-    acceptedBase: ACCEPTED_PHASE5B_SHA,
+    [profile.parentField]: profile.parent,
     expectedMain: FROZEN_MAIN_SHA,
     deployment,
   };
 }
 
-const REQUIRED_DEPLOYMENT_CHECKS = Object.freeze({
-  exactGitBranchMainAuthority: true,
-  signedSuccessfulDeploymentBindsExactHead: true,
-  allDeployableFilesComparedWhereCloudflarePermits: true,
-  branchImmutableLocalByteParity: true,
-  successfulHttpOutcomes: true,
-  real404StatusAndByteParity: true,
-  requiredHeadersAndCachePolicies: true,
-  canonicalBehavior: true,
-  productionMainUnchangedAndPhase6Unmerged: true,
-});
-
 export function validateDeploymentVerificationDocument(document, provenanceInput) {
   const provenance = canonicalProvenance(provenanceInput);
-  if (!document || document.schema !== DEPLOYMENT_VERIFICATION_SCHEMA || document.status !== "PASS") throw new Error("deployment verification schema/status differs");
+  const profile = authorityProfileById(provenance.authorityProfile ?? "phase6");
+  if (!document || document.schema !== profile.deploymentSchema || document.status !== "PASS") throw new Error("deployment verification schema/status differs");
   exactJson(document.inputs, {
     expectedHead: provenance.expectedHead,
-    acceptedBase: ACCEPTED_PHASE5B_SHA,
+    [profile.parentField]: profile.parent,
     expectedMain: FROZEN_MAIN_SHA,
     repository: REQUIRED_REPOSITORY,
-    branch: REQUIRED_BRANCH,
+    branch: profile.branch,
     deploymentId: provenance.deployment.id,
     immutableUrl: provenance.deployment.immutableUrl,
     branchUrl: provenance.deployment.branchUrl,
@@ -471,36 +686,38 @@ export function validateDeploymentVerificationDocument(document, provenanceInput
   const repository = document.repository;
   const repositoryData = repository?.data;
   if (repository?.status !== "PASS" || !repositoryData || repositoryData.repository !== REQUIRED_REPOSITORY
-    || repositoryData.branch !== REQUIRED_BRANCH || repositoryData.head !== provenance.expectedHead
-    || repositoryData.acceptedBase !== ACCEPTED_PHASE5B_SHA || repositoryData.cleanTree !== true) {
+    || repositoryData.branch !== profile.branch || repositoryData.head !== provenance.expectedHead
+    || repositoryData[profile.parentField] !== profile.parent || repositoryData.cleanTree !== true) {
     throw new Error("deployment verification repository authority differs");
   }
   const history = repositoryData.history;
-  if (!Array.isArray(history) || history.length < 1) throw new Error("deployment verification omits the Phase 6 linear history");
+  if (!Array.isArray(history) || history.length < 1) throw new Error(`deployment verification omits the ${profile.title} linear history`);
   for (let index = 0; index < history.length; index += 1) {
     const record = history[index];
-    const requiredParent = index === 0 ? ACCEPTED_PHASE5B_SHA : history[index - 1]?.commit;
+    const requiredParent = index === 0 ? profile.parent : history[index - 1]?.commit;
     if (!HASH40.test(record?.commit ?? "") || !Array.isArray(record?.parents) || record.parents.length !== 1
       || record.parents[0] !== requiredParent || typeof record.subject !== "string" || !record.subject) {
-      throw new Error(`deployment verification history entry ${index + 1} is not an exact linear descendant of accepted Phase 5B`);
+      throw new Error(`deployment verification history entry ${index + 1} is not an exact linear descendant of the required parent`);
     }
   }
   if (history.at(-1).commit !== provenance.expectedHead || repositoryData.directParent !== history.at(-1).parents[0]) {
     throw new Error("deployment verification history does not terminate at the expected Phase 6 HEAD");
   }
-  exactJson(repositoryData.main, {
-    branch: "main", headSha: FROZEN_MAIN_SHA, frozenAt: FROZEN_MAIN_SHA, containsPhase6Head: false,
-  }, "deployment verification local main");
-  exactJson(repositoryData.upstream, {
-    ref: `origin/${REQUIRED_BRANCH}`, headSha: provenance.expectedHead, parity: true,
-  }, "deployment verification upstream");
-  exactJson(repositoryData.liveRemote, {
-    branchRef: `refs/heads/${REQUIRED_BRANCH}`,
-    branchHeadSha: provenance.expectedHead,
-    mainRef: "refs/heads/main",
-    mainHeadSha: FROZEN_MAIN_SHA,
-    parity: true,
-  }, "deployment verification live remote");
+  if (profile.id === "phase6-r1") {
+    exactJson(repositoryData.main, { local: FROZEN_MAIN_SHA, upstream: FROZEN_MAIN_SHA, live: FROZEN_MAIN_SHA, modifiedOrMerged: false }, "deployment verification R1 main");
+    exactJson(repositoryData.upstream, { ref: `origin/${profile.branch}`, head: provenance.expectedHead, live: provenance.expectedHead, parity: true }, "deployment verification R1 upstream");
+    exactJson(repositoryData.productionSourceDiff, [], "deployment verification R1 production-source diff");
+  } else {
+    exactJson(repositoryData.main, { branch: "main", headSha: FROZEN_MAIN_SHA, frozenAt: FROZEN_MAIN_SHA, containsPhase6Head: false }, "deployment verification local main");
+    exactJson(repositoryData.upstream, { ref: `origin/${profile.branch}`, headSha: provenance.expectedHead, parity: true }, "deployment verification upstream");
+    exactJson(repositoryData.liveRemote, {
+      branchRef: `refs/heads/${profile.branch}`,
+      branchHeadSha: provenance.expectedHead,
+      mainRef: "refs/heads/main",
+      mainHeadSha: FROZEN_MAIN_SHA,
+      parity: true,
+    }, "deployment verification live remote");
+  }
 
   const deployment = document.deployment;
   const deploymentData = deployment?.data;
@@ -509,13 +726,14 @@ export function validateDeploymentVerificationDocument(document, provenanceInput
     || deploymentData.deploymentId !== provenance.deployment.id
     || deploymentData.immutableUrl !== provenance.deployment.immutableUrl
     || deploymentData.branchUrl !== provenance.deployment.branchUrl
-    || deploymentData.branch !== REQUIRED_BRANCH || deploymentData.commitHash !== provenance.expectedHead
+    || deploymentData.branch !== profile.branch || deploymentData.commitHash !== provenance.expectedHead
     || deploymentData.environment !== "preview") {
     throw new Error("deployment verification signed Cloudflare authority differs");
   }
   if (typeof deploymentData.completedAt !== "string" || !Number.isFinite(Date.parse(deploymentData.completedAt))) {
     throw new Error("deployment verification completedAt is not a valid timestamp");
   }
+  if (profile.id === "phase6-r1" && deploymentData.appSlug !== "cloudflare-workers-and-pages") throw new Error("deployment verification R1 Cloudflare app authority differs");
   if (document.dist?.status !== "PASS" || document.origins?.immutable?.status !== "PASS" || document.origins?.branch?.status !== "PASS") {
     throw new Error("deployment verification dist/origin parity did not pass");
   }
@@ -524,7 +742,7 @@ export function validateDeploymentVerificationDocument(document, provenanceInput
     || document.origins.immutable.data?.status !== "PASS" || document.origins.branch.data?.status !== "PASS") {
     throw new Error("deployment verification origin identities differ");
   }
-  exactJson(document.checks, REQUIRED_DEPLOYMENT_CHECKS, "deployment verification checks");
+  exactJson(document.checks, profile.deploymentChecks, "deployment verification checks");
   exactJson(document.failures, [], "deployment verification failures");
   return true;
 }
@@ -536,9 +754,10 @@ function deploymentVerificationBinding(entries, provenance) {
   try { document = JSON.parse(entry.data.toString("utf8")); }
   catch { throw new Error(`${DEPLOYMENT_VERIFICATION_PATH} is not valid JSON`); }
   validateDeploymentVerificationDocument(document, provenance);
+  const profile = authorityProfileById(provenance.authorityProfile ?? "phase6");
   return {
     path: DEPLOYMENT_VERIFICATION_PATH,
-    schema: DEPLOYMENT_VERIFICATION_SCHEMA,
+    schema: profile.deploymentSchema,
     status: "PASS",
     byteSize: entry.data.length,
     sha256: sha256(entry.data),
@@ -546,7 +765,8 @@ function deploymentVerificationBinding(entries, provenance) {
 }
 
 function packageReadme(provenance) {
-  return `# Quantum-Hub Phase 6 global-hardening human review\n\n` +
+  const profile = authorityProfileById(provenance.authorityProfile ?? "phase6");
+  return `# Quantum-Hub ${profile.title} human review\n\n` +
     `This package is bound to branch \`${provenance.branch}\`, Git HEAD \`${provenance.expectedHead}\`, deployment \`${provenance.deployment.id}\`, immutable preview ${provenance.deployment.immutableUrl}, and branch preview ${provenance.deployment.branchUrl}.\n\n` +
     `The archive uses the required \`00-provenance\` through \`13-package\` topology. It contains distilled evidence and the four tracked Phase 6 reports, but no raw frames, caches, nested archives, private host paths, or credentials. \`MANIFEST.json\` binds every non-self entry by path, byte size, and SHA-256. Detached manifest and independent-audit files are emitted beside the ZIP to avoid cryptographic self-reference.\n\n` +
     `All six Phase 6 gates remain **PENDING HUMAN REVIEW**. Machine package integrity does not accept Phase 6, authorize Phase 7, or merge main.\n`;
@@ -557,15 +777,17 @@ function sectionCounts(entries) {
 }
 
 export function buildPackageArtifacts({ payloadEntries, provenance: provenanceInput, outputFilename, generatedAt, maximumBytes = MAX_ARCHIVE_BYTES }) {
+  const profile = authorityProfileById(provenanceInput?.authorityProfile ?? "phase6");
   if (!Number.isSafeInteger(maximumBytes) || maximumBytes <= 0 || maximumBytes > MAX_ARCHIVE_BYTES) throw new Error(`maximum archive bytes must be between 1 and ${MAX_ARCHIVE_BYTES}`);
-  if (outputFilename !== REQUIRED_ARCHIVE_FILENAME) throw new Error(`output filename must be exactly ${REQUIRED_ARCHIVE_FILENAME}`);
+  if (outputFilename !== profile.archiveFilename) throw new Error(`output filename must be exactly ${profile.archiveFilename}`);
   canonicalTimestamp(generatedAt, "generatedAt");
   const provenance = canonicalProvenance(provenanceInput);
   const normalizedPayload = normalizePayloadEntries(payloadEntries);
   const deploymentVerification = deploymentVerificationBinding(normalizedPayload, provenance);
+  const humanEvidence = profile.id === "phase6-r1" ? validateR1HumanEvidencePayload(normalizedPayload) : null;
   const generatedEntries = [
     { path: "13-package/README.md", data: Buffer.from(packageReadme(provenance)), source: "generated" },
-    { path: "13-package/package-metadata.json", data: Buffer.from(stableJson({ schema: `${PACKAGE_SCHEMA}.package-metadata`, status: "PASS", generatedAt, provenance, deploymentVerification, humanReviewGates: HUMAN_REVIEW_GATES, authorization: AUTHORIZATION })), source: "generated" },
+    { path: "13-package/package-metadata.json", data: Buffer.from(stableJson({ schema: `${profile.packageSchema}.package-metadata`, status: "PASS", generatedAt, provenance, deploymentVerification, ...(humanEvidence ? { humanEvidence } : {}), humanReviewGates: HUMAN_REVIEW_GATES, authorization: AUTHORIZATION })), source: "generated" },
   ];
   const entries = normalizePayloadEntries([...normalizedPayload, ...generatedEntries]);
   validateTopology(entries.map(({ path: relativePath }) => relativePath));
@@ -577,7 +799,7 @@ export function buildPackageArtifacts({ payloadEntries, provenance: provenanceIn
     section: sectionFor(entry.path),
   }));
   const manifest = {
-    schema: PACKAGE_SCHEMA,
+    schema: profile.packageSchema,
     status: "PASS",
     generatedAt,
     provenance,
@@ -596,6 +818,7 @@ export function buildPackageArtifacts({ payloadEntries, provenance: provenanceIn
     },
     privacyAndSecrets: "PASS",
     deploymentVerification,
+    ...(humanEvidence ? { humanEvidence } : {}),
     humanReviewGates: HUMAN_REVIEW_GATES,
     authorization: AUTHORIZATION,
     files,
@@ -608,7 +831,7 @@ export function buildPackageArtifacts({ payloadEntries, provenance: provenanceIn
   ]);
   if (archiveBytes.length > maximumBytes) throw new Error(`review ZIP is ${archiveBytes.length} bytes; maximum is ${maximumBytes}`);
   const detached = {
-    schema: DETACHED_SCHEMA,
+    schema: profile.detachedSchema,
     status: "PASS",
     generatedAt,
     archive: {
@@ -622,10 +845,11 @@ export function buildPackageArtifacts({ payloadEntries, provenance: provenanceIn
       path: IN_ARCHIVE_MANIFEST,
       byteSize: manifestBytes.length,
       sha256: sha256(manifestBytes),
-      schema: PACKAGE_SCHEMA,
+      schema: profile.packageSchema,
     },
     provenance,
     deploymentVerification,
+    ...(humanEvidence ? { humanEvidence } : {}),
   };
   const detachedBytes = Buffer.from(stableJson(detached));
   assertNoPrivateText(detachedBytes, "detached-manifest.json");
@@ -662,7 +886,8 @@ function liveRefs(text) {
 }
 
 export async function repositoryAuthority(options) {
-  const [head, branch, status, parentLine, reports, localMain, originMain, originBranch, upstreamRef, upstreamHead, remoteUrl, liveText, acceptedAncestor, headMergedIntoMain] = await Promise.all([
+  const profile = authorityProfileById(options.authorityProfile ?? "phase6");
+  const [head, branch, status, parentLine, reports, localMain, originMain, originBranch, upstreamRef, upstreamHead, remoteUrl, liveText, parentAncestor, headMergedIntoMain] = await Promise.all([
     runGit(["rev-parse", "HEAD"], "Git HEAD"),
     runGit(["branch", "--show-current"], "Git branch"),
     runGit(["status", "--porcelain=v1", "--untracked-files=all"], "Git status"),
@@ -670,26 +895,26 @@ export async function repositoryAuthority(options) {
     runGit(["ls-files", "--", ...REPORT_SPECS.map(({ source }) => source)], "tracked Phase 6 reports"),
     runGit(["rev-parse", "main"], "local main"),
     runGit(["rev-parse", "origin/main"], "origin/main"),
-    runGit(["rev-parse", `origin/${REQUIRED_BRANCH}`], "origin Phase 6 branch"),
+    runGit(["rev-parse", `origin/${profile.branch}`], `origin ${profile.title} branch`),
     runGit(["rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{upstream}"], "Git upstream"),
     runGit(["rev-parse", "@{upstream}"], "Git upstream HEAD"),
     runGit(["remote", "get-url", "origin"], "origin URL"),
-    runGit(["ls-remote", "--exit-code", "--heads", "origin", `refs/heads/${REQUIRED_BRANCH}`, "refs/heads/main"], "live origin refs"),
-    gitSucceeds(["merge-base", "--is-ancestor", ACCEPTED_PHASE5B_SHA, options.expectedHead]),
+    runGit(["ls-remote", "--exit-code", "--heads", "origin", `refs/heads/${profile.branch}`, "refs/heads/main"], "live origin refs"),
+    gitSucceeds(["merge-base", "--is-ancestor", profile.parent, options.expectedHead]),
     gitSucceeds(["merge-base", "--is-ancestor", options.expectedHead, "main"]),
   ]);
   if (head !== options.expectedHead) throw new Error(`Git HEAD ${head} differs from --expected-head ${options.expectedHead}`);
-  if (branch !== REQUIRED_BRANCH || options.branch !== REQUIRED_BRANCH) throw new Error(`Git branch must be exactly ${REQUIRED_BRANCH}`);
+  if (branch !== profile.branch || options.branch !== profile.branch) throw new Error(`Git branch must be exactly ${profile.branch}`);
   if (status) throw new Error("repository must be clean before Phase 6 review packaging");
   if (localMain !== FROZEN_MAIN_SHA) throw new Error(`local main must remain frozen at ${FROZEN_MAIN_SHA}`);
   if (originMain !== FROZEN_MAIN_SHA) throw new Error(`origin/main must remain frozen at ${FROZEN_MAIN_SHA}`);
-  if (originBranch !== options.expectedHead || upstreamRef !== `origin/${REQUIRED_BRANCH}` || upstreamHead !== options.expectedHead) throw new Error("local/upstream Phase 6 branch parity differs");
+  if (originBranch !== options.expectedHead || upstreamRef !== `origin/${profile.branch}` || upstreamHead !== options.expectedHead) throw new Error(`local/upstream ${profile.title} branch parity differs`);
   if (remoteUrl.replace(/\/$/, "") !== REQUIRED_REMOTE_URL) throw new Error(`origin URL must be exactly ${REQUIRED_REMOTE_URL}`);
-  if (!acceptedAncestor) throw new Error(`accepted Phase 5B ${ACCEPTED_PHASE5B_SHA} is not an ancestor of Phase 6 HEAD`);
-  if (headMergedIntoMain) throw new Error("Phase 6 HEAD is already merged into frozen main");
+  if (!parentAncestor) throw new Error(`required parent ${profile.parent} is not an ancestor of ${profile.title} HEAD`);
+  if (headMergedIntoMain) throw new Error(`${profile.title} HEAD is already merged into frozen main`);
   const live = liveRefs(liveText);
-  if (live.size !== 2 || live.get("refs/heads/main") !== FROZEN_MAIN_SHA || live.get(`refs/heads/${REQUIRED_BRANCH}`) !== options.expectedHead) {
-    throw new Error("live origin main/Phase 6 refs differ from the frozen authorities");
+  if (live.size !== 2 || live.get("refs/heads/main") !== FROZEN_MAIN_SHA || live.get(`refs/heads/${profile.branch}`) !== options.expectedHead) {
+    throw new Error(`live origin main/${profile.title} refs differ from the frozen authorities`);
   }
   const trackedReports = reports.split(/\r?\n/).filter(Boolean).sort(lexicalCompare);
   const expectedReports = REPORT_SPECS.map(({ source }) => source).sort(lexicalCompare);
@@ -697,19 +922,19 @@ export async function repositoryAuthority(options) {
   const parentFields = parentLine.split(/\s+/);
   if (parentFields[0] !== head || parentFields.length !== 2 || !HASH40.test(parentFields[1])) throw new Error("Phase 6 HEAD must have exactly one direct parent");
   return {
-    schema: `${PACKAGE_SCHEMA}.git-provenance`,
+    schema: `${profile.packageSchema}.git-provenance`,
     status: "PASS",
     branch,
     head,
     directParents: parentFields.slice(1),
     cleanTree: true,
-    acceptedBase: ACCEPTED_PHASE5B_SHA,
-    acceptedBaseAncestor: true,
+    [profile.parentField]: profile.parent,
+    [profile.ancestorField]: true,
     headMergedIntoMain: false,
     localMain: { ref: "refs/heads/main", head: localMain },
     originMain: { ref: "refs/remotes/origin/main", head: originMain },
     liveMain: { ref: "refs/heads/main", head: live.get("refs/heads/main") },
-    upstream: { ref: upstreamRef, head: upstreamHead, liveHead: live.get(`refs/heads/${REQUIRED_BRANCH}`), parity: true },
+    upstream: { ref: upstreamRef, head: upstreamHead, liveHead: live.get(`refs/heads/${profile.branch}`), parity: true },
     remote: { name: "origin", url: remoteUrl, repository: REQUIRED_REPOSITORY },
     trackedReports,
   };
@@ -757,8 +982,10 @@ async function canonicalFuturePath(candidate, label) {
 }
 
 async function spawnAuditor({ archive, manifest, auditOutput, options }) {
+  const profile = authorityProfileById(options.authorityProfile ?? "phase6");
   const args = [
     AUDITOR,
+    "--authority-profile", profile.id,
     "--archive", archive,
     "--manifest", manifest,
     "--audit-output", auditOutput,
@@ -771,13 +998,14 @@ async function spawnAuditor({ archive, manifest, auditOutput, options }) {
   ];
   const { stdout } = await execFileAsync(process.execPath, args, { cwd: ROOT, encoding: "utf8", windowsHide: true, maxBuffer: 5_000_000 });
   let result;
-  try { result = JSON.parse(stdout); } catch { throw new Error("independent Phase 6 auditor returned invalid JSON"); }
-  if (result.status !== "PASS" || result.schema !== `${AUDIT_SCHEMA}.result`) throw new Error("independent Phase 6 auditor did not pass");
+  try { result = JSON.parse(stdout); } catch { throw new Error(`independent ${profile.title} auditor returned invalid JSON`); }
+  if (result.status !== "PASS" || result.schema !== `${profile.auditSchema}.result`) throw new Error(`independent ${profile.title} auditor did not pass`);
   return result;
 }
 
 export async function assemblePackage(input) {
   const options = validateOptionShape(input);
+  const profile = authorityProfileById(options.authorityProfile);
   const output = await canonicalFuturePath(options.output, "--output");
   const evidenceRoot = await realpath(assertExternalPath(options.evidenceRoot, "--evidence-root"));
   if (isWithin(evidenceRoot, output)) throw new Error("output cannot be inside the evidence root");
@@ -786,10 +1014,11 @@ export async function assemblePackage(input) {
   const repository = await repositoryAuthority(options);
   const generatedAt = options.generatedAt;
   const provenance = {
-    branch: REQUIRED_BRANCH,
+    ...(profile.id === "phase6-r1" ? { authorityProfile: profile.id } : {}),
+    branch: profile.branch,
     expectedHead: options.expectedHead,
     observedHead: repository.head,
-    acceptedBase: ACCEPTED_PHASE5B_SHA,
+    [profile.parentField]: profile.parent,
     expectedMain: FROZEN_MAIN_SHA,
     deployment: { id: options.deploymentId, immutableUrl: options.immutableUrl, branchUrl: options.branchUrl },
   };
@@ -818,7 +1047,7 @@ export async function assemblePackage(input) {
       { source: stagedAudit, destination: siblings.audit },
     ]);
     return {
-      schema: `${PACKAGE_SCHEMA}.result`,
+      schema: `${profile.packageSchema}.result`,
       status: "PASS",
       archive: { path: output, byteSize: artifacts.archiveBytes.length, sha256: sha256(artifacts.archiveBytes), entries: artifacts.files.length + 1 },
       detachedManifest: { path: siblings.manifest, byteSize: artifacts.detachedBytes.length, sha256: sha256(artifacts.detachedBytes) },
@@ -832,16 +1061,17 @@ export async function assemblePackage(input) {
 }
 
 function selfTestDeploymentVerification(provenance) {
-  const history = [{ commit: provenance.expectedHead, parents: [ACCEPTED_PHASE5B_SHA], subject: "Phase 6 fixture" }];
+  const profile = authorityProfileById(provenance.authorityProfile ?? "phase6");
+  const history = [{ commit: provenance.expectedHead, parents: [profile.parent], subject: `${profile.title} fixture` }];
   return {
-    schema: DEPLOYMENT_VERIFICATION_SCHEMA,
+    schema: profile.deploymentSchema,
     status: "PASS",
     inputs: {
       expectedHead: provenance.expectedHead,
-      acceptedBase: ACCEPTED_PHASE5B_SHA,
+      [profile.parentField]: profile.parent,
       expectedMain: FROZEN_MAIN_SHA,
       repository: REQUIRED_REPOSITORY,
-      branch: REQUIRED_BRANCH,
+      branch: profile.branch,
       deploymentId: provenance.deployment.id,
       immutableUrl: provenance.deployment.immutableUrl,
       branchUrl: provenance.deployment.branchUrl,
@@ -851,16 +1081,22 @@ function selfTestDeploymentVerification(provenance) {
       status: "PASS",
       data: {
         repository: REQUIRED_REPOSITORY,
-        branch: REQUIRED_BRANCH,
+        branch: profile.branch,
         head: provenance.expectedHead,
-        acceptedBase: ACCEPTED_PHASE5B_SHA,
-        directParent: ACCEPTED_PHASE5B_SHA,
+        [profile.parentField]: profile.parent,
+        directParent: profile.parent,
         cleanTree: true,
         history,
-        productionDelta: [],
-        main: { branch: "main", headSha: FROZEN_MAIN_SHA, frozenAt: FROZEN_MAIN_SHA, containsPhase6Head: false },
-        upstream: { ref: `origin/${REQUIRED_BRANCH}`, headSha: provenance.expectedHead, parity: true },
-        liveRemote: { branchRef: `refs/heads/${REQUIRED_BRANCH}`, branchHeadSha: provenance.expectedHead, mainRef: "refs/heads/main", mainHeadSha: FROZEN_MAIN_SHA, parity: true },
+        ...(profile.id === "phase6-r1" ? {
+          productionSourceDiff: [],
+          main: { local: FROZEN_MAIN_SHA, upstream: FROZEN_MAIN_SHA, live: FROZEN_MAIN_SHA, modifiedOrMerged: false },
+          upstream: { ref: `origin/${profile.branch}`, head: provenance.expectedHead, live: provenance.expectedHead, parity: true },
+        } : {
+          productionDelta: [],
+          main: { branch: "main", headSha: FROZEN_MAIN_SHA, frozenAt: FROZEN_MAIN_SHA, containsPhase6Head: false },
+          upstream: { ref: `origin/${profile.branch}`, headSha: provenance.expectedHead, parity: true },
+          liveRemote: { branchRef: `refs/heads/${profile.branch}`, branchHeadSha: provenance.expectedHead, mainRef: "refs/heads/main", mainHeadSha: FROZEN_MAIN_SHA, parity: true },
+        }),
       },
     },
     deployment: {
@@ -868,12 +1104,12 @@ function selfTestDeploymentVerification(provenance) {
       data: {
         authoritySource: "CLOUDFLARE_PAGES_SIGNED_GITHUB_CHECK",
         checkRunId: "1",
-        appSlug: "cloudflare-pages",
+        appSlug: profile.id === "phase6-r1" ? "cloudflare-workers-and-pages" : "cloudflare-pages",
         completedAt: "2026-08-30T00:00:00.000Z",
         deploymentId: provenance.deployment.id,
         immutableUrl: provenance.deployment.immutableUrl,
         branchUrl: provenance.deployment.branchUrl,
-        branch: REQUIRED_BRANCH,
+        branch: profile.branch,
         commitHash: provenance.expectedHead,
         environment: "preview",
         status: "PASS",
@@ -884,28 +1120,80 @@ function selfTestDeploymentVerification(provenance) {
       immutable: { status: "PASS", data: { origin: provenance.deployment.immutableUrl, status: "PASS" } },
       branch: { status: "PASS", data: { origin: provenance.deployment.branchUrl, status: "PASS" } },
     },
-    checks: REQUIRED_DEPLOYMENT_CHECKS,
+    checks: profile.deploymentChecks,
     failures: [],
   };
 }
 
-export function selfTest() {
+export function selfTest(authorityProfile = "phase6") {
+  const profile = authorityProfileById(authorityProfile);
   const expectedHead = "a".repeat(40);
   const deploymentId = "12345678-1234-4234-8234-123456789abc";
-  const provenance = { branch: REQUIRED_BRANCH, expectedHead, observedHead: expectedHead, acceptedBase: ACCEPTED_PHASE5B_SHA, expectedMain: FROZEN_MAIN_SHA, deployment: { id: deploymentId, immutableUrl: expectedImmutableUrl(deploymentId), branchUrl: REQUIRED_BRANCH_URL } };
+  const provenance = { ...(profile.id === "phase6-r1" ? { authorityProfile: profile.id } : {}), branch: profile.branch, expectedHead, observedHead: expectedHead, [profile.parentField]: profile.parent, expectedMain: FROZEN_MAIN_SHA, deployment: { id: deploymentId, immutableUrl: expectedImmutableUrl(deploymentId), branchUrl: profile.branchUrl } };
   const entries = TOPOLOGY_SECTIONS.slice(0, -1).map((section, index) => ({ path: `${section}/fixture-${index}.json`, data: Buffer.from(`{"index":${index}}\n`) }));
   entries.push({ path: DEPLOYMENT_VERIFICATION_PATH, data: Buffer.from(stableJson(selfTestDeploymentVerification(provenance))) });
-  const result = buildPackageArtifacts({ payloadEntries: entries, provenance, outputFilename: REQUIRED_ARCHIVE_FILENAME, generatedAt: "2026-08-30T00:00:00.000Z" });
-  return { schema: `${PACKAGE_SCHEMA}.self-test`, status: "PASS", archiveBytes: result.archiveBytes.length, entries: result.files.length + 1, maximumArchiveBytes: MAX_ARCHIVE_BYTES, topologySections: TOPOLOGY_SECTIONS.length };
+  if (profile.id === "phase6-r1") {
+    const recordings = R1_REQUIRED_HUMAN_RECORDINGS.map((filename, index) => {
+      const marker = Buffer.from(`R1 self-test physical recording ${index + 1}: ${filename}`);
+      const ftyp = Buffer.from([0, 0, 0, 24, 0x66, 0x74, 0x79, 0x70, 0x69, 0x73, 0x6f, 0x6d, 0, 0, 0, 0, 0x69, 0x73, 0x6f, 0x6d, 0x6d, 0x70, 0x34, 0x32]);
+      const free = Buffer.alloc(8);
+      free.writeUInt32BE(8 + marker.length, 0);
+      free.write("free", 4, "ascii");
+      const data = Buffer.concat([ftyp, free, marker]);
+      return { filename, data, byteSize: data.length, sha256: sha256(data) };
+    });
+    const ledger = {
+      schema: R1_HUMAN_EVIDENCE_SCHEMA,
+      createdAt: "2026-08-30T00:00:00.000Z",
+      status: "PENDING HUMAN REVIEW",
+      evidenceClass: "HUMAN DEVICE EVIDENCE",
+      rootExists: true,
+      requiredFilenames: [...R1_REQUIRED_HUMAN_RECORDINGS],
+      missingFilenames: [],
+      entries: recordings.map(({ filename, byteSize, sha256: hash }) => ({
+        filename,
+        byteSize,
+        sha256: hash,
+        evidenceClass: "PHYSICAL HUMAN RECORDING",
+        device: "Synthetic fixture; not a physical-device claim",
+        os: "Synthetic fixture; not reviewed",
+        browser: filename.startsWith("iphone-safari-") ? "Safari (version not reviewed)" : filename === "chrome-200-percent.mp4" ? "Chrome (version not reviewed)" : null,
+        browserVersion: null,
+        testSteps: ["Exercise the package binding contract without claiming a human result."],
+        observations: ["Synthetic bytes remain pending and are not acceptance evidence."],
+        observedResult: "PENDING HUMAN REVIEW; fixture presence is not a physical-device pass.",
+        status: "PENDING HUMAN REVIEW",
+        failureReferences: [],
+      })),
+      policy: { filePresenceIsPass: false, machineRecordingSubstitutionAllowed: false, failRequiresTimestampOrFrame: true, allFourFilesRequiredBeforePackaging: true },
+    };
+    const ledgerSource = Buffer.from(stableJson(ledger));
+    entries.push({
+      path: R1_HUMAN_LEDGER_PATH,
+      data: Buffer.from(stableJson({
+        schema: "quantum-hub.phase-6.final-evidence-assembly.v1.distilled-json",
+        status: "PENDING HUMAN REVIEW",
+        role: "physical-device-result",
+        source: { relativePath: "human-device/ledger.json", sha256: sha256(ledgerSource) },
+        selection: null,
+        payload: ledger,
+      })),
+    });
+    entries.push(...recordings.map(({ filename, data }) => ({ path: `11-physical-device/recordings/${filename}`, data })));
+  }
+  const result = buildPackageArtifacts({ payloadEntries: entries, provenance, outputFilename: profile.archiveFilename, generatedAt: "2026-08-30T00:00:00.000Z" });
+  return { schema: `${profile.packageSchema}.self-test`, status: "PASS", authorityProfile: profile.id, archiveBytes: result.archiveBytes.length, entries: result.files.length + 1, maximumArchiveBytes: MAX_ARCHIVE_BYTES, topologySections: TOPOLOGY_SECTIONS.length };
 }
 
-function dryRunReport() {
+function dryRunReport(authorityProfile = "phase6") {
+  const profile = authorityProfileById(authorityProfile);
   return {
-    schema: `${PACKAGE_SCHEMA}.dry-run`,
+    schema: `${profile.packageSchema}.dry-run`,
     status: "READY",
-    fixedAuthorities: { branch: REQUIRED_BRANCH, acceptedBase: ACCEPTED_PHASE5B_SHA, main: FROZEN_MAIN_SHA, branchUrl: REQUIRED_BRANCH_URL },
+    authorityProfile: profile.id,
+    fixedAuthorities: { branch: profile.branch, [profile.parentField]: profile.parent, main: FROZEN_MAIN_SHA, branchUrl: profile.branchUrl },
     dynamicInputs: ["expected HEAD", "Cloudflare deployment UUID", "matching immutable URL", "canonical generatedAt"],
-    requiredDeploymentVerification: { path: DEPLOYMENT_VERIFICATION_PATH, schema: DEPLOYMENT_VERIFICATION_SCHEMA },
+    requiredDeploymentVerification: { path: DEPLOYMENT_VERIFICATION_PATH, schema: profile.deploymentSchema },
     requiredReports: REPORT_SPECS.map(({ source, archive }) => ({ source, archive })),
     topology: TOPOLOGY_SECTIONS,
     maximumArchiveBytes: MAX_ARCHIVE_BYTES,
@@ -916,11 +1204,12 @@ function printHelp() {
   console.log([
     "Usage:",
     "  node scripts/package-phase6-human-review.mjs \\",
+    "    [--authority-profile phase6|phase6-r1] \\",
     "    --evidence-root <external-distilled-evidence-directory> \\",
-    `    --output <fresh-external>/${REQUIRED_ARCHIVE_FILENAME} --expected-head <sha40> \\`,
-    `    --branch ${REQUIRED_BRANCH} --deployment-id <Cloudflare-UUID> \\`,
+    `    --output <fresh-external>/<profile-exact-filename> --expected-head <sha40> \\`,
+    `    --branch <profile-exact-branch> --deployment-id <Cloudflare-UUID> \\`,
     `    --immutable-url https://<UUID-prefix>.${REQUIRED_CLOUDFLARE_PROJECT}.pages.dev/ \\`,
-    `    --branch-url ${REQUIRED_BRANCH_URL} --generated-at <canonical-ISO-timestamp>`,
+    `    --branch-url <profile-exact-alias> --generated-at <canonical-ISO-timestamp>`,
     "",
     "The detached manifest and independent audit are emitted beside the ZIP using its filename stem.",
   ].join("\n"));
@@ -929,8 +1218,8 @@ function printHelp() {
 async function main() {
   const options = parseArguments(process.argv.slice(2));
   if (options.help) { printHelp(); return; }
-  if (options.selfTest) { console.log(JSON.stringify(selfTest(), null, 2)); return; }
-  if (options.dryRun) { console.log(JSON.stringify(dryRunReport(), null, 2)); return; }
+  if (options.selfTest) { console.log(JSON.stringify(selfTest(options.authorityProfile), null, 2)); return; }
+  if (options.dryRun) { console.log(JSON.stringify(dryRunReport(options.authorityProfile), null, 2)); return; }
   console.log(JSON.stringify(await assemblePackage(options), null, 2));
 }
 

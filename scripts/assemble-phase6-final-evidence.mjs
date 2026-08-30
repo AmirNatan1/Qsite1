@@ -7,6 +7,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 import sharp from "sharp";
 
+import { DEVICE_REVIEW_CHECKS } from "./ingest-phase6-r1-human-evidence.mjs";
+import { PHASE6_ROUTES } from "./phase6-contract.mjs";
+
 const SCRIPT = fileURLToPath(import.meta.url);
 export const ROOT = path.resolve(path.dirname(SCRIPT), "..");
 export const SCHEMA = "quantum-hub.phase-6.final-evidence-assembly.v1";
@@ -15,8 +18,27 @@ export const MAX_EVIDENCE_BYTES = 75 * 1024 * 1024;
 export const REQUIRED_BRANCH = "feature/phase-6-global-hardening";
 export const REQUIRED_BRANCH_URL = "https://feature-phase-6-global-harde.qsite1.pages.dev/";
 export const REQUIRED_PARENT = "005a36860ecbfd6fedb3d3f2223f168c1edfbb05";
+export const R1_REQUIRED_BRANCH = "repair/phase-6-r1-validation-closure";
+export const R1_REQUIRED_BRANCH_URL = "https://repair-phase-6-r1-validation.qsite1.pages.dev/";
+export const R1_REQUIRED_PARENT = "aee036740b129624c54b8f1b878229f955d187ae";
 export const FROZEN_MAIN = "501040c42bba30b9d9517b88a8f9857992a2dba4";
 export const POSTER_DECISION = "NO PRODUCTION POSTER CHANGE — CURRENT AUTHORITY RETAINED";
+export const HUMAN_EVIDENCE_SCHEMA = "quantum-hub.phase-6-r1.human-evidence-ledger.v1";
+export const R1_MOTION_EVIDENCE_SCHEMA = "quantum-hub.phase-6-r1.motion-evidence.v1";
+export const R1_PERSISTENT_LIFECYCLE_SCHEMA = "quantum-hub.phase-6-r1.persistent-lifecycle.v1";
+export const REQUIRED_HUMAN_EVIDENCE_FILES = Object.freeze([
+  "iphone-safari-opening.mp4",
+  "iphone-safari-maradin.mp4",
+  "physical-scroll-input.mp4",
+  "chrome-200-percent.mp4",
+]);
+export const R1_MOTION_RECORDING_SPECS = Object.freeze([
+  Object.freeze({ id: "forward-physical-to-manifesto", filename: "01-forward-physical-to-manifesto.mp4" }),
+  Object.freeze({ id: "reverse-manifesto-to-f1", filename: "02-reverse-manifesto-to-f1.mp4" }),
+  Object.freeze({ id: "stop-at-authored-states", filename: "03-stop-at-authored-states.mp4" }),
+  Object.freeze({ id: "resize-orientation-mid-current-and-manifesto", filename: "04-resize-orientation-mid-current-and-manifesto.mp4" }),
+  Object.freeze({ id: "supporting-route-entry-and-reverse", filename: "05-supporting-route-entry-and-reverse.mp4" }),
+]);
 
 export const TOPOLOGY_SECTIONS = Object.freeze([
   "00-provenance",
@@ -90,7 +112,33 @@ const STALE_SOURCE_NAME = /(?:^|[-_.\/])(?:smoke|draft|trial)(?:[-_.\/]|$)/i;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 const PRIVATE_TEXT = /(?:(?:^|[\s"'=:(`\[])[a-z]:[\\/]|(?:^|[\s"'=:(`\[])\/(?:users|home|tmp|private|var\/folders|workspace|root)\/[^/\s]+(?:\/|\b)|(?:^|[^a-z])onedrive(?:[^a-z]|$)|appdata|localcache|(?:^|[\\/])\.codex(?:[\\/]|$)|file:\/\/|\\\\[^\\\s]+[\\][^\\\s]+)/i;
 const SECRET_TEXT = /(?:github_pat_[a-z0-9_]+|gh[opusr]_[a-z0-9]{20,}|glpat-[a-z0-9_-]{16,}|sk-[a-z0-9_-]{20,}|AKIA[0-9A-Z]{16}|ASIA[0-9A-Z]{16}|xox[baprs]-[a-z0-9-]{16,}|-----BEGIN [A-Z ]*PRIVATE KEY-----|(?:password|api[_-]?key|client[_-]?secret|access[_-]?token|refresh[_-]?token|bearer)\s*[:=]\s*["']?(?:bearer\s+)?[a-z0-9_./+:-]{12,})/i;
-const STATUS_VALUES = new Set(["PASS", "LIMITATION", "NOT APPLICABLE", "PENDING HUMAN DEVICE REVIEW"]);
+export const EVIDENCE_STATUS_VALUES = Object.freeze([
+  "PASS",
+  "FAIL",
+  "LIMITATION",
+  "NOT OBSERVED",
+  "PENDING HUMAN REVIEW",
+  "NOT APPLICABLE",
+]);
+const STATUS_VALUES = new Set(EVIDENCE_STATUS_VALUES);
+const AUTHORITY_PROFILES = Object.freeze({
+  phase6: Object.freeze({
+    id: "phase6",
+    branch: REQUIRED_BRANCH,
+    branchUrl: REQUIRED_BRANCH_URL,
+    parent: REQUIRED_PARENT,
+    deploymentSchema: "quantum-hub.phase-6.deployment-verification.v1",
+    deploymentParentField: "acceptedBase",
+  }),
+  "phase6-r1": Object.freeze({
+    id: "phase6-r1",
+    branch: R1_REQUIRED_BRANCH,
+    branchUrl: R1_REQUIRED_BRANCH_URL,
+    parent: R1_REQUIRED_PARENT,
+    deploymentSchema: "quantum-hub.phase-6-r1.deployment-verification.v1",
+    deploymentParentField: "exactParent",
+  }),
+});
 const GENERATED_SECTION_FILENAMES = Object.freeze({
   "00-provenance": ["repository-authority.json", "checkpoint-chain.json", "production-source-diff.txt", "change-ledger.json", "deployment-authority-summary.json", "dist-deployment-parity.json", "final-build-test.json", "final-limitations.md", "final-handoff-seed.json", "section-summary.json"],
   "01-baseline": ["accepted-phase5b-reference-hashes.json", "initial-browser-runtime-inventory.json", "section-summary.json"],
@@ -126,16 +174,27 @@ export const REQUIRED_ARTIFACT_ROLES = Object.freeze({
   "memory-summary": Object.freeze({ section: "07-memory", kind: "document", minimum: 1 }),
   "network-media-summary": Object.freeze({ section: "08-network-media", kind: "document", minimum: 1 }),
   "accessibility-summary": Object.freeze({ section: "09-accessibility", kind: "document", minimum: 3, engines: ["chromium", "webkit", "firefox"] }),
-  "accessibility-interaction-limitation": Object.freeze({ section: "09-accessibility", kind: "document", minimum: 1, engines: ["webkit"] }),
   "regression-summary": Object.freeze({ section: "12-regression", kind: "document", minimum: 1 }),
 });
 
+export const R1_REQUIRED_ARTIFACT_ROLES = Object.freeze({
+  "r1-motion-summary": Object.freeze({ section: "03-homepage-motion", kind: "document", minimum: 2, engines: ["chromium", "firefox"] }),
+  "r1-motion-recording": Object.freeze({ section: "03-homepage-motion", kind: "video", minimum: 10, engines: ["chromium", "firefox"] }),
+  "r1-persistent-lifecycle-summary": Object.freeze({ section: "05-history-bfcache", kind: "document", minimum: 1, engines: ["chromium"] }),
+  "physical-device-result": Object.freeze({ section: "11-physical-device", kind: "document", minimum: 1 }),
+  "physical-device-recording": Object.freeze({ section: "11-physical-device", kind: "video", minimum: 4 }),
+});
+
 const OPTIONAL_ARTIFACT_ROLES = Object.freeze({
+  ...R1_REQUIRED_ARTIFACT_ROLES,
+  "accessibility-interaction-limitation": Object.freeze({ section: "09-accessibility", kind: "document" }),
+  "supplemental-reflow-proxy": Object.freeze({ section: "09-accessibility", kind: "document" }),
   "physical-device-result": Object.freeze({ section: "11-physical-device", kind: "document" }),
+  "physical-device-recording": Object.freeze({ section: "11-physical-device", kind: "video" }),
 });
 
 const JSON_ROLE_SCHEMAS = Object.freeze({
-  "deployment-verifier": Object.freeze(["quantum-hub.phase-6.deployment-verification.v1"]),
+  "deployment-verifier": Object.freeze(["quantum-hub.phase-6.deployment-verification.v1", "quantum-hub.phase-6-r1.deployment-verification.v1"]),
   "cross-engine-summary": Object.freeze(["quantum-hub.phase-6.global-hardening.v1"]),
   "homepage-motion-summary": Object.freeze(["quantum-hub.phase-6.global-hardening.v1"]),
   "supporting-route-summary": Object.freeze(["quantum-hub.phase-6.global-hardening.v1"]),
@@ -145,14 +204,18 @@ const JSON_ROLE_SCHEMAS = Object.freeze({
   "network-media-summary": Object.freeze(["quantum-hub.phase-6.performance-lifecycle.v1", "quantum-hub.phase-6.global-hardening.v1"]),
   "accessibility-summary": Object.freeze(["quantum-hub.phase-6.accessibility-interactions.v1", "quantum-hub.phase-6.global-hardening.v1"]),
   "accessibility-interaction-limitation": Object.freeze(["quantum-hub.phase-6.accessibility-interactions.v1"]),
+  "supplemental-reflow-proxy": Object.freeze(["quantum-hub.phase-5b.responsive-accessibility.v1"]),
   "regression-summary": Object.freeze(["quantum-hub.phase-6.repair-regressions.v1"]),
+  "physical-device-result": Object.freeze([HUMAN_EVIDENCE_SCHEMA]),
+  "r1-motion-summary": Object.freeze([R1_MOTION_EVIDENCE_SCHEMA]),
+  "r1-persistent-lifecycle-summary": Object.freeze([R1_PERSISTENT_LIFECYCLE_SCHEMA]),
 });
 
 const GENERATED_EVIDENCE_BY_SECTION = Object.freeze({
   "00-provenance": Object.freeze(["generated-authority"]),
   "01-baseline": Object.freeze(["generated-authority", "packager-injected-report"]),
   "10-poster-study": Object.freeze(["packager-injected-report", "poster-study-summary", "poster-side-by-side", "poster-difference"]),
-  "11-physical-device": Object.freeze(["packager-injected-report", "physical-device-result"]),
+  "11-physical-device": Object.freeze(["packager-injected-report", "physical-device-result", "physical-device-recording"]),
   "13-package": Object.freeze(["packager-generated"]),
 });
 
@@ -206,6 +269,50 @@ function stableValue(value) {
 
 export function stableJson(value) {
   return `${JSON.stringify(stableValue(value), null, 2)}\n`;
+}
+
+function exactJson(observed, expected, label) {
+  if (stableJson(observed) !== stableJson(expected)) throw new Error(`${label} contradicts raw evidence`);
+}
+
+export function normalizeEvidenceStatus(value) {
+  const normalized = String(value ?? "").trim().toUpperCase().replaceAll("_", " ").replaceAll("-", " ").replace(/\s+/g, " ");
+  if (normalized === "ERROR") return "FAIL";
+  if (normalized === "UNSUPPORTED") return "LIMITATION";
+  if (normalized === "OBSERVED") return "PASS";
+  if (normalized === "PENDING HUMAN DEVICE REVIEW" || normalized === "PENDING") return "PENDING HUMAN REVIEW";
+  return STATUS_VALUES.has(normalized) ? normalized : null;
+}
+
+function aggregateEvidenceStatuses(statuses, fallback = "NOT OBSERVED") {
+  const normalized = statuses.map(normalizeEvidenceStatus).filter(Boolean);
+  if (normalized.includes("FAIL")) return "FAIL";
+  if (normalized.includes("LIMITATION")) return "LIMITATION";
+  if (normalized.includes("PENDING HUMAN REVIEW")) return "PENDING HUMAN REVIEW";
+  if (normalized.includes("PASS")) return "PASS";
+  if (normalized.includes("NOT OBSERVED")) return "NOT OBSERVED";
+  return fallback;
+}
+
+function aggregateCoverageStatuses(statuses, fallback = "NOT OBSERVED") {
+  const normalized = statuses.map(normalizeEvidenceStatus).filter(Boolean);
+  if (normalized.includes("FAIL")) return "FAIL";
+  if (normalized.includes("LIMITATION")) return "LIMITATION";
+  if (normalized.includes("PENDING HUMAN REVIEW")) return "PENDING HUMAN REVIEW";
+  if (normalized.includes("NOT OBSERVED")) return "NOT OBSERVED";
+  return normalized.length && normalized.every((status) => status === "PASS") ? "PASS" : fallback;
+}
+
+function authorityProfileById(id = "phase6") {
+  const profile = AUTHORITY_PROFILES[id];
+  if (!profile) throw new Error(`unknown evidence authority profile: ${id}`);
+  return profile;
+}
+
+function authorityProfileForBranch(branch) {
+  const profile = Object.values(AUTHORITY_PROFILES).find((candidate) => candidate.branch === branch);
+  if (!profile) throw new Error(`unsupported final evidence branch authority: ${branch ?? "missing"}`);
+  return profile;
 }
 
 function isWithin(parent, candidate) {
@@ -344,7 +451,7 @@ function validateSectionMetadata(sections, artifacts, posterStudyDirectory) {
   if (!posterStudyDirectory || sections["10-poster-study"].status !== "PASS") throw new Error("final assembly requires a PASS poster study and --poster-study-directory");
   const physical = sections["11-physical-device"];
   if (physical.status === "PASS" && !roleSet.has("physical-device-result")) throw new Error("physical-device PASS requires genuine physical-device-result evidence");
-  if (physical.status !== "PASS" && physical.status !== "PENDING HUMAN DEVICE REVIEW" && physical.status !== "LIMITATION") throw new Error("physical-device status must be genuine PASS or an explicit pending/limitation status");
+  if (!["PASS", "FAIL", "LIMITATION", "PENDING HUMAN REVIEW"].includes(physical.status)) throw new Error("physical-device status must be genuine PASS/FAIL or an explicit pending/limitation status");
 }
 
 function validateMediaContract(contract, label) {
@@ -376,7 +483,59 @@ function roleSpec(role) {
   throw new Error(`unknown evidence artifact role: ${role}`);
 }
 
-function validateArtifactRecords(artifacts) {
+function requireArtifactRoleInventory(artifacts, contracts) {
+  for (const [role, spec] of Object.entries(contracts)) {
+    const matching = artifacts.filter((record) => record.role === role);
+    if (matching.length < spec.minimum) throw new Error(`mandatory evidence role is missing: ${role}`);
+    if (spec.engines) {
+      const engines = new Set(matching.map(({ engine }) => engine));
+      for (const engine of spec.engines) if (!engines.has(engine)) throw new Error(`${role} omits ${engine}`);
+    }
+  }
+}
+
+function validateR1ArtifactTopology(artifacts) {
+  const engines = ["chromium", "firefox"];
+  const summaries = artifacts.filter(({ role }) => role === "r1-motion-summary");
+  const recordings = artifacts.filter(({ role }) => role === "r1-motion-recording");
+  const lifecycle = artifacts.filter(({ role }) => role === "r1-persistent-lifecycle-summary");
+  const humanLedgers = artifacts.filter(({ role }) => role === "physical-device-result");
+  const humanRecordings = artifacts.filter(({ role }) => role === "physical-device-recording");
+  if (summaries.length !== 2 || recordings.length !== 10 || lifecycle.length !== 1 || humanLedgers.length !== 1 || humanRecordings.length !== 4) {
+    throw new Error("R1 motion/lifecycle/human artifact topology differs");
+  }
+  for (const engine of engines) {
+    const engineSummaries = summaries.filter((record) => record.engine === engine);
+    const engineRecordings = recordings.filter((record) => record.engine === engine);
+    if (engineSummaries.length !== 1 || path.posix.basename(engineSummaries[0].source) !== "motion-evidence-report.json" || engineSummaries[0].status !== "PASS" || engineSummaries[0].select !== undefined) {
+      throw new Error(`R1 motion summary authority differs: ${engine}`);
+    }
+    const filenames = engineRecordings.map(({ source }) => path.posix.basename(source)).sort(lexicalCompare);
+    const expected = R1_MOTION_RECORDING_SPECS.map(({ filename }) => filename).sort(lexicalCompare);
+    if (engineRecordings.length !== 5 || stableJson(filenames) !== stableJson(expected)
+      || engineRecordings.some((record) => record.status !== "PASS" || !record.mediaContract)) {
+      throw new Error(`R1 motion recording inventory differs: ${engine}`);
+    }
+  }
+  const lifecycleRecord = lifecycle[0];
+  const requiredSelection = ["/bfcache", "/browser", "/history", "/listeners", "/mediaRequests", "/profileCleanup", "/status", "/visibility"];
+  if (lifecycleRecord.engine !== "chromium"
+    || lifecycleRecord.destination !== "05-history-bfcache/r1-persistent-lifecycle.json"
+    || !["PASS", "FAIL", "LIMITATION"].includes(lifecycleRecord.status)
+    || (lifecycleRecord.select !== undefined && requiredSelection.some((pointer) => !lifecycleRecord.select.includes(pointer)))) {
+    throw new Error("R1 persistent-lifecycle artifact authority differs");
+  }
+  if (humanLedgers[0].destination !== "11-physical-device/human-evidence-ledger.json" || humanLedgers[0].select !== undefined) {
+    throw new Error("R1 human-evidence ledger authority differs");
+  }
+  const humanFilenames = humanRecordings.map(({ source }) => path.posix.basename(source)).sort(lexicalCompare);
+  if (stableJson(humanFilenames) !== stableJson([...REQUIRED_HUMAN_EVIDENCE_FILES].sort(lexicalCompare))
+    || humanRecordings.some((record) => record.destination !== `11-physical-device/recordings/${path.posix.basename(record.source)}` || record.mediaContract !== undefined)) {
+    throw new Error("R1 human recording inventory differs");
+  }
+}
+
+function validateArtifactRecords(artifacts, authority) {
   if (!Array.isArray(artifacts)) throw new Error("final metadata artifacts must be an array");
   const destinations = new Set();
   const selectionKeys = new Set();
@@ -393,11 +552,14 @@ function validateArtifactRecords(artifacts) {
     const kind = extensionKind(record.destination);
     if (spec && (spec.section !== section || spec.kind !== kind)) throw new Error(`artifact role/destination differs: ${record.role}`);
     if (record.role === "deployment-verifier" && record.destination !== "00-provenance/deployment-verification.json") throw new Error("deployment-verifier must occupy 00-provenance/deployment-verification.json");
-    if (record.role === "accessibility-interaction-limitation" && (record.status !== "LIMITATION" || record.engine !== "webkit")) throw new Error("WebKit interaction limitation must be explicit");
+    if (record.role === "accessibility-interaction-limitation" && (!["FAIL", "LIMITATION"].includes(record.status) || record.engine !== "webkit")) throw new Error("WebKit interaction FAIL/LIMITATION must be explicit");
+    if (record.role === "physical-device-result" && record.select !== undefined) throw new Error("physical-device human-evidence ledger must be included whole");
     if (["deployment-verifier", "cross-engine-summary", "accessibility-summary", "performance-summary"].includes(record.role) && record.status !== "PASS") throw new Error(`required PASS authority differs: ${record.role}`);
     if (record.role === "performance-summary" && path.posix.basename(record.source) !== "phase6-performance-final.json") throw new Error("performance-summary must bind phase6-performance-final.json");
     if (record.engine !== undefined && !["chromium", "webkit", "firefox"].includes(record.engine)) throw new Error(`artifact engine differs: ${record.engine}`);
-    if (kind === "video") validateMediaContract(record.mediaContract, record.destination);
+    if (kind === "video" && record.role === "physical-device-recording") {
+      if (record.mediaContract !== undefined) throw new Error(`physical-device recording must retain its human-evidence authority without a machine capture contract: ${record.destination}`);
+    } else if (kind === "video") validateMediaContract(record.mediaContract, record.destination);
     else if (record.mediaContract !== undefined) throw new Error(`mediaContract is only valid for MP4 evidence: ${record.destination}`);
     if (record.select !== undefined && (!Array.isArray(record.select) || !record.select.length || record.select.some((pointer) => typeof pointer !== "string" || !pointer.startsWith("/")))) throw new Error(`artifact JSON selection differs: ${record.destination}`);
     const folded = record.destination.toLowerCase();
@@ -407,27 +569,32 @@ function validateArtifactRecords(artifacts) {
     if (selectionKeys.has(selectionKey)) throw new Error(`the same source projection is selected more than once: ${record.source}`);
     selectionKeys.add(selectionKey);
   }
-  for (const [role, spec] of Object.entries(REQUIRED_ARTIFACT_ROLES)) {
-    const matching = artifacts.filter((record) => record.role === role);
-    if (matching.length < spec.minimum) throw new Error(`mandatory evidence role is missing: ${role}`);
-    if (spec.engines) {
-      const engines = new Set(matching.map(({ engine }) => engine));
-      for (const engine of spec.engines) if (!engines.has(engine)) throw new Error(`${role} omits ${engine}`);
-    }
+  requireArtifactRoleInventory(artifacts, REQUIRED_ARTIFACT_ROLES);
+  if (authority.id === "phase6-r1") {
+    requireArtifactRoleInventory(artifacts, R1_REQUIRED_ARTIFACT_ROLES);
+    validateR1ArtifactTopology(artifacts);
   }
   return artifacts;
 }
 
 export function validateFinalMetadata(input, { posterStudyDirectory = null } = {}) {
   const metadata = sanitizeJsonValue(input, "final metadata");
+  for (const section of Object.values(metadata.sections ?? {})) {
+    if (section?.status === "PENDING HUMAN DEVICE REVIEW") section.status = "PENDING HUMAN REVIEW";
+    for (const override of Object.values(section?.requirements ?? {})) {
+      if (override?.status === "PENDING HUMAN DEVICE REVIEW") override.status = "PENDING HUMAN REVIEW";
+    }
+  }
   if (metadata.schema !== FINAL_METADATA_SCHEMA || metadata.status !== "READY") throw new Error("final metadata schema/status differs");
   validateIsoTimestamp(metadata.generatedAt, "final metadata generatedAt");
   const repository = metadata.repository;
-  if (!repository || repository.branch !== REQUIRED_BRANCH || repository.exactParent !== REQUIRED_PARENT || !HASH40.test(repository.finalHead ?? "") || !HASH40.test(repository.directParent ?? "") || repository.cleanTree !== true) throw new Error("final repository authority differs");
+  const authority = authorityProfileForBranch(repository?.branch);
+  if (metadata.authorityProfile !== undefined && metadata.authorityProfile !== authority.id) throw new Error("final metadata authority profile differs from its branch");
+  if (!repository || repository.exactParent !== authority.parent || !HASH40.test(repository.finalHead ?? "") || !HASH40.test(repository.directParent ?? "") || repository.cleanTree !== true) throw new Error("final repository authority differs");
   if (repository.localHead !== repository.finalHead || repository.upstreamHead !== repository.finalHead || repository.liveHead !== repository.finalHead) throw new Error("local/upstream/live HEAD parity differs");
   if (!repository.main || repository.main.local !== FROZEN_MAIN || repository.main.upstream !== FROZEN_MAIN || repository.main.public !== FROZEN_MAIN || repository.main.modifiedOrMerged !== false) throw new Error("frozen main authority differs");
   if (!Array.isArray(repository.commitChain) || !repository.commitChain.length) throw new Error("linear commit chain is required");
-  let expectedParent = REQUIRED_PARENT;
+  let expectedParent = authority.parent;
   const commitShas = new Set();
   for (const record of repository.commitChain) {
     if (!HASH40.test(record?.sha ?? "") || commitShas.has(record.sha) || !Array.isArray(record.parents) || record.parents.length !== 1 || record.parents[0] !== expectedParent || typeof record.subject !== "string" || !record.subject.trim()) throw new Error(`linear commit chain differs at ${record?.sha ?? "unknown"}`);
@@ -441,7 +608,7 @@ export function validateFinalMetadata(input, { posterStudyDirectory = null } = {
   deployment.branchUrl = normalizeHttps(deployment.branchUrl, "branch URL");
   const immutable = new URL(deployment.immutableUrl);
   const branch = new URL(deployment.branchUrl);
-  if (immutable.pathname !== "/" || branch.pathname !== "/" || immutable.hostname !== `${deployment.id.slice(0, 8)}.qsite1.pages.dev` || deployment.branchUrl !== REQUIRED_BRANCH_URL || deployment.immutableUrl === deployment.branchUrl) throw new Error("deployment URL/UUID binding differs");
+  if (immutable.pathname !== "/" || branch.pathname !== "/" || immutable.hostname !== `${deployment.id.slice(0, 8)}.qsite1.pages.dev` || deployment.branchUrl !== authority.branchUrl || deployment.immutableUrl === deployment.branchUrl) throw new Error("deployment URL/UUID binding differs");
   const evidenceContext = metadata.evidenceContext;
   if (!evidenceContext
     || evidenceContext.browserQa?.origin !== "LOCAL"
@@ -460,7 +627,7 @@ export function validateFinalMetadata(input, { posterStudyDirectory = null } = {
   if (!metadata.baseline?.acceptedPhase5bReferenceHashes || !Object.keys(metadata.baseline.acceptedPhase5bReferenceHashes).length || !metadata.baseline?.initialBrowserRuntimeInventory || !Object.keys(metadata.baseline.initialBrowserRuntimeInventory).length) throw new Error("baseline reference/runtime inventory is incomplete");
   if (!Array.isArray(metadata.limitations) || !metadata.limitations.length || metadata.limitations.some((value) => typeof value !== "string" || !value.trim())) throw new Error("genuine unresolved limitations are required");
   if (stableJson(metadata.humanReviewGates) !== stableJson(HUMAN_REVIEW_GATES) || stableJson(metadata.authorization) !== stableJson(AUTHORIZATION)) throw new Error("human-review gate or authorization policy differs");
-  validateArtifactRecords(metadata.artifacts);
+  validateArtifactRecords(metadata.artifacts, authority);
   validateSectionMetadata(metadata.sections, metadata.artifacts, posterStudyDirectory);
   assertPrivacySafe(Buffer.from(stableJson(metadata)), "final-metadata.json");
   return metadata;
@@ -541,8 +708,12 @@ async function inventorySourceEvidence(sourceEvidenceRoot) {
   return { eligible, rejected };
 }
 
-export async function createMetadataTemplate(sourceEvidenceRoot, generatedAt = new Date().toISOString()) {
+export async function createMetadataTemplate(sourceEvidenceRoot, generatedAt = new Date().toISOString(), authorityProfile = "phase6") {
   validateIsoTimestamp(generatedAt, "template generatedAt");
+  const authority = authorityProfileById(authorityProfile);
+  const requiredRoleContract = authority.id === "phase6-r1"
+    ? { ...REQUIRED_ARTIFACT_ROLES, ...R1_REQUIRED_ARTIFACT_ROLES }
+    : REQUIRED_ARTIFACT_ROLES;
   const inventory = await inventorySourceEvidence(sourceEvidenceRoot);
   return {
     schema: `${FINAL_METADATA_SCHEMA}.template`,
@@ -551,13 +722,15 @@ export async function createMetadataTemplate(sourceEvidenceRoot, generatedAt = n
     instructions: [
       `Set schema to ${FINAL_METADATA_SCHEMA} and status to READY only after every placeholder is resolved.`,
       "Choose only final evidence from sourceInventory. Copy its exact sha256 into expectedSha256; the assembler independently re-hashes every selected file.",
-      "Create at least one artifact for every required role. MP4 selections also require the exact mediaContract shown in artifactRecordTemplate.",
-      "Section requirement rows are generated from the brief and role contract; do not hand-author 104 repetitive mappings unless a requirement needs an explicit limitation override.",
+      "Create at least one artifact for every required role. Machine-captured MP4 selections require the exact mediaContract shown in artifactRecordTemplate; physical-device-recording artifacts must omit that machine contract and bind to the human ledger instead.",
+      "Section requirement rows are generated from the brief and source observations; guarded requirements cannot be explicitly promoted to PASS when their evidence is failed, limited, not observed, proxy-only or pending human review.",
     ],
-    authorityConstants: { requiredBranch: REQUIRED_BRANCH, requiredParent: REQUIRED_PARENT, frozenMain: FROZEN_MAIN, posterDecision: POSTER_DECISION },
+    authorityProfile: authority.id,
+    authorityConstants: { requiredBranch: authority.branch, requiredBranchUrl: authority.branchUrl, requiredParent: authority.parent, deploymentSchema: authority.deploymentSchema, frozenMain: FROZEN_MAIN, posterDecision: POSTER_DECISION },
     sourceInventory: inventory.eligible,
     rejectedSourceInventory: inventory.rejected,
-    artifactRoleContract: Object.fromEntries(Object.entries(REQUIRED_ARTIFACT_ROLES).map(([role, spec]) => [role, spec])),
+    artifactRoleContract: Object.fromEntries(Object.entries(requiredRoleContract).map(([role, spec]) => [role, spec])),
+    optionalArtifactRoleContract: Object.fromEntries(Object.entries(OPTIONAL_ARTIFACT_ROLES).map(([role, spec]) => [role, spec])),
     artifactRecordTemplate: {
       source: "<portable path from sourceInventory>",
       destination: "<00-provenance through 12-regression portable package path>",
@@ -571,8 +744,8 @@ export async function createMetadataTemplate(sourceEvidenceRoot, generatedAt = n
         validationReport: { source: "<capture-*/capture-report.json>", expectedSha256: "<capture report SHA-256 from sourceInventory>", recordingRelativePath: "<recordings/*.mp4 path within capture directory>" },
       },
     },
-    repository: { branch: REQUIRED_BRANCH, exactParent: REQUIRED_PARENT, finalHead: "<40-char final SHA>", directParent: "<40-char direct parent>", cleanTree: true, localHead: "<final SHA>", upstreamHead: "<final SHA>", liveHead: "<final SHA>", main: { local: FROZEN_MAIN, upstream: FROZEN_MAIN, public: FROZEN_MAIN, modifiedOrMerged: false }, commitChain: [] },
-    deployment: { id: "<lowercase Cloudflare deployment UUID>", immutableUrl: "<https://first-8-uuid.qsite1.pages.dev/>", branchUrl: REQUIRED_BRANCH_URL, deployedSha: "<final SHA>", parity: "PASS", headers: "PASS", real404: "PASS", canonical: "PASS", productionMainDeployed: false },
+    repository: { branch: authority.branch, exactParent: authority.parent, finalHead: "<40-char final SHA>", directParent: "<40-char direct parent>", cleanTree: true, localHead: "<final SHA>", upstreamHead: "<final SHA>", liveHead: "<final SHA>", main: { local: FROZEN_MAIN, upstream: FROZEN_MAIN, public: FROZEN_MAIN, modifiedOrMerged: false }, commitChain: [] },
+    deployment: { id: "<lowercase Cloudflare deployment UUID>", immutableUrl: "<https://first-8-uuid.qsite1.pages.dev/>", branchUrl: authority.branchUrl, deployedSha: "<final SHA>", parity: "PASS", headers: "PASS", real404: "PASS", canonical: "PASS", productionMainDeployed: false },
     evidenceContext: { browserQa: { origin: "LOCAL", baseUrl: "http://127.0.0.1:4338/" }, deploymentBinding: { method: "DEPLOYMENT_VERIFIER_LOCAL_DIST_ORIGIN_BYTE_PARITY", status: "PASS", verifierArtifactRole: "deployment-verifier" } },
     changes: { productionFiles: [], toolingReportFiles: [], trackedFileDelta: 0, trackedByteDelta: 0, newTrackedFilesAbove1MiB: [] },
     verification: { build: { status: "PASS" }, tests: { status: "PASS", total: 0, passed: 0, failed: 0, skipped: 0 }, publication: { status: "PASS" }, routeBudgets: { status: "PASS" } },
@@ -581,7 +754,7 @@ export async function createMetadataTemplate(sourceEvidenceRoot, generatedAt = n
     humanReviewGates: HUMAN_REVIEW_GATES,
     authorization: AUTHORIZATION,
     sections: Object.fromEntries(TOPOLOGY_SECTIONS.slice(0, -1).map((section) => [section, {
-      status: section === "11-physical-device" ? "PENDING HUMAN DEVICE REVIEW" : "PASS",
+      status: section === "11-physical-device" ? "PENDING HUMAN REVIEW" : "PASS",
       summary: "<evidence-backed summary>",
       limitations: section === "11-physical-device" ? ["Physical-device review remains pending."] : [],
     }])),
@@ -648,15 +821,961 @@ async function validateCaptureBoundMedia(sourceRoot, record, bytes) {
   return { ...contract, container: "mp4", validationReportSha256: sha256(reportBytes) };
 }
 
+const R1_MOTION_VALIDATION_CHECKS = Object.freeze([
+  "mp4Container",
+  "oneVideoStream",
+  "zeroAudioStreams",
+  "h264",
+  "yuv420p",
+  "dimensions",
+  "constant30Fps",
+  "conciseDuration",
+]);
+
+function isExpectedR1MotionRequestFailure(record) {
+  return record?.method === "GET"
+    && record?.resourceType === "media"
+    && record?.status === null
+    && /^(?:net::ERR_ABORTED|NS_BINDING_ABORTED)$/i.test(String(record?.failure ?? ""))
+    && /^https?:\/\//i.test(String(record?.path ?? ""));
+}
+
+function validateR1MotionReport(document, engine, metadata = null) {
+  if (!engine || !["chromium", "firefox"].includes(engine)
+    || document?.schema !== R1_MOTION_EVIDENCE_SCHEMA
+    || document.status !== "PASS"
+    || document.evidenceClass !== "SUPPLEMENTAL MACHINE EVIDENCE — NOT PHYSICAL DEVICE EVIDENCE"
+    || document.browser?.engine !== engine
+    || typeof document.browser?.headed !== "boolean"
+    || typeof document.browser?.version !== "string" || !document.browser.version.trim()
+    || document.inputPolicy !== "Playwright native wheel, pointer, viewport and link activation; no page scroll-position writes"
+    || document.encoder?.contract?.container !== "mp4"
+    || document.encoder?.contract?.codec !== "h264"
+    || document.encoder?.contract?.pixelFormat !== "yuv420p"
+    || document.encoder?.contract?.fps !== 30
+    || document.encoder?.contract?.audioStreams !== 0
+    || document.encoder?.fullDecodeValidated !== true
+    || document.diagnostics?.status !== "PASS"
+    || !Array.isArray(document.diagnostics?.failures) || document.diagnostics.failures.length
+    || !document.requests || !Array.isArray(document.requests.blocked) || document.requests.blocked.length
+    || !Array.isArray(document.requests.pageErrors) || document.requests.pageErrors.length
+    || !Array.isArray(document.requests.console)
+    || !Array.isArray(document.requests.requests)
+    || document.requests.requests.some((request) => request?.failure && !isExpectedR1MotionRequestFailure(request))
+    || document.summary?.recordings !== 5
+    || document.summary?.expected !== 5
+    || document.summary?.failures !== document.diagnostics?.failures?.length
+    || !Array.isArray(document.recordings)
+    || document.recordings.length !== R1_MOTION_RECORDING_SPECS.length) {
+    throw new Error(`R1 motion report authority differs: ${engine ?? "missing"}`);
+  }
+  validateIsoTimestamp(document.createdAt, `R1 motion ${engine} createdAt`);
+  if (metadata) {
+    const permittedOrigins = new Set([
+      metadata.evidenceContext?.browserQa?.baseUrl,
+      metadata.deployment?.immutableUrl,
+      metadata.deployment?.branchUrl,
+    ].filter(Boolean));
+    if (!permittedOrigins.has(document.baseUrl)) throw new Error(`R1 motion report origin differs: ${engine}`);
+  }
+  const identities = document.recordings.map(({ id, filename }) => ({ id, filename }));
+  if (stableJson(identities) !== stableJson(R1_MOTION_RECORDING_SPECS)) throw new Error(`R1 motion five-story identity differs: ${engine}`);
+  for (const [index, recording] of document.recordings.entries()) {
+    const spec = R1_MOTION_RECORDING_SPECS[index];
+    const validation = recording?.validation;
+    if (recording.evidenceClass !== "SUPPLEMENTAL MACHINE RECORDING"
+      || recording.relativePath !== `recordings/${spec.filename}`
+      || !Number.isSafeInteger(recording.byteSize) || recording.byteSize <= 0
+      || !HASH64.test(recording.sha256 ?? "")
+      || !recording.observations || typeof recording.observations !== "object" || recording.observations.status !== "PASS"
+      || validation?.status !== "PASS"
+      || !validation.checks
+      || stableJson(Object.keys(validation.checks).sort(lexicalCompare)) !== stableJson([...R1_MOTION_VALIDATION_CHECKS].sort(lexicalCompare))
+      || R1_MOTION_VALIDATION_CHECKS.some((check) => validation.checks[check] !== true)
+      || !Number.isFinite(validation.duration) || validation.duration < 1.5 || validation.duration > 45
+      || validation.media?.codec !== "h264"
+      || validation.media?.pixelFormat !== "yuv420p"
+      || validation.media?.fps !== "30/1"
+      || validation.media?.audioStreams !== 0
+      || validation.media?.width !== 1280
+      || validation.media?.height !== 720
+      || !/(?:^|,)mp4(?:,|$)/.test(String(validation.media?.format ?? ""))) {
+      throw new Error(`R1 motion recording contract differs: ${engine}/${spec.filename}`);
+    }
+  }
+  return document;
+}
+
+async function validateR1MotionBoundMedia(sourceRoot, record, bytes, metadata) {
+  const contract = validateMediaContract(record.mediaContract, record.destination);
+  const binding = contract.validationReport;
+  const expectedVideoSource = path.posix.join(path.posix.dirname(binding.source), binding.recordingRelativePath);
+  if (expectedVideoSource !== record.source) throw new Error(`R1 motion video source is not bound to its report: ${record.source}`);
+  const { bytes: reportBytes } = await checkedSourceFile(sourceRoot, binding.source);
+  if (sha256(reportBytes) !== binding.expectedSha256) throw new Error(`R1 motion report SHA-256 differs: ${binding.source}`);
+  let report;
+  try { report = JSON.parse(reportBytes.toString("utf8")); } catch { throw new Error(`invalid R1 motion report JSON: ${binding.source}`); }
+  validateR1MotionReport(report, record.engine, metadata);
+  const recording = report.recordings.find(({ relativePath }) => relativePath === binding.recordingRelativePath);
+  const expectedSpec = R1_MOTION_RECORDING_SPECS.find(({ filename }) => filename === path.posix.basename(record.source));
+  if (!recording || !expectedSpec || recording.id !== expectedSpec.id || recording.filename !== expectedSpec.filename
+    || recording.byteSize !== bytes.length || recording.sha256 !== sha256(bytes)
+    || Math.abs(recording.validation.duration - contract.durationSeconds) > 0.001
+    || contract.codec !== recording.validation.media.codec
+    || contract.pixelFormat !== recording.validation.media.pixelFormat
+    || contract.audioStreams !== recording.validation.media.audioStreams
+    || contract.fps !== 30
+    || contract.fullDecodeValidated !== report.encoder.fullDecodeValidated) {
+    throw new Error(`R1 motion video/report binding differs: ${record.source}`);
+  }
+  return { ...contract, container: "mp4", engine: record.engine, story: expectedSpec.id, validationReportSha256: sha256(reportBytes) };
+}
+
+function lifecycleComponentStatus(component, label, permitted) {
+  const status = normalizeEvidenceStatus(component?.status);
+  if (!status || status !== component.status || !permitted.includes(status)) throw new Error(`R1 persistent-lifecycle ${label} status differs`);
+  return status;
+}
+
+const R1_HISTORY_CHECKS = Object.freeze([
+  "bareCorrect",
+  "bareBackCorrect",
+  "bareBackManifestoResolved",
+  "bareForwardCorrect",
+  "entryCorrect",
+  "entryBackCorrect",
+  "entryBackManifestoResolved",
+  "entryForwardCorrect",
+  "menuClosed",
+]);
+
+const R1_HISTORY_STATES = Object.freeze([
+  "bare",
+  "bareManifesto",
+  "supportAfterBare",
+  "bareBack",
+  "supportForward",
+  "entryInitial",
+  "entryResolved",
+  "supportAfterEntry",
+  "entryBack",
+  "entryForward",
+]);
+
+const R1_VISIBILITY_SCENARIOS = Object.freeze([
+  "home-current",
+  "home-manifesto",
+  "maradin-release",
+  "maradin-retry-release",
+]);
+
+const R1_VISIBILITY_TRANSITIONS = Object.freeze({
+  "home-current": "current",
+  "home-manifesto": "manifesto",
+  "maradin-release": "maradin",
+  "maradin-retry-release": "maradinRetry",
+});
+
+function validateR1History(document, status) {
+  const checks = document.history?.checks;
+  if (!checks || stableJson(Object.keys(checks).sort(lexicalCompare)) !== stableJson([...R1_HISTORY_CHECKS].sort(lexicalCompare))
+    || R1_HISTORY_CHECKS.some((check) => typeof checks[check] !== "boolean")) {
+    throw new Error("R1 persistent-lifecycle ordinary-history checks differ");
+  }
+  const states = document.history?.states;
+  if (!states || typeof states !== "object" || Array.isArray(states)
+    || stableJson(Object.keys(states).sort(lexicalCompare)) !== stableJson([...R1_HISTORY_STATES].sort(lexicalCompare))
+    || R1_HISTORY_STATES.some((stateKey) => !states[stateKey] || typeof states[stateKey] !== "object" || Array.isArray(states[stateKey]))) {
+    throw new Error("R1 persistent-lifecycle history states inventory is incomplete");
+  }
+  if (!Array.isArray(document.history?.events) || !Array.isArray(states.entryForward.probe?.events)) {
+    throw new Error("R1 persistent-lifecycle history event evidence is incomplete");
+  }
+  exactJson(document.history.events, states.entryForward.probe.events, "R1 persistent-lifecycle history event ledger");
+  const derived = {
+    bareCorrect: states.bare.url === "/" && states.bare.scrollY === 0,
+    bareBackCorrect: states.bareBack.url === "/" && Number.isFinite(states.bareBack.scrollY) && Number.isFinite(states.bareManifesto.scrollY) && Math.abs(states.bareBack.scrollY - states.bareManifesto.scrollY) <= 2,
+    bareBackManifestoResolved: states.bareBack.home?.manifestoReveal === "resolved",
+    bareForwardCorrect: states.supportForward.url === "/for-partners/" && Number.isFinite(states.supportForward.scrollY) && Number.isFinite(states.supportAfterBare.scrollY) && Math.abs(states.supportForward.scrollY - states.supportAfterBare.scrollY) <= 2,
+    entryCorrect: states.entryResolved.url === "/#entry" && states.entryResolved.home?.manifestoReveal === "resolved",
+    entryBackCorrect: states.entryBack.url === "/#entry" && Number.isFinite(states.entryBack.scrollY) && Number.isFinite(states.entryResolved.scrollY) && Math.abs(states.entryBack.scrollY - states.entryResolved.scrollY) <= 2,
+    entryBackManifestoResolved: states.entryBack.home?.manifestoReveal === "resolved",
+    entryForwardCorrect: states.entryForward.url === "/for-partners/" && Number.isFinite(states.entryForward.scrollY) && Number.isFinite(states.supportAfterEntry.scrollY) && Math.abs(states.entryForward.scrollY - states.supportAfterEntry.scrollY) <= 2,
+    menuClosed: [states.bareBack, states.supportForward, states.entryBack, states.entryForward].every((state) => state.mobileMenu?.open === false),
+  };
+  for (const check of R1_HISTORY_CHECKS) {
+    if (checks[check] !== derived[check]) throw new Error(`R1 persistent-lifecycle history check ${check} contradicts raw states`);
+  }
+  const expected = R1_HISTORY_CHECKS.every((check) => derived[check]) ? "PASS" : "FAIL";
+  if (status !== expected) throw new Error(`R1 persistent-lifecycle history status must be ${expected}`);
+}
+
+function lifecycleRoute(event) {
+  try {
+    const url = new URL(event?.href);
+    return `${url.pathname}${url.hash}`;
+  } catch {
+    return null;
+  }
+}
+
+const R1_BFCACHE_SCENARIOS = Object.freeze([
+  Object.freeze({ departureKey: "bareManifesto", stateKey: "bareBack", expectedRoute: "/" }),
+  Object.freeze({ departureKey: "entryResolved", stateKey: "entryBack", expectedRoute: "/#entry" }),
+]);
+
+function deriveR1Bfcache(document) {
+  const events = document.history?.events;
+  const states = document.history?.states;
+  if (!Array.isArray(events) || !states || typeof states !== "object" || Array.isArray(states)) {
+    throw new Error("R1 persistent-lifecycle BFCache raw history evidence is incomplete");
+  }
+  const persistedEvents = events.filter(({ type, persisted }) => (type === "pageshow" || type === "pagehide") && persisted === true);
+  const usedHideIndexes = new Set();
+  const scenarios = R1_BFCACHE_SCENARIOS.map(({ departureKey, stateKey, expectedRoute }) => {
+    const departure = states[departureKey];
+    const state = states[stateKey];
+    if (!state?.documentId || departure?.documentId !== state.documentId || departure.url !== expectedRoute || state.url !== expectedRoute) {
+      return { departureKey, stateKey, expectedRoute, status: "NOT OBSERVED", pair: null, coherent: null };
+    }
+    for (let showIndex = 0; showIndex < events.length; showIndex += 1) {
+      const show = events[showIndex];
+      if (show?.type !== "pageshow" || show.persisted !== true || show.synthetic === true || show.documentId !== state.documentId || lifecycleRoute(show) !== expectedRoute) continue;
+      for (let hideIndex = showIndex - 1; hideIndex >= 0; hideIndex -= 1) {
+        const hide = events[hideIndex];
+        if (hide?.documentId !== state.documentId || lifecycleRoute(hide) !== expectedRoute || !["pagehide", "pageshow"].includes(hide.type)) continue;
+        if (usedHideIndexes.has(hideIndex) || hide.type !== "pagehide" || hide.persisted !== true || hide.synthetic === true) break;
+        usedHideIndexes.add(hideIndex);
+        const coherent = state.home?.manifestoReveal === "resolved" && state.mobileMenu?.open === false;
+        return {
+          departureKey,
+          stateKey,
+          expectedRoute,
+          status: coherent ? "PASS" : "FAIL",
+          pair: { pagehide: hide, pageshow: show },
+          coherent,
+        };
+      }
+    }
+    return { departureKey, stateKey, expectedRoute, status: "NOT OBSERVED", pair: null, coherent: null };
+  });
+  const pairedRestorations = scenarios.filter(({ pair }) => pair).map(({ pair, stateKey }) => ({ ...pair, stateKey }));
+  const status = !pairedRestorations.length
+    ? "NOT OBSERVED"
+    : scenarios.some(({ status: scenarioStatus }) => scenarioStatus === "FAIL")
+      ? "FAIL"
+      : scenarios.some(({ status: scenarioStatus }) => scenarioStatus === "PASS")
+        ? "PASS"
+        : "NOT OBSERVED";
+  return { status, persistedEvents, pairedRestorations, scenarios };
+}
+
+function validateR1Bfcache(document, status) {
+  const bfcache = document.bfcache;
+  if (!Array.isArray(bfcache.persistedEvents) || !Array.isArray(bfcache.pairedRestorations) || !Array.isArray(bfcache.scenarios)) {
+    throw new Error("R1 persistent-lifecycle BFCache evidence is incomplete");
+  }
+  const derived = deriveR1Bfcache(document);
+  const notRestoredReasons = Object.fromEntries(R1_HISTORY_STATES.map((stateKey) => [
+    stateKey,
+    document.history.states[stateKey].probe?.navigation?.notRestoredReasons ?? null,
+  ]));
+  exactJson(bfcache.persistedEvents, derived.persistedEvents, "R1 persistent-lifecycle BFCache persisted-event ledger");
+  exactJson(bfcache.pairedRestorations, derived.pairedRestorations, "R1 persistent-lifecycle BFCache paired-restoration ledger");
+  exactJson(bfcache.scenarios, derived.scenarios, "R1 persistent-lifecycle BFCache scenario ledger");
+  exactJson(bfcache.notRestoredReasons, notRestoredReasons, "R1 persistent-lifecycle BFCache not-restored-reasons ledger");
+  if (status !== derived.status) throw new Error(`R1 persistent-lifecycle BFCache status must be ${derived.status}`);
+}
+
+function deriveR1VisibilityObservation(transition) {
+  const { before, hidden, visible } = transition ?? {};
+  const documentId = before?.documentId;
+  const sameDocument = Boolean(documentId) && hidden?.documentId === documentId && visible?.documentId === documentId;
+  const sequenceBound = Number.isInteger(before?.probe?.documentEventSequence)
+    && Number.isInteger(hidden?.probe?.documentEventSequence)
+    && Number.isInteger(visible?.probe?.documentEventSequence)
+    && hidden.probe.documentEventSequence >= before.probe.documentEventSequence
+    && visible.probe.documentEventSequence >= hidden.probe.documentEventSequence;
+  const sequenceStart = sequenceBound ? before.probe.documentEventSequence : -1;
+  const transitionEvents = (visible?.probe?.events ?? []).filter((event) => (
+    event?.type === "visibilitychange"
+    && event.synthetic !== true
+    && event.documentId === documentId
+    && Number(event.documentEventSequence) > sequenceStart
+  ));
+  const hiddenEventIndex = transitionEvents.findIndex(({ visibilityState }) => visibilityState === "hidden");
+  const visibleEventIndex = hiddenEventIndex < 0
+    ? -1
+    : transitionEvents.findIndex(({ visibilityState }, index) => index > hiddenEventIndex && visibilityState === "visible");
+  const hiddenEventSequence = Number(transitionEvents[hiddenEventIndex]?.documentEventSequence);
+  const visibleEventSequence = Number(transitionEvents[visibleEventIndex]?.documentEventSequence);
+  const checks = {
+    sameDocument,
+    sequenceBound,
+    beforeVisible: before?.visibilityState === "visible",
+    hiddenObserved: hidden?.visibilityState === "hidden",
+    visibleRestored: visible?.visibilityState === "visible",
+    orderedVisibilityEvents: hiddenEventIndex >= 0
+      && visibleEventIndex > hiddenEventIndex
+      && visibleEventSequence > hiddenEventSequence
+      && visibleEventSequence <= Number(visible?.probe?.documentEventSequence),
+  };
+  return {
+    status: Object.values(checks).every(Boolean) ? "PASS" : "NOT OBSERVED",
+    checks,
+    transitionEvents,
+  };
+}
+
+function r1WhenHidden(transition, predicate) {
+  return transition?.hidden?.visibilityState === "hidden" ? predicate(transition.hidden) : null;
+}
+
+function r1WhenVisible(transition, predicate) {
+  return transition?.visible?.visibilityState === "visible" ? predicate(transition.visible) : null;
+}
+
+function r1ActiveResourceIsZero(state, resource) {
+  const active = state?.probe?.[resource]?.active;
+  return Number.isFinite(active) ? active === 0 : null;
+}
+
+function r1MaradinMediaSourceFree(media) {
+  return media?.state === "dormant"
+    && media.hasSource === false
+    && media.currentSrc === null
+    && media.srcAttribute === null
+    && media.paused === true
+    && media.readyState === 0
+    && media.tabIndex === -1
+    && media.launchHidden === false
+    && media.launchDisabled === false;
+}
+
+function r1MaradinSourceFreeState(state) {
+  return Array.isArray(state?.maradin) && state.maradin.length === 2 && state.maradin.every(r1MaradinMediaSourceFree);
+}
+
+function r1MaradinRetryActiveState(state) {
+  if (!Array.isArray(state?.maradin) || state.maradin.length !== 2) return false;
+  const active = state.maradin.filter((media) => media.state === "active");
+  const inactive = state.maradin.filter((media) => media.state !== "active");
+  return state.retryActivated === true
+    && state.retryPlayback?.advanced === true
+    && Number.isFinite(state.retryPlayback?.startTime)
+    && Number.isFinite(state.retryPlayback?.endTime)
+    && state.retryPlayback.endTime > state.retryPlayback.startTime
+    && active.length === 1
+    && active[0].hasSource === true
+    && active[0].paused === false
+    && active[0].readyState >= 2
+    && active[0].tabIndex === 0
+    && active[0].launchHidden === true
+    && inactive.length === 1
+    && r1MaradinMediaSourceFree(inactive[0]);
+}
+
+function deriveR1VisibilityChecks(document, scenario) {
+  const transition = scenario.transition;
+  switch (scenario.name) {
+    case "home-current":
+      return {
+        homeMediaPausedWhileHidden: r1WhenHidden(transition, (state) => state.home?.source?.paused === true),
+        noPersistentRafWhileHidden: r1WhenHidden(transition, (state) => r1ActiveResourceIsZero(state, "raf")),
+        noPersistentIntervalWhileHidden: r1WhenHidden(transition, (state) => r1ActiveResourceIsZero(state, "intervals")),
+        noStaleTargetFrameAfterReturn: r1WhenVisible(transition, (state) => Math.abs(state.home?.targetFrame - state.home?.presentedFrame) <= 1),
+        sourcePresenceStableAfterReturn: r1WhenVisible(transition, (state) => {
+          const beforeSource = transition?.before?.home?.source?.hasSource;
+          const afterSource = state.home?.source?.hasSource;
+          return typeof beforeSource === "boolean" && typeof afterSource === "boolean" ? beforeSource === afterSource : null;
+        }),
+      };
+    case "home-manifesto":
+      return {
+        manifestoCoherentAfterReturn: r1WhenVisible(transition, (state) => state.home?.manifestoReveal === "resolved"),
+        noPersistentRafWhileHidden: r1WhenHidden(transition, (state) => r1ActiveResourceIsZero(state, "raf")),
+        noPersistentIntervalWhileHidden: r1WhenHidden(transition, (state) => r1ActiveResourceIsZero(state, "intervals")),
+      };
+    case "maradin-release":
+      return {
+        sourceFreeWhileHidden: r1WhenHidden(transition, r1MaradinSourceFreeState),
+        sourceFreeAfterReturn: r1WhenVisible(transition, r1MaradinSourceFreeState),
+        noLiveOrphanBlobWhileHidden: r1WhenHidden(transition, (state) => state.probe?.blob?.live === 0),
+        noPersistentRafWhileHidden: r1WhenHidden(transition, (state) => r1ActiveResourceIsZero(state, "raf")),
+        noPersistentIntervalWhileHidden: r1WhenHidden(transition, (state) => r1ActiveResourceIsZero(state, "intervals")),
+      };
+    case "maradin-retry-release":
+      return {
+        retryActivatedWithSource: document.visibility.retryActive == null ? null : r1MaradinRetryActiveState(document.visibility.retryActive),
+        sourceFreeOnSecondHide: r1WhenHidden(transition, r1MaradinSourceFreeState),
+        sourceFreeAfterSecondReturn: r1WhenVisible(transition, r1MaradinSourceFreeState),
+        noLiveOrphanBlobOnSecondHide: r1WhenHidden(transition, (state) => state.probe?.blob?.live === 0),
+      };
+    default:
+      throw new Error(`R1 persistent-lifecycle visibility scenario differs: ${scenario?.name ?? "missing"}`);
+  }
+}
+
+function validateR1Visibility(document, status) {
+  const scenarios = document.visibility?.scenarios;
+  if (!Array.isArray(scenarios)
+    || stableJson(scenarios.map(({ name }) => name)) !== stableJson(R1_VISIBILITY_SCENARIOS)) {
+    throw new Error("R1 persistent-lifecycle visibility scenario inventory differs");
+  }
+  if (!["current", "manifesto", "maradin", "maradinRetry", "retryActive"]
+    .every((field) => Object.hasOwn(document.visibility, field))) {
+    throw new Error("R1 persistent-lifecycle visibility raw snapshot inventory is incomplete");
+  }
+  const scenarioStatuses = scenarios.map((scenario) => {
+    if (!scenario?.checks || typeof scenario.checks !== "object" || Array.isArray(scenario.checks)
+      || !Array.isArray(scenario.failedChecks) || !Array.isArray(scenario.unavailableChecks)) {
+      throw new Error(`R1 persistent-lifecycle visibility scenario differs: ${scenario?.name ?? "missing"}`);
+    }
+    const transitionField = R1_VISIBILITY_TRANSITIONS[scenario.name];
+    exactJson(scenario.transition, document.visibility[transitionField], `R1 persistent-lifecycle visibility transition ${scenario.name}`);
+    const observation = deriveR1VisibilityObservation(scenario.transition);
+    exactJson(scenario.observation, observation, `R1 persistent-lifecycle visibility raw observation ${scenario.name}`);
+    const checks = deriveR1VisibilityChecks(document, scenario);
+    exactJson(scenario.checks, checks, `R1 persistent-lifecycle visibility lifecycle checks ${scenario.name}`);
+    const falseChecks = Object.entries(checks).filter(([, value]) => value === false).map(([check]) => check);
+    const unavailableChecks = Object.entries(checks).filter(([, value]) => value == null).map(([check]) => check);
+    exactJson(scenario.failedChecks, falseChecks, `R1 persistent-lifecycle visibility failed-check ledger ${scenario.name}`);
+    exactJson(scenario.unavailableChecks, unavailableChecks, `R1 persistent-lifecycle visibility unavailable-check ledger ${scenario.name}`);
+    const observationStatus = observation.status;
+    const expected = falseChecks.length ? "FAIL" : observationStatus === "PASS" && !unavailableChecks.length ? "PASS" : "NOT OBSERVED";
+    const observed = lifecycleComponentStatus(scenario, `visibility scenario ${scenario.name}`, ["PASS", "FAIL", "NOT OBSERVED"]);
+    if (observed !== expected) throw new Error(`R1 persistent-lifecycle visibility scenario status must be ${expected}: ${scenario.name}`);
+    return observed;
+  });
+  const expected = scenarioStatuses.includes("FAIL") ? "FAIL" : scenarioStatuses.includes("NOT OBSERVED") ? "NOT OBSERVED" : "PASS";
+  if (status !== expected) throw new Error(`R1 persistent-lifecycle visibility status must be ${expected}`);
+}
+
+function collectR1LifecycleSnapshots(document) {
+  const snapshots = [];
+  const addSnapshot = (state, label) => {
+    if (state == null) return;
+    if (!state || typeof state !== "object" || Array.isArray(state)
+      || typeof state.label !== "string" || !state.label
+      || typeof state.documentId !== "string" || !state.documentId
+      || !state.probe || typeof state.probe !== "object" || Array.isArray(state.probe)) {
+      throw new Error(`R1 persistent-lifecycle raw snapshot differs: ${label}`);
+    }
+    snapshots.push(state);
+  };
+  for (const stateKey of R1_HISTORY_STATES) addSnapshot(document.history?.states?.[stateKey], `history.${stateKey}`);
+  for (const transitionField of Object.values(R1_VISIBILITY_TRANSITIONS)) {
+    const transition = document.visibility?.[transitionField];
+    if (transition == null) continue;
+    for (const stateKey of ["before", "hidden", "visible"]) addSnapshot(transition?.[stateKey], `visibility.${transitionField}.${stateKey}`);
+  }
+  addSnapshot(document.visibility?.retryActive, "visibility.retryActive");
+  return snapshots;
+}
+
+function r1ListenerSnapshot(state) {
+  const listeners = state?.probe?.listeners;
+  if (!listeners
+    || !Number.isFinite(listeners.active)
+    || !Number.isFinite(listeners.duplicateAttempts)
+    || !listeners.activeByType
+    || typeof listeners.activeByType !== "object"
+    || Array.isArray(listeners.activeByType)) return null;
+  return {
+    active: listeners.active,
+    activeByType: listeners.activeByType,
+    duplicateAttempts: listeners.duplicateAttempts,
+  };
+}
+
+function r1ListenerGrowth(before, after) {
+  if (!before || !after) return ["listener-telemetry-unavailable"];
+  const failures = [];
+  if (after.active > before.active) failures.push("active-listener-count-grew");
+  for (const [type, count] of Object.entries(after.activeByType)) {
+    if (Number(count) > Number(before.activeByType[type] ?? 0)) failures.push(`active-${type}-listeners-grew`);
+  }
+  if (after.duplicateAttempts > before.duplicateAttempts) failures.push("duplicate-registration-attempted-during-restore");
+  return failures;
+}
+
+function deriveR1Listeners(document) {
+  const snapshots = collectR1LifecycleSnapshots(document);
+  const duplicateDocuments = [...new Map(snapshots
+    .filter((state) => (state.probe?.listeners?.duplicateAttempts ?? 0) > 0)
+    .map((state) => [state.documentId, {
+      documentId: state.documentId,
+      duplicateAttempts: state.probe.listeners.duplicateAttempts,
+      label: state.label,
+    }])).values()];
+  const candidatePairs = [
+    ["bare-back", document.history?.states?.bareManifesto, document.history?.states?.bareBack],
+    ["entry-back", document.history?.states?.entryResolved, document.history?.states?.entryBack],
+    ...(document.visibility?.scenarios ?? [])
+      .filter((scenario) => scenario.observation?.status === "PASS")
+      .map((scenario) => [`${scenario.name}-foreground`, scenario.transition?.before, scenario.transition?.visible]),
+  ];
+  const comparisons = candidatePairs.flatMap(([name, beforeState, afterState]) => {
+    if (!beforeState?.documentId || beforeState.documentId !== afterState?.documentId) return [];
+    const before = r1ListenerSnapshot(beforeState);
+    const after = r1ListenerSnapshot(afterState);
+    const failures = r1ListenerGrowth(before, after);
+    return [{ name, documentId: beforeState.documentId, before, after, failures, stable: failures.length === 0 }];
+  });
+  const failed = duplicateDocuments.length > 0 || comparisons.some(({ stable }) => !stable);
+  return {
+    status: failed ? "FAIL" : comparisons.length ? "PASS" : "NOT OBSERVED",
+    duplicateDocuments,
+    comparisons,
+  };
+}
+
+function validateR1Listeners(document, status) {
+  const listeners = document.listeners;
+  if (!Array.isArray(listeners?.duplicateDocuments) || !Array.isArray(listeners?.comparisons)) throw new Error("R1 persistent-lifecycle listener evidence is incomplete");
+  const derived = deriveR1Listeners(document);
+  exactJson(listeners.duplicateDocuments, derived.duplicateDocuments, "R1 persistent-lifecycle duplicate-listener document ledger");
+  exactJson(listeners.comparisons, derived.comparisons, "R1 persistent-lifecycle listener comparison ledger");
+  if (status !== derived.status) throw new Error(`R1 persistent-lifecycle listener status must be ${derived.status}`);
+}
+
+function r1Phase4MediaUrl(value) {
+  try {
+    const url = new URL(value, "https://phase6.invalid/");
+    return /\/media\/cinematic\/phase-4r2\/media\/[^/]+\.mp4$/i.test(url.pathname) ? `${url.pathname}${url.search}` : null;
+  } catch {
+    return null;
+  }
+}
+
+function deriveR1MediaDocuments(document) {
+  const snapshots = collectR1LifecycleSnapshots(document);
+  const homeDocuments = new Map();
+  for (const state of snapshots) {
+    if (!state.home || !state.documentId) continue;
+    if (state.probe?.resources != null && !Array.isArray(state.probe.resources)) {
+      throw new Error(`R1 persistent-lifecycle raw resource ledger differs: ${state.label}`);
+    }
+    const homeDocument = homeDocuments.get(state.documentId) ?? {
+      documentId: state.documentId,
+      labels: new Set(),
+      observations: new Set(),
+      paths: new Set(),
+    };
+    homeDocument.labels.add(state.label);
+    for (const resource of state.probe?.resources ?? []) {
+      const mediaUrl = r1Phase4MediaUrl(resource?.url ?? resource?.path);
+      if (!mediaUrl) continue;
+      homeDocument.paths.add(mediaUrl);
+      homeDocument.observations.add(`${mediaUrl}\u0000${Number(resource.startTime ?? -1)}`);
+    }
+    homeDocuments.set(state.documentId, homeDocument);
+  }
+  return [...homeDocuments.values()].map((homeDocument) => ({
+    documentId: homeDocument.documentId,
+    labels: [...homeDocument.labels].sort(lexicalCompare),
+    paths: [...homeDocument.paths].sort(lexicalCompare),
+    resourceObservations: homeDocument.observations.size,
+  })).sort((left, right) => lexicalCompare(left.documentId, right.documentId));
+}
+
+function validateR1MediaRequests(document, status) {
+  const media = document.mediaRequests;
+  if (![media?.expectedPhase4Present, media?.noDuplicateSourceWithinDocument, media?.noDuplicateNonRangeRequests].every((value) => typeof value === "boolean")
+    || !Array.isArray(media.documents) || !media.network || !Array.isArray(media.network.phase4Requests) || !Array.isArray(media.network.nonRangeSelections)) {
+    throw new Error("R1 persistent-lifecycle media-request evidence is incomplete");
+  }
+  const derivedDocuments = deriveR1MediaDocuments(document);
+  exactJson(media.documents, derivedDocuments, "R1 persistent-lifecycle media document ledger");
+  const documentIds = new Set();
+  for (const [index, record] of media.documents.entries()) {
+    if (typeof record?.documentId !== "string" || !record.documentId || documentIds.has(record.documentId)
+      || !Array.isArray(record.labels) || !Array.isArray(record.paths)
+      || !Number.isSafeInteger(record.resourceObservations) || record.resourceObservations < 0
+      || record.resourceObservations < record.paths.length
+      || new Set(record.paths).size !== record.paths.length
+      || record.paths.some((requestPath) => r1Phase4MediaUrl(requestPath) !== requestPath)) {
+      throw new Error(`R1 persistent-lifecycle media document ${index} evidence differs`);
+    }
+    documentIds.add(record.documentId);
+  }
+  const phase4Requests = media.network.phase4Requests;
+  if (phase4Requests.some((request) => !request || r1Phase4MediaUrl(request.path) === null)) {
+    throw new Error("R1 persistent-lifecycle raw Phase 4 request ledger differs");
+  }
+  const expectedPhase4Present = media.documents.length > 0
+    && media.documents.every(({ paths }) => paths.length >= 1)
+    && phase4Requests.length >= 1;
+  const noDuplicateSourceWithinDocument = media.documents.length > 0 && media.documents.every(({ paths }) => paths.length === 1);
+  const uniquePaths = [...new Set(phase4Requests.map(({ path: requestPath }) => r1Phase4MediaUrl(requestPath)))].sort(lexicalCompare);
+  const selectingDocumentsByPath = new Map();
+  for (const record of media.documents) {
+    for (const selectedPath of record.paths) selectingDocumentsByPath.set(selectedPath, (selectingDocumentsByPath.get(selectedPath) ?? 0) + 1);
+  }
+  const nonRangeRequestsByPath = new Map();
+  for (const request of phase4Requests) {
+    if (request.range) continue;
+    const requestPath = r1Phase4MediaUrl(request.path);
+    nonRangeRequestsByPath.set(requestPath, (nonRangeRequestsByPath.get(requestPath) ?? 0) + 1);
+  }
+  const nonRangeSelections = [...nonRangeRequestsByPath.entries()].map(([requestPath, count]) => ({
+    path: requestPath,
+    count,
+    logicalHomeDocuments: selectingDocumentsByPath.get(requestPath) ?? 0,
+  })).sort((left, right) => lexicalCompare(left.path, right.path));
+  exactJson(media.network.nonRangeSelections, nonRangeSelections, "R1 persistent-lifecycle non-range media selection ledger");
+  const networkSummary = {
+    requestCount: phase4Requests.length,
+    rangeRequestCount: phase4Requests.filter(({ range }) => Boolean(range)).length,
+    nonRangeRequestCount: phase4Requests.filter(({ range }) => !range).length,
+    uniquePaths,
+  };
+  for (const [field, expectedValue] of Object.entries(networkSummary)) {
+    if (stableJson(media.network[field]) !== stableJson(expectedValue)) throw new Error(`R1 persistent-lifecycle network ${field} contradicts raw Phase 4 requests`);
+  }
+  const noDuplicateNonRangeRequests = nonRangeSelections.every(({ count, logicalHomeDocuments }) => count <= logicalHomeDocuments);
+  if (media.expectedPhase4Present !== expectedPhase4Present) throw new Error("R1 persistent-lifecycle expectedPhase4Present contradicts raw documents/requests");
+  if (media.noDuplicateSourceWithinDocument !== noDuplicateSourceWithinDocument) throw new Error("R1 persistent-lifecycle noDuplicateSourceWithinDocument contradicts raw document selections");
+  if (media.noDuplicateNonRangeRequests !== noDuplicateNonRangeRequests) throw new Error("R1 persistent-lifecycle noDuplicateNonRangeRequests contradicts raw non-range selections");
+  const expected = expectedPhase4Present && noDuplicateSourceWithinDocument && noDuplicateNonRangeRequests ? "PASS" : "FAIL";
+  if (status !== expected) throw new Error(`R1 persistent-lifecycle media-request status must be ${expected}`);
+}
+
+function validateR1PersistentLifecycle(document, record, metadata) {
+  if (document?.schema !== R1_PERSISTENT_LIFECYCLE_SCHEMA
+    || record.engine !== "chromium"
+    || document.browser?.engine !== "chromium"
+    || document.browser?.headed !== true
+    || document.browser?.persistentProfile !== true
+    || typeof document.browser?.version !== "string" || !document.browser.version.trim()
+    || ![metadata.deployment?.immutableUrl, metadata.deployment?.branchUrl].includes(document.baseUrl)) {
+    throw new Error("R1 persistent-lifecycle schema/browser/origin authority differs");
+  }
+  validateIsoTimestamp(document.createdAt, "R1 persistent-lifecycle createdAt");
+  const history = lifecycleComponentStatus(document.history, "history", ["PASS", "FAIL"]);
+  const bfcache = lifecycleComponentStatus(document.bfcache, "BFCache", ["PASS", "FAIL", "NOT OBSERVED"]);
+  const visibility = lifecycleComponentStatus(document.visibility, "visibility", ["PASS", "FAIL", "NOT OBSERVED"]);
+  const listeners = lifecycleComponentStatus(document.listeners, "listeners", ["PASS", "FAIL", "NOT OBSERVED"]);
+  const mediaRequests = lifecycleComponentStatus(document.mediaRequests, "media requests", ["PASS", "FAIL"]);
+  const cleanup = lifecycleComponentStatus(document.profileCleanup, "profile cleanup", ["PASS", "FAIL"]);
+  if (stableJson(document.history?.bfcache) !== stableJson(document.bfcache)) throw new Error("R1 persistent-lifecycle BFCache authority is duplicated inconsistently");
+  validateR1History(document, history);
+  validateR1Bfcache(document, bfcache);
+  validateR1Visibility(document, visibility);
+  validateR1Listeners(document, listeners);
+  validateR1MediaRequests(document, mediaRequests);
+  if (document.browser.profileRetained !== document.profileCleanup.profileRetained
+    || !Array.isArray(document.profileCleanup.errors)
+    || (cleanup === "PASS" && (document.profileCleanup.deletionVerified !== true || document.profileCleanup.profileRetained !== false || document.profileCleanup.errors.length))) {
+    throw new Error("R1 persistent-profile cleanup authority differs");
+  }
+  const componentStatuses = [history, bfcache, visibility, listeners, mediaRequests, cleanup];
+  const expectedStatus = componentStatuses.includes("FAIL")
+    ? "FAIL"
+    : componentStatuses.some((status) => status === "NOT OBSERVED" || status === "LIMITATION")
+      ? "LIMITATION"
+      : "PASS";
+  if (document.status !== expectedStatus || record.status !== expectedStatus) throw new Error(`R1 persistent-lifecycle top-level status must be ${expectedStatus}`);
+  return document;
+}
+
+const ZOOM_ROUTE_CHECKS = Object.freeze([
+  "completeH1",
+  "completeOpeningProposition",
+  "readableNavigation",
+  "usableMobileMenuWhereApplicable",
+  "noTextClipping",
+  "noInternalWordSplitting",
+  "noHiddenContent",
+  "noHorizontalOverflow",
+  "usableControlsAndLinks",
+  "reasonableDocumentContinuation",
+]);
+const ZOOM_ROUTE_OUTCOMES = Object.freeze([
+  "/",
+  "/for-partners/",
+  "/for-startups/",
+  "/industries/",
+  "/pocs/",
+  "/pocs/maradin/",
+  "/spark/",
+  "/about/",
+  "/contact/",
+  "/__phase6-intentional-404__/",
+]);
+
+function validateFailureReferences(record, label, failedChecks = []) {
+  if (!Array.isArray(record.failureReferences)) throw new Error(`${label} failureReferences must be an array`);
+  const invalid = record.failureReferences.some((reference) => !reference || typeof reference !== "object" || Array.isArray(reference)
+    || typeof reference.check !== "string" || !reference.check.trim()
+    || (![reference.timestamp, reference.frame].some((value) => (typeof value === "string" && value.trim()) || Number.isFinite(value))
+      && !Number.isFinite(reference.timestampSeconds)));
+  if (invalid) throw new Error(`${label} failureReference requires a check identifier and timestamp or frame`);
+  if (record.status === "FAIL" && !record.failureReferences.length) throw new Error(`${label} FAIL requires a timestamp or frame reference for every recorded failure`);
+  if (record.status !== "FAIL" && record.failureReferences.length) throw new Error(`${label} non-FAIL cannot contain failure references`);
+  for (const check of failedChecks) {
+    if (!record.failureReferences.some((reference) => reference.check === check)) throw new Error(`${label} false check ${check} requires a failureReference with the same check identifier and timestamp/frame`);
+  }
+  if (failedChecks.length) {
+    const allowed = new Set(failedChecks);
+    if (record.failureReferences.some((reference) => !allowed.has(reference.check))) throw new Error(`${label} failureReference identifies a check that is not false`);
+  }
+}
+
+export function validateHumanEvidenceLedger(document) {
+  if (document?.schema !== HUMAN_EVIDENCE_SCHEMA || document.evidenceClass !== "HUMAN DEVICE EVIDENCE" || document.rootExists !== true
+    || !Array.isArray(document.entries) || !Array.isArray(document.requiredFilenames) || !Array.isArray(document.missingFilenames) || document.missingFilenames.length) throw new Error("physical-device human-evidence ledger authority differs");
+  if (stableJson([...document.requiredFilenames].sort(lexicalCompare)) !== stableJson([...REQUIRED_HUMAN_EVIDENCE_FILES].sort(lexicalCompare))) throw new Error("physical-device ledger required filename authority differs");
+  const filenames = document.entries.map(({ filename }) => filename);
+  if (stableJson([...filenames].sort(lexicalCompare)) !== stableJson([...REQUIRED_HUMAN_EVIDENCE_FILES].sort(lexicalCompare))) throw new Error("physical-device human-evidence ledger omits or duplicates a required recording");
+  for (const [index, record] of document.entries.entries()) {
+    const label = `entries[${index}]`;
+    const status = normalizeEvidenceStatus(record?.status);
+    if (!record || status !== record.status || !["PASS", "FAIL", "PENDING HUMAN REVIEW"].includes(status)
+      || !HASH64.test(record.sha256 ?? "") || !Number.isSafeInteger(record.byteSize) || record.byteSize <= 0
+      || record.evidenceClass !== "PHYSICAL HUMAN RECORDING"
+      || typeof record.device !== "string" || !record.device.trim()
+      || typeof record.os !== "string" || !record.os.trim()
+      || !Object.hasOwn(record, "browserVersion") || !["string", "object"].includes(typeof record.browserVersion) || (typeof record.browserVersion === "string" && !record.browserVersion.trim())
+      || !Array.isArray(record.testSteps) || !record.testSteps.length || record.testSteps.some((step) => typeof step !== "string" || !step.trim())
+      || !Array.isArray(record.observations) || !record.observations.length || record.observations.some((observation) => (typeof observation !== "string" || !observation.trim()) && (!observation || typeof observation !== "object" || Array.isArray(observation)))
+      || typeof record.observedResult !== "string" || !record.observedResult.trim()) throw new Error(`${label} is incomplete`);
+    if (record.browser !== undefined && record.browser !== null && (typeof record.browser !== "string" || !record.browser.trim())) throw new Error(`${label}.browser must be a supplied value, null or omitted`);
+    if (record.browserVersion !== null && typeof record.browserVersion !== "string") throw new Error(`${label}.browserVersion must be a supplied value or null`);
+    const requiredDeviceChecks = DEVICE_REVIEW_CHECKS[record.filename];
+    const hasDeviceChecks = record.checks && typeof record.checks === "object" && !Array.isArray(record.checks);
+    let failedEntryChecks = [];
+    if (requiredDeviceChecks && (record.status !== "PENDING HUMAN REVIEW" || hasDeviceChecks)) {
+      const actualKeys = hasDeviceChecks ? Object.keys(record.checks).sort(lexicalCompare) : [];
+      const expectedKeys = [...requiredDeviceChecks].sort(lexicalCompare);
+      if (stableJson(actualKeys) !== stableJson(expectedKeys)) throw new Error(`${label}.checks must contain the exact physical-device review checks`);
+      const results = expectedKeys.map((check) => record.checks[check]);
+      if (results.some((result) => typeof result !== "boolean" && !(record.status === "PENDING HUMAN REVIEW" && result === null))) throw new Error(`${label}.checks contains a non-boolean physical-device result`);
+      if (record.status === "PASS" && results.some((result) => result !== true)) throw new Error(`${label} PASS contains a failed physical-device check`);
+      if (record.status === "FAIL" && results.every((result) => result !== false)) throw new Error(`${label} FAIL contains no failed physical-device check`);
+      if (record.status !== "FAIL" && results.some((result) => result === false)) throw new Error(`${label} contains a false physical-device check without FAIL status`);
+      failedEntryChecks = expectedKeys.filter((check) => record.checks[check] === false);
+    }
+    if (record.filename === "chrome-200-percent.mp4") {
+      const hasZoomReview = ["genuineBrowserZoom", "zoomPercent", "proxy", "routeOutcomes"].some((field) => Object.hasOwn(record, field));
+      if (record.status === "PENDING HUMAN REVIEW" && !hasZoomReview) continue;
+      if (record.genuineBrowserZoom !== true || record.zoomPercent !== 200 || record.proxy !== false || !Array.isArray(record.routeOutcomes) || record.routeOutcomes.length !== 10) throw new Error("genuine 200% human browser-zoom evidence is incomplete");
+      const routes = new Set();
+      for (const [routeIndex, outcome] of record.routeOutcomes.entries()) {
+        const routeStatus = normalizeEvidenceStatus(outcome?.status);
+        if (!outcome || typeof outcome.route !== "string" || !outcome.route || routes.has(outcome.route) || routeStatus !== outcome.status || !["PASS", "FAIL", "PENDING HUMAN REVIEW"].includes(routeStatus)
+          || !outcome.checks || stableJson(Object.keys(outcome.checks).sort(lexicalCompare)) !== stableJson([...ZOOM_ROUTE_CHECKS].sort(lexicalCompare))
+          || ZOOM_ROUTE_CHECKS.some((check) => typeof outcome.checks[check] !== "boolean")) throw new Error(`genuine 200% route outcome ${routeIndex} is incomplete`);
+        routes.add(outcome.route);
+        const failedChecks = ZOOM_ROUTE_CHECKS.filter((check) => outcome.checks[check] === false);
+        if (routeStatus === "PASS" && failedChecks.length) throw new Error(`genuine 200% PASS route contains a failed check: ${outcome.route}`);
+        if (routeStatus === "FAIL" && !failedChecks.length) throw new Error(`genuine 200% FAIL route contains no failed check: ${outcome.route}`);
+        if (routeStatus !== "FAIL" && failedChecks.length) throw new Error(`genuine 200% route contains a false check without FAIL status: ${outcome.route}`);
+        validateFailureReferences(outcome, `entries chrome-200-percent route ${outcome.route}`, failedChecks);
+      }
+      if (stableJson([...routes].sort(lexicalCompare)) !== stableJson([...ZOOM_ROUTE_OUTCOMES].sort(lexicalCompare))) throw new Error("genuine 200% evidence does not cover the exact ten route outcomes");
+      const zoomStatus = aggregateCoverageStatuses(record.routeOutcomes.map(({ status: routeStatus }) => routeStatus), "PENDING HUMAN REVIEW");
+      if (record.status !== zoomStatus) throw new Error(`chrome-200-percent recording status must be ${zoomStatus}`);
+    }
+    validateFailureReferences(record, label, failedEntryChecks);
+  }
+  const expectedStatus = aggregateEvidenceStatuses(document.entries.map(({ status }) => status), "PENDING HUMAN REVIEW");
+  if (document.status !== expectedStatus) throw new Error(`physical-device ledger status must be ${expectedStatus}`);
+  return document;
+}
+
+function statusAt(value) {
+  return normalizeEvidenceStatus(value?.status ?? value);
+}
+
+function lifecycleEventUrl(event) {
+  const value = event?.documentUrl ?? event?.href;
+  if (typeof value !== "string" || !value) return null;
+  try {
+    const url = new URL(value);
+    return `${url.origin}${url.pathname}${url.search}${url.hash}`;
+  } catch {
+    return null;
+  }
+}
+
+function hasRealPersistedEventPair(events) {
+  if (!Array.isArray(events)) return false;
+  const pendingHides = new Map();
+  for (const event of events) {
+    if (!event || !["pagehide", "pageshow"].includes(event.type) || event.synthetic === true) continue;
+    const eventUrl = lifecycleEventUrl(event);
+    if (!eventUrl) continue;
+    const identity = typeof event.documentId === "string" && event.documentId
+      ? `document:${event.documentId}`
+      : `url:${eventUrl}`;
+    if (event.type === "pagehide") {
+      if (event.persisted === true) pendingHides.set(identity, { event, eventUrl });
+      else pendingHides.delete(identity);
+      continue;
+    }
+    const hide = pendingHides.get(identity);
+    pendingHides.delete(identity);
+    if (event.persisted === true && hide?.event?.persisted === true && hide.eventUrl === eventUrl) return true;
+  }
+  return false;
+}
+
+function legacyHistoryEventSeries(history) {
+  const series = [];
+  if (Array.isArray(history?.events)) series.push(history.events);
+  if (Array.isArray(history?.bfcache?.events)) series.push(history.bfcache.events);
+  if (Array.isArray(history?.directEntry?.lifecycle)) series.push(history.directEntry.lifecycle);
+  if (history?.states && typeof history.states === "object" && !Array.isArray(history.states)) {
+    for (const state of Object.values(history.states)) if (Array.isArray(state?.lifecycle)) series.push(state.lifecycle);
+  }
+  return series;
+}
+
+function legacyHistories(document) {
+  const histories = [];
+  if (document?.history && typeof document.history === "object" && !Array.isArray(document.history)) histories.push(document.history);
+  if (Array.isArray(document?.engines)) {
+    for (const engine of document.engines) {
+      if (engine?.history && typeof engine.history === "object" && !Array.isArray(engine.history)) histories.push(engine.history);
+    }
+  }
+  return histories;
+}
+
+function validateLegacyBfcacheObservations(document, label) {
+  for (const history of legacyHistories(document)) {
+    if (statusAt(history.bfcache) === "PASS" && !legacyHistoryEventSeries(history).some(hasRealPersistedEventPair)) {
+      throw new Error(`${label} BFCache PASS requires a real ordered pagehide.persisted/pageshow.persisted event pair`);
+    }
+  }
+}
+
+function hasOrderedVisibilityTransition(events) {
+  if (!Array.isArray(events)) return false;
+  const hiddenIndex = events.findIndex((event) => event?.type === "visibilitychange" && event.visibilityState === "hidden" && event.synthetic !== true);
+  return hiddenIndex >= 0 && events.slice(hiddenIndex + 1).some((event) => event?.type === "visibilitychange" && event.visibilityState === "visible" && event.synthetic !== true);
+}
+
+function validatePerformanceVisibilityObservation(document) {
+  const visibility = document?.visibility;
+  if (statusAt(visibility) !== "PASS") return;
+  const transitionObserved = Object.hasOwn(visibility, "transitionObserved")
+    ? visibility.transitionObserved
+    : visibility.hiddenObserved;
+  const stateSequenceObserved = visibility.beforeBackground?.visibilityState === "visible"
+    && visibility.whileBackground?.visibilityState === "hidden"
+    && visibility.afterForeground?.visibilityState === "visible";
+  if (transitionObserved !== true || !hasOrderedVisibilityTransition(visibility.events) || !stateSequenceObserved) {
+    throw new Error("performance visibility PASS requires an observed real visible-hidden-visible transition and ordered visibilitychange events");
+  }
+}
+
+function documentBfcacheStatuses(document) {
+  const candidates = [document?.bfcache, document?.history?.bfcache];
+  if (Array.isArray(document?.history)) candidates.push(...document.history.map((item) => item?.bfcache));
+  if (Array.isArray(document?.engines)) candidates.push(...document.engines.map((engine) => engine?.history?.bfcache));
+  return candidates.map(statusAt).filter(Boolean);
+}
+
+function documentVisibilityStatuses(document) {
+  const candidates = [document?.visibility];
+  if (Array.isArray(document?.engines)) candidates.push(...document.engines.map((engine) => engine?.visibility));
+  return candidates.map(statusAt).filter(Boolean);
+}
+
+function includes720By450Proxy(value) {
+  if (!value || typeof value !== "object") return false;
+  if (value.width === 720 && value.height === 450) return true;
+  if (typeof value.id === "string" && /720\s*[x×]\s*450/i.test(value.id)) return true;
+  return Object.values(value).some(includes720By450Proxy);
+}
+
+function evidenceTaxonomy(record, document) {
+  const sourceStatus = normalizeEvidenceStatus(document?.status);
+  const taxonomy = {
+    artifactStatus: record.status,
+    sourceStatus,
+    bfcache: documentBfcacheStatuses(document),
+    visibility: documentVisibilityStatuses(document),
+  };
+  if (record.role === "accessibility-summary" || record.role === "accessibility-interaction-limitation") {
+    const engineResults = Array.isArray(document?.engines) ? document.engines : [];
+    const fullInteraction = document?.axeOnly !== true;
+    const interactionStatus = record.role === "accessibility-interaction-limitation" ? record.status : sourceStatus;
+    const keyboardObserved = fullInteraction && engineResults.some((engine) => Array.isArray(engine?.keyboard) && engine.keyboard.length > 0);
+    const mobileMenuObserved = fullInteraction && engineResults.some((engine) => engine?.mobileMenu && typeof engine.mobileMenu === "object");
+    taxonomy.accessibility = {
+      axe: sourceStatus,
+      axeOnly: document?.axeOnly === true,
+      proxy720x450: includes720By450Proxy(document),
+      keyboard: record.role === "accessibility-interaction-limitation" ? record.status : (keyboardObserved ? interactionStatus : "NOT OBSERVED"),
+      focus: record.role === "accessibility-interaction-limitation" ? record.status : (keyboardObserved ? interactionStatus : "NOT OBSERVED"),
+      mobileMenu: record.role === "accessibility-interaction-limitation" ? record.status : (mobileMenuObserved ? interactionStatus : "NOT OBSERVED"),
+    };
+  }
+  if (record.role === "supplemental-reflow-proxy") {
+    taxonomy.accessibility = {
+      proxy720x450: includes720By450Proxy(document),
+      supplementalOnly: true,
+    };
+  }
+  if (record.role === "physical-device-result") {
+    const ledger = validateHumanEvidenceLedger(document);
+    const zoom = ledger.entries.find(({ filename }) => filename === "chrome-200-percent.mp4");
+    const zoomStatuses = Array.isArray(zoom.routeOutcomes) ? zoom.routeOutcomes.map(({ status }) => status) : ["PENDING HUMAN REVIEW"];
+    const opening = ledger.entries.find(({ filename }) => filename === "iphone-safari-opening.mp4");
+    taxonomy.humanEvidence = {
+      status: ledger.status,
+      verified: false,
+      recordings: ledger.entries.map(({ filename, sha256: hash, byteSize, status, checks = null }) => ({ filename, sha256: hash, byteSize, status, checks })),
+      browserZoom: aggregateEvidenceStatuses(zoomStatuses, "PENDING HUMAN REVIEW"),
+      hiddenVisible: opening?.checks?.backgroundForeground === true
+        ? "PASS"
+        : opening?.checks?.backgroundForeground === false
+          ? "FAIL"
+          : "PENDING HUMAN REVIEW",
+    };
+  }
+  return taxonomy;
+}
+
+function validateAccessibilityInteractionMatrix(document, engine) {
+  const expectedRoutes = PHASE6_ROUTES.map(({ expectedStatus, id, path: routePath }) => ({ expectedStatus, id, path: routePath }));
+  if (!Array.isArray(document.routes) || stableJson(document.routes) !== stableJson(expectedRoutes)) throw new Error(`accessibility exact ten-route inventory differs: ${engine}`);
+  if (document.axeOnly === true) return;
+  const result = document.engines[0];
+  const keyboard = result.keyboard;
+  const routeIds = Array.isArray(keyboard) ? keyboard.map(({ route }) => route) : [];
+  const expectedRouteIds = PHASE6_ROUTES.map(({ id }) => id);
+  if (document.axeOnly !== false
+    || result.status !== "PASS"
+    || !Array.isArray(result.failures) || result.failures.length
+    || !Array.isArray(keyboard) || keyboard.length !== expectedRouteIds.length
+    || stableJson([...routeIds].sort(lexicalCompare)) !== stableJson([...expectedRouteIds].sort(lexicalCompare))
+    || keyboard.some((entry) => entry?.status !== "PASS" || !Array.isArray(entry.failures) || entry.failures.length)
+    || result.summary?.keyboardCases !== expectedRouteIds.length) {
+    throw new Error(`accessibility keyboard/focus matrix differs: ${engine}`);
+  }
+  const menu = result.mobileMenu;
+  if (menu?.status !== "PASS" || !Array.isArray(menu.cycles) || menu.cycles.length !== 4 || !Array.isArray(menu.failures) || menu.failures.length) {
+    throw new Error(`accessibility mobile-menu four-cycle authority differs: ${engine}`);
+  }
+  const history = result.history;
+  if (history?.status !== "PASS" || !Array.isArray(history.failures) || history.failures.length) throw new Error(`accessibility history authority differs: ${engine}`);
+}
+
 export function validateDocumentAuthority(record, document, metadata) {
   const engine = record.engine;
   if (record.role === "deployment-verifier") {
+    const authority = authorityProfileForBranch(metadata.repository?.branch);
     const inputs = document.inputs;
     if (document.status !== "PASS"
+      || document.schema !== authority.deploymentSchema
       || inputs?.expectedHead !== metadata.repository.finalHead
-      || inputs?.acceptedBase !== REQUIRED_PARENT
+      || inputs?.[authority.deploymentParentField] !== authority.parent
       || inputs?.expectedMain !== FROZEN_MAIN
-      || inputs?.branch !== REQUIRED_BRANCH
+      || inputs?.branch !== authority.branch
       || inputs?.deploymentId?.toLowerCase() !== metadata.deployment.id.toLowerCase()
       || inputs?.immutableUrl !== metadata.deployment.immutableUrl
       || inputs?.branchUrl !== metadata.deployment.branchUrl
@@ -683,6 +1802,7 @@ export function validateDocumentAuthority(record, document, metadata) {
       || document.summary?.unsupportedCapabilities !== expectedUnsupported
       || document.status !== "PASS") throw new Error(`cross-engine exact tuple differs: ${engine ?? "missing"}`);
   }
+  if (record.role === "history-bfcache-summary") validateLegacyBfcacheObservations(document, "history-bfcache-summary");
   if (record.role === "performance-summary") {
     const loops = document.lifecycleLoops;
     if (document.status !== "PASS"
@@ -699,6 +1819,8 @@ export function validateDocumentAuthority(record, document, metadata) {
       || loops?.homeSupport?.status !== "COMPLETE"
       || loops?.homeMaradin?.boundedness?.bounded !== true
       || loops?.homeSupport?.boundedness?.bounded !== true) throw new Error("performance exact tuple differs");
+    validateLegacyBfcacheObservations(document, "performance-summary");
+    validatePerformanceVisibilityObservation(document);
   }
   if (record.role === "accessibility-summary") {
     if (!engine || document.baseUrl !== metadata.evidenceContext.browserQa.baseUrl
@@ -710,23 +1832,40 @@ export function validateDocumentAuthority(record, document, metadata) {
       || document.summary?.axeViolations !== 0
       || document.summary?.seriousCritical !== 0
       || document.summary?.failures !== 0
+      || document.summary?.engineErrors !== 0
+      || !Array.isArray(document.failures) || document.failures.length
       || document.status !== "PASS"
       || (engine === "webkit" && document.axeOnly !== true)) throw new Error(`accessibility exact tuple differs: ${engine ?? "missing"}`);
+    validateAccessibilityInteractionMatrix(document, engine);
   }
   if (record.role === "accessibility-interaction-limitation") {
+    const sourceStatus = normalizeEvidenceStatus(document.status);
+    const failedSource = sourceStatus === "FAIL"
+      && document.summary?.failures >= 1
+      && Array.isArray(document.failures)
+      && document.failures.length > 0;
+    const limitedSource = sourceStatus === "LIMITATION"
+      && ((typeof document.limitation === "string" && document.limitation.trim()) || (Array.isArray(document.limitations) && document.limitations.some((item) => typeof item === "string" && item.trim())));
     if (document.baseUrl !== metadata.evidenceContext.browserQa.baseUrl
       || document.engine !== "webkit"
       || !Array.isArray(document.engines) || document.engines.length !== 1 || document.engines[0]?.engine !== "webkit"
       || !Array.isArray(document.selectedEngines) || document.selectedEngines.length !== 1 || document.selectedEngines[0] !== "webkit"
-      || document.status !== "FAIL"
-      || document.summary?.engineErrors < 1
-      || document.summary?.failures < 1
-      || !Array.isArray(document.failures)
-      || !document.failures.length) throw new Error("WebKit interaction limitation source differs");
+      || (!failedSource && !limitedSource)) throw new Error("WebKit interaction limitation source differs");
+  }
+  if (record.role === "supplemental-reflow-proxy") {
+    const proxy = Array.isArray(document.variants)
+      ? document.variants.filter((variant) => variant?.id === "text-200-proxy")
+      : [];
+    if (document.status !== "PASS" || proxy.length !== 1 || !includes720By450Proxy(proxy[0]) || !Array.isArray(proxy[0].records) || !proxy[0].records.length) {
+      throw new Error("supplemental 720x450 reflow proxy authority differs");
+    }
   }
   if (record.role === "regression-summary") {
     if (document.status !== "PASS" || document.target?.baseUrl !== metadata.evidenceContext.browserQa.baseUrl || document.checks?.length !== 7 || document.checks.some((check) => check?.status !== "PASS") || document.sharedDom?.status !== "PASS" || !Array.isArray(document.sharedDom?.assertions) || document.sharedDom.assertions.some((assertion) => assertion?.pass !== true) || document.failures?.length !== 0) throw new Error("repair-regression exact tuple differs");
   }
+  if (record.role === "physical-device-result") validateHumanEvidenceLedger(document);
+  if (record.role === "r1-motion-summary") validateR1MotionReport(document, engine, metadata);
+  if (record.role === "r1-persistent-lifecycle-summary") validateR1PersistentLifecycle(document, record, metadata);
 }
 
 async function curateArtifact(sourceRoot, record, metadata) {
@@ -737,15 +1876,18 @@ async function curateArtifact(sourceRoot, record, metadata) {
   const kind = extensionKind(record.destination);
   let data;
   let media = null;
+  let sourceDocument = null;
   if (destinationExtension === ".json") {
     if (sourceExtension !== ".json") throw new Error(`JSON evidence destination requires JSON source: ${record.destination}`);
     let document;
     try { document = JSON.parse(bytes.toString("utf8")); } catch { throw new Error(`invalid source JSON: ${record.source}`); }
-    const sourceStatus = String(document?.status ?? "").toUpperCase();
-    if (["FAIL", "ERROR"].includes(sourceStatus) && record.status !== "LIMITATION") throw new Error(`failed JSON report requires an explicit LIMITATION artifact: ${record.source}`);
+    sourceDocument = document;
+    const sourceStatus = normalizeEvidenceStatus(document?.status);
+    if (sourceStatus === "FAIL" && !["FAIL", "LIMITATION"].includes(record.status)) throw new Error(`failed JSON report requires an explicit FAIL or LIMITATION artifact: ${record.source}`);
+    if (["LIMITATION", "NOT OBSERVED", "PENDING HUMAN REVIEW"].includes(sourceStatus) && record.status === "PASS") throw new Error(`non-PASS JSON report cannot be promoted to a PASS artifact: ${record.source}`);
     const acceptedSchemas = JSON_ROLE_SCHEMAS[record.role];
     if (acceptedSchemas && !acceptedSchemas.includes(document?.schema)) throw new Error(`source JSON schema differs for ${record.role}: ${record.source}`);
-    if (record.status === "PASS" && String(document?.status ?? "").toUpperCase() !== "PASS") throw new Error(`PASS artifact requires a PASS source report: ${record.source}`);
+    if (record.status === "PASS" && sourceStatus !== "PASS") throw new Error(`PASS artifact requires a PASS source report: ${record.source}`);
     validateDocumentAuthority(record, document, metadata);
     const sanitized = sanitizeJsonValue(document, record.source);
     if (record.role === "deployment-verifier") {
@@ -761,7 +1903,8 @@ async function curateArtifact(sourceRoot, record, metadata) {
         status: record.status,
         role: record.role,
         source: { relativePath: record.source, sha256: sha256(bytes) },
-        ...(record.limitation ? { limitation: record.limitation, sourceStatus } : {}),
+        ...(record.status !== "PASS" ? { sourceStatus } : {}),
+        ...(record.limitation ? { limitation: record.limitation } : {}),
         selection: record.select ?? null,
         payload: selection,
       }));
@@ -779,11 +1922,48 @@ async function curateArtifact(sourceRoot, record, metadata) {
   } else if (kind === "video") {
     if (sourceExtension !== ".mp4") throw new Error(`video evidence must be MP4: ${record.source}`);
     validateMp4(bytes, record.source);
-    media = await validateCaptureBoundMedia(sourceRoot, record, bytes);
+    media = record.role === "physical-device-recording"
+      ? { container: "mp4", humanSupplied: true, byteSize: bytes.length, sha256: sha256(bytes) }
+      : record.role === "r1-motion-recording"
+        ? await validateR1MotionBoundMedia(sourceRoot, record, bytes, metadata)
+        : await validateCaptureBoundMedia(sourceRoot, record, bytes);
     data = Buffer.from(bytes);
   } else throw new Error(`unsupported evidence artifact: ${record.destination}`);
   assertPrivacySafe(data, record.destination);
-  return { path: record.destination, data, source: record.source, role: record.role, ...(record.engine ? { engine: record.engine } : {}), ...(media ? { media } : {}) };
+  return {
+    path: record.destination,
+    data,
+    source: record.source,
+    role: record.role,
+    status: record.status,
+    ...(record.engine ? { engine: record.engine } : {}),
+    ...(media ? { media } : {}),
+    ...(sourceDocument ? { taxonomy: evidenceTaxonomy(record, sourceDocument) } : {}),
+  };
+}
+
+function validateHumanEvidenceBindings(metadata, entries) {
+  const ledgerEntries = entries.filter(({ role }) => role === "physical-device-result");
+  const recordingEntries = entries.filter(({ role }) => role === "physical-device-recording");
+  if (!ledgerEntries.length) {
+    if (recordingEntries.length) throw new Error("physical-device recordings require a verified human-evidence ledger");
+    return { status: "PENDING HUMAN REVIEW", verified: false };
+  }
+  if (ledgerEntries.length !== 1) throw new Error("exactly one physical-device human-evidence ledger is required");
+  const ledgerEntry = ledgerEntries[0];
+  const ledger = ledgerEntry.taxonomy?.humanEvidence;
+  if (!ledger) throw new Error("physical-device human-evidence ledger taxonomy is unavailable");
+  for (const record of ledger.recordings) {
+    const artifactRecord = metadata.artifacts.find((artifact) => artifact.role === "physical-device-recording" && path.posix.basename(artifact.source) === record.filename);
+    const assembled = artifactRecord && recordingEntries.find(({ source }) => source === artifactRecord.source);
+    if (!artifactRecord || !assembled || artifactRecord.status !== record.status || assembled.status !== record.status
+      || artifactRecord.expectedSha256 !== record.sha256 || assembled.data.length !== record.byteSize || sha256(assembled.data) !== record.sha256) {
+      throw new Error(`human-evidence recording is not hash/size/status bound into the package: ${record.filename}`);
+    }
+  }
+  if (recordingEntries.length !== REQUIRED_HUMAN_EVIDENCE_FILES.length) throw new Error("physical-device recording inventory contains an unbound or duplicate file");
+  ledger.verified = true;
+  return { status: ledger.status, verified: true };
 }
 
 function posterLabel(width, text) {
@@ -1041,7 +2221,100 @@ function generatedAuthorityEntries(metadata) {
   ].map((entry) => ({ ...entry, role: "generated-authority" }));
 }
 
-function evidenceRolesForRequirement(section, requirement, { posterIncluded, physicalStatus }) {
+export function guardedRequirementAssessment(section, requirement, entries) {
+  if (section === "05-history-bfcache" && requirement === "BFCache") {
+    const statuses = entries.flatMap((entry) => entry.taxonomy?.bfcache ?? []);
+    const r1Statuses = entries
+      .filter((entry) => entry.role === "r1-persistent-lifecycle-summary")
+      .flatMap((entry) => entry.taxonomy?.bfcache ?? []);
+    const status = statuses.some((candidate) => normalizeEvidenceStatus(candidate) === "FAIL")
+      ? "FAIL"
+      : r1Statuses.length
+        ? aggregateCoverageStatuses(r1Statuses, "NOT OBSERVED")
+        : aggregateEvidenceStatuses(statuses, "NOT OBSERVED");
+    return {
+      status,
+      statement: status === "PASS"
+        ? "A source report observed persisted BFCache restoration."
+        : "No source report observed persisted BFCache restoration; ordinary Back/Forward evidence does not promote BFCache to PASS.",
+    };
+  }
+  if (section === "03-homepage-motion" && requirement === "hidden/visible behavior") {
+    const machineStatuses = entries.flatMap((entry) => entry.taxonomy?.visibility ?? []);
+    const r1Statuses = entries
+      .filter((entry) => entry.role === "r1-persistent-lifecycle-summary")
+      .flatMap((entry) => entry.taxonomy?.visibility ?? []);
+    const humanStatuses = entries
+      .filter((entry) => entry.taxonomy?.humanEvidence?.verified && entry.taxonomy.humanEvidence.hiddenVisible)
+      .map((entry) => entry.taxonomy.humanEvidence.hiddenVisible);
+    const statuses = [...machineStatuses, ...humanStatuses];
+    const status = statuses.some((candidate) => normalizeEvidenceStatus(candidate) === "FAIL")
+      ? "FAIL"
+      : humanStatuses.length
+        ? aggregateEvidenceStatuses(humanStatuses, "PENDING HUMAN REVIEW")
+        : r1Statuses.length
+          ? aggregateCoverageStatuses(r1Statuses, "NOT OBSERVED")
+          : aggregateEvidenceStatuses(machineStatuses, "NOT OBSERVED");
+    return {
+      status,
+      statement: status === "PASS"
+        ? "A real hidden/visible transition was observed with coherent return state."
+        : "A real hidden/visible transition was not observed successfully; synthetic lifecycle coverage cannot promote this requirement to PASS.",
+    };
+  }
+  if (section === "09-accessibility" && ["keyboard", "focus", "mobile menu"].includes(requirement)) {
+    const key = requirement === "mobile menu" ? "mobileMenu" : requirement;
+    const statuses = entries.map((entry) => entry.taxonomy?.accessibility?.[key]).filter(Boolean);
+    const status = aggregateCoverageStatuses(statuses, "NOT OBSERVED");
+    return {
+      status,
+      statement: status === "PASS"
+        ? `${requirement} interactions completed successfully in every applicable interaction source report.`
+        : `${requirement} is not a machine PASS because an applicable interaction source was incomplete, failed or limited; axe-only reports are excluded.`,
+    };
+  }
+  if (section === "09-accessibility" && requirement === "200%") {
+    const zoomStatuses = entries
+      .filter((entry) => entry.taxonomy?.humanEvidence?.verified)
+      .map((entry) => entry.taxonomy.humanEvidence.browserZoom)
+      .filter(Boolean);
+    const proxyOnly = entries.some((entry) => entry.taxonomy?.accessibility?.proxy720x450);
+    const status = zoomStatuses.length ? aggregateEvidenceStatuses(zoomStatuses, "PENDING HUMAN REVIEW") : "PENDING HUMAN REVIEW";
+    return {
+      status,
+      statement: status === "PASS"
+        ? "A hash-bound human recording verified genuine 200% browser zoom across all ten route outcomes."
+        : proxyOnly
+          ? "Only the 720×450 reflow proxy is present; it is supplemental and cannot satisfy genuine 200% browser zoom."
+          : "Genuine 200% browser-zoom evidence remains pending verified human review.",
+    };
+  }
+  if (section === "11-physical-device") {
+    const statuses = entries
+      .filter((entry) => entry.taxonomy?.humanEvidence?.verified)
+      .map((entry) => entry.taxonomy.humanEvidence.status);
+    const status = statuses.length ? aggregateEvidenceStatuses(statuses, "PENDING HUMAN REVIEW") : "PENDING HUMAN REVIEW";
+    return {
+      status,
+      statement: status === "PASS"
+        ? "All required physical-device recordings were ingested, hash/size bound and reviewed as PASS."
+        : "Physical-device requirements remain pending until all required human recordings are ingested, hash/size bound and actually reviewed.",
+    };
+  }
+  return null;
+}
+
+function aggregateRequirementStatus(requirements, configuredStatus) {
+  const statuses = requirements.map(({ status }) => status).filter((status) => status !== "NOT APPLICABLE");
+  if (!statuses.length) return configuredStatus;
+  if (statuses.includes("FAIL")) return "FAIL";
+  if (statuses.includes("PENDING HUMAN REVIEW")) return "PENDING HUMAN REVIEW";
+  if (statuses.includes("LIMITATION")) return "LIMITATION";
+  if (statuses.includes("NOT OBSERVED")) return "NOT OBSERVED";
+  return statuses.every((status) => status === "PASS") ? "PASS" : configuredStatus;
+}
+
+function evidenceRolesForRequirement(section, requirement, { posterIncluded }) {
   if (section === "00-provenance") return ["deployment verification", "dist/deployment parity"].includes(requirement) ? ["deployment-verifier"] : GENERATED_EVIDENCE_BY_SECTION[section];
   if (section === "01-baseline") return GENERATED_EVIDENCE_BY_SECTION[section];
   if (section === "02-cross-engine") {
@@ -1049,8 +2322,10 @@ function evidenceRolesForRequirement(section, requirement, { posterIncluded, phy
     if (requirement.includes("recordings")) return ["cross-engine-recording"];
     return ["cross-engine-summary"];
   }
-  if (section === "03-homepage-motion") return requirement.includes("fade") || ["fresh forward", "reverse", "fast skip", "stop-at-state", "resize/orientation", "hidden/visible"].some((token) => requirement.includes(token))
-    ? ["homepage-motion-summary", "homepage-motion-recording"]
+  if (section === "03-homepage-motion") return requirement === "hidden/visible behavior"
+    ? ["homepage-motion-summary", "homepage-motion-recording", "r1-motion-summary", "r1-motion-recording", "memory-summary", "r1-persistent-lifecycle-summary", "physical-device-result"]
+    : requirement.includes("fade") || ["fresh forward", "reverse", "fast skip", "stop-at-state", "resize/orientation"].some((token) => requirement.includes(token))
+      ? ["homepage-motion-summary", "homepage-motion-recording", "r1-motion-summary", "r1-motion-recording"]
     : ["homepage-motion-summary"];
   if (section === "04-supporting-routes") {
     const direct = {
@@ -1062,27 +2337,35 @@ function evidenceRolesForRequirement(section, requirement, { posterIncluded, phy
     }[requirement];
     return direct ? [direct] : ["supporting-route-summary"];
   }
-  if (section === "05-history-bfcache") return ["history-bfcache-summary"];
+  if (section === "05-history-bfcache") return ["history-bfcache-summary", "r1-persistent-lifecycle-summary"];
   if (section === "06-performance") return ["performance-summary"];
-  if (section === "07-memory") return ["memory-summary"];
-  if (section === "08-network-media") return ["network-media-summary"];
-  if (section === "09-accessibility") return ["accessibility-summary", "accessibility-interaction-limitation"];
+  if (section === "07-memory") return ["memory-summary", "r1-persistent-lifecycle-summary"];
+  if (section === "08-network-media") return ["network-media-summary", "r1-persistent-lifecycle-summary"];
+  if (section === "09-accessibility") {
+    if (requirement === "axe") return ["accessibility-summary"];
+    if (["keyboard", "focus", "mobile menu"].includes(requirement)) return ["accessibility-summary", "accessibility-interaction-limitation"];
+    if (requirement === "200%") return ["accessibility-summary", "supplemental-reflow-proxy", "physical-device-result", "physical-device-recording"];
+    return ["accessibility-summary"];
+  }
   if (section === "10-poster-study") {
     if (requirement === "side-by-side comparison") return posterIncluded ? ["poster-side-by-side"] : ["packager-injected-report"];
     if (requirement === "difference images") return posterIncluded ? ["poster-difference"] : ["packager-injected-report"];
     return posterIncluded ? ["poster-study-summary", "packager-injected-report"] : ["packager-injected-report"];
   }
-  if (section === "11-physical-device") return physicalStatus === "PASS" ? ["physical-device-result"] : ["packager-injected-report"];
+  if (section === "11-physical-device") return ["physical-device-result", "physical-device-recording", "packager-injected-report"];
   if (section === "12-regression") return ["regression-summary"];
   if (section === "13-package") return ["packager-generated"];
   throw new Error(`no evidence-role mapping for ${section}/${requirement}`);
 }
 
 function sectionSummary(section, metadata, existingEntries, { posterIncluded }) {
-  const evidence = existingEntries
-    .filter((entry) => entry.path.startsWith(`${section}/`) && !entry.path.endsWith("/section-summary.json"))
+  const allEvidence = existingEntries
+    .filter((entry) => !entry.path.endsWith("/section-summary.json"))
     .map((entry) => ({ path: entry.path, role: entry.role, byteSize: entry.data.length, sha256: sha256(entry.data) }))
     .sort((left, right) => lexicalCompare(left.path, right.path));
+  const evidence = allEvidence
+    .filter((entry) => entry.path.startsWith(`${section}/`) && !entry.path.endsWith("/section-summary.json"))
+    .map((entry) => ({ ...entry }));
   if (section === "01-baseline") evidence.push(
     { path: "01-baseline/PHASE_6_BASELINE.md", role: "packager-injected-report", generatedByPackager: true },
     { path: "01-baseline/PHASE_6_DEFECT_LEDGER.md", role: "packager-injected-report", generatedByPackager: true },
@@ -1114,14 +2397,25 @@ function sectionSummary(section, metadata, existingEntries, { posterIncluded }) 
       status = "LIMITATION";
       statement = "No optional external poster-study directory was supplied; the tracked study remains authoritative and visual comparison artifacts are explicitly absent.";
     }
-    if (section === "11-physical-device" && configured.status !== "PASS") status = "PENDING HUMAN DEVICE REVIEW";
-    const evidenceRoles = override?.evidenceRoles ?? evidenceRolesForRequirement(section, requirement, { posterIncluded, physicalStatus: configured.status });
+    const guarded = guardedRequirementAssessment(section, requirement, existingEntries);
+    if (guarded && guarded.status !== "PASS") {
+      if (override && override.status !== guarded.status) {
+        const promotion = override.status === "PASS" ? "false PASS promotion" : "false status promotion";
+        throw new Error(`${promotion} rejected for ${section}/${requirement}: declared ${override.status}, observed ${guarded.status}`);
+      }
+      if (!override) {
+        status = guarded.status;
+        statement = guarded.statement;
+      }
+    }
+    const evidenceRoles = override?.evidenceRoles ?? evidenceRolesForRequirement(section, requirement, { posterIncluded });
     if (!Array.isArray(evidenceRoles) || !evidenceRoles.length || evidenceRoles.some((role) => typeof role !== "string")) throw new Error(`requirement evidence role mapping differs: ${section}/${requirement}`);
-    const paths = evidence.filter(({ role }) => evidenceRoles.includes(role)).map(({ path: evidencePath }) => evidencePath);
+    const requirementEvidence = [...allEvidence, ...evidence.filter(({ generatedByPackager }) => generatedByPackager)];
+    const paths = [...new Set(requirementEvidence.filter(({ role }) => evidenceRoles.includes(role)).map(({ path: evidencePath }) => evidencePath))];
     if (status === "PASS" && !paths.length) throw new Error(`PASS requirement has no mapped evidence: ${section}/${requirement}`);
     return { requirement, status, statement, evidenceRoles, evidence: paths };
   });
-  return { schema: `${SCHEMA}.section-summary`, section, status: configured.status, summary: configured.summary, requirements, limitations: configured.limitations, evidence };
+  return { schema: `${SCHEMA}.section-summary`, section, status: aggregateRequirementStatus(requirements, configured.status), summary: configured.summary, requirements, limitations: configured.limitations, evidence };
 }
 
 export function validateEvidenceEntries(input, { maximumBytes = MAX_EVIDENCE_BYTES } = {}) {
@@ -1158,6 +2452,7 @@ export async function buildEvidenceEntries({ sourceEvidenceRoot, finalMetadata, 
   const metadata = validateFinalMetadata(finalMetadata, { posterStudyDirectory: posterRoot });
   const entries = generatedAuthorityEntries(metadata);
   for (const record of metadata.artifacts) entries.push(await curateArtifact(sourceRoot, record, metadata));
+  validateHumanEvidenceBindings(metadata, entries);
   let posterIncluded = false;
   if (posterRoot) {
     const poster = await generatePosterEvidence(posterRoot, { originalDirectory: originalPosterDirectory, verifyTrackedAuthority: verifyTrackedPosterAuthority });
@@ -1252,7 +2547,7 @@ function valueAfter(argv, index, flag) {
 }
 
 export function parseArguments(argv) {
-  const options = { sourceEvidenceRoot: null, finalMetadataPath: null, outputRoot: null, posterStudyDirectory: null, writeMetadataTemplate: null, generatedAt: null, selfTest: false, help: false };
+  const options = { sourceEvidenceRoot: null, finalMetadataPath: null, outputRoot: null, posterStudyDirectory: null, writeMetadataTemplate: null, generatedAt: null, authorityProfile: null, selfTest: false, help: false };
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index];
     const next = () => { const value = valueAfter(argv, index, argument); index += 1; return value; };
@@ -1262,6 +2557,7 @@ export function parseArguments(argv) {
     else if (argument === "--poster-study-directory") options.posterStudyDirectory = path.resolve(next());
     else if (argument === "--write-metadata-template") options.writeMetadataTemplate = path.resolve(next());
     else if (argument === "--generated-at") options.generatedAt = next();
+    else if (argument === "--authority-profile") options.authorityProfile = next();
     else if (argument === "--self-test") options.selfTest = true;
     else if (argument === "--help" || argument === "-h") options.help = true;
     else throw new Error(`unknown option: ${argument}`);
@@ -1270,13 +2566,15 @@ export function parseArguments(argv) {
 }
 
 export function selfTest() {
-  if (TOPOLOGY_SECTIONS.length !== 14 || Object.keys(BRIEF_REQUIREMENTS).length !== 14 || FINAL_HANDOFF_FIELDS.length !== 66 || Object.keys(HUMAN_REVIEW_GATES).length !== 6 || Object.values(AUTHORIZATION).some(Boolean)) throw new Error("Phase 6 evidence assembler contract differs");
+  if (TOPOLOGY_SECTIONS.length !== 14 || Object.keys(BRIEF_REQUIREMENTS).length !== 14 || FINAL_HANDOFF_FIELDS.length !== 66 || Object.keys(HUMAN_REVIEW_GATES).length !== 6 || Object.values(AUTHORIZATION).some(Boolean)
+    || R1_MOTION_RECORDING_SPECS.length !== 5 || Object.keys(R1_REQUIRED_ARTIFACT_ROLES).length !== 5) throw new Error("Phase 6 evidence assembler contract differs");
   return {
     schema: `${SCHEMA}.self-test`,
     status: "PASS",
     topologySections: TOPOLOGY_SECTIONS.length,
     briefRequirements: Object.values(BRIEF_REQUIREMENTS).reduce((sum, values) => sum + values.length, 0),
     mandatoryArtifactRoles: Object.keys(REQUIRED_ARTIFACT_ROLES).length,
+    r1MandatoryArtifactRoles: Object.keys(R1_REQUIRED_ARTIFACT_ROLES).length,
     finalHandoffFields: FINAL_HANDOFF_FIELDS.length,
     maximumEvidenceBytes: MAX_EVIDENCE_BYTES,
     posterFamilies: POSTER_FAMILIES.map(({ id }) => id),
@@ -1296,7 +2594,8 @@ function printHelp() {
     "  node scripts/assemble-phase6-final-evidence.mjs \\",
     "    --source-evidence-root <external-final-source-directory> \\",
     "    --write-metadata-template <fresh-external-template.json> \\",
-    "    --generated-at <canonical-ISO-timestamp>",
+    "    --generated-at <canonical-ISO-timestamp> \\",
+    "    [--authority-profile phase6|phase6-r1]",
     "",
     `Metadata schema: ${FINAL_METADATA_SCHEMA}`,
     "Every selected artifact record must set final=true, expectedSha256, status, role, source and destination.",
@@ -1308,16 +2607,17 @@ async function main() {
   if (options.help) { printHelp(); return; }
   if (options.selfTest) { process.stdout.write(stableJson(selfTest())); return; }
   if (options.writeMetadataTemplate) {
-    if (!options.sourceEvidenceRoot || !options.generatedAt || options.finalMetadataPath || options.outputRoot || options.posterStudyDirectory) throw new Error("template mode requires only --source-evidence-root, --write-metadata-template and --generated-at");
+    if (!options.sourceEvidenceRoot || !options.generatedAt || options.finalMetadataPath || options.outputRoot || options.posterStudyDirectory) throw new Error("template mode requires --source-evidence-root, --write-metadata-template and --generated-at, with optional --authority-profile");
     const destination = assertExternalPath(options.writeMetadataTemplate, "--write-metadata-template");
     if (path.extname(destination).toLowerCase() !== ".json") throw new Error("--write-metadata-template must be a .json file");
     await assertAbsent(destination, "metadata template");
     await mkdir(path.dirname(destination), { recursive: true });
-    const template = await createMetadataTemplate(assertExternalPath(options.sourceEvidenceRoot, "--source-evidence-root"), options.generatedAt);
+    const template = await createMetadataTemplate(assertExternalPath(options.sourceEvidenceRoot, "--source-evidence-root"), options.generatedAt, options.authorityProfile ?? "phase6");
     await writeFile(destination, stableJson(template), { flag: "wx" });
     process.stdout.write(stableJson({ schema: `${SCHEMA}.metadata-template-result`, status: "PASS", output: destination, eligibleSourceFiles: template.sourceInventory.length, rejectedSourceEntries: template.rejectedSourceInventory.length }));
     return;
   }
+  if (options.authorityProfile) throw new Error("--authority-profile is only valid with --write-metadata-template");
   if (options.generatedAt) throw new Error("--generated-at is only valid with --write-metadata-template");
   process.stdout.write(stableJson(await assembleFinalEvidence(options)));
 }

@@ -303,9 +303,11 @@ async function runKeyboardChecks(browser, engine, options) {
       await page.keyboard.press("Tab");
       await page.waitForTimeout(180);
       const first = await observeFocus(page);
-      await page.keyboard.press("Enter");
-      await page.waitForFunction((hash) => location.hash === hash, expectedHash, { timeout: Math.min(options.timeoutMs, 5_000) }).catch(() => undefined);
-      await page.waitForTimeout(100);
+      if (first.href === expectedHash) {
+        await page.keyboard.press("Enter");
+        await page.waitForFunction((hash) => location.hash === hash, expectedHash, { timeout: Math.min(options.timeoutMs, 5_000) }).catch(() => undefined);
+        await page.waitForTimeout(100);
+      }
       const afterActivation = await observeSkipActivation(page, expectedHash);
       await page.keyboard.press("Tab");
       await page.waitForTimeout(80);
@@ -371,8 +373,13 @@ export function mobileMenuFailures(record) {
       failures.push({ code: "mobile-menu-repeat-cycle", cycle: index + 1, actual: cycle });
     }
   }
+  if (!visiblyFocused(record.navigation.focus) || record.navigation.focus.href !== "/#entry") {
+    failures.push({ code: "mobile-menu-navigation-focus", actual: record.navigation.focus, expected: "/#entry" });
+  }
   if (record.navigation.arrival.path !== "/" || record.navigation.arrival.hash !== "#entry") failures.push({ code: "mobile-menu-navigation", actual: record.navigation.arrival });
-  if (record.navigation.back.path !== "/about/" || record.navigation.back.open || record.navigation.back.ariaExpanded !== "false") failures.push({ code: "mobile-menu-history-return", actual: record.navigation.back });
+  if (!record.navigation.back || record.navigation.back.path !== "/about/" || record.navigation.back.open || record.navigation.back.ariaExpanded !== "false") {
+    failures.push({ code: "mobile-menu-history-return", actual: record.navigation.back });
+  }
   return failures;
 }
 
@@ -408,16 +415,22 @@ async function runMobileMenuChecks(browser, engine, options) {
     await page.keyboard.press("Enter");
     await waitForMenu(page, true, options.timeoutMs);
     await page.keyboard.press("Tab");
-    await Promise.all([
-      page.waitForURL((url) => url.pathname === "/" && url.hash === "#entry", { timeout: options.timeoutMs, waitUntil: "commit" }),
-      page.keyboard.press("Enter"),
-    ]);
-    await settle(page, options.timeoutMs);
-    const arrival = await observeMenu(page);
-    await page.goBack({ waitUntil: "domcontentloaded", timeout: options.timeoutMs });
-    await settle(page, options.timeoutMs);
-    const back = await observeMenu(page);
-    const record = { cycles, engine, escapeClose, firstMenuLink, navigation: { arrival, back }, ordinaryClose, ordinaryOpen, triggerFocus };
+    await page.waitForTimeout(80);
+    const navigationFocus = await observeFocus(page);
+    let arrival = await observeMenu(page);
+    let back = null;
+    if (navigationFocus.href === "/#entry") {
+      await Promise.all([
+        page.waitForURL((url) => url.pathname === "/" && url.hash === "#entry", { timeout: options.timeoutMs, waitUntil: "commit" }),
+        page.keyboard.press("Enter"),
+      ]);
+      await settle(page, options.timeoutMs);
+      arrival = await observeMenu(page);
+      await page.goBack({ waitUntil: "domcontentloaded", timeout: options.timeoutMs });
+      await settle(page, options.timeoutMs);
+      back = await observeMenu(page);
+    }
+    const record = { cycles, engine, escapeClose, firstMenuLink, navigation: { arrival, back, focus: navigationFocus }, ordinaryClose, ordinaryOpen, triggerFocus };
     record.failures = mobileMenuFailures(record);
     record.status = record.failures.length ? "FAIL" : "PASS";
     return record;

@@ -124,6 +124,7 @@ test("mobile-menu validator requires close, Escape focus return and every repeat
     navigation: {
       arrival: { activeIsTrigger: false, ariaExpanded: "false", hash: "#entry", open: false, path: "/" },
       back: { ...closed },
+      focus: { ...focused("a|/#entry|Home"), href: "/#entry" },
     },
     ordinaryClose: { ...closed },
     ordinaryOpen: { ...open },
@@ -135,6 +136,28 @@ test("mobile-menu validator requires close, Escape focus return and every repeat
   const codes = mobileMenuFailures(record).map(({ code }) => code);
   assert.ok(codes.includes("mobile-menu-escape-focus-return"));
   assert.ok(codes.includes("mobile-menu-repeat-cycle"));
+});
+
+test("mobile-menu validator reports missing native link focus without waiting for navigation", () => {
+  const closed = { activeIsTrigger: true, ariaExpanded: "false", hash: "", open: false, path: "/about/" };
+  const open = { activeIsTrigger: true, ariaExpanded: "true", hash: "", open: true, path: "/about/" };
+  const record = {
+    cycles: Array.from({ length: MENU_REPEAT_CYCLES }, () => ({ close: { ...closed }, open: { ...open } })),
+    escapeClose: { ...closed },
+    firstMenuLink: focused("a|/#entry|Home"),
+    navigation: {
+      arrival: { ...open },
+      back: null,
+      focus: { ...focused("body||"), focusVisible: false, href: null, tag: "body", visible: true },
+    },
+    ordinaryClose: { ...closed },
+    ordinaryOpen: { ...open },
+    triggerFocus: focused("summary||Menu"),
+  };
+  const codes = mobileMenuFailures(record).map(({ code }) => code);
+  assert.ok(codes.includes("mobile-menu-navigation-focus"));
+  assert.ok(codes.includes("mobile-menu-navigation"));
+  assert.ok(codes.includes("mobile-menu-history-return"));
 });
 
 test("history validator distinguishes bare Home from same-document #entry", () => {
@@ -182,6 +205,7 @@ test("runner uses real axe and native keyboard without broad suppression", async
   assert.match(source, /page\.keyboard\.press\("Tab"\)/);
   assert.match(source, /page\.keyboard\.press\("Shift\+Tab"\)/);
   assert.match(source, /waitForURL\([\s\S]{0,200}waitUntil:\s*"commit"/);
+  assert.match(source, /navigationFocus\.href === "\/#entry"/);
   assert.match(source, /page\.keyboard\.press\("Escape"\)/);
   assert.match(source, /MENU_REPEAT_CYCLES/);
   assert.match(source, /assertFreshExternalOutput/);

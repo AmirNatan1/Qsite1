@@ -16,6 +16,16 @@ import {
   HUMAN_REVIEW_GATES,
   MAX_ARCHIVE_BYTES,
   PACKAGE_SCHEMA,
+  R1_AUDIT_SCHEMA,
+  R1_DEPLOYMENT_VERIFICATION_SCHEMA,
+  R1_HUMAN_EVIDENCE_SCHEMA,
+  R1_HUMAN_LEDGER_PATH,
+  R1_PACKAGE_SCHEMA,
+  R1_REQUIRED_ARCHIVE_FILENAME,
+  R1_REQUIRED_BRANCH,
+  R1_REQUIRED_BRANCH_URL,
+  R1_REQUIRED_PARENT,
+  R1_REQUIRED_HUMAN_RECORDINGS,
   REPORT_SPECS,
   REQUIRED_ARCHIVE_FILENAME,
   REQUIRED_BRANCH,
@@ -36,12 +46,14 @@ import {
   sha256,
   stableJson,
   validateOptionShape,
+  validateR1HumanEvidencePayload,
 } from "../scripts/package-phase6-human-review.mjs";
 import {
   AUDIT_SCHEMA,
   auditBuffers,
   parseArguments as parseAuditArguments,
   parseStoredZip,
+  validateR1HumanEvidenceEntries,
 } from "../scripts/audit-phase6-human-review-package.mjs";
 
 const execFileAsync = promisify(execFile);
@@ -67,6 +79,27 @@ const PROVENANCE = Object.freeze({
     branchUrl: EXPECTED.branchUrl,
   },
 });
+const R1_EXPECTED = Object.freeze({
+  authorityProfile: "phase6-r1",
+  expectedHead: "d".repeat(40),
+  branch: R1_REQUIRED_BRANCH,
+  deploymentId: "87654321-1234-4234-8234-123456789abc",
+  immutableUrl: "https://87654321.qsite1.pages.dev/",
+  branchUrl: R1_REQUIRED_BRANCH_URL,
+});
+const R1_PROVENANCE = Object.freeze({
+  authorityProfile: R1_EXPECTED.authorityProfile,
+  branch: R1_EXPECTED.branch,
+  expectedHead: R1_EXPECTED.expectedHead,
+  observedHead: R1_EXPECTED.expectedHead,
+  exactParent: R1_REQUIRED_PARENT,
+  expectedMain: FROZEN_MAIN_SHA,
+  deployment: {
+    id: R1_EXPECTED.deploymentId,
+    immutableUrl: R1_EXPECTED.immutableUrl,
+    branchUrl: R1_EXPECTED.branchUrl,
+  },
+});
 
 const DEPLOYMENT_CHECKS = Object.freeze({
   exactGitBranchMainAuthority: true,
@@ -78,6 +111,14 @@ const DEPLOYMENT_CHECKS = Object.freeze({
   requiredHeadersAndCachePolicies: true,
   canonicalBehavior: true,
   productionMainUnchangedAndPhase6Unmerged: true,
+});
+const R1_DEPLOYMENT_CHECKS = Object.freeze({
+  exactR1BranchParentAndFrozenMain: true,
+  zeroProductionSourceDiff: true,
+  signedSuccessfulDeploymentBindsExactHead: true,
+  immutableLocalByteParity: true,
+  branchLocalByteParity: true,
+  real404HeadersCanonicalAndTenRoutes: true,
 });
 
 function fixtureDeploymentVerification(overrides = {}) {
@@ -138,6 +179,63 @@ function fixtureDeploymentVerification(overrides = {}) {
   return { ...document, ...overrides };
 }
 
+function fixtureR1DeploymentVerification(overrides = {}) {
+  const document = {
+    schema: R1_DEPLOYMENT_VERIFICATION_SCHEMA,
+    status: "PASS",
+    inputs: {
+      expectedHead: R1_EXPECTED.expectedHead,
+      exactParent: R1_REQUIRED_PARENT,
+      expectedMain: FROZEN_MAIN_SHA,
+      repository: REQUIRED_REPOSITORY,
+      branch: R1_REQUIRED_BRANCH,
+      deploymentId: R1_EXPECTED.deploymentId,
+      immutableUrl: R1_EXPECTED.immutableUrl,
+      branchUrl: R1_EXPECTED.branchUrl,
+      localDist: "dist",
+    },
+    repository: {
+      status: "PASS",
+      data: {
+        repository: REQUIRED_REPOSITORY,
+        branch: R1_REQUIRED_BRANCH,
+        head: R1_EXPECTED.expectedHead,
+        exactParent: R1_REQUIRED_PARENT,
+        directParent: R1_REQUIRED_PARENT,
+        cleanTree: true,
+        history: [{ commit: R1_EXPECTED.expectedHead, parents: [R1_REQUIRED_PARENT], subject: "Fixture Phase 6-R1 commit" }],
+        main: { local: FROZEN_MAIN_SHA, upstream: FROZEN_MAIN_SHA, live: FROZEN_MAIN_SHA, modifiedOrMerged: false },
+        upstream: { ref: `origin/${R1_REQUIRED_BRANCH}`, head: R1_EXPECTED.expectedHead, live: R1_EXPECTED.expectedHead, parity: true },
+        productionSourceDiff: [],
+      },
+    },
+    deployment: {
+      status: "PASS",
+      data: {
+        authoritySource: "CLOUDFLARE_PAGES_SIGNED_GITHUB_CHECK",
+        checkRunId: "456",
+        appSlug: "cloudflare-workers-and-pages",
+        completedAt: GENERATED_AT,
+        deploymentId: R1_EXPECTED.deploymentId,
+        immutableUrl: R1_EXPECTED.immutableUrl,
+        branchUrl: R1_EXPECTED.branchUrl,
+        branch: R1_REQUIRED_BRANCH,
+        commitHash: R1_EXPECTED.expectedHead,
+        environment: "preview",
+        status: "PASS",
+      },
+    },
+    dist: { status: "PASS" },
+    origins: {
+      immutable: { status: "PASS", data: { origin: R1_EXPECTED.immutableUrl, status: "PASS" } },
+      branch: { status: "PASS", data: { origin: R1_EXPECTED.branchUrl, status: "PASS" } },
+    },
+    checks: R1_DEPLOYMENT_CHECKS,
+    failures: [],
+  };
+  return { ...document, ...overrides };
+}
+
 function fixturePayloadEntries() {
   const entries = [];
   const trackedReports = REPORT_SPECS.map(({ source }) => source).sort();
@@ -174,11 +272,108 @@ function fixturePayloadEntries() {
   return entries;
 }
 
+function fixtureR1HumanEvidenceEntries() {
+  const recordings = R1_REQUIRED_HUMAN_RECORDINGS.map((filename, index) => {
+    const marker = Buffer.from(`fixture physical human recording ${index + 1}: ${filename}`);
+    const ftyp = Buffer.from([0, 0, 0, 24, 0x66, 0x74, 0x79, 0x70, 0x69, 0x73, 0x6f, 0x6d, 0, 0, 0, 0, 0x69, 0x73, 0x6f, 0x6d, 0x6d, 0x70, 0x34, 0x32]);
+    const free = Buffer.alloc(8);
+    free.writeUInt32BE(8 + marker.length, 0);
+    free.write("free", 4, "ascii");
+    const data = Buffer.concat([ftyp, free, marker]);
+    return { filename, data, byteSize: data.length, sha256: sha256(data) };
+  });
+  const ledger = {
+    schema: R1_HUMAN_EVIDENCE_SCHEMA,
+    createdAt: GENERATED_AT,
+    status: "PENDING HUMAN REVIEW",
+    evidenceClass: "HUMAN DEVICE EVIDENCE",
+    rootExists: true,
+    requiredFilenames: [...R1_REQUIRED_HUMAN_RECORDINGS],
+    missingFilenames: [],
+    entries: recordings.map(({ filename, byteSize, sha256: hash }) => ({
+      filename,
+      sha256: hash,
+      byteSize,
+      evidenceClass: "PHYSICAL HUMAN RECORDING",
+      device: "Synthetic fixture; not a physical-device claim",
+      os: "Synthetic fixture; not reviewed",
+      browser: filename.startsWith("iphone-safari-") ? "Safari (version not reviewed)" : filename === "chrome-200-percent.mp4" ? "Chrome (version not reviewed)" : null,
+      browserVersion: null,
+      testSteps: ["Exercise the package binding contract without claiming a human result."],
+      observations: ["Synthetic bytes remain pending and are not acceptance evidence."],
+      observedResult: "PENDING HUMAN REVIEW; fixture presence is not a physical-device pass.",
+      status: "PENDING HUMAN REVIEW",
+      failureReferences: [],
+    })),
+    policy: { filePresenceIsPass: false, machineRecordingSubstitutionAllowed: false, failRequiresTimestampOrFrame: true, allFourFilesRequiredBeforePackaging: true },
+  };
+  const sourceBytes = Buffer.from(stableJson(ledger));
+  const wrapper = {
+    schema: "quantum-hub.phase-6.final-evidence-assembly.v1.distilled-json",
+    status: "PENDING HUMAN REVIEW",
+    role: "physical-device-result",
+    source: { relativePath: "human-device/ledger.json", sha256: sha256(sourceBytes) },
+    selection: null,
+    payload: ledger,
+  };
+  return [
+    { path: R1_HUMAN_LEDGER_PATH, data: Buffer.from(stableJson(wrapper)) },
+    ...recordings.map(({ filename, data }) => ({ path: `11-physical-device/recordings/${filename}`, data })),
+  ];
+}
+
+function fixtureR1PayloadEntries() {
+  const entries = [];
+  const trackedReports = REPORT_SPECS.map(({ source }) => source).sort();
+  entries.push({
+    path: "00-provenance/git-provenance.json",
+    data: Buffer.from(stableJson({
+      schema: `${R1_PACKAGE_SCHEMA}.git-provenance`,
+      status: "PASS",
+      branch: R1_EXPECTED.branch,
+      head: R1_EXPECTED.expectedHead,
+      directParents: [R1_REQUIRED_PARENT],
+      cleanTree: true,
+      exactParent: R1_REQUIRED_PARENT,
+      exactParentAncestor: true,
+      headMergedIntoMain: false,
+      localMain: { ref: "refs/heads/main", head: FROZEN_MAIN_SHA },
+      originMain: { ref: "refs/remotes/origin/main", head: FROZEN_MAIN_SHA },
+      liveMain: { ref: "refs/heads/main", head: FROZEN_MAIN_SHA },
+      upstream: { ref: `origin/${R1_REQUIRED_BRANCH}`, head: R1_EXPECTED.expectedHead, liveHead: R1_EXPECTED.expectedHead, parity: true },
+      remote: { name: "origin", url: REQUIRED_REMOTE_URL, repository: REQUIRED_REPOSITORY },
+      trackedReports,
+    })),
+  });
+  entries.push({ path: DEPLOYMENT_VERIFICATION_PATH, data: Buffer.from(stableJson(fixtureR1DeploymentVerification())) });
+  for (const [index, report] of REPORT_SPECS.entries()) {
+    entries.push({ path: report.archive, data: Buffer.from(`# ${report.source}\nR1 fixture report ${index}\n`) });
+  }
+  entries.push(...fixtureR1HumanEvidenceEntries());
+  const populatedByAuthority = new Set(["00-provenance", "01-baseline", "10-poster-study", "11-physical-device", "13-package"]);
+  for (const [index, section] of TOPOLOGY_SECTIONS.entries()) {
+    if (!populatedByAuthority.has(section)) {
+      entries.push({ path: `${section}/r1-distilled-${index}.json`, data: Buffer.from(`{"section":"${section}","r1Ordinal":${index}}\n`) });
+    }
+  }
+  return entries;
+}
+
 function fixtureArtifacts(options = {}) {
   return buildPackageArtifacts({
     payloadEntries: fixturePayloadEntries(),
     provenance: PROVENANCE,
     outputFilename: REQUIRED_ARCHIVE_FILENAME,
+    generatedAt: GENERATED_AT,
+    ...options,
+  });
+}
+
+function fixtureR1Artifacts(options = {}) {
+  return buildPackageArtifacts({
+    payloadEntries: fixtureR1PayloadEntries(),
+    provenance: R1_PROVENANCE,
+    outputFilename: R1_REQUIRED_ARCHIVE_FILENAME,
     generatedAt: GENERATED_AT,
     ...options,
   });
@@ -226,6 +421,134 @@ test("package and auditor CLIs enforce the exact Phase 6 and Cloudflare authorit
   assert.throws(() => validateOptionShape({ ...packageOptions, branchUrl: "https://another.qsite1.pages.dev/" }), /branch-url must be exactly/);
   assert.throws(() => validateOptionShape({ ...packageOptions, generatedAt: "August 30, 2026" }), /canonical ISO/);
   assert.throws(() => validateOptionShape({ ...packageOptions, output: path.resolve("fixture.zip") }), /output basename must be exactly/);
+});
+
+test("Phase 6-R1 packaging selects only the exact repair authority while preserving legacy defaults", async () => {
+  assert.equal(R1_PACKAGE_SCHEMA, "quantum-hub.phase-6-r1.validation-closure-human-review.v1");
+  assert.equal(R1_REQUIRED_BRANCH, "repair/phase-6-r1-validation-closure");
+  assert.equal(R1_REQUIRED_PARENT, "aee036740b129624c54b8f1b878229f955d187ae");
+  assert.equal(R1_REQUIRED_BRANCH_URL, "https://repair-phase-6-r1-validation.qsite1.pages.dev/");
+  assert.equal(R1_REQUIRED_ARCHIVE_FILENAME, "phase-6-r1-validation-closure-human-review.zip");
+
+  const common = [
+    "--authority-profile", "phase6-r1",
+    "--expected-head", R1_EXPECTED.expectedHead,
+    "--branch", R1_EXPECTED.branch,
+    "--deployment-id", R1_EXPECTED.deploymentId,
+    "--immutable-url", R1_EXPECTED.immutableUrl,
+    "--branch-url", R1_EXPECTED.branchUrl,
+  ];
+  const packageOptions = parsePackageArguments(["--evidence-root", "fixture-evidence", "--output", R1_REQUIRED_ARCHIVE_FILENAME, "--generated-at", GENERATED_AT, ...common]);
+  assert.equal(packageOptions.authorityProfile, "phase6-r1");
+  assert.equal(validateOptionShape(packageOptions).branch, R1_REQUIRED_BRANCH);
+  const auditOptions = parseAuditArguments(["--archive", R1_REQUIRED_ARCHIVE_FILENAME, "--manifest", "phase-6-r1-validation-closure-human-review-manifest.json", "--audit-output", "phase-6-r1-validation-closure-human-review-audit.json", ...common, "--expected-parent-process-id", "123"]);
+  assert.equal(auditOptions.authorityProfile, "phase6-r1");
+  assert.equal(auditOptions.branch, R1_REQUIRED_BRANCH);
+  assert.throws(() => validateOptionShape({ ...packageOptions, authorityProfile: "phase6", branch: REQUIRED_BRANCH }), /output basename must be exactly/);
+  assert.throws(() => validateOptionShape({ ...packageOptions, branch: REQUIRED_BRANCH }), /branch must be exactly/);
+  assert.throws(() => validateOptionShape({ ...packageOptions, branchUrl: REQUIRED_BRANCH_URL }), /branch-url must be exactly/);
+  assert.throws(() => parsePackageArguments(["--authority-profile"]), /requires a value/);
+
+  const packageDocument = JSON.parse(await readFile(path.join(TEST_ROOT, "package.json"), "utf8"));
+  assert.equal(packageDocument.scripts["package:phase6-r1-review"], "node scripts/package-phase6-human-review.mjs --authority-profile phase6-r1");
+  assert.equal(packageDocument.scripts["audit:phase6-r1-review"], "node scripts/audit-phase6-human-review-package.mjs --authority-profile phase6-r1");
+});
+
+test("an assembled Phase 6-R1 artifact passes only under its R1 package and deployment schemas", () => {
+  const humanBinding = validateR1HumanEvidencePayload(fixtureR1PayloadEntries());
+  assert.equal(humanBinding.recordings.length, 4);
+  assert.deepEqual(humanBinding.recordings.map(({ filename }) => filename).sort(), [...R1_REQUIRED_HUMAN_RECORDINGS].sort());
+  const artifacts = fixtureR1Artifacts();
+  assert.equal(artifacts.manifest.schema, R1_PACKAGE_SCHEMA);
+  assert.equal(artifacts.detached.schema, `${R1_PACKAGE_SCHEMA}.detached-manifest`);
+  assert.equal(artifacts.manifest.provenance.authorityProfile, "phase6-r1");
+  assert.equal(artifacts.manifest.provenance.exactParent, R1_REQUIRED_PARENT);
+  assert.equal(artifacts.manifest.deploymentVerification.schema, R1_DEPLOYMENT_VERIFICATION_SCHEMA);
+  const result = auditBuffers({
+    archiveBytes: artifacts.archiveBytes,
+    detachedBytes: artifacts.detachedBytes,
+    archiveFilename: R1_REQUIRED_ARCHIVE_FILENAME,
+    expected: R1_EXPECTED,
+  });
+  assert.equal(result.manifest.schema, R1_PACKAGE_SCHEMA);
+  assert.equal(result.deploymentVerification.binding.schema, R1_DEPLOYMENT_VERIFICATION_SCHEMA);
+  assert.deepEqual(result.manifest.humanEvidence, humanBinding);
+  assert.deepEqual(validateR1HumanEvidenceEntries(parseStoredZip(artifacts.archiveBytes).entries), humanBinding);
+  assert.throws(() => auditBuffers({ archiveBytes: artifacts.archiveBytes, detachedBytes: artifacts.detachedBytes, archiveFilename: REQUIRED_ARCHIVE_FILENAME, expected: EXPECTED }), /in-archive manifest authority differs|detached archive binding differs/);
+  assert.throws(() => auditBuffers({ archiveBytes: artifacts.archiveBytes, detachedBytes: artifacts.detachedBytes, archiveFilename: REQUIRED_ARCHIVE_FILENAME, expected: R1_EXPECTED }), /archive filename must be exactly/);
+  assert.throws(() => buildPackageArtifacts({ payloadEntries: fixtureR1PayloadEntries(), provenance: R1_PROVENANCE, outputFilename: REQUIRED_ARCHIVE_FILENAME, generatedAt: GENERATED_AT }), /output filename must be exactly/);
+});
+
+test("Phase 6-R1 packager and auditor reject missing, unbound, invalid, or falsely promoted human recordings", () => {
+  const build = (payloadEntries) => buildPackageArtifacts({ payloadEntries, provenance: R1_PROVENANCE, outputFilename: R1_REQUIRED_ARCHIVE_FILENAME, generatedAt: GENERATED_AT });
+  const withoutLedger = fixtureR1PayloadEntries().filter(({ path: relativePath }) => relativePath !== R1_HUMAN_LEDGER_PATH);
+  assert.throws(() => build(withoutLedger), /requires the human-evidence ledger/);
+  assert.throws(() => validateR1HumanEvidenceEntries(new Map(withoutLedger.map(({ path: relativePath, data }) => [relativePath, data]))), /requires the human-evidence ledger/);
+
+  const missingFilename = R1_REQUIRED_HUMAN_RECORDINGS[0];
+  const withoutRecording = fixtureR1PayloadEntries().filter(({ path: relativePath }) => relativePath !== `11-physical-device/recordings/${missingFilename}`);
+  assert.throws(() => build(withoutRecording), /physical recording inventory differs/);
+  assert.throws(() => validateR1HumanEvidenceEntries(new Map(withoutRecording.map(({ path: relativePath, data }) => [relativePath, data]))), /physical recording inventory differs/);
+
+  const unbound = fixtureR1PayloadEntries().map((entry) => {
+    if (entry.path !== R1_HUMAN_LEDGER_PATH) return entry;
+    const wrapper = JSON.parse(entry.data.toString("utf8"));
+    wrapper.payload.entries[0].byteSize += 1;
+    return { ...entry, data: Buffer.from(stableJson(wrapper)) };
+  });
+  assert.throws(() => build(unbound), /not hash\/size\/status bound/);
+  assert.throws(() => validateR1HumanEvidenceEntries(new Map(unbound.map(({ path: relativePath, data }) => [relativePath, data]))), /not hash\/size\/status bound/);
+
+  const invalidMp4Filename = R1_REQUIRED_HUMAN_RECORDINGS[0];
+  const invalidMp4Path = `11-physical-device/recordings/${invalidMp4Filename}`;
+  const invalidMp4 = fixtureR1PayloadEntries();
+  const invalidBytes = Buffer.from(invalidMp4.find(({ path: relativePath }) => relativePath === invalidMp4Path).data);
+  invalidBytes.fill(0, 4, 8);
+  for (const entry of invalidMp4) {
+    if (entry.path === invalidMp4Path) entry.data = invalidBytes;
+    if (entry.path === R1_HUMAN_LEDGER_PATH) {
+      const wrapper = JSON.parse(entry.data.toString("utf8"));
+      const record = wrapper.payload.entries.find(({ filename }) => filename === invalidMp4Filename);
+      record.byteSize = invalidBytes.length;
+      record.sha256 = sha256(invalidBytes);
+      entry.data = Buffer.from(stableJson(wrapper));
+    }
+  }
+  assert.throws(() => build(invalidMp4), /MP4 container signature differs/);
+  assert.throws(() => validateR1HumanEvidenceEntries(new Map(invalidMp4.map(({ path: relativePath, data }) => [relativePath, data]))), /MP4 container signature differs/);
+
+  const falseOverallPass = fixtureR1PayloadEntries().map((entry) => {
+    if (entry.path !== R1_HUMAN_LEDGER_PATH) return entry;
+    const wrapper = JSON.parse(entry.data.toString("utf8"));
+    wrapper.status = "PASS";
+    wrapper.payload.status = "PASS";
+    return { ...entry, data: Buffer.from(stableJson(wrapper)) };
+  });
+  assert.throws(() => build(falseOverallPass), /ledger status must be PENDING HUMAN REVIEW/);
+  assert.throws(() => validateR1HumanEvidenceEntries(new Map(falseOverallPass.map(({ path: relativePath, data }) => [relativePath, data]))), /ledger status must be PENDING HUMAN REVIEW/);
+
+  const missingReviewField = fixtureR1PayloadEntries().map((entry) => {
+    if (entry.path !== R1_HUMAN_LEDGER_PATH) return entry;
+    const wrapper = JSON.parse(entry.data.toString("utf8"));
+    delete wrapper.payload.entries[0].device;
+    return { ...entry, data: Buffer.from(stableJson(wrapper)) };
+  });
+  assert.throws(() => build(missingReviewField), /review metadata is incomplete/);
+  assert.throws(() => validateR1HumanEvidenceEntries(new Map(missingReviewField.map(({ path: relativePath, data }) => [relativePath, data]))), /review metadata is incomplete/);
+});
+
+test("Phase 6-R1 deployment semantics fail closed on parent, production-diff, and signed-app mismatches", () => {
+  const mutateDeployment = (mutate) => fixtureR1PayloadEntries().map((entry) => {
+    if (entry.path !== DEPLOYMENT_VERIFICATION_PATH) return entry;
+    const document = JSON.parse(entry.data.toString("utf8"));
+    mutate(document);
+    return { ...entry, data: Buffer.from(stableJson(document)) };
+  });
+  const build = (payloadEntries) => buildPackageArtifacts({ payloadEntries, provenance: R1_PROVENANCE, outputFilename: R1_REQUIRED_ARCHIVE_FILENAME, generatedAt: GENERATED_AT });
+  assert.throws(() => build(mutateDeployment((document) => { document.inputs.exactParent = "b".repeat(40); })), /deployment verification inputs/);
+  assert.throws(() => build(mutateDeployment((document) => { document.repository.data.productionSourceDiff = ["src/pages/index.astro"]; })), /production-source diff/);
+  assert.throws(() => build(mutateDeployment((document) => { document.deployment.data.appSlug = "cloudflare-pages"; })), /Cloudflare app authority/);
+  assert.throws(() => build(mutateDeployment((document) => { document.checks.zeroProductionSourceDiff = false; })), /deployment verification checks/);
 });
 
 test("portable path, raw/cache/archive, and privacy/secret guards fail closed", () => {
@@ -436,4 +759,49 @@ test("the audit CLI runs as a separate process and emits a fresh report with its
   assert.equal(auditDocument.auditor.parentProcessId, process.pid);
   assert.equal(auditDocument.archive.sha256, sha256(artifacts.archiveBytes));
   await assert.rejects(() => writeFile(audit, "replacement", { flag: "wx" }), /EEXIST/);
+});
+
+test("assembled Phase 6-R1 evidence packages to the exact closure filename and passes a separate-process R1 audit", async (t) => {
+  const temporary = await mkdtemp(path.join(os.tmpdir(), "qh-phase6-r1-independent-audit-"));
+  t.after(() => rm(temporary, { recursive: true, force: true }));
+  const artifacts = fixtureR1Artifacts();
+  const archive = path.join(temporary, R1_REQUIRED_ARCHIVE_FILENAME);
+  const manifest = path.join(temporary, "phase-6-r1-validation-closure-human-review-manifest.json");
+  const audit = path.join(temporary, "phase-6-r1-validation-closure-human-review-audit.json");
+  await writeFile(archive, artifacts.archiveBytes);
+  await writeFile(manifest, artifacts.detachedBytes);
+
+  const { stdout } = await execFileAsync(process.execPath, [
+    AUDITOR,
+    "--authority-profile", "phase6-r1",
+    "--archive", archive,
+    "--manifest", manifest,
+    "--audit-output", audit,
+    "--expected-head", R1_EXPECTED.expectedHead,
+    "--branch", R1_EXPECTED.branch,
+    "--deployment-id", R1_EXPECTED.deploymentId,
+    "--immutable-url", R1_EXPECTED.immutableUrl,
+    "--branch-url", R1_EXPECTED.branchUrl,
+    "--expected-parent-process-id", String(process.pid),
+  ], { cwd: TEST_ROOT, encoding: "utf8", windowsHide: true });
+
+  const result = JSON.parse(stdout);
+  const auditBytes = await readFile(audit);
+  const auditDocument = JSON.parse(auditBytes.toString("utf8"));
+  assert.equal(path.basename(archive), "phase-6-r1-validation-closure-human-review.zip");
+  assert.equal(result.schema, `${R1_AUDIT_SCHEMA}.result`);
+  assert.equal(result.status, "PASS");
+  assert.equal(result.audit.sha256, sha256(auditBytes));
+  assert.equal(auditDocument.schema, R1_AUDIT_SCHEMA);
+  assert.equal(auditDocument.auditor.separateProcess, true);
+  assert.equal(auditDocument.auditor.parentProcessId, process.pid);
+  assert.equal(auditDocument.archive.filename, R1_REQUIRED_ARCHIVE_FILENAME);
+  assert.equal(auditDocument.archive.sha256, sha256(artifacts.archiveBytes));
+  assert.equal(auditDocument.detachedManifest.schema, `${R1_PACKAGE_SCHEMA}.detached-manifest`);
+  assert.equal(auditDocument.inArchiveManifest.schema, R1_PACKAGE_SCHEMA);
+  assert.equal(auditDocument.deploymentVerification.schema, R1_DEPLOYMENT_VERIFICATION_SCHEMA);
+  assert.equal(auditDocument.provenance.authorityProfile, "phase6-r1");
+  assert.equal(auditDocument.provenance.exactParent, R1_REQUIRED_PARENT);
+  assert.equal(auditDocument.checks.exactBranchParentAndFrozenMain, "PASS");
+  assert.equal("exactBranchBaseAndFrozenMain" in auditDocument.checks, false);
 });

@@ -653,7 +653,7 @@ export function selectDeploymentCheck(payload, options) {
     deploymentId: options.deploymentId,
     immutableUrl: options.immutableUrl,
     branchUrl: options.branchUrl,
-    branch: REQUIRED_BRANCH,
+    branch: options.branch ?? REQUIRED_BRANCH,
     commitHash: options.expectedHead,
     environment: "preview",
     status: "PASS",
