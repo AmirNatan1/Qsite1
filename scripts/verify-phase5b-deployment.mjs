@@ -37,7 +37,12 @@ export const SCHEMA = "quantum-hub.phase-5b.deployment-verification.v1";
 export const REPORT_FILENAME = "phase-5b-deployment-verification.json";
 export const REQUIRED_REPOSITORY = "AmirNatan1/Qsite1";
 export const REQUIRED_REMOTE_URL = "https://github.com/AmirNatan1/Qsite1.git";
+export const DEFAULT_PROFILE = "cp9";
+export const R1_PROFILE = "r1";
+export const DEPLOYMENT_PROFILE_CP9 = DEFAULT_PROFILE;
+export const DEPLOYMENT_PROFILE_R1 = R1_PROFILE;
 export const REQUIRED_BRANCH = "feature/phase-5b-supporting-route-production";
+export const R1_REQUIRED_BRANCH = "repair/phase-5b-r1-about-dark-v2-fidelity";
 export const ACCEPTED_PHASE5AR_SHA = "b6a9d4f6e05412dfd460a657edfd8be4ce7eef2c";
 export const FROZEN_MAIN_SHA = "501040c42bba30b9d9517b88a8f9857992a2dba4";
 export const REQUIRED_CLOUDFLARE_ACCOUNT_ID = "16bccc18bf7d54fd2538de7c1b5f19ed";
@@ -47,6 +52,10 @@ export const CP8_HEAD_SHA = "1b890e945973ce4bc90ba5dda917d9656c4db9d6";
 export const PROVISIONAL_CP8_CHECK_RUN_ID = "99183081974";
 export const PROVISIONAL_CP8_DEPLOYMENT_ID = "d1775212-92ca-4217-94cc-b61bb32db1cc";
 export const PROVISIONAL_CP8_IMMUTABLE_URL = "https://d1775212.qsite1.pages.dev/";
+export const R1_PARENT_SHA = "011abd3e5fc7464d5a0133603d222110df13b820";
+export const R1_PARENT_CP9_SHA = R1_PARENT_SHA;
+export const R1_COMMIT_SUBJECT = "Repair Phase 5B About Dark V2 fidelity";
+export const R1_CHECKPOINT_SUBJECT = R1_COMMIT_SUBJECT;
 
 export const CHECKPOINT_SUBJECTS = Object.freeze([
   "Establish Phase 5B route production architecture",
@@ -70,6 +79,45 @@ export const FIXED_CHECKPOINT_SHAS = Object.freeze([
   "9a9ad82b266c663e5689c8a6884a90cfc835ef7c",
   CP8_HEAD_SHA,
 ]);
+
+export const R1_CHECKPOINT_SUBJECTS = Object.freeze([
+  ...CHECKPOINT_SUBJECTS,
+  R1_CHECKPOINT_SUBJECT,
+]);
+
+export const R1_FIXED_CHECKPOINT_SHAS = Object.freeze([
+  ...FIXED_CHECKPOINT_SHAS,
+  R1_PARENT_CP9_SHA,
+]);
+
+export const DEPLOYMENT_PROFILES = Object.freeze({
+  [DEPLOYMENT_PROFILE_CP9]: Object.freeze({
+    id: DEPLOYMENT_PROFILE_CP9,
+    label: "Phase 5B",
+    branch: REQUIRED_BRANCH,
+    requiredBranchUrl: REQUIRED_BRANCH_URL,
+    checkpointSubjects: CHECKPOINT_SUBJECTS,
+    fixedCheckpointShas: FIXED_CHECKPOINT_SHAS,
+    finalCheckpoint: "CP9",
+  }),
+  [DEPLOYMENT_PROFILE_R1]: Object.freeze({
+    id: DEPLOYMENT_PROFILE_R1,
+    label: "Phase 5B-R1",
+    branch: R1_REQUIRED_BRANCH,
+    requiredBranchUrl: null,
+    checkpointSubjects: R1_CHECKPOINT_SUBJECTS,
+    fixedCheckpointShas: R1_FIXED_CHECKPOINT_SHAS,
+    finalCheckpoint: "CP10",
+  }),
+});
+
+export function resolveDeploymentProfile(value = DEPLOYMENT_PROFILE_CP9) {
+  const profile = DEPLOYMENT_PROFILES[String(value ?? DEPLOYMENT_PROFILE_CP9).toLowerCase()];
+  if (!profile) {
+    throw new Error(`--profile must be exactly ${DEPLOYMENT_PROFILE_CP9} or ${DEPLOYMENT_PROFILE_R1}`);
+  }
+  return profile;
+}
 
 export const HUMAN_GATES = Object.freeze({
   "SUPPORTING-ROUTE PRODUCTION FIDELITY": "PENDING HUMAN REVIEW",
@@ -135,11 +183,12 @@ function valueAfter(argv, index, flag) {
 
 export function parseArguments(argv) {
   const options = {
+    profile: DEPLOYMENT_PROFILE_CP9,
     expectedHead: null,
     expectedBase: ACCEPTED_PHASE5AR_SHA,
     expectedMain: FROZEN_MAIN_SHA,
     repository: null,
-    branch: REQUIRED_BRANCH,
+    branch: null,
     mainBranch: "main",
     remote: "origin",
     githubCheckRunId: null,
@@ -165,7 +214,8 @@ export function parseArguments(argv) {
       index += 1;
       return value;
     };
-    if (argument === "--expected-head") options.expectedHead = next().toLowerCase();
+    if (argument === "--profile") options.profile = next();
+    else if (argument === "--expected-head") options.expectedHead = next().toLowerCase();
     else if (argument === "--expected-base" || argument === "--accepted-phase5ar") options.expectedBase = next().toLowerCase();
     else if (argument === "--expected-main" || argument === "--frozen-main") options.expectedMain = next().toLowerCase();
     else if (argument === "--repository") options.repository = next();
@@ -188,6 +238,9 @@ export function parseArguments(argv) {
     else if (argument === "--help" || argument === "-h") options.help = true;
     else throw new Error(`Unknown option: ${argument}`);
   }
+  const profile = resolveDeploymentProfile(options.profile);
+  options.profile = profile.id;
+  if (!options.branch) options.branch = profile.branch;
   return options;
 }
 
@@ -216,18 +269,20 @@ function validateExternalOutput(output, required) {
 }
 
 export function validateOptions(options, { requireOutput = true } = {}) {
+  const profile = resolveDeploymentProfile(options.profile);
   if (!HASH40.test(options.expectedHead ?? "")) throw new Error("--expected-head must be exactly 40 lowercase hexadecimal characters");
-  if (options.expectedHead === ACCEPTED_PHASE5AR_SHA || options.expectedHead === FROZEN_MAIN_SHA || options.expectedHead === CP8_HEAD_SHA) {
-    throw new Error("--expected-head must be the new CP9 commit, not an earlier authority");
+  if (options.expectedHead === ACCEPTED_PHASE5AR_SHA || options.expectedHead === FROZEN_MAIN_SHA
+    || profile.fixedCheckpointShas.includes(options.expectedHead)) {
+    throw new Error(`--expected-head must be the new ${profile.finalCheckpoint} commit, not an earlier authority`);
   }
   if (options.expectedBase !== ACCEPTED_PHASE5AR_SHA) throw new Error(`--expected-base must be exactly ${ACCEPTED_PHASE5AR_SHA}`);
   if (options.expectedMain !== FROZEN_MAIN_SHA) throw new Error(`--expected-main must be exactly ${FROZEN_MAIN_SHA}`);
   if (options.repository !== REQUIRED_REPOSITORY) throw new Error(`--repository must be exactly ${REQUIRED_REPOSITORY}`);
-  if (options.branch !== REQUIRED_BRANCH) throw new Error(`--branch must be exactly ${REQUIRED_BRANCH}`);
+  if (options.branch !== profile.branch) throw new Error(`--branch must be exactly ${profile.branch}`);
   if (options.mainBranch !== "main") throw new Error("--main-branch must be exactly main");
   if (options.remote !== "origin") throw new Error("--remote must be exactly origin");
   if (!/^\d+$/.test(String(options.githubCheckRunId ?? ""))) throw new Error("--github-check-run-id must be numeric");
-  if (String(options.githubCheckRunId) === PROVISIONAL_CP8_CHECK_RUN_ID) throw new Error("the provisional CP8 GitHub check cannot authorize CP9");
+  if (String(options.githubCheckRunId) === PROVISIONAL_CP8_CHECK_RUN_ID) throw new Error(`the provisional CP8 GitHub check cannot authorize ${profile.finalCheckpoint}`);
   if (options.cloudflareAccountId !== REQUIRED_CLOUDFLARE_ACCOUNT_ID) {
     throw new Error(`--cloudflare-account-id must be exactly ${REQUIRED_CLOUDFLARE_ACCOUNT_ID}`);
   }
@@ -238,7 +293,7 @@ export function validateOptions(options, { requireOutput = true } = {}) {
     throw new Error("--cloudflare-deployment-id must be a UUID, never a GitHub check-run ID");
   }
   if (options.cloudflareDeploymentId === PROVISIONAL_CP8_DEPLOYMENT_ID) {
-    throw new Error("the provisional CP8 deployment UUID cannot authorize CP9");
+    throw new Error(`the provisional CP8 deployment UUID cannot authorize ${profile.finalCheckpoint}`);
   }
   if (!/^[A-Z_][A-Z0-9_]*$/.test(options.githubTokenEnvironment)
     || !/^[A-Z_][A-Z0-9_]*$/.test(options.cloudflareTokenEnvironment)) {
@@ -251,8 +306,11 @@ export function validateOptions(options, { requireOutput = true } = {}) {
   if (options.observedImmutableUrl !== requiredImmutable) {
     throw new Error(`--observed-immutable-url must be exactly ${requiredImmutable}`);
   }
-  if (options.observedBranchUrl !== REQUIRED_BRANCH_URL) {
-    throw new Error(`--observed-branch-url must be exactly ${REQUIRED_BRANCH_URL}`);
+  if (profile.requiredBranchUrl && options.observedBranchUrl !== profile.requiredBranchUrl) {
+    throw new Error(`--observed-branch-url must be exactly ${profile.requiredBranchUrl}`);
+  }
+  if (!profile.requiredBranchUrl && options.observedBranchUrl === REQUIRED_BRANCH_URL) {
+    throw new Error("the Phase 5B CP9 branch URL cannot authorize the Phase 5B-R1 repair branch");
   }
   if (options.observedImmutableUrl === options.observedBranchUrl) throw new Error("immutable and branch URLs must be distinct");
   if (!Number.isInteger(options.timeoutMs) || options.timeoutMs < 5_000 || options.timeoutMs > 120_000) {
@@ -264,38 +322,39 @@ export function validateOptions(options, { requireOutput = true } = {}) {
 }
 
 export function printHelp() {
-  process.stdout.write(`Phase 5B deployment verifier\n\nUsage:\n  node ${SCRIPT_RELATIVE} \\\n+    --expected-head <40-hex-CP9-SHA> \\\n+    --expected-base ${ACCEPTED_PHASE5AR_SHA} --expected-main ${FROZEN_MAIN_SHA} \\\n+    --repository ${REQUIRED_REPOSITORY} --branch ${REQUIRED_BRANCH} \\\n+    --github-check-run-id <new-numeric-id> \\\n+    --cloudflare-account-id ${REQUIRED_CLOUDFLARE_ACCOUNT_ID} \\\n+    --cloudflare-project ${REQUIRED_CLOUDFLARE_PROJECT} --cloudflare-deployment-id <new-uuid> \\\n+    --observed-immutable-url https://<new-uuid-prefix>.qsite1.pages.dev/ \\\n+    --observed-branch-url ${REQUIRED_BRANCH_URL} \\\n+    --output <durable-external-directory>/${REPORT_FILENAME}\n\nOptions:\n  --remote origin              Exact configured/live remote\n  --main-branch main           Frozen production branch\n  --dist DIR                   Exact local emitted dist root\n  --github-token-env NAME      Default GITHUB_TOKEN\n  --cloudflare-token-env NAME  Default CLOUDFLARE_API_TOKEN; signed-check fallback when absent\n  --timeout-ms N               Per-request timeout, 5000..120000\n  --dry-run                    Validate bindings only; no Git, build reads, network, or writes\n  --self-test                  Run pure contract tests only\n  --help, -h                   Show help\n`);
+  process.stdout.write(`Phase 5B deployment verifier\n\nUsage:\n  node ${SCRIPT_RELATIVE} \\\n+    [--profile ${DEPLOYMENT_PROFILE_CP9}|${DEPLOYMENT_PROFILE_R1}] \\\n+    --expected-head <40-hex-final-SHA> \\\n+    --expected-base ${ACCEPTED_PHASE5AR_SHA} --expected-main ${FROZEN_MAIN_SHA} \\\n+    --repository ${REQUIRED_REPOSITORY} --branch <profile-branch> \\\n+    --github-check-run-id <new-numeric-id> \\\n+    --cloudflare-account-id ${REQUIRED_CLOUDFLARE_ACCOUNT_ID} \\\n+    --cloudflare-project ${REQUIRED_CLOUDFLARE_PROJECT} --cloudflare-deployment-id <new-uuid> \\\n+    --observed-immutable-url https://<new-uuid-prefix>.qsite1.pages.dev/ \\\n+    --observed-branch-url https://<observed-branch-alias>.qsite1.pages.dev/ \\\n+    --output <durable-external-directory>/${REPORT_FILENAME}\n\nProfiles:\n  ${DEPLOYMENT_PROFILE_CP9}  Default; exact CP1-CP9 authority on ${REQUIRED_BRANCH}\n  ${DEPLOYMENT_PROFILE_R1}   Exact CP1-CP10 repair authority on ${R1_REQUIRED_BRANCH}; CP9 parent ${R1_PARENT_CP9_SHA}\n\nOptions:\n  --remote origin              Exact configured/live remote\n  --main-branch main           Frozen production branch\n  --dist DIR                   Exact local emitted dist root\n  --github-token-env NAME      Default GITHUB_TOKEN\n  --cloudflare-token-env NAME  Default CLOUDFLARE_API_TOKEN; signed-check fallback when absent\n  --timeout-ms N               Per-request timeout, 5000..120000\n  --dry-run                    Validate bindings only; no Git, build reads, network, or writes\n  --self-test                  Run pure contract tests for the selected profile\n  --help, -h                   Show help\n`);
 }
 
-export function assertCheckpointChain(records, expectedHead) {
-  if (!Array.isArray(records) || records.length !== CHECKPOINT_SUBJECTS.length) {
-    throw new Error(`Phase 5B must contain exactly ${CHECKPOINT_SUBJECTS.length} checkpoint commits`);
+export function assertCheckpointChain(records, expectedHead, profileId = DEPLOYMENT_PROFILE_CP9) {
+  const profile = resolveDeploymentProfile(profileId);
+  if (!Array.isArray(records) || records.length !== profile.checkpointSubjects.length) {
+    throw new Error(`${profile.label} must contain exactly ${profile.checkpointSubjects.length} checkpoint commits`);
   }
   for (let index = 0; index < records.length; index += 1) {
     const record = records[index];
-    const expectedSha = index < FIXED_CHECKPOINT_SHAS.length ? FIXED_CHECKPOINT_SHAS[index] : expectedHead;
+    const expectedSha = index < profile.fixedCheckpointShas.length ? profile.fixedCheckpointShas[index] : expectedHead;
     if (!HASH40.test(record?.sha ?? "") || record.sha !== expectedSha) {
-      throw new Error(`Phase 5B checkpoint CP${index + 1} SHA differs from its exact authority`);
+      throw new Error(`${profile.label} checkpoint CP${index + 1} SHA differs from its exact authority`);
     }
-    if (record.subject !== CHECKPOINT_SUBJECTS[index]) {
-      throw new Error(`Phase 5B checkpoint CP${index + 1} subject differs`);
+    if (record.subject !== profile.checkpointSubjects[index]) {
+      throw new Error(`${profile.label} checkpoint CP${index + 1} subject differs`);
     }
     const parents = Array.isArray(record.parents) ? record.parents : [];
     const expectedParent = index === 0 ? ACCEPTED_PHASE5AR_SHA : records[index - 1].sha;
     if (parents.length !== 1 || parents[0] !== expectedParent) {
-      throw new Error(`Phase 5B checkpoint CP${index + 1} must be the exact linear child of ${expectedParent}`);
+      throw new Error(`${profile.label} checkpoint CP${index + 1} must be the exact linear child of ${expectedParent}`);
     }
   }
-  if (records.at(-1).sha !== expectedHead) throw new Error("Phase 5B CP9 is not the explicit final HEAD");
+  if (records.at(-1).sha !== expectedHead) throw new Error(`${profile.label} ${profile.finalCheckpoint} is not the explicit final HEAD`);
   return true;
 }
 
-export function parseLinearLog(text, expectedHead) {
+export function parseLinearLog(text, expectedHead, profileId = DEPLOYMENT_PROFILE_CP9) {
   const records = String(text).split(/\r?\n/).filter(Boolean).map((line) => {
     const [sha, parentText, ...subject] = line.split("\t");
     return { sha, parents: String(parentText ?? "").split(/\s+/).filter(Boolean), subject: subject.join("\t") };
   });
-  assertCheckpointChain(records, expectedHead);
+  assertCheckpointChain(records, expectedHead, profileId);
   return records;
 }
 
@@ -332,6 +391,7 @@ function normalizedRemoteUrl(value) {
 }
 
 async function verifyRepository(options) {
+  const profile = resolveDeploymentProfile(options.profile);
   const [
     head,
     branch,
@@ -352,7 +412,7 @@ async function verifyRepository(options) {
     git("branch", "--show-current"),
     git("rev-parse", "main"),
     git("rev-parse", "origin/main"),
-    git("rev-parse", `origin/${REQUIRED_BRANCH}`),
+    git("rev-parse", `origin/${profile.branch}`),
     git("status", "--porcelain=v1", "--untracked-files=all"),
     git("rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{upstream}"),
     git("rev-parse", "@{upstream}"),
@@ -364,42 +424,44 @@ async function verifyRepository(options) {
     git("ls-files", "--error-unmatch", "--", SCRIPT_RELATIVE),
   ]);
 
-  assert.equal(head, options.expectedHead, "local HEAD differs from the expected CP9 SHA");
-  assert.equal(branch, REQUIRED_BRANCH, "local branch differs from the Phase 5B branch");
+  assert.equal(head, options.expectedHead, `local HEAD differs from the expected ${profile.finalCheckpoint} SHA`);
+  assert.equal(branch, profile.branch, `local branch differs from the ${profile.label} branch`);
   assert.equal(statusText, "", "deployment verification requires a clean tree, including no untracked files");
   assert.equal(mainHead, FROZEN_MAIN_SHA, "local main changed");
   assert.equal(originMain, FROZEN_MAIN_SHA, "origin/main changed");
-  assert.equal(originBranch, options.expectedHead, "origin Phase 5B branch differs from CP9");
-  assert.equal(upstreamRef, `origin/${REQUIRED_BRANCH}`, "Phase 5B branch tracks the wrong upstream");
-  assert.equal(upstreamHead, options.expectedHead, "configured upstream differs from CP9");
+  assert.equal(originBranch, options.expectedHead, `origin ${profile.label} branch differs from ${profile.finalCheckpoint}`);
+  assert.equal(upstreamRef, `origin/${profile.branch}`, `${profile.label} branch tracks the wrong upstream`);
+  assert.equal(upstreamHead, options.expectedHead, `configured upstream differs from ${profile.finalCheckpoint}`);
   assert.equal(normalizedRemoteUrl(remoteUrl), normalizedRemoteUrl(REQUIRED_REMOTE_URL), "origin URL differs from the Qsite1 repository");
-  assert.equal(acceptedAncestor, true, "accepted Phase 5A-R is not an ancestor of CP9");
-  assert.equal(headMergedIntoMain, false, "CP9 is already merged into main");
-  assert.equal(mergeCommits, "", "merge commits are prohibited in the Phase 5B checkpoint chain");
+  assert.equal(acceptedAncestor, true, `accepted Phase 5A-R is not an ancestor of ${profile.finalCheckpoint}`);
+  assert.equal(headMergedIntoMain, false, `${profile.finalCheckpoint} is already merged into main`);
+  assert.equal(mergeCommits, "", `merge commits are prohibited in the ${profile.label} checkpoint chain`);
   assert.equal(trackedScript.replaceAll("\\", "/"), SCRIPT_RELATIVE, "deployment verifier is not the exact tracked script");
-  const checkpoints = parseLinearLog(logText, options.expectedHead);
+  const checkpoints = parseLinearLog(logText, options.expectedHead, profile.id);
 
-  const liveText = await git("ls-remote", "--exit-code", "--heads", "origin", `refs/heads/${REQUIRED_BRANCH}`, "refs/heads/main");
+  const liveText = await git("ls-remote", "--exit-code", "--heads", "origin", `refs/heads/${profile.branch}`, "refs/heads/main");
   const live = parseRemoteRefs(liveText);
   if (live.size !== 2
-    || live.get(`refs/heads/${REQUIRED_BRANCH}`) !== options.expectedHead
+    || live.get(`refs/heads/${profile.branch}`) !== options.expectedHead
     || live.get("refs/heads/main") !== FROZEN_MAIN_SHA) {
-    throw new Error("live origin branch/main refs differ from the Phase 5B authorities");
+    throw new Error(`live origin branch/main refs differ from the ${profile.label} authorities`);
   }
 
   return {
     repository: REQUIRED_REPOSITORY,
     remoteUrl: REQUIRED_REMOTE_URL,
-    branch: REQUIRED_BRANCH,
+    profile: profile.id,
+    branch: profile.branch,
     head,
     exactParent: ACCEPTED_PHASE5AR_SHA,
+    finalCommitParent: profile.fixedCheckpointShas.at(-1),
     cleanTree: true,
     checkpoints,
     main: { branch: "main", headSha: mainHead, frozenAt: FROZEN_MAIN_SHA, containsPhase5BHead: false },
     upstream: { ref: upstreamRef, headSha: upstreamHead, parity: true },
     liveRemote: {
-      branchRef: `refs/heads/${REQUIRED_BRANCH}`,
-      branchHeadSha: live.get(`refs/heads/${REQUIRED_BRANCH}`),
+      branchRef: `refs/heads/${profile.branch}`,
+      branchHeadSha: live.get(`refs/heads/${profile.branch}`),
       mainRef: "refs/heads/main",
       mainHeadSha: live.get("refs/heads/main"),
       parity: true,
@@ -486,9 +548,10 @@ export function cloudflareDetailsBindDeployment(value, deploymentId) {
 }
 
 export function verifyCloudflareGithubCheck(options, run) {
+  const profile = resolveDeploymentProfile(options.profile);
   const check = assertSuccessfulGithubCheckRun(run);
   assert.equal(check.id, String(options.githubCheckRunId), "GitHub check-run ID differs from the explicit authority");
-  assert.equal(check.headSha, options.expectedHead, "Cloudflare GitHub check head differs from CP9");
+  assert.equal(check.headSha, options.expectedHead, `Cloudflare GitHub check head differs from ${profile.finalCheckpoint}`);
   if (!cloudflareDetailsBindDeployment(check.detailsUrl, options.cloudflareDeploymentId)) {
     throw new Error("Cloudflare GitHub check details do not bind the exact account/project/deployment UUID");
   }
@@ -497,7 +560,7 @@ export function verifyCloudflareGithubCheck(options, run) {
     || !summary.includes(`<code>${options.expectedHead.slice(0, 7)}</code>`)
     || !summary.includes(options.observedImmutableUrl.slice(0, -1))
     || !summary.includes(options.observedBranchUrl.slice(0, -1))) {
-    throw new Error("Cloudflare signed check summary does not bind CP9 and both observed URLs");
+    throw new Error(`Cloudflare signed check summary does not bind ${profile.finalCheckpoint} and both observed URLs`);
   }
   return {
     authoritySource: "CLOUDFLARE_PAGES_SIGNED_GITHUB_CHECK",
@@ -506,7 +569,7 @@ export function verifyCloudflareGithubCheck(options, run) {
     deploymentId: options.cloudflareDeploymentId,
     immutableUrl: options.observedImmutableUrl,
     branchUrl: options.observedBranchUrl,
-    branch: REQUIRED_BRANCH,
+    branch: profile.branch,
     commitHash: options.expectedHead,
     environment: "preview",
     terminalStage: { name: "deploy", status: "success", endedOn: check.completedAt },
@@ -514,31 +577,33 @@ export function verifyCloudflareGithubCheck(options, run) {
 }
 
 async function verifyGithub(options, token) {
+  const profile = resolveDeploymentProfile(options.profile);
   const api = `https://api.github.com/repos/${REQUIRED_REPOSITORY}`;
   const [commit, branchReference, mainReference, baseComparison, checkRun] = await Promise.all([
     jsonRequest(`${api}/commits/${options.expectedHead}`, token, options.timeoutMs, "GitHub final commit", true),
-    jsonRequest(`${api}/git/ref/heads/${encodeURIComponent(REQUIRED_BRANCH)}`, token, options.timeoutMs, "GitHub Phase 5B branch", true),
+    jsonRequest(`${api}/git/ref/heads/${encodeURIComponent(profile.branch)}`, token, options.timeoutMs, `GitHub ${profile.label} branch`, true),
     jsonRequest(`${api}/git/ref/heads/main`, token, options.timeoutMs, "GitHub main", true),
     jsonRequest(`${api}/compare/${ACCEPTED_PHASE5AR_SHA}...${options.expectedHead}`, token, options.timeoutMs, "GitHub Phase 5B comparison", true),
     jsonRequest(`${api}/check-runs/${options.githubCheckRunId}`, token, options.timeoutMs, "GitHub Cloudflare check", true),
   ]);
-  assert.equal(commit.sha, options.expectedHead, "GitHub final commit differs from CP9");
-  assert.equal(branchReference.object?.sha, options.expectedHead, "GitHub Phase 5B branch differs from CP9");
+  assert.equal(commit.sha, options.expectedHead, `GitHub final commit differs from ${profile.finalCheckpoint}`);
+  assert.equal(branchReference.object?.sha, options.expectedHead, `GitHub ${profile.label} branch differs from ${profile.finalCheckpoint}`);
   assert.equal(mainReference.object?.sha, FROZEN_MAIN_SHA, "GitHub main changed");
   if (baseComparison.merge_base_commit?.sha !== ACCEPTED_PHASE5AR_SHA || baseComparison.status !== "ahead"
-    || baseComparison.ahead_by !== CHECKPOINT_SUBJECTS.length || baseComparison.behind_by !== 0) {
-    throw new Error("GitHub Phase 5B comparison does not preserve the exact parent and nine-commit count");
+    || baseComparison.ahead_by !== profile.checkpointSubjects.length || baseComparison.behind_by !== 0) {
+    throw new Error(`GitHub ${profile.label} comparison does not preserve the exact parent and ${profile.checkpointSubjects.length}-commit count`);
   }
   const checkpoints = githubCheckpointRecords(baseComparison);
-  assertCheckpointChain(checkpoints, options.expectedHead);
+  assertCheckpointChain(checkpoints, options.expectedHead, profile.id);
   const check = assertSuccessfulGithubCheckRun(checkRun);
   assert.equal(check.id, String(options.githubCheckRunId), "GitHub returned a different check-run ID");
-  assert.equal(check.headSha, options.expectedHead, "GitHub Cloudflare check is not attached to CP9");
+  assert.equal(check.headSha, options.expectedHead, `GitHub Cloudflare check is not attached to ${profile.finalCheckpoint}`);
   return {
     repository: REQUIRED_REPOSITORY,
     commitSha: commit.sha,
     commitUrl: commit.html_url ?? null,
-    branch: REQUIRED_BRANCH,
+    profile: profile.id,
+    branch: profile.branch,
     branchHeadSha: branchReference.object.sha,
     mainHeadSha: mainReference.object.sha,
     acceptedBase: ACCEPTED_PHASE5AR_SHA,
@@ -573,6 +638,7 @@ export function terminalCloudflareStage(deployment) {
 }
 
 async function verifyCloudflareApi(options, token) {
+  const profile = resolveDeploymentProfile(options.profile);
   const endpoint = `https://api.cloudflare.com/client/v4/accounts/${REQUIRED_CLOUDFLARE_ACCOUNT_ID}/pages/projects/${REQUIRED_CLOUDFLARE_PROJECT}/deployments/${options.cloudflareDeploymentId}`;
   const payload = await jsonRequest(endpoint, token, options.timeoutMs, "Cloudflare Pages deployment");
   if (payload.success !== true || !payload.result) throw new Error("Cloudflare API did not return a successful deployment result");
@@ -584,10 +650,10 @@ async function verifyCloudflareApi(options, token) {
     ? deployment.aliases.map((alias) => normalizePreviewUrl(/^https:\/\//i.test(alias) ? alias : `https://${alias.replace(/\/$/, "")}/`, "Cloudflare alias"))
     : [];
   if (String(deployment.id).toLowerCase() !== options.cloudflareDeploymentId || commitHash !== options.expectedHead
-    || branch !== REQUIRED_BRANCH || immutableUrl !== options.observedImmutableUrl
+    || branch !== profile.branch || immutableUrl !== options.observedImmutableUrl
     || deployment.project_name !== REQUIRED_CLOUDFLARE_PROJECT || deployment.environment !== "preview"
     || !aliases.includes(options.observedBranchUrl)) {
-    throw new Error("Cloudflare API deployment identity differs from the exact CP9 bindings");
+    throw new Error(`Cloudflare API deployment identity differs from the exact ${profile.finalCheckpoint} bindings`);
   }
   const stage = terminalCloudflareStage(deployment);
   return {
@@ -878,36 +944,55 @@ async function atomicWrite(destination, bytes) {
   }
 }
 
-function syntheticOptions() {
+function syntheticBranchUrl(profile) {
+  return profile.requiredBranchUrl
+    ?? `https://self-test-${sha256(profile.branch).slice(0, 12)}.${REQUIRED_CLOUDFLARE_PROJECT}.pages.dev/`;
+}
+
+function syntheticOptions(profileId = DEPLOYMENT_PROFILE_CP9) {
+  const profile = resolveDeploymentProfile(profileId);
   return validateOptions(parseArguments([
+    "--profile", profile.id,
     "--expected-head", "a".repeat(40),
     "--repository", REQUIRED_REPOSITORY,
-    "--branch", REQUIRED_BRANCH,
+    "--branch", profile.branch,
     "--github-check-run-id", "123456789",
     "--cloudflare-account-id", REQUIRED_CLOUDFLARE_ACCOUNT_ID,
     "--cloudflare-project", REQUIRED_CLOUDFLARE_PROJECT,
     "--cloudflare-deployment-id", "12345678-1234-4234-8234-123456789abc",
     "--observed-immutable-url", "https://12345678.qsite1.pages.dev/",
-    "--observed-branch-url", REQUIRED_BRANCH_URL,
+    "--observed-branch-url", syntheticBranchUrl(profile),
     "--output", path.resolve(ROOT, "..", REPORT_FILENAME),
   ]));
 }
 
-function syntheticCheckpointChain(expectedHead) {
-  return CHECKPOINT_SUBJECTS.map((subject, index) => ({
-    sha: index < FIXED_CHECKPOINT_SHAS.length ? FIXED_CHECKPOINT_SHAS[index] : expectedHead,
-    parents: [index === 0 ? ACCEPTED_PHASE5AR_SHA : index <= FIXED_CHECKPOINT_SHAS.length
-      ? FIXED_CHECKPOINT_SHAS[index - 1]
+function syntheticCheckpointChain(expectedHead, profileId = DEPLOYMENT_PROFILE_CP9) {
+  const profile = resolveDeploymentProfile(profileId);
+  return profile.checkpointSubjects.map((subject, index) => ({
+    sha: index < profile.fixedCheckpointShas.length ? profile.fixedCheckpointShas[index] : expectedHead,
+    parents: [index === 0 ? ACCEPTED_PHASE5AR_SHA : index <= profile.fixedCheckpointShas.length
+      ? profile.fixedCheckpointShas[index - 1]
       : expectedHead],
     subject,
   }));
 }
 
-export async function selfTest() {
-  const options = syntheticOptions();
-  const checkpoints = syntheticCheckpointChain(options.expectedHead);
-  assertCheckpointChain(checkpoints, options.expectedHead);
-  assert.throws(() => assertCheckpointChain(checkpoints.slice(0, -1), options.expectedHead), /exactly 9/);
+export async function selfTest(profileId = DEPLOYMENT_PROFILE_CP9) {
+  const profile = resolveDeploymentProfile(profileId);
+  const options = syntheticOptions(profile.id);
+  const checkpoints = syntheticCheckpointChain(options.expectedHead, profile.id);
+  assertCheckpointChain(checkpoints, options.expectedHead, profile.id);
+  assert.throws(
+    () => assertCheckpointChain(checkpoints.slice(0, -1), options.expectedHead, profile.id),
+    new RegExp(`exactly ${profile.checkpointSubjects.length}`),
+  );
+  if (profile.id === DEPLOYMENT_PROFILE_R1) {
+    assert.equal(checkpoints.at(-1).parents[0], R1_PARENT_CP9_SHA);
+    assert.equal(checkpoints.at(-1).subject, R1_CHECKPOINT_SUBJECT);
+    const wrongParent = structuredClone(checkpoints);
+    wrongParent.at(-1).parents = [CP8_HEAD_SHA];
+    assert.throws(() => assertCheckpointChain(wrongParent, options.expectedHead, profile.id), /linear child/);
+  }
   const policies = parseHeadersFile(Object.entries(REQUIRED_HEADER_POLICIES)
     .map(([pattern, value]) => `${pattern}\n  Cache-Control: ${value}`).join("\n\n"));
   assertRequiredHeaderPolicies(policies);
@@ -923,16 +1008,22 @@ export async function selfTest() {
   assert.equal(new Set(Object.values(HUMAN_GATES)).size, 1);
   return {
     status: "PASS",
-    tests: 8,
+    tests: profile.id === DEPLOYMENT_PROFILE_CP9 ? 8 : 11,
     checkpointCount: checkpoints.length,
     pendingHumanGateCount: Object.keys(HUMAN_GATES).length,
     requiredHeaderPolicyCount: Object.keys(REQUIRED_HEADER_POLICIES).length,
     provisionalCp8Rejected: true,
+    ...(profile.id === DEPLOYMENT_PROFILE_R1 ? {
+      profile: profile.id,
+      cp9ParentFixed: true,
+      branchUrlBinding: "observed-and-authority-bound",
+    } : {}),
   };
 }
 
 export async function verifyDeployment(options) {
   validateOptions(options);
+  const profile = resolveDeploymentProfile(options.profile);
   try {
     await stat(options.output);
     throw new Error("--output must be fresh and must not already exist");
@@ -962,6 +1053,7 @@ export async function verifyDeployment(options) {
   const report = {
     schema: SCHEMA,
     status: "PASS",
+    profile: profile.id,
     verificationStartedAt,
     generatedAt: new Date().toISOString(),
     repository,
@@ -979,7 +1071,9 @@ export async function verifyDeployment(options) {
     },
     origins: { immutable, branch },
     checks: {
-      exactNineCommitChain: true,
+      ...(profile.id === DEPLOYMENT_PROFILE_CP9
+        ? { exactNineCommitChain: true }
+        : { exactTenCommitChain: true, fixedCp9Parent: true, r1DirectParentIsCp9: true }),
       fixedCp1ThroughCp8Shas: true,
       cp9DirectParentIsCp8: true,
       cleanTree: true,
@@ -1015,11 +1109,12 @@ export async function main(argv = process.argv.slice(2)) {
     return;
   }
   if (options.selfTest) {
-    process.stdout.write(stableJson({ schema: `${SCHEMA}.self-test`, ...await selfTest() }));
+    process.stdout.write(stableJson({ schema: `${SCHEMA}.self-test`, ...await selfTest(options.profile) }));
     return;
   }
   validateOptions(options, { requireOutput: !options.dryRun });
   if (options.dryRun) {
+    const profile = resolveDeploymentProfile(options.profile);
     process.stdout.write(stableJson({
       schema: `${SCHEMA}.dry-run`,
       status: "PASS",
@@ -1027,11 +1122,12 @@ export async function main(argv = process.argv.slice(2)) {
       filesystemReadsPerformed: false,
       gitCommandsPerformed: false,
       networkRequestsPerformed: false,
+      profile: profile.id,
       expectedHead: options.expectedHead,
       expectedBase: ACCEPTED_PHASE5AR_SHA,
       expectedMain: FROZEN_MAIN_SHA,
-      branch: REQUIRED_BRANCH,
-      checkpointCount: CHECKPOINT_SUBJECTS.length,
+      branch: profile.branch,
+      checkpointCount: profile.checkpointSubjects.length,
       cloudflare: {
         accountId: REQUIRED_CLOUDFLARE_ACCOUNT_ID,
         project: REQUIRED_CLOUDFLARE_PROJECT,

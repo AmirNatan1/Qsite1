@@ -79,6 +79,59 @@ export const FIXED_CHECKPOINT_SHAS = Object.freeze([
   CP8_HEAD,
 ]);
 
+export const DEFAULT_PROFILE = "cp9";
+export const R1_PROFILE = "r1";
+export const R1_PACKAGE_SCHEMA = "quantum-hub.phase-5b-r1.about-dark-v2-fidelity-human-review.v1";
+export const R1_DETACHED_SCHEMA = `${R1_PACKAGE_SCHEMA}.detached-manifest`;
+export const R1_AUDIT_SCHEMA = `${R1_PACKAGE_SCHEMA}.independent-audit`;
+export const R1_ARCHIVE_FILENAME = "phase-5b-r1-about-dark-v2-fidelity-human-review.zip";
+export const R1_DETACHED_MANIFEST_FILENAME = "phase-5b-r1-about-dark-v2-fidelity-human-review-manifest.json";
+export const R1_AUDIT_FILENAME = "phase-5b-r1-about-dark-v2-fidelity-human-review-audit.json";
+export const R1_REQUIRED_BRANCH = "repair/phase-5b-r1-about-dark-v2-fidelity";
+export const R1_REQUIRED_BRANCH_URL = null;
+export const R1_PARENT_SHA = "011abd3e5fc7464d5a0133603d222110df13b820";
+export const R1_COMMIT_SUBJECT = "Repair Phase 5B About Dark V2 fidelity";
+export const R1_PRODUCTION_DELTA = Object.freeze(["M\tsrc/styles/routes/about.css"]);
+export const R1_CHECKPOINT_SUBJECTS = Object.freeze([...CHECKPOINT_SUBJECTS, R1_COMMIT_SUBJECT]);
+export const R1_FIXED_CHECKPOINT_SHAS = Object.freeze([...FIXED_CHECKPOINT_SHAS, R1_PARENT_SHA]);
+
+const REVIEW_PROFILES = Object.freeze({
+  [DEFAULT_PROFILE]: Object.freeze({
+    id: DEFAULT_PROFILE,
+    packageSchema: PACKAGE_SCHEMA,
+    detachedSchema: DETACHED_SCHEMA,
+    auditSchema: AUDIT_SCHEMA,
+    archiveFilename: ARCHIVE_FILENAME,
+    detachedManifestFilename: DETACHED_MANIFEST_FILENAME,
+    auditFilename: AUDIT_FILENAME,
+    requiredBranch: REQUIRED_BRANCH,
+    requiredBranchUrl: REQUIRED_BRANCH_URL,
+    checkpointSubjects: CHECKPOINT_SUBJECTS,
+    fixedCheckpointShas: FIXED_CHECKPOINT_SHAS,
+    exactParent: null,
+  }),
+  [R1_PROFILE]: Object.freeze({
+    id: R1_PROFILE,
+    packageSchema: R1_PACKAGE_SCHEMA,
+    detachedSchema: R1_DETACHED_SCHEMA,
+    auditSchema: R1_AUDIT_SCHEMA,
+    archiveFilename: R1_ARCHIVE_FILENAME,
+    detachedManifestFilename: R1_DETACHED_MANIFEST_FILENAME,
+    auditFilename: R1_AUDIT_FILENAME,
+    requiredBranch: R1_REQUIRED_BRANCH,
+    requiredBranchUrl: R1_REQUIRED_BRANCH_URL,
+    checkpointSubjects: R1_CHECKPOINT_SUBJECTS,
+    fixedCheckpointShas: R1_FIXED_CHECKPOINT_SHAS,
+    exactParent: R1_PARENT_SHA,
+  }),
+});
+
+export function reviewProfile(value = DEFAULT_PROFILE) {
+  const profile = REVIEW_PROFILES[String(value ?? DEFAULT_PROFILE).toLowerCase()];
+  if (!profile) throw new Error(`--profile must be ${DEFAULT_PROFILE} or ${R1_PROFILE}`);
+  return profile;
+}
+
 export const ROUTES = Object.freeze([
   Object.freeze({ id: "for-industry", publicRoute: "/for-partners/", label: "Industry", mode: "C" }),
   Object.freeze({ id: "for-startups", publicRoute: "/for-startups/", label: "Startups", mode: "C" }),
@@ -316,6 +369,7 @@ function valueAfter(argv, index, flag) {
 
 export function parseArguments(argv) {
   const options = {
+    profile: DEFAULT_PROFILE,
     evidenceRoot: null,
     storyboardRoot: null,
     deploymentReport: null,
@@ -323,7 +377,7 @@ export function parseArguments(argv) {
     cp8Report: null,
     expectedHead: null,
     expectedUpstream: null,
-    expectedBranch: REQUIRED_BRANCH,
+    expectedBranch: null,
     expectedMain: FROZEN_MAIN_SHA,
     acceptedPhase5AR: ACCEPTED_PHASE5AR_SHA,
     expectedDeploymentId: null,
@@ -339,7 +393,8 @@ export function parseArguments(argv) {
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index];
     const next = () => { const value = valueAfter(argv, index, argument); index += 1; return value; };
-    if (["--evidence-root", "--deployed-evidence-root"].includes(argument)) options.evidenceRoot = path.resolve(next());
+    if (argument === "--profile") options.profile = next().toLowerCase();
+    else if (["--evidence-root", "--deployed-evidence-root"].includes(argument)) options.evidenceRoot = path.resolve(next());
     else if (["--storyboard-root", "--accepted-storyboard-root"].includes(argument)) options.storyboardRoot = path.resolve(next());
     else if (argument === "--deployment-report") options.deploymentReport = path.resolve(next());
     else if (argument === "--cp7-report") options.cp7Report = path.resolve(next());
@@ -360,6 +415,9 @@ export function parseArguments(argv) {
     else if (argument === "--help" || argument === "-h") options.help = true;
     else throw new Error(`unknown option: ${argument}`);
   }
+  const profile = reviewProfile(options.profile);
+  options.profile = profile.id;
+  options.expectedBranch ??= profile.requiredBranch;
   return options;
 }
 
@@ -374,10 +432,14 @@ function normalizePreviewUrl(value, flag) {
 
 export function validateOptionShape(input) {
   const options = { ...input };
+  const profile = reviewProfile(options.profile);
+  options.profile = profile.id;
+  options.expectedBranch ??= profile.requiredBranch;
   if (!HASH40.test(options.expectedHead ?? "")) throw new Error("--expected-head must be a lowercase 40-hex commit");
   options.expectedUpstream ??= options.expectedHead;
   if (!HASH40.test(options.expectedUpstream) || options.expectedUpstream !== options.expectedHead) throw new Error("--expected-upstream must equal --expected-head");
-  if (options.expectedBranch !== REQUIRED_BRANCH) throw new Error(`--expected-branch must remain ${REQUIRED_BRANCH}`);
+  if (profile.id === R1_PROFILE && options.expectedHead === R1_PARENT_SHA) throw new Error("--expected-head must be the new R1 repair commit, not its exact CP9 parent");
+  if (options.expectedBranch !== profile.requiredBranch) throw new Error(`--expected-branch must remain ${profile.requiredBranch} for profile ${profile.id}`);
   if (options.expectedMain !== FROZEN_MAIN_SHA) throw new Error(`--expected-main must remain ${FROZEN_MAIN_SHA}`);
   if (options.acceptedPhase5AR !== ACCEPTED_PHASE5AR_SHA) throw new Error(`--accepted-phase5ar must remain ${ACCEPTED_PHASE5AR_SHA}`);
   if (!UUID.test(options.expectedDeploymentId ?? "")) throw new Error("--expected-deployment-id must be a Cloudflare UUID");
@@ -385,7 +447,8 @@ export function validateOptionShape(input) {
   options.immutableUrl = normalizePreviewUrl(options.immutableUrl, "--immutable-url");
   options.branchUrl = normalizePreviewUrl(options.branchUrl, "--branch-url");
   if (options.immutableUrl === options.branchUrl) throw new Error("immutable and branch preview URLs must differ");
-  if (options.branchUrl !== REQUIRED_BRANCH_URL) throw new Error(`--branch-url must remain ${REQUIRED_BRANCH_URL}`);
+  if (profile.requiredBranchUrl && options.branchUrl !== profile.requiredBranchUrl) throw new Error(`--branch-url must remain ${profile.requiredBranchUrl} for profile ${profile.id}`);
+  if (!profile.requiredBranchUrl && options.branchUrl === REQUIRED_BRANCH_URL) throw new Error("--branch-url cannot reuse the accepted Phase 5B CP9 branch preview for the R1 repair");
   if (new URL(options.immutableUrl).hostname !== `${options.expectedDeploymentId.split("-")[0].toLowerCase()}.${REQUIRED_PROJECT}.pages.dev`) throw new Error("--immutable-url must match the deployment UUID prefix");
   for (const [key, flag] of [
     ["evidenceRoot", "--deployed-evidence-root"],
@@ -396,7 +459,7 @@ export function validateOptionShape(input) {
     ["output", "--output"],
   ]) if (!options[key]) throw new Error(`${flag} is required`);
   if (!options.ffprobe || !path.isAbsolute(options.ffprobe)) throw new Error("--ffprobe must be an absolute executable path");
-  if (path.basename(options.output) !== ARCHIVE_FILENAME) throw new Error(`--output basename must be ${ARCHIVE_FILENAME}`);
+  if (path.basename(options.output) !== profile.archiveFilename) throw new Error(`--output basename must be ${profile.archiveFilename}`);
   assertExternalPath(options.output, "output");
   return options;
 }
@@ -664,6 +727,7 @@ function parseLinearLog(text) {
 }
 
 async function repositoryAuthority(options) {
+  const profile = reviewProfile(options.profile);
   const tracked = [
     ...REPOSITORY_DOCS.map(({ source }) => source),
     "scripts/package-phase5b-human-review.mjs",
@@ -683,20 +747,27 @@ async function repositoryAuthority(options) {
     git("diff", "--name-status", `${ACCEPTED_PHASE5AR_SHA}..HEAD`),
     ...tracked.map((relative) => git("ls-files", "--error-unmatch", "--", relative)),
   ]);
-  if (head !== options.expectedHead || upstream !== options.expectedUpstream || branch !== REQUIRED_BRANCH) throw new Error("Git HEAD/upstream/branch authority differs");
+  if (head !== options.expectedHead || upstream !== options.expectedUpstream || branch !== profile.requiredBranch) throw new Error("Git HEAD/upstream/branch authority differs");
   if (localMain !== FROZEN_MAIN_SHA || originMain !== FROZEN_MAIN_SHA || options.expectedMain !== FROZEN_MAIN_SHA) throw new Error("main moved from its frozen authority");
   if (statusText) throw new Error(`working tree must be clean before production packaging:\n${statusText}`);
   if (trackedChecks.some((value) => !value)) throw new Error("a package authority file is not tracked");
   const commits = parseLinearLog(logText);
-  if (commits.length !== CHECKPOINT_SUBJECTS.length || commits[0].parents.length !== 1 || commits[0].parents[0] !== ACCEPTED_PHASE5AR_SHA) throw new Error("Phase 5B chain does not contain the exact nine checkpoints from the accepted Phase 5A-R SHA");
+  if (commits.length !== profile.checkpointSubjects.length || commits[0].parents.length !== 1 || commits[0].parents[0] !== ACCEPTED_PHASE5AR_SHA) throw new Error(`Phase 5B ${profile.id} chain does not contain the exact ${profile.checkpointSubjects.length} checkpoints from the accepted Phase 5A-R SHA`);
   for (let index = 0; index < commits.length; index += 1) {
-    const expectedSha = index < FIXED_CHECKPOINT_SHAS.length ? FIXED_CHECKPOINT_SHAS[index] : options.expectedHead;
+    const expectedSha = index < profile.fixedCheckpointShas.length ? profile.fixedCheckpointShas[index] : options.expectedHead;
     const expectedParent = index === 0 ? ACCEPTED_PHASE5AR_SHA : commits[index - 1].sha;
-    if (commits[index].sha !== expectedSha || commits[index].subject !== CHECKPOINT_SUBJECTS[index] || commits[index].parents.length !== 1 || commits[index].parents[0] !== expectedParent) throw new Error(`Phase 5B CP${index + 1} checkpoint authority differs`);
+    if (commits[index].sha !== expectedSha || commits[index].subject !== profile.checkpointSubjects[index] || commits[index].parents.length !== 1 || commits[index].parents[0] !== expectedParent) throw new Error(`Phase 5B ${profile.id} checkpoint ${index + 1} authority differs`);
   }
   if (commits.at(-1).sha !== head) throw new Error("Phase 5B commit chain does not end at HEAD");
+  let repair = null;
+  if (profile.id === R1_PROFILE) {
+    if (parent !== R1_PARENT_SHA || head === R1_PARENT_SHA) throw new Error("R1 HEAD must be a new commit whose exact parent is CP9");
+    const productionDelta = (await git("diff", "--name-status", "--no-renames", `${R1_PARENT_SHA}..HEAD`, "--", "src", "public", "astro.config.mjs")).split(/\r?\n/).filter(Boolean);
+    if (!productionDelta.length || JSON.stringify(productionDelta) !== JSON.stringify(R1_PRODUCTION_DELTA)) throw new Error("R1 production delta must modify only src/styles/routes/about.css");
+    repair = { exactParent: R1_PARENT_SHA, commitSubject: R1_COMMIT_SUBJECT, productionDelta };
+  }
   return {
-    schema: `${PACKAGE_SCHEMA}.git-provenance`,
+    schema: `${profile.packageSchema}.git-provenance`,
     status: "PASS",
     generatedAt: timestamp,
     branch,
@@ -710,10 +781,11 @@ async function repositoryAuthority(options) {
     commits,
     trackedDelta: delta.split(/\r?\n/).filter(Boolean),
     trackedAuthorities: tracked.sort(lexicalCompare),
+    ...(repair ? { profile: R1_PROFILE, repair } : {}),
   };
 }
 
-async function buildAuthority(generatedAt) {
+async function buildAuthority(generatedAt, profile = reviewProfile()) {
   const distRoot = path.join(ROOT, "dist");
   const files = await recursiveFiles(distRoot);
   const records = [];
@@ -733,7 +805,7 @@ async function buildAuthority(generatedAt) {
     media.push(record);
   }
   return {
-    schema: `${PACKAGE_SCHEMA}.build-budget`,
+    schema: `${profile.packageSchema}.build-budget`,
     status: "PASS",
     generatedAt,
     fileCount: records.length,
@@ -795,6 +867,15 @@ export function validateArtifactRoles(roles, paths) {
 }
 
 function readmeText(repository, options) {
+  const profile = reviewProfile(options.profile);
+  if (profile.id === R1_PROFILE) {
+    return `# Quantum-Hub Phase 5B-R1 About Dark V2 fidelity — human review\n\n` +
+      `This deterministic repair package is bound to Git HEAD \`${repository.head}\`, exact CP9 parent \`${R1_PARENT_SHA}\`, and Cloudflare deployment \`${options.expectedDeploymentId}\`. Machine PASS proves package integrity only.\n\n` +
+      `## R1 review focus\n\nReview the About route's Dark V2 interlock fidelity, readable threshold state, responsive composition, and unchanged semantic narrative. The only authorized production-source delta is \`src/styles/routes/about.css\`; the other eight supporting routes, Home, Phase 4 authority, public media, copy, controllers, and route topology remain regression surfaces rather than redesign scope.\n\n` +
+      `## Review order\n\n1. \`per-route/about/\`: compare the deployed About states with the accepted storyboard and route-brief delta.\n2. \`cross-route/\`: confirm the repair remains coherent with all nine production identities.\n3. The other \`per-route/<id>/\` folders and \`homepage-regression/\`: confirm no collateral route, manifesto, or CRT regression.\n4. \`reports/\`: inspect deployment, accessibility, publication, performance, anti-template, Git, and build authorities.\n\n` +
+      `## Package boundary\n\nThe archive retains the complete Phase 5B review topology and contains no raw frames, source assets, prototype internals, Blender files, repository history dump, private host path, credential, or nested archive. Every non-self entry is bound by byte size and SHA-256 in \`MANIFEST.json\`; the detached manifest binds both the canonical stored ZIP and its in-archive manifest; a separate process independently verifies hashes and CRCs and produces the audit sibling.\n\n` +
+      `## Human gates\n\nAll six Phase 5B gates remain **PENDING HUMAN REVIEW**. Machine PASS is not human acceptance. Phase 6 remains **UNAUTHORIZED**, \`main\` remains unchanged, and neither the author nor deployer may self-approve.\n`;
+  }
   return `# Quantum-Hub Phase 5B supporting-route production — human review\n\n` +
     `This deterministic package is bound to Git HEAD \`${repository.head}\` and Cloudflare deployment \`${options.expectedDeploymentId}\`. Machine PASS proves package integrity only.\n\n` +
     `## Review order\n\n1. \`cross-route/\`: compare all nine production identities and navigation.\n2. \`per-route/<id>/\`: compare deployed states with the accepted desktop storyboard and route-brief delta.\n3. \`homepage-regression/\`: confirm the accepted manifesto/CRT experience did not regress.\n4. \`reports/\`: inspect deployment, accessibility, publication, performance, anti-template, Git, and build authorities.\n\n` +
@@ -809,7 +890,8 @@ export function validateReviewPolicy(document) {
   return true;
 }
 
-export function selfTest() {
+export function selfTest(profileValue = DEFAULT_PROFILE) {
+  const profile = reviewProfile(profileValue);
   assert.equal(expectedEvidenceArtifactPaths().length, 126);
   assert.equal(expectedEvidencePaths().length, 127);
   assert.equal(CROSS_ROUTE_ARTIFACTS.length, 5);
@@ -822,11 +904,18 @@ export function selfTest() {
   assert.equal(Object.keys(HUMAN_REVIEW_GATES).length, 6);
   assert.ok(Object.values(HUMAN_REVIEW_GATES).every((value) => value === "PENDING HUMAN REVIEW"));
   assert.ok(Object.values(AUTHORIZATION).every((value) => value === false));
+  assert.equal(profile.checkpointSubjects.length, profile.id === R1_PROFILE ? 10 : 9);
+  assert.equal(profile.fixedCheckpointShas.length, profile.checkpointSubjects.length - 1);
+  if (profile.id === R1_PROFILE) {
+    assert.equal(profile.exactParent, R1_PARENT_SHA);
+    assert.equal(profile.checkpointSubjects.at(-1), R1_COMMIT_SUBJECT);
+    assert.equal(profile.fixedCheckpointShas.at(-1), R1_PARENT_SHA);
+  }
   validateArtifactRoles(buildArtifactRoles(), [...expectedPackagePayloadPaths(), README_FILENAME]);
   validateReviewPolicy({ humanReviewGates: HUMAN_REVIEW_GATES, authorization: AUTHORIZATION, policy: { phase6: "UNAUTHORIZED", pendingGateCount: 6, machinePassGrantsHumanAcceptance: false } });
   const sample = createStoredZipBuffer([{ path: README_FILENAME, data: Buffer.from("review\n") }, { path: IN_ARCHIVE_MANIFEST, data: Buffer.from("{}\n") }]);
   assert.ok(sample.length > 100);
-  return { schema: `${PACKAGE_SCHEMA}.self-test`, status: "PASS", evidenceFiles: 127, ledgerArtifacts: 126, packagePayloadFiles: 157, archiveEntries: 159, images: 90, videos: 8, maximumArchiveBytes: MAX_ARCHIVE_BYTES, gatesPending: 6, phase6Authorized: false };
+  return { schema: `${profile.packageSchema}.self-test`, status: "PASS", ...(profile.id === R1_PROFILE ? { profile: profile.id } : {}), evidenceFiles: 127, ledgerArtifacts: 126, packagePayloadFiles: 157, archiveEntries: 159, images: 90, videos: 8, maximumArchiveBytes: MAX_ARCHIVE_BYTES, gatesPending: 6, phase6Authorized: false };
 }
 
 export function crc32(bytes) {
@@ -909,9 +998,10 @@ async function spawnAuditor(args) {
 
 export async function assemblePackage(input) {
   const options = validateOptionShape(input);
+  const profile = reviewProfile(options.profile);
   const output = await canonicalFuturePath(options.output);
-  const detachedOutput = sibling(output, DETACHED_MANIFEST_FILENAME);
-  const auditOutput = sibling(output, AUDIT_FILENAME);
+  const detachedOutput = sibling(output, profile.detachedManifestFilename);
+  const auditOutput = sibling(output, profile.auditFilename);
   await assertFreshOutputSet([output, detachedOutput, auditOutput]);
 
   const [evidenceRoot, storyboardRoot, ffprobe, cp7, cp8, deployment, repository] = await Promise.all([
@@ -928,7 +1018,7 @@ export async function assemblePackage(input) {
   const [deployed, accepted, build] = await Promise.all([
     collectDeployedEvidence(evidenceRoot, options, ffprobe),
     collectAcceptedStoryboards(storyboardRoot),
-    buildAuthority(repository.generatedAt),
+    buildAuthority(repository.generatedAt, profile),
   ]);
   validateDeploymentDist(deployment.document, build);
 
@@ -971,8 +1061,9 @@ export async function assemblePackage(input) {
   }
   const sourceBytes = files.reduce((sum, record) => sum + record.byteSize, 0);
   const manifest = {
-    schema: PACKAGE_SCHEMA,
+    schema: profile.packageSchema,
     status: "MACHINE INTEGRITY PASS — HUMAN REVIEW PENDING",
+    ...(profile.id === R1_PROFILE ? { profile: profile.id, repair: repository.repair } : {}),
     generatedAt: repository.generatedAt,
     fixedZipEpoch: FIXED_EPOCH,
     git: { branch: repository.branch, head: repository.head, upstream: repository.upstream, acceptedPhase5AR: ACCEPTED_PHASE5AR_SHA, main: FROZEN_MAIN_SHA, cleanTree: true },
@@ -993,28 +1084,30 @@ export async function assemblePackage(input) {
   if (archiveBytes.length > MAX_ARCHIVE_BYTES) throw new Error(`review ZIP is ${archiveBytes.length} bytes; maximum is ${MAX_ARCHIVE_BYTES}`);
 
   const detached = {
-    schema: DETACHED_SCHEMA,
+    schema: profile.detachedSchema,
     status: "PASS",
+    ...(profile.id === R1_PROFILE ? { profile: profile.id, repair: repository.repair } : {}),
     generatedAt: repository.generatedAt,
-    archive: { filename: ARCHIVE_FILENAME, byteSize: archiveBytes.length, sha256: sha256(archiveBytes), entries: files.length + 1, canonicalUniqueStoredZip: true },
-    inArchiveManifest: { path: IN_ARCHIVE_MANIFEST, byteSize: manifestBytes.length, sha256: sha256(manifestBytes), schema: PACKAGE_SCHEMA },
+    archive: { filename: profile.archiveFilename, byteSize: archiveBytes.length, sha256: sha256(archiveBytes), entries: files.length + 1, canonicalUniqueStoredZip: true },
+    inArchiveManifest: { path: IN_ARCHIVE_MANIFEST, byteSize: manifestBytes.length, sha256: sha256(manifestBytes), schema: profile.packageSchema },
     humanReviewGates: HUMAN_REVIEW_GATES,
     authorization: AUTHORIZATION,
     policy: manifest.policy,
   };
   validateReviewPolicy(detached);
   const detachedBytes = Buffer.from(stableJson(detached));
-  assertNoPrivateText(detachedBytes, DETACHED_MANIFEST_FILENAME);
+  assertNoPrivateText(detachedBytes, profile.detachedManifestFilename);
 
   const staging = path.join(path.dirname(output), `.phase5b-review-${randomUUID()}`);
   await mkdir(staging, { recursive: false });
-  const stagedArchive = path.join(staging, ARCHIVE_FILENAME);
-  const stagedDetached = path.join(staging, DETACHED_MANIFEST_FILENAME);
-  const stagedAudit = path.join(staging, AUDIT_FILENAME);
+  const stagedArchive = path.join(staging, profile.archiveFilename);
+  const stagedDetached = path.join(staging, profile.detachedManifestFilename);
+  const stagedAudit = path.join(staging, profile.auditFilename);
   try {
     await writeFile(stagedArchive, archiveBytes, { flag: "wx" });
     await writeFile(stagedDetached, detachedBytes, { flag: "wx" });
     const auditResult = await spawnAuditor([
+      "--profile", profile.id,
       "--archive", stagedArchive,
       "--manifest", stagedDetached,
       "--audit-output", stagedAudit,
@@ -1039,18 +1132,20 @@ export async function assemblePackage(input) {
   } finally {
     await rm(staging, { recursive: true, force: true });
   }
-  return { schema: `${PACKAGE_SCHEMA}.result`, status: "PASS", archive: { path: output, byteSize: archiveBytes.length, sha256: sha256(archiveBytes) }, detachedManifest: detachedOutput, independentAudit: auditOutput, humanReviewGates: HUMAN_REVIEW_GATES, phase6Authorized: false };
+  return { schema: `${profile.packageSchema}.result`, status: "PASS", ...(profile.id === R1_PROFILE ? { profile: profile.id } : {}), archive: { path: output, byteSize: archiveBytes.length, sha256: sha256(archiveBytes) }, detachedManifest: detachedOutput, independentAudit: auditOutput, humanReviewGates: HUMAN_REVIEW_GATES, phase6Authorized: false };
 }
 
-function dryRunReport() {
+function dryRunReport(profileValue = DEFAULT_PROFILE) {
+  const profile = reviewProfile(profileValue);
   return {
-    schema: `${PACKAGE_SCHEMA}.dry-run`,
+    schema: `${profile.packageSchema}.dry-run`,
     status: "PASS",
+    ...(profile.id === R1_PROFILE ? { profile: profile.id } : {}),
     writesPerformed: false,
-    archiveFilename: ARCHIVE_FILENAME,
-    detachedManifestFilename: DETACHED_MANIFEST_FILENAME,
-    auditFilename: AUDIT_FILENAME,
-    topology: selfTest(),
+    archiveFilename: profile.archiveFilename,
+    detachedManifestFilename: profile.detachedManifestFilename,
+    auditFilename: profile.auditFilename,
+    topology: selfTest(profile.id),
     requiredInputs: ["deployed evidence root", "accepted storyboard root", "deployment report", "CP7 report", "CP8 clean-head report", "ffprobe", "expected HEAD/deployment/URLs", "fresh durable output"],
   };
 }
@@ -1058,13 +1153,14 @@ function dryRunReport() {
 function printHelp() {
   process.stdout.write([
     "Phase 5B supporting-route production human-review packager", "",
-    `node scripts/${path.basename(SCRIPT)} \\`,
+    `node scripts/${path.basename(SCRIPT)} [--profile cp9|r1] \\`,
     "  --deployed-evidence-root <external-directory> \\",
     "  --accepted-storyboard-root <external-directory> \\",
     "  --deployment-report <external-json> --cp7-report <external-json> --cp8-report <external-json> \\",
     "  --expected-head <40-hex> --expected-upstream <same-40-hex> \\",
     "  --expected-deployment-id <uuid> --immutable-url <https-origin/> --branch-url <https-origin/> \\",
     "  --ffprobe <absolute-executable> --output <external exact ZIP path>", "",
+    `R1 requires branch ${R1_REQUIRED_BRANCH}, exact parent ${R1_PARENT_SHA}, and output ${R1_ARCHIVE_FILENAME}.`,
     "Use --self-test or --dry-run for write-free contract checks.", "",
   ].join("\n"));
 }
@@ -1072,8 +1168,8 @@ function printHelp() {
 async function main() {
   const options = parseArguments(process.argv.slice(2));
   if (options.help) return printHelp();
-  if (options.selfTest) { process.stdout.write(stableJson(selfTest())); return; }
-  if (options.dryRun) { process.stdout.write(stableJson(dryRunReport())); return; }
+  if (options.selfTest) { process.stdout.write(stableJson(selfTest(options.profile))); return; }
+  if (options.dryRun) { process.stdout.write(stableJson(dryRunReport(options.profile))); return; }
   process.stdout.write(stableJson(await assemblePackage(options)));
 }
 

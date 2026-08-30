@@ -12,13 +12,29 @@ import {
   ARCHIVE_FILENAME,
   AUDIT_FILENAME,
   AUTHORIZATION,
+  CHECKPOINT_SUBJECTS,
   CP7_HEAD,
   CP7_REPORT_GIT_HEAD,
   CP7_REPORT_SHA256,
+  DEFAULT_PROFILE,
   DETACHED_MANIFEST_FILENAME,
+  FIXED_CHECKPOINT_SHAS,
   HUMAN_REVIEW_GATES,
   MAX_ARCHIVE_BYTES,
   MOTION_ROUTE_IDS,
+  PACKAGE_SCHEMA,
+  R1_ARCHIVE_FILENAME,
+  R1_AUDIT_FILENAME,
+  R1_CHECKPOINT_SUBJECTS,
+  R1_COMMIT_SUBJECT,
+  R1_DETACHED_MANIFEST_FILENAME,
+  R1_FIXED_CHECKPOINT_SHAS,
+  R1_PACKAGE_SCHEMA,
+  R1_PARENT_SHA,
+  R1_PRODUCTION_DELTA,
+  R1_PROFILE,
+  R1_REQUIRED_BRANCH,
+  R1_REQUIRED_BRANCH_URL,
   REQUIRED_BRANCH,
   REQUIRED_BRANCH_URL,
   ROOT,
@@ -35,15 +51,35 @@ import {
   expectedPackagePayloadPaths,
   parseArguments,
   publishFreshSetAtomic,
+  reviewProfile,
   validateArtifactRoles,
   validateOptionShape,
   validateReviewPolicy,
 } from "../scripts/package-phase5b-human-review.mjs";
 import {
+  ARCHIVE_FILENAME as AUDITOR_ARCHIVE_FILENAME,
+  AUDIT_FILENAME as AUDITOR_AUDIT_FILENAME,
   CP7_REPORT_GIT_HEAD as AUDIT_CP7_REPORT_GIT_HEAD,
   CP7_REPORT_SHA256 as AUDIT_CP7_REPORT_SHA256,
+  DEFAULT_PROFILE as AUDITOR_DEFAULT_PROFILE,
+  DETACHED_MANIFEST_FILENAME as AUDITOR_DETACHED_MANIFEST_FILENAME,
+  PACKAGE_SCHEMA as AUDITOR_PACKAGE_SCHEMA,
+  R1_ARCHIVE_FILENAME as AUDITOR_R1_ARCHIVE_FILENAME,
+  R1_AUDIT_FILENAME as AUDITOR_R1_AUDIT_FILENAME,
+  R1_CHECKPOINT_SUBJECTS as AUDITOR_R1_CHECKPOINT_SUBJECTS,
+  R1_COMMIT_SUBJECT as AUDITOR_R1_COMMIT_SUBJECT,
+  R1_DETACHED_MANIFEST_FILENAME as AUDITOR_R1_DETACHED_MANIFEST_FILENAME,
+  R1_FIXED_CHECKPOINT_SHAS as AUDITOR_R1_FIXED_CHECKPOINT_SHAS,
+  R1_PACKAGE_SCHEMA as AUDITOR_R1_PACKAGE_SCHEMA,
+  R1_PARENT_SHA as AUDITOR_R1_PARENT_SHA,
+  R1_PRODUCTION_DELTA as AUDITOR_R1_PRODUCTION_DELTA,
+  R1_PROFILE as AUDITOR_R1_PROFILE,
+  R1_REQUIRED_BRANCH as AUDITOR_R1_REQUIRED_BRANCH,
+  R1_REQUIRED_BRANCH_URL as AUDITOR_R1_REQUIRED_BRANCH_URL,
   assertNoPrivateText as independentlyAssertNoPrivateText,
+  parseArguments as parseAuditArguments,
   parseStoredZip,
+  reviewProfile as independentlyReviewProfile,
   validateArtifactRoles as independentlyValidateArtifactRoles,
   validateReviewPolicy as independentlyValidateReviewPolicy,
 } from "../scripts/audit-phase5b-human-review-package.mjs";
@@ -52,6 +88,7 @@ const execFileAsync = promisify(execFile);
 const TEST_FILE = fileURLToPath(import.meta.url);
 const PACKAGE_SCRIPT = path.join(ROOT, "scripts", "package-phase5b-human-review.mjs");
 const AUDIT_SCRIPT = path.join(ROOT, "scripts", "audit-phase5b-human-review-package.mjs");
+const OBSERVED_R1_BRANCH_URL = "https://repair-phase-5b-r1-about-dar.qsite1.pages.dev/";
 
 function rolePaths(value, output = []) {
   if (typeof value === "string") output.push(value);
@@ -61,6 +98,8 @@ function rolePaths(value, output = []) {
 }
 
 test("exact Phase 5B archive names, branch, gate, and authorization contracts are frozen", () => {
+  assert.equal(DEFAULT_PROFILE, "cp9");
+  assert.equal(PACKAGE_SCHEMA, "quantum-hub.phase-5b.supporting-route-production-human-review.v1");
   assert.equal(ARCHIVE_FILENAME, "phase-5b-supporting-route-production-human-review.zip");
   assert.equal(DETACHED_MANIFEST_FILENAME, "phase-5b-supporting-route-production-human-review-manifest.json");
   assert.equal(AUDIT_FILENAME, "phase-5b-supporting-route-production-human-review-audit.json");
@@ -70,6 +109,11 @@ test("exact Phase 5B archive names, branch, gate, and authorization contracts ar
   assert.equal(CP7_HEAD, "9a9ad82b266c663e5689c8a6884a90cfc835ef7c");
   assert.equal(CP7_REPORT_GIT_HEAD, "508d54a517b9c28ac683fb3257df3afad24b72bb");
   assert.equal(CP7_REPORT_SHA256, "e62b4d20b49170d729ce4dfb61e5f73f796eb55701678beeacce2ac600afe365");
+  assert.equal(AUDITOR_DEFAULT_PROFILE, DEFAULT_PROFILE);
+  assert.equal(AUDITOR_PACKAGE_SCHEMA, PACKAGE_SCHEMA);
+  assert.equal(AUDITOR_ARCHIVE_FILENAME, ARCHIVE_FILENAME);
+  assert.equal(AUDITOR_DETACHED_MANIFEST_FILENAME, DETACHED_MANIFEST_FILENAME);
+  assert.equal(AUDITOR_AUDIT_FILENAME, AUDIT_FILENAME);
   assert.equal(AUDIT_CP7_REPORT_GIT_HEAD, CP7_REPORT_GIT_HEAD);
   assert.equal(AUDIT_CP7_REPORT_SHA256, CP7_REPORT_SHA256);
   assert.equal(MAX_ARCHIVE_BYTES, 50 * 1024 * 1024);
@@ -78,6 +122,45 @@ test("exact Phase 5B archive names, branch, gate, and authorization contracts ar
   assert.deepEqual(Object.keys(HUMAN_REVIEW_GATES), ["SUPPORTING-ROUTE PRODUCTION FIDELITY", "ROUTE-SPECIFIC SPATIAL IDENTITY", "RESPONSIVE + ACCESSIBLE INTEGRATION", "PUBLICATION + MEDIA SAFETY", "PERFORMANCE + RUNTIME SAFETY", "HOMEPAGE + PHASE 4/5A REGRESSION"]);
   assert.ok(Object.values(AUTHORIZATION).every((value) => value === false));
   assert.equal(AUTHORIZATION.phase6Authorized, false);
+});
+
+test("R1 profile independently freezes About-only repair authority without baking the final SHA", () => {
+  assert.equal(R1_PROFILE, "r1");
+  assert.equal(R1_PACKAGE_SCHEMA, "quantum-hub.phase-5b-r1.about-dark-v2-fidelity-human-review.v1");
+  assert.equal(R1_ARCHIVE_FILENAME, "phase-5b-r1-about-dark-v2-fidelity-human-review.zip");
+  assert.equal(R1_DETACHED_MANIFEST_FILENAME, "phase-5b-r1-about-dark-v2-fidelity-human-review-manifest.json");
+  assert.equal(R1_AUDIT_FILENAME, "phase-5b-r1-about-dark-v2-fidelity-human-review-audit.json");
+  assert.equal(R1_REQUIRED_BRANCH, "repair/phase-5b-r1-about-dark-v2-fidelity");
+  assert.equal(R1_REQUIRED_BRANCH_URL, null);
+  assert.equal(R1_PARENT_SHA, "011abd3e5fc7464d5a0133603d222110df13b820");
+  assert.equal(R1_COMMIT_SUBJECT, "Repair Phase 5B About Dark V2 fidelity");
+  assert.deepEqual(R1_PRODUCTION_DELTA, ["M\tsrc/styles/routes/about.css"]);
+  assert.deepEqual(R1_CHECKPOINT_SUBJECTS.slice(0, -1), CHECKPOINT_SUBJECTS);
+  assert.deepEqual(R1_FIXED_CHECKPOINT_SHAS.slice(0, -1), FIXED_CHECKPOINT_SHAS);
+  assert.equal(R1_CHECKPOINT_SUBJECTS.length, 10);
+  assert.equal(R1_FIXED_CHECKPOINT_SHAS.length, 9);
+  assert.equal(R1_CHECKPOINT_SUBJECTS.at(-1), R1_COMMIT_SUBJECT);
+  assert.equal(R1_FIXED_CHECKPOINT_SHAS.at(-1), R1_PARENT_SHA);
+
+  assert.equal(AUDITOR_R1_PROFILE, R1_PROFILE);
+  assert.equal(AUDITOR_R1_PACKAGE_SCHEMA, R1_PACKAGE_SCHEMA);
+  assert.equal(AUDITOR_R1_ARCHIVE_FILENAME, R1_ARCHIVE_FILENAME);
+  assert.equal(AUDITOR_R1_DETACHED_MANIFEST_FILENAME, R1_DETACHED_MANIFEST_FILENAME);
+  assert.equal(AUDITOR_R1_AUDIT_FILENAME, R1_AUDIT_FILENAME);
+  assert.equal(AUDITOR_R1_REQUIRED_BRANCH, R1_REQUIRED_BRANCH);
+  assert.equal(AUDITOR_R1_REQUIRED_BRANCH_URL, R1_REQUIRED_BRANCH_URL);
+  assert.equal(AUDITOR_R1_PARENT_SHA, R1_PARENT_SHA);
+  assert.equal(AUDITOR_R1_COMMIT_SUBJECT, R1_COMMIT_SUBJECT);
+  assert.deepEqual(AUDITOR_R1_PRODUCTION_DELTA, R1_PRODUCTION_DELTA);
+  assert.deepEqual(AUDITOR_R1_CHECKPOINT_SUBJECTS, R1_CHECKPOINT_SUBJECTS);
+  assert.deepEqual(AUDITOR_R1_FIXED_CHECKPOINT_SHAS, R1_FIXED_CHECKPOINT_SHAS);
+
+  assert.equal(reviewProfile().id, "cp9");
+  assert.equal(independentlyReviewProfile().id, "cp9");
+  assert.deepEqual(reviewProfile("r1"), independentlyReviewProfile("r1"));
+  assert.equal(reviewProfile("r1").fixedCheckpointShas.length, reviewProfile("r1").checkpointSubjects.length - 1);
+  assert.throws(() => reviewProfile("future"), /profile/);
+  assert.throws(() => independentlyReviewProfile("future"), /profile/);
 });
 
 test("deployed capture topology is exactly 127 files with 126 ledger artifacts", () => {
@@ -221,6 +304,44 @@ test("CLI parses aliases and enforces exact output/deployment authority", () => 
   assert.throws(() => validateOptionShape({ ...parsed, immutableUrl: "http://127.0.0.1/" }), /HTTPS|Pages/);
 });
 
+test("R1 CLI selects exact sibling names, repair branch, and dynamic repair HEAD", () => {
+  const sha = "b".repeat(40);
+  const output = path.join(path.dirname(ROOT), "phase5b-r1-review-future", R1_ARCHIVE_FILENAME);
+  const parsed = parseArguments([
+    "--profile", "r1",
+    "--evidence-root", "../evidence",
+    "--storyboard-root", "../storyboards",
+    "--deployment-report", "../deployment.json",
+    "--cp7-report", "../cp7.json",
+    "--cp8-report", "../cp8.json",
+    "--expected-head", sha,
+    "--expected-deployment-id", "87654321-1234-4234-8234-123456789abc",
+    "--immutable-url", "https://87654321.qsite1.pages.dev/",
+    "--branch-url", OBSERVED_R1_BRANCH_URL,
+    "--ffprobe", process.execPath,
+    "--output", output,
+  ]);
+  const validated = validateOptionShape(parsed);
+  assert.equal(validated.profile, R1_PROFILE);
+  assert.equal(validated.expectedBranch, R1_REQUIRED_BRANCH);
+  assert.equal(validated.expectedHead, sha);
+  assert.equal(validated.expectedUpstream, sha);
+  assert.equal(validated.output, path.resolve(output));
+  assert.equal(path.basename(validated.output), R1_ARCHIVE_FILENAME);
+
+  const auditParsed = parseAuditArguments(["--profile", "r1", "--self-test"]);
+  assert.equal(auditParsed.profile, R1_PROFILE);
+  assert.equal(auditParsed.expectedBranch, R1_REQUIRED_BRANCH);
+  assert.equal(auditParsed.selfTest, true);
+
+  assert.throws(() => validateOptionShape({ ...parsed, expectedHead: R1_PARENT_SHA, expectedUpstream: R1_PARENT_SHA }), /new R1 repair commit/);
+  assert.throws(() => validateOptionShape({ ...parsed, branchUrl: REQUIRED_BRANCH_URL }), /branch-url/);
+  assert.throws(() => validateOptionShape({ ...parsed, expectedBranch: REQUIRED_BRANCH }), /expected-branch/);
+  assert.throws(() => validateOptionShape({ ...parsed, output: path.join(path.dirname(output), ARCHIVE_FILENAME) }), /basename/);
+  assert.throws(() => parseArguments(["--profile", "future", "--self-test"]), /profile/);
+  assert.throws(() => parseAuditArguments(["--profile", "future", "--self-test"]), /profile/);
+});
+
 test("durable output policy rejects repository, OS-temp, and drive-root destinations", () => {
   assert.throws(() => assertExternalPath(path.join(ROOT, ARCHIVE_FILENAME)), /outside/);
   assert.throws(() => assertExternalPath(path.join(os.tmpdir(), ARCHIVE_FILENAME)), /outside/);
@@ -256,14 +377,25 @@ test("packager and auditor imports are side-effect free", async () => {
   }
 });
 
-test("self-test and dry-run modes are write-free and pass in both tools", async () => {
+test("CP9 and R1 self-test/dry-run modes are write-free and pass in both tools", async () => {
   for (const script of [PACKAGE_SCRIPT, AUDIT_SCRIPT]) {
-    for (const mode of ["--self-test", "--dry-run"]) {
-      const { stdout, stderr } = await execFileAsync(process.execPath, [script, mode], { cwd: ROOT, encoding: "utf8" });
-      assert.equal(stderr, "");
-      const result = JSON.parse(stdout);
-      assert.equal(result.status, "PASS");
-      if (mode === "--dry-run") assert.equal(result.writesPerformed, false);
+    for (const profile of [DEFAULT_PROFILE, R1_PROFILE]) {
+      for (const mode of ["--self-test", "--dry-run"]) {
+        const profileArgs = profile === R1_PROFILE ? ["--profile", profile] : [];
+        const { stdout, stderr } = await execFileAsync(process.execPath, [script, ...profileArgs, mode], { cwd: ROOT, encoding: "utf8" });
+        assert.equal(stderr, "");
+        const result = JSON.parse(stdout);
+        assert.equal(result.status, "PASS");
+        assert.equal(result.schema.startsWith(profile === R1_PROFILE ? R1_PACKAGE_SCHEMA : PACKAGE_SCHEMA), true);
+        assert.equal(result.profile, profile === R1_PROFILE ? R1_PROFILE : undefined);
+        if (mode === "--dry-run") {
+          assert.equal(result.writesPerformed, false);
+          const namesExpected = script === PACKAGE_SCRIPT || profile === R1_PROFILE;
+          assert.equal(result.archiveFilename, namesExpected ? (profile === R1_PROFILE ? R1_ARCHIVE_FILENAME : ARCHIVE_FILENAME) : undefined);
+          assert.equal(result.detachedManifestFilename, namesExpected ? (profile === R1_PROFILE ? R1_DETACHED_MANIFEST_FILENAME : DETACHED_MANIFEST_FILENAME) : undefined);
+          assert.equal(result.auditFilename, namesExpected ? (profile === R1_PROFILE ? R1_AUDIT_FILENAME : AUDIT_FILENAME) : undefined);
+        }
+      }
     }
   }
 });
@@ -277,6 +409,12 @@ test("independent auditor does not import the packager and retains its own ZIP r
   assert.match(auditor, /export function parseStoredZip/);
   for (const source of [packager, auditor]) {
     assert.match(source, /phase-5b-supporting-route-production-human-review\.zip/);
+    assert.match(source, /phase-5b-r1-about-dark-v2-fidelity-human-review\.zip/);
+    assert.match(source, /repair\/phase-5b-r1-about-dark-v2-fidelity/);
+    assert.match(source, /Repair Phase 5B About Dark V2 fidelity/);
+    assert.match(source, /011abd3e5fc7464d5a0133603d222110df13b820/);
+    assert.match(source, /src\/styles\/routes\/about\.css/);
+    assert.doesNotMatch(source, /R1_(?:FINAL|HEAD|DEPLOYMENT)(?:_SHA|_ID)?\s*=/);
     assert.match(source, /PENDING HUMAN REVIEW/);
     assert.match(source, /phase6Authorized/);
     assert.match(source, /50 \* 1024 \* 1024/);
@@ -289,5 +427,11 @@ test("independent auditor does not import the packager and retains its own ZIP r
     assert.doesNotMatch(source, /expectedHead|observedHead/);
   }
   assert.match(packager, /publishFreshSetAtomic/);
+  assert.match(packager, /# Quantum-Hub Phase 5B-R1 About Dark V2 fidelity — human review/);
+  assert.match(packager, /## R1 review focus/);
+  assert.match(packager, /"--profile", profile\.id/);
+  assert.match(auditor, /function validateProfileBinding/);
+  assert.match(auditor, /"show", "-s", "--format=%s", "HEAD"/);
+  assert.match(auditor, /"diff", "--name-status", "--no-renames"/);
   assert.equal(path.basename(TEST_FILE), "phase5b-human-review-package-tooling.test.mjs");
 });

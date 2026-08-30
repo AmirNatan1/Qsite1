@@ -10,6 +10,9 @@ import {
   ACCEPTED_PHASE5AR_SHA,
   CHECKPOINT_SUBJECTS,
   CP8_HEAD_SHA,
+  DEPLOYMENT_PROFILE_CP9,
+  DEPLOYMENT_PROFILE_R1,
+  DEPLOYMENT_PROFILES,
   FIXED_CHECKPOINT_SHAS,
   FROZEN_MAIN_SHA,
   HTML_AUTHORITY_FILES,
@@ -25,6 +28,11 @@ import {
   REQUIRED_HEADER_POLICIES,
   REQUIRED_REMOTE_URL,
   REQUIRED_REPOSITORY,
+  R1_CHECKPOINT_SUBJECT,
+  R1_CHECKPOINT_SUBJECTS,
+  R1_FIXED_CHECKPOINT_SHAS,
+  R1_PARENT_CP9_SHA,
+  R1_REQUIRED_BRANCH,
   ROOT,
   SCHEMA,
   assertCheckpointChain,
@@ -35,6 +43,7 @@ import {
   parseHeadersFile,
   parseLinearLog,
   publicPathForDistFile,
+  resolveDeploymentProfile,
   selfTest,
   validateDeployedRecord,
   validateDistRecords,
@@ -48,6 +57,10 @@ const SCRIPT = path.join(ROOT, "scripts", "verify-phase5b-deployment.mjs");
 const FINAL_HEAD = "a".repeat(40);
 const DEPLOYMENT_ID = "12345678-1234-4234-8234-123456789abc";
 const CHECK_RUN_ID = "123456789";
+const R1_FINAL_HEAD = "b".repeat(40);
+const R1_DEPLOYMENT_ID = "87654321-4321-4321-8321-cba987654321";
+const R1_BRANCH_URL = "https://observed-r1-repair-alias.qsite1.pages.dev/";
+const R1_CHECK_RUN_ID = "987654321";
 
 function validArguments({ output = true, dryRun = false } = {}) {
   const argv = [
@@ -72,6 +85,29 @@ function validOptions() {
   return validateOptions(parseArguments(validArguments()));
 }
 
+function validR1Arguments({ output = true, dryRun = false, branchUrl = R1_BRANCH_URL } = {}) {
+  const argv = [
+    "--profile", DEPLOYMENT_PROFILE_R1,
+    "--expected-head", R1_FINAL_HEAD,
+    "--expected-base", ACCEPTED_PHASE5AR_SHA,
+    "--expected-main", FROZEN_MAIN_SHA,
+    "--repository", REQUIRED_REPOSITORY,
+    "--github-check-run-id", R1_CHECK_RUN_ID,
+    "--cloudflare-account-id", REQUIRED_CLOUDFLARE_ACCOUNT_ID,
+    "--cloudflare-project", REQUIRED_CLOUDFLARE_PROJECT,
+    "--cloudflare-deployment-id", R1_DEPLOYMENT_ID,
+    "--observed-immutable-url", "https://87654321.qsite1.pages.dev/",
+    "--observed-branch-url", branchUrl,
+  ];
+  if (output) argv.push("--output", path.resolve(ROOT, "..", REPORT_FILENAME));
+  if (dryRun) argv.push("--dry-run");
+  return argv;
+}
+
+function validR1Options() {
+  return validateOptions(parseArguments(validR1Arguments()));
+}
+
 function validChain() {
   return CHECKPOINT_SUBJECTS.map((subject, index) => ({
     sha: index < FIXED_CHECKPOINT_SHAS.length ? FIXED_CHECKPOINT_SHAS[index] : FINAL_HEAD,
@@ -84,6 +120,16 @@ function validChain() {
 
 function serializedChain(records = validChain()) {
   return records.map(({ sha, parents, subject }) => `${sha}\t${parents.join(" ")}\t${subject}`).join("\n");
+}
+
+function validR1Chain() {
+  return R1_CHECKPOINT_SUBJECTS.map((subject, index) => ({
+    sha: index < R1_FIXED_CHECKPOINT_SHAS.length ? R1_FIXED_CHECKPOINT_SHAS[index] : R1_FINAL_HEAD,
+    parents: [index === 0 ? ACCEPTED_PHASE5AR_SHA : index <= R1_FIXED_CHECKPOINT_SHAS.length
+      ? R1_FIXED_CHECKPOINT_SHAS[index - 1]
+      : R1_FINAL_HEAD],
+    subject,
+  }));
 }
 
 function validCheckRun(options = validOptions()) {
@@ -143,6 +189,22 @@ test("Phase 5B constants bind the exact branch, parent, main, CP1-CP8 ledger, an
   assert.deepEqual([...new Set(Object.values(HUMAN_GATES))], ["PENDING HUMAN REVIEW"]);
 });
 
+test("Phase 5B-R1 profile freezes the repair branch, CP9 parent, tenth subject, and preserves the CP9 default", () => {
+  assert.equal(parseArguments([]).profile, DEPLOYMENT_PROFILE_CP9);
+  assert.equal(parseArguments([]).branch, REQUIRED_BRANCH);
+  assert.equal(resolveDeploymentProfile().id, DEPLOYMENT_PROFILE_CP9);
+  assert.equal(resolveDeploymentProfile(DEPLOYMENT_PROFILE_R1).branch, R1_REQUIRED_BRANCH);
+  assert.equal(R1_REQUIRED_BRANCH, "repair/phase-5b-r1-about-dark-v2-fidelity");
+  assert.equal(R1_PARENT_CP9_SHA, "011abd3e5fc7464d5a0133603d222110df13b820");
+  assert.equal(R1_CHECKPOINT_SUBJECT, "Repair Phase 5B About Dark V2 fidelity");
+  assert.equal(R1_CHECKPOINT_SUBJECTS.length, 10);
+  assert.equal(R1_CHECKPOINT_SUBJECTS.at(-1), R1_CHECKPOINT_SUBJECT);
+  assert.equal(R1_FIXED_CHECKPOINT_SHAS.length, 9);
+  assert.equal(R1_FIXED_CHECKPOINT_SHAS.at(-1), R1_PARENT_CP9_SHA);
+  assert.equal(DEPLOYMENT_PROFILES[DEPLOYMENT_PROFILE_R1].requiredBranchUrl, null);
+  assert.throws(() => resolveDeploymentProfile("phase5b-r2"), /--profile/);
+});
+
 test("CLI bindings require a new CP9 head, new deployment, exact account/project, and observed URLs", () => {
   const options = validOptions();
   assert.equal(options.expectedHead, FINAL_HEAD);
@@ -167,6 +229,22 @@ test("CLI bindings require a new CP9 head, new deployment, exact account/project
   assert.throws(() => validateOptions({ ...options, output: path.join(ROOT, REPORT_FILENAME) }), /outside/);
 });
 
+test("R1 CLI selects the repair branch and dynamically binds a fresh observed branch alias", () => {
+  const options = validR1Options();
+  assert.equal(options.profile, DEPLOYMENT_PROFILE_R1);
+  assert.equal(options.branch, R1_REQUIRED_BRANCH);
+  assert.equal(options.expectedHead, R1_FINAL_HEAD);
+  assert.equal(options.observedBranchUrl, R1_BRANCH_URL);
+  assert.equal(
+    validateOptions({ ...options, observedBranchUrl: "https://another-observed-r1-alias.qsite1.pages.dev/" }).observedBranchUrl,
+    "https://another-observed-r1-alias.qsite1.pages.dev/",
+  );
+  assert.throws(() => validateOptions({ ...options, expectedHead: R1_PARENT_CP9_SHA }), /new CP10/);
+  assert.throws(() => validateOptions({ ...options, branch: REQUIRED_BRANCH }), /--branch/);
+  assert.throws(() => validateOptions({ ...options, observedBranchUrl: REQUIRED_BRANCH_URL }), /cannot authorize/);
+  assert.throws(() => validateOptions({ ...options, observedBranchUrl: options.observedImmutableUrl }), /must be distinct/);
+});
+
 test("the exact nine-commit chain rejects rewritten CP1-CP8, missing CP9, merges, and wrong parents", () => {
   const records = parseLinearLog(serializedChain(), FINAL_HEAD);
   assert.equal(records.length, 9);
@@ -184,6 +262,27 @@ test("the exact nine-commit chain rejects rewritten CP1-CP8, missing CP9, merges
   const wrongParent = structuredClone(records); wrongParent[8].parents = [ACCEPTED_PHASE5AR_SHA];
   assert.throws(() => assertCheckpointChain(wrongParent, FINAL_HEAD), /linear child/);
   assert.throws(() => parseLinearLog(serializedChain(), "c".repeat(40)), /CP9 SHA/);
+});
+
+test("R1 chain requires the exact ten linear commits with fixed CP9 as the direct repair parent", () => {
+  const records = validR1Chain();
+  const parsed = parseLinearLog(serializedChain(records), R1_FINAL_HEAD, DEPLOYMENT_PROFILE_R1);
+  assert.equal(parsed.length, 10);
+  assert.equal(parsed[8].sha, R1_PARENT_CP9_SHA);
+  assert.equal(parsed[8].parents[0], CP8_HEAD_SHA);
+  assert.equal(parsed[9].parents[0], R1_PARENT_CP9_SHA);
+  assert.equal(parsed[9].subject, R1_CHECKPOINT_SUBJECT);
+  assert.equal(assertCheckpointChain(parsed, R1_FINAL_HEAD, DEPLOYMENT_PROFILE_R1), true);
+
+  assert.throws(() => assertCheckpointChain(parsed.slice(0, -1), R1_FINAL_HEAD, DEPLOYMENT_PROFILE_R1), /exactly 10/);
+  const rewrittenCp9 = structuredClone(parsed); rewrittenCp9[8].sha = "c".repeat(40);
+  assert.throws(() => assertCheckpointChain(rewrittenCp9, R1_FINAL_HEAD, DEPLOYMENT_PROFILE_R1), /CP9 SHA/);
+  const renamedRepair = structuredClone(parsed); renamedRepair[9].subject = "Repair About colors";
+  assert.throws(() => assertCheckpointChain(renamedRepair, R1_FINAL_HEAD, DEPLOYMENT_PROFILE_R1), /CP10 subject/);
+  const wrongParent = structuredClone(parsed); wrongParent[9].parents = [CP8_HEAD_SHA];
+  assert.throws(() => assertCheckpointChain(wrongParent, R1_FINAL_HEAD, DEPLOYMENT_PROFILE_R1), /linear child/);
+  const merge = structuredClone(parsed); merge[9].parents.push("d".repeat(40));
+  assert.throws(() => assertCheckpointChain(merge, R1_FINAL_HEAD, DEPLOYMENT_PROFILE_R1), /linear child/);
 });
 
 test("Cloudflare dashboard details and signed check bind account, project, UUID, CP9, and both URLs", () => {
@@ -205,6 +304,19 @@ test("Cloudflare dashboard details and signed check bind account, project, UUID,
   assert.throws(() => verifyCloudflareGithubCheck(options, wrongHead), /head differs/);
   const missingBranch = validCheckRun(options); missingBranch.output.summary = missingBranch.output.summary.replace(options.observedBranchUrl.slice(0, -1), "");
   assert.throws(() => verifyCloudflareGithubCheck(options, missingBranch), /both observed URLs/);
+});
+
+test("R1 signed Cloudflare check binds the dynamic alias, repair branch, UUID, and final head", () => {
+  const options = validR1Options();
+  const authority = verifyCloudflareGithubCheck(options, validCheckRun(options));
+  assert.equal(authority.branch, R1_REQUIRED_BRANCH);
+  assert.equal(authority.branchUrl, R1_BRANCH_URL);
+  assert.equal(authority.deploymentId, R1_DEPLOYMENT_ID);
+  assert.equal(authority.commitHash, R1_FINAL_HEAD);
+
+  const staleAlias = validCheckRun(options);
+  staleAlias.output.summary = staleAlias.output.summary.replace(R1_BRANCH_URL.slice(0, -1), REQUIRED_BRANCH_URL.slice(0, -1));
+  assert.throws(() => verifyCloudflareGithubCheck(options, staleAlias), /both observed URLs/);
 });
 
 test("headers are exact and real 404 permits no-store only with status and byte parity", () => {
@@ -303,6 +415,39 @@ test("self-test and dry-run execute without Git, build reads, network, or writes
   assert.equal(dryReport.cloudflare.deploymentId, DEPLOYMENT_ID);
 });
 
+test("R1 self-test and dry-run remain write-free while reporting the ten-commit authority", async () => {
+  assert.deepEqual(await selfTest(DEPLOYMENT_PROFILE_R1), {
+    status: "PASS",
+    tests: 11,
+    checkpointCount: 10,
+    pendingHumanGateCount: 6,
+    requiredHeaderPolicyCount: 4,
+    provisionalCp8Rejected: true,
+    profile: DEPLOYMENT_PROFILE_R1,
+    cp9ParentFixed: true,
+    branchUrlBinding: "observed-and-authority-bound",
+  });
+
+  const self = await execFileAsync(process.execPath, [SCRIPT, "--profile", DEPLOYMENT_PROFILE_R1, "--self-test"], { cwd: ROOT, windowsHide: true });
+  const selfReport = JSON.parse(self.stdout);
+  assert.equal(selfReport.status, "PASS");
+  assert.equal(selfReport.profile, DEPLOYMENT_PROFILE_R1);
+  assert.equal(selfReport.checkpointCount, 10);
+  assert.equal(selfReport.cp9ParentFixed, true);
+
+  const dry = await execFileAsync(process.execPath, [SCRIPT, ...validR1Arguments({ output: false, dryRun: true })], { cwd: ROOT, windowsHide: true });
+  const dryReport = JSON.parse(dry.stdout);
+  assert.equal(dryReport.status, "PASS");
+  assert.equal(dryReport.profile, DEPLOYMENT_PROFILE_R1);
+  assert.equal(dryReport.branch, R1_REQUIRED_BRANCH);
+  assert.equal(dryReport.checkpointCount, 10);
+  assert.equal(dryReport.cloudflare.branchUrl, R1_BRANCH_URL);
+  assert.equal(dryReport.filesystemReadsPerformed, false);
+  assert.equal(dryReport.gitCommandsPerformed, false);
+  assert.equal(dryReport.networkRequestsPerformed, false);
+  assert.equal(dryReport.writesPerformed, false);
+});
+
 test("module import is inert and contains no baked final CP9 deployment identity", async () => {
   const imported = await execFileAsync(process.execPath, [
     "--input-type=module",
@@ -318,4 +463,7 @@ test("module import is inert and contains no baked final CP9 deployment identity
   assert.equal(source.includes("verify-phase5ar-deployment.mjs"), false);
   assert.equal(source.includes(PROVISIONAL_CP8_DEPLOYMENT_ID), true);
   assert.equal(source.includes(PROVISIONAL_CP8_IMMUTABLE_URL), true);
+  assert.equal(source.includes(R1_FINAL_HEAD), false);
+  assert.equal(source.includes(R1_DEPLOYMENT_ID), false);
+  assert.equal(source.includes(R1_BRANCH_URL), false);
 });

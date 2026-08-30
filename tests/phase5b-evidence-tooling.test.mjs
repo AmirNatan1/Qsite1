@@ -8,6 +8,9 @@ import { fileURLToPath } from "node:url";
 
 import {
   ACCEPTED_STORYBOARD_FILE_COUNT,
+  ALLOWED_CAPTURE_BRANCHES,
+  AUDIENCE_HEADING,
+  AUDIENCE_LINKS,
   CAPTURE_VIEWS,
   CP7_SCHEMA,
   CP8_SCHEMA,
@@ -17,10 +20,14 @@ import {
   MOTION_ROUTE_IDS,
   RECORDING_VIEW,
   REPORT_PATH,
+  REQUIRED_BRANCH,
   REVIEW_TARGET_MAX_BYTES,
+  R1_REPAIR_BRANCH,
   ROUTES,
   SCHEMA,
   STORYBOARD_SCHEMA,
+  audienceFrameScrollTarget,
+  audienceFramingResult,
   expectedStoryboardFiles,
   homeRegressionResult,
   mediaPolicyResult,
@@ -116,6 +123,35 @@ function request(pathname, resourceType = "image") {
   return { path: pathname, resourceType, url: `${DEPLOYMENT_URL.slice(0, -1)}${pathname}` };
 }
 
+function audienceFramingObservation() {
+  return {
+    viewport: { width: 1440, height: 900 },
+    headerBottom: 120,
+    navigationReleased: true,
+    scrollY: 7485,
+    heading: {
+      tagName: "h2",
+      role: null,
+      text: AUDIENCE_HEADING,
+      href: null,
+      displayed: true,
+      visible: true,
+      opacity: 1,
+      rect: { top: 180, right: 620, bottom: 320, left: 48, width: 572, height: 140 },
+    },
+    links: AUDIENCE_LINKS.map((link, index) => ({
+      tagName: "a",
+      role: null,
+      ...link,
+      audienceLabel: link.text,
+      displayed: true,
+      visible: true,
+      opacity: 1,
+      rect: { top: 190 + index * 280, right: 1390, bottom: 390 + index * 280, left: 720, width: 670, height: 200 },
+    })),
+  };
+}
+
 test("CP9 topology is exact, compact and package-ready", () => {
   assert.equal(SCHEMA, "quantum-hub.phase-5b.deployed-browser-evidence.v1");
   assert.equal(ROUTES.length, 9);
@@ -143,7 +179,7 @@ test("CP9 topology is exact, compact and package-ready", () => {
   assert.equal(REVIEW_TARGET_MAX_BYTES, 50 * 1024 * 1024);
 });
 
-test("CP9 CLI requires deployed authority and a disjoint fresh external output intent", () => {
+test("CP9-default and exact R1 CLI branches retain deployed authority and disjoint fresh output intent", () => {
   const external = path.resolve(ROOT, "..", "phase-5b-work", "cp9-tooling-fixture");
   const options = parseArguments([
     "--deployment-url", DEPLOYMENT_URL,
@@ -155,6 +191,10 @@ test("CP9 CLI requires deployed authority and a disjoint fresh external output i
     "--dry-run",
   ]);
   assert.equal(validateOptions(options), options);
+  assert.equal(options.expectedBranch, REQUIRED_BRANCH);
+  assert.deepEqual(ALLOWED_CAPTURE_BRANCHES, [REQUIRED_BRANCH, R1_REPAIR_BRANCH]);
+  assert.equal(Object.isFrozen(ALLOWED_CAPTURE_BRANCHES), true);
+  assert.equal(parseArguments(["--expected-branch", R1_REPAIR_BRANCH]).expectedBranch, R1_REPAIR_BRANCH);
   assert.equal(options.url, DEPLOYMENT_URL);
   assert.equal(options.ffmpeg, DEFAULT_FFMPEG);
   assert.equal(options.ffprobe, DEFAULT_FFPROBE);
@@ -162,6 +202,8 @@ test("CP9 CLI requires deployed authority and a disjoint fresh external output i
   assert.throws(() => normalizeDeploymentUrl("http://127.0.0.1:4338/"), /non-loopback HTTPS/);
   assert.throws(() => normalizeDeploymentUrl("https://qsite1.pages.dev/"), /preview origin/);
   assert.throws(() => validateOptions({ ...options, expectedHead: "short" }), /40-character/);
+  assert.equal(validateOptions({ ...options, expectedBranch: R1_REPAIR_BRANCH }).expectedBranch, R1_REPAIR_BRANCH);
+  assert.throws(() => validateOptions({ ...options, expectedBranch: "repair/unrecognized" }), /must be one of/);
   assert.throws(() => validateOptions({ ...options, output: path.join(ROOT, "evidence") }), /outside the repository/);
   assert.throws(() => validateOptions({ ...options, output: path.join(options.storyboardRoot, "nested") }), /disjoint/);
 });
@@ -217,18 +259,49 @@ test("CP9 recording contract requires compact silent H.264/yuv420p constant-30 M
 });
 
 test("CP9 compact Home regression includes CRT/current/Q, manifesto, audience and final-response Operating Field", () => {
+  const audienceFraming = audienceFramingResult(audienceFramingObservation());
   const states = {
     crtStartup: { mode: "enhanced", mediaReady: true, segment: "top-dormancy" },
     current: { targetFrame: 316, segment: "raster-expansion" },
     q: { targetFrame: 370, presentedFrame: 370 },
     manifesto: { manifestoSettled: true, semanticProgress: 1, manifestoText: "We turn industrial needs into field evidence.", navigationReleased: false },
     audience: { navigationReleased: true, audienceVisible: true, audienceLinks: ["/for-partners/", "/for-startups/"], wheelEvents: 9, programmaticScrollCalls: 0 },
+    audienceFraming,
     operatingField: { serverRendered: true, afterAudience: true, reachedByNativeScroll: true, h2: "Start with the operating reality.", acceptedText: true },
   };
   assert.equal(homeRegressionResult(states).status, "PASS");
   assert.equal(homeRegressionResult({ ...states, operatingField: { ...states.operatingField, afterAudience: false } }).status, "FAIL");
   assert.equal(homeRegressionResult({ ...states, q: { ...states.q, presentedFrame: 369 } }).status, "FAIL");
   assert.equal(homeRegressionResult({ ...states, audience: { ...states.audience, programmaticScrollCalls: 1 } }).status, "FAIL");
+  assert.equal(homeRegressionResult({ ...states, audienceFraming: { ...audienceFraming, status: "FAIL" } }).status, "FAIL");
+});
+
+test("audience review framing preserves release proof and requires the H2 plus both ordinary links fully below fixed chrome", () => {
+  assert.equal(audienceFrameScrollTarget({ audienceTop: 7605, headerBottom: 120, maxScrollY: 20_000 }), 7485);
+  assert.equal(audienceFrameScrollTarget({ audienceTop: 7605, headerBottom: 120, maxScrollY: 7000 }), 7000);
+  assert.throws(() => audienceFrameScrollTarget({ audienceTop: 7605, headerBottom: -1, maxScrollY: 20_000 }), /finite non-negative/);
+
+  const observation = audienceFramingObservation();
+  const framed = audienceFramingResult(observation);
+  assert.equal(framed.status, "PASS");
+  assert.deepEqual(framed.checks, {
+    finiteViewportAndHeader: true,
+    navigationReleased: true,
+    exactHeading: true,
+    headingFullyVisibleBelowHeader: true,
+    exactOrdinaryLinks: true,
+    linksFullyVisibleBelowHeader: true,
+  });
+
+  const obscuredHeading = structuredClone(observation);
+  obscuredHeading.heading.rect.top = 90;
+  assert.equal(audienceFramingResult(obscuredHeading).checks.headingFullyVisibleBelowHeader, false);
+  const clippedLink = structuredClone(observation);
+  clippedLink.links[1].rect.bottom = 920;
+  assert.equal(audienceFramingResult(clippedLink).checks.linksFullyVisibleBelowHeader, false);
+  const disguisedControl = structuredClone(observation);
+  disguisedControl.links[0].role = "button";
+  assert.equal(audienceFramingResult(disguisedControl).checks.exactOrdinaryLinks, false);
 });
 
 test("CP9 ledger and report are exact, self-excluding, private-path-free and human-pending", () => {
@@ -272,8 +345,16 @@ test("CP9 executable is import-safe and contains real deployed evidence mechanis
     /removeOwnedRawRoot/,
     /PRIVATE_TEXT/,
     /Start with the operating reality\./,
+    /repair\/phase-5b-r1-about-dark-v2-fidelity/,
+    /audienceFrameScrollTarget/,
+    /waitForAudienceFraming/,
+    /One operating field\. Two trajectories\./,
+    /exactHead: head === options\.expectedHead/,
+    /exactBranch: branch === options\.expectedBranch/,
+    /cleanTree: statusText === ""/,
   ]) assert.match(source, pattern);
   assert.match(source, /await nativeWheelTo\(page, 0,[\s\S]*?const reverseEnd = await page\.evaluate[\s\S]*?const axeResult = axe/);
+  assert.match(source, /nativeWheelTo\(page, addresses\.audienceVisible[\s\S]*?const audience = await observeHomeState\(page\)[\s\S]*?audienceFrameScrollTarget\(geometry\)[\s\S]*?waitForAudienceFraming\(page[\s\S]*?homepage\/audience-split\.png/);
   assert.doesNotMatch(source, /git\s+(?:commit|push)|package-phase5b|modify main/i);
 });
 

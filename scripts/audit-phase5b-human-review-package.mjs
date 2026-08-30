@@ -53,6 +53,59 @@ export const CHECKPOINT_SUBJECTS = Object.freeze([
 ]);
 export const FIXED_CHECKPOINT_SHAS = Object.freeze(["1fcc260fc51810934b160eec38971184db2008e1", "58a87e333cca47b2495c373d2c934e69ec25d290", "5458b5d74411ac16b83874b725cc021605851326", "996c9a05a0f8a3a810f0d47a0288c12fac430093", "11952af17bb1cdb3f079902dfb5300ddafe42594", "508d54a517b9c28ac683fb3257df3afad24b72bb", CP7_HEAD, CP8_HEAD]);
 
+export const DEFAULT_PROFILE = "cp9";
+export const R1_PROFILE = "r1";
+export const R1_PACKAGE_SCHEMA = "quantum-hub.phase-5b-r1.about-dark-v2-fidelity-human-review.v1";
+export const R1_DETACHED_SCHEMA = `${R1_PACKAGE_SCHEMA}.detached-manifest`;
+export const R1_AUDIT_SCHEMA = `${R1_PACKAGE_SCHEMA}.independent-audit`;
+export const R1_ARCHIVE_FILENAME = "phase-5b-r1-about-dark-v2-fidelity-human-review.zip";
+export const R1_DETACHED_MANIFEST_FILENAME = "phase-5b-r1-about-dark-v2-fidelity-human-review-manifest.json";
+export const R1_AUDIT_FILENAME = "phase-5b-r1-about-dark-v2-fidelity-human-review-audit.json";
+export const R1_REQUIRED_BRANCH = "repair/phase-5b-r1-about-dark-v2-fidelity";
+export const R1_REQUIRED_BRANCH_URL = null;
+export const R1_PARENT_SHA = "011abd3e5fc7464d5a0133603d222110df13b820";
+export const R1_COMMIT_SUBJECT = "Repair Phase 5B About Dark V2 fidelity";
+export const R1_PRODUCTION_DELTA = Object.freeze(["M\tsrc/styles/routes/about.css"]);
+export const R1_CHECKPOINT_SUBJECTS = Object.freeze([...CHECKPOINT_SUBJECTS, R1_COMMIT_SUBJECT]);
+export const R1_FIXED_CHECKPOINT_SHAS = Object.freeze([...FIXED_CHECKPOINT_SHAS, R1_PARENT_SHA]);
+
+const REVIEW_PROFILES = Object.freeze({
+  [DEFAULT_PROFILE]: Object.freeze({
+    id: DEFAULT_PROFILE,
+    packageSchema: PACKAGE_SCHEMA,
+    detachedSchema: DETACHED_SCHEMA,
+    auditSchema: AUDIT_SCHEMA,
+    archiveFilename: ARCHIVE_FILENAME,
+    detachedManifestFilename: DETACHED_MANIFEST_FILENAME,
+    auditFilename: AUDIT_FILENAME,
+    requiredBranch: REQUIRED_BRANCH,
+    requiredBranchUrl: REQUIRED_BRANCH_URL,
+    checkpointSubjects: CHECKPOINT_SUBJECTS,
+    fixedCheckpointShas: FIXED_CHECKPOINT_SHAS,
+    exactParent: null,
+  }),
+  [R1_PROFILE]: Object.freeze({
+    id: R1_PROFILE,
+    packageSchema: R1_PACKAGE_SCHEMA,
+    detachedSchema: R1_DETACHED_SCHEMA,
+    auditSchema: R1_AUDIT_SCHEMA,
+    archiveFilename: R1_ARCHIVE_FILENAME,
+    detachedManifestFilename: R1_DETACHED_MANIFEST_FILENAME,
+    auditFilename: R1_AUDIT_FILENAME,
+    requiredBranch: R1_REQUIRED_BRANCH,
+    requiredBranchUrl: R1_REQUIRED_BRANCH_URL,
+    checkpointSubjects: R1_CHECKPOINT_SUBJECTS,
+    fixedCheckpointShas: R1_FIXED_CHECKPOINT_SHAS,
+    exactParent: R1_PARENT_SHA,
+  }),
+});
+
+export function reviewProfile(value = DEFAULT_PROFILE) {
+  const profile = REVIEW_PROFILES[String(value ?? DEFAULT_PROFILE).toLowerCase()];
+  if (!profile) throw new Error(`--profile must be ${DEFAULT_PROFILE} or ${R1_PROFILE}`);
+  return profile;
+}
+
 export const ROUTES = Object.freeze([
   Object.freeze({ id: "for-industry", mode: "C" }),
   Object.freeze({ id: "for-startups", mode: "C" }),
@@ -343,15 +396,28 @@ function normalizePreview(value, label) {
   return url.toString();
 }
 function validateExpected(input) {
-  const expected = { ...input }; expected.expectedUpstream ??= expected.expectedHead;
+  const expected = { ...input };
+  const profile = reviewProfile(expected.profile);
+  expected.profile = profile.id;
+  expected.expectedBranch ??= profile.requiredBranch;
+  expected.expectedUpstream ??= expected.expectedHead;
   if (!HASH40.test(expected.expectedHead ?? "") || expected.expectedUpstream !== expected.expectedHead) throw new Error("expected HEAD/upstream differ");
-  if (expected.expectedBranch !== REQUIRED_BRANCH || expected.expectedMain !== FROZEN_MAIN_SHA || expected.acceptedPhase5AR !== ACCEPTED_PHASE5AR_SHA) throw new Error("Git authority constants differ");
+  if (expected.expectedBranch !== profile.requiredBranch || expected.expectedMain !== FROZEN_MAIN_SHA || expected.acceptedPhase5AR !== ACCEPTED_PHASE5AR_SHA) throw new Error("Git authority constants differ");
+  if (profile.id === R1_PROFILE && expected.expectedHead === R1_PARENT_SHA) throw new Error("R1 expected HEAD must be the new repair commit, not its exact CP9 parent");
   if (!UUID.test(expected.expectedDeploymentId ?? "") || expected.deploymentProject !== REQUIRED_PROJECT) throw new Error("deployment identity differs");
   expected.immutableUrl = normalizePreview(expected.immutableUrl, "immutable URL"); expected.branchUrl = normalizePreview(expected.branchUrl, "branch URL");
   if (expected.immutableUrl === expected.branchUrl) throw new Error("deployment URLs must differ");
-  if (expected.branchUrl !== REQUIRED_BRANCH_URL) throw new Error("branch URL differs from its exact authority");
+  if (profile.requiredBranchUrl && expected.branchUrl !== profile.requiredBranchUrl) throw new Error("branch URL differs from its exact authority");
+  if (!profile.requiredBranchUrl && expected.branchUrl === REQUIRED_BRANCH_URL) throw new Error("the accepted Phase 5B CP9 branch URL cannot authorize the R1 repair package");
   if (new URL(expected.immutableUrl).hostname !== `${expected.expectedDeploymentId.split("-")[0].toLowerCase()}.${REQUIRED_PROJECT}.pages.dev`) throw new Error("immutable URL does not match deployment UUID prefix");
   return expected;
+}
+
+function validateProfileBinding(document, profile, label) {
+  if (profile.id !== R1_PROFILE) return true;
+  if (document.profile !== R1_PROFILE) throw new Error(`${label} omits the R1 profile binding`);
+  assert.deepEqual(document.repair, { exactParent: R1_PARENT_SHA, commitSubject: R1_COMMIT_SUBJECT, productionDelta: [...R1_PRODUCTION_DELTA] }, `${label} R1 repair binding differs`);
+  return true;
 }
 
 async function validateMediaEntries(entries, ledger, ffprobe) {
@@ -374,6 +440,7 @@ async function validateMediaEntries(entries, ledger, ffprobe) {
 }
 
 async function validateLocalGit(expected) {
+  const profile = reviewProfile(expected.profile);
   const values = await Promise.all([
     run("git", ["rev-parse", "HEAD"], "independent Git HEAD"),
     run("git", ["rev-parse", "@{upstream}"], "independent Git upstream"),
@@ -383,24 +450,36 @@ async function validateLocalGit(expected) {
     run("git", ["status", "--porcelain=v1", "--untracked-files=all"], "independent clean tree"),
   ]);
   const [head, upstream, branch, localMain, originMain, statusText] = values.map(({ stdout }) => stdout.trim());
-  if (head !== expected.expectedHead || upstream !== expected.expectedUpstream || branch !== REQUIRED_BRANCH || localMain !== FROZEN_MAIN_SHA || originMain !== FROZEN_MAIN_SHA || statusText) throw new Error("independent live Git authority differs");
-  return { head, upstream, branch, localMain, originMain, cleanTree: true };
+  if (head !== expected.expectedHead || upstream !== expected.expectedUpstream || branch !== profile.requiredBranch || localMain !== FROZEN_MAIN_SHA || originMain !== FROZEN_MAIN_SHA || statusText) throw new Error("independent live Git authority differs");
+  if (profile.id !== R1_PROFILE) return { head, upstream, branch, localMain, originMain, cleanTree: true };
+  const [{ stdout: parentText }, { stdout: subjectText }, { stdout: deltaText }] = await Promise.all([
+    run("git", ["rev-parse", "HEAD^"], "independent R1 Git parent"),
+    run("git", ["show", "-s", "--format=%s", "HEAD"], "independent R1 Git subject"),
+    run("git", ["diff", "--name-status", "--no-renames", `${R1_PARENT_SHA}..HEAD`, "--", "src", "public", "astro.config.mjs"], "independent R1 production delta"),
+  ]);
+  const parent = parentText.trim();
+  const commitSubject = subjectText.trim();
+  const productionDelta = deltaText.trim().split(/\r?\n/).filter(Boolean);
+  if (parent !== R1_PARENT_SHA || commitSubject !== R1_COMMIT_SUBJECT || JSON.stringify(productionDelta) !== JSON.stringify(R1_PRODUCTION_DELTA)) throw new Error("independent live R1 parent/subject/production delta differs");
+  return { head, upstream, branch, localMain, originMain, cleanTree: true, profile: R1_PROFILE, repair: { exactParent: parent, commitSubject, productionDelta } };
 }
 
 export async function auditBuffers({ archiveBytes, detachedBytes, expected: inputExpected, ffprobe = null, validateMedia = false, validateGit = false } = {}) {
   const expected = validateExpected(inputExpected);
+  const profile = reviewProfile(expected.profile);
   const parsed = parseStoredZip(archiveBytes); const { entries } = parsed;
   exactPaths(entries.keys(), [...expectedPackagePayloadPaths(), README_FILENAME, IN_ARCHIVE_MANIFEST], "archive topology");
   for (const [relativePath, bytes] of entries) { assertAllowedEntry(relativePath); assertNoPrivateText(bytes, relativePath); }
   const manifest = parseJsonEntry(entries, IN_ARCHIVE_MANIFEST);
   let detached; try { detached = JSON.parse(Buffer.from(detachedBytes).toString("utf8")); } catch { throw new Error("detached manifest is invalid JSON"); }
-  assertNoPrivateText(detachedBytes, DETACHED_MANIFEST_FILENAME);
-  if (manifest.schema !== PACKAGE_SCHEMA || detached.schema !== DETACHED_SCHEMA || detached.status !== "PASS") throw new Error("package/detached schema or status differs");
+  assertNoPrivateText(detachedBytes, profile.detachedManifestFilename);
+  if (manifest.schema !== profile.packageSchema || detached.schema !== profile.detachedSchema || detached.status !== "PASS") throw new Error("package/detached schema or status differs");
+  validateProfileBinding(manifest, profile, "in-archive manifest"); validateProfileBinding(detached, profile, "detached manifest");
   validateReviewPolicy(manifest); validateReviewPolicy(detached);
-  if (archiveBytes.length > MAX_ARCHIVE_BYTES || detached.archive?.filename !== ARCHIVE_FILENAME || detached.archive?.byteSize !== archiveBytes.length || detached.archive?.sha256 !== sha256(archiveBytes) || detached.archive?.entries !== entries.size || detached.archive?.canonicalUniqueStoredZip !== true) throw new Error("detached archive binding differs");
+  if (archiveBytes.length > MAX_ARCHIVE_BYTES || detached.archive?.filename !== profile.archiveFilename || detached.archive?.byteSize !== archiveBytes.length || detached.archive?.sha256 !== sha256(archiveBytes) || detached.archive?.entries !== entries.size || detached.archive?.canonicalUniqueStoredZip !== true) throw new Error("detached archive binding differs");
   const manifestBytes = entries.get(IN_ARCHIVE_MANIFEST);
-  if (detached.inArchiveManifest?.path !== IN_ARCHIVE_MANIFEST || detached.inArchiveManifest?.byteSize !== manifestBytes.length || detached.inArchiveManifest?.sha256 !== sha256(manifestBytes) || detached.inArchiveManifest?.schema !== PACKAGE_SCHEMA) throw new Error("detached in-archive manifest binding differs");
-  if (manifest.git?.head !== expected.expectedHead || manifest.git?.upstream !== expected.expectedUpstream || manifest.git?.branch !== REQUIRED_BRANCH || manifest.git?.main !== FROZEN_MAIN_SHA || manifest.git?.acceptedPhase5AR !== ACCEPTED_PHASE5AR_SHA || manifest.git?.cleanTree !== true) throw new Error("manifest Git binding differs");
+  if (detached.inArchiveManifest?.path !== IN_ARCHIVE_MANIFEST || detached.inArchiveManifest?.byteSize !== manifestBytes.length || detached.inArchiveManifest?.sha256 !== sha256(manifestBytes) || detached.inArchiveManifest?.schema !== profile.packageSchema) throw new Error("detached in-archive manifest binding differs");
+  if (manifest.git?.head !== expected.expectedHead || manifest.git?.upstream !== expected.expectedUpstream || manifest.git?.branch !== profile.requiredBranch || manifest.git?.main !== FROZEN_MAIN_SHA || manifest.git?.acceptedPhase5AR !== ACCEPTED_PHASE5AR_SHA || manifest.git?.cleanTree !== true) throw new Error("manifest Git binding differs");
   for (const [name, value] of [["deployment ID", expected.expectedDeploymentId], ["project", REQUIRED_PROJECT], ["immutable URL", expected.immutableUrl], ["branch URL", expected.branchUrl]]) if (!containsScalar(manifest.deployment, value)) throw new Error(`manifest omits ${name}`);
   const exactInventory = { evidenceSourceFiles: 127, evidenceLedgerArtifacts: 126, crossRouteFiles: 5, routeFolders: 9, deployedRouteFiles: 115, acceptedStoryboardFiles: 18, homepageRegressionFiles: 6, reportFiles: 13, images: 90, videos: 8, hashedNonSelfFiles: 158, archiveEntries: 159, maximumArchiveBytes: MAX_ARCHIVE_BYTES };
   for (const [key, value] of Object.entries(exactInventory)) if (manifest.inventory?.[key] !== value) throw new Error(`manifest inventory differs: ${key}`);
@@ -455,13 +534,14 @@ export async function auditBuffers({ archiveBytes, detachedBytes, expected: inpu
   if (deployment.humanReview?.allSixPending !== true || deployment.authorization?.phase6Authorized !== false) throw new Error("deployment review authorization differs");
   for (const value of [expected.expectedHead, expected.expectedDeploymentId, REQUIRED_PROJECT, expected.immutableUrl, expected.branchUrl]) if (!containsScalar(deployment, value)) throw new Error(`deployment authority omits ${value}`);
   const gitReport = parseJsonEntry(entries, REPORT_PATHS.git);
-  if (gitReport.status !== "PASS" || gitReport.head !== expected.expectedHead || gitReport.upstream !== expected.expectedUpstream || gitReport.branch !== REQUIRED_BRANCH || gitReport.localMain !== FROZEN_MAIN_SHA || gitReport.originMain !== FROZEN_MAIN_SHA || gitReport.acceptedPhase5AR !== ACCEPTED_PHASE5AR_SHA || gitReport.cleanTree !== true || !Array.isArray(gitReport.commits) || gitReport.commits.length !== CHECKPOINT_SUBJECTS.length || gitReport.commits.at(-1)?.sha !== expected.expectedHead) throw new Error("archived Git report differs");
+  if (gitReport.schema !== `${profile.packageSchema}.git-provenance` || gitReport.status !== "PASS" || gitReport.head !== expected.expectedHead || gitReport.upstream !== expected.expectedUpstream || gitReport.branch !== profile.requiredBranch || gitReport.localMain !== FROZEN_MAIN_SHA || gitReport.originMain !== FROZEN_MAIN_SHA || gitReport.acceptedPhase5AR !== ACCEPTED_PHASE5AR_SHA || gitReport.cleanTree !== true || !Array.isArray(gitReport.commits) || gitReport.commits.length !== profile.checkpointSubjects.length || gitReport.commits.at(-1)?.sha !== expected.expectedHead) throw new Error("archived Git report differs");
+  validateProfileBinding(gitReport, profile, "archived Git report");
   for (let index = 0; index < gitReport.commits.length; index += 1) {
-    const record = gitReport.commits[index]; const expectedSha = index < FIXED_CHECKPOINT_SHAS.length ? FIXED_CHECKPOINT_SHAS[index] : expected.expectedHead; const expectedParent = index === 0 ? ACCEPTED_PHASE5AR_SHA : gitReport.commits[index - 1].sha;
-    if (record.sha !== expectedSha || record.subject !== CHECKPOINT_SUBJECTS[index] || record.parents?.length !== 1 || record.parents[0] !== expectedParent) throw new Error(`archived Git CP${index + 1} differs`);
+    const record = gitReport.commits[index]; const expectedSha = index < profile.fixedCheckpointShas.length ? profile.fixedCheckpointShas[index] : expected.expectedHead; const expectedParent = index === 0 ? ACCEPTED_PHASE5AR_SHA : gitReport.commits[index - 1].sha;
+    if (record.sha !== expectedSha || record.subject !== profile.checkpointSubjects[index] || record.parents?.length !== 1 || record.parents[0] !== expectedParent) throw new Error(`archived Git CP${index + 1} differs`);
   }
   const build = parseJsonEntry(entries, REPORT_PATHS.build);
-  if (build.status !== "PASS" || build.totalBytes > MAX_DIST_BYTES || build.maximumBytes !== MAX_DIST_BYTES || build.sourceMaps !== 0 || build.serverRuntime !== false || !Array.isArray(build.files) || build.files.length !== build.fileCount) throw new Error("archived build report differs");
+  if (build.schema !== `${profile.packageSchema}.build-budget` || build.status !== "PASS" || build.totalBytes > MAX_DIST_BYTES || build.maximumBytes !== MAX_DIST_BYTES || build.sourceMaps !== 0 || build.serverRuntime !== false || !Array.isArray(build.files) || build.files.length !== build.fileCount) throw new Error("archived build report differs");
   for (const [relativePath, hash] of Object.entries(ACTIVE_MEDIA_SHA256)) if (!build.activeMedia?.some((record) => record.relativePath === relativePath && record.sha256 === hash)) throw new Error(`build media authority differs: ${relativePath}`);
   const deployedDist = new Map();
   for (const record of deployment.dist?.files ?? []) {
@@ -478,27 +558,37 @@ export async function auditBuffers({ archiveBytes, detachedBytes, expected: inpu
   if (deployment.dist?.totals?.files !== build.fileCount || deployment.dist?.totals?.bytes !== build.totalBytes) throw new Error("deployment/build dist totals differ");
   const readme = entries.get(README_FILENAME).toString("utf8");
   if (!/All six Phase 5B gates remain \*\*PENDING HUMAN REVIEW\*\*/.test(readme) || !/Phase 6 remains \*\*UNAUTHORIZED\*\*/.test(readme) || !/no raw frames, source assets, prototype internals, Blender files/i.test(readme)) throw new Error("README review/boundary policy differs");
+  if (profile.id === R1_PROFILE && (!/^# Quantum-Hub Phase 5B-R1 About Dark V2 fidelity — human review/m.test(readme) || !/^## R1 review focus/m.test(readme) || !/src\/styles\/routes\/about\.css/.test(readme))) throw new Error("README R1 focus differs");
   const media = validateMedia ? await validateMediaEntries(entries, ledger, ffprobe) : { images: imageCount, videos: videoCount };
   const repository = validateGit ? await validateLocalGit(expected) : null;
   return { manifest, detached, entries, ledger, media, repository, canonical: parsed.canonical, crcValidated: parsed.crcValidated, privacyAndSecrets: "PASS", reviewPolicy: "PASS" };
 }
 
-export function selfTest() {
+export function selfTest(profileValue = DEFAULT_PROFILE) {
+  const profile = reviewProfile(profileValue);
   assert.equal(expectedEvidenceArtifactPaths().length, 126); assert.equal(expectedPackagePayloadPaths().length, 157);
   assert.equal(expectedPackagePayloadPaths().filter((item) => IMAGE_EXTENSIONS.has(path.posix.extname(item))).length, 90);
   assert.equal(expectedPackagePayloadPaths().filter((item) => VIDEO_EXTENSIONS.has(path.posix.extname(item))).length, 8);
   assert.equal(Object.keys(HUMAN_REVIEW_GATES).length, 6); assert.ok(Object.values(AUTHORIZATION).every((value) => value === false));
+  assert.equal(profile.checkpointSubjects.length, profile.id === R1_PROFILE ? 10 : 9);
+  assert.equal(profile.fixedCheckpointShas.length, profile.checkpointSubjects.length - 1);
+  if (profile.id === R1_PROFILE) {
+    assert.equal(profile.exactParent, R1_PARENT_SHA);
+    assert.equal(profile.checkpointSubjects.at(-1), R1_COMMIT_SUBJECT);
+    assert.equal(profile.fixedCheckpointShas.at(-1), R1_PARENT_SHA);
+  }
   const entries = new Map([[IN_ARCHIVE_MANIFEST, Buffer.from("{}\n")], [README_FILENAME, Buffer.from("review\n")]]); const zip = rebuildStoredZip(entries); const parsed = parseStoredZip(zip);
   assert.deepEqual([...parsed.entries.keys()], [IN_ARCHIVE_MANIFEST, README_FILENAME]);
-  return { schema: `${AUDIT_SCHEMA}.self-test`, status: "PASS", evidenceArtifacts: 126, packagePayloadFiles: 157, archiveEntries: 159, images: 90, videos: 8, gatesPending: 6, phase6Authorized: false, canonicalParser: true };
+  return { schema: `${profile.auditSchema}.self-test`, status: "PASS", ...(profile.id === R1_PROFILE ? { profile: profile.id } : {}), evidenceArtifacts: 126, packagePayloadFiles: 157, archiveEntries: 159, images: 90, videos: 8, gatesPending: 6, phase6Authorized: false, canonicalParser: true };
 }
 
 function valueAfter(argv, index, flag) { const value = argv[index + 1]; if (!value || value.startsWith("--")) throw new Error(`${flag} requires a value`); return value; }
 export function parseArguments(argv) {
-  const options = { archive: null, manifest: null, auditOutput: null, expectedHead: null, expectedUpstream: null, expectedBranch: REQUIRED_BRANCH, expectedMain: FROZEN_MAIN_SHA, acceptedPhase5AR: ACCEPTED_PHASE5AR_SHA, expectedDeploymentId: null, deploymentProject: REQUIRED_PROJECT, immutableUrl: null, branchUrl: null, ffprobe: null, expectedParentProcessId: null, selfTest: false, dryRun: false, help: false };
+  const options = { profile: DEFAULT_PROFILE, archive: null, manifest: null, auditOutput: null, expectedHead: null, expectedUpstream: null, expectedBranch: null, expectedMain: FROZEN_MAIN_SHA, acceptedPhase5AR: ACCEPTED_PHASE5AR_SHA, expectedDeploymentId: null, deploymentProject: REQUIRED_PROJECT, immutableUrl: null, branchUrl: null, ffprobe: null, expectedParentProcessId: null, selfTest: false, dryRun: false, help: false };
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index]; const next = () => { const value = valueAfter(argv, index, argument); index += 1; return value; };
-    if (argument === "--archive") options.archive = path.resolve(next());
+    if (argument === "--profile") options.profile = next().toLowerCase();
+    else if (argument === "--archive") options.archive = path.resolve(next());
     else if (argument === "--manifest") options.manifest = path.resolve(next());
     else if (argument === "--audit-output") options.auditOutput = path.resolve(next());
     else if (argument === "--expected-head") options.expectedHead = next().toLowerCase();
@@ -517,12 +607,16 @@ export function parseArguments(argv) {
     else if (argument === "--help" || argument === "-h") options.help = true;
     else throw new Error(`unknown option: ${argument}`);
   }
+  const profile = reviewProfile(options.profile);
+  options.profile = profile.id;
+  options.expectedBranch ??= profile.requiredBranch;
   return options;
 }
 
 async function auditArchive(input) {
   const expected = validateExpected(input);
-  for (const [key, basename, label] of [["archive", ARCHIVE_FILENAME, "archive"], ["manifest", DETACHED_MANIFEST_FILENAME, "detached manifest"], ["auditOutput", AUDIT_FILENAME, "audit output"]]) {
+  const profile = reviewProfile(expected.profile);
+  for (const [key, basename, label] of [["archive", profile.archiveFilename, "archive"], ["manifest", profile.detachedManifestFilename, "detached manifest"], ["auditOutput", profile.auditFilename, "audit output"]]) {
     if (!input[key] || path.basename(input[key]) !== basename) throw new Error(`${label} basename must be ${basename}`);
     assertExternalPath(input[key], label);
   }
@@ -532,11 +626,12 @@ async function auditArchive(input) {
   const [archiveBytes, detachedBytes] = await Promise.all([readFile(archivePath), readFile(manifestPath)]);
   const result = await auditBuffers({ archiveBytes, detachedBytes, expected, ffprobe, validateMedia: true, validateGit: true });
   const audit = {
-    schema: AUDIT_SCHEMA,
+    schema: profile.auditSchema,
     status: "PASS",
+    ...(profile.id === R1_PROFILE ? { profile: profile.id, repair: result.manifest.repair } : {}),
     generatedAt: result.manifest.generatedAt,
-    archive: { filename: ARCHIVE_FILENAME, byteSize: archiveBytes.length, sha256: sha256(archiveBytes), entries: result.entries.size, canonicalUniqueStoredZip: true, crcValidated: true },
-    detachedManifest: { filename: DETACHED_MANIFEST_FILENAME, byteSize: detachedBytes.length, sha256: sha256(detachedBytes), archiveBinding: true, inArchiveManifestBinding: true },
+    archive: { filename: profile.archiveFilename, byteSize: archiveBytes.length, sha256: sha256(archiveBytes), entries: result.entries.size, canonicalUniqueStoredZip: true, crcValidated: true },
+    detachedManifest: { filename: profile.detachedManifestFilename, byteSize: detachedBytes.length, sha256: sha256(detachedBytes), archiveBinding: true, inArchiveManifestBinding: true },
     contract: { evidenceSourceFiles: 127, evidenceLedgerArtifacts: 126, crossRouteFiles: 5, routeFolders: 9, deployedRouteFiles: 115, acceptedStoryboardFiles: 18, homepageRegressionFiles: 6, reportFiles: 13, images: result.media.images, videos: result.media.videos, rawFrames: 0, rawAssets: 0, sourceFiles: 0, prototypes: 0, blenderFiles: 0, historyDumps: 0, nestedArchives: 0, privacyAndSecrets: "PASS" },
     repository: result.repository,
     process: { separateProcess: true },
@@ -545,19 +640,23 @@ async function auditArchive(input) {
     policy: { phase6: "UNAUTHORIZED", pendingGateCount: 6, machinePassGrantsHumanAcceptance: false },
     conclusion: { machineIntegrityPassOnly: true, humanAcceptanceGranted: false, phase6Authorized: false },
   };
-  validateReviewPolicy(audit); const bytes = Buffer.from(stableJson(audit)); assertNoPrivateText(bytes, AUDIT_FILENAME);
+  validateProfileBinding(audit, profile, "independent audit"); validateReviewPolicy(audit); const bytes = Buffer.from(stableJson(audit)); assertNoPrivateText(bytes, profile.auditFilename);
   await mkdir(path.dirname(input.auditOutput), { recursive: true }); const temporary = `${input.auditOutput}.${randomUUID()}.tmp`; await writeFile(temporary, bytes, { flag: "wx" });
   try { await rename(temporary, input.auditOutput); } catch (error) { await unlink(temporary).catch(() => {}); throw error; }
   return audit;
 }
 
-function dryRunReport() { return { schema: `${AUDIT_SCHEMA}.dry-run`, status: "PASS", writesPerformed: false, topology: selfTest(), independentImplementation: true }; }
-function printHelp() { process.stdout.write(`Independent Phase 5B review-package audit\n\nnode scripts/${path.basename(SCRIPT)} --archive <exact ZIP> --manifest <exact detached manifest> --audit-output <fresh exact audit path> --expected-head <sha> --expected-upstream <sha> --expected-deployment-id <uuid> --immutable-url <url> --branch-url <url> --ffprobe <absolute> --expected-parent-process-id <pid>\n\nUse --self-test or --dry-run for write-free checks.\n`); }
+function dryRunReport(profileValue = DEFAULT_PROFILE) {
+  const profile = reviewProfile(profileValue);
+  return { schema: `${profile.auditSchema}.dry-run`, status: "PASS", ...(profile.id === R1_PROFILE ? { profile: profile.id, archiveFilename: profile.archiveFilename, detachedManifestFilename: profile.detachedManifestFilename, auditFilename: profile.auditFilename } : {}), writesPerformed: false, topology: selfTest(profile.id), independentImplementation: true };
+}
+function printHelp() { process.stdout.write(`Independent Phase 5B review-package audit\n\nnode scripts/${path.basename(SCRIPT)} [--profile cp9|r1] --archive <exact ZIP> --manifest <exact detached manifest> --audit-output <fresh exact audit path> --expected-head <sha> --expected-upstream <sha> --expected-deployment-id <uuid> --immutable-url <url> --branch-url <url> --ffprobe <absolute> --expected-parent-process-id <pid>\n\nThe default cp9 profile preserves the original package. The r1 profile requires branch ${R1_REQUIRED_BRANCH}, exact CP9 parent ${R1_PARENT_SHA}, and output ${R1_ARCHIVE_FILENAME}. Use --self-test or --dry-run for write-free checks.\n`); }
 async function main() {
   const options = parseArguments(process.argv.slice(2)); if (options.help) return printHelp();
-  if (options.selfTest) { process.stdout.write(stableJson(selfTest())); return; }
-  if (options.dryRun) { process.stdout.write(stableJson(dryRunReport())); return; }
-  const result = await auditArchive(options); process.stdout.write(stableJson({ schema: `${AUDIT_SCHEMA}.result`, status: result.status, archive: result.archive, auditOutput: AUDIT_FILENAME }));
+  const profile = reviewProfile(options.profile);
+  if (options.selfTest) { process.stdout.write(stableJson(selfTest(profile.id))); return; }
+  if (options.dryRun) { process.stdout.write(stableJson(dryRunReport(profile.id))); return; }
+  const result = await auditArchive(options); process.stdout.write(stableJson({ schema: `${profile.auditSchema}.result`, status: result.status, ...(profile.id === R1_PROFILE ? { profile: profile.id } : {}), archive: result.archive, auditOutput: profile.auditFilename }));
 }
 const invokedDirectly = process.argv[1] && pathToFileURL(path.resolve(process.argv[1])).href === import.meta.url;
 if (invokedDirectly) main().catch((error) => { process.stderr.write(`Phase 5B independent package audit FAIL: ${error.stack ?? error}\n`); process.exitCode = 1; });

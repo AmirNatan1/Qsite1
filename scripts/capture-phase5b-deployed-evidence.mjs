@@ -49,6 +49,8 @@ export const CP7_SCHEMA = "quantum-hub.phase-5b.responsive-accessibility.v1";
 export const CP8_SCHEMA = "quantum-hub.phase-5b.publication-media-performance.v1";
 export const STORYBOARD_SCHEMA = "qh.phase5ar.route-preproduction-manifest.v1";
 export const REQUIRED_BRANCH = "feature/phase-5b-supporting-route-production";
+export const R1_REPAIR_BRANCH = "repair/phase-5b-r1-about-dark-v2-fidelity";
+export const ALLOWED_CAPTURE_BRANCHES = Object.freeze([REQUIRED_BRANCH, R1_REPAIR_BRANCH]);
 export const REPORT_PATH = "capture-report.json";
 export const ACCEPTED_STORYBOARD_FILE_COUNT = 76;
 export const REVIEW_TARGET_MAX_BYTES = 50 * 1024 * 1024;
@@ -68,6 +70,11 @@ export const ROUTES = Object.freeze(PHASE5B_ROUTES.map((route) => Object.freeze(
 export const MOTION_ROUTE_IDS = Object.freeze(ROUTES.filter(({ mode }) => mode === "B" || mode === "C").map(({ id }) => id));
 export const DEFAULT_FFMPEG = path.resolve(ROOT, "..", "phase-5a-r-work", "tooling", "node_modules", "ffmpeg-static", "ffmpeg.exe");
 export const DEFAULT_FFPROBE = path.resolve(ROOT, "..", "phase-5a-r-work", "tooling", "node_modules", "ffprobe-static", "bin", "win32", "x64", "ffprobe.exe");
+export const AUDIENCE_HEADING = "One operating field. Two trajectories.";
+export const AUDIENCE_LINKS = Object.freeze([
+  Object.freeze({ text: "For industry", href: "/for-partners/" }),
+  Object.freeze({ text: "For startups", href: "/for-startups/" }),
+]);
 
 const HASH40 = /^[0-9a-f]{40}$/;
 const HASH64 = /^[0-9a-f]{64}$/;
@@ -170,7 +177,7 @@ export function parseArguments(argv) {
 
 export function validateOptions(options, { allowTemporaryFixture = false } = {}) {
   if (!HASH40.test(options.expectedHead ?? "")) throw new Error("--expected-head must be a full lowercase 40-character Git SHA");
-  if (options.expectedBranch !== REQUIRED_BRANCH) throw new Error(`--expected-branch must be ${REQUIRED_BRANCH}`);
+  if (!ALLOWED_CAPTURE_BRANCHES.includes(options.expectedBranch)) throw new Error(`--expected-branch must be one of: ${ALLOWED_CAPTURE_BRANCHES.join(", ")}`);
   options.url = normalizeDeploymentUrl(options.url);
   options.storyboardRoot = assertExternalDurablePath(options.storyboardRoot, "storyboard root", { allowTemporaryFixture });
   options.cp7Report = assertExternalDurablePath(options.cp7Report, "CP7 report", { allowTemporaryFixture });
@@ -360,6 +367,7 @@ export function homeRegressionResult(states) {
     stableQ: Number(states?.q?.targetFrame) === 370 && Number(states?.q?.presentedFrame) === 370,
     manifestoSettled: states?.manifesto?.manifestoSettled === true && Number(states?.manifesto?.semanticProgress) === 1 && states?.manifesto?.manifestoText === "We turn industrial needs into field evidence." && states?.manifesto?.navigationReleased === false,
     audienceReleased: states?.audience?.navigationReleased === true && states?.audience?.audienceVisible === true && states?.audience?.audienceLinks?.join("|") === "/for-partners/|/for-startups/",
+    audienceFramed: states?.audienceFraming?.status === "PASS",
     nativeInput: Number(states?.audience?.wheelEvents) > 0 && Number(states?.audience?.programmaticScrollCalls) === 0,
     operatingFieldFinalResponse: states?.operatingField?.serverRendered === true
       && states?.operatingField?.afterAudience === true
@@ -368,6 +376,47 @@ export function homeRegressionResult(states) {
       && states?.operatingField?.acceptedText === true,
   };
   return { status: Object.values(checks).every(Boolean) ? "PASS" : "FAIL", checks, states };
+}
+
+export function audienceFrameScrollTarget(geometry) {
+  const values = [geometry?.audienceTop, geometry?.headerBottom, geometry?.maxScrollY];
+  if (!values.every(Number.isFinite) || geometry.audienceTop < 0 || geometry.headerBottom < 0 || geometry.maxScrollY < 0) {
+    throw new Error("audience framing geometry must contain finite non-negative audienceTop, headerBottom, and maxScrollY");
+  }
+  return Math.max(0, Math.min(Math.round(geometry.maxScrollY), Math.round(geometry.audienceTop - geometry.headerBottom)));
+}
+
+export function audienceFramingResult(observation) {
+  const viewport = observation?.viewport ?? {};
+  const headerBottom = Number(observation?.headerBottom);
+  const fullyVisibleBelowHeader = (item) => {
+    const rect = item?.rect ?? {};
+    return item?.displayed === true
+      && item?.visible === true
+      && Number(item?.opacity) > 0.01
+      && [rect.top, rect.right, rect.bottom, rect.left, rect.width, rect.height].every(Number.isFinite)
+      && rect.width > 0
+      && rect.height > 0
+      && rect.top + 0.5 >= headerBottom
+      && rect.left >= -0.5
+      && rect.right <= Number(viewport.width) + 0.5
+      && rect.bottom <= Number(viewport.height) + 0.5;
+  };
+  const links = Array.isArray(observation?.links) ? observation.links : [];
+  const checks = {
+    finiteViewportAndHeader: Number.isFinite(viewport.width) && viewport.width > 0
+      && Number.isFinite(viewport.height) && viewport.height > 0
+      && Number.isFinite(headerBottom) && headerBottom >= 0 && headerBottom < viewport.height,
+    navigationReleased: observation?.navigationReleased === true,
+    exactHeading: observation?.heading?.tagName === "h2" && observation.heading.text === AUDIENCE_HEADING,
+    headingFullyVisibleBelowHeader: fullyVisibleBelowHeader(observation?.heading),
+    exactOrdinaryLinks: links.length === AUDIENCE_LINKS.length && links.every((link, index) => link?.tagName === "a"
+      && link?.role === null
+      && link?.audienceLabel === AUDIENCE_LINKS[index].text
+      && link?.href === AUDIENCE_LINKS[index].href),
+    linksFullyVisibleBelowHeader: links.length === AUDIENCE_LINKS.length && links.every(fullyVisibleBelowHeader),
+  };
+  return { status: Object.values(checks).every(Boolean) ? "PASS" : "FAIL", checks, observation };
 }
 
 export function validateArtifactLedger(records) {
@@ -1397,12 +1446,14 @@ async function homeGeometry(page) {
     const absoluteTop = (element) => element.getBoundingClientRect().top + scrollY;
     const shellTop = absoluteTop(shell);
     const entryTop = absoluteTop(entry);
+    const headerRect = header.getBoundingClientRect();
     return {
       shellTop,
       entryTop,
       audienceTop: absoluteTop(audience),
       builtTop: absoluteTop(built),
-      travel: Math.max(1, entryTop - header.getBoundingClientRect().height - shellTop),
+      headerBottom: Math.max(0, headerRect.bottom),
+      travel: Math.max(1, entryTop - headerRect.height - shellTop),
       maxScrollY: Math.max(0, document.documentElement.scrollHeight - innerHeight),
     };
   });
@@ -1433,6 +1484,48 @@ async function observeHomeState(page) {
       programmaticScrollCalls: telemetry.programmaticScrollCalls ?? 0,
     };
   });
+}
+
+async function observeAudienceFraming(page) {
+  return page.evaluate(() => {
+    const header = document.querySelector(".site-header");
+    const heading = document.querySelector("[data-audience-routing] h2");
+    const links = [...document.querySelectorAll("[data-audience-routing] a[href]")];
+    const snapshot = (element) => {
+      const rect = element?.getBoundingClientRect();
+      const style = element ? getComputedStyle(element) : null;
+      return {
+        tagName: element?.localName ?? null,
+        role: element?.getAttribute?.("role") ?? null,
+        text: element?.textContent?.replace(/\s+/g, " ").trim() ?? "",
+        audienceLabel: element?.querySelector?.(".audience-trajectory__audience")?.textContent?.replace(/\s+/g, " ").trim() ?? null,
+        href: element?.getAttribute?.("href") ?? null,
+        displayed: style?.display !== "none",
+        visible: style?.visibility === "visible",
+        opacity: Number(style?.opacity ?? 0),
+        rect: rect ? { top: rect.top, right: rect.right, bottom: rect.bottom, left: rect.left, width: rect.width, height: rect.height } : null,
+      };
+    };
+    return {
+      viewport: { width: innerWidth, height: innerHeight },
+      headerBottom: header?.getBoundingClientRect().bottom ?? Number.NaN,
+      navigationReleased: window.quantumPhase4?.navigationReleased === true,
+      scrollY: Math.round(scrollY),
+      heading: snapshot(heading),
+      links: links.map(snapshot),
+    };
+  });
+}
+
+async function waitForAudienceFraming(page, timeoutMs) {
+  const started = Date.now();
+  let result = audienceFramingResult(await observeAudienceFraming(page));
+  while (result.status !== "PASS") {
+    if (Date.now() - started > timeoutMs) throw new Error(`homepage audience framing failed: ${JSON.stringify(result.checks)}`);
+    await page.waitForTimeout(50);
+    result = audienceFramingResult(await observeAudienceFraming(page));
+  }
+  return result;
 }
 
 async function waitForPresentedFrame(page, expected, timeoutMs) {
@@ -1552,6 +1645,10 @@ async function captureHomeAndNavigation(browser, options, staging, rawRoot) {
     await nativeWheelTo(page, addresses.audienceVisible, options.timeoutMs, { step: 420, pause: 80 });
     await page.waitForFunction(() => window.quantumPhase4?.navigationReleased === true, null, { timeout: options.timeoutMs });
     const audience = await observeHomeState(page);
+    const audienceFrameY = audienceFrameScrollTarget(geometry);
+    await phase("home-audience-framed");
+    await nativeWheelTo(page, audienceFrameY, options.timeoutMs, { step: 360, pause: 80 });
+    const audienceFraming = await waitForAudienceFraming(page, options.timeoutMs);
     await writePng(staging, "homepage/audience-split.png", await screenshotBuffer(page));
 
     await phase("home-operating-field");
@@ -1559,12 +1656,12 @@ async function captureHomeAndNavigation(browser, options, staging, rawRoot) {
     const operatingField = await observeOperatingField(page, serverHtml);
     await nativeWheelTo(page, addresses.audienceVisible, options.timeoutMs, { step: 460, pause: 70 });
 
-    regression = homeRegressionResult({ crtStartup, current, q, manifesto, audience, operatingField });
+    regression = homeRegressionResult({ crtStartup, current, q, manifesto, audience, audienceFraming, operatingField });
     const regressionReport = {
       schema: "quantum-hub.phase-5b.homepage-regression-evidence.v1",
       status: regression.status,
-      method: "native wheel through accepted CRT/current/Q/manifesto/audience anchors plus final-response Operating Field reachability",
-      addresses,
+      method: "native wheel through accepted CRT/current/Q/manifesto/audience release anchors, a fully framed audience review state, and final-response Operating Field reachability",
+      addresses: { ...addresses, audienceFramed: audienceFrameY },
       result: regression,
       diagnostics,
       network: { requests: aggregateRequests(ledger.requests), blocked: ledger.blocked.length, failed: ledger.failed.length },
@@ -1870,6 +1967,7 @@ function storyboardFixture() {
 export async function selfTest() {
   assert.equal(ROUTES.length, 9);
   assert.equal(CAPTURE_VIEWS.length, 4);
+  assert.deepEqual(ALLOWED_CAPTURE_BRANCHES, [REQUIRED_BRANCH, R1_REPAIR_BRANCH]);
   assert.deepEqual(MOTION_ROUTE_IDS, ["for-industry", "for-startups", "industries", "proof", "maradin", "spark", "about"]);
   assert.equal(EXPECTED_ARTIFACT_PATHS.length, 126);
   assert.equal(EXPECTED_ARTIFACT_PATHS.filter((value) => value.endsWith("route-recording.mp4")).length, 7);
@@ -1883,9 +1981,17 @@ export async function selfTest() {
     q: { targetFrame: 370, presentedFrame: 370 },
     manifesto: { manifestoSettled: true, semanticProgress: 1, manifestoText: "We turn industrial needs into field evidence.", navigationReleased: false },
     audience: { navigationReleased: true, audienceVisible: true, audienceLinks: ["/for-partners/", "/for-startups/"], wheelEvents: 4, programmaticScrollCalls: 0 },
+    audienceFraming: audienceFramingResult({
+      viewport: { width: 1440, height: 900 },
+      headerBottom: 120,
+      navigationReleased: true,
+      heading: { tagName: "h2", role: null, text: AUDIENCE_HEADING, displayed: true, visible: true, opacity: 1, rect: { top: 180, right: 620, bottom: 310, left: 48, width: 572, height: 130 } },
+      links: AUDIENCE_LINKS.map((link, index) => ({ tagName: "a", role: null, ...link, audienceLabel: link.text, displayed: true, visible: true, opacity: 1, rect: { top: 250 + index * 260, right: 1390, bottom: 410 + index * 260, left: 720, width: 670, height: 160 } })),
+    }),
     operatingField: { serverRendered: true, afterAudience: true, reachedByNativeScroll: true, h2: "Start with the operating reality.", acceptedText: true },
   });
   assert.equal(home.status, "PASS");
+  assert.equal(audienceFrameScrollTarget({ audienceTop: 7605, headerBottom: 120, maxScrollY: 20_000 }), 7485);
   return {
     schema: SCHEMA,
     status: "PASS",
@@ -1896,6 +2002,7 @@ export async function selfTest() {
 }
 
 function printHelp() {
+  process.stdout.write(`Accepted --expected-branch values: ${ALLOWED_CAPTURE_BRANCHES.join(", ")}\n\n`);
   process.stdout.write(`Phase 5B deployed browser evidence\n\nUsage:\n  node ${SCRIPT_RELATIVE} \\\n+    --deployment-url https://<deployment>.qsite1.pages.dev/ \\\n+    --expected-head <40-hex> --expected-branch ${REQUIRED_BRANCH} \\\n+    --storyboard-root <accepted-phase5ar-preproduction-root> \\\n+    --cp7-report <responsive-accessibility.json> \\\n+    --cp8-report <publication-media-performance.json> \\\n+    [--deployment-report <cloudflare-inspection.json>] \\\n+    --output <fresh-durable-external-directory> \\\n+    [--browser <chrome>] [--ffmpeg <ffmpeg>] [--ffprobe <ffprobe>]\n\nOptions:\n  --dry-run       Validate explicit argument and topology intent only; no reads, Git, network, browser, or output.\n  --self-test     Run pure contract checks; no reads, Git, network, browser, or output.\n  --timeout-ms N  Per-operation timeout, 5000..120000.\n`);
 }
 
