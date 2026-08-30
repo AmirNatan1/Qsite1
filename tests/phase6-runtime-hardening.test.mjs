@@ -19,12 +19,18 @@ function loadCinematicRuntime() {
   return module.exports;
 }
 
-test("Phase 6 homepage bootstrap has a bounded outer-module fail-open watchdog", () => {
+test("Phase 6 homepage bootstrap keeps its fail-open watchdog through controller initialization", () => {
   const source = read("src/pages/index.astro");
   assert.match(source, /__quantumHomeControllerWatchdog\s*=\s*window\.setTimeout/);
-  assert.match(source, /cinematicFallback\s*=\s*"controller-timeout"/);
-  assert.match(source, /cinematicMode\s*=\s*"static"[\s\S]*?removeAttribute\("inert"\)/);
-  assert.match(source, /window\.clearTimeout\(controllerWatchdog\)[\s\S]*?cinematicController\s*=\s*"claimed"/);
+  assert.match(source, /const preserveRunway = window\.scrollY !== 0[\s\S]*?window\.location\.hash === "#entry"[\s\S]*?cinematicEntryIntent === "pending"/);
+  assert.match(source, /cinematicMode = preserveRunway \? "enhanced" : "static"/);
+  assert.match(source, /cinematicFallback = preserveRunway[\s\S]*?"controller-timeout"[\s\S]*?removeAttribute\("inert"\)/);
+  assert.match(source, /"controller-timeout-preserve-runway"[\s\S]*?"failed-preserve-runway"[\s\S]*?manifestoReveal = "resolved"/);
+  assert.match(source, /const clearControllerWatchdog = \(\) => \{[\s\S]*?window\.clearTimeout\(controllerWatchdog\)/);
+  assert.match(source, /const controllerTimeoutIsTerminal = \(\) => root\.dataset\.cinematicFallback === "controller-timeout"[\s\S]*?"controller-timeout-preserve-runway"/);
+  assert.match(source, /import\("\.\.\/scripts\/home-cinematic-integration"\)[\s\S]*?if \(controllerTimeoutIsTerminal\(\)\) return;[\s\S]*?initHomeCinematicIntegration\(\);[\s\S]*?clearControllerWatchdog\(\);/);
+  assert.match(source, /\.catch\(\(\) => \{[\s\S]*?clearControllerWatchdog\(\);[\s\S]*?if \(controllerTimeoutIsTerminal\(\)\) return;/);
+  assert.match(source, /\} else clearControllerWatchdog\(\);/);
   assert.doesNotMatch(source, /setInterval|scrollTo\(|scrollIntoView\(|\.scrollTop\s*=/);
 });
 

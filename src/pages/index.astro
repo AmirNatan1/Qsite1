@@ -134,10 +134,15 @@ if (!maradinOpening || !maradinClimax) {
             window.__quantumHomeControllerWatchdog = window.setTimeout(() => {
               delete window.__quantumHomeControllerWatchdog;
               if (root.dataset.cinematicMode !== "candidate") return;
+              const preserveRunway = window.scrollY !== 0
+                || window.location.hash === "#entry"
+                || root.dataset.cinematicEntryIntent === "pending";
               root.dataset.cinematicEligibility = "bypass";
-              root.dataset.cinematicMode = "static";
+              root.dataset.cinematicMode = preserveRunway ? "enhanced" : "static";
               root.dataset.cinematicHeader = "released";
-              root.dataset.cinematicFallback = "controller-timeout";
+              root.dataset.cinematicFallback = preserveRunway
+                ? "controller-timeout-preserve-runway"
+                : "controller-timeout";
               delete root.dataset.cinematicEntryIntent;
               document.querySelector(".site-header")?.removeAttribute("inert");
               document.querySelector(".site-footer")?.removeAttribute("inert");
@@ -148,7 +153,8 @@ if (!maradinOpening || !maradinClimax) {
                 shell.dataset.cinematicInteractive = "true";
                 shell.dataset.routeNavigation = "released";
                 shell.dataset.cinematicPhase = "fallback";
-                shell.dataset.mediaState = "failed";
+                shell.dataset.mediaState = preserveRunway ? "failed-preserve-runway" : "failed";
+                if (preserveRunway) shell.dataset.manifestoReveal = "resolved";
               }
             }, 4_000);
           }
@@ -225,16 +231,25 @@ if (!maradinOpening || !maradinClimax) {
     <script>
       const root = document.documentElement;
       const watchdogWindow = window as typeof window & { __quantumHomeControllerWatchdog?: number };
-      const controllerWatchdog = watchdogWindow.__quantumHomeControllerWatchdog;
-      if (typeof controllerWatchdog === "number") {
+      const clearControllerWatchdog = () => {
+        const controllerWatchdog = watchdogWindow.__quantumHomeControllerWatchdog;
+        if (typeof controllerWatchdog !== "number") return;
         window.clearTimeout(controllerWatchdog);
         delete watchdogWindow.__quantumHomeControllerWatchdog;
-      }
+      };
+      const controllerTimeoutIsTerminal = () => root.dataset.cinematicFallback === "controller-timeout"
+        || root.dataset.cinematicFallback === "controller-timeout-preserve-runway";
       root.dataset.cinematicController = "claimed";
       if (root.dataset.cinematicMode === "candidate") {
         void import("../scripts/home-cinematic-integration")
-          .then(({ initHomeCinematicIntegration }) => initHomeCinematicIntegration())
+          .then(({ initHomeCinematicIntegration }) => {
+            if (controllerTimeoutIsTerminal()) return;
+            initHomeCinematicIntegration();
+            clearControllerWatchdog();
+          })
           .catch(() => {
+            clearControllerWatchdog();
+            if (controllerTimeoutIsTerminal()) return;
             root.dataset.cinematicMode = "static";
             root.dataset.cinematicFallback = "controller";
             root.dataset.cinematicHeader = "released";
@@ -251,7 +266,7 @@ if (!maradinOpening || !maradinClimax) {
               shell.dataset.cinematicPhase = "fallback";
             }
           });
-      }
+      } else clearControllerWatchdog();
     </script>
   </div>
 
