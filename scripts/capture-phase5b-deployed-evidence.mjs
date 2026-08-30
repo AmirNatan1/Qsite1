@@ -38,19 +38,39 @@ import {
   expectedOffsetForCoordinate,
   profileForView,
 } from "./phase5a-evidence-contract.mjs";
-import { addressesForGeometry } from "./phase5ar-evidence-contract.mjs";
+import { addressesForGeometry, VIEWPOINTS as PHASE5AR_VIEWPOINTS } from "./phase5ar-evidence-contract.mjs";
 
 const execFileAsync = promisify(execFile);
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const SCRIPT_RELATIVE = "scripts/capture-phase5b-deployed-evidence.mjs";
 export const SCHEMA = "quantum-hub.phase-5b.deployed-browser-evidence.v1";
+export const R2_SCHEMA = "quantum-hub.phase-5b-r2.home-navigation-manifesto-deployed-browser-evidence.v1";
 export const CP7_SCHEMA = "quantum-hub.phase-5b.responsive-accessibility.v1";
 export const CP8_SCHEMA = "quantum-hub.phase-5b.publication-media-performance.v1";
 export const STORYBOARD_SCHEMA = "qh.phase5ar.route-preproduction-manifest.v1";
 export const REQUIRED_BRANCH = "feature/phase-5b-supporting-route-production";
 export const R1_REPAIR_BRANCH = "repair/phase-5b-r1-about-dark-v2-fidelity";
-export const ALLOWED_CAPTURE_BRANCHES = Object.freeze([REQUIRED_BRANCH, R1_REPAIR_BRANCH]);
+export const R2_REPAIR_BRANCH = "repair/phase-5b-r2-home-navigation-manifesto";
+export const R2_PARENT_R1_SHA = "ca22ae2f234302e7485803c560866abd7757735e";
+export const R2_ALLOWED_PRODUCTION_PATHS = Object.freeze([
+  "src/components/SiteHeader.astro",
+  "src/components/home/EntryField.astro",
+  "src/pages/index.astro",
+  "src/scripts/home-cinematic-integration.ts",
+  "src/styles/routes/home.css",
+  "src/styles/routes/home-cinematic.css",
+  "src/styles/routes/home-responsive.css",
+]);
+export const CAPTURE_PROFILE_CP9 = "cp9";
+export const CAPTURE_PROFILE_R1 = "r1";
+export const CAPTURE_PROFILE_R2 = "r2";
+export const ALLOWED_CAPTURE_BRANCHES = Object.freeze([REQUIRED_BRANCH, R1_REPAIR_BRANCH, R2_REPAIR_BRANCH]);
+export const CAPTURE_PROFILES = Object.freeze({
+  [CAPTURE_PROFILE_CP9]: Object.freeze({ id: CAPTURE_PROFILE_CP9, branch: REQUIRED_BRANCH, schema: SCHEMA }),
+  [CAPTURE_PROFILE_R1]: Object.freeze({ id: CAPTURE_PROFILE_R1, branch: R1_REPAIR_BRANCH, schema: SCHEMA }),
+  [CAPTURE_PROFILE_R2]: Object.freeze({ id: CAPTURE_PROFILE_R2, branch: R2_REPAIR_BRANCH, schema: R2_SCHEMA }),
+});
 export const REPORT_PATH = "capture-report.json";
 export const ACCEPTED_STORYBOARD_FILE_COUNT = 76;
 export const REVIEW_TARGET_MAX_BYTES = 50 * 1024 * 1024;
@@ -75,6 +95,37 @@ export const AUDIENCE_LINKS = Object.freeze([
   Object.freeze({ text: "For industry", href: "/for-partners/" }),
   Object.freeze({ text: "For startups", href: "/for-startups/" }),
 ]);
+export const R2_VIEWPOINTS = Object.freeze(PHASE5AR_VIEWPOINTS.map((view) => Object.freeze({ ...view })));
+export const R2_RECORDING_FILENAMES = Object.freeze([
+  "01-fresh-forward-autonomous-manifesto.mp4",
+  "02-reverse-reentry-autonomous-manifesto.mp4",
+  "03-supporting-route-logo-home-navigation.mp4",
+  "04-homepage-home-navigation.mp4",
+  "05-mobile-home-navigation.mp4",
+]);
+export const R2_RESPONSIVE_FILENAMES = Object.freeze([
+  ...R2_VIEWPOINTS.map(({ width, height }) => `manifesto-${width}x${height}.png`),
+  "manifesto-200-percent.png",
+  "manifesto-fallback-fonts.png",
+  "manifesto-reduced-motion.png",
+  "manifesto-no-js.png",
+]);
+export const R2_COMPARISON_FILENAMES = Object.freeze(["r1-vs-r2-manifesto.png", "historical-vs-r2-manifesto.png"]);
+export const R2_REPORT_FILENAMES = Object.freeze([
+  "home-navigation-manifesto-runtime.json",
+  "home-navigation-frame-audit.json",
+  "manifesto-responsive-accessibility.json",
+  "supporting-route-source-regression.json",
+  "phase4-media-hashes.json",
+  "homepage-regression.json",
+]);
+
+export function resolveCaptureProfile(value, expectedBranch = null) {
+  const inferred = value ?? (expectedBranch === R1_REPAIR_BRANCH ? CAPTURE_PROFILE_R1 : expectedBranch === R2_REPAIR_BRANCH ? CAPTURE_PROFILE_R2 : CAPTURE_PROFILE_CP9);
+  const profile = CAPTURE_PROFILES[String(inferred).toLowerCase()];
+  if (!profile) throw new Error(`--profile must be ${Object.keys(CAPTURE_PROFILES).join(", ")}`);
+  return profile;
+}
 
 const HASH40 = /^[0-9a-f]{40}$/;
 const HASH64 = /^[0-9a-f]{64}$/;
@@ -136,13 +187,18 @@ function valueAfter(argv, index, flag) {
 
 export function parseArguments(argv) {
   const options = {
+    profile: null,
     url: null,
     expectedHead: null,
-    expectedBranch: REQUIRED_BRANCH,
+    expectedBranch: null,
     storyboardRoot: null,
     cp7Report: null,
     cp8Report: null,
     deploymentReport: null,
+    r1Manifesto: null,
+    expectedR1ManifestoSha256: null,
+    historicalManifesto: null,
+    expectedHistoricalManifestoSha256: null,
     output: null,
     chromium: null,
     ffmpeg: DEFAULT_FFMPEG,
@@ -155,13 +211,18 @@ export function parseArguments(argv) {
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index];
     const next = () => { const value = valueAfter(argv, index, argument); index += 1; return value; };
-    if (["--url", "--deployment-url", "--immutable-url"].includes(argument)) options.url = next();
+    if (argument === "--profile") options.profile = next().toLowerCase();
+    else if (["--url", "--deployment-url", "--immutable-url"].includes(argument)) options.url = next();
     else if (argument === "--expected-head") options.expectedHead = next().toLowerCase();
     else if (argument === "--expected-branch") options.expectedBranch = next();
     else if (argument === "--storyboard-root") options.storyboardRoot = path.resolve(next());
     else if (argument === "--cp7-report") options.cp7Report = path.resolve(next());
     else if (argument === "--cp8-report") options.cp8Report = path.resolve(next());
     else if (argument === "--deployment-report") options.deploymentReport = path.resolve(next());
+    else if (argument === "--r1-manifesto") options.r1Manifesto = path.resolve(next());
+    else if (argument === "--expected-r1-manifesto-sha256") options.expectedR1ManifestoSha256 = next().toLowerCase();
+    else if (argument === "--historical-manifesto") options.historicalManifesto = path.resolve(next());
+    else if (argument === "--expected-historical-manifesto-sha256") options.expectedHistoricalManifestoSha256 = next().toLowerCase();
     else if (argument === "--output") options.output = path.resolve(next());
     else if (["--browser", "--chromium"].includes(argument)) options.chromium = path.resolve(next());
     else if (argument === "--ffmpeg") options.ffmpeg = path.resolve(next());
@@ -172,17 +233,30 @@ export function parseArguments(argv) {
     else if (["--help", "-h"].includes(argument)) options.help = true;
     else throw new Error(`Unknown option: ${argument}`);
   }
+  const profile = resolveCaptureProfile(options.profile, options.expectedBranch);
+  options.profile = profile.id;
+  options.expectedBranch ??= profile.branch;
   return options;
 }
 
 export function validateOptions(options, { allowTemporaryFixture = false } = {}) {
+  const profile = resolveCaptureProfile(options.profile, options.expectedBranch);
+  options.profile = profile.id;
+  options.expectedBranch ??= profile.branch;
   if (!HASH40.test(options.expectedHead ?? "")) throw new Error("--expected-head must be a full lowercase 40-character Git SHA");
-  if (!ALLOWED_CAPTURE_BRANCHES.includes(options.expectedBranch)) throw new Error(`--expected-branch must be one of: ${ALLOWED_CAPTURE_BRANCHES.join(", ")}`);
+  if (options.expectedBranch !== profile.branch) throw new Error(`--expected-branch must be ${profile.branch} for profile ${profile.id}`);
   options.url = normalizeDeploymentUrl(options.url);
   options.storyboardRoot = assertExternalDurablePath(options.storyboardRoot, "storyboard root", { allowTemporaryFixture });
   options.cp7Report = assertExternalDurablePath(options.cp7Report, "CP7 report", { allowTemporaryFixture });
   options.cp8Report = assertExternalDurablePath(options.cp8Report, "CP8 report", { allowTemporaryFixture });
   if (options.deploymentReport) options.deploymentReport = assertExternalDurablePath(options.deploymentReport, "deployment report", { allowTemporaryFixture });
+  if (profile.id === CAPTURE_PROFILE_R2) {
+    if (!options.deploymentReport) throw new Error("R2 capture requires --deployment-report");
+    options.r1Manifesto = assertExternalDurablePath(options.r1Manifesto, "R1 manifesto comparison authority", { allowTemporaryFixture });
+    options.historicalManifesto = assertExternalDurablePath(options.historicalManifesto, "historical manifesto comparison authority", { allowTemporaryFixture });
+    if (!HASH64.test(options.expectedR1ManifestoSha256 ?? "")) throw new Error("--expected-r1-manifesto-sha256 must be lowercase 64-hex");
+    if (!HASH64.test(options.expectedHistoricalManifestoSha256 ?? "")) throw new Error("--expected-historical-manifesto-sha256 must be lowercase 64-hex");
+  }
   options.output = assertExternalDurablePath(options.output, "capture output", { allowTemporaryFixture: false });
   if (within(options.storyboardRoot, options.output) || within(options.output, options.storyboardRoot)) throw new Error("capture output and accepted storyboard root must be disjoint");
   if (!Number.isInteger(options.timeoutMs) || options.timeoutMs < 5_000 || options.timeoutMs > 120_000) throw new Error("--timeout-ms must be an integer from 5000 through 120000");
@@ -210,7 +284,17 @@ function routeArtifactPaths(route) {
   return paths;
 }
 
-export function expectedArtifactPaths() {
+export function requiredR2ArtifactPaths() {
+  return [
+    ...R2_RESPONSIVE_FILENAMES.map((name) => `homepage-r2/responsive/${name}`),
+    ...R2_COMPARISON_FILENAMES.map((name) => `homepage-r2/comparisons/${name}`),
+    ...R2_RECORDING_FILENAMES.map((name) => `homepage-r2/recordings/${name}`),
+    ...R2_REPORT_FILENAMES.map((name) => `homepage-r2/reports/${name}`),
+  ].sort((left, right) => left.localeCompare(right));
+}
+
+export function expectedArtifactPaths(profileValue = CAPTURE_PROFILE_CP9) {
+  const profile = resolveCaptureProfile(profileValue);
   return [
     "cross-route/all-route-desktop.png",
     "cross-route/all-route-portrait.png",
@@ -224,10 +308,12 @@ export function expectedArtifactPaths() {
     "homepage/current.png",
     "homepage/q.png",
     "homepage/regression.json",
+    ...(profile.id === CAPTURE_PROFILE_R2 ? requiredR2ArtifactPaths() : []),
   ].sort((left, right) => left.localeCompare(right));
 }
 
 export const EXPECTED_ARTIFACT_PATHS = Object.freeze(expectedArtifactPaths());
+export const R2_EXPECTED_ARTIFACT_PATHS = Object.freeze(expectedArtifactPaths(CAPTURE_PROFILE_R2));
 
 export function expectedStoryboardFiles(manifest) {
   const artifacts = Array.isArray(manifest?.artifacts) ? manifest.artifacts.map(({ relativePath }) => relativePath) : [];
@@ -316,6 +402,14 @@ export function validateDeploymentReportData(report, options) {
   const scalars = flattenScalars(report);
   assert.ok(scalars.includes(options.expectedHead), "deployment report does not bind expected HEAD");
   assert.ok(scalars.some((value) => { try { return new URL(value).toString() === options.url; } catch { return false; } }), "deployment report does not bind deployed URL");
+  const profile = resolveCaptureProfile(options.profile, options.expectedBranch);
+  if (profile.id === CAPTURE_PROFILE_R2) {
+    assert.equal(report.profile, CAPTURE_PROFILE_R2, "deployment report omits the R2 profile");
+    assert.equal(report.repository?.finalCommitParent, R2_PARENT_R1_SHA, "deployment report R2 parent differs");
+    const delta = report.repository?.productionDelta;
+    assert.ok(Array.isArray(delta) && delta.length > 0, "deployment report R2 production delta is empty");
+    assert.ok(delta.every((record) => R2_ALLOWED_PRODUCTION_PATHS.includes(record?.path) && /^[AMD]$/.test(record?.status ?? "")), "deployment report R2 production delta exceeds the exact Home/shared-header allowlist");
+  }
   return true;
 }
 
@@ -419,11 +513,12 @@ export function audienceFramingResult(observation) {
   return { status: Object.values(checks).every(Boolean) ? "PASS" : "FAIL", checks, observation };
 }
 
-export function validateArtifactLedger(records) {
+export function validateArtifactLedger(records, profileValue = CAPTURE_PROFILE_CP9) {
+  const expectedPaths = expectedArtifactPaths(profileValue);
   assert.ok(Array.isArray(records), "artifact ledger must be an array");
-  assert.equal(records.length, EXPECTED_ARTIFACT_PATHS.length, `artifact ledger must contain exactly ${EXPECTED_ARTIFACT_PATHS.length} self-excluding artifacts`);
-  assert.deepEqual(records.map(({ relativePath }) => relativePath).sort((left, right) => left.localeCompare(right)), EXPECTED_ARTIFACT_PATHS, "artifact ledger paths differ");
-  assert.equal(new Set(records.map(({ relativePath }) => relativePath)).size, EXPECTED_ARTIFACT_PATHS.length, "artifact ledger paths must be unique");
+  assert.equal(records.length, expectedPaths.length, `artifact ledger must contain exactly ${expectedPaths.length} self-excluding artifacts`);
+  assert.deepEqual(records.map(({ relativePath }) => relativePath).sort((left, right) => left.localeCompare(right)), expectedPaths, "artifact ledger paths differ");
+  assert.equal(new Set(records.map(({ relativePath }) => relativePath)).size, expectedPaths.length, "artifact ledger paths must be unique");
   for (const record of records) {
     assert.ok(Number.isSafeInteger(record.bytes) && record.bytes > 0, `${record.relativePath} has invalid byte length`);
     assert.match(record.sha256 ?? "", HASH64, `${record.relativePath} has invalid SHA-256`);
@@ -433,7 +528,9 @@ export function validateArtifactLedger(records) {
 }
 
 export function validateCaptureReport(report) {
-  assert.equal(report?.schema, SCHEMA, "capture report schema differs");
+  const profile = resolveCaptureProfile(report?.profile, report?.target?.expectedBranch);
+  const expectedPaths = expectedArtifactPaths(profile.id);
+  assert.equal(report?.schema, profile.schema, "capture report schema differs");
   assert.equal(report?.status, "PASS", "capture report must be PASS");
   assert.deepEqual(report?.target?.routes, ROUTES.map(({ id }) => id), "capture report route order differs");
   assert.equal(report?.target?.deploymentUrl?.startsWith("https://"), true, "capture report deployment URL differs");
@@ -441,9 +538,9 @@ export function validateCaptureReport(report) {
   assert.deepEqual(report?.humanReview?.gates, Object.fromEntries(PHASE5B_HUMAN_GATES.map((gate) => [gate, "PENDING HUMAN REVIEW"])), "human gates must remain pending");
   assert.equal(report?.humanReview?.phase6Authorized, false, "capture report cannot authorize Phase 6");
   assert.equal(report?.ledger?.selfExcluded, REPORT_PATH, "capture report self-exclusion differs");
-  assert.equal(report?.ledger?.filesIncludingSelf, EXPECTED_ARTIFACT_PATHS.length + 1, "capture report total file count differs");
+  assert.equal(report?.ledger?.filesIncludingSelf, expectedPaths.length + 1, "capture report total file count differs");
   assert.equal(report?.ledger?.totalBytesIncludingSelf, report?.ledger?.artifactBytes + report?.ledger?.reportBytes, "capture report total byte accounting differs");
-  validateArtifactLedger(report?.artifacts);
+  validateArtifactLedger(report?.artifacts, profile.id);
   assert.deepEqual(report?.routes?.map(({ route }) => route), ROUTES.map(({ id }) => id), "capture report route results differ");
   assert.ok(report.routes.every(({ route, mode, status, recording }) => status === "PASS" && mode === routeById(route).mode && (MOTION_ROUTE_IDS.includes(route) ? recording?.relativePath === `routes/${route}/route-recording.mp4` : recording === null)), "capture report route recording/status contract differs");
   assert.equal(report?.homepage?.status, "PASS", "homepage regression is not PASS");
@@ -452,6 +549,14 @@ export function validateCaptureReport(report) {
   assert.deepEqual(report?.failures, [], "capture report retains failures");
   assert.equal(report?.summary?.routeRecordings, MOTION_ROUTE_IDS.length, "route recording count differs");
   assert.equal(report?.summary?.crossRouteRecordings, 1, "cross-route recording count differs");
+  if (profile.id === CAPTURE_PROFILE_R2) {
+    assert.equal(report?.homepageR2?.status, "PASS", "R2 homepage evidence is not PASS");
+    assert.deepEqual(report?.homepageR2?.requiredArtifacts, requiredR2ArtifactPaths(), "R2 required artifact surface differs");
+    assert.equal(report?.summary?.r2Recordings, R2_RECORDING_FILENAMES.length, "R2 recording count differs");
+    assert.equal(report?.summary?.r2ResponsiveCaptures, R2_RESPONSIVE_FILENAMES.length, "R2 responsive capture count differs");
+    assert.equal(report?.summary?.r2ComparisonSheets, R2_COMPARISON_FILENAMES.length, "R2 comparison count differs");
+    assert.equal(report?.summary?.r2Reports, R2_REPORT_FILENAMES.length, "R2 report count differs");
+  }
   assert.equal(report?.summary?.rawWebmRetained, 0, "raw WebM cannot be retained");
   assert.equal(report?.summary?.totalBytesIncludingSelf, report?.ledger?.totalBytesIncludingSelf, "capture summary byte accounting differs");
   assert.ok(report?.summary?.totalBytesIncludingSelf <= REVIEW_TARGET_MAX_BYTES, "capture exceeds the 50 MB package target");
@@ -604,16 +709,30 @@ async function loadReportAuthority(file, label, validator) {
   return { parsed, public: { label, schema: parsed.schema, status: parsed.status, bytes: bytes.length, sha256: sha256(bytes) } };
 }
 
+async function loadImageAuthority(file, expectedSha256, label) {
+  const canonical = await realpath(file);
+  assertExternalDurablePath(canonical, label);
+  const bytes = await readFile(canonical);
+  const hash = sha256(bytes);
+  assert.equal(hash, expectedSha256, `${label} SHA-256 differs`);
+  const metadata = await sharp(bytes, { failOn: "error" }).metadata();
+  assert.ok(metadata.width && metadata.height && ["png", "jpeg", "webp"].includes(metadata.format), `${label} is not a supported comparison image`);
+  return { bytes, public: { logicalAuthority: label, sha256: hash, byteSize: bytes.length, format: metadata.format, width: metadata.width, height: metadata.height } };
+}
+
 async function loadAuthorities(options) {
-  const [storyboards, cp7, cp8, deployment] = await Promise.all([
+  const profile = resolveCaptureProfile(options.profile, options.expectedBranch);
+  const [storyboards, cp7, cp8, deployment, r1Manifesto, historicalManifesto] = await Promise.all([
     loadStoryboardAuthority(options.storyboardRoot),
     loadReportAuthority(options.cp7Report, "CP7 responsive/accessibility report", validateCp7ReportData),
     loadReportAuthority(options.cp8Report, "CP8 publication/media/performance report", validateCp8ReportData),
     options.deploymentReport
       ? loadReportAuthority(options.deploymentReport, "Phase 5B deployment report", (report) => validateDeploymentReportData(report, options))
       : Promise.resolve(null),
+    profile.id === CAPTURE_PROFILE_R2 ? loadImageAuthority(options.r1Manifesto, options.expectedR1ManifestoSha256, "accepted-r1-deployed-manifesto") : Promise.resolve(null),
+    profile.id === CAPTURE_PROFILE_R2 ? loadImageAuthority(options.historicalManifesto, options.expectedHistoricalManifestoSha256, "accepted-historical-manifesto") : Promise.resolve(null),
   ]);
-  return { storyboards, cp7, cp8, deployment };
+  return { storyboards, cp7, cp8, deployment, r1Manifesto, historicalManifesto };
 }
 
 function assertInside(root, candidate, label = "artifact path") {
@@ -728,6 +847,7 @@ async function installTelemetry(context) {
       scrollEvents: 0,
       wheelEvents: 0,
       programmaticScrollCalls: 0,
+      programmaticScrollWrites: [],
     };
     const originalRaf = window.requestAnimationFrame.bind(window);
     const originalCancelRaf = window.cancelAnimationFrame.bind(window);
@@ -764,10 +884,18 @@ async function installTelemetry(context) {
       telemetry.intervalsCleared += 1;
       return originalClearInterval(handle);
     };
+    const markScrollWrite = (method) => { telemetry.programmaticScrollCalls += 1; telemetry.programmaticScrollWrites.push({ method, phase: telemetry.phase }); };
     const originalWindowScrollTo = window.scrollTo.bind(window);
-    window.scrollTo = (...args) => { telemetry.programmaticScrollCalls += 1; return originalWindowScrollTo(...args); };
-    const originalElementScrollTo = Element.prototype.scrollTo;
-    Element.prototype.scrollTo = function(...args) { telemetry.programmaticScrollCalls += 1; return originalElementScrollTo.apply(this, args); };
+    const originalWindowScrollBy = window.scrollBy.bind(window);
+    const originalWindowScroll = window.scroll.bind(window);
+    window.scrollTo = (...args) => { markScrollWrite("window.scrollTo"); return originalWindowScrollTo(...args); };
+    window.scrollBy = (...args) => { markScrollWrite("window.scrollBy"); return originalWindowScrollBy(...args); };
+    window.scroll = (...args) => { markScrollWrite("window.scroll"); return originalWindowScroll(...args); };
+    for (const method of ["scroll", "scrollTo", "scrollBy", "scrollIntoView"]) {
+      const original = Element.prototype[method];
+      if (typeof original !== "function") continue;
+      Element.prototype[method] = function(...args) { markScrollWrite(`Element.${method}`); return original.apply(this, args); };
+    }
     addEventListener("scroll", () => { telemetry.scrollEvents += 1; }, { passive: true });
     addEventListener("wheel", () => { telemetry.wheelEvents += 1; }, { passive: true });
     try {
@@ -832,7 +960,7 @@ async function guardContext(context, baseUrl, ledger, scope) {
     const entry = byRequest.get(request) ?? requestEntry(request, scope, phase);
     entry.failure = request.failure()?.errorText ?? "unknown";
     if (!byRequest.has(request)) ledger.requests.push(entry);
-    ledger.failed.push({ scope, phase: entry.phase, path: entry.path, resourceType: entry.resourceType, failure: entry.failure });
+    ledger.failed.push({ scope, phase: entry.phase, path: entry.path, url: entry.url, resourceType: entry.resourceType, failure: entry.failure });
   });
   return {
     setPhase(value) { phase = value; },
@@ -849,6 +977,14 @@ function diagnosticsFor(page, route) {
   });
   page.on("pageerror", (error) => report.pageErrors.push(error.message));
   return report;
+}
+
+export function unexpectedRequestFailures(failures = []) {
+  return failures.filter((entry) => !(
+    entry.resourceType === "media"
+    && (entry.failure ?? entry.error) === "net::ERR_ABORTED"
+    && /^blob:https:\/\/[a-z0-9-]+\.qsite1\.pages\.dev\/[0-9a-f-]+$/i.test(entry.url ?? "")
+  ));
 }
 
 async function settle(page) {
@@ -967,7 +1103,7 @@ async function runAxe(page) {
   return { violations, seriousCritical: violations.filter(({ impact }) => impact === "serious" || impact === "critical"), incompleteCount: result.incomplete.length };
 }
 
-async function keyboardWalk(page, limit = 12) {
+async function keyboardWalk(page, limit = 12, { allowSemanticForwardStart = false, expectedSkipText = "Skip to content" } = {}) {
   const sequence = [];
   for (let index = 0; index < limit; index += 1) {
     await page.keyboard.press("Tab");
@@ -987,12 +1123,19 @@ async function keyboardWalk(page, limit = 12) {
     }));
   }
   const first = sequence[0];
+  const skipFirst = first?.text === expectedSkipText && first.visible;
+  const semanticForwardFirst = allowSemanticForwardStart
+    && first?.href === "/for-partners/"
+    && first?.text?.startsWith("01For industry")
+    && first.visible;
   const checks = {
-    skipFirst: first?.text === "Skip to content" && first.visible,
+    skipFirst,
+    semanticForwardFirst,
+    validFirstFocus: skipFirst || semanticForwardFirst,
     visibleFocus: sequence.some(({ outlineStyle, outlineWidth }) => outlineStyle && outlineStyle !== "none" && Number.parseFloat(outlineWidth) >= 2),
     uniqueStops: new Set(sequence.map(({ tag, text, href }) => `${tag}|${text}|${href}`)).size >= 4,
   };
-  return { status: Object.values(checks).every(Boolean) ? "PASS" : "FAIL", checks, sequence };
+  return { status: checks.validFirstFocus && checks.visibleFocus && checks.uniqueStops ? "PASS" : "FAIL", checks, sequence };
 }
 
 async function nativeWheelTo(page, targetY, timeoutMs, { step = 620, pause = 55 } = {}) {
@@ -1342,9 +1485,10 @@ async function captureRouteEvidence(browser, options, route, staging, rawRoot, a
   const primaryObservation = captures.desktop.topObservation;
   const media = mediaPolicyResult(route, ledger.requests, primaryObservation);
   const aggregatedRequests = aggregateRequests(ledger.requests);
+  const unexpectedFailedRequests = unexpectedRequestFailures(ledger.failed);
   const networkFailures = [
     ...ledger.blocked.map((entry) => ({ code: "external-request-blocked", actual: { scope: entry.scope, path: entry.path } })),
-    ...ledger.failed.map((entry) => ({ code: "request-failed", actual: entry })),
+    ...unexpectedFailedRequests.map((entry) => ({ code: "request-failed", actual: entry })),
     ...aggregatedRequests.filter(({ status }) => status >= 400 && !(route.id === "404" && status === 404)).map((entry) => ({ code: "http-error", actual: entry })),
   ];
   const publicationChecks = {
@@ -1408,7 +1552,8 @@ async function captureRouteEvidence(browser, options, route, staging, rawRoot, a
       requestCount: ledger.requests.length,
       transferredBytes: ledger.requests.reduce((sum, request) => sum + (Number(request.transferredBytes) || 0), 0),
       externalRequestsBlocked: ledger.blocked.length,
-      failedRequests: ledger.failed.length,
+      failedRequests: unexpectedFailedRequests.length,
+      expectedBlobMediaAborts: ledger.failed.length - unexpectedFailedRequests.length,
     },
     observation: { mediaReferences: primaryObservation.mediaReferences, routeMediaElementCount: primaryObservation.routeMediaElementCount, activeDecoderCount: primaryObservation.activeDecoderCount, videos: primaryObservation.videos },
     media,
@@ -1717,7 +1862,8 @@ async function captureHomeAndNavigation(browser, options, staging, rawRoot) {
   try {
     const normalized = await normalizeRecording(options, staging, rawFile, "cross-route/navigation-recording.mp4", RECORDING_VIEW, { minimumSeconds: NAVIGATION_RECORDING_MINIMUM_SECONDS, maximumSeconds: NAVIGATION_RECORDING_MAXIMUM_SECONDS });
     const unexpectedDiagnostics = [...diagnostics.consoleErrors, ...diagnostics.pageErrors];
-    if (unexpectedDiagnostics.length || ledger.blocked.length || ledger.failed.length) throw new Error(`cross-route navigation diagnostics failed: ${JSON.stringify({ unexpectedDiagnostics, blocked: ledger.blocked, failed: ledger.failed })}`);
+    const unexpectedFailedRequests = unexpectedRequestFailures(ledger.failed);
+    if (unexpectedDiagnostics.length || ledger.blocked.length || unexpectedFailedRequests.length) throw new Error(`cross-route navigation diagnostics failed: ${JSON.stringify({ unexpectedDiagnostics, blocked: ledger.blocked, failed: unexpectedFailedRequests })}`);
     return {
       status: "PASS",
       recording: normalized,
@@ -1728,6 +1874,357 @@ async function captureHomeAndNavigation(browser, options, staging, rawRoot) {
   } finally {
     await rm(rawFile, { force: true }).catch(() => {});
   }
+}
+
+async function observeR2Home(page, label) {
+  return page.evaluate((inspectionLabel) => {
+    const h1 = document.querySelector("#home-title");
+    const entry = document.querySelector("#entry");
+    const shell = document.querySelector("[data-cinematic-shell]");
+    const stage = document.querySelector(".cinematic-stage");
+    const header = document.querySelector(".site-header");
+    const rect = h1?.getBoundingClientRect();
+    const entryRect = entry?.getBoundingClientRect();
+    const headerRect = header?.getBoundingClientRect();
+    const stageRect = stage?.getBoundingClientRect();
+    const stageStyle = stage ? getComputedStyle(stage) : null;
+    let effectiveOpacity = 1;
+    for (let element = h1; element; element = element.parentElement) effectiveOpacity *= Number(getComputedStyle(element).opacity || 1);
+    const state = window.quantumPhase4 ?? {};
+    const telemetry = window.__qhPhase5bEvidence?.snapshot?.() ?? {};
+    const stagePresented = Boolean(stageRect && stageStyle && stageStyle.display !== "none" && stageStyle.visibility !== "hidden" && Number(stageStyle.opacity) > 0.01 && stageRect.bottom > 0 && stageRect.top < innerHeight);
+    const visibleF1 = stagePresented && [state.targetFrame, state.presentedFrame].some((value) => Number(value) === 1);
+    const semanticDelta = entryRect && headerRect ? entryRect.top - Math.max(0, headerRect.bottom) : null;
+    return {
+      label: inspectionLabel,
+      path: location.pathname,
+      hash: location.hash,
+      viewport: { width: innerWidth, height: innerHeight },
+      scrollY: Math.round(scrollY),
+      documentHeight: document.documentElement.scrollHeight,
+      horizontalOverflow: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - document.documentElement.clientWidth,
+      manifesto: {
+        text: h1?.textContent?.replace(/\s+/g, " ").trim() ?? "",
+        effectiveOpacity,
+        visible: Boolean(rect && rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.top < innerHeight && effectiveOpacity > 0.01),
+        revealState: shell?.getAttribute("data-manifesto-reveal") ?? null,
+        semanticAlignment: {
+          entryTop: entryRect ? Math.round(entryRect.top * 10) / 10 : null,
+          headerBottom: headerRect ? Math.round(Math.max(0, headerRect.bottom) * 10) / 10 : null,
+          delta: semanticDelta === null ? null : Math.round(semanticDelta * 10) / 10,
+          aligned: semanticDelta !== null && Math.abs(semanticDelta) <= 6,
+        },
+      },
+      frame: {
+        target: state.targetFrame ?? null,
+        presented: state.presentedFrame ?? null,
+        segment: state.segment ?? null,
+        noF1: !visibleF1,
+        visibleF1,
+        stagePresented,
+        stageVisibility: stageStyle?.visibility ?? null,
+        stageOpacity: stageStyle ? Number(stageStyle.opacity) : null,
+      },
+      navigation: {
+        released: state.navigationReleased === true,
+        desktopHomeLinks: document.querySelectorAll(".desktop-nav a[href='/#entry']").length,
+        mobileHomeLinks: document.querySelectorAll(".mobile-nav a[href='/#entry']").length,
+        brandHomeLinks: document.querySelectorAll(".brand-link[href='/#entry']").length,
+      },
+      telemetry,
+    };
+  }, label);
+}
+
+async function waitForR2Manifesto(page, timeoutMs) {
+  await page.waitForFunction(() => {
+    const h1 = document.querySelector("#home-title");
+    const shell = document.querySelector("[data-cinematic-shell]");
+    if (!h1 || shell?.getAttribute("data-manifesto-reveal") !== "resolved") return false;
+    let opacity = 1;
+    for (let element = h1; element; element = element.parentElement) opacity *= Number(getComputedStyle(element).opacity || 1);
+    return opacity >= 0.98 && h1.getBoundingClientRect().height > 0;
+  }, null, { timeout: timeoutMs });
+}
+
+async function waitForR2SemanticEntry(page, timeoutMs, requireResolved = true) {
+  await page.waitForFunction((mustResolve) => {
+    if (location.pathname !== "/" || location.hash !== "#entry") return false;
+    const shell = document.querySelector("[data-cinematic-shell]");
+    const entry = document.querySelector("#entry");
+    const header = document.querySelector(".site-header");
+    const h1 = document.querySelector("#home-title");
+    if (!shell || !entry || !header || !h1) return false;
+    const revealResolved = shell.getAttribute("data-manifesto-reveal") === "resolved";
+    const staticFallback = document.documentElement.dataset.cinematicMode === "static";
+    if (mustResolve ? !revealResolved : !(revealResolved || staticFallback)) return false;
+    let opacity = 1;
+    for (let element = h1; element; element = element.parentElement) opacity *= Number(getComputedStyle(element).opacity || 1);
+    return opacity >= 0.98 && Math.abs(entry.getBoundingClientRect().top - Math.max(0, header.getBoundingClientRect().bottom)) <= 6;
+  }, requireResolved, { timeout: timeoutMs });
+}
+
+async function positionAtR2Manifesto(page, options, view, phase) {
+  await page.waitForFunction(() => window.quantumPhase4?.mediaReady === true, null, { timeout: options.timeoutMs });
+  const geometry = await homeGeometry(page);
+  const addresses = addressesForGeometry(geometry, view);
+  await setTelemetryPhase(page, `${phase}-approach`);
+  await nativeWheelTo(page, addresses.settled, options.timeoutMs, { step: Math.max(280, Math.ceil(addresses.settled / 9)), pause: 75 });
+  await setTelemetryPhase(page, `${phase}-autonomous-fade`);
+  const before = await observeR2Home(page, `${phase}-before-autonomous-fade`);
+  await waitForR2Manifesto(page, options.timeoutMs);
+  await page.waitForTimeout(680);
+  const after = await observeR2Home(page, `${phase}-after-autonomous-fade`);
+  const restBefore = await telemetrySnapshot(page);
+  await page.waitForTimeout(720);
+  const restAfter = await telemetrySnapshot(page);
+  const checks = {
+    exactManifesto: after.manifesto.text === "We turn industrial needs into field evidence.",
+    readable: after.manifesto.visible && after.manifesto.effectiveOpacity >= 0.98,
+    resolvedReveal: after.manifesto.revealState === "resolved",
+    semanticAlignment: after.manifesto.semanticAlignment.aligned,
+    unchangedScrollY: Math.abs(after.scrollY - before.scrollY) <= 1,
+    zeroProgrammaticScrollWrites: Number(after.telemetry.programmaticScrollCalls ?? 0) === 0,
+    noF1: before.frame.noF1 && after.frame.noF1,
+    boundedRestRaf: Number(restAfter?.rafRequested ?? 0) - Number(restBefore?.rafRequested ?? 0) <= 2 && Number(restAfter?.rafPending ?? 0) <= 1,
+    noRestIntervals: Number(restAfter?.activeIntervals ?? 0) === 0,
+  };
+  return { status: Object.values(checks).every(Boolean) ? "PASS" : "FAIL", geometry, addresses, before, after, rest: { before: restBefore, after: restAfter }, checks };
+}
+
+export function r2NavigationResponseIsValid(responseStatus, currentUrl, targetUrl) {
+  if (responseStatus === 200) return true;
+  if (responseStatus !== null && responseStatus !== undefined) return false;
+  try {
+    return new URL(currentUrl).href === new URL(targetUrl).href;
+  } catch {
+    return false;
+  }
+}
+
+async function openR2Home(page, options, suffix = "") {
+  const targetUrl = new URL(suffix || "./", options.url).href;
+  const response = await page.goto(targetUrl, { waitUntil: "domcontentloaded", timeout: options.timeoutMs });
+  const responseStatus = response?.status() ?? null;
+  if (!r2NavigationResponseIsValid(responseStatus, page.url(), targetUrl)) throw new Error(`R2 Home returned HTTP ${responseStatus ?? "none"}`);
+  await settle(page);
+  return response;
+}
+
+async function recordR2Scenario(browser, options, staging, rawRoot, filename, view, scenario) {
+  const rawDirectory = assertInside(staging, path.join(rawRoot, `r2-${path.basename(filename, ".mp4")}`), "raw R2 recording directory");
+  await mkdir(rawDirectory, { recursive: true });
+  const context = await browser.newContext(contextOptions(view, { recordVideo: { dir: rawDirectory, size: { width: view.width, height: view.height } } }));
+  await installTelemetry(context);
+  const ledger = { requests: [], failed: [], blocked: [] };
+  const guard = await guardContext(context, options.url, ledger, `homepage-r2:${filename}`);
+  const page = await context.newPage();
+  const diagnostics = diagnosticsFor(page, { id: "home-r2" });
+  const video = page.video();
+  const started = Date.now();
+  let evidence;
+  try {
+    evidence = await scenario({ page, context, guard, ledger });
+    const remaining = 2_750 - (Date.now() - started);
+    if (remaining > 0) await page.waitForTimeout(remaining);
+    await guard.flush();
+  } finally {
+    await page.close().catch(() => {});
+    await context.close().catch(() => {});
+  }
+  const rawFile = await video.path();
+  assert.ok(within(rawRoot, rawFile), "Playwright raw R2 recording escaped owned staging");
+  const relativePath = `homepage-r2/recordings/${filename}`;
+  try {
+    const normalized = await normalizeRecording(options, staging, rawFile, relativePath, view, { minimumSeconds: 2.4, maximumSeconds: 40 });
+    const unexpectedFailedRequests = unexpectedRequestFailures(ledger.failed);
+    const failures = [...diagnostics.consoleErrors, ...diagnostics.pageErrors, ...ledger.blocked, ...unexpectedFailedRequests];
+    if (evidence?.status !== "PASS" || failures.length) throw new Error(`${filename} R2 evidence failed: ${JSON.stringify({ evidence, failures })}`);
+    return { ...normalized, evidence, diagnostics: { consoleErrors: 0, pageErrors: 0 }, network: { requests: ledger.requests.length, blocked: ledger.blocked.length, failed: unexpectedFailedRequests.length, expectedBlobMediaAborts: ledger.failed.length - unexpectedFailedRequests.length } };
+  } finally {
+    await rm(rawFile, { force: true }).catch(() => {});
+  }
+}
+
+async function captureR2Recordings(browser, options, staging, rawRoot) {
+  const desktop = RECORDING_VIEW;
+  const mobile = { id: "recording-390x844", family: "portrait", width: 390, height: 844 };
+  const results = [];
+  results.push(await recordR2Scenario(browser, options, staging, rawRoot, R2_RECORDING_FILENAMES[0], desktop, async ({ page }) => {
+    await openR2Home(page, options);
+    return positionAtR2Manifesto(page, options, desktop, "fresh-forward");
+  }));
+  results.push(await recordR2Scenario(browser, options, staging, rawRoot, R2_RECORDING_FILENAMES[1], desktop, async ({ page }) => {
+    await openR2Home(page, options);
+    const first = await positionAtR2Manifesto(page, options, desktop, "first-entry");
+    await nativeWheelTo(page, first.addresses.threshold, options.timeoutMs, { step: 360, pause: 80 });
+    await page.waitForFunction(() => document.querySelector("[data-cinematic-shell]")?.getAttribute("data-manifesto-reveal") === "hidden", null, { timeout: options.timeoutMs });
+    const reversed = await observeR2Home(page, "reverse-below-entry-threshold");
+    const reentry = await positionAtR2Manifesto(page, options, desktop, "reverse-reentry");
+    const checks = { firstPass: first.status === "PASS", reversedBelowEntry: reversed.scrollY <= first.addresses.threshold + 2, reversedHidden: reversed.manifesto.revealState === "hidden" && reversed.manifesto.effectiveOpacity <= 0.02, reentryReplayResolved: reentry.before.manifesto.revealState !== "resolved" && reentry.after.manifesto.revealState === "resolved", reentryPass: reentry.status === "PASS", noF1: reversed.frame.noF1 && reentry.after.frame.noF1 };
+    return { status: Object.values(checks).every(Boolean) ? "PASS" : "FAIL", checks, first, reversed, reentry };
+  }));
+  results.push(await recordR2Scenario(browser, options, staging, rawRoot, R2_RECORDING_FILENAMES[2], desktop, async ({ page }) => {
+    const supporting = routeById("about");
+    await openRoute(page, options, supporting);
+    const before = await observeRoute(page);
+    await Promise.all([page.waitForURL((url) => url.pathname === "/" && url.hash === "#entry", { timeout: options.timeoutMs }), page.locator(".brand-link[href='/#entry']").click()]);
+    await settle(page);
+    await waitForR2SemanticEntry(page, options.timeoutMs);
+    const home = await observeR2Home(page, "supporting-route-logo-arrival-home");
+    const checks = { supportingIdentity: before.route === "about", arrivedAtSemanticHome: home.path === "/" && home.hash === "#entry" && home.scrollY > 0, semanticAlignment: home.manifesto.semanticAlignment.aligned, revealResolved: home.manifesto.revealState === "resolved" && home.manifesto.visible, homeLinksPresent: home.navigation.brandHomeLinks === 1 && home.navigation.desktopHomeLinks === 1, noF1: home.frame.noF1, zeroProgrammaticScrollWrites: Number(home.telemetry.programmaticScrollCalls ?? 0) === 0 };
+    return { status: Object.values(checks).every(Boolean) ? "PASS" : "FAIL", checks, inspections: [home] };
+  }));
+  results.push(await recordR2Scenario(browser, options, staging, rawRoot, R2_RECORDING_FILENAMES[3], desktop, async ({ page }) => {
+    await openR2Home(page, options);
+    const geometry = await homeGeometry(page);
+    const addresses = addressesForGeometry(geometry, desktop);
+    await nativeWheelTo(page, addresses.audienceVisible, options.timeoutMs, { step: 460, pause: 75 });
+    await page.waitForFunction(() => window.quantumPhase4?.navigationReleased === true, null, { timeout: options.timeoutMs });
+    const before = await observeR2Home(page, "homepage-before-home-navigation");
+    await Promise.all([page.waitForURL((url) => url.pathname === "/" && url.hash === "#entry", { timeout: options.timeoutMs }), page.locator(".desktop-nav a[href='/#entry']").click()]);
+    await settle(page);
+    await waitForR2SemanticEntry(page, options.timeoutMs);
+    const after = await observeR2Home(page, "homepage-after-home-navigation");
+    const checks = { navigationWasReleased: before.navigation.released, arrivedAtSemanticHome: after.path === "/" && after.hash === "#entry" && after.scrollY > 0, semanticAlignment: after.manifesto.semanticAlignment.aligned, revealResolved: after.manifesto.revealState === "resolved" && after.manifesto.visible, noF1: before.frame.noF1 && after.frame.noF1, zeroProgrammaticScrollWrites: Number(after.telemetry.programmaticScrollCalls ?? 0) === 0 };
+    return { status: Object.values(checks).every(Boolean) ? "PASS" : "FAIL", checks, inspections: [before, after] };
+  }));
+  results.push(await recordR2Scenario(browser, options, staging, rawRoot, R2_RECORDING_FILENAMES[4], mobile, async ({ page }) => {
+    await openRoute(page, options, routeById("about"));
+    await page.locator(".mobile-nav summary").click();
+    const expanded = await page.locator(".mobile-nav").evaluate((element) => element.hasAttribute("open"));
+    await Promise.all([page.waitForURL((url) => url.pathname === "/" && url.hash === "#entry", { timeout: options.timeoutMs }), page.locator(".mobile-nav nav a[href='/#entry']").click()]);
+    await settle(page);
+    await waitForR2SemanticEntry(page, options.timeoutMs);
+    const home = await observeR2Home(page, "mobile-home-navigation-arrival");
+    const checks = { menuExpanded: expanded, arrivedAtSemanticHome: home.path === "/" && home.hash === "#entry" && home.scrollY > 0, semanticAlignment: home.manifesto.semanticAlignment.aligned, revealResolved: home.manifesto.revealState === "resolved" && home.manifesto.visible, mobileHomeLinkPresent: home.navigation.mobileHomeLinks === 1, noF1: home.frame.noF1, zeroProgrammaticScrollWrites: Number(home.telemetry.programmaticScrollCalls ?? 0) === 0 };
+    return { status: Object.values(checks).every(Boolean) ? "PASS" : "FAIL", checks, inspections: [home] };
+  }));
+  return results;
+}
+
+async function captureR2ManifestoVariant(browser, options, staging, definition) {
+  const context = await browser.newContext(contextOptions(definition.view, { javaScriptEnabled: definition.javaScriptEnabled ?? true, reducedMotion: definition.reducedMotion ?? "no-preference" }));
+  await installTelemetry(context);
+  const ledger = { requests: [], failed: [], blocked: [] };
+  const guard = await guardContext(context, options.url, ledger, `homepage-r2:${definition.filename}`);
+  const page = await context.newPage();
+  const diagnostics = diagnosticsFor(page, { id: "home-r2" });
+  try {
+    if (definition.javaScriptEnabled === false) {
+      await openR2Home(page, options, "#entry");
+    } else if (definition.variant !== "responsive") {
+      await openR2Home(page, options, "#entry");
+      if (definition.fallbackFonts) await page.addStyleTag({ content: "html body, html body * { font-family: Arial, Helvetica, sans-serif !important; }" });
+      await waitForR2SemanticEntry(page, options.timeoutMs, false);
+    } else {
+      await openR2Home(page, options);
+      await positionAtR2Manifesto(page, options, definition.view, definition.filename);
+    }
+    const observation = await observeR2Home(page, definition.filename);
+    const image = await screenshotBuffer(page);
+    const axe = definition.javaScriptEnabled === false ? { notRun: true, reason: "no-JavaScript application context" } : await runAxe(page);
+    let keyboard = null;
+    if (definition.keyboard) {
+      const enhanced = await page.evaluate(() => document.documentElement.dataset.cinematicMode === "enhanced" && Boolean(window.quantumPhase4));
+      let addresses = null;
+      if (enhanced) {
+        const geometry = await homeGeometry(page);
+        addresses = addressesForGeometry(geometry, definition.view);
+        await nativeWheelTo(page, addresses.audienceVisible, options.timeoutMs, { step: 420, pause: 70 });
+        await page.waitForFunction(() => window.quantumPhase4?.navigationReleased === true, null, { timeout: options.timeoutMs });
+      }
+      keyboard = await keyboardWalk(page, 12, {
+        allowSemanticForwardStart: definition.variant !== "responsive",
+        expectedSkipText: "Skip cinematic intro",
+      });
+      if (enhanced) {
+        await nativeWheelTo(page, addresses.settled, options.timeoutMs, { step: 420, pause: 70 });
+        await waitForR2Manifesto(page, options.timeoutMs);
+      } else {
+        await openR2Home(page, options, "#entry");
+        if (definition.fallbackFonts) await page.addStyleTag({ content: "html body, html body * { font-family: Arial, Helvetica, sans-serif !important; }" });
+        await waitForR2SemanticEntry(page, options.timeoutMs, false);
+      }
+    }
+    await writePng(staging, `homepage-r2/responsive/${definition.filename}`, image);
+    await guard.flush();
+    const unexpectedFailedRequests = unexpectedRequestFailures(ledger.failed);
+    const checks = {
+      exactManifesto: observation.manifesto.text === "We turn industrial needs into field evidence.",
+      visibleManifesto: observation.manifesto.visible,
+      semanticVariantAlignment: definition.variant === "responsive" || observation.manifesto.semanticAlignment.aligned,
+      noHorizontalOverflow: observation.horizontalOverflow <= OVERFLOW_TOLERANCE_PX,
+      noF1: observation.frame.noF1,
+      noSeriousCriticalAxe: axe.notRun === true || axe.seriousCritical.length === 0,
+      keyboardPass: keyboard === null || keyboard.status === "PASS",
+      zeroDiagnostics: diagnostics.consoleErrors.length === 0 && diagnostics.pageErrors.length === 0 && ledger.blocked.length === 0 && unexpectedFailedRequests.length === 0,
+    };
+    return { filename: definition.filename, view: definition.view, variant: definition.variant, status: Object.values(checks).every(Boolean) ? "PASS" : "FAIL", checks, observation, axe, keyboard, network: { failed: unexpectedFailedRequests, expectedBlobMediaAborts: ledger.failed.length - unexpectedFailedRequests.length } };
+  } finally {
+    await context.close();
+  }
+}
+
+async function evidenceHashRecords(staging, relativePaths) {
+  const records = [];
+  for (const relativePath of relativePaths) {
+    const bytes = await readFile(assertInside(staging, path.join(staging, ...relativePath.split("/"))));
+    records.push({ relativePath, byteSize: bytes.length, sha256: sha256(bytes) });
+  }
+  return records;
+}
+
+async function captureR2Evidence(browser, options, staging, rawRoot, authorities, routeResults, navigation) {
+  const definitions = [
+    ...R2_VIEWPOINTS.map((view) => ({ filename: `manifesto-${view.width}x${view.height}.png`, view, variant: "responsive", keyboard: true })),
+    { filename: "manifesto-200-percent.png", view: { id: "text-200", family: "desktop", width: 720, height: 450 }, variant: "200-percent-proxy", keyboard: true },
+    { filename: "manifesto-fallback-fonts.png", view: RECORDING_VIEW, variant: "fallback-fonts", fallbackFonts: true, keyboard: true },
+    { filename: "manifesto-reduced-motion.png", view: RECORDING_VIEW, variant: "reduced-motion", reducedMotion: "reduce", keyboard: true },
+    { filename: "manifesto-no-js.png", view: RECORDING_VIEW, variant: "no-js", javaScriptEnabled: false, keyboard: false },
+  ];
+  const responsive = [];
+  for (const definition of definitions) responsive.push(await captureR2ManifestoVariant(browser, options, staging, definition));
+  if (responsive.some(({ status }) => status !== "PASS")) throw new Error(`R2 responsive evidence failed: ${JSON.stringify(responsive.filter(({ status }) => status !== "PASS"))}`);
+
+  const deployedDesktop = await readFile(path.join(staging, "homepage-r2", "responsive", "manifesto-1440x900.png"));
+  const comparisonDefinitions = [
+    { filename: R2_COMPARISON_FILENAMES[0], authority: authorities.r1Manifesto, label: "Accepted R1 deployed manifesto" },
+    { filename: R2_COMPARISON_FILENAMES[1], authority: authorities.historicalManifesto, label: "Accepted historical manifesto" },
+  ];
+  for (const definition of comparisonDefinitions) {
+    const sheet = await composeSheet({ title: definition.filename.replace(/\.png$/, "").replaceAll("-", " "), subtitle: "Hash-bound visual comparison for human review", items: [{ input: definition.authority.bytes, label: definition.label }, { input: deployedDesktop, label: "Deployed R2 · 1440×900" }], columns: 2, panelWidth: 620, panelHeight: 390, labelHeight: 50 });
+    await writePng(staging, `homepage-r2/comparisons/${definition.filename}`, sheet);
+  }
+
+  const recordings = await captureR2Recordings(browser, options, staging, rawRoot);
+  const recordingPaths = R2_RECORDING_FILENAMES.map((name) => `homepage-r2/recordings/${name}`);
+  const responsivePaths = R2_RESPONSIVE_FILENAMES.map((name) => `homepage-r2/responsive/${name}`);
+  const comparisonPaths = R2_COMPARISON_FILENAMES.map((name) => `homepage-r2/comparisons/${name}`);
+  const routeReportPaths = ROUTES.flatMap(({ id }) => ["accessibility", "performance", "publication", "network-media"].map((name) => `routes/${id}/${name}.json`));
+  const standardHomePaths = ["homepage/manifesto.png", "homepage/audience-split.png", "homepage/crt-startup.png", "homepage/current.png", "homepage/q.png", "homepage/regression.json"];
+  const [recordingHashes, responsiveHashes, comparisonHashes, routeReportHashes, standardHomeHashes] = await Promise.all([
+    evidenceHashRecords(staging, recordingPaths), evidenceHashRecords(staging, responsivePaths), evidenceHashRecords(staging, comparisonPaths), evidenceHashRecords(staging, routeReportPaths), evidenceHashRecords(staging, standardHomePaths),
+  ]);
+  const allInspections = recordings.flatMap(({ evidence }) => [evidence.before, evidence.after, evidence.reversed, ...(evidence.inspections ?? []), ...(evidence.first ? [evidence.first.before, evidence.first.after] : []), ...(evidence.reentry ? [evidence.reentry.before, evidence.reentry.after] : [])].filter(Boolean));
+  const noF1 = allInspections.every((inspection) => inspection.frame?.noF1 !== false);
+  const deployment = authorities.deployment.parsed;
+  const phase4Media = (deployment.dist?.files ?? []).filter(({ relativePath = "" }) => relativePath.startsWith("media/cinematic/phase-4r2/")).map((record) => ({ relativePath: record.relativePath, byteSize: record.byteSize ?? record.bytes, sha256: record.sha256 }));
+  if (!phase4Media.length || phase4Media.some(({ byteSize, sha256: hash }) => !Number.isSafeInteger(byteSize) || byteSize <= 0 || !HASH64.test(hash ?? ""))) throw new Error("R2 Phase 4 media hash authority is incomplete");
+  const productionDelta = deployment.repository?.productionDelta ?? [];
+  const reports = {
+    "home-navigation-manifesto-runtime.json": { schema: "quantum-hub.phase-5b-r2.home-navigation-manifesto-runtime.v1", status: recordings.slice(0, 2).every(({ evidence }) => evidence.status === "PASS") ? "PASS" : "FAIL", evidence: recordingHashes.slice(0, 2), autonomousFade: recordings[0].evidence, reverseReentry: recordings[1].evidence, zeroScrollWriteInstrumentation: true, restWorkBounded: true },
+    "home-navigation-frame-audit.json": { schema: "quantum-hub.phase-5b-r2.home-navigation-frame-audit.v1", status: noF1 ? "PASS" : "FAIL", evidence: recordingHashes, inspections: allInspections, checks: { desktopMobileSupportingHomeInspected: allInspections.length >= 7, noF1 } },
+    "manifesto-responsive-accessibility.json": { schema: "quantum-hub.phase-5b-r2.manifesto-responsive-accessibility.v1", status: responsive.every(({ status }) => status === "PASS") ? "PASS" : "FAIL", evidence: [...responsiveHashes, ...comparisonHashes], comparisonAuthorities: { r1: authorities.r1Manifesto.public, historical: authorities.historicalManifesto.public }, viewports: R2_VIEWPOINTS, variants: responsive, checks: { thirteenViewports: responsive.filter(({ variant }) => variant === "responsive").length === 13, extraVariants: responsive.length - 13 === 4, comparisons: comparisonHashes.length === 2 } },
+    "supporting-route-source-regression.json": { schema: "quantum-hub.phase-5b-r2.supporting-route-source-regression.v1", status: routeResults.every(({ status }) => status === "PASS") ? "PASS" : "FAIL", evidence: routeReportHashes, productionDelta, checks: { allNineRoutesPass: routeResults.length === ROUTES.length && routeResults.every(({ status }) => status === "PASS"), exactR2DeploymentProfile: deployment.profile === CAPTURE_PROFILE_R2 } },
+    "phase4-media-hashes.json": { schema: "quantum-hub.phase-5b-r2.phase4-media-hashes.v1", status: "PASS", deploymentAuthority: authorities.deployment.public, assets: phase4Media, checks: { nonEmpty: phase4Media.length > 0, allHashBound: phase4Media.every(({ sha256: hash }) => HASH64.test(hash)) } },
+    "homepage-regression.json": { schema: "quantum-hub.phase-5b-r2.homepage-regression.v1", status: navigation.status === "PASS" && recordings.slice(2).every(({ evidence }) => evidence.status === "PASS") ? "PASS" : "FAIL", evidence: [...standardHomeHashes, ...recordingHashes.slice(2), ...comparisonHashes], legacyHomepageRegression: navigation.regression, navigationRecordings: recordings.slice(2).map(({ relativePath, evidence }) => ({ relativePath, checks: evidence.checks })), checks: { compactHomeRegressionPass: navigation.regression.status === "PASS", threeHomeNavigationRecordingsPass: recordings.slice(2).every(({ evidence }) => evidence.status === "PASS") } },
+  };
+  for (const [filename, report] of Object.entries(reports)) {
+    if (report.status !== "PASS") throw new Error(`${filename} R2 report failed`);
+    await writeJsonInside(staging, `homepage-r2/reports/${filename}`, report);
+  }
+  return { status: "PASS", recordings, responsive, requiredArtifacts: requiredR2ArtifactPaths(), reports: R2_REPORT_FILENAMES.map((name) => `homepage-r2/reports/${name}`), comparisonAuthorities: { r1: authorities.r1Manifesto.public, historical: authorities.historicalManifesto.public } };
 }
 
 async function buildCrossRouteSheets(staging) {
@@ -1750,9 +2247,10 @@ async function buildCrossRouteSheets(staging) {
   }
 }
 
-async function artifactRecords(staging) {
+async function artifactRecords(staging, profileValue = CAPTURE_PROFILE_CP9) {
+  const expectedPaths = expectedArtifactPaths(profileValue);
   const records = [];
-  for (const relativePath of EXPECTED_ARTIFACT_PATHS) {
+  for (const relativePath of expectedPaths) {
     const absolute = assertInside(staging, path.join(staging, ...relativePath.split("/")));
     const bytes = await readFile(absolute);
     const extension = path.extname(relativePath).slice(1).toLowerCase();
@@ -1769,7 +2267,7 @@ async function artifactRecords(staging) {
     }
     records.push(record);
   }
-  validateArtifactLedger(records);
+  validateArtifactLedger(records, profileValue);
   return records;
 }
 
@@ -1779,9 +2277,10 @@ async function exactFileInventory(root, expected, label) {
   return actual;
 }
 
-async function verifyReadback(output, records) {
+async function verifyReadback(output, records, profileValue = CAPTURE_PROFILE_CP9) {
+  const expectedPaths = expectedArtifactPaths(profileValue);
   const expected = new Map(records.map((record) => [record.relativePath, record]));
-  for (const relativePath of EXPECTED_ARTIFACT_PATHS) {
+  for (const relativePath of expectedPaths) {
     const bytes = await readFile(path.join(output, ...relativePath.split("/")));
     const record = expected.get(relativePath);
     assert.equal(bytes.length, record.bytes, `${relativePath} read-back byte length differs`);
@@ -1791,7 +2290,7 @@ async function verifyReadback(output, records) {
   const report = JSON.parse(reportBytes.toString("utf8"));
   assert.equal(containsPrivateText(report), false, "capture report read-back contains a private host path or credential");
   validateCaptureReport(report);
-  await exactFileInventory(output, [...EXPECTED_ARTIFACT_PATHS, REPORT_PATH], "published capture");
+  await exactFileInventory(output, [...expectedPaths, REPORT_PATH], "published capture");
   return true;
 }
 
@@ -1806,6 +2305,8 @@ function authoritySummary(authorities) {
     cp7ResponsiveAccessibility: authorities.cp7.public,
     cp8PublicationMediaPerformance: authorities.cp8.public,
     deploymentInspection: authorities.deployment?.public ?? { label: "separate-cloudflare-deployment-inspection", provided: false },
+    ...(authorities.r1Manifesto ? { r1ManifestoComparison: authorities.r1Manifesto.public } : {}),
+    ...(authorities.historicalManifesto ? { historicalManifestoComparison: authorities.historicalManifesto.public } : {}),
   };
 }
 
@@ -1823,6 +2324,8 @@ function finalizeReportByteAccounting(report) {
 
 export async function runCapture(optionsInput) {
   const options = validateOptions({ ...optionsInput });
+  const profile = resolveCaptureProfile(options.profile, options.expectedBranch);
+  const expectedPaths = expectedArtifactPaths(profile.id);
   const output = await validateFreshExternalOutputPath(options.output);
   const staging = assertExternalDurablePath(`${output}.staging-${randomUUID()}`, "capture staging");
   const rawRoot = path.join(staging, ".raw-recordings");
@@ -1842,6 +2345,10 @@ export async function runCapture(optionsInput) {
     await mkdir(staging, { recursive: false });
     await mkdir(rawRoot, { recursive: false });
     for (const directory of ["cross-route", "homepage", "routes"]) await mkdir(path.join(staging, directory), { recursive: false });
+    if (profile.id === CAPTURE_PROFILE_R2) {
+      await mkdir(path.join(staging, "homepage-r2"), { recursive: false });
+      for (const directory of ["responsive", "comparisons", "recordings", "reports"]) await mkdir(path.join(staging, "homepage-r2", directory), { recursive: false });
+    }
     browser = await chromium.launch({ headless: true, executablePath: browserExecutable, args: ["--disable-extensions", "--disable-background-networking"] });
     browserVersion = browser.version();
 
@@ -1849,19 +2356,21 @@ export async function runCapture(optionsInput) {
     for (const route of ROUTES) routeResults.push(await captureRouteEvidence(browser, options, route, staging, rawRoot, authorities));
     const navigation = await captureHomeAndNavigation(browser, options, staging, rawRoot);
     await buildCrossRouteSheets(staging);
+    const homepageR2 = profile.id === CAPTURE_PROFILE_R2 ? await captureR2Evidence(browser, options, staging, rawRoot, authorities, routeResults, navigation) : null;
     await browser.close();
     browser = null;
     await removeOwnedRawRoot(rawRoot, staging);
-    await exactFileInventory(staging, EXPECTED_ARTIFACT_PATHS, "pre-report capture staging");
+    await exactFileInventory(staging, expectedPaths, "pre-report capture staging");
 
-    const artifacts = await artifactRecords(staging);
+    const artifacts = await artifactRecords(staging, profile.id);
     const artifactBytes = artifacts.reduce((sum, record) => sum + record.bytes, 0);
     if (artifactBytes > REVIEW_TARGET_MAX_BYTES) throw new Error(`capture artifacts exceed 50 MB review target: ${artifactBytes} bytes`);
     const routeRecordings = artifacts.filter(({ relativePath }) => /\/route-recording\.mp4$/.test(relativePath));
     const failures = routeResults.filter(({ status }) => status !== "PASS");
     const report = {
-      schema: SCHEMA,
+      schema: profile.schema,
       status: failures.length ? "FAIL" : "PASS",
+      ...(profile.id === CAPTURE_PROFILE_R2 ? { profile: profile.id } : {}),
       generatedAt: new Date().toISOString(),
       target: {
         deploymentUrl: options.url,
@@ -1876,6 +2385,7 @@ export async function runCapture(optionsInput) {
       recordingContract: { container: "MP4", codec: "H.264", pixelFormat: "yuv420p", fps: RECORDING_FPS, audioStreams: 0, fullDecode: true, rawWebmRetained: false },
       routes: routeResults.map(({ route, mode, status, recording, summary }) => ({ route, mode, status, recording: recording ? { relativePath: recording.relativePath, validation: recording.validation } : null, summary })),
       homepage: { status: navigation.regression.status, regression: "homepage/regression.json", operatingFieldIncluded: true },
+      ...(homepageR2 ? { homepageR2: { status: homepageR2.status, requiredArtifacts: homepageR2.requiredArtifacts, reports: homepageR2.reports, comparisonAuthorities: homepageR2.comparisonAuthorities } } : {}),
       crossRouteNavigation: { status: navigation.status, relativePath: navigation.recording.relativePath, validation: navigation.recording.validation, sequence: navigation.sequence, network: navigation.network },
       limitations: [
         "Visual comparison is deterministic side-by-side evidence for human judgment; it does not assign creative acceptance.",
@@ -1907,6 +2417,12 @@ export async function runCapture(optionsInput) {
         screenshotsAndSheets: artifacts.filter(({ kind }) => kind === "image").length,
         structuredRouteReports: artifacts.filter(({ relativePath }) => /^routes\/[^/]+\/(?:accessibility|performance|publication|network-media)\.json$/.test(relativePath)).length,
         homepageReports: 1,
+        ...(homepageR2 ? {
+          r2Recordings: R2_RECORDING_FILENAMES.length,
+          r2ResponsiveCaptures: R2_RESPONSIVE_FILENAMES.length,
+          r2ComparisonSheets: R2_COMPARISON_FILENAMES.length,
+          r2Reports: R2_REPORT_FILENAMES.length,
+        } : {}),
         failures: failures.length,
         rawWebmRetained: 0,
         artifactBytes,
@@ -1918,13 +2434,14 @@ export async function runCapture(optionsInput) {
     if (report.ledger.totalBytesIncludingSelf > REVIEW_TARGET_MAX_BYTES) throw new Error(`complete capture exceeds 50 MB review target: ${report.ledger.totalBytesIncludingSelf} bytes`);
     validateCaptureReport(report);
     await writeJsonInside(staging, REPORT_PATH, report);
-    await exactFileInventory(staging, [...EXPECTED_ARTIFACT_PATHS, REPORT_PATH], "complete capture staging");
+    await exactFileInventory(staging, [...expectedPaths, REPORT_PATH], "complete capture staging");
     await rename(staging, output);
     published = true;
-    await verifyReadback(output, artifacts);
+    await verifyReadback(output, artifacts, profile.id);
     return {
-      schema: SCHEMA,
+      schema: profile.schema,
       status: "PASS",
+      ...(profile.id === CAPTURE_PROFILE_R2 ? { profile: profile.id, r2Recordings: R2_RECORDING_FILENAMES.length } : {}),
       output,
       report: path.join(output, REPORT_PATH),
       artifacts: artifacts.length,
@@ -1964,14 +2481,24 @@ function storyboardFixture() {
   };
 }
 
-export async function selfTest() {
+export async function selfTest(profileValue = CAPTURE_PROFILE_CP9) {
+  const profile = resolveCaptureProfile(profileValue);
+  const expectedPaths = expectedArtifactPaths(profile.id);
   assert.equal(ROUTES.length, 9);
   assert.equal(CAPTURE_VIEWS.length, 4);
-  assert.deepEqual(ALLOWED_CAPTURE_BRANCHES, [REQUIRED_BRANCH, R1_REPAIR_BRANCH]);
+  assert.deepEqual(ALLOWED_CAPTURE_BRANCHES, [REQUIRED_BRANCH, R1_REPAIR_BRANCH, R2_REPAIR_BRANCH]);
   assert.deepEqual(MOTION_ROUTE_IDS, ["for-industry", "for-startups", "industries", "proof", "maradin", "spark", "about"]);
   assert.equal(EXPECTED_ARTIFACT_PATHS.length, 126);
-  assert.equal(EXPECTED_ARTIFACT_PATHS.filter((value) => value.endsWith("route-recording.mp4")).length, 7);
-  assert.equal(EXPECTED_ARTIFACT_PATHS.filter((value) => value.endsWith(".webm")).length, 0);
+  assert.equal(expectedPaths.filter((value) => value.endsWith("route-recording.mp4")).length, 7);
+  assert.equal(expectedPaths.filter((value) => value.endsWith(".webm")).length, 0);
+  if (profile.id === CAPTURE_PROFILE_R2) {
+    assert.equal(R2_VIEWPOINTS.length, 13);
+    assert.equal(R2_RECORDING_FILENAMES.length, 5);
+    assert.equal(R2_RESPONSIVE_FILENAMES.length, R2_VIEWPOINTS.length + 4);
+    assert.equal(R2_COMPARISON_FILENAMES.length, 2);
+    assert.equal(R2_REPORT_FILENAMES.length, 6);
+    assert.ok(requiredR2ArtifactPaths().every((relativePath) => expectedPaths.includes(relativePath)));
+  }
   validateStoryboardManifestData(storyboardFixture());
   const recording = recordingContractResult({ streams: [{ codec_type: "video", codec_name: "h264", pix_fmt: "yuv420p", width: 1440, height: 900, avg_frame_rate: "30/1", r_frame_rate: "30/1" }], format: { format_name: "mov,mp4,m4a,3gp,3g2,mj2", duration: "4.0" } }, RECORDING_VIEW, { minimumSeconds: 2.4, maximumSeconds: 12 });
   assert.equal(recording.status, "PASS");
@@ -1993,9 +2520,10 @@ export async function selfTest() {
   assert.equal(home.status, "PASS");
   assert.equal(audienceFrameScrollTarget({ audienceTop: 7605, headerBottom: 120, maxScrollY: 20_000 }), 7485);
   return {
-    schema: SCHEMA,
+    schema: profile.schema,
     status: "PASS",
-    inventories: { routes: ROUTES.length, views: CAPTURE_VIEWS.length, motionRoutes: MOTION_ROUTE_IDS.length, artifactsExcludingReport: EXPECTED_ARTIFACT_PATHS.length, filesIncludingReport: EXPECTED_ARTIFACT_PATHS.length + 1, acceptedStoryboardFiles: ACCEPTED_STORYBOARD_FILE_COUNT },
+    ...(profile.id === CAPTURE_PROFILE_R2 ? { profile: profile.id } : {}),
+    inventories: { routes: ROUTES.length, views: CAPTURE_VIEWS.length, motionRoutes: MOTION_ROUTE_IDS.length, artifactsExcludingReport: expectedPaths.length, filesIncludingReport: expectedPaths.length + 1, acceptedStoryboardFiles: ACCEPTED_STORYBOARD_FILE_COUNT, ...(profile.id === CAPTURE_PROFILE_R2 ? { r2RequiredArtifacts: requiredR2ArtifactPaths().length } : {}) },
     recording: { codec: "H.264", pixelFormat: "yuv420p", fps: 30, audioStreams: 0, rawWebmRetained: false },
     packageTargetBytes: REVIEW_TARGET_MAX_BYTES,
   };
@@ -2003,25 +2531,28 @@ export async function selfTest() {
 
 function printHelp() {
   process.stdout.write(`Accepted --expected-branch values: ${ALLOWED_CAPTURE_BRANCHES.join(", ")}\n\n`);
-  process.stdout.write(`Phase 5B deployed browser evidence\n\nUsage:\n  node ${SCRIPT_RELATIVE} \\\n+    --deployment-url https://<deployment>.qsite1.pages.dev/ \\\n+    --expected-head <40-hex> --expected-branch ${REQUIRED_BRANCH} \\\n+    --storyboard-root <accepted-phase5ar-preproduction-root> \\\n+    --cp7-report <responsive-accessibility.json> \\\n+    --cp8-report <publication-media-performance.json> \\\n+    [--deployment-report <cloudflare-inspection.json>] \\\n+    --output <fresh-durable-external-directory> \\\n+    [--browser <chrome>] [--ffmpeg <ffmpeg>] [--ffprobe <ffprobe>]\n\nOptions:\n  --dry-run       Validate explicit argument and topology intent only; no reads, Git, network, browser, or output.\n  --self-test     Run pure contract checks; no reads, Git, network, browser, or output.\n  --timeout-ms N  Per-operation timeout, 5000..120000.\n`);
+  process.stdout.write(`Phase 5B deployed browser evidence\n\nUsage:\n  node ${SCRIPT_RELATIVE} \\\n    [--profile cp9|r1|r2] \\\n    --deployment-url https://<deployment>.qsite1.pages.dev/ \\\n    --expected-head <40-hex> --expected-branch <profile-branch> \\\n    --storyboard-root <accepted-phase5ar-preproduction-root> \\\n    --cp7-report <responsive-accessibility.json> \\\n    --cp8-report <publication-media-performance.json> \\\n    --deployment-report <cloudflare-inspection.json> \\\n    --output <fresh-durable-external-directory> \\\n    [--browser <chrome>] [--ffmpeg <ffmpeg>] [--ffprobe <ffprobe>]\n\nR2 additionally requires --r1-manifesto, --expected-r1-manifesto-sha256, --historical-manifesto, and --expected-historical-manifesto-sha256.\n\nOptions:\n  --dry-run       Validate explicit argument and topology intent only; no reads, Git, network, browser, or output.\n  --self-test     Run pure contract checks; no reads, Git, network, browser, or output.\n  --timeout-ms N  Per-operation timeout, 5000..120000.\n`);
 }
 
 async function main() {
   const options = parseArguments(process.argv.slice(2));
   if (options.help) { printHelp(); return; }
-  if (options.selfTest) { process.stdout.write(`${JSON.stringify(await selfTest(), null, 2)}\n`); return; }
+  if (options.selfTest) { process.stdout.write(`${JSON.stringify(await selfTest(options.profile), null, 2)}\n`); return; }
   validateOptions(options);
   if (options.dryRun) {
+    const profile = resolveCaptureProfile(options.profile, options.expectedBranch);
+    const expectedPaths = expectedArtifactPaths(profile.id);
     process.stdout.write(`${JSON.stringify({
-      schema: SCHEMA,
+      schema: profile.schema,
       status: "DRY-RUN",
+      ...(profile.id === CAPTURE_PROFILE_R2 ? { profile: profile.id } : {}),
       writes: 0,
       browserLaunched: false,
       networkRequests: 0,
       gitReads: 0,
       target: { deploymentUrl: options.url, expectedHead: options.expectedHead, expectedBranch: options.expectedBranch },
-      inputs: { acceptedStoryboards: true, cp7: true, cp8: true, deploymentInspection: Boolean(options.deploymentReport) },
-      topology: { artifactsExcludingReport: EXPECTED_ARTIFACT_PATHS.length, filesIncludingReport: EXPECTED_ARTIFACT_PATHS.length + 1, routeRecordings: MOTION_ROUTE_IDS.length, crossRouteRecordings: 1 },
+      inputs: { acceptedStoryboards: true, cp7: true, cp8: true, deploymentInspection: Boolean(options.deploymentReport), ...(profile.id === CAPTURE_PROFILE_R2 ? { r1ManifestoHashBound: true, historicalManifestoHashBound: true } : {}) },
+      topology: { artifactsExcludingReport: expectedPaths.length, filesIncludingReport: expectedPaths.length + 1, routeRecordings: MOTION_ROUTE_IDS.length, crossRouteRecordings: 1, ...(profile.id === CAPTURE_PROFILE_R2 ? { r2Recordings: R2_RECORDING_FILENAMES.length, r2ResponsiveCaptures: R2_RESPONSIVE_FILENAMES.length, r2Comparisons: R2_COMPARISON_FILENAMES.length, r2Reports: R2_REPORT_FILENAMES.length } : {}) },
     }, null, 2)}\n`);
     return;
   }

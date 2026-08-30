@@ -12,6 +12,7 @@ import {
   CP8_HEAD_SHA,
   DEPLOYMENT_PROFILE_CP9,
   DEPLOYMENT_PROFILE_R1,
+  DEPLOYMENT_PROFILE_R2,
   DEPLOYMENT_PROFILES,
   FIXED_CHECKPOINT_SHAS,
   FROZEN_MAIN_SHA,
@@ -33,6 +34,12 @@ import {
   R1_FIXED_CHECKPOINT_SHAS,
   R1_PARENT_CP9_SHA,
   R1_REQUIRED_BRANCH,
+  R2_ALLOWED_PRODUCTION_PATHS,
+  R2_CHECKPOINT_SUBJECT,
+  R2_CHECKPOINT_SUBJECTS,
+  R2_FIXED_CHECKPOINT_SHAS,
+  R2_PARENT_R1_SHA,
+  R2_REQUIRED_BRANCH,
   ROOT,
   SCHEMA,
   assertCheckpointChain,
@@ -49,6 +56,7 @@ import {
   validateDistRecords,
   validateObservedHeaders,
   validateOptions,
+  validateProductionDelta,
   verifyCloudflareGithubCheck,
 } from "../scripts/verify-phase5b-deployment.mjs";
 
@@ -203,6 +211,26 @@ test("Phase 5B-R1 profile freezes the repair branch, CP9 parent, tenth subject, 
   assert.equal(R1_FIXED_CHECKPOINT_SHAS.at(-1), R1_PARENT_CP9_SHA);
   assert.equal(DEPLOYMENT_PROFILES[DEPLOYMENT_PROFILE_R1].requiredBranchUrl, null);
   assert.throws(() => resolveDeploymentProfile("phase5b-r2"), /--profile/);
+});
+
+test("Phase 5B-R2 freezes the R1 parent, eleventh subject, and exact Home/shared-header production scope", async () => {
+  const profile = resolveDeploymentProfile(DEPLOYMENT_PROFILE_R2);
+  assert.equal(profile.branch, R2_REQUIRED_BRANCH);
+  assert.equal(R2_REQUIRED_BRANCH, "repair/phase-5b-r2-home-navigation-manifesto");
+  assert.equal(R2_PARENT_R1_SHA, "ca22ae2f234302e7485803c560866abd7757735e");
+  assert.equal(R2_CHECKPOINT_SUBJECT, "Repair Phase 5B home navigation and manifesto");
+  assert.equal(R2_CHECKPOINT_SUBJECTS.length, 11);
+  assert.equal(R2_CHECKPOINT_SUBJECTS.at(-1), R2_CHECKPOINT_SUBJECT);
+  assert.equal(R2_FIXED_CHECKPOINT_SHAS.length, 10);
+  assert.equal(R2_FIXED_CHECKPOINT_SHAS.at(-1), R2_PARENT_R1_SHA);
+  assert.deepEqual(R2_ALLOWED_PRODUCTION_PATHS, ["src/components/SiteHeader.astro", "src/components/home/EntryField.astro", "src/pages/index.astro", "src/scripts/home-cinematic-integration.ts", "src/styles/routes/home.css", "src/styles/routes/home-cinematic.css", "src/styles/routes/home-responsive.css"]);
+  assert.deepEqual(validateProductionDelta(`M\t${R2_ALLOWED_PRODUCTION_PATHS[0]}\nM\t${R2_ALLOWED_PRODUCTION_PATHS.at(-1)}`, DEPLOYMENT_PROFILE_R2), [{ status: "M", path: R2_ALLOWED_PRODUCTION_PATHS[0] }, { status: "M", path: R2_ALLOWED_PRODUCTION_PATHS.at(-1) }]);
+  assert.throws(() => validateProductionDelta("", DEPLOYMENT_PROFILE_R2), /non-empty/);
+  assert.throws(() => validateProductionDelta("M\tsrc/styles/navigation.css", DEPLOYMENT_PROFILE_R2), /allowlist/);
+  const self = await selfTest(DEPLOYMENT_PROFILE_R2);
+  assert.equal(self.profile, DEPLOYMENT_PROFILE_R2);
+  assert.equal(self.checkpointCount, 11);
+  assert.equal(self.r1ParentFixed, true);
 });
 
 test("CLI bindings require a new CP9 head, new deployment, exact account/project, and observed URLs", () => {

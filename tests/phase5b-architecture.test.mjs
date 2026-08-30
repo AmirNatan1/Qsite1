@@ -54,10 +54,13 @@ test("legacy Phase 4 verification permits only the explicit Phase 5B route surfa
   const packageManifest = JSON.parse(await read("package.json"));
   assert.match(packageManifest.scripts.check, /verify-phase4-source\.mjs --allow-phase5b-route-scope/);
   assert.match(verifier, /PHASE5B_ROUTE_SCOPE_ALLOWED/);
+  assert.match(verifier, /\^src\\\/components\\\/SiteHeader\\\.astro\$\//);
   assert.match(verifier, /src\\\/components\\\/routes/);
   assert.match(verifier, /src\\\/styles\\\/global\\\.css/);
   assert.match(verifier, /src\\\/pages\\\/pocs/);
   assert.doesNotMatch(verifier, /PHASE5B_ROUTE_PRODUCTION_CHANGES[\s\S]{0,150}\^src\\\/\.\*/);
+  assert.match(verifier, /entryH1Text === "We turn industrial needs into field evidence\."/);
+  assert.match(verifier, /setThresholdInteraction\\\(manifestoActive, navigationReleased\\\)/);
   assert.match(outputVerifier, /PHASE5B_ROUTE_SCOPE_ALLOWED/);
   assert.match(finalBuild, /verify-phase4-output\.mjs", "--allow-phase5b-route-scope/);
 });

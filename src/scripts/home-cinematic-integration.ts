@@ -42,10 +42,6 @@ const MEDIA_ROOT = "/media/cinematic/phase-4r2/";
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 const rounded = (value: number, digits = 4) => Number(value.toFixed(digits));
 const mix = (start: number, end: number, progress: number) => start + (end - start) * progress;
-const smoothstep = (value: number) => {
-  const progress = clamp(value);
-  return progress * progress * (3 - 2 * progress);
-};
 
 function interpolatePiecewise(value: number, input: readonly number[], output: readonly number[]) {
   const progress = Math.min(input.at(-1) ?? 1, Math.max(input[0] ?? 0, value));
@@ -219,7 +215,7 @@ export function cinematicDocumentStateForScroll(
   const blackBreath = blackOffset >= 0 && blackOffset < BLACK_FRAME_COUNT
     ? 0.5 - 0.5 * Math.cos((blackOffset / BLACK_FRAME_COUNT) * Math.PI * 2)
     : 0;
-  const semantic = smoothstep((conceptualCoordinate - ENTRY_START_U) / (CONCEPTUAL_FRAME_COUNT - ENTRY_START_U));
+  const semantic = conceptualCoordinate >= ENTRY_START_U ? 1 : 0;
   const settled = scrollProgress >= 0.9995;
   const phase: CinematicDocumentPhase = settled
     ? "settled"
@@ -327,6 +323,7 @@ export function initHomeCinematicIntegration() {
   const downstreamFields = Array.from(document.querySelectorAll<HTMLElement>("[data-field-section]"));
   const skipLink = document.querySelector<HTMLAnchorElement>(".skip-link[href='#entry']");
   const mobileMenu = header?.querySelector<HTMLDetailsElement>("[data-mobile-nav]");
+  const semanticHomeLinks = Array.from(header?.querySelectorAll<HTMLAnchorElement>('a[href="/#entry"]') ?? []);
   const methodField = document.querySelector<HTMLElement>("[data-method-section]");
   const methodStages = Array.from(methodField?.querySelectorAll<HTMLElement>("[data-method-stage]") ?? []);
   const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -338,6 +335,7 @@ export function initHomeCinematicIntegration() {
     root.dataset.cinematicEligibility = "bypass";
     root.dataset.cinematicMode = "static";
     root.dataset.cinematicHeader = "released";
+    delete root.dataset.cinematicEntryIntent;
     document.querySelector<HTMLElement>(".site-header")?.removeAttribute("inert");
     document.querySelector<HTMLElement>("#entry")?.removeAttribute("inert");
     document.querySelector<HTMLElement>("[data-audience-routing]")?.removeAttribute("inert");
@@ -359,11 +357,22 @@ export function initHomeCinematicIntegration() {
   const abortController = new AbortController();
   const mediaAbortController = new AbortController();
   const { signal } = abortController;
-  const initialFamily = chooseFamily(window.innerWidth, window.innerHeight);
-  const initialShortDesktop = initialFamily === "desktop" && window.innerHeight < 704;
-  const authoredTravel = window.innerHeight * travelViewportHeights(initialFamily, initialShortDesktop);
+  const initialCohort = root.dataset.cinematicCohort;
+  const initialFamily: MediaFamily = initialCohort === "portrait"
+    ? "portrait"
+    : initialCohort === "landscape"
+      ? "landscape"
+      : "desktop";
+  const initialShortDesktop = initialCohort === "short-desktop";
   const codec = chooseCodec(video);
   let animationFrame = 0;
+  let manifestoAnimationFrame = 0;
+  let manifestoNavigationFrame = 0;
+  let semanticHomeClickPending = false;
+  let manifestoRevealState: "hidden" | "armed" | "revealing" | "resolved" = "hidden";
+  let manifestoThresholdActive = false;
+  let manifestoRevealStartedAt = 0;
+  let semanticEntryNavigationResolved = false;
   let loadTimer = 0;
   let metadataReady = false;
   let mediaReady = false;
@@ -379,6 +388,7 @@ export function initHomeCinematicIntegration() {
   let audienceTop = 2;
   let headerHeight = 0;
   let travel = 1;
+  let committedTravel = 0;
   let scrollTargetPhysicalFrame = 1;
   let presentedPhysicalFrame = 1;
   let currentScrollOffset = 0;
@@ -460,8 +470,7 @@ export function initHomeCinematicIntegration() {
     }
   };
   const clearCinematicStyles = () => {
-    for (const property of ["--cinematic-header-px", "--cinematic-travel-px", "--cinematic-progress", "--cinematic-film-progress", "--cinematic-black", "--cinematic-black-breath", "--cinematic-semantic", "--cinematic-media-ready", "--manifesto-anchor-px"]) shell.style.removeProperty(property);
-    root.style.removeProperty("--cinematic-semantic");
+    for (const property of ["--cinematic-header-px", "--cinematic-travel-px", "--cinematic-progress", "--cinematic-film-progress", "--cinematic-black", "--cinematic-black-breath", "--cinematic-media-ready", "--manifesto-anchor-px"]) shell.style.removeProperty(property);
   };
   const failOpen = (reason: string) => {
     if (failed) return;
@@ -485,8 +494,13 @@ export function initHomeCinematicIntegration() {
     failed = true;
     releaseMedia();
     if (animationFrame) window.cancelAnimationFrame(animationFrame);
+    if (manifestoAnimationFrame) window.cancelAnimationFrame(manifestoAnimationFrame);
+    manifestoAnimationFrame = 0;
+    if (manifestoNavigationFrame) window.cancelAnimationFrame(manifestoNavigationFrame);
+    manifestoNavigationFrame = 0;
     root.dataset.cinematicEligibility = "bypass";
     root.dataset.cinematicMode = "static";
+    delete shell.dataset.manifestoReveal;
     shell.dataset.mediaState = "failed";
     shell.dataset.cinematicPhase = "fallback";
     setThresholdInteraction(true, true);
@@ -519,6 +533,10 @@ export function initHomeCinematicIntegration() {
     scrollProgress: 0, cinematicProgress: 0, conceptualFrame: 1, targetFrame: 1, targetTime: 0,
     blackProgress: 0, semanticProgress: 0, mediaReady: false, control: "scroll-addressed" as const,
     segment: "top-dormancy" as CinematicSegmentId, scrollOffset: 0, presentedFrame: 1,
+    manifestoActive: false, manifestoSettled: false,
+    manifestoRevealState: "hidden" as "hidden" | "armed" | "revealing" | "resolved",
+    manifestoRevealDurationMs: 0,
+    navigationReleased: false,
   };
   window.quantumPhase4 = publicState;
   root.dataset.cinematicMode = "enhanced";
@@ -527,14 +545,76 @@ export function initHomeCinematicIntegration() {
   shell.dataset.mediaDelivery = "blob";
   shell.dataset.mediaState = "loading";
   shell.dataset.cinematicControl = "scroll-addressed";
+  shell.dataset.manifestoReveal = "hidden";
   video.preload = "auto";
+
+  const publishManifestoReveal = () => {
+    Object.assign(publicState, {
+      semanticProgress: manifestoRevealState === "resolved" ? 1 : 0,
+      manifestoActive: manifestoThresholdActive,
+      manifestoSettled: manifestoRevealState === "resolved",
+      manifestoRevealState,
+      manifestoRevealDurationMs: manifestoRevealState === "resolved" && manifestoRevealStartedAt > 0
+        ? rounded(performance.now() - manifestoRevealStartedAt, 1)
+        : 0,
+    });
+  };
+  const resolveManifestoReveal = () => {
+    if (!manifestoThresholdActive || manifestoRevealState === "resolved") return;
+    if (manifestoAnimationFrame) window.cancelAnimationFrame(manifestoAnimationFrame);
+    manifestoAnimationFrame = 0;
+    manifestoRevealState = "resolved";
+    shell.dataset.manifestoReveal = "resolved";
+    publishManifestoReveal();
+  };
+  const setManifestoReveal = (active: boolean) => {
+    manifestoThresholdActive = active;
+    if (!active) {
+      if (manifestoAnimationFrame) window.cancelAnimationFrame(manifestoAnimationFrame);
+      manifestoAnimationFrame = 0;
+      manifestoRevealState = "hidden";
+      shell.dataset.manifestoReveal = "hidden";
+      publishManifestoReveal();
+      return;
+    }
+    if (manifestoRevealState !== "hidden") {
+      publishManifestoReveal();
+      return;
+    }
+    manifestoRevealState = "armed";
+    shell.dataset.manifestoReveal = "armed";
+    publishManifestoReveal();
+    manifestoAnimationFrame = window.requestAnimationFrame(() => {
+      manifestoAnimationFrame = 0;
+      if (!manifestoThresholdActive || manifestoRevealState !== "armed") return;
+      manifestoRevealStartedAt = performance.now();
+      manifestoRevealState = "revealing";
+      shell.dataset.manifestoReveal = "revealing";
+      publishManifestoReveal();
+    });
+  };
+  const replayManifestoAfterNativeHomeNavigation = () => {
+    root.dataset.cinematicEntryIntent = "pending";
+    semanticEntryNavigationResolved = true;
+    setManifestoReveal(false);
+    if (manifestoNavigationFrame) return;
+    manifestoNavigationFrame = window.requestAnimationFrame(() => {
+      manifestoNavigationFrame = 0;
+      if (window.location.hash !== "#entry") return;
+      schedule();
+    });
+  };
 
   const measure = () => {
     headerHeight = header.getBoundingClientRect().height;
     shell.style.setProperty("--cinematic-header-px", `${headerHeight.toFixed(2)}px`);
-    shell.style.setProperty("--cinematic-travel-px", `${authoredTravel.toFixed(2)}px`);
     shellTop = shell.getBoundingClientRect().top + window.scrollY;
     entryTop = entry.getBoundingClientRect().top + window.scrollY;
+    if (committedTravel === 0) {
+      committedTravel = Math.max(entryTop - headerHeight - shellTop, 1);
+      shell.style.setProperty("--cinematic-travel-px", `${committedTravel.toFixed(2)}px`);
+      entryTop = entry.getBoundingClientRect().top + window.scrollY;
+    }
     audienceTop = audienceRouting.getBoundingClientRect().top + window.scrollY;
     travel = Math.max(entryTop - headerHeight - shellTop, 1);
     needsMeasurement = false;
@@ -544,9 +624,18 @@ export function initHomeCinematicIntegration() {
     latestPhysicalFrame = targetPhysicalFrame;
     try { video.pause(); video.currentTime = targetTime; } catch { failOpen("seek"); }
   };
+  const maybeReleaseEntryIntentGuard = () => {
+    if (
+      root.dataset.cinematicEntryIntent === "pending"
+      && semanticEntryNavigationResolved
+      && mediaReady
+      && presentedPhysicalFrame === targetPhysicalFrame
+    ) delete root.dataset.cinematicEntryIntent;
+  };
   const publishPresentedFrame = () => {
     shell.dataset.presentedFrame = String(presentedPhysicalFrame);
     Object.assign(publicState, { presentedFrame: presentedPhysicalFrame });
+    maybeReleaseEntryIntentGuard();
   };
   const targetFrame = (frame: number, replacePending = false) => {
     targetPhysicalFrame = Math.min(PHYSICAL_FRAME_COUNT, Math.max(1, Math.floor(frame)));
@@ -563,6 +652,7 @@ export function initHomeCinematicIntegration() {
     currentScrollOffset = Math.min(scrollExtent, Math.max(0, Math.round(nativeScrollY - shellTop)));
     const documentState = cinematicDocumentStateForScroll(currentScrollOffset, scrollExtent, initialFamily, initialShortDesktop);
     const { scrollProgress, conceptualCoordinate, conceptualFrame, black, blackBreath, semantic, settled, phase } = documentState;
+    const manifestoActive = semantic === 1;
     const cinematicProgress = conceptualCoordinate / CONCEPTUAL_FRAME_COUNT;
     scrollTargetPhysicalFrame = documentState.physicalFrame;
     const segment = cinematicSegmentForCoordinate(conceptualCoordinate);
@@ -575,10 +665,8 @@ export function initHomeCinematicIntegration() {
     shell.style.setProperty("--cinematic-film-progress", cinematicProgress.toFixed(4));
     shell.style.setProperty("--cinematic-black", black.toFixed(4));
     shell.style.setProperty("--cinematic-black-breath", blackBreath.toFixed(4));
-    shell.style.setProperty("--cinematic-semantic", semantic.toFixed(4));
     shell.style.setProperty("--manifesto-anchor-px", `${Math.min(0, currentScrollOffset - scrollExtent).toFixed(2)}px`);
     shell.style.setProperty("--cinematic-media-ready", mediaReady && !mediaFailed ? "1" : "0");
-    root.style.setProperty("--cinematic-semantic", semantic.toFixed(4));
     shell.dataset.cinematicPhase = phase;
     shell.dataset.scrollProgress = scrollProgress.toFixed(4);
     shell.dataset.cinematicProgress = cinematicProgress.toFixed(4);
@@ -587,12 +675,15 @@ export function initHomeCinematicIntegration() {
     shell.dataset.cinematicSegment = segment;
     shell.dataset.targetFrame = String(targetPhysicalFrame);
     shell.dataset.targetTime = targetTime.toFixed(4);
+    if (manifestoActive) semanticEntryNavigationResolved = true;
+    setManifestoReveal(manifestoActive);
+    maybeReleaseEntryIntentGuard();
     const navigationReleasePoint = audienceTop - window.innerHeight;
     const navigationReleased = settled && nativeScrollY >= navigationReleasePoint;
-    setThresholdInteraction(settled, navigationReleased);
+    setThresholdInteraction(manifestoActive, navigationReleased);
     persistRestorationState(settled);
     requestCurrentFrame();
-    Object.assign(publicState, { mode: root.dataset.cinematicMode ?? "enhanced", scrollProgress: rounded(scrollProgress), cinematicProgress: rounded(cinematicProgress), conceptualFrame, targetFrame: targetPhysicalFrame, targetTime: rounded(targetTime), blackProgress: rounded(black), semanticProgress: rounded(semantic), mediaReady, segment, scrollOffset: currentScrollOffset, presentedFrame: presentedPhysicalFrame, manifestoSettled: settled, navigationReleased });
+    Object.assign(publicState, { mode: root.dataset.cinematicMode ?? "enhanced", scrollProgress: rounded(scrollProgress), cinematicProgress: rounded(cinematicProgress), conceptualFrame, targetFrame: targetPhysicalFrame, targetTime: rounded(targetTime), blackProgress: rounded(black), mediaReady, segment, scrollOffset: currentScrollOffset, presentedFrame: presentedPhysicalFrame, manifestoActive, navigationReleased });
   };
   const schedule = () => {
     if (animationFrame || document.hidden || failed) return;
@@ -608,17 +699,23 @@ export function initHomeCinematicIntegration() {
     mediaReady = true;
     shell.dataset.mediaState = "ready";
     clearTimer();
+    maybeReleaseEntryIntentGuard();
     schedule();
   };
-  const handleSkip = () => {
+  const handleSkip = (event: MouseEvent) => {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     pauseDecoder();
+    semanticHomeClickPending = window.location.hash !== "#entry";
     shell.style.setProperty("--cinematic-progress", "1");
     shell.style.setProperty("--cinematic-film-progress", "1");
     shell.style.setProperty("--cinematic-black", "1");
-    shell.style.setProperty("--cinematic-semantic", "1");
     shell.style.setProperty("--manifesto-anchor-px", "0px");
-    root.style.setProperty("--cinematic-semantic", "1");
     shell.dataset.cinematicPhase = "settled";
+    root.dataset.cinematicEntryIntent = "pending";
+    semanticEntryNavigationResolved = true;
+    setManifestoReveal(true);
+    resolveManifestoReveal();
+    maybeReleaseEntryIntentGuard();
     setThresholdInteraction(true, false);
     persistRestorationState(true);
     entry.focus({ preventScroll: true });
@@ -648,12 +745,40 @@ export function initHomeCinematicIntegration() {
   window.addEventListener("scroll", schedule, { passive: true, signal });
   window.addEventListener("resize", invalidate, { passive: true, signal });
   window.addEventListener("pageshow", invalidate, { passive: true, signal });
+  for (const link of semanticHomeLinks) {
+    link.addEventListener("click", (event) => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      semanticHomeClickPending = window.location.hash !== "#entry";
+      replayManifestoAfterNativeHomeNavigation();
+    }, { signal });
+  }
+  window.addEventListener("hashchange", () => {
+    if (window.location.hash !== "#entry") {
+      semanticHomeClickPending = false;
+      return;
+    }
+    if (semanticHomeClickPending) {
+      semanticHomeClickPending = false;
+      return;
+    }
+    replayManifestoAfterNativeHomeNavigation();
+  }, { signal });
   skipLink.addEventListener("click", handleSkip, { signal });
+  manifestoContent.addEventListener("transitionend", (event) => {
+    if (event.target === manifestoContent && event.propertyName === "opacity" && manifestoRevealState === "revealing") {
+      resolveManifestoReveal();
+    }
+  }, { signal });
   motion.addEventListener("change", () => { if (motion.matches) failOpen("reduced-motion-change"); }, { signal });
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
       if (animationFrame) cancelAnimationFrame(animationFrame);
       animationFrame = 0;
+      if (manifestoThresholdActive) resolveManifestoReveal();
+      else if (manifestoAnimationFrame) cancelAnimationFrame(manifestoAnimationFrame);
+      manifestoAnimationFrame = 0;
+      if (manifestoNavigationFrame) cancelAnimationFrame(manifestoNavigationFrame);
+      manifestoNavigationFrame = 0;
       pauseDecoder();
     }
     else invalidate();
@@ -671,9 +796,18 @@ export function initHomeCinematicIntegration() {
   video.addEventListener("error", () => failOpen("media"), { signal });
   void fonts?.ready.then(() => { fontsReady = true; invalidate(); });
   window.addEventListener("pagehide", (event) => {
+    semanticHomeClickPending = false;
     persistRestorationState(shell.dataset.cinematicPhase === "settled" || window.scrollY >= entryTop - headerHeight - 1);
+    if (manifestoThresholdActive || (window.location.hash === "#entry" && window.scrollY >= entryTop - headerHeight - 1)) {
+      manifestoThresholdActive = true;
+      resolveManifestoReveal();
+    }
     if (animationFrame) cancelAnimationFrame(animationFrame);
     animationFrame = 0;
+    if (manifestoAnimationFrame) cancelAnimationFrame(manifestoAnimationFrame);
+    manifestoAnimationFrame = 0;
+    if (manifestoNavigationFrame) cancelAnimationFrame(manifestoNavigationFrame);
+    manifestoNavigationFrame = 0;
     pauseDecoder();
     if (event.persisted) return;
     clearTimer(); releaseMedia(); resizeObserver.disconnect(); abortController.abort();
@@ -691,6 +825,9 @@ declare global {
       cinematicProgress: number; conceptualFrame: number; targetFrame: number; targetTime: number;
       blackProgress: number; semanticProgress: number; mediaReady: boolean; control: "scroll-addressed";
       segment: CinematicSegmentId; scrollOffset: number; presentedFrame: number;
+      manifestoActive: boolean; manifestoSettled: boolean;
+      manifestoRevealState: "hidden" | "armed" | "revealing" | "resolved";
+      manifestoRevealDurationMs: number; navigationReleased: boolean;
     }>;
   }
 }

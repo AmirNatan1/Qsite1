@@ -5,8 +5,10 @@ interface Props {
 
 const { currentPath } = Astro.props;
 
+const HOME_HREF = "/#entry";
+
 const navigation = [
-  { href: "/", label: "Home" },
+  { href: HOME_HREF, label: "Home" },
   { href: "/for-partners/", label: "For industry" },
   { href: "/for-startups/", label: "For startups" },
   { href: "/industries/", label: "Industries" },
@@ -23,15 +25,16 @@ const normalizePath = (value: string) => {
 
 const activePath = normalizePath(currentPath);
 const isCurrent = (href: string) => {
-  if (href === "/") return activePath === "/";
-  if (href === "/pocs/") return activePath.startsWith("/pocs/");
-  return activePath === href;
+  const path = href.split("#", 1)[0] || "/";
+  if (path === "/") return activePath === "/";
+  if (path === "/pocs/") return activePath.startsWith("/pocs/");
+  return activePath === path;
 };
 ---
 
 <header class="site-header">
   <div class="site-header__inner">
-    <a class="brand-link" href="/" aria-label="Quantum home">
+    <a class="brand-link" href={HOME_HREF} aria-label="Quantum home">
       <img
         src="/brand/quantum-full-logo-white.svg"
         width="222"

@@ -29,7 +29,7 @@ test("Phase 5A-R makes the manifesto the sole post-CRT H1 and routes audiences a
   assert.doesNotMatch(source, /class="[^"]*(?:card|button|modal|column)[^"]*"/i);
 });
 
-test("Phase 5A-R manifesto uses normal-flow hold, anchored reveal, and reversible chrome threshold", async () => {
+test("Phase 5B-R2 manifesto uses a compact normal-flow hold and an autonomous reversible reveal", async () => {
   const [cinematicCss, homeCss, responsiveCss, controller] = await Promise.all([
     read("src/styles/routes/home-cinematic.css"),
     read("src/styles/routes/home.css"),
@@ -37,22 +37,30 @@ test("Phase 5A-R manifesto uses normal-flow hold, anchored reveal, and reversibl
     read("src/scripts/home-cinematic-integration.ts"),
   ]);
 
-  assert.match(cinematicCss, /min-height:\s*calc\(170svh - var\(--cinematic-header-px\)\)/);
+  assert.match(cinematicCss, /\.cinematic-shell > \.manifesto-field[\s\S]*?min-height:\s*100svh/);
   assert.match(cinematicCss, /top:\s*calc\(var\(--manifesto-anchor-px\) - var\(--cinematic-header-px\)\)/);
-  assert.match(cinematicCss, /opacity:\s*var\(--cinematic-semantic\)/);
+  assert.match(cinematicCss, /data-manifesto-reveal="revealing"[\s\S]*?opacity:\s*1[\s\S]*?opacity 720ms/);
+  assert.match(cinematicCss, /data-manifesto-reveal="resolved"[\s\S]*?opacity:\s*1/);
+  assert.doesNotMatch(cinematicCss, /var\(--cinematic-semantic\)/);
   assert.doesNotMatch(`${cinematicCss}\n${homeCss}`, /\.manifesto-field[^}]*position:\s*sticky/);
   assert.doesNotMatch(`${cinematicCss}\n${homeCss}\n${responsiveCss}`, /scroll-snap-(?:type|align|stop)\s*:/i);
-  assert.match(homeCss, /\.manifesto-field__content[\s\S]*?padding-top:\s*clamp\(3\.5rem, 10svh, 7rem\)/);
-  assert.match(responsiveCss, /padding-top:\s*clamp\(3\.2rem, 9svh, 5\.5rem\)/);
-  assert.match(responsiveCss, /padding-top:\s*clamp\(1\.35rem, 7svh, 2\.7rem\)/);
+  assert.match(homeCss, /\.manifesto-field__content[\s\S]*?place-items:\s*center[\s\S]*?padding-block:\s*clamp\(2\.75rem, 8svh, 6rem\)/);
+  assert.match(homeCss, /\.manifesto-field h1[\s\S]*?font-size:\s*clamp\(3\.5rem, 6\.2vw, 7\.75rem\)[\s\S]*?text-align:\s*center/);
+  assert.match(responsiveCss, /padding-block:\s*clamp\(2\.25rem, 7svh, 4\.5rem\)/);
+  assert.match(responsiveCss, /padding-block:\s*clamp\(1\.35rem, 6svh, 2\.5rem\)/);
   assert.match(responsiveCss, /@media \(max-width:\s*48rem\)[\s\S]*?\.audience-field__content\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/);
-  assert.match(responsiveCss, /@media \(max-width:\s*48rem\)[\s\S]*?\.manifesto-field h1\s*\{[^}]*font-size:\s*clamp\(1\.05rem,\s*5\.6vw,\s*2\.65rem\)/);
-  assert.match(responsiveCss, /@media \(max-width:\s*22rem\)[\s\S]*?\.manifesto-field h1\s*\{[^}]*font-size:\s*clamp\(1\.05rem,\s*5\.6vw,\s*1\.25rem\)/);
+  assert.match(responsiveCss, /@media \(max-width:\s*48rem\)[\s\S]*?\.manifesto-field h1\s*\{[^}]*font-size:\s*clamp\(2\.2rem,\s*10\.8vw,\s*5\.25rem\)/);
+  assert.match(responsiveCss, /@media \(max-height:\s*30rem\)[\s\S]*?\.manifesto-field h1\s*\{[^}]*font-size:\s*clamp\(2\.25rem,\s*5\.8vw,\s*3\.35rem\)/);
 
   assert.match(controller, /--manifesto-anchor-px["'`],\s*`\$\{Math\.min\(0, currentScrollOffset - scrollExtent\)/);
   assert.match(controller, /navigationReleasePoint\s*=\s*audienceTop\s*-\s*window\.innerHeight/);
-  assert.match(controller, /setThresholdInteraction\(settled, navigationReleased\)/);
+  assert.match(controller, /setManifestoReveal\(manifestoActive\)/);
+  assert.match(controller, /setThresholdInteraction\(manifestoActive, navigationReleased\)/);
   assert.match(controller, /setThresholdInteraction\(true, false\)/);
+  assert.match(controller, /manifestoAnimationFrame\s*=\s*window\.requestAnimationFrame/);
+  assert.match(controller, /transitionend[\s\S]*?resolveManifestoReveal\(\)/);
+  assert.match(controller, /const semantic = conceptualCoordinate >= ENTRY_START_U \? 1 : 0/);
+  assert.doesNotMatch(controller, /smoothstep|setProperty\(["']--cinematic-semantic/);
   assert.match(controller, /downstreamFields[\s\S]*?field\.setAttribute\("inert"/);
   assert.match(controller, /version:\s*4, settledOrLower/);
   assert.match(controller, /let fontsReady = !fonts \|\| fonts\.status === "loaded"/);
@@ -60,14 +68,17 @@ test("Phase 5A-R manifesto uses normal-flow hold, anchored reveal, and reversibl
   assert.match(controller, /fonts\?\.ready\.then\(\(\) => \{ fontsReady = true; invalidate\(\); \}\)/);
 });
 
-test("Phase 5A-R keeps static fallback semantics and the accepted physical mapping authority", async () => {
+test("Phase 5B-R2 keeps native semantic-entry bootstrap, static fallbacks, and accepted physical mapping", async () => {
   const [index, controller] = await Promise.all([
     read("src/pages/index.astro"),
     read("src/scripts/home-cinematic-integration.ts"),
   ]);
 
   assert.match(index, /skipHref="\#entry"/);
-  assert.match(index, /const candidate = capable && !reduced && !directDeepLink && !restoredSettled && !textZoomUnsafe/);
+  assert.match(index, /const semanticHomeIntent = window\.location\.hash === "#entry"/);
+  assert.match(index, /\(!directDeepLink \|\| semanticHomeIntent\)/);
+  assert.match(index, /\(!restoredSettled \|\| semanticHomeIntent\)/);
+  assert.match(index, /cinematicEntryIntent = "pending"/);
   assert.match(index, /downstreamFields\.forEach\(\(field\) => field\.toggleAttribute\("inert", concealed\)\)/);
   assert.match(index, /querySelectorAll\("\[data-field-section\]"\)\.forEach\(\(field\) => field\.removeAttribute\("inert"\)\)/);
   assert.match(controller, /PHYSICAL_FRAME_COUNT = 500/);

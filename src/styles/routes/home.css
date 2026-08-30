@@ -80,26 +80,35 @@
 }
 
 .manifesto-field__content {
+  display: grid;
+  place-items: center;
+  align-self: stretch;
   width: min(calc(100% - (2 * var(--gutter))), 90rem);
+  min-height: inherit;
   min-width: 0;
   margin-inline: auto;
-  padding-top: clamp(3.5rem, 10svh, 7rem);
+  padding-block: clamp(2.75rem, 8svh, 6rem);
 }
 
 .manifesto-field h1 {
+  width: 160%;
+  min-width: 0;
   max-width: none;
   margin: 0;
   color: #f4f6f5;
-  font-size: clamp(3rem, 3.9vw, 4.1rem);
-  letter-spacing: -0.064em;
-  line-height: 0.88;
-  text-align: left;
+  font-size: clamp(3.5rem, 6.2vw, 7.75rem);
+  letter-spacing: -0.075em;
+  line-height: 0.82;
+  text-align: center;
   text-wrap: balance;
   text-transform: uppercase;
+  transform: scaleX(0.625);
+  transform-origin: center;
 }
 
 .manifesto-field h1 > .manifesto-line {
   display: block;
+  white-space: nowrap;
 }
 
 /* AUDIENCE ROUTING */

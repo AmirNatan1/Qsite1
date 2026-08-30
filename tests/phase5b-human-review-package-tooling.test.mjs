@@ -35,6 +35,23 @@ import {
   R1_PROFILE,
   R1_REQUIRED_BRANCH,
   R1_REQUIRED_BRANCH_URL,
+  R2_ALLOWED_PRODUCTION_PATHS,
+  R2_ARCHIVE_FILENAME,
+  R2_AUDIT_FILENAME,
+  R2_CHECKPOINT_SUBJECTS,
+  R2_COMMIT_SUBJECT,
+  R2_COMPARISON_FILENAMES,
+  R2_DETACHED_MANIFEST_FILENAME,
+  R2_FIXED_CHECKPOINT_SHAS,
+  R2_PACKAGE_SCHEMA,
+  R2_PARENT_SHA,
+  R2_PROFILE,
+  R2_RECORDING_FILENAMES,
+  R2_REPORT_FILENAMES,
+  R2_REQUIRED_BRANCH,
+  R2_REQUIRED_BRANCH_URL,
+  R2_RESPONSIVE_FILENAMES,
+  R2_VIEWPORTS,
   REQUIRED_BRANCH,
   REQUIRED_BRANCH_URL,
   ROOT,
@@ -51,9 +68,12 @@ import {
   expectedPackagePayloadPaths,
   parseArguments,
   publishFreshSetAtomic,
+  requiredR2EvidenceArtifactPaths,
   reviewProfile,
   validateArtifactRoles,
+  validateEvidenceArtifactPaths,
   validateOptionShape,
+  validateR2ProductionDelta,
   validateReviewPolicy,
 } from "../scripts/package-phase5b-human-review.mjs";
 import {
@@ -76,10 +96,25 @@ import {
   R1_PROFILE as AUDITOR_R1_PROFILE,
   R1_REQUIRED_BRANCH as AUDITOR_R1_REQUIRED_BRANCH,
   R1_REQUIRED_BRANCH_URL as AUDITOR_R1_REQUIRED_BRANCH_URL,
+  R2_ALLOWED_PRODUCTION_PATHS as AUDITOR_R2_ALLOWED_PRODUCTION_PATHS,
+  R2_ARCHIVE_FILENAME as AUDITOR_R2_ARCHIVE_FILENAME,
+  R2_AUDIT_FILENAME as AUDITOR_R2_AUDIT_FILENAME,
+  R2_CHECKPOINT_SUBJECTS as AUDITOR_R2_CHECKPOINT_SUBJECTS,
+  R2_COMMIT_SUBJECT as AUDITOR_R2_COMMIT_SUBJECT,
+  R2_DETACHED_MANIFEST_FILENAME as AUDITOR_R2_DETACHED_MANIFEST_FILENAME,
+  R2_FIXED_CHECKPOINT_SHAS as AUDITOR_R2_FIXED_CHECKPOINT_SHAS,
+  R2_PACKAGE_SCHEMA as AUDITOR_R2_PACKAGE_SCHEMA,
+  R2_PARENT_SHA as AUDITOR_R2_PARENT_SHA,
+  R2_PROFILE as AUDITOR_R2_PROFILE,
+  R2_REQUIRED_BRANCH as AUDITOR_R2_REQUIRED_BRANCH,
+  R2_REQUIRED_BRANCH_URL as AUDITOR_R2_REQUIRED_BRANCH_URL,
   assertNoPrivateText as independentlyAssertNoPrivateText,
+  buildArtifactRoles as independentlyBuildArtifactRoles,
   parseArguments as parseAuditArguments,
   parseStoredZip,
   reviewProfile as independentlyReviewProfile,
+  validateEvidenceArtifactPaths as independentlyValidateEvidenceArtifactPaths,
+  validateR2ProductionDelta as independentlyValidateR2ProductionDelta,
   validateArtifactRoles as independentlyValidateArtifactRoles,
   validateReviewPolicy as independentlyValidateReviewPolicy,
 } from "../scripts/audit-phase5b-human-review-package.mjs";
@@ -89,6 +124,7 @@ const TEST_FILE = fileURLToPath(import.meta.url);
 const PACKAGE_SCRIPT = path.join(ROOT, "scripts", "package-phase5b-human-review.mjs");
 const AUDIT_SCRIPT = path.join(ROOT, "scripts", "audit-phase5b-human-review-package.mjs");
 const OBSERVED_R1_BRANCH_URL = "https://repair-phase-5b-r1-about-dar.qsite1.pages.dev/";
+const OBSERVED_R2_BRANCH_URL = "https://repair-phase-5b-r2-home-naviga.qsite1.pages.dev/";
 
 function rolePaths(value, output = []) {
   if (typeof value === "string") output.push(value);
@@ -161,6 +197,69 @@ test("R1 profile independently freezes About-only repair authority without bakin
   assert.equal(reviewProfile("r1").fixedCheckpointShas.length, reviewProfile("r1").checkpointSubjects.length - 1);
   assert.throws(() => reviewProfile("future"), /profile/);
   assert.throws(() => independentlyReviewProfile("future"), /profile/);
+});
+
+test("R2 profile independently freezes Home/navigation authority without baking final deployment identity", () => {
+  assert.equal(R2_PROFILE, "r2");
+  assert.equal(R2_PACKAGE_SCHEMA, "quantum-hub.phase-5b-r2.home-navigation-manifesto-human-review.v1");
+  assert.equal(R2_ARCHIVE_FILENAME, "phase-5b-r2-home-navigation-manifesto-human-review.zip");
+  assert.equal(R2_DETACHED_MANIFEST_FILENAME, "phase-5b-r2-home-navigation-manifesto-human-review-manifest.json");
+  assert.equal(R2_AUDIT_FILENAME, "phase-5b-r2-home-navigation-manifesto-human-review-audit.json");
+  assert.equal(R2_REQUIRED_BRANCH, "repair/phase-5b-r2-home-navigation-manifesto");
+  assert.equal(R2_REQUIRED_BRANCH_URL, null);
+  assert.equal(R2_PARENT_SHA, "ca22ae2f234302e7485803c560866abd7757735e");
+  assert.equal(R2_COMMIT_SUBJECT, "Repair Phase 5B home navigation and manifesto");
+  assert.deepEqual(R2_ALLOWED_PRODUCTION_PATHS, ["src/components/SiteHeader.astro", "src/components/home/EntryField.astro", "src/pages/index.astro", "src/scripts/home-cinematic-integration.ts", "src/styles/routes/home.css", "src/styles/routes/home-cinematic.css", "src/styles/routes/home-responsive.css"]);
+  assert.deepEqual(R2_CHECKPOINT_SUBJECTS.slice(0, -1), R1_CHECKPOINT_SUBJECTS);
+  assert.deepEqual(R2_FIXED_CHECKPOINT_SHAS.slice(0, -1), R1_FIXED_CHECKPOINT_SHAS);
+  assert.equal(R2_CHECKPOINT_SUBJECTS.at(-1), R2_COMMIT_SUBJECT);
+  assert.equal(R2_FIXED_CHECKPOINT_SHAS.at(-1), R2_PARENT_SHA);
+  assert.equal(R2_VIEWPORTS.length, 13);
+  assert.deepEqual(R2_RECORDING_FILENAMES, ["01-fresh-forward-autonomous-manifesto.mp4", "02-reverse-reentry-autonomous-manifesto.mp4", "03-supporting-route-logo-home-navigation.mp4", "04-homepage-home-navigation.mp4", "05-mobile-home-navigation.mp4"]);
+  assert.deepEqual(R2_RESPONSIVE_FILENAMES.slice(-4), ["manifesto-200-percent.png", "manifesto-fallback-fonts.png", "manifesto-reduced-motion.png", "manifesto-no-js.png"]);
+  assert.deepEqual(R2_COMPARISON_FILENAMES, ["r1-vs-r2-manifesto.png", "historical-vs-r2-manifesto.png"]);
+  assert.deepEqual(R2_REPORT_FILENAMES, ["home-navigation-manifesto-runtime.json", "home-navigation-frame-audit.json", "manifesto-responsive-accessibility.json", "supporting-route-source-regression.json", "phase4-media-hashes.json", "homepage-regression.json"]);
+
+  assert.equal(AUDITOR_R2_PROFILE, R2_PROFILE);
+  assert.equal(AUDITOR_R2_PACKAGE_SCHEMA, R2_PACKAGE_SCHEMA);
+  assert.equal(AUDITOR_R2_ARCHIVE_FILENAME, R2_ARCHIVE_FILENAME);
+  assert.equal(AUDITOR_R2_DETACHED_MANIFEST_FILENAME, R2_DETACHED_MANIFEST_FILENAME);
+  assert.equal(AUDITOR_R2_AUDIT_FILENAME, R2_AUDIT_FILENAME);
+  assert.equal(AUDITOR_R2_REQUIRED_BRANCH, R2_REQUIRED_BRANCH);
+  assert.equal(AUDITOR_R2_REQUIRED_BRANCH_URL, R2_REQUIRED_BRANCH_URL);
+  assert.equal(AUDITOR_R2_PARENT_SHA, R2_PARENT_SHA);
+  assert.equal(AUDITOR_R2_COMMIT_SUBJECT, R2_COMMIT_SUBJECT);
+  assert.deepEqual(AUDITOR_R2_ALLOWED_PRODUCTION_PATHS, R2_ALLOWED_PRODUCTION_PATHS);
+  assert.deepEqual(AUDITOR_R2_CHECKPOINT_SUBJECTS, R2_CHECKPOINT_SUBJECTS);
+  assert.deepEqual(AUDITOR_R2_FIXED_CHECKPOINT_SHAS, R2_FIXED_CHECKPOINT_SHAS);
+  assert.deepEqual(reviewProfile(R2_PROFILE), independentlyReviewProfile(R2_PROFILE));
+});
+
+test("R2 evidence is additive, required-role complete, and dynamic-ledger safe", () => {
+  const base = expectedEvidenceArtifactPaths(DEFAULT_PROFILE);
+  const required = requiredR2EvidenceArtifactPaths();
+  const r2 = expectedEvidenceArtifactPaths(R2_PROFILE);
+  assert.equal(r2.length, base.length + R2_RESPONSIVE_FILENAMES.length + R2_COMPARISON_FILENAMES.length + R2_RECORDING_FILENAMES.length + R2_REPORT_FILENAMES.length);
+  assert.deepEqual(required, r2.filter((relativePath) => relativePath.startsWith("homepage-r2/")));
+  for (const relativePath of required) assert.ok(r2.includes(relativePath));
+  assert.deepEqual(validateEvidenceArtifactPaths(r2, R2_PROFILE), r2);
+  assert.deepEqual(independentlyValidateEvidenceArtifactPaths(r2, R2_PROFILE), r2);
+
+  const augmented = [...r2, "homepage-r2/reports/additional-machine-check.json"].sort();
+  assert.deepEqual(validateEvidenceArtifactPaths(augmented, R2_PROFILE), augmented);
+  assert.deepEqual(independentlyValidateEvidenceArtifactPaths(augmented, R2_PROFILE), augmented);
+  assert.ok(expectedPackagePayloadPaths(R2_PROFILE, augmented).includes("homepage-r2/reports/additional-machine-check.json"));
+  const roles = buildArtifactRoles(R2_PROFILE, augmented);
+  const independentRoles = independentlyBuildArtifactRoles(R2_PROFILE, augmented);
+  assert.deepEqual(roles, independentRoles);
+  assert.equal(validateArtifactRoles(roles, [...expectedPackagePayloadPaths(R2_PROFILE, augmented), "README.md"]), true);
+  assert.throws(() => validateEvidenceArtifactPaths([...r2, "homepage-r2/raw/frame.png"], R2_PROFILE), /unexpected/);
+  assert.throws(() => independentlyValidateEvidenceArtifactPaths([...r2, "homepage-r2/recordings/not-video.png"], R2_PROFILE), /type/);
+  assert.throws(() => validateR2ProductionDelta([]), /non-empty/);
+  assert.deepEqual(validateR2ProductionDelta([`M\t${R2_ALLOWED_PRODUCTION_PATHS[0]}`]), [{ status: "M", path: R2_ALLOWED_PRODUCTION_PATHS[0] }]);
+  assert.deepEqual(independentlyValidateR2ProductionDelta([{ status: "M", path: R2_ALLOWED_PRODUCTION_PATHS[0] }]), [{ status: "M", path: R2_ALLOWED_PRODUCTION_PATHS[0] }]);
+  assert.throws(() => validateR2ProductionDelta(["M\tsrc/styles/navigation.css"]), /allowlist/);
+  assert.throws(() => independentlyValidateR2ProductionDelta([{ status: "M", path: "src/scripts/home-operating-field.ts" }]), /allowlist/);
 });
 
 test("deployed capture topology is exactly 127 files with 126 ledger artifacts", () => {
@@ -248,6 +347,7 @@ test("archive surface rejects raw frames, assets, source, prototypes, Blender, h
   assert.equal(assertAllowedEntry("cross-route/all-route-desktop.png"), true);
   assert.equal(assertAllowedEntry("per-route/maradin/route-recording.mp4"), true);
   assert.equal(assertAllowedEntry("homepage-regression/q.png"), true);
+  assert.equal(assertAllowedEntry("homepage-r2/recordings/01-fresh-forward-autonomous-manifesto.mp4"), true);
   assert.equal(assertAllowedEntry("reports/git-provenance.json"), true);
   for (const invalid of [
     "per-route/proof/raw/frame-001.png",
@@ -342,6 +442,36 @@ test("R1 CLI selects exact sibling names, repair branch, and dynamic repair HEAD
   assert.throws(() => parseAuditArguments(["--profile", "future", "--self-test"]), /profile/);
 });
 
+test("R2 CLI selects exact siblings, R1 parent, strict branch, and dynamic repair HEAD", () => {
+  const sha = "c".repeat(40);
+  const output = path.join(path.dirname(ROOT), "phase5b-r2-review-future", R2_ARCHIVE_FILENAME);
+  const parsed = parseArguments([
+    "--profile", R2_PROFILE,
+    "--evidence-root", "../evidence",
+    "--storyboard-root", "../storyboards",
+    "--deployment-report", "../deployment.json",
+    "--cp7-report", "../cp7.json",
+    "--cp8-report", "../cp8.json",
+    "--expected-head", sha,
+    "--expected-deployment-id", "abcdef12-1234-4234-8234-123456789abc",
+    "--immutable-url", "https://abcdef12.qsite1.pages.dev/",
+    "--branch-url", OBSERVED_R2_BRANCH_URL,
+    "--ffprobe", process.execPath,
+    "--output", output,
+  ]);
+  const validated = validateOptionShape(parsed);
+  assert.equal(validated.profile, R2_PROFILE);
+  assert.equal(validated.expectedBranch, R2_REQUIRED_BRANCH);
+  assert.equal(validated.expectedHead, sha);
+  assert.equal(validated.expectedUpstream, sha);
+  assert.equal(path.basename(validated.output), R2_ARCHIVE_FILENAME);
+  assert.equal(parseAuditArguments(["--profile", R2_PROFILE, "--self-test"]).expectedBranch, R2_REQUIRED_BRANCH);
+  assert.throws(() => validateOptionShape({ ...parsed, expectedHead: R2_PARENT_SHA, expectedUpstream: R2_PARENT_SHA }), /new R2 repair commit/);
+  assert.throws(() => validateOptionShape({ ...parsed, branchUrl: REQUIRED_BRANCH_URL }), /branch-url/);
+  assert.throws(() => validateOptionShape({ ...parsed, expectedBranch: R1_REQUIRED_BRANCH }), /expected-branch/);
+  assert.throws(() => validateOptionShape({ ...parsed, output: path.join(path.dirname(output), R1_ARCHIVE_FILENAME) }), /basename/);
+});
+
 test("durable output policy rejects repository, OS-temp, and drive-root destinations", () => {
   assert.throws(() => assertExternalPath(path.join(ROOT, ARCHIVE_FILENAME)), /outside/);
   assert.throws(() => assertExternalPath(path.join(os.tmpdir(), ARCHIVE_FILENAME)), /outside/);
@@ -377,23 +507,27 @@ test("packager and auditor imports are side-effect free", async () => {
   }
 });
 
-test("CP9 and R1 self-test/dry-run modes are write-free and pass in both tools", async () => {
+test("CP9, R1, and R2 self-test/dry-run modes are write-free and pass in both tools", async () => {
   for (const script of [PACKAGE_SCRIPT, AUDIT_SCRIPT]) {
-    for (const profile of [DEFAULT_PROFILE, R1_PROFILE]) {
+    for (const profile of [DEFAULT_PROFILE, R1_PROFILE, R2_PROFILE]) {
       for (const mode of ["--self-test", "--dry-run"]) {
-        const profileArgs = profile === R1_PROFILE ? ["--profile", profile] : [];
+        const profileArgs = profile === DEFAULT_PROFILE ? [] : ["--profile", profile];
         const { stdout, stderr } = await execFileAsync(process.execPath, [script, ...profileArgs, mode], { cwd: ROOT, encoding: "utf8" });
         assert.equal(stderr, "");
         const result = JSON.parse(stdout);
         assert.equal(result.status, "PASS");
-        assert.equal(result.schema.startsWith(profile === R1_PROFILE ? R1_PACKAGE_SCHEMA : PACKAGE_SCHEMA), true);
-        assert.equal(result.profile, profile === R1_PROFILE ? R1_PROFILE : undefined);
+        const schema = profile === R2_PROFILE ? R2_PACKAGE_SCHEMA : profile === R1_PROFILE ? R1_PACKAGE_SCHEMA : PACKAGE_SCHEMA;
+        assert.equal(result.schema.startsWith(schema), true);
+        assert.equal(result.profile, profile === DEFAULT_PROFILE ? undefined : profile);
         if (mode === "--dry-run") {
           assert.equal(result.writesPerformed, false);
-          const namesExpected = script === PACKAGE_SCRIPT || profile === R1_PROFILE;
-          assert.equal(result.archiveFilename, namesExpected ? (profile === R1_PROFILE ? R1_ARCHIVE_FILENAME : ARCHIVE_FILENAME) : undefined);
-          assert.equal(result.detachedManifestFilename, namesExpected ? (profile === R1_PROFILE ? R1_DETACHED_MANIFEST_FILENAME : DETACHED_MANIFEST_FILENAME) : undefined);
-          assert.equal(result.auditFilename, namesExpected ? (profile === R1_PROFILE ? R1_AUDIT_FILENAME : AUDIT_FILENAME) : undefined);
+          const namesExpected = script === PACKAGE_SCRIPT || profile !== DEFAULT_PROFILE;
+          const archiveName = profile === R2_PROFILE ? R2_ARCHIVE_FILENAME : profile === R1_PROFILE ? R1_ARCHIVE_FILENAME : ARCHIVE_FILENAME;
+          const manifestName = profile === R2_PROFILE ? R2_DETACHED_MANIFEST_FILENAME : profile === R1_PROFILE ? R1_DETACHED_MANIFEST_FILENAME : DETACHED_MANIFEST_FILENAME;
+          const auditName = profile === R2_PROFILE ? R2_AUDIT_FILENAME : profile === R1_PROFILE ? R1_AUDIT_FILENAME : AUDIT_FILENAME;
+          assert.equal(result.archiveFilename, namesExpected ? archiveName : undefined);
+          assert.equal(result.detachedManifestFilename, namesExpected ? manifestName : undefined);
+          assert.equal(result.auditFilename, namesExpected ? auditName : undefined);
         }
       }
     }
@@ -414,7 +548,15 @@ test("independent auditor does not import the packager and retains its own ZIP r
     assert.match(source, /Repair Phase 5B About Dark V2 fidelity/);
     assert.match(source, /011abd3e5fc7464d5a0133603d222110df13b820/);
     assert.match(source, /src\/styles\/routes\/about\.css/);
+    assert.match(source, /phase-5b-r2-home-navigation-manifesto-human-review\.zip/);
+    assert.match(source, /repair\/phase-5b-r2-home-navigation-manifesto/);
+    assert.match(source, /Repair Phase 5B home navigation and manifesto/);
+    assert.match(source, /ca22ae2f234302e7485803c560866abd7757735e/);
+    assert.match(source, /src\/components\/SiteHeader\.astro/);
+    assert.match(source, /01-fresh-forward-autonomous-manifesto\.mp4/);
+    assert.match(source, /home-navigation-frame-audit\.json/);
     assert.doesNotMatch(source, /R1_(?:FINAL|HEAD|DEPLOYMENT)(?:_SHA|_ID)?\s*=/);
+    assert.doesNotMatch(source, /R2_(?:FINAL|HEAD|DEPLOYMENT)(?:_SHA|_ID)?\s*=/);
     assert.match(source, /PENDING HUMAN REVIEW/);
     assert.match(source, /phase6Authorized/);
     assert.match(source, /50 \* 1024 \* 1024/);
@@ -429,6 +571,8 @@ test("independent auditor does not import the packager and retains its own ZIP r
   assert.match(packager, /publishFreshSetAtomic/);
   assert.match(packager, /# Quantum-Hub Phase 5B-R1 About Dark V2 fidelity — human review/);
   assert.match(packager, /## R1 review focus/);
+  assert.match(packager, /# Quantum-Hub Phase 5B-R2 Home navigation and manifesto — human review/);
+  assert.match(packager, /## R2 review focus/);
   assert.match(packager, /"--profile", profile\.id/);
   assert.match(auditor, /function validateProfileBinding/);
   assert.match(auditor, /"show", "-s", "--format=%s", "HEAD"/);

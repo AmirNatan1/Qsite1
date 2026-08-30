@@ -12,11 +12,22 @@ import {
   AUDIENCE_HEADING,
   AUDIENCE_LINKS,
   CAPTURE_VIEWS,
+  CAPTURE_PROFILE_R2,
   CP7_SCHEMA,
   CP8_SCHEMA,
   DEFAULT_FFMPEG,
   DEFAULT_FFPROBE,
   EXPECTED_ARTIFACT_PATHS,
+  R2_ALLOWED_PRODUCTION_PATHS,
+  R2_COMPARISON_FILENAMES,
+  R2_EXPECTED_ARTIFACT_PATHS,
+  R2_PARENT_R1_SHA,
+  R2_RECORDING_FILENAMES,
+  R2_REPAIR_BRANCH,
+  R2_REPORT_FILENAMES,
+  R2_RESPONSIVE_FILENAMES,
+  R2_SCHEMA,
+  R2_VIEWPOINTS,
   MOTION_ROUTE_IDS,
   RECORDING_VIEW,
   REPORT_PATH,
@@ -33,7 +44,10 @@ import {
   mediaPolicyResult,
   normalizeDeploymentUrl,
   parseArguments,
+  requiredR2ArtifactPaths,
+  r2NavigationResponseIsValid,
   recordingContractResult,
+  unexpectedRequestFailures,
   validateArtifactLedger,
   validateCaptureReport,
   validateCp7ReportData,
@@ -179,7 +193,7 @@ test("CP9 topology is exact, compact and package-ready", () => {
   assert.equal(REVIEW_TARGET_MAX_BYTES, 50 * 1024 * 1024);
 });
 
-test("CP9-default and exact R1 CLI branches retain deployed authority and disjoint fresh output intent", () => {
+test("CP9-default, R1, and R2 CLI branches retain deployed authority and disjoint fresh output intent", () => {
   const external = path.resolve(ROOT, "..", "phase-5b-work", "cp9-tooling-fixture");
   const options = parseArguments([
     "--deployment-url", DEPLOYMENT_URL,
@@ -192,9 +206,10 @@ test("CP9-default and exact R1 CLI branches retain deployed authority and disjoi
   ]);
   assert.equal(validateOptions(options), options);
   assert.equal(options.expectedBranch, REQUIRED_BRANCH);
-  assert.deepEqual(ALLOWED_CAPTURE_BRANCHES, [REQUIRED_BRANCH, R1_REPAIR_BRANCH]);
+  assert.deepEqual(ALLOWED_CAPTURE_BRANCHES, [REQUIRED_BRANCH, R1_REPAIR_BRANCH, R2_REPAIR_BRANCH]);
   assert.equal(Object.isFrozen(ALLOWED_CAPTURE_BRANCHES), true);
   assert.equal(parseArguments(["--expected-branch", R1_REPAIR_BRANCH]).expectedBranch, R1_REPAIR_BRANCH);
+  assert.equal(parseArguments(["--expected-branch", R2_REPAIR_BRANCH]).profile, CAPTURE_PROFILE_R2);
   assert.equal(options.url, DEPLOYMENT_URL);
   assert.equal(options.ffmpeg, DEFAULT_FFMPEG);
   assert.equal(options.ffprobe, DEFAULT_FFPROBE);
@@ -202,10 +217,83 @@ test("CP9-default and exact R1 CLI branches retain deployed authority and disjoi
   assert.throws(() => normalizeDeploymentUrl("http://127.0.0.1:4338/"), /non-loopback HTTPS/);
   assert.throws(() => normalizeDeploymentUrl("https://qsite1.pages.dev/"), /preview origin/);
   assert.throws(() => validateOptions({ ...options, expectedHead: "short" }), /40-character/);
-  assert.equal(validateOptions({ ...options, expectedBranch: R1_REPAIR_BRANCH }).expectedBranch, R1_REPAIR_BRANCH);
-  assert.throws(() => validateOptions({ ...options, expectedBranch: "repair/unrecognized" }), /must be one of/);
+  assert.equal(validateOptions({ ...options, profile: "r1", expectedBranch: R1_REPAIR_BRANCH }).expectedBranch, R1_REPAIR_BRANCH);
+  assert.throws(() => validateOptions({ ...options, expectedBranch: "repair/unrecognized" }), /expected-branch/);
   assert.throws(() => validateOptions({ ...options, output: path.join(ROOT, "evidence") }), /outside the repository/);
   assert.throws(() => validateOptions({ ...options, output: path.join(options.storyboardRoot, "nested") }), /disjoint/);
+});
+
+test("R2 topology freezes semantic Home recordings, responsive variants, reports, and hash-bound comparisons", () => {
+  assert.equal(R2_SCHEMA, "quantum-hub.phase-5b-r2.home-navigation-manifesto-deployed-browser-evidence.v1");
+  assert.equal(R2_PARENT_R1_SHA, "ca22ae2f234302e7485803c560866abd7757735e");
+  assert.equal(R2_VIEWPOINTS.length, 13);
+  assert.deepEqual(R2_RECORDING_FILENAMES, ["01-fresh-forward-autonomous-manifesto.mp4", "02-reverse-reentry-autonomous-manifesto.mp4", "03-supporting-route-logo-home-navigation.mp4", "04-homepage-home-navigation.mp4", "05-mobile-home-navigation.mp4"]);
+  assert.deepEqual(R2_RESPONSIVE_FILENAMES.slice(-4), ["manifesto-200-percent.png", "manifesto-fallback-fonts.png", "manifesto-reduced-motion.png", "manifesto-no-js.png"]);
+  assert.deepEqual(R2_COMPARISON_FILENAMES, ["r1-vs-r2-manifesto.png", "historical-vs-r2-manifesto.png"]);
+  assert.deepEqual(R2_REPORT_FILENAMES, ["home-navigation-manifesto-runtime.json", "home-navigation-frame-audit.json", "manifesto-responsive-accessibility.json", "supporting-route-source-regression.json", "phase4-media-hashes.json", "homepage-regression.json"]);
+  assert.equal(R2_EXPECTED_ARTIFACT_PATHS.length, EXPECTED_ARTIFACT_PATHS.length + requiredR2ArtifactPaths().length);
+  assert.ok(requiredR2ArtifactPaths().every((relativePath) => R2_EXPECTED_ARTIFACT_PATHS.includes(relativePath)));
+  assert.deepEqual(R2_ALLOWED_PRODUCTION_PATHS, ["src/components/SiteHeader.astro", "src/components/home/EntryField.astro", "src/pages/index.astro", "src/scripts/home-cinematic-integration.ts", "src/styles/routes/home.css", "src/styles/routes/home-cinematic.css", "src/styles/routes/home-responsive.css"]);
+
+  const external = path.resolve(ROOT, "..", "phase-5b-work", "r2-tooling-fixture");
+  const parsed = parseArguments([
+    "--profile", CAPTURE_PROFILE_R2,
+    "--deployment-url", DEPLOYMENT_URL,
+    "--expected-head", EXPECTED_HEAD,
+    "--storyboard-root", path.join(external, "storyboards"),
+    "--cp7-report", path.join(external, "cp7.json"),
+    "--cp8-report", path.join(external, "cp8.json"),
+    "--deployment-report", path.join(external, "deployment.json"),
+    "--r1-manifesto", path.join(external, "r1.png"),
+    "--expected-r1-manifesto-sha256", HASH,
+    "--historical-manifesto", path.join(external, "historical.png"),
+    "--expected-historical-manifesto-sha256", HASH,
+    "--output", path.join(external, "output"),
+    "--dry-run",
+  ]);
+  assert.equal(validateOptions(parsed), parsed);
+  assert.equal(parsed.expectedBranch, R2_REPAIR_BRANCH);
+  assert.throws(() => validateOptions({ ...parsed, expectedBranch: R1_REPAIR_BRANCH }), /expected-branch/);
+  assert.throws(() => validateOptions({ ...parsed, expectedR1ManifestoSha256: "bad" }), /64-hex/);
+});
+
+test("R2 native same-document entry navigation accepts a null network response only at the exact target", () => {
+  const target = "https://12345678.qsite1.pages.dev/#entry";
+  assert.equal(r2NavigationResponseIsValid(200, target, target), true);
+  assert.equal(r2NavigationResponseIsValid(null, target, target), true);
+  assert.equal(r2NavigationResponseIsValid(undefined, target, target), true);
+  assert.equal(r2NavigationResponseIsValid(null, "https://12345678.qsite1.pages.dev/", target), false);
+  assert.equal(r2NavigationResponseIsValid(204, target, target), false);
+  assert.equal(r2NavigationResponseIsValid(null, "not-a-url", target), false);
+});
+
+test("deployed diagnostics disclose only the internal Pages media-blob abort", () => {
+  const expected = {
+    url: "blob:https://12345678.qsite1.pages.dev/11111111-2222-4333-8444-555555555555",
+    resourceType: "media",
+    failure: "net::ERR_ABORTED",
+  };
+  assert.deepEqual(unexpectedRequestFailures([expected]), []);
+  for (const failure of [
+    { ...expected, url: "https://12345678.qsite1.pages.dev/site.css" },
+    { ...expected, resourceType: "script" },
+    { ...expected, failure: "net::ERR_FAILED" },
+    { ...expected, url: "blob:https://example.com/11111111-2222-4333-8444-555555555555" },
+  ]) assert.equal(unexpectedRequestFailures([failure]).length, 1);
+});
+
+test("R2 keyboard evidence recognizes the exact cinematic skip-link label", async () => {
+  const source = await readFile(SCRIPT, "utf8");
+  assert.match(source, /expectedSkipText:\s*"Skip cinematic intro"/);
+  assert.match(source, /first\?\.text === expectedSkipText/);
+});
+
+test("R2 human visual captures precede keyboard-focus traversal", async () => {
+  const source = await readFile(SCRIPT, "utf8");
+  const body = source.match(/async function captureR2ManifestoVariant[\s\S]*?\n}\n\nasync function evidenceHashRecords/)?.[0] ?? "";
+  const screenshot = body.indexOf("const image = await screenshotBuffer(page)");
+  const keyboard = body.indexOf("if (definition.keyboard)");
+  assert.ok(screenshot >= 0 && keyboard >= 0 && screenshot < keyboard);
 });
 
 test("CP9 validates the exact accepted Phase 5A-R 76-file storyboard authority", () => {
@@ -346,6 +434,15 @@ test("CP9 executable is import-safe and contains real deployed evidence mechanis
     /PRIVATE_TEXT/,
     /Start with the operating reality\./,
     /repair\/phase-5b-r1-about-dark-v2-fidelity/,
+    /repair\/phase-5b-r2-home-navigation-manifesto/,
+    /01-fresh-forward-autonomous-manifesto\.mp4/,
+    /shell\?\.getAttribute\("data-manifesto-reveal"\)/,
+    /\.brand-link\[href='\/#entry'\]/,
+    /\.desktop-nav a\[href='\/#entry'\]/,
+    /\.mobile-nav nav a\[href='\/#entry'\]/,
+    /arrivedAtSemanticHome: home\.path === "\/" && home\.hash === "#entry" && home\.scrollY > 0/,
+    /reversedHidden: reversed\.manifesto\.revealState === "hidden"/,
+    /reentryReplayResolved/,
     /audienceFrameScrollTarget/,
     /waitForAudienceFraming/,
     /One operating field\. Two trajectories\./,
@@ -356,6 +453,8 @@ test("CP9 executable is import-safe and contains real deployed evidence mechanis
   assert.match(source, /await nativeWheelTo\(page, 0,[\s\S]*?const reverseEnd = await page\.evaluate[\s\S]*?const axeResult = axe/);
   assert.match(source, /nativeWheelTo\(page, addresses\.audienceVisible[\s\S]*?const audience = await observeHomeState\(page\)[\s\S]*?audienceFrameScrollTarget\(geometry\)[\s\S]*?waitForAudienceFraming\(page[\s\S]*?homepage\/audience-split\.png/);
   assert.doesNotMatch(source, /git\s+(?:commit|push)|package-phase5b|modify main/i);
+  const r2Recordings = source.match(/async function captureR2Recordings[\s\S]*?\n\}/)?.[0] ?? "";
+  assert.doesNotMatch(r2Recordings, /a\[href='\/'\]|scrollY === 0/);
 });
 
 test("CP9 self-test and dry-run execute without browser, network, Git or output", async () => {
@@ -379,4 +478,11 @@ test("CP9 self-test and dry-run execute without browser, network, Git or output"
   assert.equal(dryResult.status, "DRY-RUN");
   assert.deepEqual({ writes: dryResult.writes, browserLaunched: dryResult.browserLaunched, networkRequests: dryResult.networkRequests, gitReads: dryResult.gitReads }, { writes: 0, browserLaunched: false, networkRequests: 0, gitReads: 0 });
   assert.deepEqual(dryResult.topology, { artifactsExcludingReport: 126, filesIncludingReport: 127, routeRecordings: 7, crossRouteRecordings: 1 });
+
+  const r2Self = await execFileAsync(process.execPath, [SCRIPT, "--profile", CAPTURE_PROFILE_R2, "--self-test"], { cwd: ROOT, windowsHide: true });
+  const r2SelfResult = JSON.parse(r2Self.stdout);
+  assert.equal(r2SelfResult.status, "PASS");
+  assert.equal(r2SelfResult.profile, CAPTURE_PROFILE_R2);
+  assert.equal(r2SelfResult.schema, R2_SCHEMA);
+  assert.equal(r2SelfResult.inventories.r2RequiredArtifacts, requiredR2ArtifactPaths().length);
 });

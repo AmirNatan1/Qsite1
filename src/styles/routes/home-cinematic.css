@@ -6,7 +6,6 @@
   --cinematic-film-progress: 0;
   --cinematic-black: 0;
   --cinematic-black-breath: 0;
-  --cinematic-semantic: 0;
   --cinematic-media-ready: 0;
   --manifesto-anchor-px: 0px;
   --cinematic-object-x: 48%;
@@ -80,6 +79,13 @@
   scroll-margin-top: var(--cinematic-header-px);
 }
 
+/* Native /#entry navigation can resolve after first paint. Keep the pending
+   bootstrap on pure black so an intentional Home action can never expose F1. */
+html[data-cinematic-mode="candidate"][data-cinematic-entry-intent="pending"] .home-page .cinematic-stage,
+html[data-cinematic-mode="enhanced"][data-cinematic-entry-intent="pending"] .home-page .cinematic-stage {
+  visibility: hidden;
+}
+
 .home-page .site-header {
   position: sticky;
   top: 0;
@@ -103,9 +109,21 @@ html[data-cinematic-mode="enhanced"][data-cinematic-header="concealed"] .home-pa
 
 html[data-cinematic-mode="candidate"] .cinematic-shell,
 html[data-cinematic-mode="enhanced"] .cinematic-shell {
-  --cinematic-travel-px: 625svh;
+  --cinematic-travel-px: 675svh;
   margin-top: calc(-1 * var(--cinematic-header-px));
   padding-top: calc(var(--cinematic-travel-px) + var(--cinematic-header-px));
+}
+
+html[data-cinematic-cohort="short-desktop"] .cinematic-shell {
+  --cinematic-travel-px: 595svh;
+}
+
+html[data-cinematic-cohort="portrait"] .cinematic-shell {
+  --cinematic-travel-px: 535svh;
+}
+
+html[data-cinematic-cohort="landscape"] .cinematic-shell {
+  --cinematic-travel-px: 560svh;
 }
 
 html[data-cinematic-mode="candidate"] .cinematic-runway,
@@ -127,7 +145,7 @@ html[data-cinematic-mode="enhanced"] .cinematic-stage {
 
 html[data-cinematic-mode="candidate"] .cinematic-shell > .manifesto-field,
 html[data-cinematic-mode="enhanced"] .cinematic-shell > .manifesto-field {
-  min-height: calc(170svh - var(--cinematic-header-px));
+  min-height: 100svh;
   background: transparent;
   pointer-events: none;
 }
@@ -136,8 +154,24 @@ html[data-cinematic-mode="candidate"] .cinematic-shell > .manifesto-field .manif
 html[data-cinematic-mode="enhanced"] .cinematic-shell > .manifesto-field .manifesto-field__content {
   position: relative;
   top: calc(var(--manifesto-anchor-px) - var(--cinematic-header-px));
-  filter: blur(calc((1 - var(--cinematic-semantic)) * 0.65px));
-  opacity: var(--cinematic-semantic);
+  filter: blur(0.8px);
+  opacity: 0;
+}
+
+html[data-cinematic-mode="candidate"] .cinematic-shell[data-manifesto-reveal="revealing"] > .manifesto-field .manifesto-field__content,
+html[data-cinematic-mode="enhanced"] .cinematic-shell[data-manifesto-reveal="revealing"] > .manifesto-field .manifesto-field__content {
+  filter: blur(0);
+  opacity: 1;
+  transition:
+    opacity 720ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 720ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, filter;
+}
+
+html[data-cinematic-mode="candidate"] .cinematic-shell[data-manifesto-reveal="resolved"] > .manifesto-field .manifesto-field__content,
+html[data-cinematic-mode="enhanced"] .cinematic-shell[data-manifesto-reveal="resolved"] > .manifesto-field .manifesto-field__content {
+  filter: none;
+  opacity: 1;
 }
 
 html[data-cinematic-mode="candidate"] .cinematic-shell[data-cinematic-interactive="manifesto"] > .manifesto-field,
@@ -167,21 +201,12 @@ html[data-cinematic-mode="enhanced"] .cinematic-shell[data-media-state="failed-p
 }
 
 @media (max-width: 50rem) and (orientation: portrait),
-  (max-width: 56.25rem) and (max-height: 30rem) {
+  (max-width: 56.25rem) and (max-height: 30rem) and (orientation: landscape) {
   .cinematic-shell {
     --cinematic-object-x: 54%;
     --cinematic-object-y: 50%;
   }
 
-  html[data-cinematic-mode="candidate"] .cinematic-shell,
-  html[data-cinematic-mode="enhanced"] .cinematic-shell {
-    --cinematic-travel-px: 485svh;
-  }
-
-  html[data-cinematic-mode="candidate"] .cinematic-shell > .manifesto-field,
-  html[data-cinematic-mode="enhanced"] .cinematic-shell > .manifesto-field {
-    min-height: calc(168svh - var(--cinematic-header-px));
-  }
 }
 
 @media (max-width: 21.875rem) and (orientation: portrait) {
@@ -190,28 +215,12 @@ html[data-cinematic-mode="enhanced"] .cinematic-shell[data-media-state="failed-p
   }
 }
 
-@media (max-width: 56.25rem) and (max-height: 30rem) {
+@media (max-width: 56.25rem) and (max-height: 30rem) and (orientation: landscape) {
   .cinematic-shell {
     --cinematic-object-x: 53%;
     --cinematic-object-y: 48%;
   }
 
-  html[data-cinematic-mode="candidate"] .cinematic-shell,
-  html[data-cinematic-mode="enhanced"] .cinematic-shell {
-    --cinematic-travel-px: 510svh;
-  }
-
-  html[data-cinematic-mode="candidate"] .cinematic-shell > .manifesto-field,
-  html[data-cinematic-mode="enhanced"] .cinematic-shell > .manifesto-field {
-    min-height: calc(164svh - var(--cinematic-header-px));
-  }
-}
-
-@media (max-height: 43.999rem) and (min-width: 56.26rem) {
-  html[data-cinematic-mode="candidate"] .cinematic-shell,
-  html[data-cinematic-mode="enhanced"] .cinematic-shell {
-    --cinematic-travel-px: 545svh;
-  }
 }
 
 @media (max-width: 48rem) {

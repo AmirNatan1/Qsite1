@@ -88,6 +88,7 @@ const ALLOWED_PRODUCTION_CHANGES = Object.freeze([
   /^public\/_headers$/,
 ]);
 const PHASE5B_ROUTE_PRODUCTION_CHANGES = Object.freeze([
+  /^src\/components\/SiteHeader\.astro$/,
   /^src\/components\/routes\//,
   /^src\/scripts\/routes\//,
   /^src\/styles\/global\.css$/,
@@ -219,7 +220,9 @@ for (const component of HOME_COMPONENTS) {
 check(h1Count === 1, "home-h1-count", "src/pages/index.astro + src/components/home", `Home must contain exactly one literal H1; observed ${h1Count}`);
 
 const entrySource = componentSources.get("EntryField") ?? "";
-check(/<h1\b[^>]*>[\s\S]*We turn[\s\S]*industrial needs[\s\S]*into field[\s\S]*evidence\.[\s\S]*<\/h1>/i.test(entrySource), "manifesto-h1", "src/components/home/EntryField.astro", "the production-authorized manifesto sentence must be the settled semantic H1");
+const entryH1Markup = entrySource.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1] ?? "";
+const entryH1Text = entryH1Markup.replace(/\{["']\s+["']\}/g, " ").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+check(entryH1Text === "We turn industrial needs into field evidence.", "manifesto-h1", "src/components/home/EntryField.astro", "the production-authorized manifesto sentence must be the settled semantic H1");
 check(!/<h1\b[^>]*>[\s\S]*Where do[\s\S]*you enter\?[\s\S]*<\/h1>/i.test(entrySource), "superseded-entry-h1", "src/components/home/EntryField.astro", "the superseded audience prompt must not remain an H1");
 check(/<section\b[\s\S]*?\bid=["']entry["'][\s\S]*?\btabindex=["']-1["']/.test(entrySource), "skip-target-focus", "src/components/home/EntryField.astro", "the cinematic skip target must be programmatically focusable");
 check(/<section\b[\s\S]*?\bid=["']audience-routing["'][\s\S]*?data-audience-routing/.test(entrySource), "audience-routing-region", "src/components/home/EntryField.astro", "audience routes must follow the pure manifesto in their own semantic region");
@@ -314,7 +317,7 @@ check(/video\.seeking/.test(cinematicController) && /targetFrame\(scrollTargetPh
 check(matches(cinematicController, /video\.play\s*\(/g) === 0 && !/requestVideoFrameCallback|cancelVideoFrameCallback|wake-forward|wake-reverse|wake-armed|stable-hold/.test(cinematicController), "no-automatic-wake", "src/scripts/home-cinematic-integration.ts", "the automatic F285-to-F370 playback/reaction state machine must be absent");
 check(/window\.addEventListener\(["']scroll["'],\s*schedule,\s*\{\s*passive:\s*true/.test(cinematicController) && !/arrivalCrossingDirection|scrollIntentFor|reverseFrameForElapsed|reviseReversePlan/.test(cinematicController), "single-scroll-authority", "src/scripts/home-cinematic-integration.ts", "native document position must be the sole single-valued authority in both directions");
 check(matches(cinematicController, /presentedPhysicalFrame\s*=(?!=)/g) === 2 && /addEventListener\(\s*["']seeked["'][\s\S]{0,180}presentedPhysicalFrame\s*=\s*frameAtTime/.test(cinematicController), "presented-frame-authority", "src/scripts/home-cinematic-integration.ts", "presented-frame telemetry may be initialized once and updated only by decoder seek completion");
-check(/const\s+settled\s*=\s*scrollProgress\s*>=\s*0\.9995/.test(cinematicController) && /navigationReleasePoint\s*=\s*audienceTop\s*-\s*window\.innerHeight/.test(cinematicController) && /setThresholdInteraction\(settled, navigationReleased\)/.test(cinematicController), "manifesto-chrome-boundary", "src/scripts/home-cinematic-integration.ts", "manifesto settlement and the reversible audience/chrome threshold must remain separate");
+check(/const\s+settled\s*=\s*scrollProgress\s*>=\s*0\.9995/.test(cinematicController) && /const\s+manifestoActive\s*=\s*semantic\s*===\s*1/.test(cinematicController) && /navigationReleasePoint\s*=\s*audienceTop\s*-\s*window\.innerHeight/.test(cinematicController) && /setThresholdInteraction\(manifestoActive, navigationReleased\)/.test(cinematicController), "manifesto-chrome-boundary", "src/scripts/home-cinematic-integration.ts", "the autonomous manifesto threshold and reversible audience/chrome release must remain separate");
 check(/header\.setAttribute\(["']inert["']/.test(cinematicController) && /field\.setAttribute\(["']inert["']/.test(cinematicController) && /header\.removeAttribute\(["']inert["']/.test(cinematicController) && /field\.removeAttribute\(["']inert["']/.test(cinematicController), "threshold-inert-state", "src/scripts/home-cinematic-integration.ts", "header and downstream fields must remain inert through the pure manifesto hold and release at audience entry");
 check(/mobileMenu\?\.removeAttribute\(["']open["']\)/.test(cinematicController), "reverse-menu-close", "src/scripts/home-cinematic-integration.ts", "reverse concealment must close the mobile menu");
 check(/skipLink\.focus\(\{\s*preventScroll:\s*true\s*\}\)/.test(cinematicController) && /entry\.focus\(\{\s*preventScroll:\s*true\s*\}\)/.test(cinematicController), "reverse-focus-safety", "src/scripts/home-cinematic-integration.ts", "reverse concealment must move focus out of newly hidden regions without scrolling");
@@ -374,7 +377,7 @@ check(!/\btouch-action\s*:\s*none/i.test(homeStyles), "touch-lock", "src/styles/
 check(/data-cinematic-header=["']concealed["'][\s\S]{0,180}\.site-header[\s\S]{0,260}visibility:\s*hidden[\s\S]{0,160}opacity:\s*0[\s\S]{0,160}pointer-events:\s*none/.test(cinematicCss), "concealed-chrome-css", "src/styles/routes/home-cinematic.css", "the complete pre-settled header must be invisible, transparent, and pointer-safe");
 check(!/:focus-within[\s\S]{0,160}(?:site-header|entry-field)|cinematic-focus/.test(cinematicCss), "no-focus-reveal-css", "src/styles/routes/home-cinematic.css", "keyboard focus must never reveal concealed chrome or ENTRY prematurely");
 check(
-  /@media\s*\(max-height:\s*30rem\)\s*and\s*\(min-width:\s*36rem\)[\s\S]*?\.manifesto-field__content\s*\{[\s\S]*?padding-top:\s*clamp\(1\.35rem,\s*7svh,\s*2\.7rem\)[\s\S]*?\.audience-field__content\s*\{/.test(homeStyles),
+  /@media\s*\(max-height:\s*30rem\)\s*and\s*\(min-width:\s*36rem\)[\s\S]*?\.manifesto-field__content\s*\{[\s\S]*?padding-block:\s*clamp\(1\.35rem,\s*6svh,\s*2\.5rem\)[\s\S]*?\.manifesto-field h1\s*\{[\s\S]*?width:\s*160%[\s\S]*?transform:\s*scaleX\(0\.625\)[\s\S]*?\.audience-field__content\s*\{/.test(homeStyles),
   "short-landscape-manifesto-fit",
   "src/styles/routes/home-responsive.css",
   "the short-landscape regime must keep the manifesto top-authored and give the following audience field an intentional composition",

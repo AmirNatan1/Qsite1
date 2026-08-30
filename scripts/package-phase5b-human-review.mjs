@@ -81,6 +81,7 @@ export const FIXED_CHECKPOINT_SHAS = Object.freeze([
 
 export const DEFAULT_PROFILE = "cp9";
 export const R1_PROFILE = "r1";
+export const R2_PROFILE = "r2";
 export const R1_PACKAGE_SCHEMA = "quantum-hub.phase-5b-r1.about-dark-v2-fidelity-human-review.v1";
 export const R1_DETACHED_SCHEMA = `${R1_PACKAGE_SCHEMA}.detached-manifest`;
 export const R1_AUDIT_SCHEMA = `${R1_PACKAGE_SCHEMA}.independent-audit`;
@@ -94,6 +95,27 @@ export const R1_COMMIT_SUBJECT = "Repair Phase 5B About Dark V2 fidelity";
 export const R1_PRODUCTION_DELTA = Object.freeze(["M\tsrc/styles/routes/about.css"]);
 export const R1_CHECKPOINT_SUBJECTS = Object.freeze([...CHECKPOINT_SUBJECTS, R1_COMMIT_SUBJECT]);
 export const R1_FIXED_CHECKPOINT_SHAS = Object.freeze([...FIXED_CHECKPOINT_SHAS, R1_PARENT_SHA]);
+export const R2_PACKAGE_SCHEMA = "quantum-hub.phase-5b-r2.home-navigation-manifesto-human-review.v1";
+export const R2_DETACHED_SCHEMA = `${R2_PACKAGE_SCHEMA}.detached-manifest`;
+export const R2_AUDIT_SCHEMA = `${R2_PACKAGE_SCHEMA}.independent-audit`;
+export const R2_ARCHIVE_FILENAME = "phase-5b-r2-home-navigation-manifesto-human-review.zip";
+export const R2_DETACHED_MANIFEST_FILENAME = "phase-5b-r2-home-navigation-manifesto-human-review-manifest.json";
+export const R2_AUDIT_FILENAME = "phase-5b-r2-home-navigation-manifesto-human-review-audit.json";
+export const R2_REQUIRED_BRANCH = "repair/phase-5b-r2-home-navigation-manifesto";
+export const R2_REQUIRED_BRANCH_URL = null;
+export const R2_PARENT_SHA = "ca22ae2f234302e7485803c560866abd7757735e";
+export const R2_COMMIT_SUBJECT = "Repair Phase 5B home navigation and manifesto";
+export const R2_ALLOWED_PRODUCTION_PATHS = Object.freeze([
+  "src/components/SiteHeader.astro",
+  "src/components/home/EntryField.astro",
+  "src/pages/index.astro",
+  "src/scripts/home-cinematic-integration.ts",
+  "src/styles/routes/home.css",
+  "src/styles/routes/home-cinematic.css",
+  "src/styles/routes/home-responsive.css",
+]);
+export const R2_CHECKPOINT_SUBJECTS = Object.freeze([...R1_CHECKPOINT_SUBJECTS, R2_COMMIT_SUBJECT]);
+export const R2_FIXED_CHECKPOINT_SHAS = Object.freeze([...R1_FIXED_CHECKPOINT_SHAS, R2_PARENT_SHA]);
 
 const REVIEW_PROFILES = Object.freeze({
   [DEFAULT_PROFILE]: Object.freeze({
@@ -124,11 +146,25 @@ const REVIEW_PROFILES = Object.freeze({
     fixedCheckpointShas: R1_FIXED_CHECKPOINT_SHAS,
     exactParent: R1_PARENT_SHA,
   }),
+  [R2_PROFILE]: Object.freeze({
+    id: R2_PROFILE,
+    packageSchema: R2_PACKAGE_SCHEMA,
+    detachedSchema: R2_DETACHED_SCHEMA,
+    auditSchema: R2_AUDIT_SCHEMA,
+    archiveFilename: R2_ARCHIVE_FILENAME,
+    detachedManifestFilename: R2_DETACHED_MANIFEST_FILENAME,
+    auditFilename: R2_AUDIT_FILENAME,
+    requiredBranch: R2_REQUIRED_BRANCH,
+    requiredBranchUrl: R2_REQUIRED_BRANCH_URL,
+    checkpointSubjects: R2_CHECKPOINT_SUBJECTS,
+    fixedCheckpointShas: R2_FIXED_CHECKPOINT_SHAS,
+    exactParent: R2_PARENT_SHA,
+  }),
 });
 
 export function reviewProfile(value = DEFAULT_PROFILE) {
   const profile = REVIEW_PROFILES[String(value ?? DEFAULT_PROFILE).toLowerCase()];
-  if (!profile) throw new Error(`--profile must be ${DEFAULT_PROFILE} or ${R1_PROFILE}`);
+  if (!profile) throw new Error(`--profile must be ${[DEFAULT_PROFILE, R1_PROFILE, R2_PROFILE].join(", ")}`);
   return profile;
 }
 
@@ -176,6 +212,27 @@ export const HOMEPAGE_ARTIFACTS = Object.freeze([
   "q.png",
   "regression.json",
 ]);
+export const R2_RECORDING_FILENAMES = Object.freeze([
+  "01-fresh-forward-autonomous-manifesto.mp4",
+  "02-reverse-reentry-autonomous-manifesto.mp4",
+  "03-supporting-route-logo-home-navigation.mp4",
+  "04-homepage-home-navigation.mp4",
+  "05-mobile-home-navigation.mp4",
+]);
+export const R2_VIEWPORTS = Object.freeze([[1440, 900], [1366, 650], [1280, 800], [1024, 768], [768, 1024], [390, 844], [360, 800], [320, 800], [844, 390], [740, 360], [800, 360], [896, 414], [900, 480]]);
+export const R2_RESPONSIVE_FILENAMES = Object.freeze([...R2_VIEWPORTS.map(([width, height]) => `manifesto-${width}x${height}.png`), "manifesto-200-percent.png", "manifesto-fallback-fonts.png", "manifesto-reduced-motion.png", "manifesto-no-js.png"]);
+export const R2_COMPARISON_FILENAMES = Object.freeze(["r1-vs-r2-manifesto.png", "historical-vs-r2-manifesto.png"]);
+export const R2_REPORT_FILENAMES = Object.freeze(["home-navigation-manifesto-runtime.json", "home-navigation-frame-audit.json", "manifesto-responsive-accessibility.json", "supporting-route-source-regression.json", "phase4-media-hashes.json", "homepage-regression.json"]);
+export const R2_CAPTURE_SCHEMA = "quantum-hub.phase-5b-r2.home-navigation-manifesto-deployed-browser-evidence.v1";
+
+export function requiredR2EvidenceArtifactPaths() {
+  return [
+    ...R2_RESPONSIVE_FILENAMES.map((name) => `homepage-r2/responsive/${name}`),
+    ...R2_COMPARISON_FILENAMES.map((name) => `homepage-r2/comparisons/${name}`),
+    ...R2_RECORDING_FILENAMES.map((name) => `homepage-r2/recordings/${name}`),
+    ...R2_REPORT_FILENAMES.map((name) => `homepage-r2/reports/${name}`),
+  ].sort(lexicalCompare);
+}
 export const CAPTURE_REPORT = "capture-report.json";
 export const ACCEPTED_STORYBOARD_ARTIFACTS = Object.freeze([
   "desktop-storyboard--1440x900.png",
@@ -264,7 +321,8 @@ export function stableJson(value) {
   return `${JSON.stringify(stableValue(value), null, 2)}\n`;
 }
 
-export function expectedEvidenceArtifactPaths() {
+export function expectedEvidenceArtifactPaths(profileValue = DEFAULT_PROFILE) {
+  const profile = reviewProfile(profileValue);
   return [
     ...CROSS_ROUTE_ARTIFACTS.map((name) => `cross-route/${name}`),
     ...ROUTES.flatMap(({ id, mode }) => [
@@ -272,11 +330,36 @@ export function expectedEvidenceArtifactPaths() {
       ...(mode === "A" ? [] : [`routes/${id}/${ROUTE_RECORDING}`]),
     ]),
     ...HOMEPAGE_ARTIFACTS.map((name) => `homepage/${name}`),
+    ...(profile.id === R2_PROFILE ? requiredR2EvidenceArtifactPaths() : []),
   ].sort(lexicalCompare);
 }
 
-export function expectedEvidencePaths() {
-  return [...expectedEvidenceArtifactPaths(), CAPTURE_REPORT].sort(lexicalCompare);
+export function expectedEvidencePaths(profileValue = DEFAULT_PROFILE) {
+  return [...expectedEvidenceArtifactPaths(profileValue), CAPTURE_REPORT].sort(lexicalCompare);
+}
+
+export function validateEvidenceArtifactPaths(paths, profileValue = DEFAULT_PROFILE) {
+  const profile = reviewProfile(profileValue);
+  const actual = [...paths].sort(lexicalCompare);
+  if (new Set(actual).size !== actual.length) throw new Error("deployed evidence contains duplicate paths");
+  if (profile.id !== R2_PROFILE) {
+    exactPaths(actual, expectedEvidenceArtifactPaths(profile.id), `deployed capture ${profile.id} ledger`);
+    return actual;
+  }
+  const required = expectedEvidenceArtifactPaths(R2_PROFILE);
+  const actualSet = new Set(actual);
+  for (const relativePath of required) if (!actualSet.has(relativePath)) throw new Error(`R2 deployed capture omits required evidence: ${relativePath}`);
+  for (const relativePath of actual) {
+    safeRelativePath(relativePath, "R2 deployed-evidence path");
+    if (required.includes(relativePath)) continue;
+    if (!/^homepage-r2\/(?:responsive|comparisons|recordings|reports)\//.test(relativePath)) throw new Error(`unexpected R2 deployed-evidence path: ${relativePath}`);
+    const extension = path.posix.extname(relativePath).toLowerCase();
+    const directory = relativePath.split("/")[1];
+    if ((directory === "recordings" && !VIDEO_EXTENSIONS.has(extension)) ||
+        (["responsive", "comparisons"].includes(directory) && !IMAGE_EXTENSIONS.has(extension)) ||
+        (directory === "reports" && extension !== ".json")) throw new Error(`unexpected R2 evidence type: ${relativePath}`);
+  }
+  return actual;
 }
 
 export function evidenceToArchivePath(relativePath) {
@@ -284,13 +367,14 @@ export function evidenceToArchivePath(relativePath) {
   if (relativePath.startsWith("cross-route/")) return relativePath;
   if (relativePath.startsWith("routes/")) return `per-route/${relativePath.slice("routes/".length)}`;
   if (relativePath.startsWith("homepage/")) return `homepage-regression/${relativePath.slice("homepage/".length)}`;
+  if (relativePath.startsWith("homepage-r2/")) return relativePath;
   if (relativePath === CAPTURE_REPORT) return REPORT_PATHS.deployedCapture;
   throw new Error(`unknown deployed-evidence path: ${relativePath}`);
 }
 
-export function expectedPackagePayloadPaths() {
+export function expectedPackagePayloadPaths(profileValue = DEFAULT_PROFILE, evidencePaths = expectedEvidenceArtifactPaths(profileValue)) {
   return [
-    ...expectedEvidenceArtifactPaths().map(evidenceToArchivePath),
+    ...evidencePaths.map(evidenceToArchivePath),
     ...ROUTE_ORDER.flatMap((id) => ACCEPTED_STORYBOARD_ARTIFACTS.map((name) => `per-route/${id}/${name}`)),
     ...Object.values(REPORT_PATHS),
     ...REPOSITORY_DOCS.map(({ archive }) => archive),
@@ -326,7 +410,7 @@ export function assertAllowedEntry(relativePath) {
   if (FORBIDDEN_ENTRY.test(relativePath)) throw new Error(`forbidden raw/assets/source/prototype/history/private payload: ${relativePath}`);
   if ([README_FILENAME, IN_ARCHIVE_MANIFEST].includes(relativePath)) return true;
   const top = relativePath.split("/")[0];
-  if (!new Set(["cross-route", "per-route", "homepage-regression", "reports"]).has(top)) {
+  if (!new Set(["cross-route", "per-route", "homepage-regression", "homepage-r2", "reports"]).has(top)) {
     throw new Error(`entry is outside the Phase 5B review surface: ${relativePath}`);
   }
   if (!ALLOWED_EXTENSIONS.has(path.posix.extname(relativePath).toLowerCase())) throw new Error(`unsupported review payload: ${relativePath}`);
@@ -438,7 +522,7 @@ export function validateOptionShape(input) {
   if (!HASH40.test(options.expectedHead ?? "")) throw new Error("--expected-head must be a lowercase 40-hex commit");
   options.expectedUpstream ??= options.expectedHead;
   if (!HASH40.test(options.expectedUpstream) || options.expectedUpstream !== options.expectedHead) throw new Error("--expected-upstream must equal --expected-head");
-  if (profile.id === R1_PROFILE && options.expectedHead === R1_PARENT_SHA) throw new Error("--expected-head must be the new R1 repair commit, not its exact CP9 parent");
+  if (profile.exactParent && options.expectedHead === profile.exactParent) throw new Error(`--expected-head must be the new ${profile.id.toUpperCase()} repair commit, not its exact parent`);
   if (options.expectedBranch !== profile.requiredBranch) throw new Error(`--expected-branch must remain ${profile.requiredBranch} for profile ${profile.id}`);
   if (options.expectedMain !== FROZEN_MAIN_SHA) throw new Error(`--expected-main must remain ${FROZEN_MAIN_SHA}`);
   if (options.acceptedPhase5AR !== ACCEPTED_PHASE5AR_SHA) throw new Error(`--accepted-phase5ar must remain ${ACCEPTED_PHASE5AR_SHA}`);
@@ -448,7 +532,7 @@ export function validateOptionShape(input) {
   options.branchUrl = normalizePreviewUrl(options.branchUrl, "--branch-url");
   if (options.immutableUrl === options.branchUrl) throw new Error("immutable and branch preview URLs must differ");
   if (profile.requiredBranchUrl && options.branchUrl !== profile.requiredBranchUrl) throw new Error(`--branch-url must remain ${profile.requiredBranchUrl} for profile ${profile.id}`);
-  if (!profile.requiredBranchUrl && options.branchUrl === REQUIRED_BRANCH_URL) throw new Error("--branch-url cannot reuse the accepted Phase 5B CP9 branch preview for the R1 repair");
+  if (!profile.requiredBranchUrl && options.branchUrl === REQUIRED_BRANCH_URL) throw new Error(`--branch-url cannot reuse the accepted Phase 5B CP9 branch preview for the ${profile.id.toUpperCase()} repair`);
   if (new URL(options.immutableUrl).hostname !== `${options.expectedDeploymentId.split("-")[0].toLowerCase()}.${REQUIRED_PROJECT}.pages.dev`) throw new Error("--immutable-url must match the deployment UUID prefix");
   for (const [key, flag] of [
     ["evidenceRoot", "--deployed-evidence-root"],
@@ -610,9 +694,22 @@ function extractLedger(document, label) {
 }
 
 async function collectDeployedEvidence(root, options, ffprobe) {
-  exactPaths(await recursiveFiles(root), expectedEvidencePaths(), "deployed evidence 127-file topology");
+  const profile = reviewProfile(options.profile);
+  const allFiles = await recursiveFiles(root);
+  if (!allFiles.includes(CAPTURE_REPORT)) throw new Error(`deployed evidence omits ${CAPTURE_REPORT}`);
+  const reportItem = await readBoundFile(root, CAPTURE_REPORT, REPORT_PATHS.deployedCapture);
+  const report = parseJson(reportItem.data, CAPTURE_REPORT);
+  assertPassReport(report, "deployed capture report");
+  if (profile.id === R2_PROFILE) {
+    if (report.schema !== R2_CAPTURE_SCHEMA || report.profile !== R2_PROFILE) throw new Error("deployed capture report omits the exact R2 schema/profile binding");
+  }
+  assert.deepEqual(report.humanReview?.gates, HUMAN_REVIEW_GATES, "deployed capture human gates differ");
+  if (report.humanReview?.phase6Authorized !== false) throw new Error("deployed capture report attempts to authorize Phase 6");
+  const ledger = extractLedger(report, "deployed capture report");
+  const evidencePaths = validateEvidenceArtifactPaths(ledger.keys(), profile.id);
+  exactPaths(allFiles, [...evidencePaths, CAPTURE_REPORT], `deployed evidence ${profile.id} filesystem/ledger topology`);
   const artifacts = [];
-  for (const relativePath of expectedEvidenceArtifactPaths()) {
+  for (const relativePath of evidencePaths) {
     const item = await readBoundFile(root, relativePath, evidenceToArchivePath(relativePath));
     const extension = path.posix.extname(relativePath).toLowerCase();
     if (IMAGE_EXTENSIONS.has(extension)) item.media = await validateImage(item.data, item.relativePath);
@@ -620,13 +717,6 @@ async function collectDeployedEvidence(root, options, ffprobe) {
     else parseJson(item.data, item.relativePath);
     artifacts.push(item);
   }
-  const reportItem = await readBoundFile(root, CAPTURE_REPORT, REPORT_PATHS.deployedCapture);
-  const report = parseJson(reportItem.data, CAPTURE_REPORT);
-  assertPassReport(report, "deployed capture report");
-  assert.deepEqual(report.humanReview?.gates, HUMAN_REVIEW_GATES, "deployed capture human gates differ");
-  if (report.humanReview?.phase6Authorized !== false) throw new Error("deployed capture report attempts to authorize Phase 6");
-  const ledger = extractLedger(report, "deployed capture report");
-  exactPaths(ledger.keys(), expectedEvidenceArtifactPaths(), "deployed capture ledger");
   for (const item of artifacts) {
     const record = ledger.get(item.sourceRelativePath);
     if (record.byteSize !== item.data.length || record.sha256 !== sha256(item.data)) throw new Error(`deployed capture ledger mismatch: ${item.sourceRelativePath}`);
@@ -634,7 +724,7 @@ async function collectDeployedEvidence(root, options, ffprobe) {
   for (const [name, expected] of [["HEAD", options.expectedHead], ["immutable URL", options.immutableUrl]]) {
     if (!containsScalar(report, expected)) throw new Error(`deployed capture report does not bind exact ${name}: ${expected}`);
   }
-  return { artifacts, reportItem, report };
+  return { artifacts, reportItem, report, evidencePaths };
 }
 
 async function collectAcceptedStoryboards(root) {
@@ -686,6 +776,7 @@ function validateCp8(item) {
 }
 
 function validateDeployment(item, options) {
+  const profile = reviewProfile(options.profile);
   assertPassReport(item.document, "deployment report");
   assert.deepEqual(item.document.humanReview?.gates, HUMAN_REVIEW_GATES, "deployment human gates differ");
   if (item.document.authorization?.phase6Authorized !== false || item.document.humanReview?.allSixPending !== true) throw new Error("deployment human-review authorization differs");
@@ -696,6 +787,12 @@ function validateDeployment(item, options) {
     ["immutable URL", options.immutableUrl],
     ["branch URL", options.branchUrl],
   ]) if (!containsScalar(item.document, expected)) throw new Error(`deployment report does not bind exact ${name}: ${expected}`);
+  if (profile.id === R2_PROFILE) {
+    if (item.document.profile !== R2_PROFILE || item.document.repository?.profile !== R2_PROFILE || item.document.repository?.finalCommitParent !== R2_PARENT_SHA) throw new Error("deployment report omits the exact R2 parent/profile authority");
+    assert.deepEqual(item.document.repository?.productionAllowlist, [...R2_ALLOWED_PRODUCTION_PATHS], "deployment R2 production allowlist differs");
+    const deploymentDelta = (item.document.repository?.productionDelta ?? []).map((record) => `${record?.status}\t${record?.path}`);
+    validateR2ProductionDelta(deploymentDelta);
+  }
 }
 
 function validateDeploymentDist(deployment, build) {
@@ -724,6 +821,19 @@ function parseLinearLog(text) {
     const [sha, parents, ...subject] = line.split("\t");
     return { sha, parents: parents.split(" ").filter(Boolean), subject: subject.join("\t") };
   });
+}
+
+export function validateR2ProductionDelta(lines) {
+  const records = [...lines].map((line) => {
+    const fields = String(line).split("\t");
+    if (fields.length !== 2 || !/^[AMD]$/.test(fields[0])) throw new Error(`R2 production delta status differs: ${line}`);
+    safeRelativePath(fields[1], "R2 production delta path");
+    return { status: fields[0], path: fields[1] };
+  });
+  if (!records.length) throw new Error("R2 parent..HEAD production delta must be non-empty");
+  if (new Set(records.map(({ path: relativePath }) => relativePath)).size !== records.length) throw new Error("R2 production delta repeats a path");
+  for (const { path: relativePath } of records) if (!R2_ALLOWED_PRODUCTION_PATHS.includes(relativePath)) throw new Error(`R2 production delta exceeds the exact allowlist: ${relativePath}`);
+  return records;
 }
 
 async function repositoryAuthority(options) {
@@ -765,6 +875,11 @@ async function repositoryAuthority(options) {
     const productionDelta = (await git("diff", "--name-status", "--no-renames", `${R1_PARENT_SHA}..HEAD`, "--", "src", "public", "astro.config.mjs")).split(/\r?\n/).filter(Boolean);
     if (!productionDelta.length || JSON.stringify(productionDelta) !== JSON.stringify(R1_PRODUCTION_DELTA)) throw new Error("R1 production delta must modify only src/styles/routes/about.css");
     repair = { exactParent: R1_PARENT_SHA, commitSubject: R1_COMMIT_SUBJECT, productionDelta };
+  } else if (profile.id === R2_PROFILE) {
+    if (parent !== R2_PARENT_SHA || head === R2_PARENT_SHA) throw new Error("R2 HEAD must be a new commit whose exact parent is R1");
+    const productionDeltaLines = (await git("diff", "--name-status", "--no-renames", `${R2_PARENT_SHA}..HEAD`, "--", "src", "public", "astro.config.mjs")).split(/\r?\n/).filter(Boolean);
+    const productionDelta = validateR2ProductionDelta(productionDeltaLines);
+    repair = { exactParent: R2_PARENT_SHA, commitSubject: R2_COMMIT_SUBJECT, productionDelta, productionAllowlist: [...R2_ALLOWED_PRODUCTION_PATHS] };
   }
   return {
     schema: `${profile.packageSchema}.git-provenance`,
@@ -781,7 +896,7 @@ async function repositoryAuthority(options) {
     commits,
     trackedDelta: delta.split(/\r?\n/).filter(Boolean),
     trackedAuthorities: tracked.sort(lexicalCompare),
-    ...(repair ? { profile: R1_PROFILE, repair } : {}),
+    ...(repair ? { profile: profile.id, repair } : {}),
   };
 }
 
@@ -831,6 +946,10 @@ function roleFor(relativePath) {
   if (relativePath === README_FILENAME) return "review guide and gate contract";
   if (relativePath.startsWith("cross-route/")) return "deployed cross-route comparison evidence";
   if (relativePath.startsWith("homepage-regression/")) return "deployed homepage regression evidence";
+  if (relativePath.startsWith("homepage-r2/responsive/")) return "R2 manifesto responsive and accessibility evidence";
+  if (relativePath.startsWith("homepage-r2/comparisons/")) return "R2 manifesto hash-bound authority comparison";
+  if (relativePath.startsWith("homepage-r2/recordings/")) return "R2 Home navigation and autonomous manifesto runtime evidence";
+  if (relativePath.startsWith("homepage-r2/reports/")) return "R2 Home navigation, manifesto, source-regression, and media authority report";
   if (relativePath.includes("desktop-storyboard--1440x900.png")) return "accepted Phase 5A-R desktop storyboard authority";
   if (relativePath.endsWith("route-brief-delta.md")) return "accepted Phase 5A-R route-brief delta authority";
   if (relativePath.startsWith("per-route/")) return "deployed route-specific production evidence";
@@ -838,8 +957,9 @@ function roleFor(relativePath) {
   throw new Error(`no artifact role for ${relativePath}`);
 }
 
-export function buildArtifactRoles() {
-  return {
+export function buildArtifactRoles(profileValue = DEFAULT_PROFILE, evidencePaths = expectedEvidenceArtifactPaths(profileValue)) {
+  const profile = reviewProfile(profileValue);
+  const roles = {
     crossRoute: CROSS_ROUTE_ARTIFACTS.map((name) => `cross-route/${name}`),
     perRoute: Object.fromEntries(ROUTES.map(({ id, mode }) => [id, {
       deployed: [...ROUTE_COMMON_ARTIFACTS, ...(mode === "A" ? [] : [ROUTE_RECORDING])].map((name) => `per-route/${id}/${name}`),
@@ -850,6 +970,16 @@ export function buildArtifactRoles() {
     reports: [...Object.values(REPORT_PATHS), ...REPOSITORY_DOCS.map(({ archive }) => archive)],
     readme: README_FILENAME,
   };
+  if (profile.id === R2_PROFILE) {
+    const archivePaths = evidencePaths.map(evidenceToArchivePath);
+    roles.homepageR2 = {
+      responsive: archivePaths.filter((relativePath) => relativePath.startsWith("homepage-r2/responsive/")),
+      comparisons: archivePaths.filter((relativePath) => relativePath.startsWith("homepage-r2/comparisons/")),
+      recordings: archivePaths.filter((relativePath) => relativePath.startsWith("homepage-r2/recordings/")),
+      reports: archivePaths.filter((relativePath) => relativePath.startsWith("homepage-r2/reports/")),
+    };
+  }
+  return roles;
 }
 
 function flattenRolePaths(value, output = []) {
@@ -868,6 +998,14 @@ export function validateArtifactRoles(roles, paths) {
 
 function readmeText(repository, options) {
   const profile = reviewProfile(options.profile);
+  if (profile.id === R2_PROFILE) {
+    return `# Quantum-Hub Phase 5B-R2 Home navigation and manifesto — human review\n\n` +
+      `This deterministic repair package is bound to Git HEAD \`${repository.head}\`, exact R1 parent \`${R2_PARENT_SHA}\`, and Cloudflare deployment \`${options.expectedDeploymentId}\`. Machine PASS proves package integrity only.\n\n` +
+      `## R2 review focus\n\nReview semantic logo-to-Home navigation, same-page and cross-route entry behavior, the autonomous manifesto fade without scroll writes, reverse/re-entry replay, reduced-motion and no-JS fail-open behavior, responsive/keyboard/axe results, and the explicit no-F1 frame result. Production changes must be non-empty and confined to the exact seven-path Home/shared-header allowlist recorded in \`reports/git-provenance.json\`; all nine supporting-route sources, Phase 4 media, \`src/styles/navigation.css\`, \`BaseLayout\`, \`home-operating-field.ts\`, and public media remain frozen regression surfaces.\n\n` +
+      `## Review order\n\n1. \`homepage-r2/recordings/\`: inspect all five named navigation and autonomous-manifesto scenarios.\n2. \`homepage-r2/responsive/\` and \`homepage-r2/comparisons/\`: inspect the thirteen required viewports, variants, and hash-bound R1/historical comparisons.\n3. \`homepage-r2/reports/\`: inspect runtime, frame/no-F1, responsive accessibility, source regression, Phase 4 media hashes, and homepage regression bindings.\n4. The retained \`cross-route/\`, \`per-route/\`, \`homepage-regression/\`, and \`reports/\` surfaces: confirm no supporting-route or prior-homepage collateral regression.\n\n` +
+      `## Package boundary\n\nThe archive retains the complete earlier Phase 5B review surface plus the R2 evidence ledger and contains no raw frames, source assets, prototype internals, Blender files, repository history dump, private host path, credential, or nested archive. Every non-self entry is bound by byte size and SHA-256 in \`MANIFEST.json\`; the detached manifest binds both the canonical stored ZIP and its in-archive manifest; a separate process independently verifies hashes and CRCs and produces the audit sibling.\n\n` +
+      `## Human gates\n\nAll six Phase 5B gates remain **PENDING HUMAN REVIEW**. Machine PASS is not human acceptance. Phase 6 remains **UNAUTHORIZED**, \`main\` remains unchanged, and neither the author nor deployer may self-approve.\n`;
+  }
   if (profile.id === R1_PROFILE) {
     return `# Quantum-Hub Phase 5B-R1 About Dark V2 fidelity — human review\n\n` +
       `This deterministic repair package is bound to Git HEAD \`${repository.head}\`, exact CP9 parent \`${R1_PARENT_SHA}\`, and Cloudflare deployment \`${options.expectedDeploymentId}\`. Machine PASS proves package integrity only.\n\n` +
@@ -890,32 +1028,70 @@ export function validateReviewPolicy(document) {
   return true;
 }
 
+export function buildInventory(profileValue, evidencePaths, files, sourceBytes) {
+  const profile = reviewProfile(profileValue);
+  const payloadPaths = files.map(({ relativePath }) => relativePath);
+  const inventory = {
+    evidenceSourceFiles: evidencePaths.length + 1,
+    evidenceLedgerArtifacts: evidencePaths.length,
+    crossRouteFiles: evidencePaths.filter((relativePath) => relativePath.startsWith("cross-route/")).length,
+    routeFolders: new Set(evidencePaths.filter((relativePath) => relativePath.startsWith("routes/")).map((relativePath) => relativePath.split("/")[1])).size,
+    deployedRouteFiles: evidencePaths.filter((relativePath) => relativePath.startsWith("routes/")).length,
+    acceptedStoryboardFiles: payloadPaths.filter((relativePath) => /\/desktop-storyboard--1440x900\.png$|\/route-brief-delta\.md$/.test(relativePath)).length,
+    homepageRegressionFiles: evidencePaths.filter((relativePath) => relativePath.startsWith("homepage/")).length,
+    reportFiles: payloadPaths.filter((relativePath) => relativePath.startsWith("reports/")).length,
+    images: payloadPaths.filter((relativePath) => IMAGE_EXTENSIONS.has(path.posix.extname(relativePath).toLowerCase())).length,
+    videos: payloadPaths.filter((relativePath) => VIDEO_EXTENSIONS.has(path.posix.extname(relativePath).toLowerCase())).length,
+    hashedNonSelfFiles: files.length,
+    hashedNonSelfBytes: sourceBytes,
+    archiveEntries: files.length + 1,
+    maximumArchiveBytes: MAX_ARCHIVE_BYTES,
+  };
+  if (profile.id === R2_PROFILE) {
+    inventory.homepageR2Files = evidencePaths.filter((relativePath) => relativePath.startsWith("homepage-r2/")).length;
+    inventory.homepageR2ResponsiveFiles = evidencePaths.filter((relativePath) => relativePath.startsWith("homepage-r2/responsive/")).length;
+    inventory.homepageR2ComparisonFiles = evidencePaths.filter((relativePath) => relativePath.startsWith("homepage-r2/comparisons/")).length;
+    inventory.homepageR2RecordingFiles = evidencePaths.filter((relativePath) => relativePath.startsWith("homepage-r2/recordings/")).length;
+    inventory.homepageR2ReportFiles = evidencePaths.filter((relativePath) => relativePath.startsWith("homepage-r2/reports/")).length;
+  }
+  return inventory;
+}
+
 export function selfTest(profileValue = DEFAULT_PROFILE) {
   const profile = reviewProfile(profileValue);
-  assert.equal(expectedEvidenceArtifactPaths().length, 126);
-  assert.equal(expectedEvidencePaths().length, 127);
+  const evidencePaths = expectedEvidenceArtifactPaths(profile.id);
+  const payloadPaths = expectedPackagePayloadPaths(profile.id, evidencePaths);
+  const images = payloadPaths.filter((item) => IMAGE_EXTENSIONS.has(path.posix.extname(item))).length;
+  const videos = payloadPaths.filter((item) => VIDEO_EXTENSIONS.has(path.posix.extname(item))).length;
+  assert.equal(expectedEvidenceArtifactPaths(DEFAULT_PROFILE).length, 126);
+  assert.equal(expectedEvidencePaths(DEFAULT_PROFILE).length, 127);
   assert.equal(CROSS_ROUTE_ARTIFACTS.length, 5);
   assert.equal(ROUTE_ORDER.length, 9);
   assert.equal(MOTION_ROUTE_IDS.length, 7);
-  assert.equal(expectedEvidenceArtifactPaths().filter((item) => item.startsWith("routes/")).length, 115);
-  assert.equal(expectedPackagePayloadPaths().length, 157);
-  assert.equal(expectedPackagePayloadPaths().filter((item) => IMAGE_EXTENSIONS.has(path.posix.extname(item))).length, 90);
-  assert.equal(expectedPackagePayloadPaths().filter((item) => VIDEO_EXTENSIONS.has(path.posix.extname(item))).length, 8);
+  assert.equal(expectedEvidenceArtifactPaths(DEFAULT_PROFILE).filter((item) => item.startsWith("routes/")).length, 115);
+  assert.equal(expectedPackagePayloadPaths(DEFAULT_PROFILE).length, 157);
   assert.equal(Object.keys(HUMAN_REVIEW_GATES).length, 6);
   assert.ok(Object.values(HUMAN_REVIEW_GATES).every((value) => value === "PENDING HUMAN REVIEW"));
   assert.ok(Object.values(AUTHORIZATION).every((value) => value === false));
-  assert.equal(profile.checkpointSubjects.length, profile.id === R1_PROFILE ? 10 : 9);
+  assert.equal(profile.checkpointSubjects.length, CHECKPOINT_SUBJECTS.length + (profile.id === R2_PROFILE ? 2 : profile.id === R1_PROFILE ? 1 : 0));
   assert.equal(profile.fixedCheckpointShas.length, profile.checkpointSubjects.length - 1);
   if (profile.id === R1_PROFILE) {
     assert.equal(profile.exactParent, R1_PARENT_SHA);
     assert.equal(profile.checkpointSubjects.at(-1), R1_COMMIT_SUBJECT);
     assert.equal(profile.fixedCheckpointShas.at(-1), R1_PARENT_SHA);
   }
-  validateArtifactRoles(buildArtifactRoles(), [...expectedPackagePayloadPaths(), README_FILENAME]);
+  if (profile.id === R2_PROFILE) {
+    assert.equal(profile.exactParent, R2_PARENT_SHA);
+    assert.equal(profile.checkpointSubjects.at(-1), R2_COMMIT_SUBJECT);
+    assert.equal(profile.fixedCheckpointShas.at(-1), R2_PARENT_SHA);
+    assert.deepEqual(validateEvidenceArtifactPaths(evidencePaths, profile.id), evidencePaths);
+    for (const relativePath of requiredR2EvidenceArtifactPaths()) assert.ok(evidencePaths.includes(relativePath));
+  }
+  validateArtifactRoles(buildArtifactRoles(profile.id, evidencePaths), [...payloadPaths, README_FILENAME]);
   validateReviewPolicy({ humanReviewGates: HUMAN_REVIEW_GATES, authorization: AUTHORIZATION, policy: { phase6: "UNAUTHORIZED", pendingGateCount: 6, machinePassGrantsHumanAcceptance: false } });
   const sample = createStoredZipBuffer([{ path: README_FILENAME, data: Buffer.from("review\n") }, { path: IN_ARCHIVE_MANIFEST, data: Buffer.from("{}\n") }]);
   assert.ok(sample.length > 100);
-  return { schema: `${profile.packageSchema}.self-test`, status: "PASS", ...(profile.id === R1_PROFILE ? { profile: profile.id } : {}), evidenceFiles: 127, ledgerArtifacts: 126, packagePayloadFiles: 157, archiveEntries: 159, images: 90, videos: 8, maximumArchiveBytes: MAX_ARCHIVE_BYTES, gatesPending: 6, phase6Authorized: false };
+  return { schema: `${profile.packageSchema}.self-test`, status: "PASS", ...(profile.id !== DEFAULT_PROFILE ? { profile: profile.id } : {}), evidenceFiles: evidencePaths.length + 1, ledgerArtifacts: evidencePaths.length, packagePayloadFiles: payloadPaths.length, archiveEntries: payloadPaths.length + 2, images, videos, maximumArchiveBytes: MAX_ARCHIVE_BYTES, gatesPending: 6, phase6Authorized: false };
 }
 
 export function crc32(bytes) {
@@ -1015,6 +1191,7 @@ export async function assemblePackage(input) {
   ]);
   if (isWithin(evidenceRoot, output) || isWithin(storyboardRoot, output)) throw new Error("output must be disjoint from deployed evidence and accepted storyboard inputs");
   validateCp7(cp7); validateCp8(cp8); validateDeployment(deployment, options);
+  if (profile.id === R2_PROFILE) assert.deepEqual(deployment.document.repository.productionDelta, repository.repair.productionDelta, "deployment/local R2 production delta differs");
   const [deployed, accepted, build] = await Promise.all([
     collectDeployedEvidence(evidenceRoot, options, ffprobe),
     collectAcceptedStoryboards(storyboardRoot),
@@ -1044,8 +1221,10 @@ export async function assemblePackage(input) {
     ...repositoryDocs,
     readme,
   ].map((entry) => ({ ...entry, data: Buffer.from(entry.data) }));
-  exactPaths(entries.map(({ relativePath }) => relativePath), [...expectedPackagePayloadPaths(), README_FILENAME], "pre-manifest package surface");
-  validateArtifactRoles(buildArtifactRoles(), entries.map(({ relativePath }) => relativePath));
+  const expectedPayloadPaths = expectedPackagePayloadPaths(profile.id, deployed.evidencePaths);
+  const artifactRoles = buildArtifactRoles(profile.id, deployed.evidencePaths);
+  exactPaths(entries.map(({ relativePath }) => relativePath), [...expectedPayloadPaths, README_FILENAME], "pre-manifest package surface");
+  validateArtifactRoles(artifactRoles, entries.map(({ relativePath }) => relativePath));
 
   const files = [];
   for (const entry of entries.sort((left, right) => lexicalCompare(left.relativePath, right.relativePath))) {
@@ -1060,17 +1239,18 @@ export async function assemblePackage(input) {
     });
   }
   const sourceBytes = files.reduce((sum, record) => sum + record.byteSize, 0);
+  const inventory = buildInventory(profile.id, deployed.evidencePaths, files, sourceBytes);
   const manifest = {
     schema: profile.packageSchema,
     status: "MACHINE INTEGRITY PASS — HUMAN REVIEW PENDING",
-    ...(profile.id === R1_PROFILE ? { profile: profile.id, repair: repository.repair } : {}),
+    ...(profile.id !== DEFAULT_PROFILE ? { profile: profile.id, repair: repository.repair } : {}),
     generatedAt: repository.generatedAt,
     fixedZipEpoch: FIXED_EPOCH,
     git: { branch: repository.branch, head: repository.head, upstream: repository.upstream, acceptedPhase5AR: ACCEPTED_PHASE5AR_SHA, main: FROZEN_MAIN_SHA, cleanTree: true },
     deployment: { id: options.expectedDeploymentId, project: REQUIRED_PROJECT, immutableUrl: options.immutableUrl, branchUrl: options.branchUrl, verificationReportSha256: sha256(deployment.data) },
     authorities: { deployedCaptureReportSha256: sha256(deployed.reportItem.data), acceptedStoryboardManifestSha256: sha256(accepted.manifestItem.data), cp7Sha256: sha256(cp7.data), cp8Sha256: sha256(cp8.data), gitReportSha256: sha256(generatedReports[0].data), buildReportSha256: sha256(generatedReports[1].data) },
-    inventory: { evidenceSourceFiles: 127, evidenceLedgerArtifacts: 126, crossRouteFiles: 5, routeFolders: 9, deployedRouteFiles: 115, acceptedStoryboardFiles: 18, homepageRegressionFiles: 6, reportFiles: 13, images: 90, videos: 8, hashedNonSelfFiles: files.length, hashedNonSelfBytes: sourceBytes, archiveEntries: files.length + 1, maximumArchiveBytes: MAX_ARCHIVE_BYTES },
-    artifactRoles: buildArtifactRoles(),
+    inventory,
+    artifactRoles,
     files,
     traceability: { everyNonSelfFileHasSizeAndSha256: true, inArchiveManifestBoundByDetachedManifest: true, detachedManifestBoundByIndependentAudit: true, imageAndVideoDecodeAudit: true, canonicalUniqueStoredZip: true },
     humanReviewGates: HUMAN_REVIEW_GATES,
@@ -1086,7 +1266,7 @@ export async function assemblePackage(input) {
   const detached = {
     schema: profile.detachedSchema,
     status: "PASS",
-    ...(profile.id === R1_PROFILE ? { profile: profile.id, repair: repository.repair } : {}),
+    ...(profile.id !== DEFAULT_PROFILE ? { profile: profile.id, repair: repository.repair } : {}),
     generatedAt: repository.generatedAt,
     archive: { filename: profile.archiveFilename, byteSize: archiveBytes.length, sha256: sha256(archiveBytes), entries: files.length + 1, canonicalUniqueStoredZip: true },
     inArchiveManifest: { path: IN_ARCHIVE_MANIFEST, byteSize: manifestBytes.length, sha256: sha256(manifestBytes), schema: profile.packageSchema },
@@ -1132,7 +1312,7 @@ export async function assemblePackage(input) {
   } finally {
     await rm(staging, { recursive: true, force: true });
   }
-  return { schema: `${profile.packageSchema}.result`, status: "PASS", ...(profile.id === R1_PROFILE ? { profile: profile.id } : {}), archive: { path: output, byteSize: archiveBytes.length, sha256: sha256(archiveBytes) }, detachedManifest: detachedOutput, independentAudit: auditOutput, humanReviewGates: HUMAN_REVIEW_GATES, phase6Authorized: false };
+  return { schema: `${profile.packageSchema}.result`, status: "PASS", ...(profile.id !== DEFAULT_PROFILE ? { profile: profile.id } : {}), archive: { path: output, byteSize: archiveBytes.length, sha256: sha256(archiveBytes) }, detachedManifest: detachedOutput, independentAudit: auditOutput, humanReviewGates: HUMAN_REVIEW_GATES, phase6Authorized: false };
 }
 
 function dryRunReport(profileValue = DEFAULT_PROFILE) {
@@ -1140,7 +1320,7 @@ function dryRunReport(profileValue = DEFAULT_PROFILE) {
   return {
     schema: `${profile.packageSchema}.dry-run`,
     status: "PASS",
-    ...(profile.id === R1_PROFILE ? { profile: profile.id } : {}),
+    ...(profile.id !== DEFAULT_PROFILE ? { profile: profile.id } : {}),
     writesPerformed: false,
     archiveFilename: profile.archiveFilename,
     detachedManifestFilename: profile.detachedManifestFilename,
@@ -1153,7 +1333,7 @@ function dryRunReport(profileValue = DEFAULT_PROFILE) {
 function printHelp() {
   process.stdout.write([
     "Phase 5B supporting-route production human-review packager", "",
-    `node scripts/${path.basename(SCRIPT)} [--profile cp9|r1] \\`,
+    `node scripts/${path.basename(SCRIPT)} [--profile cp9|r1|r2] \\`,
     "  --deployed-evidence-root <external-directory> \\",
     "  --accepted-storyboard-root <external-directory> \\",
     "  --deployment-report <external-json> --cp7-report <external-json> --cp8-report <external-json> \\",
@@ -1161,6 +1341,7 @@ function printHelp() {
     "  --expected-deployment-id <uuid> --immutable-url <https-origin/> --branch-url <https-origin/> \\",
     "  --ffprobe <absolute-executable> --output <external exact ZIP path>", "",
     `R1 requires branch ${R1_REQUIRED_BRANCH}, exact parent ${R1_PARENT_SHA}, and output ${R1_ARCHIVE_FILENAME}.`,
+    `R2 requires branch ${R2_REQUIRED_BRANCH}, exact parent ${R2_PARENT_SHA}, strict seven-path production allowlist, and output ${R2_ARCHIVE_FILENAME}.`,
     "Use --self-test or --dry-run for write-free contract checks.", "",
   ].join("\n"));
 }

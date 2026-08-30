@@ -3,10 +3,6 @@
     --method-decide: 0;
   }
 
-  .manifesto-field h1 {
-    font-size: clamp(3.25rem, 5.4vw, 4.5rem);
-  }
-
   .industry-cavity {
     min-height: auto;
   }
@@ -88,14 +84,16 @@
   }
 
   .manifesto-field__content {
-    padding-top: clamp(3.2rem, 9svh, 5.5rem);
+    padding-block: clamp(2.25rem, 7svh, 4.5rem);
   }
 
   .manifesto-field h1 {
-    width: 100%;
-    max-width: 100%;
-    font-size: clamp(1.05rem, 5.6vw, 2.65rem);
-    line-height: 0.88;
+    width: 122.5%;
+    max-width: none;
+    font-size: clamp(2.2rem, 10.8vw, 5.25rem);
+    letter-spacing: -0.073em;
+    line-height: 0.82;
+    transform: scaleX(0.8163);
   }
 
   .manifesto-field h1 > .manifesto-line {
@@ -499,10 +497,6 @@
 }
 
 @media (max-width: 22rem) {
-  .manifesto-field h1 {
-    font-size: clamp(1.05rem, 5.6vw, 1.25rem);
-  }
-
   .audience-trajectory {
     grid-template-columns: 1.9rem minmax(0, 1fr);
   }
@@ -541,10 +535,6 @@
 @media (max-height: 43.999rem) and (min-width: 49rem) {
   .method-field {
     --method-decide: 0;
-  }
-
-  .manifesto-field h1 {
-    font-size: clamp(3.5rem, 7.4vw, 5.7rem);
   }
 
   .industry-cavity,
@@ -597,13 +587,25 @@
   }
 
   .manifesto-field__content {
-    padding-top: clamp(1.35rem, 7svh, 2.7rem);
+    padding-block: clamp(1.35rem, 6svh, 2.5rem);
   }
 
   .manifesto-field h1 {
-    max-width: 15ch;
-    font-size: clamp(2.15rem, 4.6vw, 3rem);
-    line-height: 0.86;
+    width: 160%;
+    max-width: none;
+    font-size: clamp(2.25rem, 5.8vw, 3.35rem);
+    line-height: 0.82;
+    transform: scaleX(0.625);
+  }
+
+  .manifesto-field h1 > .manifesto-line {
+    display: block;
+    white-space: nowrap;
+  }
+
+  .manifesto-mobile-line {
+    display: inline;
+    white-space: normal;
   }
 
   .audience-field {

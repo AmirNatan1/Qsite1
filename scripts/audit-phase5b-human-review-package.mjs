@@ -55,6 +55,7 @@ export const FIXED_CHECKPOINT_SHAS = Object.freeze(["1fcc260fc51810934b160eec389
 
 export const DEFAULT_PROFILE = "cp9";
 export const R1_PROFILE = "r1";
+export const R2_PROFILE = "r2";
 export const R1_PACKAGE_SCHEMA = "quantum-hub.phase-5b-r1.about-dark-v2-fidelity-human-review.v1";
 export const R1_DETACHED_SCHEMA = `${R1_PACKAGE_SCHEMA}.detached-manifest`;
 export const R1_AUDIT_SCHEMA = `${R1_PACKAGE_SCHEMA}.independent-audit`;
@@ -68,6 +69,27 @@ export const R1_COMMIT_SUBJECT = "Repair Phase 5B About Dark V2 fidelity";
 export const R1_PRODUCTION_DELTA = Object.freeze(["M\tsrc/styles/routes/about.css"]);
 export const R1_CHECKPOINT_SUBJECTS = Object.freeze([...CHECKPOINT_SUBJECTS, R1_COMMIT_SUBJECT]);
 export const R1_FIXED_CHECKPOINT_SHAS = Object.freeze([...FIXED_CHECKPOINT_SHAS, R1_PARENT_SHA]);
+export const R2_PACKAGE_SCHEMA = "quantum-hub.phase-5b-r2.home-navigation-manifesto-human-review.v1";
+export const R2_DETACHED_SCHEMA = `${R2_PACKAGE_SCHEMA}.detached-manifest`;
+export const R2_AUDIT_SCHEMA = `${R2_PACKAGE_SCHEMA}.independent-audit`;
+export const R2_ARCHIVE_FILENAME = "phase-5b-r2-home-navigation-manifesto-human-review.zip";
+export const R2_DETACHED_MANIFEST_FILENAME = "phase-5b-r2-home-navigation-manifesto-human-review-manifest.json";
+export const R2_AUDIT_FILENAME = "phase-5b-r2-home-navigation-manifesto-human-review-audit.json";
+export const R2_REQUIRED_BRANCH = "repair/phase-5b-r2-home-navigation-manifesto";
+export const R2_REQUIRED_BRANCH_URL = null;
+export const R2_PARENT_SHA = "ca22ae2f234302e7485803c560866abd7757735e";
+export const R2_COMMIT_SUBJECT = "Repair Phase 5B home navigation and manifesto";
+export const R2_ALLOWED_PRODUCTION_PATHS = Object.freeze([
+  "src/components/SiteHeader.astro",
+  "src/components/home/EntryField.astro",
+  "src/pages/index.astro",
+  "src/scripts/home-cinematic-integration.ts",
+  "src/styles/routes/home.css",
+  "src/styles/routes/home-cinematic.css",
+  "src/styles/routes/home-responsive.css",
+]);
+export const R2_CHECKPOINT_SUBJECTS = Object.freeze([...R1_CHECKPOINT_SUBJECTS, R2_COMMIT_SUBJECT]);
+export const R2_FIXED_CHECKPOINT_SHAS = Object.freeze([...R1_FIXED_CHECKPOINT_SHAS, R2_PARENT_SHA]);
 
 const REVIEW_PROFILES = Object.freeze({
   [DEFAULT_PROFILE]: Object.freeze({
@@ -98,11 +120,25 @@ const REVIEW_PROFILES = Object.freeze({
     fixedCheckpointShas: R1_FIXED_CHECKPOINT_SHAS,
     exactParent: R1_PARENT_SHA,
   }),
+  [R2_PROFILE]: Object.freeze({
+    id: R2_PROFILE,
+    packageSchema: R2_PACKAGE_SCHEMA,
+    detachedSchema: R2_DETACHED_SCHEMA,
+    auditSchema: R2_AUDIT_SCHEMA,
+    archiveFilename: R2_ARCHIVE_FILENAME,
+    detachedManifestFilename: R2_DETACHED_MANIFEST_FILENAME,
+    auditFilename: R2_AUDIT_FILENAME,
+    requiredBranch: R2_REQUIRED_BRANCH,
+    requiredBranchUrl: R2_REQUIRED_BRANCH_URL,
+    checkpointSubjects: R2_CHECKPOINT_SUBJECTS,
+    fixedCheckpointShas: R2_FIXED_CHECKPOINT_SHAS,
+    exactParent: R2_PARENT_SHA,
+  }),
 });
 
 export function reviewProfile(value = DEFAULT_PROFILE) {
   const profile = REVIEW_PROFILES[String(value ?? DEFAULT_PROFILE).toLowerCase()];
-  if (!profile) throw new Error(`--profile must be ${DEFAULT_PROFILE} or ${R1_PROFILE}`);
+  if (!profile) throw new Error(`--profile must be ${[DEFAULT_PROFILE, R1_PROFILE, R2_PROFILE].join(", ")}`);
   return profile;
 }
 
@@ -122,6 +158,12 @@ export const CROSS_ROUTE_ARTIFACTS = Object.freeze(["all-route-desktop.png", "al
 export const ROUTE_COMMON_ARTIFACTS = Object.freeze(["production-comparison.png", "desktop-key-states.png", "mobile-key-states.png", "320.png", "844-landscape.png", "reduced-motion.png", "no-js.png", "text-200.png", "accessibility.json", "performance.json", "publication.json", "network-media.json"]);
 export const ROUTE_RECORDING = "route-recording.mp4";
 export const HOMEPAGE_ARTIFACTS = Object.freeze(["manifesto.png", "audience-split.png", "crt-startup.png", "current.png", "q.png", "regression.json"]);
+export const R2_RECORDING_FILENAMES = Object.freeze(["01-fresh-forward-autonomous-manifesto.mp4", "02-reverse-reentry-autonomous-manifesto.mp4", "03-supporting-route-logo-home-navigation.mp4", "04-homepage-home-navigation.mp4", "05-mobile-home-navigation.mp4"]);
+export const R2_VIEWPORTS = Object.freeze([[1440, 900], [1366, 650], [1280, 800], [1024, 768], [768, 1024], [390, 844], [360, 800], [320, 800], [844, 390], [740, 360], [800, 360], [896, 414], [900, 480]]);
+export const R2_RESPONSIVE_FILENAMES = Object.freeze([...R2_VIEWPORTS.map(([width, height]) => `manifesto-${width}x${height}.png`), "manifesto-200-percent.png", "manifesto-fallback-fonts.png", "manifesto-reduced-motion.png", "manifesto-no-js.png"]);
+export const R2_COMPARISON_FILENAMES = Object.freeze(["r1-vs-r2-manifesto.png", "historical-vs-r2-manifesto.png"]);
+export const R2_REPORT_FILENAMES = Object.freeze(["home-navigation-manifesto-runtime.json", "home-navigation-frame-audit.json", "manifesto-responsive-accessibility.json", "supporting-route-source-regression.json", "phase4-media-hashes.json", "homepage-regression.json"]);
+export const R2_CAPTURE_SCHEMA = "quantum-hub.phase-5b-r2.home-navigation-manifesto-deployed-browser-evidence.v1";
 export const ACCEPTED_STORYBOARD_ARTIFACTS = Object.freeze(["desktop-storyboard--1440x900.png", "route-brief-delta.md"]);
 export const REPOSITORY_DOC_ARCHIVES = Object.freeze([
   "reports/PHASE_5B_IMPLEMENTATION_ARCHITECTURE.md",
@@ -181,26 +223,59 @@ function stableValue(value) {
 }
 export function stableJson(value) { return `${JSON.stringify(stableValue(value), null, 2)}\n`; }
 
-export function expectedEvidenceArtifactPaths() {
+export function requiredR2EvidenceArtifactPaths() {
+  return [
+    ...R2_RESPONSIVE_FILENAMES.map((name) => `homepage-r2/responsive/${name}`),
+    ...R2_COMPARISON_FILENAMES.map((name) => `homepage-r2/comparisons/${name}`),
+    ...R2_RECORDING_FILENAMES.map((name) => `homepage-r2/recordings/${name}`),
+    ...R2_REPORT_FILENAMES.map((name) => `homepage-r2/reports/${name}`),
+  ].sort(lexicalCompare);
+}
+export function expectedEvidenceArtifactPaths(profileValue = DEFAULT_PROFILE) {
+  const profile = reviewProfile(profileValue);
   return [
     ...CROSS_ROUTE_ARTIFACTS.map((name) => `cross-route/${name}`),
     ...ROUTES.flatMap(({ id, mode }) => [...ROUTE_COMMON_ARTIFACTS.map((name) => `routes/${id}/${name}`), ...(mode === "A" ? [] : [`routes/${id}/${ROUTE_RECORDING}`])]),
     ...HOMEPAGE_ARTIFACTS.map((name) => `homepage/${name}`),
+    ...(profile.id === R2_PROFILE ? requiredR2EvidenceArtifactPaths() : []),
   ].sort(lexicalCompare);
 }
 export function evidenceToArchivePath(relativePath) {
   if (relativePath.startsWith("cross-route/")) return relativePath;
   if (relativePath.startsWith("routes/")) return `per-route/${relativePath.slice("routes/".length)}`;
   if (relativePath.startsWith("homepage/")) return `homepage-regression/${relativePath.slice("homepage/".length)}`;
+  if (relativePath.startsWith("homepage-r2/")) return relativePath;
   throw new Error(`unknown evidence path: ${relativePath}`);
 }
-export function expectedPackagePayloadPaths() {
+export function expectedPackagePayloadPaths(profileValue = DEFAULT_PROFILE, evidencePaths = expectedEvidenceArtifactPaths(profileValue)) {
   return [
-    ...expectedEvidenceArtifactPaths().map(evidenceToArchivePath),
+    ...evidencePaths.map(evidenceToArchivePath),
     ...ROUTE_ORDER.flatMap((id) => ACCEPTED_STORYBOARD_ARTIFACTS.map((name) => `per-route/${id}/${name}`)),
     ...Object.values(REPORT_PATHS),
     ...REPOSITORY_DOC_ARCHIVES,
   ].sort(lexicalCompare);
+}
+
+export function validateEvidenceArtifactPaths(paths, profileValue = DEFAULT_PROFILE) {
+  const profile = reviewProfile(profileValue);
+  const actual = [...paths].sort(lexicalCompare);
+  if (new Set(actual).size !== actual.length) throw new Error("deployed evidence contains duplicate paths");
+  if (profile.id !== R2_PROFILE) {
+    exactPaths(actual, expectedEvidenceArtifactPaths(profile.id), `deployed capture ${profile.id} ledger`);
+    return actual;
+  }
+  const required = expectedEvidenceArtifactPaths(R2_PROFILE);
+  const actualSet = new Set(actual);
+  for (const relativePath of required) if (!actualSet.has(relativePath)) throw new Error(`R2 deployed capture omits required evidence: ${relativePath}`);
+  for (const relativePath of actual) {
+    safeRelativePath(relativePath, "R2 deployed-evidence path");
+    if (required.includes(relativePath)) continue;
+    if (!/^homepage-r2\/(?:responsive|comparisons|recordings|reports)\//.test(relativePath)) throw new Error(`unexpected R2 deployed-evidence path: ${relativePath}`);
+    const extension = path.posix.extname(relativePath).toLowerCase();
+    const directory = relativePath.split("/")[1];
+    if ((directory === "recordings" && !VIDEO_EXTENSIONS.has(extension)) || (["responsive", "comparisons"].includes(directory) && !IMAGE_EXTENSIONS.has(extension)) || (directory === "reports" && extension !== ".json")) throw new Error(`unexpected R2 evidence type: ${relativePath}`);
+  }
+  return actual;
 }
 
 function isWithin(parent, candidate) {
@@ -222,7 +297,7 @@ export function assertAllowedEntry(relativePath) {
   safeRelativePath(relativePath, "package entry");
   if (FORBIDDEN_ENTRY.test(relativePath)) throw new Error(`forbidden raw/assets/source/prototype/history/private payload: ${relativePath}`);
   if ([README_FILENAME, IN_ARCHIVE_MANIFEST].includes(relativePath)) return true;
-  if (!new Set(["cross-route", "per-route", "homepage-regression", "reports"]).has(relativePath.split("/")[0])) throw new Error(`entry is outside the Phase 5B review surface: ${relativePath}`);
+  if (!new Set(["cross-route", "per-route", "homepage-regression", "homepage-r2", "reports"]).has(relativePath.split("/")[0])) throw new Error(`entry is outside the Phase 5B review surface: ${relativePath}`);
   if (!ALLOWED_EXTENSIONS.has(path.posix.extname(relativePath).toLowerCase())) throw new Error(`unsupported review payload: ${relativePath}`);
   return true;
 }
@@ -339,14 +414,25 @@ function assertPassReport(document, label) {
   if (Number.isFinite(document.summary?.failures) && document.summary.failures !== 0) throw new Error(`${label} contains failures`);
 }
 
-export function buildArtifactRoles() {
-  return {
+export function buildArtifactRoles(profileValue = DEFAULT_PROFILE, evidencePaths = expectedEvidenceArtifactPaths(profileValue)) {
+  const profile = reviewProfile(profileValue);
+  const roles = {
     crossRoute: CROSS_ROUTE_ARTIFACTS.map((name) => `cross-route/${name}`),
     perRoute: Object.fromEntries(ROUTES.map(({ id, mode }) => [id, { deployed: [...ROUTE_COMMON_ARTIFACTS, ...(mode === "A" ? [] : [ROUTE_RECORDING])].map((name) => `per-route/${id}/${name}`), acceptedStoryboard: `per-route/${id}/desktop-storyboard--1440x900.png`, routeBriefDelta: `per-route/${id}/route-brief-delta.md` }])),
     homepageRegression: HOMEPAGE_ARTIFACTS.map((name) => `homepage-regression/${name}`),
     reports: [...Object.values(REPORT_PATHS), ...REPOSITORY_DOC_ARCHIVES],
     readme: README_FILENAME,
   };
+  if (profile.id === R2_PROFILE) {
+    const archivePaths = evidencePaths.map(evidenceToArchivePath);
+    roles.homepageR2 = {
+      responsive: archivePaths.filter((relativePath) => relativePath.startsWith("homepage-r2/responsive/")),
+      comparisons: archivePaths.filter((relativePath) => relativePath.startsWith("homepage-r2/comparisons/")),
+      recordings: archivePaths.filter((relativePath) => relativePath.startsWith("homepage-r2/recordings/")),
+      reports: archivePaths.filter((relativePath) => relativePath.startsWith("homepage-r2/reports/")),
+    };
+  }
+  return roles;
 }
 function flattenRoles(value, output = []) {
   if (typeof value === "string") output.push(value);
@@ -403,24 +489,83 @@ function validateExpected(input) {
   expected.expectedUpstream ??= expected.expectedHead;
   if (!HASH40.test(expected.expectedHead ?? "") || expected.expectedUpstream !== expected.expectedHead) throw new Error("expected HEAD/upstream differ");
   if (expected.expectedBranch !== profile.requiredBranch || expected.expectedMain !== FROZEN_MAIN_SHA || expected.acceptedPhase5AR !== ACCEPTED_PHASE5AR_SHA) throw new Error("Git authority constants differ");
-  if (profile.id === R1_PROFILE && expected.expectedHead === R1_PARENT_SHA) throw new Error("R1 expected HEAD must be the new repair commit, not its exact CP9 parent");
+  if (profile.exactParent && expected.expectedHead === profile.exactParent) throw new Error(`${profile.id.toUpperCase()} expected HEAD must be the new repair commit, not its exact parent`);
   if (!UUID.test(expected.expectedDeploymentId ?? "") || expected.deploymentProject !== REQUIRED_PROJECT) throw new Error("deployment identity differs");
   expected.immutableUrl = normalizePreview(expected.immutableUrl, "immutable URL"); expected.branchUrl = normalizePreview(expected.branchUrl, "branch URL");
   if (expected.immutableUrl === expected.branchUrl) throw new Error("deployment URLs must differ");
   if (profile.requiredBranchUrl && expected.branchUrl !== profile.requiredBranchUrl) throw new Error("branch URL differs from its exact authority");
-  if (!profile.requiredBranchUrl && expected.branchUrl === REQUIRED_BRANCH_URL) throw new Error("the accepted Phase 5B CP9 branch URL cannot authorize the R1 repair package");
+  if (!profile.requiredBranchUrl && expected.branchUrl === REQUIRED_BRANCH_URL) throw new Error(`the accepted Phase 5B CP9 branch URL cannot authorize the ${profile.id.toUpperCase()} repair package`);
   if (new URL(expected.immutableUrl).hostname !== `${expected.expectedDeploymentId.split("-")[0].toLowerCase()}.${REQUIRED_PROJECT}.pages.dev`) throw new Error("immutable URL does not match deployment UUID prefix");
   return expected;
 }
 
 function validateProfileBinding(document, profile, label) {
-  if (profile.id !== R1_PROFILE) return true;
-  if (document.profile !== R1_PROFILE) throw new Error(`${label} omits the R1 profile binding`);
-  assert.deepEqual(document.repair, { exactParent: R1_PARENT_SHA, commitSubject: R1_COMMIT_SUBJECT, productionDelta: [...R1_PRODUCTION_DELTA] }, `${label} R1 repair binding differs`);
+  if (profile.id === DEFAULT_PROFILE) return true;
+  if (document.profile !== profile.id) throw new Error(`${label} omits the ${profile.id.toUpperCase()} profile binding`);
+  if (profile.id === R1_PROFILE) {
+    assert.deepEqual(document.repair, { exactParent: R1_PARENT_SHA, commitSubject: R1_COMMIT_SUBJECT, productionDelta: [...R1_PRODUCTION_DELTA] }, `${label} R1 repair binding differs`);
+  } else {
+    if (document.repair?.exactParent !== R2_PARENT_SHA || document.repair?.commitSubject !== R2_COMMIT_SUBJECT) throw new Error(`${label} R2 parent/subject binding differs`);
+    assert.deepEqual(document.repair?.productionAllowlist, [...R2_ALLOWED_PRODUCTION_PATHS], `${label} R2 production allowlist differs`);
+    validateR2ProductionDelta(document.repair?.productionDelta, `${label} R2 production delta`);
+  }
   return true;
 }
 
-async function validateMediaEntries(entries, ledger, ffprobe) {
+export function validateR2ProductionDelta(value, label = "R2 production delta") {
+  if (!Array.isArray(value) || !value.length) throw new Error(`${label} must be non-empty`);
+  const records = value.map((record) => {
+    if (!record || !/^[AMD]$/.test(record.status ?? "")) throw new Error(`${label} contains an invalid status`);
+    safeRelativePath(record.path, `${label} path`);
+    if (!R2_ALLOWED_PRODUCTION_PATHS.includes(record.path)) throw new Error(`${label} exceeds the exact allowlist: ${record.path}`);
+    return { status: record.status, path: record.path };
+  });
+  if (new Set(records.map(({ path: relativePath }) => relativePath)).size !== records.length) throw new Error(`${label} repeats a path`);
+  return records;
+}
+
+function validateR2EvidenceReports(entries, captureLedger) {
+  const report = (filename) => {
+    const relativePath = `homepage-r2/reports/${filename}`;
+    const document = parseJsonEntry(entries, relativePath);
+    assertPassReport(document, relativePath);
+    return document;
+  };
+  const validateEvidence = (document, expectedPaths, label) => {
+    if (!Array.isArray(document.evidence)) throw new Error(`${label} omits its evidence hash bindings`);
+    exactPaths(document.evidence.map(({ relativePath }) => relativePath), expectedPaths, `${label} evidence roles`);
+    for (const record of document.evidence) {
+      safeRelativePath(record.relativePath, `${label} evidence path`);
+      const authority = captureLedger.get(record.relativePath);
+      if (!authority || record.byteSize !== authority.byteSize || record.sha256 !== authority.sha256) throw new Error(`${label} evidence hash binding differs: ${record.relativePath}`);
+    }
+  };
+  const recordings = R2_RECORDING_FILENAMES.map((name) => `homepage-r2/recordings/${name}`);
+  const responsive = R2_RESPONSIVE_FILENAMES.map((name) => `homepage-r2/responsive/${name}`);
+  const comparisons = R2_COMPARISON_FILENAMES.map((name) => `homepage-r2/comparisons/${name}`);
+  const routeReports = ROUTE_ORDER.flatMap((id) => ["accessibility", "performance", "publication", "network-media"].map((name) => `routes/${id}/${name}.json`));
+  const legacyHome = HOMEPAGE_ARTIFACTS.map((name) => `homepage/${name}`);
+  const runtime = report("home-navigation-manifesto-runtime.json");
+  validateEvidence(runtime, recordings.slice(0, 2), "R2 runtime report");
+  if (runtime.zeroScrollWriteInstrumentation !== true || runtime.restWorkBounded !== true) throw new Error("R2 runtime report omits zero-scroll-write/rest-work assertions");
+  const frames = report("home-navigation-frame-audit.json");
+  validateEvidence(frames, recordings, "R2 frame report");
+  if (frames.checks?.desktopMobileSupportingHomeInspected !== true || frames.checks?.noF1 !== true) throw new Error("R2 frame report does not prove the required no-F1 inspections");
+  const responsiveReport = report("manifesto-responsive-accessibility.json");
+  validateEvidence(responsiveReport, [...responsive, ...comparisons], "R2 responsive/accessibility report");
+  if (responsiveReport.checks?.thirteenViewports !== true || responsiveReport.checks?.extraVariants !== true || responsiveReport.checks?.comparisons !== true) throw new Error("R2 responsive/accessibility report coverage differs");
+  const supporting = report("supporting-route-source-regression.json");
+  validateEvidence(supporting, routeReports, "R2 supporting-route regression report");
+  if (supporting.checks?.allNineRoutesPass !== true || supporting.checks?.exactR2DeploymentProfile !== true) throw new Error("R2 supporting-route regression report differs");
+  const phase4 = report("phase4-media-hashes.json");
+  if (!Array.isArray(phase4.assets) || !phase4.assets.length || phase4.checks?.nonEmpty !== true || phase4.checks?.allHashBound !== true) throw new Error("R2 Phase 4 media report omits its asset hash bindings");
+  const homepage = report("homepage-regression.json");
+  validateEvidence(homepage, [...legacyHome, ...recordings.slice(2), ...comparisons], "R2 homepage regression report");
+  if (homepage.checks?.compactHomeRegressionPass !== true || homepage.checks?.threeHomeNavigationRecordingsPass !== true) throw new Error("R2 homepage regression report differs");
+  return { runtime, frames, responsive: responsiveReport, supporting, phase4, homepage };
+}
+
+async function validateMediaEntries(entries, ledger, ffprobe, expectedImages, expectedVideos) {
   let images = 0; let videos = 0; const temporary = await mkdtemp(path.join(os.tmpdir(), "phase5b-audit-media-"));
   try {
     for (const [relativePath, record] of ledger) {
@@ -435,7 +580,7 @@ async function validateMediaEntries(entries, ledger, ffprobe) {
       }
     }
   } finally { await rm(temporary, { recursive: true, force: true }); }
-  if (images !== 90 || videos !== 8) throw new Error(`media inventory differs: ${images} images / ${videos} videos`);
+  if (images !== expectedImages || videos !== expectedVideos) throw new Error(`media inventory differs: ${images} images / ${videos} videos`);
   return { images, videos };
 }
 
@@ -451,40 +596,76 @@ async function validateLocalGit(expected) {
   ]);
   const [head, upstream, branch, localMain, originMain, statusText] = values.map(({ stdout }) => stdout.trim());
   if (head !== expected.expectedHead || upstream !== expected.expectedUpstream || branch !== profile.requiredBranch || localMain !== FROZEN_MAIN_SHA || originMain !== FROZEN_MAIN_SHA || statusText) throw new Error("independent live Git authority differs");
-  if (profile.id !== R1_PROFILE) return { head, upstream, branch, localMain, originMain, cleanTree: true };
+  if (profile.id === DEFAULT_PROFILE) return { head, upstream, branch, localMain, originMain, cleanTree: true };
   const [{ stdout: parentText }, { stdout: subjectText }, { stdout: deltaText }] = await Promise.all([
-    run("git", ["rev-parse", "HEAD^"], "independent R1 Git parent"),
-    run("git", ["show", "-s", "--format=%s", "HEAD"], "independent R1 Git subject"),
-    run("git", ["diff", "--name-status", "--no-renames", `${R1_PARENT_SHA}..HEAD`, "--", "src", "public", "astro.config.mjs"], "independent R1 production delta"),
+    run("git", ["rev-parse", "HEAD^"], `independent ${profile.id.toUpperCase()} Git parent`),
+    run("git", ["show", "-s", "--format=%s", "HEAD"], `independent ${profile.id.toUpperCase()} Git subject`),
+    run("git", ["diff", "--name-status", "--no-renames", `${profile.exactParent}..HEAD`, "--", "src", "public", "astro.config.mjs"], `independent ${profile.id.toUpperCase()} production delta`),
   ]);
   const parent = parentText.trim();
   const commitSubject = subjectText.trim();
   const productionDelta = deltaText.trim().split(/\r?\n/).filter(Boolean);
-  if (parent !== R1_PARENT_SHA || commitSubject !== R1_COMMIT_SUBJECT || JSON.stringify(productionDelta) !== JSON.stringify(R1_PRODUCTION_DELTA)) throw new Error("independent live R1 parent/subject/production delta differs");
-  return { head, upstream, branch, localMain, originMain, cleanTree: true, profile: R1_PROFILE, repair: { exactParent: parent, commitSubject, productionDelta } };
+  if (profile.id === R1_PROFILE) {
+    if (parent !== R1_PARENT_SHA || commitSubject !== R1_COMMIT_SUBJECT || JSON.stringify(productionDelta) !== JSON.stringify(R1_PRODUCTION_DELTA)) throw new Error("independent live R1 parent/subject/production delta differs");
+    return { head, upstream, branch, localMain, originMain, cleanTree: true, profile: R1_PROFILE, repair: { exactParent: parent, commitSubject, productionDelta } };
+  }
+  const records = validateR2ProductionDelta(productionDelta.map((line) => {
+    const fields = line.split("\t");
+    return { status: fields[0], path: fields[1] };
+  }), "independent live R2 production delta");
+  if (parent !== R2_PARENT_SHA || commitSubject !== R2_COMMIT_SUBJECT) throw new Error("independent live R2 parent/subject differs");
+  return { head, upstream, branch, localMain, originMain, cleanTree: true, profile: R2_PROFILE, repair: { exactParent: parent, commitSubject, productionDelta: records, productionAllowlist: [...R2_ALLOWED_PRODUCTION_PATHS] } };
 }
 
 export async function auditBuffers({ archiveBytes, detachedBytes, expected: inputExpected, ffprobe = null, validateMedia = false, validateGit = false } = {}) {
   const expected = validateExpected(inputExpected);
   const profile = reviewProfile(expected.profile);
   const parsed = parseStoredZip(archiveBytes); const { entries } = parsed;
-  exactPaths(entries.keys(), [...expectedPackagePayloadPaths(), README_FILENAME, IN_ARCHIVE_MANIFEST], "archive topology");
   for (const [relativePath, bytes] of entries) { assertAllowedEntry(relativePath); assertNoPrivateText(bytes, relativePath); }
+  for (const required of [IN_ARCHIVE_MANIFEST, README_FILENAME, REPORT_PATHS.deployedCapture]) if (!entries.has(required)) throw new Error(`archive omits required entry: ${required}`);
   const manifest = parseJsonEntry(entries, IN_ARCHIVE_MANIFEST);
   let detached; try { detached = JSON.parse(Buffer.from(detachedBytes).toString("utf8")); } catch { throw new Error("detached manifest is invalid JSON"); }
   assertNoPrivateText(detachedBytes, profile.detachedManifestFilename);
   if (manifest.schema !== profile.packageSchema || detached.schema !== profile.detachedSchema || detached.status !== "PASS") throw new Error("package/detached schema or status differs");
   validateProfileBinding(manifest, profile, "in-archive manifest"); validateProfileBinding(detached, profile, "detached manifest");
+  const capture = parseJsonEntry(entries, REPORT_PATHS.deployedCapture); assertPassReport(capture, "deployed capture report");
+  if (profile.id === R2_PROFILE && (capture.schema !== R2_CAPTURE_SCHEMA || capture.profile !== R2_PROFILE)) throw new Error("deployed capture report omits the exact R2 schema/profile binding");
+  const captureLedger = extractLedger(capture, "deployed capture report");
+  const evidencePaths = validateEvidenceArtifactPaths(captureLedger.keys(), profile.id);
+  const expectedPayloadPaths = expectedPackagePayloadPaths(profile.id, evidencePaths);
+  exactPaths(entries.keys(), [...expectedPayloadPaths, README_FILENAME, IN_ARCHIVE_MANIFEST], "archive topology");
   validateReviewPolicy(manifest); validateReviewPolicy(detached);
   if (archiveBytes.length > MAX_ARCHIVE_BYTES || detached.archive?.filename !== profile.archiveFilename || detached.archive?.byteSize !== archiveBytes.length || detached.archive?.sha256 !== sha256(archiveBytes) || detached.archive?.entries !== entries.size || detached.archive?.canonicalUniqueStoredZip !== true) throw new Error("detached archive binding differs");
   const manifestBytes = entries.get(IN_ARCHIVE_MANIFEST);
   if (detached.inArchiveManifest?.path !== IN_ARCHIVE_MANIFEST || detached.inArchiveManifest?.byteSize !== manifestBytes.length || detached.inArchiveManifest?.sha256 !== sha256(manifestBytes) || detached.inArchiveManifest?.schema !== profile.packageSchema) throw new Error("detached in-archive manifest binding differs");
   if (manifest.git?.head !== expected.expectedHead || manifest.git?.upstream !== expected.expectedUpstream || manifest.git?.branch !== profile.requiredBranch || manifest.git?.main !== FROZEN_MAIN_SHA || manifest.git?.acceptedPhase5AR !== ACCEPTED_PHASE5AR_SHA || manifest.git?.cleanTree !== true) throw new Error("manifest Git binding differs");
   for (const [name, value] of [["deployment ID", expected.expectedDeploymentId], ["project", REQUIRED_PROJECT], ["immutable URL", expected.immutableUrl], ["branch URL", expected.branchUrl]]) if (!containsScalar(manifest.deployment, value)) throw new Error(`manifest omits ${name}`);
-  const exactInventory = { evidenceSourceFiles: 127, evidenceLedgerArtifacts: 126, crossRouteFiles: 5, routeFolders: 9, deployedRouteFiles: 115, acceptedStoryboardFiles: 18, homepageRegressionFiles: 6, reportFiles: 13, images: 90, videos: 8, hashedNonSelfFiles: 158, archiveEntries: 159, maximumArchiveBytes: MAX_ARCHIVE_BYTES };
+  const packageLedgerPaths = [...expectedPayloadPaths, README_FILENAME];
+  const exactInventory = {
+    evidenceSourceFiles: evidencePaths.length + 1,
+    evidenceLedgerArtifacts: evidencePaths.length,
+    crossRouteFiles: evidencePaths.filter((relativePath) => relativePath.startsWith("cross-route/")).length,
+    routeFolders: new Set(evidencePaths.filter((relativePath) => relativePath.startsWith("routes/")).map((relativePath) => relativePath.split("/")[1])).size,
+    deployedRouteFiles: evidencePaths.filter((relativePath) => relativePath.startsWith("routes/")).length,
+    acceptedStoryboardFiles: expectedPayloadPaths.filter((relativePath) => /\/desktop-storyboard--1440x900\.png$|\/route-brief-delta\.md$/.test(relativePath)).length,
+    homepageRegressionFiles: evidencePaths.filter((relativePath) => relativePath.startsWith("homepage/")).length,
+    reportFiles: expectedPayloadPaths.filter((relativePath) => relativePath.startsWith("reports/")).length,
+    images: packageLedgerPaths.filter((relativePath) => IMAGE_EXTENSIONS.has(path.posix.extname(relativePath).toLowerCase())).length,
+    videos: packageLedgerPaths.filter((relativePath) => VIDEO_EXTENSIONS.has(path.posix.extname(relativePath).toLowerCase())).length,
+    hashedNonSelfFiles: packageLedgerPaths.length,
+    archiveEntries: packageLedgerPaths.length + 1,
+    maximumArchiveBytes: MAX_ARCHIVE_BYTES,
+  };
+  if (profile.id === R2_PROFILE) Object.assign(exactInventory, {
+    homepageR2Files: evidencePaths.filter((relativePath) => relativePath.startsWith("homepage-r2/")).length,
+    homepageR2ResponsiveFiles: evidencePaths.filter((relativePath) => relativePath.startsWith("homepage-r2/responsive/")).length,
+    homepageR2ComparisonFiles: evidencePaths.filter((relativePath) => relativePath.startsWith("homepage-r2/comparisons/")).length,
+    homepageR2RecordingFiles: evidencePaths.filter((relativePath) => relativePath.startsWith("homepage-r2/recordings/")).length,
+    homepageR2ReportFiles: evidencePaths.filter((relativePath) => relativePath.startsWith("homepage-r2/reports/")).length,
+  });
   for (const [key, value] of Object.entries(exactInventory)) if (manifest.inventory?.[key] !== value) throw new Error(`manifest inventory differs: ${key}`);
   const ledger = extractLedger(manifest, "in-archive manifest");
-  exactPaths(ledger.keys(), [...expectedPackagePayloadPaths(), README_FILENAME], "manifest ledger");
+  exactPaths(ledger.keys(), packageLedgerPaths, "manifest ledger");
   let ledgerBytes = 0; let imageCount = 0; let videoCount = 0;
   for (const [relativePath, record] of ledger) {
     const bytes = entries.get(relativePath); if (!bytes || record.byteSize !== bytes.length || record.sha256 !== sha256(bytes)) throw new Error(`manifest hash/size differs: ${relativePath}`);
@@ -494,8 +675,9 @@ export async function auditBuffers({ archiveBytes, detachedBytes, expected: inpu
     else if (record.kind !== "document" || record.media) throw new Error(`document ledger role differs: ${relativePath}`);
     if (typeof record.role !== "string" || !record.role) throw new Error(`artifact role omitted: ${relativePath}`);
   }
-  if (ledgerBytes !== manifest.inventory.hashedNonSelfBytes || imageCount !== 90 || videoCount !== 8) throw new Error("manifest byte/media totals differ");
+  if (ledgerBytes !== manifest.inventory.hashedNonSelfBytes || imageCount !== exactInventory.images || videoCount !== exactInventory.videos) throw new Error("manifest byte/media totals differ");
   validateArtifactRoles(manifest.artifactRoles, [...ledger.keys()]);
+  assert.deepEqual(manifest.artifactRoles, buildArtifactRoles(profile.id, evidencePaths), "manifest artifact role assignments differ");
   const expectedAuthorityHashes = {
     deployedCaptureReportSha256: sha256(entries.get(REPORT_PATHS.deployedCapture)),
     acceptedStoryboardManifestSha256: sha256(entries.get(REPORT_PATHS.acceptedStoryboard)),
@@ -507,14 +689,17 @@ export async function auditBuffers({ archiveBytes, detachedBytes, expected: inpu
   for (const [key, value] of Object.entries(expectedAuthorityHashes)) if (manifest.authorities?.[key] !== value) throw new Error(`manifest authority binding differs: ${key}`);
   if (manifest.deployment?.verificationReportSha256 !== sha256(entries.get(REPORT_PATHS.deployment))) throw new Error("manifest deployment-report binding differs");
 
-  const capture = parseJsonEntry(entries, REPORT_PATHS.deployedCapture); assertPassReport(capture, "deployed capture report");
   assert.deepEqual(capture.humanReview?.gates, HUMAN_REVIEW_GATES, "deployed capture human gates differ");
   if (capture.humanReview?.phase6Authorized !== false) throw new Error("deployed capture report attempts to authorize Phase 6");
   for (const value of [expected.expectedHead, expected.immutableUrl]) if (!containsScalar(capture, value)) throw new Error(`deployed capture report omits ${value}`);
-  const captureLedger = extractLedger(capture, "deployed capture report"); exactPaths(captureLedger.keys(), expectedEvidenceArtifactPaths(), "deployed capture ledger");
   for (const [sourcePath, record] of captureLedger) {
     const bytes = entries.get(evidenceToArchivePath(sourcePath));
     if (!bytes || record.byteSize !== bytes.length || record.sha256 !== sha256(bytes)) throw new Error(`deployed capture binding differs: ${sourcePath}`);
+  }
+  const r2Reports = profile.id === R2_PROFILE ? validateR2EvidenceReports(entries, captureLedger) : null;
+  if (profile.id === R2_PROFILE) {
+    assert.deepEqual(r2Reports.responsive.comparisonAuthorities, capture.homepageR2?.comparisonAuthorities, "R2 comparison authority bindings differ between capture and report");
+    for (const authority of Object.values(r2Reports.responsive.comparisonAuthorities ?? {})) if (!HASH64.test(authority?.sha256 ?? "")) throw new Error("R2 comparison authority omits its exact SHA-256");
   }
   const accepted = parseJsonEntry(entries, REPORT_PATHS.acceptedStoryboard);
   if (accepted.schema !== "qh.phase5ar.route-preproduction-manifest.v1" || accepted.status !== "PASS" || accepted.phase5BAuthorized !== false || accepted.acceptedPhase5A !== "799ee284355f161e06404919d5022cd051165bf5") throw new Error("accepted storyboard authority differs");
@@ -533,9 +718,17 @@ export async function auditBuffers({ archiveBytes, detachedBytes, expected: inpu
   assert.deepEqual(deployment.humanReview?.gates, HUMAN_REVIEW_GATES, "deployment human gates differ");
   if (deployment.humanReview?.allSixPending !== true || deployment.authorization?.phase6Authorized !== false) throw new Error("deployment review authorization differs");
   for (const value of [expected.expectedHead, expected.expectedDeploymentId, REQUIRED_PROJECT, expected.immutableUrl, expected.branchUrl]) if (!containsScalar(deployment, value)) throw new Error(`deployment authority omits ${value}`);
+  if (profile.id === R2_PROFILE) {
+    if (deployment.profile !== R2_PROFILE || deployment.repository?.profile !== R2_PROFILE || deployment.repository?.finalCommitParent !== R2_PARENT_SHA) throw new Error("deployment report omits the exact R2 parent/profile authority");
+    assert.deepEqual(deployment.repository?.productionAllowlist, [...R2_ALLOWED_PRODUCTION_PATHS], "deployment R2 production allowlist differs");
+    const deploymentDelta = validateR2ProductionDelta(deployment.repository?.productionDelta, "deployment R2 production delta");
+    assert.deepEqual(deploymentDelta, manifest.repair.productionDelta, "deployment/package R2 production delta differs");
+    assert.deepEqual(validateR2ProductionDelta(r2Reports.supporting.productionDelta, "R2 supporting-route report production delta"), manifest.repair.productionDelta, "R2 supporting-route/package production delta differs");
+  }
   const gitReport = parseJsonEntry(entries, REPORT_PATHS.git);
   if (gitReport.schema !== `${profile.packageSchema}.git-provenance` || gitReport.status !== "PASS" || gitReport.head !== expected.expectedHead || gitReport.upstream !== expected.expectedUpstream || gitReport.branch !== profile.requiredBranch || gitReport.localMain !== FROZEN_MAIN_SHA || gitReport.originMain !== FROZEN_MAIN_SHA || gitReport.acceptedPhase5AR !== ACCEPTED_PHASE5AR_SHA || gitReport.cleanTree !== true || !Array.isArray(gitReport.commits) || gitReport.commits.length !== profile.checkpointSubjects.length || gitReport.commits.at(-1)?.sha !== expected.expectedHead) throw new Error("archived Git report differs");
   validateProfileBinding(gitReport, profile, "archived Git report");
+  if (profile.id === R2_PROFILE) assert.deepEqual(gitReport.repair, manifest.repair, "archived Git/package R2 repair authority differs");
   for (let index = 0; index < gitReport.commits.length; index += 1) {
     const record = gitReport.commits[index]; const expectedSha = index < profile.fixedCheckpointShas.length ? profile.fixedCheckpointShas[index] : expected.expectedHead; const expectedParent = index === 0 ? ACCEPTED_PHASE5AR_SHA : gitReport.commits[index - 1].sha;
     if (record.sha !== expectedSha || record.subject !== profile.checkpointSubjects[index] || record.parents?.length !== 1 || record.parents[0] !== expectedParent) throw new Error(`archived Git CP${index + 1} differs`);
@@ -556,30 +749,49 @@ export async function auditBuffers({ archiveBytes, detachedBytes, expected: inpu
     if (deployed.byteSize !== record.byteSize || deployed.sha256 !== record.sha256) throw new Error(`deployment/build dist bytes differ: ${record.relativePath}`);
   }
   if (deployment.dist?.totals?.files !== build.fileCount || deployment.dist?.totals?.bytes !== build.totalBytes) throw new Error("deployment/build dist totals differ");
+  if (profile.id === R2_PROFILE) {
+    const phase4Deployed = [...deployedDist.entries()].filter(([relativePath]) => relativePath.startsWith("media/cinematic/phase-4r2/")).map(([relativePath, record]) => ({ relativePath, ...record }));
+    exactPaths(r2Reports.phase4.assets.map(({ relativePath }) => relativePath), phase4Deployed.map(({ relativePath }) => relativePath), "R2 Phase 4 media paths");
+    for (const asset of r2Reports.phase4.assets) {
+      const deployed = deployedDist.get(asset.relativePath);
+      if (!deployed || asset.byteSize !== deployed.byteSize || asset.sha256 !== deployed.sha256) throw new Error(`R2 Phase 4 media hash differs: ${asset.relativePath}`);
+    }
+    if (r2Reports.phase4.deploymentAuthority?.sha256 !== sha256(entries.get(REPORT_PATHS.deployment))) throw new Error("R2 Phase 4 report deployment authority binding differs");
+  }
   const readme = entries.get(README_FILENAME).toString("utf8");
   if (!/All six Phase 5B gates remain \*\*PENDING HUMAN REVIEW\*\*/.test(readme) || !/Phase 6 remains \*\*UNAUTHORIZED\*\*/.test(readme) || !/no raw frames, source assets, prototype internals, Blender files/i.test(readme)) throw new Error("README review/boundary policy differs");
   if (profile.id === R1_PROFILE && (!/^# Quantum-Hub Phase 5B-R1 About Dark V2 fidelity — human review/m.test(readme) || !/^## R1 review focus/m.test(readme) || !/src\/styles\/routes\/about\.css/.test(readme))) throw new Error("README R1 focus differs");
-  const media = validateMedia ? await validateMediaEntries(entries, ledger, ffprobe) : { images: imageCount, videos: videoCount };
+  if (profile.id === R2_PROFILE && (!/^# Quantum-Hub Phase 5B-R2 Home navigation and manifesto — human review/m.test(readme) || !/^## R2 review focus/m.test(readme) || !/seven-path Home\/shared-header allowlist/.test(readme) || !/homepage-r2\/recordings\//.test(readme))) throw new Error("README R2 focus differs");
+  const media = validateMedia ? await validateMediaEntries(entries, ledger, ffprobe, exactInventory.images, exactInventory.videos) : { images: imageCount, videos: videoCount };
   const repository = validateGit ? await validateLocalGit(expected) : null;
-  return { manifest, detached, entries, ledger, media, repository, canonical: parsed.canonical, crcValidated: parsed.crcValidated, privacyAndSecrets: "PASS", reviewPolicy: "PASS" };
+  return { manifest, detached, entries, ledger, media, repository, evidencePaths, canonical: parsed.canonical, crcValidated: parsed.crcValidated, privacyAndSecrets: "PASS", reviewPolicy: "PASS" };
 }
 
 export function selfTest(profileValue = DEFAULT_PROFILE) {
   const profile = reviewProfile(profileValue);
-  assert.equal(expectedEvidenceArtifactPaths().length, 126); assert.equal(expectedPackagePayloadPaths().length, 157);
-  assert.equal(expectedPackagePayloadPaths().filter((item) => IMAGE_EXTENSIONS.has(path.posix.extname(item))).length, 90);
-  assert.equal(expectedPackagePayloadPaths().filter((item) => VIDEO_EXTENSIONS.has(path.posix.extname(item))).length, 8);
+  const evidencePaths = expectedEvidenceArtifactPaths(profile.id);
+  const payloadPaths = expectedPackagePayloadPaths(profile.id, evidencePaths);
+  const images = payloadPaths.filter((item) => IMAGE_EXTENSIONS.has(path.posix.extname(item))).length;
+  const videos = payloadPaths.filter((item) => VIDEO_EXTENSIONS.has(path.posix.extname(item))).length;
+  assert.equal(expectedEvidenceArtifactPaths(DEFAULT_PROFILE).length, 126); assert.equal(expectedPackagePayloadPaths(DEFAULT_PROFILE).length, 157);
   assert.equal(Object.keys(HUMAN_REVIEW_GATES).length, 6); assert.ok(Object.values(AUTHORIZATION).every((value) => value === false));
-  assert.equal(profile.checkpointSubjects.length, profile.id === R1_PROFILE ? 10 : 9);
+  assert.equal(profile.checkpointSubjects.length, CHECKPOINT_SUBJECTS.length + (profile.id === R2_PROFILE ? 2 : profile.id === R1_PROFILE ? 1 : 0));
   assert.equal(profile.fixedCheckpointShas.length, profile.checkpointSubjects.length - 1);
   if (profile.id === R1_PROFILE) {
     assert.equal(profile.exactParent, R1_PARENT_SHA);
     assert.equal(profile.checkpointSubjects.at(-1), R1_COMMIT_SUBJECT);
     assert.equal(profile.fixedCheckpointShas.at(-1), R1_PARENT_SHA);
   }
+  if (profile.id === R2_PROFILE) {
+    assert.equal(profile.exactParent, R2_PARENT_SHA);
+    assert.equal(profile.checkpointSubjects.at(-1), R2_COMMIT_SUBJECT);
+    assert.equal(profile.fixedCheckpointShas.at(-1), R2_PARENT_SHA);
+    assert.deepEqual(validateEvidenceArtifactPaths(evidencePaths, profile.id), evidencePaths);
+  }
+  validateArtifactRoles(buildArtifactRoles(profile.id, evidencePaths), [...payloadPaths, README_FILENAME]);
   const entries = new Map([[IN_ARCHIVE_MANIFEST, Buffer.from("{}\n")], [README_FILENAME, Buffer.from("review\n")]]); const zip = rebuildStoredZip(entries); const parsed = parseStoredZip(zip);
   assert.deepEqual([...parsed.entries.keys()], [IN_ARCHIVE_MANIFEST, README_FILENAME]);
-  return { schema: `${profile.auditSchema}.self-test`, status: "PASS", ...(profile.id === R1_PROFILE ? { profile: profile.id } : {}), evidenceArtifacts: 126, packagePayloadFiles: 157, archiveEntries: 159, images: 90, videos: 8, gatesPending: 6, phase6Authorized: false, canonicalParser: true };
+  return { schema: `${profile.auditSchema}.self-test`, status: "PASS", ...(profile.id !== DEFAULT_PROFILE ? { profile: profile.id } : {}), evidenceArtifacts: evidencePaths.length, packagePayloadFiles: payloadPaths.length, archiveEntries: payloadPaths.length + 2, images, videos, gatesPending: 6, phase6Authorized: false, canonicalParser: true };
 }
 
 function valueAfter(argv, index, flag) { const value = argv[index + 1]; if (!value || value.startsWith("--")) throw new Error(`${flag} requires a value`); return value; }
@@ -628,11 +840,11 @@ async function auditArchive(input) {
   const audit = {
     schema: profile.auditSchema,
     status: "PASS",
-    ...(profile.id === R1_PROFILE ? { profile: profile.id, repair: result.manifest.repair } : {}),
+    ...(profile.id !== DEFAULT_PROFILE ? { profile: profile.id, repair: result.manifest.repair } : {}),
     generatedAt: result.manifest.generatedAt,
     archive: { filename: profile.archiveFilename, byteSize: archiveBytes.length, sha256: sha256(archiveBytes), entries: result.entries.size, canonicalUniqueStoredZip: true, crcValidated: true },
     detachedManifest: { filename: profile.detachedManifestFilename, byteSize: detachedBytes.length, sha256: sha256(detachedBytes), archiveBinding: true, inArchiveManifestBinding: true },
-    contract: { evidenceSourceFiles: 127, evidenceLedgerArtifacts: 126, crossRouteFiles: 5, routeFolders: 9, deployedRouteFiles: 115, acceptedStoryboardFiles: 18, homepageRegressionFiles: 6, reportFiles: 13, images: result.media.images, videos: result.media.videos, rawFrames: 0, rawAssets: 0, sourceFiles: 0, prototypes: 0, blenderFiles: 0, historyDumps: 0, nestedArchives: 0, privacyAndSecrets: "PASS" },
+    contract: { evidenceSourceFiles: result.manifest.inventory.evidenceSourceFiles, evidenceLedgerArtifacts: result.manifest.inventory.evidenceLedgerArtifacts, crossRouteFiles: result.manifest.inventory.crossRouteFiles, routeFolders: result.manifest.inventory.routeFolders, deployedRouteFiles: result.manifest.inventory.deployedRouteFiles, acceptedStoryboardFiles: result.manifest.inventory.acceptedStoryboardFiles, homepageRegressionFiles: result.manifest.inventory.homepageRegressionFiles, reportFiles: result.manifest.inventory.reportFiles, ...(profile.id === R2_PROFILE ? { homepageR2Files: result.manifest.inventory.homepageR2Files, homepageR2ResponsiveFiles: result.manifest.inventory.homepageR2ResponsiveFiles, homepageR2ComparisonFiles: result.manifest.inventory.homepageR2ComparisonFiles, homepageR2RecordingFiles: result.manifest.inventory.homepageR2RecordingFiles, homepageR2ReportFiles: result.manifest.inventory.homepageR2ReportFiles } : {}), images: result.media.images, videos: result.media.videos, rawFrames: 0, rawAssets: 0, sourceFiles: 0, prototypes: 0, blenderFiles: 0, historyDumps: 0, nestedArchives: 0, privacyAndSecrets: "PASS" },
     repository: result.repository,
     process: { separateProcess: true },
     humanReviewGates: HUMAN_REVIEW_GATES,
@@ -648,15 +860,15 @@ async function auditArchive(input) {
 
 function dryRunReport(profileValue = DEFAULT_PROFILE) {
   const profile = reviewProfile(profileValue);
-  return { schema: `${profile.auditSchema}.dry-run`, status: "PASS", ...(profile.id === R1_PROFILE ? { profile: profile.id, archiveFilename: profile.archiveFilename, detachedManifestFilename: profile.detachedManifestFilename, auditFilename: profile.auditFilename } : {}), writesPerformed: false, topology: selfTest(profile.id), independentImplementation: true };
+  return { schema: `${profile.auditSchema}.dry-run`, status: "PASS", ...(profile.id !== DEFAULT_PROFILE ? { profile: profile.id, archiveFilename: profile.archiveFilename, detachedManifestFilename: profile.detachedManifestFilename, auditFilename: profile.auditFilename } : {}), writesPerformed: false, topology: selfTest(profile.id), independentImplementation: true };
 }
-function printHelp() { process.stdout.write(`Independent Phase 5B review-package audit\n\nnode scripts/${path.basename(SCRIPT)} [--profile cp9|r1] --archive <exact ZIP> --manifest <exact detached manifest> --audit-output <fresh exact audit path> --expected-head <sha> --expected-upstream <sha> --expected-deployment-id <uuid> --immutable-url <url> --branch-url <url> --ffprobe <absolute> --expected-parent-process-id <pid>\n\nThe default cp9 profile preserves the original package. The r1 profile requires branch ${R1_REQUIRED_BRANCH}, exact CP9 parent ${R1_PARENT_SHA}, and output ${R1_ARCHIVE_FILENAME}. Use --self-test or --dry-run for write-free checks.\n`); }
+function printHelp() { process.stdout.write(`Independent Phase 5B review-package audit\n\nnode scripts/${path.basename(SCRIPT)} [--profile cp9|r1|r2] --archive <exact ZIP> --manifest <exact detached manifest> --audit-output <fresh exact audit path> --expected-head <sha> --expected-upstream <sha> --expected-deployment-id <uuid> --immutable-url <url> --branch-url <url> --ffprobe <absolute> --expected-parent-process-id <pid>\n\nThe default cp9 profile preserves the original package. The r1 profile requires branch ${R1_REQUIRED_BRANCH}, exact CP9 parent ${R1_PARENT_SHA}, and output ${R1_ARCHIVE_FILENAME}. The r2 profile requires branch ${R2_REQUIRED_BRANCH}, exact R1 parent ${R2_PARENT_SHA}, the strict seven-path Home/shared-header allowlist, and output ${R2_ARCHIVE_FILENAME}. Use --self-test or --dry-run for write-free checks.\n`); }
 async function main() {
   const options = parseArguments(process.argv.slice(2)); if (options.help) return printHelp();
   const profile = reviewProfile(options.profile);
   if (options.selfTest) { process.stdout.write(stableJson(selfTest(profile.id))); return; }
   if (options.dryRun) { process.stdout.write(stableJson(dryRunReport(profile.id))); return; }
-  const result = await auditArchive(options); process.stdout.write(stableJson({ schema: `${profile.auditSchema}.result`, status: result.status, ...(profile.id === R1_PROFILE ? { profile: profile.id } : {}), archive: result.archive, auditOutput: profile.auditFilename }));
+  const result = await auditArchive(options); process.stdout.write(stableJson({ schema: `${profile.auditSchema}.result`, status: result.status, ...(profile.id !== DEFAULT_PROFILE ? { profile: profile.id } : {}), archive: result.archive, auditOutput: profile.auditFilename }));
 }
 const invokedDirectly = process.argv[1] && pathToFileURL(path.resolve(process.argv[1])).href === import.meta.url;
 if (invokedDirectly) main().catch((error) => { process.stderr.write(`Phase 5B independent package audit FAIL: ${error.stack ?? error}\n`); process.exitCode = 1; });

@@ -39,10 +39,13 @@ export const REQUIRED_REPOSITORY = "AmirNatan1/Qsite1";
 export const REQUIRED_REMOTE_URL = "https://github.com/AmirNatan1/Qsite1.git";
 export const DEFAULT_PROFILE = "cp9";
 export const R1_PROFILE = "r1";
+export const R2_PROFILE = "r2";
 export const DEPLOYMENT_PROFILE_CP9 = DEFAULT_PROFILE;
 export const DEPLOYMENT_PROFILE_R1 = R1_PROFILE;
+export const DEPLOYMENT_PROFILE_R2 = R2_PROFILE;
 export const REQUIRED_BRANCH = "feature/phase-5b-supporting-route-production";
 export const R1_REQUIRED_BRANCH = "repair/phase-5b-r1-about-dark-v2-fidelity";
+export const R2_REQUIRED_BRANCH = "repair/phase-5b-r2-home-navigation-manifesto";
 export const ACCEPTED_PHASE5AR_SHA = "b6a9d4f6e05412dfd460a657edfd8be4ce7eef2c";
 export const FROZEN_MAIN_SHA = "501040c42bba30b9d9517b88a8f9857992a2dba4";
 export const REQUIRED_CLOUDFLARE_ACCOUNT_ID = "16bccc18bf7d54fd2538de7c1b5f19ed";
@@ -56,6 +59,18 @@ export const R1_PARENT_SHA = "011abd3e5fc7464d5a0133603d222110df13b820";
 export const R1_PARENT_CP9_SHA = R1_PARENT_SHA;
 export const R1_COMMIT_SUBJECT = "Repair Phase 5B About Dark V2 fidelity";
 export const R1_CHECKPOINT_SUBJECT = R1_COMMIT_SUBJECT;
+export const R2_PARENT_R1_SHA = "ca22ae2f234302e7485803c560866abd7757735e";
+export const R2_COMMIT_SUBJECT = "Repair Phase 5B home navigation and manifesto";
+export const R2_CHECKPOINT_SUBJECT = R2_COMMIT_SUBJECT;
+export const R2_ALLOWED_PRODUCTION_PATHS = Object.freeze([
+  "src/components/SiteHeader.astro",
+  "src/components/home/EntryField.astro",
+  "src/pages/index.astro",
+  "src/scripts/home-cinematic-integration.ts",
+  "src/styles/routes/home.css",
+  "src/styles/routes/home-cinematic.css",
+  "src/styles/routes/home-responsive.css",
+]);
 
 export const CHECKPOINT_SUBJECTS = Object.freeze([
   "Establish Phase 5B route production architecture",
@@ -90,6 +105,9 @@ export const R1_FIXED_CHECKPOINT_SHAS = Object.freeze([
   R1_PARENT_CP9_SHA,
 ]);
 
+export const R2_CHECKPOINT_SUBJECTS = Object.freeze([...R1_CHECKPOINT_SUBJECTS, R2_CHECKPOINT_SUBJECT]);
+export const R2_FIXED_CHECKPOINT_SHAS = Object.freeze([...R1_FIXED_CHECKPOINT_SHAS, R2_PARENT_R1_SHA]);
+
 export const DEPLOYMENT_PROFILES = Object.freeze({
   [DEPLOYMENT_PROFILE_CP9]: Object.freeze({
     id: DEPLOYMENT_PROFILE_CP9,
@@ -99,6 +117,7 @@ export const DEPLOYMENT_PROFILES = Object.freeze({
     checkpointSubjects: CHECKPOINT_SUBJECTS,
     fixedCheckpointShas: FIXED_CHECKPOINT_SHAS,
     finalCheckpoint: "CP9",
+    exactParent: null,
   }),
   [DEPLOYMENT_PROFILE_R1]: Object.freeze({
     id: DEPLOYMENT_PROFILE_R1,
@@ -108,13 +127,24 @@ export const DEPLOYMENT_PROFILES = Object.freeze({
     checkpointSubjects: R1_CHECKPOINT_SUBJECTS,
     fixedCheckpointShas: R1_FIXED_CHECKPOINT_SHAS,
     finalCheckpoint: "CP10",
+    exactParent: R1_PARENT_CP9_SHA,
+  }),
+  [DEPLOYMENT_PROFILE_R2]: Object.freeze({
+    id: DEPLOYMENT_PROFILE_R2,
+    label: "Phase 5B-R2",
+    branch: R2_REQUIRED_BRANCH,
+    requiredBranchUrl: null,
+    checkpointSubjects: R2_CHECKPOINT_SUBJECTS,
+    fixedCheckpointShas: R2_FIXED_CHECKPOINT_SHAS,
+    finalCheckpoint: "CP11",
+    exactParent: R2_PARENT_R1_SHA,
   }),
 });
 
 export function resolveDeploymentProfile(value = DEPLOYMENT_PROFILE_CP9) {
   const profile = DEPLOYMENT_PROFILES[String(value ?? DEPLOYMENT_PROFILE_CP9).toLowerCase()];
   if (!profile) {
-    throw new Error(`--profile must be exactly ${DEPLOYMENT_PROFILE_CP9} or ${DEPLOYMENT_PROFILE_R1}`);
+    throw new Error(`--profile must be exactly ${[DEPLOYMENT_PROFILE_CP9, DEPLOYMENT_PROFILE_R1, DEPLOYMENT_PROFILE_R2].join(", ")}`);
   }
   return profile;
 }
@@ -310,7 +340,7 @@ export function validateOptions(options, { requireOutput = true } = {}) {
     throw new Error(`--observed-branch-url must be exactly ${profile.requiredBranchUrl}`);
   }
   if (!profile.requiredBranchUrl && options.observedBranchUrl === REQUIRED_BRANCH_URL) {
-    throw new Error("the Phase 5B CP9 branch URL cannot authorize the Phase 5B-R1 repair branch");
+    throw new Error(`the Phase 5B CP9 branch URL cannot authorize the ${profile.label} repair branch`);
   }
   if (options.observedImmutableUrl === options.observedBranchUrl) throw new Error("immutable and branch URLs must be distinct");
   if (!Number.isInteger(options.timeoutMs) || options.timeoutMs < 5_000 || options.timeoutMs > 120_000) {
@@ -322,7 +352,7 @@ export function validateOptions(options, { requireOutput = true } = {}) {
 }
 
 export function printHelp() {
-  process.stdout.write(`Phase 5B deployment verifier\n\nUsage:\n  node ${SCRIPT_RELATIVE} \\\n+    [--profile ${DEPLOYMENT_PROFILE_CP9}|${DEPLOYMENT_PROFILE_R1}] \\\n+    --expected-head <40-hex-final-SHA> \\\n+    --expected-base ${ACCEPTED_PHASE5AR_SHA} --expected-main ${FROZEN_MAIN_SHA} \\\n+    --repository ${REQUIRED_REPOSITORY} --branch <profile-branch> \\\n+    --github-check-run-id <new-numeric-id> \\\n+    --cloudflare-account-id ${REQUIRED_CLOUDFLARE_ACCOUNT_ID} \\\n+    --cloudflare-project ${REQUIRED_CLOUDFLARE_PROJECT} --cloudflare-deployment-id <new-uuid> \\\n+    --observed-immutable-url https://<new-uuid-prefix>.qsite1.pages.dev/ \\\n+    --observed-branch-url https://<observed-branch-alias>.qsite1.pages.dev/ \\\n+    --output <durable-external-directory>/${REPORT_FILENAME}\n\nProfiles:\n  ${DEPLOYMENT_PROFILE_CP9}  Default; exact CP1-CP9 authority on ${REQUIRED_BRANCH}\n  ${DEPLOYMENT_PROFILE_R1}   Exact CP1-CP10 repair authority on ${R1_REQUIRED_BRANCH}; CP9 parent ${R1_PARENT_CP9_SHA}\n\nOptions:\n  --remote origin              Exact configured/live remote\n  --main-branch main           Frozen production branch\n  --dist DIR                   Exact local emitted dist root\n  --github-token-env NAME      Default GITHUB_TOKEN\n  --cloudflare-token-env NAME  Default CLOUDFLARE_API_TOKEN; signed-check fallback when absent\n  --timeout-ms N               Per-request timeout, 5000..120000\n  --dry-run                    Validate bindings only; no Git, build reads, network, or writes\n  --self-test                  Run pure contract tests for the selected profile\n  --help, -h                   Show help\n`);
+  process.stdout.write(`Phase 5B deployment verifier\n\nUsage:\n  node ${SCRIPT_RELATIVE} \\\n    [--profile ${DEPLOYMENT_PROFILE_CP9}|${DEPLOYMENT_PROFILE_R1}|${DEPLOYMENT_PROFILE_R2}] \\\n    --expected-head <40-hex-final-SHA> \\\n    --expected-base ${ACCEPTED_PHASE5AR_SHA} --expected-main ${FROZEN_MAIN_SHA} \\\n    --repository ${REQUIRED_REPOSITORY} --branch <profile-branch> \\\n    --github-check-run-id <new-numeric-id> \\\n    --cloudflare-account-id ${REQUIRED_CLOUDFLARE_ACCOUNT_ID} \\\n    --cloudflare-project ${REQUIRED_CLOUDFLARE_PROJECT} --cloudflare-deployment-id <new-uuid> \\\n    --observed-immutable-url https://<new-uuid-prefix>.qsite1.pages.dev/ \\\n    --observed-branch-url https://<observed-branch-alias>.qsite1.pages.dev/ \\\n    --output <durable-external-directory>/${REPORT_FILENAME}\n\nProfiles:\n  ${DEPLOYMENT_PROFILE_CP9}  Default; exact CP1-CP9 authority on ${REQUIRED_BRANCH}\n  ${DEPLOYMENT_PROFILE_R1}   Exact CP1-CP10 repair authority on ${R1_REQUIRED_BRANCH}; CP9 parent ${R1_PARENT_CP9_SHA}\n  ${DEPLOYMENT_PROFILE_R2}   Exact CP1-CP11 repair authority on ${R2_REQUIRED_BRANCH}; R1 parent ${R2_PARENT_R1_SHA}\n\nOptions:\n  --remote origin              Exact configured/live remote\n  --main-branch main           Frozen production branch\n  --dist DIR                   Exact local emitted dist root\n  --github-token-env NAME      Default GITHUB_TOKEN\n  --cloudflare-token-env NAME  Default CLOUDFLARE_API_TOKEN; signed-check fallback when absent\n  --timeout-ms N               Per-request timeout, 5000..120000\n  --dry-run                    Validate bindings only; no Git, build reads, network, or writes\n  --self-test                  Run pure contract tests for the selected profile\n  --help, -h                   Show help\n`);
 }
 
 export function assertCheckpointChain(records, expectedHead, profileId = DEPLOYMENT_PROFILE_CP9) {
@@ -355,6 +385,23 @@ export function parseLinearLog(text, expectedHead, profileId = DEPLOYMENT_PROFIL
     return { sha, parents: String(parentText ?? "").split(/\s+/).filter(Boolean), subject: subject.join("\t") };
   });
   assertCheckpointChain(records, expectedHead, profileId);
+  return records;
+}
+
+export function validateProductionDelta(text, profileId = DEPLOYMENT_PROFILE_CP9) {
+  const profile = resolveDeploymentProfile(profileId);
+  const records = String(text ?? "").split(/\r?\n/).filter(Boolean).map((line) => {
+    const [status, ...pathParts] = line.split("\t");
+    return { status, path: pathParts.join("\t").replaceAll("\\", "/") };
+  });
+  if (profile.id !== DEPLOYMENT_PROFILE_R2) return records;
+  if (!records.length) throw new Error("Phase 5B-R2 production delta must be non-empty");
+  const allowed = new Set(R2_ALLOWED_PRODUCTION_PATHS);
+  for (const record of records) {
+    if (!/^[AMD]$/.test(record.status) || !allowed.has(record.path)) {
+      throw new Error(`Phase 5B-R2 production delta exceeds the exact Home/shared-header allowlist: ${record.status}\t${record.path}`);
+    }
+  }
   return records;
 }
 
@@ -407,6 +454,7 @@ async function verifyRepository(options) {
     acceptedAncestor,
     headMergedIntoMain,
     trackedScript,
+    productionDeltaText,
   ] = await Promise.all([
     git("rev-parse", "HEAD"),
     git("branch", "--show-current"),
@@ -422,6 +470,9 @@ async function verifyRepository(options) {
     gitExit("merge-base", "--is-ancestor", ACCEPTED_PHASE5AR_SHA, options.expectedHead),
     gitExit("merge-base", "--is-ancestor", options.expectedHead, "main"),
     git("ls-files", "--error-unmatch", "--", SCRIPT_RELATIVE),
+    profile.id === DEPLOYMENT_PROFILE_R2
+      ? git("diff", "--name-status", "--no-renames", `${R2_PARENT_R1_SHA}..${options.expectedHead}`, "--", "src", "public", "astro.config.mjs")
+      : Promise.resolve(""),
   ]);
 
   assert.equal(head, options.expectedHead, `local HEAD differs from the expected ${profile.finalCheckpoint} SHA`);
@@ -438,6 +489,7 @@ async function verifyRepository(options) {
   assert.equal(mergeCommits, "", `merge commits are prohibited in the ${profile.label} checkpoint chain`);
   assert.equal(trackedScript.replaceAll("\\", "/"), SCRIPT_RELATIVE, "deployment verifier is not the exact tracked script");
   const checkpoints = parseLinearLog(logText, options.expectedHead, profile.id);
+  const productionDelta = validateProductionDelta(productionDeltaText, profile.id);
 
   const liveText = await git("ls-remote", "--exit-code", "--heads", "origin", `refs/heads/${profile.branch}`, "refs/heads/main");
   const live = parseRemoteRefs(liveText);
@@ -455,6 +507,7 @@ async function verifyRepository(options) {
     head,
     exactParent: ACCEPTED_PHASE5AR_SHA,
     finalCommitParent: profile.fixedCheckpointShas.at(-1),
+    ...(profile.id === DEPLOYMENT_PROFILE_R2 ? { productionDelta, productionAllowlist: [...R2_ALLOWED_PRODUCTION_PATHS] } : {}),
     cleanTree: true,
     checkpoints,
     main: { branch: "main", headSha: mainHead, frozenAt: FROZEN_MAIN_SHA, containsPhase5BHead: false },
@@ -986,12 +1039,20 @@ export async function selfTest(profileId = DEPLOYMENT_PROFILE_CP9) {
     () => assertCheckpointChain(checkpoints.slice(0, -1), options.expectedHead, profile.id),
     new RegExp(`exactly ${profile.checkpointSubjects.length}`),
   );
-  if (profile.id === DEPLOYMENT_PROFILE_R1) {
-    assert.equal(checkpoints.at(-1).parents[0], R1_PARENT_CP9_SHA);
-    assert.equal(checkpoints.at(-1).subject, R1_CHECKPOINT_SUBJECT);
+  if (profile.exactParent) {
+    assert.equal(checkpoints.at(-1).parents[0], profile.exactParent);
+    assert.equal(checkpoints.at(-1).subject, profile.checkpointSubjects.at(-1));
     const wrongParent = structuredClone(checkpoints);
     wrongParent.at(-1).parents = [CP8_HEAD_SHA];
     assert.throws(() => assertCheckpointChain(wrongParent, options.expectedHead, profile.id), /linear child/);
+  }
+  if (profile.id === DEPLOYMENT_PROFILE_R2) {
+    assert.deepEqual(validateProductionDelta(`M\t${R2_ALLOWED_PRODUCTION_PATHS[0]}\nM\t${R2_ALLOWED_PRODUCTION_PATHS.at(-1)}`, profile.id), [
+      { status: "M", path: R2_ALLOWED_PRODUCTION_PATHS[0] },
+      { status: "M", path: R2_ALLOWED_PRODUCTION_PATHS.at(-1) },
+    ]);
+    assert.throws(() => validateProductionDelta("", profile.id), /non-empty/);
+    assert.throws(() => validateProductionDelta("M\tsrc/styles/navigation.css", profile.id), /allowlist/);
   }
   const policies = parseHeadersFile(Object.entries(REQUIRED_HEADER_POLICIES)
     .map(([pattern, value]) => `${pattern}\n  Cache-Control: ${value}`).join("\n\n"));
@@ -1008,14 +1069,14 @@ export async function selfTest(profileId = DEPLOYMENT_PROFILE_CP9) {
   assert.equal(new Set(Object.values(HUMAN_GATES)).size, 1);
   return {
     status: "PASS",
-    tests: profile.id === DEPLOYMENT_PROFILE_CP9 ? 8 : 11,
+    tests: profile.id === DEPLOYMENT_PROFILE_CP9 ? 8 : profile.id === DEPLOYMENT_PROFILE_R1 ? 11 : 14,
     checkpointCount: checkpoints.length,
     pendingHumanGateCount: Object.keys(HUMAN_GATES).length,
     requiredHeaderPolicyCount: Object.keys(REQUIRED_HEADER_POLICIES).length,
     provisionalCp8Rejected: true,
-    ...(profile.id === DEPLOYMENT_PROFILE_R1 ? {
+    ...(profile.id !== DEPLOYMENT_PROFILE_CP9 ? {
       profile: profile.id,
-      cp9ParentFixed: true,
+      ...(profile.id === DEPLOYMENT_PROFILE_R1 ? { cp9ParentFixed: true } : { r1ParentFixed: true }),
       branchUrlBinding: "observed-and-authority-bound",
     } : {}),
   };
@@ -1073,7 +1134,9 @@ export async function verifyDeployment(options) {
     checks: {
       ...(profile.id === DEPLOYMENT_PROFILE_CP9
         ? { exactNineCommitChain: true }
-        : { exactTenCommitChain: true, fixedCp9Parent: true, r1DirectParentIsCp9: true }),
+        : profile.id === DEPLOYMENT_PROFILE_R1
+          ? { exactTenCommitChain: true, fixedCp9Parent: true, r1DirectParentIsCp9: true }
+          : { exactElevenCommitChain: true, fixedR1Parent: true, r2DirectParentIsR1: true, exactHomeSharedHeaderProductionScope: true }),
       fixedCp1ThroughCp8Shas: true,
       cp9DirectParentIsCp8: true,
       cleanTree: true,
