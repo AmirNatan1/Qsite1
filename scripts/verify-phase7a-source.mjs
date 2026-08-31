@@ -64,13 +64,14 @@ export async function verifySource(root = process.cwd()) {
   const maradinDiff = git(root, ["diff", "--name-only", PHASE7A_PARENT, "--", ...MARADIN_FROZEN_PATHS]);
   assert.equal(maradinDiff, "", "Maradin route, content, lifecycle, or media authority changed");
 
-  const [index, signal, signalController, cinematic, signalCss, header, typography, packageText, attributes] = await Promise.all([
+  const [index, signal, signalController, cinematic, signalCss, header, navigationCss, typography, packageText, attributes] = await Promise.all([
     read("src/pages/index.astro"),
     read("src/components/home/SignalThreshold.astro"),
     read("src/scripts/signal-field.ts"),
     read("src/scripts/home-cinematic-integration.ts"),
     read("src/styles/routes/phase-7a-signal-field.css"),
     read("src/components/SiteHeader.astro"),
+    read("src/styles/navigation.css"),
     read("src/styles/typography.css"),
     read("package.json"),
     read(".gitattributes"),
@@ -118,6 +119,7 @@ export async function verifySource(root = process.cwd()) {
   assert.match(header, /<nav id="field-map-navigation"/);
   assert.match(header, /event\.key === "Escape"/);
   assert.match(header, /trigger\?\.focus\(\{ preventScroll: true \}\)/);
+  assert.match(navigationCss, /html\[data-field-map-open\] \.site-header\s*\{[\s\S]*?backdrop-filter:\s*none/);
 
   assert.match(typography, /font-family:\s*"Anybody"/);
   assert.match(typography, /\.maradin-page\s*\{[\s\S]*?--font-display:\s*"Syne"/);

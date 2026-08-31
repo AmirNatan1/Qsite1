@@ -57,12 +57,16 @@ test("Signal Field keeps semantic text and links outside decorative SVG", async 
 });
 
 test("Field Map exposes exactly eight ordinary destinations and native disclosure", async () => {
-  const source = await read("src/components/SiteHeader.astro");
+  const [source, styles] = await Promise.all([
+    read("src/components/SiteHeader.astro"),
+    read("src/styles/navigation.css"),
+  ]);
   for (const destination of FIELD_MAP_DESTINATIONS) assert.ok(source.includes(destination));
   assert.equal((source.match(/coordinate:\s*"/g) ?? []).length, 8);
   assert.match(source, /<details class="field-map"/);
   assert.match(source, /<summary/);
   assert.match(source, /<nav id="field-map-navigation"/);
+  assert.match(styles, /html\[data-field-map-open\] \.site-header\s*\{[\s\S]*?backdrop-filter:\s*none/);
 });
 
 test("reduced motion and no-JS retain authored static authority", async () => {

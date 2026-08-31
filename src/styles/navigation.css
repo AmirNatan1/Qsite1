@@ -94,6 +94,15 @@
   overscroll-behavior: contain;
 }
 
+/* backdrop-filter establishes a fixed-position containing block in Chromium.
+   Release it while the Field Map is open so the plane owns the viewport rather
+   than collapsing to the sticky header's height. */
+html[data-field-map-open] .site-header {
+  border-color: transparent;
+  background: transparent;
+  backdrop-filter: none;
+}
+
 .field-map__material {
   position: fixed;
   inset: 0;
