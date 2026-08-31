@@ -39,6 +39,27 @@ function gitOptionalRef(root, ref) {
   throw new Error(result.stderr || `git rev-parse --verify --quiet ${ref}^{commit} failed`);
 }
 
+export function pagesHydrationArgs(isShallowRepository) {
+  return [
+    "fetch",
+    "--no-tags",
+    "--prune",
+    ...(isShallowRepository ? ["--unshallow"] : []),
+    "origin",
+    "+refs/heads/main:refs/remotes/origin/main",
+    `+refs/heads/${PHASE7A_BRANCH}:refs/remotes/origin/${PHASE7A_BRANCH}`,
+  ];
+}
+
+function hydratePagesGitAuthority(root, head) {
+  const isShallowRepository = git(root, ["rev-parse", "--is-shallow-repository"]) === "true";
+  git(root, pagesHydrationArgs(isShallowRepository));
+  const originMain = gitOptionalRef(root, "refs/remotes/origin/main");
+  assert.equal(originMain, FROZEN_MAIN, "hydrated origin/main moved");
+  git(root, ["merge-base", "--is-ancestor", head, `refs/remotes/origin/${PHASE7A_BRANCH}`]);
+  return originMain;
+}
+
 export function resolveGitAuthority({ localBranch, head, localMain, originMain, environment = process.env }) {
   const onCloudflarePages = environment.CF_PAGES === "1";
   const branch = localBranch || (onCloudflarePages ? environment.CF_PAGES_BRANCH ?? "" : "");
@@ -70,7 +91,11 @@ export async function verifySource(root = process.cwd(), environment = process.e
   const localBranch = git(root, ["branch", "--show-current"]);
   const head = git(root, ["rev-parse", "HEAD"]);
   const localMain = gitOptionalRef(root, "refs/heads/main");
-  const originMain = gitOptionalRef(root, "refs/remotes/origin/main");
+  let originMain = gitOptionalRef(root, "refs/remotes/origin/main");
+  if (environment.CF_PAGES === "1") {
+    resolveGitAuthority({ localBranch, head, localMain, originMain, environment });
+    originMain = hydratePagesGitAuthority(root, head);
+  }
   const authority = resolveGitAuthority({ localBranch, head, localMain, originMain, environment });
   const { branch, mainAuthorityMode } = authority;
   const firstCommit = git(root, ["rev-list", "--reverse", `${PHASE7A_PARENT}..${head}`]).split(/\r?\n/)[0];

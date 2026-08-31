@@ -14,7 +14,7 @@ import {
   REQUIRED_NODE,
   REVIEW_ZIP_NAME,
 } from "../scripts/phase7a-contract.mjs";
-import { resolveGitAuthority, verifySource } from "../scripts/verify-phase7a-source.mjs";
+import { pagesHydrationArgs, resolveGitAuthority, verifySource } from "../scripts/verify-phase7a-source.mjs";
 
 const root = process.cwd();
 const read = (relative) => readFile(path.join(root, relative), "utf8");
@@ -66,6 +66,29 @@ test("Phase 7A source authority supports Cloudflare Pages detached checkouts wit
       CF_PAGES_COMMIT_SHA: "b".repeat(40),
     },
   }), /Cloudflare Pages commit differs/);
+});
+
+test("Phase 7A Cloudflare hydration fetches only frozen main and the governed branch", () => {
+  const complete = pagesHydrationArgs(false);
+  const shallow = pagesHydrationArgs(true);
+
+  assert.deepEqual(complete, [
+    "fetch",
+    "--no-tags",
+    "--prune",
+    "origin",
+    "+refs/heads/main:refs/remotes/origin/main",
+    `+refs/heads/${PHASE7A_BRANCH}:refs/remotes/origin/${PHASE7A_BRANCH}`,
+  ]);
+  assert.deepEqual(shallow, [
+    "fetch",
+    "--no-tags",
+    "--prune",
+    "--unshallow",
+    "origin",
+    "+refs/heads/main:refs/remotes/origin/main",
+    `+refs/heads/${PHASE7A_BRANCH}:refs/remotes/origin/${PHASE7A_BRANCH}`,
+  ]);
 });
 
 test("Signal Field keeps semantic text and links outside decorative SVG", async () => {
