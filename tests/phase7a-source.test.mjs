@@ -71,6 +71,12 @@ test("reduced motion and no-JS retain authored static authority", async () => {
   assert.match(signalCss, /prefers-reduced-motion:\s*reduce[\s\S]*?opacity:\s*1\s*!important/);
 });
 
+test("governed Phase 4-R2 authority bytes survive Windows checkouts", async () => {
+  const attributes = await read(".gitattributes");
+  assert.match(attributes, /artifacts\/original\/phase-4r2-1-causal-signal-scroll-stability\/production\/\*\* -text/);
+  assert.match(attributes, /artifacts\/reports\/phase-4r2\/\*\* -text/);
+});
+
 test("Maradin remains lazily sourced with one-player replacement and teardown", async () => {
   const [component, controller] = await Promise.all([
     read("src/components/routes/maradin/MaradinExperience.astro"),

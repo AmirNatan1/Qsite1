@@ -64,7 +64,7 @@ export async function verifySource(root = process.cwd()) {
   const maradinDiff = git(root, ["diff", "--name-only", PHASE7A_PARENT, "--", ...MARADIN_FROZEN_PATHS]);
   assert.equal(maradinDiff, "", "Maradin route, content, lifecycle, or media authority changed");
 
-  const [index, signal, signalController, cinematic, signalCss, header, typography, packageText] = await Promise.all([
+  const [index, signal, signalController, cinematic, signalCss, header, typography, packageText, attributes] = await Promise.all([
     read("src/pages/index.astro"),
     read("src/components/home/SignalThreshold.astro"),
     read("src/scripts/signal-field.ts"),
@@ -73,6 +73,7 @@ export async function verifySource(root = process.cwd()) {
     read("src/components/SiteHeader.astro"),
     read("src/styles/typography.css"),
     read("package.json"),
+    read(".gitattributes"),
   ]);
 
   assert.match(index, /<SignalThreshold\s*\/>/);
@@ -117,6 +118,9 @@ export async function verifySource(root = process.cwd()) {
   assert.match(typography, /font-family:\s*"Anybody"/);
   assert.match(typography, /\.maradin-page\s*\{[\s\S]*?--font-display:\s*"Syne"/);
   assert.doesNotMatch(typography, /fonts\.googleapis|https?:\/\//);
+
+  assert.match(attributes, /artifacts\/original\/phase-4r2-1-causal-signal-scroll-stability\/production\/\*\* -text/);
+  assert.match(attributes, /artifacts\/reports\/phase-4r2\/\*\* -text/);
 
   const packageJson = JSON.parse(packageText);
   assert.deepEqual(Object.keys(packageJson.dependencies ?? {}), ["astro"], "no production runtime dependency may be added");
