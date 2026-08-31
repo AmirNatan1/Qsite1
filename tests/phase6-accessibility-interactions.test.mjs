@@ -115,9 +115,17 @@ function keyboardRow(engine, route) {
   const expectedHash = route.id === "home" ? "#entry" : "#main-content";
   const forwardFirst = route.id === "home"
     ? { ...focused("a|/for-partners/|For partners"), classes: ["audience-trajectory"], href: "/for-partners/" }
+    : route.id === "maradin"
+      ? focused("button||▶ Play field footage")
+      : route.id === "spark"
+        ? focused("summary||Who is SPARK for?")
     : focused("a|/one|One");
   const forwardSecond = route.id === "home"
     ? { ...focused("a|/for-startups/|For startups"), classes: ["audience-trajectory"], href: "/for-startups/" }
+    : route.id === "maradin"
+      ? focused("button||▶ Play test footage")
+      : route.id === "spark"
+        ? focused("summary||Is a POC guaranteed?")
     : focused("a|/two|Two");
   const record = {
     activationReady: true,
@@ -131,6 +139,7 @@ function keyboardRow(engine, route) {
     firstVisibilityReady: true,
     forwardFirst,
     forwardSecond,
+    interactionReady: true,
     route: route.id,
     routePath: route.path,
   };
@@ -302,6 +311,7 @@ test("keyboard validator covers visible skip activation and reverse focus order"
     firstVisibilityReady: true,
     forwardFirst,
     forwardSecond: focused("a|/two|Two"),
+    interactionReady: true,
     route: "about",
     routePath: "/about/",
   };
@@ -313,11 +323,40 @@ test("keyboard validator covers visible skip activation and reverse focus order"
   assert.ok(codes.includes("shift-tab-order"));
 });
 
+test("keyboard validator accepts visible native supporting-route controls without promoting arbitrary focus targets", () => {
+  for (const [routeId, firstKey, secondKey] of [
+    ["maradin", "button||▶ Play field footage", "button||▶ Play test footage"],
+    ["spark", "summary||Who is SPARK for?", "summary||Is a POC guaranteed?"],
+  ]) {
+    const route = PHASE6_ROUTES.find(({ id }) => id === routeId);
+    const record = keyboardRow("chromium", route);
+    record.forwardFirst = focused(firstKey);
+    record.forwardSecond = focused(secondKey);
+    record.backward = { ...record.forwardFirst };
+    assert.deepEqual(keyboardFailures(record), [], `${routeId} native controls were rejected`);
+  }
+
+  const route = PHASE6_ROUTES.find(({ id }) => id === "about");
+  const arbitrary = keyboardRow("chromium", route);
+  arbitrary.forwardFirst = focused("div||Focusable div");
+  arbitrary.backward = { ...arbitrary.forwardFirst };
+  assert.ok(keyboardFailures(arbitrary).some(({ code }) => code === "forward-focus-visibility"));
+
+  const maradin = keyboardRow("chromium", PHASE6_ROUTES.find(({ id }) => id === "maradin"));
+  maradin.forwardFirst = focused("summary||Wrong route control");
+  maradin.backward = { ...maradin.forwardFirst };
+  assert.ok(keyboardFailures(maradin).some(({ code }) => code === "forward-focus-visibility"));
+});
+
 test("keyboard validator rejects focus-wait timeouts and every partial viewport edge", () => {
   const route = PHASE6_ROUTES.find(({ id }) => id === "about");
   const timedOut = keyboardRow("chromium", route);
   timedOut.firstVisibilityReady = false;
   assert.ok(keyboardFailures(timedOut).some(({ code }) => code === "skip-link-visibility-wait"));
+
+  const notReady = keyboardRow("chromium", PHASE6_ROUTES.find(({ id }) => id === "home"));
+  notReady.interactionReady = false;
+  assert.ok(keyboardFailures(notReady).some(({ code }) => code === "interaction-readiness"));
 
   for (const [edge, value] of [["top", -1], ["left", -1], ["bottom", 901], ["right", 1441]]) {
     const partial = keyboardRow("chromium", route);
@@ -641,9 +680,17 @@ test("report validator re-derives complete route-bound interaction diagnostics",
   });
   assert.equal(validateReport(exact404Console), true, "exact intentional-404 console evidence should remain allowed");
 
+  const staleDocument404Console = structuredClone(exact404Console);
+  staleDocument404Console.engines[0].keyboard.find(({ route }) => route === "404").diagnostics.consoleErrors[0].documentUrl = new URL("/contact/", BASE_URL).toString();
+  assert.equal(validateReport(staleDocument404Console), true, "same-origin WebKit console timing must remain bound by the exact 404 location and request ledger");
+
   const wrong404Console = structuredClone(exact404Console);
-  wrong404Console.engines[0].keyboard.find(({ route }) => route === "404").diagnostics.consoleErrors[0].documentUrl = BASE_URL;
-  assert.throws(() => validateReport(wrong404Console), /keyboard raw row\/status differs/, "Home 404 console error was attributed to the intentional-404 document");
+  wrong404Console.engines[0].keyboard.find(({ route }) => route === "404").diagnostics.consoleErrors[0].documentUrl = "https://evil.example/";
+  assert.throws(() => validateReport(wrong404Console), /keyboard raw row\/status differs/, "cross-origin 404 console error was attributed to the intentional-404 document");
+
+  const wrong404Location = structuredClone(exact404Console);
+  wrong404Location.engines[0].keyboard.find(({ route }) => route === "404").diagnostics.consoleErrors[0].location.url = BASE_URL;
+  assert.throws(() => validateReport(wrong404Location), /keyboard raw row\/status differs/, "unrelated Home console location was attributed to the intentional-404 document");
 
   const supportingBlobAbort = structuredClone(base);
   supportingBlobAbort.engines[0].keyboard[1].diagnostics.requests.push({
@@ -754,6 +801,9 @@ test("runner uses real axe and native keyboard without broad suppression", async
   assert.match(source, /page\.keyboard\.press\("Tab"\)/);
   assert.match(source, /page\.keyboard\.press\("Shift\+Tab"\)/);
   assert.match(source, /waitForActiveElementFullyVisible/);
+  assert.match(source, /polling:\s*50,\s*timeout:\s*Math\.min\(timeoutMs,\s*5_000\)/);
+  assert.match(source, /waitForInteractionReady/);
+  assert.match(source, /window\.quantumPhase4\?\.mode === "enhanced"/);
   assert.doesNotMatch(source, /waitForTimeout\(180\)/);
   assert.match(source, /prepareHomeHeaderNavigation/);
   assert.match(source, /page\.mouse\.wheel\(0, 1_200\)/);

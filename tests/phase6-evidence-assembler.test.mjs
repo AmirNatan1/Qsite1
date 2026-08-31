@@ -194,15 +194,24 @@ function accessibilityKeyboardRow(engine, route) {
   const expectedHash = route.id === "home" ? "#entry" : "#main-content";
   const forwardFirst = route.id === "home"
     ? { ...accessibilityFocus("a|/for-partners/|For partners"), classes: ["audience-trajectory"], href: "/for-partners/" }
+    : route.id === "maradin"
+      ? accessibilityFocus("button||▶ Play field footage")
+      : route.id === "spark"
+        ? accessibilityFocus("summary||Who is SPARK for?")
     : accessibilityFocus("a|/one|One");
   const forwardSecond = route.id === "home"
     ? { ...accessibilityFocus("a|/for-startups/|For startups"), classes: ["audience-trajectory"], href: "/for-startups/" }
+    : route.id === "maradin"
+      ? accessibilityFocus("button||▶ Play test footage")
+      : route.id === "spark"
+        ? accessibilityFocus("summary||Is a POC guaranteed?")
     : accessibilityFocus("a|/two|Two");
   const row = {
     activationReady: true,
     afterActivation: { activeId: expectedHash.slice(1), hash: expectedHash, path: route.path, ...accessibilitySkipTarget(expectedHash) },
     backward: { ...forwardFirst }, desktopHome: accessibilityDesktopHome(route.path), diagnostics: accessibilityDiagnostics(route.path, route.expectedStatus, { includeHome: true }), engine, expectedHash,
     first: { ...accessibilityFocus(`a|${expectedHash}|${route.id === "home" ? "Skip cinematic intro" : "Skip to content"}`), classes: ["skip-link"], href: expectedHash }, firstVisibilityReady: true,
+    interactionReady: true,
     forwardFirst, forwardSecond, route: route.id, routePath: route.path,
   };
   row.failures = accessibilityKeyboardFailures(row);
@@ -1524,6 +1533,7 @@ test("accessibility PASS requires the exact ten-route interaction matrix, four c
   }
 
   for (const mutate of [
+    (row) => { row.interactionReady = false; },
     (row) => { row.firstVisibilityReady = false; },
     (row) => { row.activationReady = false; },
     (row) => { row.first.rect.top = -1; },

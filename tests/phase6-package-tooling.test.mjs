@@ -650,12 +650,24 @@ function accessibilityFixture(engine, { axeOnly = false, failed = false } = {}) 
   const keyboard = axeOnly ? [] : routes.map((route) => {
     const expectedHash = route.id === "home" ? "#entry" : "#main-content";
     const first = visibleFocus(expectedHash, ["skip-link"], `a|${expectedHash}|${route.id === "home" ? "Skip cinematic intro" : "Skip to content"}`);
-    const forwardFirst = route.id === "home" ? visibleFocus("/for-partners/", ["audience-trajectory"], "a|/for-partners/|Industry") : visibleFocus("/fixture-one/", ["fixture-link"], "a|/fixture-one/|One");
-    const forwardSecond = route.id === "home" ? visibleFocus("/for-startups/", ["audience-trajectory"], "a|/for-startups/|Startups") : visibleFocus("/fixture-two/", ["fixture-link"], "a|/fixture-two/|Two");
+    const forwardFirst = route.id === "home"
+      ? visibleFocus("/for-partners/", ["audience-trajectory"], "a|/for-partners/|Industry")
+      : route.id === "maradin"
+        ? visibleFocus(null, ["maradin-player__launch"], "button||▶ Play field footage")
+        : route.id === "spark"
+          ? visibleFocus(null, [], "summary||Who is SPARK for?")
+          : visibleFocus("/fixture-one/", ["fixture-link"], "a|/fixture-one/|One");
+    const forwardSecond = route.id === "home"
+      ? visibleFocus("/for-startups/", ["audience-trajectory"], "a|/for-startups/|Startups")
+      : route.id === "maradin"
+        ? visibleFocus(null, ["maradin-player__launch"], "button||▶ Play test footage")
+        : route.id === "spark"
+          ? visibleFocus(null, [], "summary||Is a POC guaranteed?")
+          : visibleFocus("/fixture-two/", ["fixture-link"], "a|/fixture-two/|Two");
     return {
       activationReady: true, afterActivation: { activeId: expectedHash.slice(1), hash: expectedHash, path: route.path, ...skipTarget(expectedHash) }, backward: { ...forwardFirst },
       desktopHome: { activationError: null, arrival: resolvedHomeState(), arrivalReady: true, back: route.id === "home" ? resolvedHomeState("") : { cinematicMode: null, entryInert: null, hash: "", manifestoReveal: null, mediaState: null, path: route.path, route: route.path }, backError: null, focus: { ...visibleFocus("/#entry", ["brand-link"], "a|/#entry|"), ariaLabel: "Quantum home", withinSiteHeader: true }, forward: resolvedHomeState(), forwardError: null, preparation: route.id === "home" ? { input: "NATIVE WHEEL", ready: true, resolved: true, state: resolvedHomeState(""), wheelSteps: 12 } : null },
-      diagnostics: diagnostics(route.path, route.expectedStatus, { includeHome: true }), engine, expectedHash, failures: [], first, firstVisibilityReady: true, forwardFirst, forwardSecond, route: route.id, routePath: route.path, status: "PASS",
+      diagnostics: diagnostics(route.path, route.expectedStatus, { includeHome: true }), engine, expectedHash, failures: [], first, firstVisibilityReady: true, forwardFirst, forwardSecond, interactionReady: true, route: route.id, routePath: route.path, status: "PASS",
     };
   });
   const closedMenu = { activeIsTrigger: true, ariaExpanded: "false", hash: "", open: false, path: "/about/" };
@@ -1453,6 +1465,7 @@ test("Phase 6-R1 canonical assembler inventory, wrappers, taxonomy and roles fai
   }
 
   for (const [name, mutate] of Object.entries({
+    interactionNotReady: (row) => { row.interactionReady = false; },
     focusVisibilityTimeout: (row) => { row.firstVisibilityReady = false; },
     activationTimeoutThenLateCorrect: (row) => { row.activationReady = false; },
     partialTop: (row) => { row.first.rect.top = -1; },

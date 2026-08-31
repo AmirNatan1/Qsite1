@@ -225,8 +225,11 @@ function interactionDiagnosticFailures(diagnostics, route, baseUrl, { allowHomeT
     let coveredHomeNavigation = !allowHomeTransitions || expectedRouteUrl.pathname === "/";
     for (const actual of diagnostics.consoleErrors) {
       const documentUrl = new URL(actual.documentUrl);
+      let locationUrl = null;
+      try { locationUrl = new URL(actual.location.url); } catch {}
       const expected404 = route.expectedStatus === 404
-        && documentUrl.origin === expectedOrigin && documentUrl.pathname === expectedRouteUrl.pathname && documentUrl.search === expectedRouteUrl.search
+        && documentUrl.origin === expectedOrigin
+        && locationUrl?.origin === expectedOrigin && locationUrl.pathname === expectedRouteUrl.pathname && locationUrl.search === expectedRouteUrl.search
         && /failed to load resource.*404|status of 404/i.test(actual.text);
       if (!expected404) failures.push({ code: "console-error", actual });
     }
@@ -290,6 +293,16 @@ async function openRoute(page, options, route) {
   const response = await page.goto(targetUrl(options.baseUrl, route.path), { waitUntil: "domcontentloaded", timeout: options.timeoutMs });
   await settle(page, options.timeoutMs);
   return response?.status() ?? null;
+}
+
+async function waitForInteractionReady(page, route, timeoutMs) {
+  if (route.id !== "home") return true;
+  return page.waitForFunction(() => (
+    document.documentElement.dataset.cinematicMode === "enhanced"
+    && window.quantumPhase4?.mode === "enhanced"
+    && document.querySelector('.skip-link[href="#entry"]') instanceof HTMLAnchorElement
+    && document.querySelector('#entry[tabindex="-1"]') instanceof HTMLElement
+  ), undefined, { polling: 50, timeout: Math.min(timeoutMs, 5_000) }).then(() => true, () => false);
 }
 
 export function normalizeAxeViolations(violations) {
@@ -427,7 +440,7 @@ async function waitForActiveElementFullyVisible(page, timeoutMs) {
     return rect.width > 0 && rect.height > 0
       && rect.top >= 0 && rect.left >= 0 && rect.bottom <= innerHeight && rect.right <= innerWidth
       && style.display !== "none" && style.visibility !== "hidden";
-  }, undefined, { timeout: Math.min(timeoutMs, 1_500) }).then(() => true, () => false);
+  }, undefined, { polling: 50, timeout: Math.min(timeoutMs, 5_000) }).then(() => true, () => false);
 }
 
 function hasConsistentRectGeometry(rect) {
@@ -503,11 +516,24 @@ function hasObservedClass(observation, className) {
     && observation.classes.includes(className);
 }
 
+const FORWARD_CONTROL_TAGS_BY_ROUTE = new Map([
+  ["maradin", ["button", "button"]],
+  ["spark", ["summary", "summary"]],
+]);
+
+function visiblyFocusedExpectedControl(observation, expectedTag) {
+  if (!visiblyFocused(observation) || observation.tag !== expectedTag) return false;
+  return observation.tag === "a"
+    ? typeof observation.href === "string" && observation.href.length > 0
+    : observation.href === null;
+}
+
 export function keyboardFailures(record) {
   const failures = [];
   const route = PHASE6_ROUTES.find(({ id }) => id === record.route);
   const expectedHash = route ? (route.id === "home" ? "#entry" : "#main-content") : null;
   const expectedSkipLabel = route?.id === "home" ? "Skip cinematic intro" : "Skip to content";
+  if (record.interactionReady !== true) failures.push({ code: "interaction-readiness", actual: record.interactionReady ?? null, expected: true });
   if (record.expectedHash !== expectedHash) failures.push({ code: "skip-link-route-contract", actual: record.expectedHash ?? null, expected: expectedHash });
   if (record.firstVisibilityReady !== true) failures.push({ code: "skip-link-visibility-wait", actual: record.firstVisibilityReady ?? null, expected: true });
   if (record.activationReady !== true) failures.push({ code: "skip-link-activation-wait", actual: record.activationReady ?? null, expected: true });
@@ -518,7 +544,8 @@ export function keyboardFailures(record) {
     || record.afterActivation.activeId !== expectedHash.slice(1) || !skipTargetIsVisible(record.afterActivation, expectedHash)) {
     failures.push({ code: "skip-link-activation", actual: record.afterActivation, expected: expectedHash });
   }
-  if (record.forwardFirst?.tag !== "a" || record.forwardSecond?.tag !== "a" || !visiblyFocused(record.forwardFirst) || !visiblyFocused(record.forwardSecond)) failures.push({ code: "forward-focus-visibility", actual: [record.forwardFirst, record.forwardSecond] });
+  const forwardTags = FORWARD_CONTROL_TAGS_BY_ROUTE.get(record.route) ?? ["a", "a"];
+  if (!visiblyFocusedExpectedControl(record.forwardFirst, forwardTags[0]) || !visiblyFocusedExpectedControl(record.forwardSecond, forwardTags[1])) failures.push({ code: "forward-focus-visibility", actual: [record.forwardFirst, record.forwardSecond] });
   if (!visiblyFocused(record.backward) || record.backward.key !== record.forwardFirst.key) failures.push({ code: "shift-tab-order", actual: record.backward, expected: record.forwardFirst });
   if (record.route === "home") {
     if (!hasObservedClass(record.forwardFirst, "audience-trajectory") || record.forwardFirst.href !== "/for-partners/") {
@@ -717,6 +744,7 @@ async function runKeyboardChecks(browser, engine, options) {
     for (const route of PHASE6_ROUTES) {
       const collector = startDiagnostics(page);
       await openRoute(page, options, route);
+      const interactionReady = await waitForInteractionReady(page, route, options.timeoutMs);
       const expectedHash = route.id === "home" ? "#entry" : "#main-content";
       await page.keyboard.press("Tab");
       const firstVisibilityReady = await waitForActiveElementFullyVisible(page, options.timeoutMs);
@@ -739,7 +767,7 @@ async function runKeyboardChecks(browser, engine, options) {
       const backward = await observeFocus(page);
       const desktopHome = await observeDesktopHomeNavigation(page, options, route);
       const diagnostics = collector.stop();
-      const record = { activationReady, afterActivation, backward, desktopHome, diagnostics, engine, expectedHash, first, firstVisibilityReady, forwardFirst, forwardSecond, route: route.id, routePath: route.path };
+      const record = { activationReady, afterActivation, backward, desktopHome, diagnostics, engine, expectedHash, first, firstVisibilityReady, forwardFirst, forwardSecond, interactionReady, route: route.id, routePath: route.path };
       record.failures = [...keyboardFailures(record), ...interactionDiagnosticFailures(diagnostics, route, options.baseUrl, { allowHomeTransitions: true })];
       record.status = record.failures.length ? "FAIL" : "PASS";
       records.push(record);
