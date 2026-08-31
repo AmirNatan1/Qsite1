@@ -24,7 +24,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.8rem;
-  min-width: 0;
+  min-width: 44px;
   min-height: 44px;
   color: var(--q-white);
   font-family: var(--font-ui);

@@ -145,6 +145,7 @@
 
 .semantic-links a,
 .semantic-inline-links a,
+.semantic-section__content > a,
 .semantic-shell__hero a,
 .semantic-shell__release a {
   display: inline-flex;
@@ -160,6 +161,7 @@
 
 .semantic-links a:is(:hover, :focus-visible),
 .semantic-inline-links a:is(:hover, :focus-visible),
+.semantic-section__content > a:is(:hover, :focus-visible),
 .semantic-shell__hero a:is(:hover, :focus-visible),
 .semantic-shell__release a:is(:hover, :focus-visible) {
   border-bottom-color: var(--q-magenta);

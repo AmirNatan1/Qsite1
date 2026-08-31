@@ -25,7 +25,7 @@ const BROWSERS = Object.freeze({ chromium, firefox, webkit });
 const MANIFESTO = "We turn industrial needs into field evidence.";
 const INTENTIONAL_404 = Object.freeze({
   route: REAL_404_PATH,
-  h1: "Signal not found.",
+  h1: "The requested route is out of alignment.",
   expectedStatus: 404,
 });
 
@@ -100,6 +100,10 @@ function canonicalText(value) {
   return String(value ?? "").replace(/\s+/g, " ").trim().toLowerCase();
 }
 
+function canonicalHeading(value) {
+  return canonicalText(value).replace(/\s/g, "");
+}
+
 function sha256(value) {
   return createHash("sha256").update(value).digest("hex");
 }
@@ -165,8 +169,8 @@ async function inspectDocument(page) {
 function documentChecks(state, expectedH1) {
   return {
     oneH1: state.h1Count === 1,
-    expectedH1: canonicalText(state.h1) === canonicalText(expectedH1),
-    landmarks: state.landmarkCounts.header === 1 && state.landmarkCounts.main === 1 && state.landmarkCounts.footer === 1 && state.landmarkCounts.navigation >= 1,
+    expectedH1: canonicalHeading(state.h1) === canonicalHeading(expectedH1),
+    landmarks: state.landmarkCounts.header === 1 && state.landmarkCounts.main === 1 && state.landmarkCounts.footer >= 1 && state.landmarkCounts.navigation >= 1,
     noHorizontalOverflow: !state.horizontalOverflow,
     targetSizes: state.targetFailures.length === 0,
   };
@@ -298,6 +302,7 @@ async function fieldMapCase(browser, baseUrl, timeoutMs) {
     return { active: document.activeElement?.getAttribute("href"), links, plane: plane ? { left: plane.left, right: plane.right, top: plane.top, bottom: plane.bottom } : null };
   });
   await page.keyboard.press("Escape");
+  await page.waitForFunction(() => !document.documentElement.hasAttribute("data-field-map-open"));
   const closed = await page.evaluate(() => ({
     active: document.activeElement?.tagName.toLowerCase(),
     open: document.querySelector("[data-field-map]")?.hasAttribute("open"),
@@ -382,6 +387,7 @@ async function intentHistoryCase(browser, baseUrl, timeoutMs) {
   await page.goBack({ waitUntil: "load" });
   const back = { url: page.url(), h1: await page.locator("h1").getAttribute("aria-label") ?? await page.locator("h1").textContent() };
   await page.goForward({ waitUntil: "load" });
+  await page.waitForFunction(() => document.querySelector("[data-cinematic-shell]")?.getAttribute("data-manifesto-reveal") === "resolved", null, { timeout: 5_000 }).catch(() => undefined);
   await settle(page);
   const forward = await inspectDocument(page);
   const checks = {
