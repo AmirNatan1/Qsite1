@@ -1,10 +1,10 @@
 {
   "name": "quantum-hub-qsite1",
-  "version": "0.1.0-phase-1",
+  "version": "0.7.0-phase-7a",
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=22.12.0"
+    "node": "22.16.0"
   },
   "overrides": {
     "unifont": "0.7.4"
@@ -12,9 +12,9 @@
   "scripts": {
     "stage:phase4-media": "node scripts/stage-phase4-media.mjs && node scripts/stage-phase4r2-runtime-media.mjs",
     "dev": "npm run stage:phase4-media && astro dev",
-    "check": "npm run stage:phase4-media && astro check && node --test tests/phase1-publication.test.mjs tests/phase4r2-runtime.test.mjs tests/phase5a-preproduction-tooling.test.mjs tests/phase5a-deployment-verifier.test.mjs tests/phase5a-evidence-tooling.test.mjs tests/phase5a-human-review-package-tooling.test.mjs tests/phase5ar-homepage.test.mjs tests/phase5br2-homepage.test.mjs tests/phase5ar-responsive-overtures.test.mjs tests/phase5ar-route-capture-tooling.test.mjs tests/phase5ar-deployment-verifier.test.mjs tests/phase5ar-evidence-tooling.test.mjs tests/phase5ar-human-review-package-tooling.test.mjs tests/phase5b-architecture.test.mjs tests/phase5b-accessibility-tooling.test.mjs tests/phase5b-publication-safety.test.mjs tests/phase5b-publication-performance-tooling.test.mjs tests/phase5b-deployment-verifier.test.mjs tests/phase5b-evidence-tooling.test.mjs tests/phase5b-human-review-package-tooling.test.mjs tests/phase5b-publication.test.mjs tests/phase5b-production.test.mjs tests/phase6-runtime-hardening.test.mjs tests/phase6-global-hardening.test.mjs tests/phase6-performance-lifecycle.test.mjs tests/phase6-review-capture.test.mjs tests/phase6-deployment-verifier.test.mjs tests/phase6-evidence-assembler.test.mjs tests/phase6-package-tooling.test.mjs tests/phase6-repair-regressions.test.mjs tests/phase6-accessibility-interactions.test.mjs tests/phase6-r1-human-evidence.test.mjs tests/phase6-r1-motion-capture.test.mjs tests/phase6-r1-persistent-lifecycle.test.mjs tests/phase6-r1-deployment-verifier.test.mjs && node scripts/verify-phase4-source.mjs --allow-phase5b-route-scope --allow-phase6-global-hardening",
-    "test": "node --test tests/phase1-publication.test.mjs tests/phase4r2-runtime.test.mjs tests/phase5a-preproduction-tooling.test.mjs tests/phase5a-deployment-verifier.test.mjs tests/phase5a-evidence-tooling.test.mjs tests/phase5a-human-review-package-tooling.test.mjs tests/phase5ar-homepage.test.mjs tests/phase5br2-homepage.test.mjs tests/phase5ar-responsive-overtures.test.mjs tests/phase5ar-route-capture-tooling.test.mjs tests/phase5ar-deployment-verifier.test.mjs tests/phase5ar-evidence-tooling.test.mjs tests/phase5ar-human-review-package-tooling.test.mjs tests/phase5b-architecture.test.mjs tests/phase5b-accessibility-tooling.test.mjs tests/phase5b-publication-safety.test.mjs tests/phase5b-publication-performance-tooling.test.mjs tests/phase5b-deployment-verifier.test.mjs tests/phase5b-evidence-tooling.test.mjs tests/phase5b-human-review-package-tooling.test.mjs tests/phase5b-publication.test.mjs tests/phase5b-production.test.mjs tests/phase6-runtime-hardening.test.mjs tests/phase6-global-hardening.test.mjs tests/phase6-performance-lifecycle.test.mjs tests/phase6-review-capture.test.mjs tests/phase6-deployment-verifier.test.mjs tests/phase6-evidence-assembler.test.mjs tests/phase6-package-tooling.test.mjs tests/phase6-repair-regressions.test.mjs tests/phase6-accessibility-interactions.test.mjs tests/phase6-r1-human-evidence.test.mjs tests/phase6-r1-motion-capture.test.mjs tests/phase6-r1-persistent-lifecycle.test.mjs tests/phase6-r1-deployment-verifier.test.mjs",
-    "build": "node scripts/run-phase4-build.mjs",
+    "check": "node scripts/verify-phase7a-environment.mjs && npm run stage:phase4-media && astro check && npm test && node scripts/verify-phase7a-source.mjs",
+    "test": "node --test tests/phase1-publication.test.mjs tests/phase4r2-1-production-tooling.test.mjs tests/phase4r2-1-evidence-tooling.test.mjs tests/phase4r2-runtime.test.mjs tests/phase5b-accessibility-tooling.test.mjs tests/phase5b-publication-performance-tooling.test.mjs tests/phase6-runtime-hardening.test.mjs tests/phase6-global-hardening.test.mjs tests/phase6-accessibility-interactions.test.mjs tests/phase6-performance-lifecycle.test.mjs tests/phase6-r1-persistent-lifecycle.test.mjs tests/phase6-repair-regressions.test.mjs tests/phase7a-source.test.mjs",
+    "build": "node scripts/run-phase7a-build.mjs",
     "build:phase4r2-final": "node scripts/run-phase4r2-final-build.mjs",
     "qa:browser": "node scripts/qa-phase4-browser.mjs --server-mode astro-preview --base-url http://127.0.0.1:4334",
     "qa:visual": "node scripts/create-phase1-contact-sheets.mjs",

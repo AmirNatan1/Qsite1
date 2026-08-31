@@ -473,11 +473,10 @@ test("Phase 4-R2.1 late media failure preserves document geometry while early el
   assert.ok(entry && entry.phase === "entry" && entry.semantic > 0, "semantic ENTRY continues from native document progress after a late timeout");
 });
 
-test("Phase 5A runtime keeps one paused decoder, native scroll, latest-position authority, and fail-open safeguards", () => {
+test("Phase 7A runtime keeps one paused decoder, native scroll, latest-position authority, and bounded Signal Field work", () => {
   const source = readFileSync(path.join(process.cwd(), "src", "scripts", "home-cinematic-integration.ts"), "utf8");
   const cinematicCss = readFileSync(path.join(process.cwd(), "src", "styles", "routes", "home-cinematic.css"), "utf8");
-  const frozenOperatingField = readFileSync(path.join(process.cwd(), "src", "scripts", "home-operating-field.ts"), "utf8");
-  assert.equal(digest(frozenOperatingField), "b8a3af5dc4f5ad24ad2eb1e8c2c800385da718ae439133efc6a652bd5fdf84a2", "the accepted Operating Field controller remains byte-frozen");
+  const signalField = readFileSync(path.join(process.cwd(), "src", "scripts", "signal-field.ts"), "utf8");
   assert.match(source, /const releaseMissingDom/);
   assert.match(source, /cinematicFallback = "required-dom"/);
   assert.match(source, /const handleSkip[\s\S]*?setThresholdInteraction\(true, false\)[\s\S]*?entry\.focus\(\{ preventScroll: true \}\)/);
@@ -500,12 +499,15 @@ test("Phase 5A runtime keeps one paused decoder, native scroll, latest-position 
   assert.match(source, /completeH264Inventory/);
   assert.match(source, /failed-preserve-runway/);
   assert.match(source, /cinematicDocumentStateForScroll/);
-  assert.match(source, /methodField\?\.dataset\.methodSticky !== "true"/);
-  assert.match(source, /getComputedStyle\(stage\)\.minHeight/);
-  assert.match(source, /--cinematic-committed-method-stage-min-height/);
-  assert.match(source, /resizeObserver\.observe\(methodField\)/);
-  assert.match(cinematicCss, /prefers-reduced-motion:\s*reduce[\s\S]*?data-cinematic-method-geometry="committed"[\s\S]*?min-height:\s*var\(--cinematic-committed-method-stage-min-height\)/);
-  assert.doesNotMatch(cinematicCss, /data-cinematic-method-geometry[\s\S]{0,240}567px/, "late preference geometry must use the measured authored value, not the 900px-viewport example");
+  assert.match(source, /resizeObserver\.observe\(fieldMapThreshold\)/);
+  assert.match(source, /fieldMapTop = fieldMapThreshold\.getBoundingClientRect\(\)\.top \+ window\.scrollY/);
+  assert.doesNotMatch(source, /methodField|methodStages|cinematicMethodGeometry/);
+  assert.match(signalField, /\(hover: hover\) and \(pointer: fine\)/);
+  assert.match(signalField, /requestAnimationFrame\(write\)/);
+  assert.match(signalField, /pointerleave|pointercancel/);
+  assert.match(signalField, /visibilitychange[\s\S]*?cancelAnimationFrame\(frame\)/);
+  assert.doesNotMatch(signalField, /setInterval|scroll(?:To|By|IntoView)\s*\(|\.scrollTop\s*=/);
+  assert.match(cinematicCss, /prefers-reduced-motion:\s*reduce[\s\S]*?\.cinematic-media\s*\{[\s\S]*?display:\s*none/);
   assert.doesNotMatch(source, /querySelectorAll\(["']source["']\)[\s\S]{0,160}removeAttribute\(["']srcset["']\)/, "late failure must retain the still poster while releasing only video\/Blob resources");
   assert.doesNotMatch(source, /\bpreventDefault\s*\(/);
   assert.doesNotMatch(source, /(?:window\.)?scroll(?:To|By)\s*\(/);
@@ -514,21 +516,22 @@ test("Phase 5A runtime keeps one paused decoder, native scroll, latest-position 
   assert.match(source, /ENTRY_START_U = 513/);
 });
 
-test("Phase 4-R2.1 final build is fail-closed and ships only the active nested H.264 authority", () => {
+test("Phase 7A build remains fail-closed around the active nested H.264 authority", () => {
   const root = process.cwd();
   const packageManifest = JSON.parse(readFileSync(path.join(root, "package.json"), "utf8"));
-  const finalBuild = readFileSync(path.join(root, "scripts", "run-phase4r2-final-build.mjs"), "utf8");
+  const finalBuild = readFileSync(path.join(root, "scripts", "run-phase7a-build.mjs"), "utf8");
   const legacyStage = readFileSync(path.join(root, "scripts", "stage-phase4-media.mjs"), "utf8");
   const r2Stage = readFileSync(path.join(root, "scripts", "stage-phase4r2-runtime-media.mjs"), "utf8");
-  const outputVerifier = readFileSync(path.join(root, "scripts", "verify-phase4-output.mjs"), "utf8");
+  const outputVerifier = readFileSync(path.join(root, "scripts", "verify-phase7a-output.mjs"), "utf8");
 
-  assert.equal(packageManifest.scripts.build, "node scripts/run-phase4-build.mjs");
+  assert.equal(packageManifest.scripts.build, "node scripts/run-phase7a-build.mjs");
   assert.equal(packageManifest.scripts["build:phase4r2-final"], "node scripts/run-phase4r2-final-build.mjs");
   assert.match(finalBuild, /PHASE4R2_FINAL_AUTHORITY: "1"/);
+  assert.match(finalBuild, /verify-phase7a-environment\.mjs/);
   assert.match(finalBuild, /stage-phase4-media\.mjs/);
   assert.match(finalBuild, /stage-phase4r2-runtime-media\.mjs/);
   assert.match(finalBuild, /node_modules\/astro\/bin\/astro\.mjs/);
-  assert.match(finalBuild, /verify-phase4-output\.mjs/);
+  assert.match(finalBuild, /verify-phase7a-output\.mjs/);
   assert.match(legacyStage, /FINAL_AUTHORITY_EXPECTED/);
   assert.match(legacyStage, /Pruned .*legacy cinematic/);
   assert.match(r2Stage, /PHASE4R21_MANIFEST_RELATIVE/);
@@ -536,13 +539,10 @@ test("Phase 4-R2.1 final build is fail-closed and ships only the active nested H
   assert.match(r2Stage, /active tracked authority must contain exactly ten files/);
   assert.match(r2Stage, /strict six-asset H\.264 authority/);
   assert.match(r2Stage, /rename\(tempRoot, outputRoot\)/);
-  assert.match(outputVerifier, /phase4r2-final-inventory/);
-  assert.match(outputVerifier, /phase4r2-final-no-fallback/);
-  assert.match(outputVerifier, /phase4r2-final-poster-binding/);
-  assert.match(outputVerifier, /phase4r2-runtime-binding/);
-  assert.match(outputVerifier, /phase4r2-manifest-byte-parity/);
-  assert.match(outputVerifier, /loadAndValidatePhase4R21Authority/);
-  assert.match(outputVerifier, /FINAL_AUTHORITY_EXPECTED \? \[\] : MEDIA_ASSETS/);
+  assert.match(outputVerifier, /data-cinematic-shell/);
+  assert.match(outputVerifier, /data-signal-field/);
+  assert.match(outputVerifier, /real404/);
+  assert.match(outputVerifier, /anybody-latin-variable/);
 });
 
 test("Phase 4-R2 complete miniature source/report/media authority validates", () => {

@@ -65,7 +65,7 @@ test("Phase 6 cinematic failures collapse only at a safe top and release failed 
   const source = read("src/scripts/home-cinematic-integration.ts");
   const styles = read("src/styles/routes/home-cinematic.css");
   assert.match(source, /semanticEntryNavigationResolved[\s\S]*?window\.scrollY >= entryTop - headerHeight - 1[\s\S]*?mediaFailed \|\| \(mediaReady && presentedPhysicalFrame === targetPhysicalFrame\)[\s\S]*?delete root\.dataset\.cinematicEntryIntent/);
-  assert.match(source, /if \(manifestoSettled\) \{[\s\S]{0,100}entry\.removeAttribute\("inert"\);[\s\S]{0,100}audienceRouting\.removeAttribute\("inert"\);/);
+  assert.match(source, /if \(manifestoSettled\) \{[\s\S]{0,100}entry\.removeAttribute\("inert"\);[\s\S]{0,100}fieldMapThreshold\.removeAttribute\("inert"\);/);
   assert.match(styles, /data-cinematic-mode="static"\]\[data-cinematic-fallback\][\s\S]*?margin-top:\s*calc\(-1 \* var\(--cinematic-header-px\)\)/);
   assert.match(styles, /data-cinematic-mode="static"\]\[data-cinematic-fallback\][\s\S]*?\.cinematic-runway[\s\S]*?height:\s*100svh/);
 });
@@ -81,20 +81,24 @@ test("Phase 6 Maradin media teardown survives BFCache and recovers failures", ()
   assert.doesNotMatch(source, /beforeunload|unload|setInterval|requestAnimationFrame/);
 });
 
-test("Phase 6 home controls use the semantic destination and ratio-correct logo", () => {
+test("Phase 7A controls use the semantic destination, exact Q, and accessible Field Map", () => {
   const header = read("src/components/SiteHeader.astro");
   const footer = read("src/components/SiteFooter.astro");
   const notFound = read("src/components/routes/error/NotFoundExperience.astro");
-  for (const source of [header, footer]) {
-    assert.match(source, /width="242"[\s\S]*?height="182"/);
-  }
-  assert.match(footer, /class="brand-link" href="\/#entry"/);
-  assert.match(notFound, /class="recovery-link" href="\/#entry"/);
+  for (const source of [header, footer]) assert.match(source, /quantum-icon-white\.svg/);
+  assert.match(header, /const HOME_HREF = "\/#entry"/);
+  assert.match(header, /<details class="field-map"/);
+  assert.match(header, /event\.key === "Escape"/);
+  assert.match(header, /trigger\?\.focus\(\{ preventScroll: true \}\)/);
+  assert.match(footer, /class="site-footer__return" href="\/#entry"/);
+  assert.match(notFound, /<a href="\/#entry">Return to the signal origin<\/a>/);
 });
 
-test("Phase 6 keeps the legacy source verifier deny-by-default with one exact global allowance", () => {
-  const verifier = read("scripts/verify-phase4-source.mjs");
-  assert.match(verifier, /PHASE6_GLOBAL_HARDENING_ALLOWED/);
-  assert.match(verifier, /PHASE6_GLOBAL_HARDENING_CHANGES[\s\S]*?SiteFooter\\\.astro/);
-  assert.match(verifier, /if \\\(safeAtTop\\\) return "static"/);
+test("Phase 7A source verifier is deny-by-default for superseded paths and frozen authorities", () => {
+  const verifier = read("scripts/verify-phase7a-source.mjs");
+  assert.match(verifier, /DELETED_PRODUCTION_PATHS/);
+  assert.match(verifier, /PHYSICAL_ASSETS/);
+  assert.match(verifier, /MARADIN_FROZEN_PATHS/);
+  assert.match(verifier, /first Phase 7A commit must descend directly/);
+  assert.match(verifier, /no production runtime dependency may be added/);
 });

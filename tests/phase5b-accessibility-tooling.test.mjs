@@ -99,20 +99,24 @@ test("CP7 executable uses actual axe, native keyboard, static variants and exter
   assert.match(source, /seriousCriticalAxe/);
 });
 
-test("CP7 production repairs remain bound to compact layouts and semantic hiding", async () => {
-  const [globalCss, aboutCss, maradinCss, sparkCss, revealSource] = await Promise.all([
+test("Phase 7A production remains bound to semantic hiding, neutral shells, and authored fallbacks", async () => {
+  const [globalCss, shellCss, maradinCss, signalCss, signalSource] = await Promise.all([
     readFile(path.join(root, "src", "styles", "global.css"), "utf8"),
-    readFile(path.join(root, "src", "styles", "routes", "about.css"), "utf8"),
+    readFile(path.join(root, "src", "styles", "routes", "phase-7a-semantic-shell.css"), "utf8"),
     readFile(path.join(root, "src", "styles", "routes", "maradin.css"), "utf8"),
-    readFile(path.join(root, "src", "styles", "routes", "spark-production.css"), "utf8"),
-    readFile(path.join(root, "src", "scripts", "routes", "reversible-reveal.ts"), "utf8"),
+    readFile(path.join(root, "src", "styles", "routes", "phase-7a-signal-field.css"), "utf8"),
+    readFile(path.join(root, "src", "scripts", "signal-field.ts"), "utf8"),
   ]);
   assert.match(globalCss, /\[hidden\]\s*\{\s*display:\s*none\s*!important/);
-  assert.match(aboutCss, /\.about-joint__rails\s*\{\s*inset:13% 30%/);
+  assert.match(shellCss, /\.semantic-shell/);
+  assert.match(shellCss, /@media \(max-width:\s*48rem\)/);
+  assert.match(shellCss, /@media \(max-height:\s*30rem\).*orientation:\s*landscape/s);
+  assert.doesNotMatch(shellCss, /@keyframes|animation\s*:|transition\s*:/, "neutral shells are already static in reduced motion");
   assert.match(maradinCss, /\.maradin-act__count[^}]*rgba\(231, 223, 212, 0\.64\)/);
   assert.match(maradinCss, /\.maradin-player--aperture \.maradin-player__launch\s*\{\s*bottom:\s*auto;\s*top:\s*5rem/);
   assert.match(maradinCss, /\.maradin-player--aperture \.maradin-player__launch\s*\{\s*bottom:\s*5rem/);
-  assert.match(sparkCss, /max-height:41rem/);
-  assert.match(revealSource, /threshold:\s*0\.04/);
-  assert.doesNotMatch(revealSource, /requestAnimationFrame|scroll\s*[,)]/);
+  assert.match(signalCss, /prefers-reduced-motion:\s*reduce/);
+  assert.match(signalCss, /@media \(max-width:\s*25rem\)/);
+  assert.match(signalSource, /requestAnimationFrame\(write\)/);
+  assert.doesNotMatch(signalSource, /setInterval|scroll(?:To|By|IntoView)\s*\(|\.scrollTop\s*=/);
 });
