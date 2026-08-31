@@ -449,7 +449,14 @@ function attachDiagnostics(page, ledger, scope) {
     requestfailed(request) {
       const requestPath = safeRequestUrl(request.url());
       const intentionallyBlocked = ledger.blocked.some(({ path: blockedPath }) => blockedPath === requestPath);
-      if (!intentionallyBlocked && !request.failure()?.errorText?.includes("ERR_BLOCKED_BY_CLIENT")) ledger.failedRequests.push({ scope, path: requestPath, failure: request.failure()?.errorText ?? "unknown" });
+      if (!intentionallyBlocked && !request.failure()?.errorText?.includes("ERR_BLOCKED_BY_CLIENT")) ledger.failedRequests.push({
+        scope,
+        path: requestPath,
+        failure: request.failure()?.errorText ?? "unknown",
+        method: request.method(),
+        navigation: request.isNavigationRequest(),
+        resourceType: request.resourceType(),
+      });
     },
   };
   for (const [event, handler] of Object.entries(handlers)) page.on(event, handler);
@@ -1167,7 +1174,10 @@ export async function capturePhase7AReviewEvidence(options) {
     const unexpectedConsoleErrors = ledger.console.filter(({ type, scope }) => type === "error" && scope !== "screenshot:fallback-font-narrow");
     const externalRequestAttempts = ledger.blocked.filter(({ reason }) => reason === "origin-isolation");
     invariant(ledger.pageErrors.length === 0, `browser capture observed ${ledger.pageErrors.length} page error(s)`);
-    invariant(ledger.failedRequests.length === 0, `browser capture observed ${ledger.failedRequests.length} unexpected failed request(s)`);
+    invariant(
+      ledger.failedRequests.length === 0,
+      `browser capture observed ${ledger.failedRequests.length} unexpected failed request(s): ${JSON.stringify(ledger.failedRequests.slice(0, 10))}`,
+    );
     invariant(unexpectedConsoleErrors.length === 0, `browser capture observed ${unexpectedConsoleErrors.length} unexpected console error(s)`);
     invariant(externalRequestAttempts.length === 0, `browser capture observed ${externalRequestAttempts.length} external request attempt(s)`);
 
