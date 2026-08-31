@@ -6,6 +6,7 @@ artifacts/original/phase-4r1-refined-proving-hall/source/** -text whitespace=cr-
 artifacts/original/phase-4r1-1-periphery-current-mobile-crt/source/** -text whitespace=cr-at-eol
 
 # Preserve raw Phase 4-R2 production/report authority bytes on Windows checkouts.
+artifacts/original/phase-4r2-final-cinematic-production/** -text whitespace=cr-at-eol
 artifacts/original/phase-4r2-1-causal-signal-scroll-stability/production/** -text whitespace=cr-at-eol
 artifacts/reports/phase-4r2/** -text whitespace=cr-at-eol
 scripts/aggregate-phase4r1-refined-evidence.mjs -text

@@ -73,6 +73,7 @@ test("reduced motion and no-JS retain authored static authority", async () => {
 
 test("governed Phase 4-R2 authority bytes survive Windows checkouts", async () => {
   const attributes = await read(".gitattributes");
+  assert.match(attributes, /artifacts\/original\/phase-4r2-final-cinematic-production\/\*\* -text/);
   assert.match(attributes, /artifacts\/original\/phase-4r2-1-causal-signal-scroll-stability\/production\/\*\* -text/);
   assert.match(attributes, /artifacts\/reports\/phase-4r2\/\*\* -text/);
 });
