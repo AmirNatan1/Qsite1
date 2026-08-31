@@ -34,7 +34,7 @@ const isCurrent = (href: string) => {
 
 <header class="site-header">
   <div class="site-header__inner">
-    <a class="brand-link" href={HOME_HREF} aria-label="Quantum home — enter at the manifesto">
+    <a class="brand-link" href={HOME_HREF} aria-label="Quantum home — enter at the manifesto" data-field-map-background>
       <img
         src="/brand/quantum-icon-white.svg"
         width="56"
@@ -93,19 +93,68 @@ const isCurrent = (href: string) => {
       map.dataset.controller = "ready";
       const trigger = map.querySelector("summary");
       const destinations = Array.from(map.querySelectorAll("a[href]"));
+      const ownedInert = new Set();
+      let focusFrame = 0;
+
+      const backgroundRegions = () => Array.from(document.querySelectorAll("[data-field-map-background]"))
+        .filter((region) => region instanceof HTMLElement);
+
+      const releaseBackground = () => {
+        ownedInert.forEach((region) => {
+          if (region.dataset.fieldMapInertOwned !== "true") return;
+          region.inert = false;
+          delete region.dataset.fieldMapInertOwned;
+        });
+        ownedInert.clear();
+      };
+
+      const isolateBackground = () => {
+        backgroundRegions().forEach((region) => {
+          if (region.inert) return;
+          region.inert = true;
+          region.dataset.fieldMapInertOwned = "true";
+          ownedInert.add(region);
+        });
+      };
+
+      const setTriggerState = (isOpen) => {
+        trigger?.setAttribute("aria-expanded", String(isOpen));
+        const state = trigger?.querySelector(".field-map__trigger-state");
+        if (state) state.textContent = isOpen ? "Close" : "Open";
+      };
 
       const syncState = () => {
         const isOpen = map.open;
-        trigger?.setAttribute("aria-expanded", String(isOpen));
         root.toggleAttribute("data-field-map-open", isOpen);
-        const state = trigger?.querySelector(".field-map__trigger-state");
-        if (state) state.textContent = isOpen ? "Close" : "Open";
+        setTriggerState(isOpen);
+        if (isOpen) isolateBackground();
+        else releaseBackground();
+      };
+
+      const closeMap = ({ returnFocus = false } = {}) => {
+        if (focusFrame) cancelAnimationFrame(focusFrame);
+        focusFrame = 0;
+        map.open = false;
+        root.removeAttribute("data-field-map-open");
+        setTriggerState(false);
+        releaseBackground();
+        if (returnFocus) trigger?.focus({ preventScroll: true });
+      };
+
+      const isAvailable = (item) => {
+        if (!(item instanceof HTMLElement) || item.closest("[inert]") || item.matches(":disabled")) return false;
+        const style = getComputedStyle(item);
+        const bounds = item.getBoundingClientRect();
+        return style.display !== "none" && style.visibility !== "hidden" && bounds.width > 0 && bounds.height > 0;
       };
 
       map.addEventListener("toggle", () => {
         syncState();
         if (!map.open) return;
-        requestAnimationFrame(() => {
+        if (focusFrame) cancelAnimationFrame(focusFrame);
+        focusFrame = requestAnimationFrame(() => {
+          focusFrame = 0;
+          if (!map.open) return;
           const current = destinations.find((link) => link.getAttribute("aria-current") === "page");
           (current ?? destinations[0])?.focus({ preventScroll: true });
         });
@@ -115,15 +164,17 @@ const isCurrent = (href: string) => {
         if (!map.open) return;
         if (event.key === "Escape") {
           event.preventDefault();
-          map.open = false;
-          trigger?.focus({ preventScroll: true });
+          closeMap({ returnFocus: true });
           return;
         }
         if (event.key !== "Tab" || !trigger) return;
-        const focusable = [trigger, ...destinations].filter((item) => !item.hasAttribute("inert"));
+        const focusable = [trigger, ...destinations].filter(isAvailable);
         const first = focusable[0];
         const last = focusable.at(-1);
-        if (event.shiftKey && document.activeElement === first) {
+        if (!focusable.includes(document.activeElement)) {
+          event.preventDefault();
+          (event.shiftKey ? last : first)?.focus();
+        } else if (event.shiftKey && document.activeElement === first) {
           event.preventDefault();
           last?.focus();
         } else if (!event.shiftKey && document.activeElement === last) {
@@ -134,12 +185,13 @@ const isCurrent = (href: string) => {
 
       map.addEventListener("click", (event) => {
         const target = event.target;
-        if (target instanceof Element && target.closest("a")) map.open = false;
+        if (target instanceof Element && target.closest("a")) closeMap();
       });
 
-      addEventListener("pagehide", () => {
-        root.removeAttribute("data-field-map-open");
-      }, { once: true });
+      addEventListener("popstate", () => closeMap());
+      addEventListener("hashchange", () => closeMap());
+      addEventListener("pagehide", () => closeMap());
+      addEventListener("pageshow", () => closeMap());
 
       syncState();
     });

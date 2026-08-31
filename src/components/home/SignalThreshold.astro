@@ -14,22 +14,51 @@
       preserveAspectRatio="xMidYMid slice"
       focusable="false"
     >
+      <defs>
+        <pattern id="signal-field-dither" width="34" height="34" patternUnits="userSpaceOnUse">
+          <circle cx="2" cy="3" r="1.1" />
+          <circle cx="21" cy="17" r="0.75" />
+          <circle cx="31" cy="29" r="0.55" />
+        </pattern>
+      </defs>
+      <g class="signal-field__far">
+        <path d="M-220 238 C162 118 350 224 548 120 S934 -10 1114 98 S1422 252 1820 64" />
+        <path d="M-170 974 C156 800 392 918 586 794 S924 674 1128 764 S1460 894 1780 716" />
+        <path d="M52 -96 C190 182 132 368 314 514 S594 686 592 1090" />
+        <path d="M1518 -88 C1372 174 1418 344 1250 498 S1044 742 1030 1098" />
+      </g>
       <g class="signal-field__pressure">
         <path d="M-160 760 C170 610 326 700 492 548 S772 366 954 474 S1260 654 1760 304" />
         <path d="M-120 870 C208 700 396 806 566 628 S842 446 1048 554 S1340 722 1750 430" />
         <path d="M-90 552 C214 446 354 504 516 408 S818 236 1004 342 S1300 472 1710 188" />
         <path d="M112 1080 C350 824 514 916 684 736 S974 576 1152 660 S1410 768 1694 598" />
       </g>
+      <g class="signal-field__contours">
+        <path d="M510 500 C552 294 690 222 800 222 C944 222 1052 332 1090 500 C1048 674 930 778 800 778 C660 778 548 674 510 500Z" />
+        <path d="M594 500 C622 354 710 306 800 306 C902 306 982 378 1006 500 C976 628 896 692 800 692 C702 692 620 626 594 500Z" />
+        <path d="M678 500 C692 424 744 390 800 390 C862 390 908 436 922 500 C906 568 858 610 800 610 C740 610 692 566 678 500Z" />
+      </g>
+      <g class="signal-field__occlusion">
+        <path d="M-70 292 L366 156 L516 246 L86 390Z" />
+        <path d="M1184 742 L1682 568 L1740 722 L1260 868Z" />
+      </g>
       <g class="signal-field__load">
         <path d="M246 -80 C356 166 332 332 486 470 C620 590 798 558 894 684 C1018 848 970 990 1108 1110" />
         <path d="M1290 -90 C1164 160 1206 308 1086 452 C968 594 810 604 724 742 C632 890 686 1026 590 1110" />
       </g>
+      <g class="signal-field__near">
+        <path d="M-120 636 C210 524 394 614 570 548 S750 490 800 500" />
+        <path d="M800 500 C944 512 1000 668 1192 644 S1488 500 1730 536" />
+        <path d="M428 -90 C490 154 456 300 590 420" />
+        <path d="M1178 1086 C1126 824 1152 700 1024 584" />
+      </g>
+      <path class="signal-field__dither" d="M-80 846 C268 648 482 772 686 610 S1018 482 1240 580 S1510 676 1700 546 L1700 1030 L-80 1030Z" />
       <path
         class="signal-field__live"
         pathLength="1"
-        d="M-80 544 C250 536 390 574 574 512 C700 470 752 500 810 500 C920 500 954 590 1114 576 C1290 560 1400 470 1680 486"
+        d="M-80 544 C250 536 390 574 574 512 C700 470 752 500 800 500 C920 500 954 590 1114 576 C1290 560 1400 470 1680 486"
       />
-      <circle class="signal-field__contact" cx="810" cy="500" r="8" />
+      <circle class="signal-field__contact" cx="800" cy="500" r="8" />
     </svg>
     <div class="signal-field__source">
       <img
@@ -69,23 +98,45 @@
   data-field-map-threshold
   data-field-section
 >
-  <div class="field-map-threshold__structure" aria-hidden="true">
-    <span></span><span></span><span></span>
+  <div class="bifurcation-field" aria-hidden="true">
+    <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" focusable="false">
+      <g class="bifurcation-field__architecture">
+        <path d="M-120 236 C260 164 466 248 710 424 S1134 678 1730 606" />
+        <path d="M-80 724 C252 674 472 590 710 424 S1130 120 1700 174" />
+        <path d="M164 940 C346 692 514 602 710 424" />
+      </g>
+      <path class="bifurcation-field__incoming" pathLength="1" d="M-100 448 C204 448 408 468 710 424" />
+      <g class="bifurcation-field__industry">
+        <path class="bifurcation-field__branch" d="M710 424 C874 462 1002 574 1194 628 S1462 650 1700 626" />
+        <path d="M710 400 C890 430 1000 534 1198 596 S1460 630 1710 604" />
+        <path d="M710 448 C874 492 986 610 1190 660 S1464 670 1710 646" />
+        <path d="M898 510 C1002 546 1072 582 1198 610" />
+      </g>
+      <g class="bifurcation-field__startup">
+        <path class="bifurcation-field__branch" d="M710 424 C902 376 1074 256 1282 226 S1518 236 1710 190" />
+        <path d="M710 424 C928 410 1084 318 1278 290 S1512 270 1710 220" />
+        <path class="bifurcation-field__edge-signal" pathLength="1" d="M1710 190 C1546 224 1456 214 1370 224" />
+      </g>
+      <circle class="bifurcation-field__junction" cx="710" cy="424" r="9" />
+    </svg>
   </div>
   <div class="field-map-threshold__content">
     <p class="field-map-threshold__coordinate">FIELD MAP / SIGNAL 01</p>
-    <h2 id="field-map-threshold-title">One operating field. Two trajectories.</h2>
+    <h2 id="field-map-threshold-title">
+      <span>One operating field.</span>
+      <span>Two trajectories.</span>
+    </h2>
     <nav class="field-map-threshold__trajectories" aria-label="Primary trajectories">
-      <a class="field-map-destination" href="/for-partners/">
-        <span>For industry</span>
-        <span>Bring an operational challenge</span>
+      <a class="bifurcation-destination bifurcation-destination--industry" href="/for-partners/">
+        <span class="bifurcation-destination__label">For industry</span>
+        <span class="bifurcation-destination__copy">Pressure becomes proof.</span>
       </a>
-      <a class="field-map-destination" href="/for-startups/">
-        <span>For startups</span>
-        <span>Bring a technology ready to be tested</span>
+      <a class="bifurcation-destination bifurcation-destination--startup" href="/for-startups/">
+        <span class="bifurcation-destination__label">For startups</span>
+        <span class="bifurcation-destination__copy">A viable edge enters the field.</span>
       </a>
     </nav>
-    <p class="field-map-threshold__instruction">The complete Field Map is available above.</p>
+    <p class="field-map-threshold__instruction">Two paths. One field.</p>
   </div>
 </section>
 

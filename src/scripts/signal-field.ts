@@ -17,8 +17,16 @@ export function initSignalField() {
 
   const write = () => {
     frame = 0;
+    const normalizedX = Math.min(1, Math.max(-1, (pendingX - 50) / 50));
+    const normalizedY = Math.min(1, Math.max(-1, (pendingY - 50) / 50));
     field.style.setProperty("--probe-x", `${pendingX.toFixed(2)}%`);
     field.style.setProperty("--probe-y", `${pendingY.toFixed(2)}%`);
+    field.style.setProperty("--probe-far-x", `${(-normalizedX * 2.5).toFixed(2)}px`);
+    field.style.setProperty("--probe-far-y", `${(-normalizedY * 2).toFixed(2)}px`);
+    field.style.setProperty("--probe-mid-x", `${(normalizedX * 4.5).toFixed(2)}px`);
+    field.style.setProperty("--probe-mid-y", `${(normalizedY * 3.5).toFixed(2)}px`);
+    field.style.setProperty("--probe-near-x", `${(normalizedX * 8).toFixed(2)}px`);
+    field.style.setProperty("--probe-near-y", `${(normalizedY * 6).toFixed(2)}px`);
   };
 
   const schedule = () => {
@@ -60,12 +68,22 @@ export function initSignalField() {
     pendingY = 50;
     field.style.setProperty("--probe-x", "50%");
     field.style.setProperty("--probe-y", "50%");
+    field.style.setProperty("--probe-far-x", "0px");
+    field.style.setProperty("--probe-far-y", "0px");
+    field.style.setProperty("--probe-mid-x", "0px");
+    field.style.setProperty("--probe-mid-y", "0px");
+    field.style.setProperty("--probe-near-x", "0px");
+    field.style.setProperty("--probe-near-y", "0px");
     field.dataset.probe = "settled";
   }, { signal });
 
   addEventListener("pagehide", (event) => {
     if (frame) cancelAnimationFrame(frame);
     frame = 0;
+    pendingX = 50;
+    pendingY = 50;
+    write();
+    field.dataset.probe = "settled";
     if (!event.persisted) {
       abortController.abort();
       delete field.dataset.probeController;

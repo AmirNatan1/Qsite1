@@ -56,11 +56,13 @@ const canonical = !noindex && Astro.site
     <title>{documentTitle}</title>
   </head>
   <body class={bodyClass}>
-    <a class="skip-link" href={skipHref}>{skipLabel}</a>
+    <a class="skip-link" href={skipHref} data-field-map-background>{skipLabel}</a>
     <SiteHeader currentPath={Astro.url.pathname} />
-    <main id="main-content" tabindex="-1">
-      <slot />
-    </main>
-    <SiteFooter />
+    <div data-field-map-background>
+      <main id="main-content" tabindex="-1">
+        <slot />
+      </main>
+      <SiteFooter />
+    </div>
   </body>
 </html>
