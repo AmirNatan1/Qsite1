@@ -40,13 +40,20 @@ test("Phase 7A source authority passes as one fail-closed report", async () => {
 });
 
 test("Signal Field keeps semantic text and links outside decorative SVG", async () => {
-  const source = await read("src/components/home/SignalThreshold.astro");
+  const [source, styles] = await Promise.all([
+    read("src/components/home/SignalThreshold.astro"),
+    read("src/styles/routes/phase-7a-signal-field.css"),
+  ]);
   const svg = source.match(/<svg[\s\S]*?<\/svg>/)?.[0] ?? "";
   assert.ok(svg.length > 0);
   assert.doesNotMatch(svg, /<text|<a\b|<foreignObject/i);
   assert.match(source, /<h1\b/);
   assert.match(source, /<nav\b[^>]*aria-label="Primary trajectories"/);
   assert.equal((source.match(/class="manifesto-word/g) ?? []).length, 7);
+  assert.match(styles, /font-stretch:\s*58%/);
+  assert.match(styles, /font-stretch:\s*112%/);
+  assert.match(styles, /transition:[\s\S]*?font-stretch 920ms/);
+  assert.doesNotMatch(styles, /manifesto-field__content[\s\S]{0,180}?transform:\s*scaleX/);
 });
 
 test("Field Map exposes exactly eight ordinary destinations and native disclosure", async () => {

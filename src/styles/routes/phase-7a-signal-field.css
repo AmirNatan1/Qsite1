@@ -206,10 +206,14 @@
 
 html[data-cinematic-mode="candidate"] .cinematic-shell > .signal-threshold .manifesto-field__content,
 html[data-cinematic-mode="enhanced"] .cinematic-shell > .signal-threshold .manifesto-field__content {
-  filter: blur(2.5px);
+  filter: blur(0.6px);
   opacity: 0;
-  transform: scaleX(0.58);
-  transform-origin: 50% 52%;
+}
+
+html[data-cinematic-mode="candidate"] .cinematic-shell > .signal-threshold h1,
+html[data-cinematic-mode="enhanced"] .cinematic-shell > .signal-threshold h1 {
+  font-stretch: 58%;
+  letter-spacing: -0.025em;
 }
 
 html[data-cinematic-mode="candidate"] .cinematic-shell > .signal-threshold .signal-field,
@@ -228,11 +232,18 @@ html[data-cinematic-mode="candidate"] .cinematic-shell[data-manifesto-reveal="re
 html[data-cinematic-mode="enhanced"] .cinematic-shell[data-manifesto-reveal="revealing"] > .signal-threshold .manifesto-field__content {
   filter: blur(0);
   opacity: 1;
-  transform: scaleX(1);
   transition:
     opacity 920ms cubic-bezier(0.22, 1, 0.36, 1),
-    filter 920ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 920ms cubic-bezier(0.22, 1, 0.36, 1);
+    filter 920ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html[data-cinematic-mode="candidate"] .cinematic-shell[data-manifesto-reveal="revealing"] > .signal-threshold h1,
+html[data-cinematic-mode="enhanced"] .cinematic-shell[data-manifesto-reveal="revealing"] > .signal-threshold h1 {
+  font-stretch: 112%;
+  letter-spacing: -0.055em;
+  transition:
+    font-stretch 920ms cubic-bezier(0.22, 1, 0.36, 1),
+    letter-spacing 920ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 html[data-cinematic-mode="candidate"] .cinematic-shell[data-manifesto-reveal="revealing"] > .signal-threshold .signal-field,
@@ -257,6 +268,12 @@ html[data-cinematic-mode="enhanced"] .cinematic-shell[data-manifesto-reveal="res
   filter: none;
   opacity: 1;
   transform: none;
+}
+
+html[data-cinematic-mode="candidate"] .cinematic-shell[data-manifesto-reveal="resolved"] > .signal-threshold h1,
+html[data-cinematic-mode="enhanced"] .cinematic-shell[data-manifesto-reveal="resolved"] > .signal-threshold h1 {
+  font-stretch: 112%;
+  letter-spacing: -0.055em;
 }
 
 html[data-cinematic-mode="candidate"] .cinematic-shell:not([data-manifesto-reveal="revealing"]):not([data-manifesto-reveal="resolved"]) .signal-field__live,

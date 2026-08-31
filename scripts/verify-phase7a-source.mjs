@@ -103,6 +103,10 @@ export async function verifySource(root = process.cwd()) {
 
   assert.match(signalCss, /stroke-dashoffset:\s*1/);
   assert.match(signalCss, /data-manifesto-reveal="revealing"/);
+  assert.match(signalCss, /font-stretch:\s*58%/);
+  assert.match(signalCss, /font-stretch:\s*112%/);
+  assert.match(signalCss, /transition:[\s\S]*?font-stretch 920ms/);
+  assert.doesNotMatch(signalCss, /manifesto-field__content[\s\S]{0,180}?transform:\s*scaleX/);
   assert.match(signalCss, /prefers-reduced-motion:\s*reduce/);
   assert.doesNotMatch(signalCss, /@keyframes|animation\s*:/);
 
