@@ -438,10 +438,18 @@ async function reverseCyclesCase(browser, baseUrl, timeoutMs) {
   const samples = [];
   for (let cycle = 1; cycle <= 10; cycle += 1) {
     await page.evaluate((y) => window.scrollTo(0, y), geometry.entry + 20);
-    await page.waitForTimeout(80);
+    await page.waitForFunction(() => {
+      const shell = document.querySelector("[data-cinematic-shell]");
+      return shell?.getAttribute("data-cinematic-progress") === "1.0000"
+        && ["revealing", "resolved"].includes(shell?.getAttribute("data-manifesto-reveal") ?? "");
+    }, null, { timeout: 3_000 });
     const forward = await page.evaluate(() => ({ reveal: document.querySelector("[data-cinematic-shell]")?.getAttribute("data-manifesto-reveal"), progress: document.querySelector("[data-cinematic-shell]")?.getAttribute("data-cinematic-progress"), scrollY }));
     await page.evaluate(() => window.scrollTo(0, 0));
-    await page.waitForTimeout(80);
+    await page.waitForFunction(() => {
+      const shell = document.querySelector("[data-cinematic-shell]");
+      return shell?.getAttribute("data-cinematic-progress") === "0.0000"
+        && shell?.getAttribute("data-manifesto-reveal") === "hidden";
+    }, null, { timeout: 3_000 });
     const reverse = await page.evaluate(() => ({ reveal: document.querySelector("[data-cinematic-shell]")?.getAttribute("data-manifesto-reveal"), progress: document.querySelector("[data-cinematic-shell]")?.getAttribute("data-cinematic-progress"), scrollY }));
     samples.push({ cycle, forward, reverse });
   }
