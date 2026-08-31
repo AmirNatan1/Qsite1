@@ -93,12 +93,20 @@ test("independent auditor validates canonical ordering, every CRC/SHA, detached 
 
 test("direct producer inputs normalize without modifying report, capture, zoom, brief, or deployment authorities", async () => {
   const inputs = await createSelfTestProducerInputs();
+  const captureManifest = JSON.parse(inputs.captureFiles.get("evidence-manifest.json"));
+  assert.equal(Object.hasOwn(captureManifest, "failures"), false);
   const before = new Map([...inputs.captureFiles].map(([name, bytes]) => [name, sha256(bytes)]));
   const normalized = normalizeProducerInputs(inputs);
   assert.equal(normalized.length, FIXED_EVIDENCE.length + RECORDING_PACKAGE_PATHS.length + SCREENSHOT_PACKAGE_PATHS.length);
   assert.equal(JSON.parse(normalized.find(({ relativePath }) => relativePath === "19-deployment/deployment-authority.json").data).status, "NOT AVAILABLE TO EXECUTION ENVIRONMENT");
   assert.deepEqual(new Map([...inputs.captureFiles].map(([name, bytes]) => [name, sha256(bytes)])), before);
   assert.throws(() => normalizeProducerInputs({ ...inputs, allowMissingDeployment: false }), /requires --deployment-json/i);
+
+  const malformed = await createSelfTestProducerInputs();
+  const malformedManifest = JSON.parse(malformed.captureFiles.get("evidence-manifest.json"));
+  malformedManifest.failures = null;
+  malformed.captureFiles.set("evidence-manifest.json", Buffer.from(stableJson(malformedManifest)));
+  assert.throws(() => normalizeProducerInputs(malformed), /failures must be an array/i);
 });
 
 test("closed topology rejects missing authorities, unlisted payloads, nested archives, source archives and font binaries", () => {

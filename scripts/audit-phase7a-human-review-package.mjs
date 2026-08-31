@@ -413,12 +413,19 @@ function validateFontLicences(entries) {
   }
 }
 
+function validateProducerRecordingManifest(report) {
+  validateRecordingReport({
+    ...report,
+    failures: Object.hasOwn(report, "failures") ? report.failures : [],
+  });
+}
+
 function validateRecordingInventory(entries) {
   const relativePath = "21-recordings/capture-evidence-manifest.json";
   const report = parseJson(entries.get(relativePath).data, relativePath);
   invariant(report.schema === CAPTURE_SCHEMA && report.status === "PASS", "capture evidence manifest authority differs");
   validateHumanGates(report.humanGates);
-  validateRecordingReport(report);
+  validateProducerRecordingManifest(report);
   const records = new Map(report.recordings.map((record) => [record.relativePath, record]));
   const ledger = new Map((report.files ?? []).map((record) => [record.relativePath, record]));
   invariant(ledger.size === RECORDING_PACKAGE_PATHS.length + SCREENSHOT_SPECS.length + 1, "capture evidence manifest file count differs");

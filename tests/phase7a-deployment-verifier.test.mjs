@@ -23,6 +23,7 @@ import {
   validateOptions,
   validateSecurityHeaders,
   verifyOrigin,
+  verifyOriginsSerially,
 } from "../scripts/verify-phase7a-deployment.mjs";
 
 const HEAD = "b".repeat(40);
@@ -182,6 +183,28 @@ test("origin verifier proves exact ten routes, real 404, canonical content, head
     })),
     /byte parity differs/,
   );
+});
+
+test("deployment origin verification is serialized to bound large-preview network concurrency", async () => {
+  const parsed = options();
+  const failures = [];
+  const calls = [];
+  let active = 0;
+  let maximumActive = 0;
+  const verify = async (origin) => {
+    calls.push(origin);
+    active += 1;
+    maximumActive = Math.max(maximumActive, active);
+    await new Promise((resolve) => setImmediate(resolve));
+    active -= 1;
+    return { origin, status: "PASS" };
+  };
+  const result = await verifyOriginsSerially(parsed, syntheticDistAuthority(), failures, verify);
+  assert.deepEqual(calls, [IMMUTABLE_URL, BRANCH_URL]);
+  assert.equal(maximumActive, 1);
+  assert.deepEqual(failures, []);
+  assert.equal(result.immutable.status, "PASS");
+  assert.equal(result.branch.status, "PASS");
 });
 
 test("self-test is deterministic, inert, and covers route, 404, and security contracts", () => {

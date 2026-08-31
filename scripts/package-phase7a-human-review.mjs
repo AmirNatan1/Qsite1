@@ -365,12 +365,19 @@ function validateFontLicences(entriesByPath) {
   }
 }
 
+function validateProducerRecordingManifest(report) {
+  validateRecordingReport({
+    ...report,
+    failures: Object.hasOwn(report, "failures") ? report.failures : [],
+  });
+}
+
 function validateRecordingInventory(entriesByPath) {
   const relativePath = "21-recordings/capture-evidence-manifest.json";
   const report = parseJson(entriesByPath.get(relativePath).data, relativePath);
   invariant(report.schema === CAPTURE_SCHEMA && report.status === "PASS", "capture evidence manifest authority differs");
   validateHumanGates(report.humanGates);
-  validateRecordingReport(report);
+  validateProducerRecordingManifest(report);
   const records = new Map(report.recordings.map((record) => [record.relativePath, record]));
   const ledger = new Map((report.files ?? []).map((record) => [record.relativePath, record]));
   invariant(ledger.size === CAPTURE_SOURCE_MAP.length - 1, "capture evidence manifest file count differs");
@@ -701,7 +708,7 @@ function validateCaptureBundle(files) {
   const manifest = parseJson(files.get(CAPTURE_MANIFEST_PATH), CAPTURE_MANIFEST_PATH);
   invariant(manifest.schema === CAPTURE_SCHEMA && manifest.status === "PASS", "capture-runner manifest authority differs");
   validateHumanGates(manifest.humanGates);
-  validateRecordingReport(manifest);
+  validateProducerRecordingManifest(manifest);
   const expectedLedger = CAPTURE_SOURCE_MAP.filter(({ sourcePath }) => sourcePath !== CAPTURE_MANIFEST_PATH)
     .map(({ sourcePath }) => ({ bytes: files.get(sourcePath).length, relativePath: sourcePath, sha256: sha256(files.get(sourcePath)) }))
     .sort((left, right) => lexicalCompare(left.relativePath, right.relativePath));
@@ -1026,7 +1033,6 @@ export async function createSelfTestEntries() {
     data: Buffer.from(stableJson({
       schema: CAPTURE_SCHEMA,
       status: "PASS",
-      failures: [],
       files,
       humanGates: HUMAN_GATE_RECORDS,
       browsers: [{ engine: "chromium", executable: "chrome.exe", headed: false, version: "self-test" }, { engine: "firefox", executable: "firefox.exe", headed: false, version: "self-test" }],

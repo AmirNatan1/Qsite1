@@ -411,6 +411,12 @@ async function captured(name, failures, operation) {
   }
 }
 
+export async function verifyOriginsSerially(options, distAuthority, failures, verifyOriginImpl = verifyOrigin) {
+  const immutable = await captured("immutable-origin", failures, () => verifyOriginImpl(options.immutableUrl, distAuthority, options));
+  const branch = await captured("branch-origin", failures, () => verifyOriginImpl(options.branchUrl, distAuthority, options));
+  return { immutable, branch };
+}
+
 export async function verifyPhase7ADeployment(options, dependencies = {}) {
   validateOptions(options);
   const output = await freshExternalOutput(options.output);
@@ -421,10 +427,7 @@ export async function verifyPhase7ADeployment(options, dependencies = {}) {
   let immutable = { status: "NOT RUN", reason: "local dist authority unavailable" };
   let branch = { status: "NOT RUN", reason: "local dist authority unavailable" };
   if (dist.status === "PASS") {
-    [immutable, branch] = await Promise.all([
-      captured("immutable-origin", failures, () => (dependencies.verifyOrigin ?? verifyOrigin)(options.immutableUrl, dist.data, options)),
-      captured("branch-origin", failures, () => (dependencies.verifyOrigin ?? verifyOrigin)(options.branchUrl, dist.data, options)),
-    ]);
+    ({ immutable, branch } = await verifyOriginsSerially(options, dist.data, failures, dependencies.verifyOrigin ?? verifyOrigin));
   } else {
     failures.push({ check: "origin-parity", message: "not run because local dist authority failed" });
   }
