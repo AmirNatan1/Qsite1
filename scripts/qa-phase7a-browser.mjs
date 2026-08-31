@@ -18,6 +18,7 @@ import {
   HOME_EXTRA_VIEWPORT_IDS,
   REAL_404_PATH,
   ROUTE_MATRIX_COUNTS,
+  SCHEMA as BROWSER_EVIDENCE_SCHEMA,
 } from "./phase7a-browser-contract.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -29,7 +30,7 @@ const INTENTIONAL_404 = Object.freeze({
   expectedStatus: 404,
 });
 
-export const SCHEMA = "quantum-hub.phase-7a.browser-validation.v1";
+export const SCHEMA = BROWSER_EVIDENCE_SCHEMA;
 export const RESPONSIVE_VIEWPORTS = CORE_VIEWPORTS;
 export const AXE_VIEWPORTS = Object.freeze(AXE_VIEWPORT_IDS.map((id) => CORE_VIEWPORTS.find((viewport) => viewport.id === id)));
 export const ROUTE_OUTCOMES = Object.freeze([
