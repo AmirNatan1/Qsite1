@@ -1,7 +1,5 @@
 ---
 import { champProgramme } from "../../../content";
-import RouteKicker from "../shared/RouteKicker.astro";
-import RouteLink from "../shared/RouteLink.astro";
 
 const capabilities = [
   ["Challenge definition", "Clarify the operational problem, stakeholder, environment and criteria for a useful test."],
@@ -20,130 +18,70 @@ const evidenceStages = [
 ] as const;
 ---
 
-<article
-  class="industry-pressure-system"
-  aria-labelledby="industry-title"
-  data-industry-progress
-  data-route-architecture="pressure-system"
-  data-route-production="for-industry"
-  data-route-motion="static"
->
-  <section class="industry-act industry-act--pressure" data-route-act="pressure" aria-labelledby="industry-pressure-title">
-    <div class="industry-load" data-route-geometry="load" aria-hidden="true">
-      <span></span><span></span><span></span><i></i>
+<article class="semantic-shell" data-route-production="for-industry" data-route-architecture="phase-7a-semantic-shell" aria-labelledby="industry-title">
+  <header class="semantic-shell__hero">
+    <p class="semantic-kicker">For industry</p>
+    <div class="semantic-shell__hero-copy">
+      <h1 id="industry-title">Turn industrial needs into testable decisions.</h1>
+      <p class="semantic-lead">Bring Quantum an operational challenge. We help shape it into a clear search, assessment and field-test process.</p>
+      <a href="/contact/#for-industry">Start with your challenge</a>
     </div>
-    <header class="industry-overture">
-      <RouteKicker>For industry</RouteKicker>
-      <h1 id="industry-title" aria-label="Turn industrial needs into testable decisions.">
-        <span>Turn industrial</span>
-        <span>needs into</span>
-        <span>testable decisions.</span>
-      </h1>
-      <p class="industry-overture__intro">
-        Bring Quantum an operational challenge. We help shape it into a clear search,
-        assessment and field-test process.
-      </p>
-      <RouteLink href="/contact/#for-industry">Start with your challenge</RouteLink>
-    </header>
-    <div class="industry-pressure-copy">
-      <RouteKicker>The challenge</RouteKicker>
-      <h2 id="industry-pressure-title">The need comes before the technology.</h2>
-      <p>
-        An industrial challenge becomes useful when its context, owner and evidence needs are
-        explicit. Quantum works with the people closest to the operation to frame that
-        foundation before a solution is selected.
-      </p>
-      <p>
-        That discipline keeps technology sourcing relevant. Candidates are assessed against
-        the actual environment, constraints and route to a practical test—not against a generic
-        innovation brief.
-      </p>
-      <p>
-        The result is a bounded POC designed to answer specific questions and support a
-        responsible next step without overstating what the test proves.
-      </p>
+  </header>
+
+  <section class="semantic-section" aria-labelledby="industry-need-title">
+    <p class="semantic-kicker">The challenge</p>
+    <div class="semantic-section__content semantic-copy">
+      <h2 id="industry-need-title">The need comes before the technology.</h2>
+      <p>An industrial challenge becomes useful when its context, owner and evidence needs are explicit. Quantum works with the people closest to the operation to frame that foundation before a solution is selected.</p>
+      <p>That discipline keeps technology sourcing relevant. Candidates are assessed against the actual environment, constraints and route to a practical test—not against a generic innovation brief.</p>
+      <p>The result is a bounded POC designed to answer specific questions and support a responsible next step without overstating what the test proves.</p>
     </div>
   </section>
 
-  <section class="industry-act industry-act--frame" data-route-act="frame" aria-labelledby="industry-frame-title">
-    <div class="industry-boundary" data-route-geometry="boundary" aria-hidden="true"><i></i><i></i><i></i></div>
-    <div class="industry-frame-copy">
-      <RouteKicker>Capabilities</RouteKicker>
-      <h2 id="industry-frame-title">Support across the evidence path.</h2>
-      <p class="industry-act__lead">
-        Quantum connects challenge definition, technology assessment and field execution.
-      </p>
-      <dl class="industry-capability-thread">
-        {capabilities.map(([title, description]) => (
-          <div><dt>{title}</dt><dd>{description}</dd></div>
-        ))}
+  <section class="semantic-section" aria-labelledby="industry-capabilities-title">
+    <p class="semantic-kicker">Capabilities</p>
+    <div class="semantic-section__content">
+      <h2 id="industry-capabilities-title">Support across the evidence path.</h2>
+      <p class="semantic-lead">Quantum connects challenge definition, technology assessment and field execution.</p>
+      <dl class="semantic-rows">
+        {capabilities.map(([title, description]) => <div><dt>{title}</dt><dd>{description}</dd></div>)}
       </dl>
     </div>
   </section>
 
-  <section class="industry-act industry-act--test" data-route-act="test" aria-labelledby="industry-test-title">
-    <div class="industry-search-field" data-route-geometry="search" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
-    <div class="industry-test-copy">
-      <RouteKicker>Engagement route</RouteKicker>
-      <h2 id="industry-test-title">Five stages. One evidence thread.</h2>
-      <p class="industry-act__lead">
-        The method keeps the original need connected to every sourcing, assessment and test choice.
-      </p>
-      <ol class="industry-evidence-passage" aria-label="Five-stage industry engagement route">
-        {evidenceStages.map(([title, description], index) => (
-          <li>
-            <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-            <div><h3>{title}</h3><p>{description}</p></div>
-          </li>
-        ))}
+  <section class="semantic-section" aria-labelledby="industry-route-title">
+    <p class="semantic-kicker">Engagement route</p>
+    <div class="semantic-section__content">
+      <h2 id="industry-route-title">Five stages. One evidence thread.</h2>
+      <p class="semantic-lead">The method keeps the original need connected to every sourcing, assessment and test choice.</p>
+      <ol class="semantic-rows" aria-label="Five-stage industry engagement route">
+        {evidenceStages.map(([title, description]) => <li><h3>{title}</h3><p>{description}</p></li>)}
       </ol>
-      <div class="industry-engagement-block">
-        <RouteKicker>Ways to work</RouteKicker>
+      <div class="semantic-copy">
         <h3>A defined challenge or an ongoing context.</h3>
         <p>The right structure depends on whether the need is already clear or must be developed over time.</p>
-        <dl class="industry-engagement-routes">
-          <div>
-            <dt>Defined challenge</dt>
-            <dd>Begin with a specific operational need and build a focused route toward a testable question.</dd>
-          </div>
-          <div>
-            <dt>Ongoing innovation partnership</dt>
-            <dd>Develop a repeatable way to surface needs, assess relevance and prepare selected opportunities for evidence.</dd>
-          </div>
-        </dl>
       </div>
-      <div class="industry-programme" id="champ" tabindex="-1">
-        <span>Industry programme</span>
+      <dl class="semantic-rows">
+        <div><dt>Defined challenge</dt><dd>Begin with a specific operational need and build a focused route toward a testable question.</dd></div>
+        <div><dt>Ongoing innovation partnership</dt><dd>Develop a repeatable way to surface needs, assess relevance and prepare selected opportunities for evidence.</dd></div>
+      </dl>
+      <div id="champ" class="semantic-fragment semantic-copy" tabindex="-1">
+        <p class="semantic-status">Industry programme</p>
         <h3>{champProgramme.name}</h3>
         <p>{champProgramme.summary}</p>
       </div>
     </div>
   </section>
 
-  <section class="industry-act industry-act--decision" data-route-act="decision" aria-labelledby="industry-decision-title">
-    <div class="industry-decision-plane" data-route-geometry="decision" aria-hidden="true"><span></span><span></span></div>
-    <div class="industry-decision-copy">
-      <RouteKicker>Industry network</RouteKicker>
-      <h2 id="industry-decision-title">Keep the operating context in view.</h2>
-      <p class="industry-act__lead">
-        Quantum engagement begins with the operational challenge, its real operating context
-        and the evidence required to determine a next step.
-      </p>
-      <div class="industry-ending">
-        <h3>Bring the operating challenge.</h3>
-        <p>
-          Describe the context you need to understand. Quantum will begin with the questions a
-          useful test should answer.
-        </p>
-        <div class="industry-ending__links">
-          <RouteLink href="/contact/#for-industry">Choose the industry path</RouteLink>
-          <RouteLink href="/pocs/">See the proof approach</RouteLink>
-        </div>
-      </div>
+  <footer class="semantic-shell__release">
+    <p class="semantic-kicker">Industry network</p>
+    <div>
+      <h2>Keep the operating context in view.</h2>
+      <p>Describe the context you need to understand. Quantum will begin with the questions a useful test should answer.</p>
+      <nav class="semantic-inline-links" aria-label="Industry next steps">
+        <a href="/contact/#for-industry">Choose the industry path</a>
+        <a href="/pocs/">See the proof approach</a>
+      </nav>
     </div>
-  </section>
+  </footer>
 </article>
-
-<script>
-  import "../../../scripts/routes/industry-progress";
-</script>

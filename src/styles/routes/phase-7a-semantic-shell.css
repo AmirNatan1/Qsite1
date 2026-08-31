@@ -1,0 +1,257 @@
+.semantic-shell {
+  min-width: 0;
+  overflow: clip;
+  color: var(--text-body);
+  background: #0b0e0f;
+}
+
+.semantic-shell__hero,
+.semantic-section,
+.semantic-shell__release {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 0.42fr) minmax(0, 1fr);
+  gap: clamp(2rem, 8vw, 9rem);
+  width: min(calc(100% - (2 * var(--field-gutter))), 88rem);
+  margin-inline: auto;
+  padding-block: clamp(4rem, 10vw, 8rem);
+}
+
+.semantic-shell__hero {
+  min-height: min(78svh, 54rem);
+  align-items: end;
+}
+
+.semantic-shell__hero::before,
+.semantic-section::before,
+.semantic-shell__release::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--q-magenta) 0 4.5rem, rgba(255, 255, 255, 0.12) 4.5rem, transparent 82%);
+  content: "";
+}
+
+.semantic-shell__hero::before {
+  display: none;
+}
+
+.semantic-kicker,
+.semantic-index,
+.semantic-status {
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.semantic-status {
+  color: var(--q-magenta-soft);
+}
+
+.semantic-shell__hero-copy,
+.semantic-section__content,
+.semantic-shell__release > div {
+  display: grid;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.semantic-shell h1 {
+  max-width: 14ch;
+  font-size: clamp(3rem, 7.4vw, 7.5rem);
+  font-stretch: 108%;
+  font-weight: 650;
+  line-height: 0.9;
+}
+
+.semantic-shell h2 {
+  max-width: 17ch;
+  font-size: clamp(2rem, 4.5vw, 4.7rem);
+  font-stretch: 106%;
+  font-weight: 620;
+  line-height: 0.95;
+}
+
+.semantic-shell h3 {
+  font-size: clamp(1.25rem, 2.2vw, 2rem);
+  font-stretch: 104%;
+  font-weight: 620;
+}
+
+.semantic-lead {
+  max-width: 54ch;
+  color: var(--q-neutral-300);
+  font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+  line-height: 1.55;
+}
+
+.semantic-copy {
+  display: grid;
+  gap: 1rem;
+  max-width: 64ch;
+}
+
+.semantic-rows,
+.semantic-links,
+.semantic-inline-links {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.semantic-rows {
+  border-top: 1px solid rgba(255, 255, 255, 0.13);
+}
+
+.semantic-rows > li,
+.semantic-rows > div {
+  display: grid;
+  grid-template-columns: minmax(7rem, 0.38fr) minmax(0, 1fr);
+  gap: clamp(1rem, 4vw, 4rem);
+  padding-block: 1.35rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.semantic-rows dt,
+.semantic-rows strong,
+.semantic-rows h3 {
+  color: var(--q-white);
+  font-family: var(--font-ui);
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.semantic-rows dd,
+.semantic-rows p,
+.semantic-rows span {
+  margin: 0;
+  color: var(--text-body);
+  line-height: 1.6;
+}
+
+.semantic-links,
+.semantic-inline-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.5rem;
+}
+
+.semantic-links a,
+.semantic-inline-links a,
+.semantic-shell__hero a,
+.semantic-shell__release a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.28);
+  color: var(--q-white);
+  font-family: var(--font-ui);
+  font-size: 0.84rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.semantic-links a:is(:hover, :focus-visible),
+.semantic-inline-links a:is(:hover, :focus-visible),
+.semantic-shell__hero a:is(:hover, :focus-visible),
+.semantic-shell__release a:is(:hover, :focus-visible) {
+  border-bottom-color: var(--q-magenta);
+}
+
+.semantic-note {
+  max-width: 62ch;
+  padding-left: 1rem;
+  border-left: 2px solid var(--q-magenta);
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+
+.semantic-fragment {
+  scroll-margin-top: calc(var(--header-height) + 1rem);
+}
+
+.semantic-shell details {
+  border-top: 1px solid rgba(255, 255, 255, 0.13);
+}
+
+.semantic-shell details:last-child {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.13);
+}
+
+.semantic-shell summary {
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+  color: var(--q-white);
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-weight: 600;
+}
+
+.semantic-shell details p {
+  max-width: 64ch;
+  padding-bottom: 1.2rem;
+}
+
+.semantic-shell__release {
+  align-items: end;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.018), transparent);
+}
+
+@media (max-width: 48rem) {
+  .semantic-shell__hero,
+  .semantic-section,
+  .semantic-shell__release {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .semantic-shell__hero {
+    min-height: auto;
+    padding-top: clamp(5rem, 20vw, 8rem);
+  }
+
+  .semantic-rows > li,
+  .semantic-rows > div {
+    grid-template-columns: 1fr;
+    gap: 0.55rem;
+  }
+}
+
+@media (max-width: 22.5rem) {
+  .semantic-shell h1 {
+    font-size: clamp(2.35rem, 13vw, 3rem);
+  }
+
+  .semantic-shell h2 {
+    font-size: clamp(1.85rem, 10vw, 2.5rem);
+  }
+}
+
+@media (max-height: 30rem) and (orientation: landscape) {
+  .semantic-shell__hero {
+    min-height: auto;
+    padding-block: 4rem 2.5rem;
+  }
+
+  .semantic-shell h1 {
+    font-size: clamp(2.5rem, 7vw, 4rem);
+  }
+}
+
+@media (forced-colors: active) {
+  .semantic-shell__hero::before,
+  .semantic-section::before,
+  .semantic-shell__release::before {
+    background: CanvasText;
+  }
+}

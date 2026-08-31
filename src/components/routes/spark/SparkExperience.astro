@@ -23,76 +23,64 @@ const questions = [
 ] as const;
 ---
 
-<article class="spark" data-route-production="spark" data-route-architecture="sealed-programme-runway" data-route-motion="static">
-  <section class="sp-act sp-runway" data-route-act="runway" data-route-region="runway" aria-labelledby="spark-title">
-    <div class="sp-overture">
-      <header class="sp-opening">
-        <p class="meta-label sp-k">spark programme</p>
-        <h1 id="spark-title">A runway from MVP+ to industrial POC.</h1>
-        <p class="sp-intro">SPARK helps ready technologies connect their capabilities to relevant industrial needs and prepare a structured route toward field evidence.</p>
-      </header>
-
-      <div class="sp-gate" data-route-geometry="sealed-runway" data-route-reveal>
-        <div class="sp-bar" aria-hidden="true"><i></i><i></i><i></i></div>
-        <p><span>programme status</span><strong>{sparkProgramme.status}</strong></p>
-      </div>
+<article class="semantic-shell" data-route-production="spark" data-route-architecture="phase-7a-semantic-shell" aria-labelledby="spark-title">
+  <header class="semantic-shell__hero">
+    <p class="semantic-kicker">SPARK programme</p>
+    <div class="semantic-shell__hero-copy">
+      <h1 id="spark-title">A runway from MVP+ to industrial POC.</h1>
+      <p class="semantic-lead">SPARK helps ready technologies connect their capabilities to relevant industrial needs and prepare a structured route toward field evidence.</p>
+      <p class="semantic-status">Programme status: {sparkProgramme.status}</p>
     </div>
+  </header>
 
-    <div class="sp-track" data-route-reveal>
-      <div class="sp-track-title">
-        <p class="meta-label sp-k">programme route</p>
-        <h2>From capability to evidence question.</h2>
-        <p>Each stage adds context so a potential POC is relevant to both the startup and the industrial need.</p>
-      </div>
-      <ol aria-label="SPARK programme route">
-        {programmeSteps.map(([title, description], index) => (
-          <li><span aria-hidden="true">0{index + 1}</span><h3>{title}</h3><p>{description}</p></li>
-        ))}
+  <section class="semantic-section" aria-labelledby="spark-route-title">
+    <p class="semantic-kicker">Programme route</p>
+    <div class="semantic-section__content">
+      <h2 id="spark-route-title">From capability to evidence question.</h2>
+      <p class="semantic-lead">Each stage adds context so a potential POC is relevant to both the startup and the industrial need.</p>
+      <ol class="semantic-rows" aria-label="SPARK programme route">
+        {programmeSteps.map(([title, description]) => <li><h3>{title}</h3><p>{description}</p></li>)}
       </ol>
     </div>
   </section>
 
-  <section class="sp-act sp-closed" data-route-act="closed" data-route-region="closed" aria-labelledby="status-title">
-    <div class="sp-seal" data-route-geometry="institutional-gate" data-route-reveal aria-hidden="true"><i></i><i></i></div>
-    <div class="sp-status">
-      <p class="meta-label sp-k">status</p>
-      <h2 id="status-title">{sparkProgramme.status}</h2>
+  <section class="semantic-section" aria-labelledby="spark-status-title">
+    <p class="semantic-kicker">Status</p>
+    <div class="semantic-section__content semantic-copy">
+      <h2 id="spark-status-title">{sparkProgramme.status}</h2>
       <p>SPARK is not accepting applications. No future cohort date, registration route or waiting list is being published at this stage.</p>
-    </div>
-
-    <div class="sp-proposition">
-      <p class="meta-label sp-k">proposition</p>
-      <h2>Industrial relevance is developed, not assumed.</h2>
+      <h3>Industrial relevance is developed, not assumed.</h3>
       <p>SPARK creates a structured context for startups to test how their technology connects to an operational need. The work begins with readiness and relevance, then narrows toward a POC question that can be examined in meaningful conditions.</p>
       <p>The intended audience is a startup with MVP+ technology, a clear industrial use case, a deployable team and the ability to engage with the processes of a large organisation.</p>
       <p>Eligibility is about preparedness for the work: a functioning capability, measurable value hypothesis and willingness to adapt the POC design around the actual environment.</p>
     </div>
   </section>
 
-  <section class="sp-act sp-context" data-route-act="context" data-route-region="context" aria-labelledby="value-title">
-    <div class="sp-value">
-      <div class="sp-value-head">
-        <p class="meta-label sp-k">participant value</p>
-        <h2 id="value-title">Context, feedback and test discipline.</h2>
-        <p>The value sits in better questions and a more credible route into real operating conditions.</p>
-      </div>
-      <ul>
+  <section class="semantic-section" aria-labelledby="spark-value-title">
+    <p class="semantic-kicker">Participant value</p>
+    <div class="semantic-section__content">
+      <h2 id="spark-value-title">Context, feedback and test discipline.</h2>
+      <p class="semantic-lead">The value sits in better questions and a more credible route into real operating conditions.</p>
+      <ul class="semantic-rows">
         {participantValue.map(([title, description]) => <li><h3>{title}</h3><p>{description}</p></li>)}
       </ul>
     </div>
+  </section>
 
-    <div class="sp-faq">
-      <div><p class="meta-label sp-k">faq</p><h2>Programme questions.</h2></div>
+  <section class="semantic-section" aria-labelledby="spark-faq-title">
+    <p class="semantic-kicker">FAQ</p>
+    <div class="semantic-section__content">
+      <h2 id="spark-faq-title">Programme questions.</h2>
       <div>{questions.map(([question, answer]) => <details><summary>{question}</summary><p>{answer}</p></details>)}</div>
     </div>
-
-    <footer class="sp-release">
-      <div><h2>Follow the startup route.</h2><p>General technology introductions can begin through the non-application startup contact path.</p></div>
-      <a href="/contact/#for-startups">Introduce your technology <span aria-hidden="true">↗</span></a>
-    </footer>
   </section>
-</article>
 
-<script>
-  import "../../../scripts/routes/spark-threshold";
-</script>
+  <footer class="semantic-shell__release">
+    <p class="semantic-kicker">Startup route</p>
+    <div>
+      <h2>Follow the startup route.</h2>
+      <p>General technology introductions can begin through the non-application startup contact path.</p>
+      <a href="/contact/#for-startups">Introduce your technology</a>
+    </div>
+  </footer>
+</article>

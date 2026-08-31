@@ -5,11 +5,6 @@ if (publicProofRecords.length !== 1) {
   throw new Error("The public Proof overview must contain exactly one approved record.");
 }
 
-const maradinPoster = maradinProofRecord.media[0];
-if (!maradinPoster || maradinPoster.kind !== "image") {
-  throw new Error("The approved Maradin poster is required on Proof.");
-}
-
 const proofStages = [
   ["Define the condition", "State the operating need and the uncertainty the test should address."],
   ["Match the technology", "Assess relevance and readiness before entering the field."],
@@ -18,64 +13,54 @@ const proofStages = [
 ] as const;
 ---
 
-<article class="proof-route" data-route-production="proof" data-route-architecture="archive-threshold" data-route-motion="static">
-  <section class="proof-act proof-threshold" data-route-act="threshold" data-route-region="threshold" aria-labelledby="proof-title">
-    <div class="proof-threshold__boundary" aria-hidden="true"></div>
-    <div class="proof-threshold__copy">
-      <p class="proof-kicker">proof</p>
+<article class="semantic-shell" data-route-production="proof" data-route-architecture="phase-7a-semantic-shell" aria-labelledby="proof-title">
+  <header class="semantic-shell__hero">
+    <p class="semantic-kicker">Proof</p>
+    <div class="semantic-shell__hero-copy">
       <h1 id="proof-title">Evidence before scale.</h1>
-      <p class="proof-intro">A POC should reduce a specific uncertainty. Quantum connects the original need, field conditions and evidence in one structured record.</p>
+      <p class="semantic-lead">A POC should reduce a specific uncertainty. Quantum connects the original need, field conditions and evidence in one structured record.</p>
+    </div>
+  </header>
+
+  <section class="semantic-section" aria-labelledby="proof-record-title">
+    <p class="semantic-kicker">Only public field record</p>
+    <div class="semantic-section__content semantic-copy">
+      <h2 id="proof-record-title">{maradinProofRecord.title}</h2>
+      <p>{maradinProofRecord.summary}</p>
+      <a href="/pocs/maradin/">Open the field record</a>
     </div>
   </section>
 
-  <section class="proof-act proof-record" data-route-act="record" data-route-region="record" aria-labelledby="record-title">
-    <div class="proof-record__lead">
-      <figure class="proof-poster" data-route-geometry="record-aperture" data-route-reveal>
-        <img src={maradinPoster.src} alt={maradinPoster.alt} width={maradinPoster.width} height={maradinPoster.height} loading="eager" fetchpriority="high" decoding="async" />
-      </figure>
-      <div class="proof-record__copy">
-        <p class="proof-kicker">field record</p>
-        <h2 id="record-title">{maradinProofRecord.title}</h2>
-        <p>{maradinProofRecord.summary}</p>
-        <a class="proof-record__link" href="/pocs/maradin/">Open the field record</a>
-      </div>
+  <section class="semantic-section" aria-labelledby="proof-philosophy-title">
+    <p class="semantic-kicker">Evidence philosophy</p>
+    <div class="semantic-section__content semantic-copy">
+      <h2 id="proof-philosophy-title">Test the question that matters.</h2>
+      <p>A convincing demonstration is not automatically useful evidence. Quantum starts by defining the operational question, the environment that gives it meaning and the observations needed to understand what should happen next.</p>
+      <p>Technology fit is assessed before the test. The POC is then bounded so its design stays connected to the operating question, relevant conditions and evidence needed for a next-step decision.</p>
+      <p>Evidence is reported with its context and limits intact, giving the parties a clearer basis for the next-step decision.</p>
     </div>
+  </section>
 
-    <div class="proof-discipline" aria-labelledby="philosophy-title">
-      <div class="proof-philosophy">
-        <p class="proof-kicker">evidence philosophy</p>
-        <h2 id="philosophy-title">Test the question that matters.</h2>
-        <div class="proof-philosophy__copy">
-          <p>A convincing demonstration is not automatically useful evidence. Quantum starts by defining the operational question, the environment that gives it meaning and the observations needed to understand what should happen next.</p>
-          <p>Technology fit is assessed before the test. The POC is then bounded so its design stays connected to the operating question, relevant conditions and evidence needed for a next-step decision.</p>
-          <p>Evidence is reported with its context and limits intact, giving the parties a clearer basis for the next-step decision.</p>
-        </div>
-      </div>
-
-      <div class="proof-process" aria-labelledby="proof-process-title">
-        <div>
-          <p class="proof-kicker">structured poc</p>
-          <h2 id="proof-process-title">From condition to evidence.</h2>
-          <p>A useful field record keeps the challenge, technology, test design, execution and evidence distinct.</p>
-        </div>
-        <ol aria-label="Structured POC discipline">
-          {proofStages.map(([stage, detail]) => <li><h3>{stage}</h3><p>{detail}</p></li>)}
-        </ol>
-      </div>
+  <section class="semantic-section" aria-labelledby="proof-process-title">
+    <p class="semantic-kicker">Structured POC</p>
+    <div class="semantic-section__content">
+      <h2 id="proof-process-title">From condition to evidence.</h2>
+      <p class="semantic-lead">A useful field record keeps the challenge, technology, test design, execution and evidence distinct.</p>
+      <ol class="semantic-rows" aria-label="Structured POC discipline">
+        {proofStages.map(([stage, detail]) => <li><h3>{stage}</h3><p>{detail}</p></li>)}
+      </ol>
     </div>
+  </section>
 
-    <div class="proof-release">
-      <div><h2>Define what the test must answer.</h2><p>Start with the uncertainty that matters in the operating environment.</p></div>
-      <nav aria-label="Proof starting contexts">
-        <a class="button button--primary" href="/contact/#for-industry" aria-label="Bring an industrial challenge">
-          <span class="button__label--full">Bring an industrial challenge</span><span class="button__label--compact" aria-hidden="true">Industry challenge</span>
-        </a>
-        <a class="button button--secondary" href="/contact/#for-startups">Introduce a technology</a>
+  <footer class="semantic-shell__release">
+    <p class="semantic-kicker">Next question</p>
+    <div>
+      <h2>Define what the test must answer.</h2>
+      <p>Start with the uncertainty that matters in the operating environment.</p>
+      <nav class="semantic-inline-links" aria-label="Proof starting contexts">
+        <a href="/contact/#for-industry">Bring an industrial challenge</a>
+        <a href="/contact/#for-startups">Introduce a technology</a>
       </nav>
     </div>
-  </section>
+  </footer>
 </article>
-
-<script>
-  import "../../../scripts/routes/proof-threshold";
-</script>
