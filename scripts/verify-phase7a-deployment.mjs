@@ -39,6 +39,7 @@ const execFileAsync = promisify(execFile);
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const SCHEMA = "quantum-hub.phase-7a.deployment-verification.v1";
 export const REQUIRED_BRANCH = "redirect/phase-7a-signal-field-threshold";
+export const REQUIRED_BRANCH_URL = "https://redirect-phase-7a-signal-fie.qsite1.pages.dev/";
 export const REQUIRED_REPOSITORY = "AmirNatan1/Qsite1";
 export const REQUIRED_REMOTE_URL = "https://github.com/AmirNatan1/Qsite1.git";
 export const REQUIRED_CLOUDFLARE_APP_SLUG = "cloudflare-workers-and-pages";
@@ -132,8 +133,9 @@ export function validateOptions(options, { requireOutput = true } = {}) {
   if (options.immutableUrl === options.branchUrl) throw new Error("immutable and branch preview URLs must be distinct");
   const immutableLabel = new URL(options.immutableUrl).hostname.split(".")[0];
   if (!/^[0-9a-f]{8}$/.test(immutableLabel)) throw new Error("--immutable-url must begin with the lowercase eight-hex Cloudflare deployment prefix");
-  const branchLabel = new URL(options.branchUrl).hostname.split(".")[0];
-  if (!branchLabel.includes("phase-7a-signal-field")) throw new Error("--branch-url must identify the Phase 7A signal-field branch alias");
+  if (options.branchUrl !== REQUIRED_BRANCH_URL) {
+    throw new Error(`--branch-url must be the exact Cloudflare Pages alias ${REQUIRED_BRANCH_URL}`);
+  }
   if (path.resolve(options.dist) !== DEFAULT_DIST) throw new Error("--dist must be the exact repository dist directory");
   if (!/^[A-Z_][A-Z0-9_]*$/.test(options.githubTokenEnvironment)) {
     throw new Error("--github-token-environment must be an uppercase environment identifier");
@@ -484,7 +486,7 @@ export function runSelfTest() {
   const options = validateOptions(parseArguments([
     "--expected-head", "b".repeat(40),
     "--immutable-url", "https://12345678.qsite1.pages.dev/",
-    "--branch-url", "https://redirect-phase-7a-signal-field.qsite1.pages.dev/",
+    "--branch-url", REQUIRED_BRANCH_URL,
   ]), { requireOutput: false });
   const headers = new Headers({
     "cache-control": "public, max-age=0, must-revalidate",

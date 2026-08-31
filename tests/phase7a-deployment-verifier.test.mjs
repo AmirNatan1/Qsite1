@@ -10,6 +10,7 @@ import {
   HTML_AUTHORITY_FILES,
   PUBLIC_ROUTE_OUTCOMES,
   REQUIRED_BRANCH,
+  REQUIRED_BRANCH_URL,
   REQUIRED_CLOUDFLARE_PROJECT,
   REQUIRED_HEADER_POLICIES,
   ROOT,
@@ -26,7 +27,7 @@ import {
 
 const HEAD = "b".repeat(40);
 const IMMUTABLE_URL = "https://12345678.qsite1.pages.dev/";
-const BRANCH_URL = "https://redirect-phase-7a-signal-field.qsite1.pages.dev/";
+const BRANCH_URL = REQUIRED_BRANCH_URL;
 const DEPLOYMENT_ID = "12345678-1234-4234-8234-123456789abc";
 
 function options(extra = []) {
@@ -123,7 +124,7 @@ test("CLI accepts only explicit, distinct Phase 7A HTTPS preview bindings and ex
   assert.throws(() => options(["--immutable-url", "https://qsite1.pages.dev/"]), /preview origin/);
   assert.throws(() => options(["--immutable-url", "https://nothex12.qsite1.pages.dev/"]), /eight-hex/);
   assert.throws(() => options(["--branch-url", IMMUTABLE_URL]), /distinct/);
-  assert.throws(() => options(["--branch-url", "https://some-other-branch.qsite1.pages.dev/"]), /signal-field branch alias/);
+  assert.throws(() => options(["--branch-url", "https://some-other-branch.qsite1.pages.dev/"]), /exact Cloudflare Pages alias/);
   assert.throws(() => options(["--dist", path.join(ROOT, "another-dist")]), /exact repository dist/);
   assert.throws(() => options(["--expected-head", ACCEPTED_PARENT_SHA]), /new lowercase/);
 });
