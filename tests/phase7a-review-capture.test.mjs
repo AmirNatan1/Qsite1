@@ -6,6 +6,7 @@ import test from "node:test";
 
 import {
   CAPTURE_RECORDING_SPECS,
+  CAPTURE_SETTLE_TIMEOUTS,
   MANIFEST_PATH,
   RECORDING_VIEW,
   ROOT,
@@ -100,6 +101,11 @@ test("Firefox gets one fresh browser per recording segment while Chromium stays 
     firefox.find(({ segment }) => segment === "reduced-motion").sessionId,
     firefox.find(({ segment }) => segment === "no-javascript").sessionId,
   );
+});
+
+test("capture settling is bounded when Firefox suppresses animation frames", () => {
+  assert.deepEqual(CAPTURE_SETTLE_TIMEOUTS, { fontsMs: 1_000, animationFramesMs: 500 });
+  assert.ok(Object.isFrozen(CAPTURE_SETTLE_TIMEOUTS));
 });
 
 test("screenshot authority covers all thirteen core viewports and key alternatives", () => {

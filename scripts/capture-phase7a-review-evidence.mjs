@@ -52,6 +52,7 @@ export const SCHEMA = "quantum-hub.phase-7a.review-evidence-capture.v1";
 export const MANIFEST_PATH = "evidence-manifest.json";
 export const TYPOGRAPHY_SPECIMEN_PATH = "typography/phase7a-portable-specimen.html";
 export const RECORDING_VIEW = Object.freeze({ id: "recording-1280x720", width: 1280, height: 720 });
+export const CAPTURE_SETTLE_TIMEOUTS = Object.freeze({ fontsMs: 1_000, animationFramesMs: 500 });
 export const CAPTURE_RECORDING_SPECS = RECORDING_SPECS;
 
 const executableName = (base) => process.platform === "win32" ? `${base}.exe` : base;
@@ -457,10 +458,18 @@ function attachDiagnostics(page, ledger, scope) {
 
 async function settle(page, timeoutMs) {
   await page.waitForLoadState("load", { timeout: timeoutMs }).catch(() => undefined);
-  await page.evaluate(async () => {
-    if (document.fonts?.ready) await document.fonts.ready;
-    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-  }).catch(() => undefined);
+  await page.evaluate(async ({ fontsMs, animationFramesMs }) => {
+    if (document.fonts?.ready) {
+      await Promise.race([
+        document.fonts.ready,
+        new Promise((resolve) => setTimeout(resolve, fontsMs)),
+      ]);
+    }
+    await Promise.race([
+      new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
+      new Promise((resolve) => setTimeout(resolve, animationFramesMs)),
+    ]);
+  }, CAPTURE_SETTLE_TIMEOUTS).catch(() => undefined);
   await page.waitForTimeout(120);
 }
 
