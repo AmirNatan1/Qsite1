@@ -1,22 +1,8 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import BuiltWithIndustry from "../components/home/BuiltWithIndustry.astro";
-import ConversionField from "../components/home/ConversionField.astro";
-import EntryField from "../components/home/EntryField.astro";
-import IndustryTerritories from "../components/home/IndustryTerritories.astro";
-import MethodField from "../components/home/MethodField.astro";
-import ProgrammesField from "../components/home/ProgrammesField.astro";
-import ProofField from "../components/home/ProofField.astro";
-import {
-  PUBLIC_INDUSTRIES,
-  champProgramme,
-  maradinProofRecord,
-  sparkProgramme,
-} from "../content";
-import "../styles/routes/home.css";
+import SignalThreshold from "../components/home/SignalThreshold.astro";
 import "../styles/routes/home-cinematic.css";
-import "../styles/routes/home-method.css";
-import "../styles/routes/home-responsive.css";
+import "../styles/routes/phase-7a-signal-field.css";
 
 const title = "Industrial innovation tested in the real world";
 const description =
@@ -53,19 +39,6 @@ try {
   }
 }
 
-const processSteps = [
-  { title: "Frame", description: "Define the operational problem, owner and success criteria." },
-  { title: "Source", description: "Find technologies relevant to the real operating context." },
-  { title: "Assess", description: "Evaluate technical, commercial and implementation fit." },
-  { title: "Test", description: "Run a structured POC in a real environment." },
-  { title: "Decide", description: "Use evidence to determine the next step." },
-] as const;
-
-const maradinOpening = maradinProofRecord.media.find(({ id }) => id === "maradin-field-aperture-poster");
-const maradinClimax = maradinProofRecord.media.find(({ id }) => id === "maradin-real-field-still");
-if (!maradinOpening || !maradinClimax) {
-  throw new Error("The approved Maradin stills are required on Home.");
-}
 ---
 
 <BaseLayout
@@ -204,7 +177,7 @@ if (!maradinOpening || !maradinClimax) {
       </div>
     </div>
 
-    <EntryField />
+    <SignalThreshold />
 
     <script is:inline>
       (() => {
@@ -258,7 +231,7 @@ if (!maradinOpening || !maradinClimax) {
             document.querySelector(".site-header")?.removeAttribute("inert");
             document.querySelector(".site-footer")?.removeAttribute("inert");
             document.querySelector("#entry")?.removeAttribute("inert");
-            document.querySelectorAll("[data-field-section]").forEach((field) => field.removeAttribute("inert"));
+              document.querySelectorAll("[data-field-section]").forEach((field) => field.removeAttribute("inert"));
             const shell = document.querySelector("[data-cinematic-shell]");
             if (shell instanceof HTMLElement) {
               shell.dataset.cinematicInteractive = "true";
@@ -270,16 +243,4 @@ if (!maradinOpening || !maradinClimax) {
     </script>
   </div>
 
-  <BuiltWithIndustry />
-  <MethodField steps={processSteps} />
-  <IndustryTerritories industries={PUBLIC_INDUSTRIES} />
-  <ProofField
-    title={maradinProofRecord.title}
-    summary={maradinProofRecord.summary}
-    execution={maradinProofRecord.execution}
-    openingMedia={maradinOpening}
-    climaxMedia={maradinClimax}
-  />
-  <ProgrammesField spark={sparkProgramme} champ={champProgramme} inheritedMedia={maradinClimax} />
-  <ConversionField />
 </BaseLayout>

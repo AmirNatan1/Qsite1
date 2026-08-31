@@ -1,0 +1,96 @@
+<section
+  id="entry"
+  class="manifesto-field signal-threshold"
+  aria-labelledby="home-title"
+  tabindex="-1"
+  data-home-scene="signal-threshold"
+  data-manifesto-threshold
+>
+  <div class="signal-field" data-signal-field aria-hidden="true">
+    <div class="signal-field__material"></div>
+    <svg
+      class="signal-field__structure"
+      viewBox="0 0 1600 1000"
+      preserveAspectRatio="xMidYMid slice"
+      focusable="false"
+    >
+      <g class="signal-field__pressure">
+        <path d="M-160 760 C170 610 326 700 492 548 S772 366 954 474 S1260 654 1760 304" />
+        <path d="M-120 870 C208 700 396 806 566 628 S842 446 1048 554 S1340 722 1750 430" />
+        <path d="M-90 552 C214 446 354 504 516 408 S818 236 1004 342 S1300 472 1710 188" />
+        <path d="M112 1080 C350 824 514 916 684 736 S974 576 1152 660 S1410 768 1694 598" />
+      </g>
+      <g class="signal-field__load">
+        <path d="M246 -80 C356 166 332 332 486 470 C620 590 798 558 894 684 C1018 848 970 990 1108 1110" />
+        <path d="M1290 -90 C1164 160 1206 308 1086 452 C968 594 810 604 724 742 C632 890 686 1026 590 1110" />
+      </g>
+      <path
+        class="signal-field__live"
+        pathLength="1"
+        d="M-80 544 C250 536 390 574 574 512 C700 470 752 500 810 500 C920 500 954 590 1114 576 C1290 560 1400 470 1680 486"
+      />
+      <circle class="signal-field__contact" cx="810" cy="500" r="8" />
+    </svg>
+    <div class="signal-field__source">
+      <img
+        src="/brand/quantum-icon-white.svg"
+        width="240"
+        height="240"
+        alt=""
+        decoding="sync"
+      />
+      <span></span>
+    </div>
+  </div>
+
+  <div class="manifesto-field__content">
+    <h1 id="home-title" aria-label="We turn industrial needs into field evidence.">
+      <span class="manifesto-line manifesto-line--one" aria-hidden="true">
+        <span class="manifesto-word">WE</span>
+        <span class="manifesto-word">TURN</span>
+      </span>
+      <span class="manifesto-line manifesto-line--two" aria-hidden="true">
+        <span class="manifesto-word">INDUSTRIAL</span>
+        <span class="manifesto-word">NEEDS</span>
+      </span>
+      <span class="manifesto-line manifesto-line--three" aria-hidden="true">
+        <span class="manifesto-word">INTO</span>
+        <span class="manifesto-word manifesto-word--contact">FIELD</span>
+        <span class="manifesto-word">EVIDENCE.</span>
+      </span>
+    </h1>
+  </div>
+</section>
+
+<section
+  class="field-map-threshold"
+  aria-labelledby="field-map-threshold-title"
+  data-home-scene="field-map"
+  data-field-map-threshold
+  data-field-section
+>
+  <div class="field-map-threshold__structure" aria-hidden="true">
+    <span></span><span></span><span></span>
+  </div>
+  <div class="field-map-threshold__content">
+    <p class="field-map-threshold__coordinate">FIELD MAP / SIGNAL 01</p>
+    <h2 id="field-map-threshold-title">One operating field. Two trajectories.</h2>
+    <nav class="field-map-threshold__trajectories" aria-label="Primary trajectories">
+      <a class="field-map-destination" href="/for-partners/">
+        <span>For industry</span>
+        <span>Bring an operational challenge</span>
+      </a>
+      <a class="field-map-destination" href="/for-startups/">
+        <span>For startups</span>
+        <span>Bring a technology ready to be tested</span>
+      </a>
+    </nav>
+    <p class="field-map-threshold__instruction">The complete Field Map is available above.</p>
+  </div>
+</section>
+
+<script>
+  import { initSignalField } from "../../scripts/signal-field";
+
+  initSignalField();
+</script>
