@@ -123,6 +123,7 @@ export async function verifySource(root = process.cwd()) {
   assert.match(attributes, /artifacts\/original\/phase-4r2-1-causal-signal-scroll-stability\/production\/\*\* -text/);
   assert.match(attributes, /artifacts\/reports\/phase-4r2\/\*\* -text/);
   assert.match(attributes, /artifacts\/original\/phase-7a-typography-candidates\/OFL-\*\.txt -text/);
+  assert.match(attributes, /public\/fonts\/licenses\/OFL-\*\.txt -text/);
 
   const packageJson = JSON.parse(packageText);
   assert.deepEqual(Object.keys(packageJson.dependencies ?? {}), ["astro"], "no production runtime dependency may be added");

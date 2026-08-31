@@ -81,6 +81,7 @@ test("governed Phase 4-R2 authority bytes survive Windows checkouts", async () =
 test("typography candidate licences survive Windows checkouts byte-for-byte", async () => {
   const attributes = await read(".gitattributes");
   assert.match(attributes, /artifacts\/original\/phase-7a-typography-candidates\/OFL-\*\.txt -text/);
+  assert.match(attributes, /public\/fonts\/licenses\/OFL-\*\.txt -text/);
 });
 
 test("Maradin remains lazily sourced with one-player replacement and teardown", async () => {
