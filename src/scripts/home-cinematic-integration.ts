@@ -322,15 +322,13 @@ export function initHomeCinematicIntegration() {
   const video = shell?.querySelector<HTMLVideoElement>("[data-cinematic-media]");
   const entry = shell?.querySelector<HTMLElement>("#entry");
   const manifestoContent = shell?.querySelector<HTMLElement>(".manifesto-field__content");
-  const audienceRouting = shell?.querySelector<HTMLElement>("[data-audience-routing]");
+  const fieldMapThreshold = shell?.querySelector<HTMLElement>("[data-field-map-threshold]");
   const header = document.querySelector<HTMLElement>(".site-header");
   const footer = document.querySelector<HTMLElement>(".site-footer");
   const downstreamFields = Array.from(document.querySelectorAll<HTMLElement>("[data-field-section]"));
   const skipLink = document.querySelector<HTMLAnchorElement>(".skip-link[href='#entry']");
-  const mobileMenu = header?.querySelector<HTMLDetailsElement>("[data-mobile-nav]");
+  const fieldMap = header?.querySelector<HTMLDetailsElement>("[data-field-map]");
   const semanticHomeLinks = Array.from(header?.querySelectorAll<HTMLAnchorElement>('a[href="/#entry"]') ?? []);
-  const methodField = document.querySelector<HTMLElement>("[data-method-section]");
-  const methodStages = Array.from(methodField?.querySelectorAll<HTMLElement>("[data-method-stage]") ?? []);
   const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const fonts = document.fonts;
   let fontsReady = !fonts || fonts.status === "loaded";
@@ -343,7 +341,7 @@ export function initHomeCinematicIntegration() {
     delete root.dataset.cinematicEntryIntent;
     document.querySelector<HTMLElement>(".site-header")?.removeAttribute("inert");
     document.querySelector<HTMLElement>("#entry")?.removeAttribute("inert");
-    document.querySelector<HTMLElement>("[data-audience-routing]")?.removeAttribute("inert");
+    document.querySelector<HTMLElement>("[data-field-map-threshold]")?.removeAttribute("inert");
     document.querySelector<HTMLElement>(".site-footer")?.removeAttribute("inert");
     for (const field of document.querySelectorAll<HTMLElement>("[data-field-section]")) field.removeAttribute("inert");
     if (shell) {
@@ -353,7 +351,7 @@ export function initHomeCinematicIntegration() {
       shell.dataset.mediaState = "failed";
     }
   };
-  if (!shell || !stage || !video || !entry || !manifestoContent || !audienceRouting || !header || !skipLink) {
+  if (!shell || !stage || !video || !entry || !manifestoContent || !fieldMapThreshold || !header || !skipLink) {
     releaseMissingDom();
     return;
   }
@@ -390,7 +388,7 @@ export function initHomeCinematicIntegration() {
   let needsMeasurement = true;
   let shellTop = 0;
   let entryTop = 1;
-  let audienceTop = 2;
+  let fieldMapTop = 2;
   let headerHeight = 0;
   let travel = 1;
   let committedTravel = 0;
@@ -399,25 +397,6 @@ export function initHomeCinematicIntegration() {
   let currentScrollOffset = 0;
   let persistedRestorationState = "";
   let resizeObserver: ResizeObserver | null = null;
-
-  /**
-   * The accepted Operating Field owns its motion preference response and stays
-   * byte-frozen. Once its five-stage desktop geometry has actually committed,
-   * remember the authored computed minimum so a later accessibility preference
-   * can stop sticky motion without collapsing the already-entered document.
-   */
-  const rememberCommittedMethodGeometry = () => {
-    if (
-      root.dataset.cinematicMethodGeometry === "committed"
-      || methodField?.dataset.methodSticky !== "true"
-      || methodStages.length !== 5
-    ) return;
-    const minimums = methodStages.map((stage) => Number.parseFloat(getComputedStyle(stage).minHeight));
-    if (minimums.some((value) => !Number.isFinite(value) || value <= 0)) return;
-    if (Math.max(...minimums) - Math.min(...minimums) > 0.5) return;
-    root.style.setProperty("--cinematic-committed-method-stage-min-height", `${minimums[0]!.toFixed(2)}px`);
-    root.dataset.cinematicMethodGeometry = "committed";
-  };
 
   const pauseDecoder = () => {
     video.pause();
@@ -454,7 +433,7 @@ export function initHomeCinematicIntegration() {
       shell.dataset.routeNavigation = "released";
       return;
     }
-    mobileMenu?.removeAttribute("open");
+    fieldMap?.removeAttribute("open");
     const focused = document.activeElement;
     header.setAttribute("inert", "");
     footer?.setAttribute("inert", "");
@@ -463,7 +442,7 @@ export function initHomeCinematicIntegration() {
     shell.dataset.routeNavigation = "concealed";
     if (manifestoSettled) {
       entry.removeAttribute("inert");
-      audienceRouting.removeAttribute("inert");
+      fieldMapThreshold.removeAttribute("inert");
       shell.dataset.cinematicInteractive = "manifesto";
       if (focused instanceof Node && (header.contains(focused) || footer?.contains(focused) || downstreamFields.some((field) => field.contains(focused)))) {
         entry.focus({ preventScroll: true });
@@ -530,7 +509,7 @@ export function initHomeCinematicIntegration() {
     const anchors = [
       manifestoContent.querySelector<HTMLElement>("h1"),
       ...manifestoContent.querySelectorAll<HTMLElement>(".manifesto-line"),
-      ...audienceRouting.querySelectorAll<HTMLElement>(".audience-trajectory"),
+      ...fieldMapThreshold.querySelectorAll<HTMLElement>(".field-map-destination"),
     ];
     return anchors.every((anchor) => {
       if (!anchor) return false;
@@ -633,7 +612,7 @@ export function initHomeCinematicIntegration() {
       shell.style.setProperty("--cinematic-travel-px", `${committedTravel.toFixed(2)}px`);
       entryTop = entry.getBoundingClientRect().top + window.scrollY;
     }
-    audienceTop = audienceRouting.getBoundingClientRect().top + window.scrollY;
+    fieldMapTop = fieldMapThreshold.getBoundingClientRect().top + window.scrollY;
     travel = Math.max(entryTop - headerHeight - shellTop, 1);
     needsMeasurement = false;
   };
@@ -663,7 +642,6 @@ export function initHomeCinematicIntegration() {
   const frameAtTime = (time: number) => Math.min(PHYSICAL_FRAME_COUNT, Math.max(1, Math.floor(time * FRAME_RATE + 0.001) + 1));
   const write = () => {
     if (failed || document.hidden) return;
-    rememberCommittedMethodGeometry();
     if (needsMeasurement) measure();
     const scrollExtent = Math.max(1, Math.round(travel));
     const nativeScrollY = window.scrollY;
@@ -699,7 +677,7 @@ export function initHomeCinematicIntegration() {
     if (manifestoActive) semanticEntryNavigationResolved = true;
     setManifestoReveal(manifestoActive);
     maybeReleaseEntryIntentGuard();
-    const navigationReleasePoint = audienceTop - window.innerHeight;
+    const navigationReleasePoint = fieldMapTop - window.innerHeight;
     const navigationReleased = settled && nativeScrollY >= navigationReleasePoint;
     setThresholdInteraction(manifestoActive, navigationReleased);
     persistRestorationState(settled);
@@ -762,8 +740,7 @@ export function initHomeCinematicIntegration() {
   resizeObserver = new ResizeObserver(invalidate);
   resizeObserver.observe(shell);
   resizeObserver.observe(entry);
-  resizeObserver.observe(audienceRouting);
-  if (methodField) resizeObserver.observe(methodField);
+  resizeObserver.observe(fieldMapThreshold);
   window.addEventListener("scroll", schedule, { passive: true, signal });
   window.addEventListener("resize", invalidate, { passive: true, signal });
   window.addEventListener("pageshow", invalidate, { passive: true, signal });
