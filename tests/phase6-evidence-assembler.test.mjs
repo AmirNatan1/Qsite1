@@ -144,7 +144,7 @@ function accessibilityDesktopHome(routePath) {
       input: "NATIVE WHEEL",
       ready: true,
       resolved: true,
-      state: { entryInert: false, hash: "", manifestoReveal: "resolved", path: "/", route: "/" },
+      state: { cinematicMode: "enhanced", entryInert: false, hash: "", manifestoReveal: "resolved", mediaState: "ready", path: "/", route: "/" },
       wheelSteps: 12,
     } : null,
   };
@@ -1391,6 +1391,19 @@ test("accessibility PASS requires the exact ten-route interaction matrix, four c
   historyFailure.engines[0].history.status = "FAIL";
   historyFailure.engines[0].history.failures.push({ code: "forward" });
   assert.throws(() => validateDocumentAuthority(record, historyFailure, metadata), /history raw evidence differs|history authority differs/);
+
+  for (const mutate of [
+    (preparation) => { preparation.state.hash = "#entry"; },
+    (preparation) => { preparation.state.route = "/#entry"; },
+    (preparation) => { preparation.wheelSteps = 25; },
+    (preparation) => { preparation.state.cinematicMode = "fallback"; },
+    (preparation) => { preparation.state.mediaState = "loading"; },
+  ]) {
+    const contradictoryPreparation = accessibilityReport("chromium");
+    const preparation = contradictoryPreparation.engines[0].keyboard.find(({ route }) => route === "home").desktopHome.preparation;
+    mutate(preparation);
+    assert.throws(() => validateDocumentAuthority(record, contradictoryPreparation, metadata), /keyboard raw row\/status differs/);
+  }
 });
 
 test("guarded requirement statuses reject every known false PASS promotion", async (t) => {

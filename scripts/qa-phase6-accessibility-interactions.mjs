@@ -300,9 +300,11 @@ export function keyboardFailures(record) {
   if (record.route === "home") {
     const preparation = desktopHome?.preparation;
     if (!preparation || preparation.input !== "NATIVE WHEEL" || preparation.ready !== true
-      || preparation.resolved !== true || !Number.isInteger(preparation.wheelSteps) || preparation.wheelSteps < 1
-      || preparation.state?.path !== "/" || preparation.state?.entryInert !== false
-      || preparation.state?.manifestoReveal !== "resolved") {
+      || preparation.resolved !== true || !Number.isInteger(preparation.wheelSteps)
+      || preparation.wheelSteps < 1 || preparation.wheelSteps > 24
+      || preparation.state?.path !== "/" || preparation.state?.hash !== "" || preparation.state?.route !== "/"
+      || preparation.state?.cinematicMode !== "enhanced" || preparation.state?.mediaState !== "ready"
+      || preparation.state?.entryInert !== false || preparation.state?.manifestoReveal !== "resolved") {
       failures.push({ code: "desktop-home-preparation", actual: preparation ?? null });
     }
   }
@@ -330,9 +332,11 @@ async function observeDesktopHomeState(page) {
     const entry = document.querySelector("#entry");
     const shell = document.querySelector("[data-cinematic-shell]");
     return {
+      cinematicMode: document.documentElement.dataset.cinematicMode ?? null,
       entryInert: entry?.hasAttribute("inert") ?? null,
       hash: location.hash,
       manifestoReveal: shell?.getAttribute("data-manifesto-reveal") ?? null,
+      mediaState: shell?.getAttribute("data-media-state") ?? null,
       path: location.pathname,
       route: `${location.pathname}${location.hash}`,
     };

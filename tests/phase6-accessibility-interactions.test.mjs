@@ -50,7 +50,7 @@ function desktopHome(routePath) {
       input: "NATIVE WHEEL",
       ready: true,
       resolved: true,
-      state: { entryInert: false, hash: "", manifestoReveal: "resolved", path: "/", route: "/" },
+      state: { cinematicMode: "enhanced", entryInert: false, hash: "", manifestoReveal: "resolved", mediaState: "ready", path: "/", route: "/" },
       wheelSteps: 12,
     } : null,
   };
@@ -248,10 +248,29 @@ test("keyboard validator covers visible skip activation and reverse focus order"
 });
 
 test("Home desktop navigation requires native cinematic preparation evidence", () => {
-  const record = keyboardRow("chromium", PHASE6_ROUTES.find(({ id }) => id === "home"));
+  const home = PHASE6_ROUTES.find(({ id }) => id === "home");
+  const record = keyboardRow("chromium", home);
   assert.deepEqual(record.failures, []);
-  delete record.desktopHome.preparation;
-  assert.ok(keyboardFailures(record).some(({ code }) => code === "desktop-home-preparation"));
+  const mutations = [
+    (candidate) => { delete candidate.desktopHome.preparation; },
+    (candidate) => { candidate.desktopHome.preparation.input = "PROGRAMMATIC"; },
+    (candidate) => { candidate.desktopHome.preparation.ready = false; },
+    (candidate) => { candidate.desktopHome.preparation.resolved = false; },
+    (candidate) => { candidate.desktopHome.preparation.wheelSteps = 0; },
+    (candidate) => { candidate.desktopHome.preparation.wheelSteps = 25; },
+    (candidate) => { candidate.desktopHome.preparation.state.path = "/about/"; },
+    (candidate) => { candidate.desktopHome.preparation.state.hash = "#entry"; },
+    (candidate) => { candidate.desktopHome.preparation.state.route = "/#entry"; },
+    (candidate) => { candidate.desktopHome.preparation.state.cinematicMode = "fallback"; },
+    (candidate) => { candidate.desktopHome.preparation.state.mediaState = "loading"; },
+    (candidate) => { candidate.desktopHome.preparation.state.entryInert = true; },
+    (candidate) => { candidate.desktopHome.preparation.state.manifestoReveal = "hidden"; },
+  ];
+  for (const mutate of mutations) {
+    const candidate = keyboardRow("chromium", home);
+    mutate(candidate);
+    assert.ok(keyboardFailures(candidate).some(({ code }) => code === "desktop-home-preparation"));
+  }
 });
 
 test("mobile-menu validator requires close, Escape focus return and every repeat cycle", () => {

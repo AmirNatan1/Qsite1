@@ -623,7 +623,7 @@ function accessibilityFixture(engine, { axeOnly = false, failed = false } = {}) 
     const forwardSecond = route.id === "home" ? visibleFocus("/for-startups/", ["audience-trajectory"], "a|/for-startups/|Startups") : visibleFocus("/fixture-two/", ["fixture-link"], "a|/fixture-two/|Two");
     return {
       afterActivation: { activeId: expectedHash.slice(1), hash: expectedHash, targetVisible: true }, backward: { ...forwardFirst },
-      desktopHome: { activationError: null, arrival: { entryInert: false, hash: "#entry", manifestoReveal: "resolved", path: "/", route: "/#entry" }, back: { hash: "", path: route.path, route: route.path }, backError: null, focus: visibleFocus("/#entry"), forward: { hash: "#entry", path: "/", route: "/#entry" }, forwardError: null, preparation: route.id === "home" ? { input: "NATIVE WHEEL", ready: true, resolved: true, state: { entryInert: false, hash: "", manifestoReveal: "resolved", path: "/", route: "/" }, wheelSteps: 12 } : null },
+      desktopHome: { activationError: null, arrival: { entryInert: false, hash: "#entry", manifestoReveal: "resolved", path: "/", route: "/#entry" }, back: { hash: "", path: route.path, route: route.path }, backError: null, focus: visibleFocus("/#entry"), forward: { hash: "#entry", path: "/", route: "/#entry" }, forwardError: null, preparation: route.id === "home" ? { input: "NATIVE WHEEL", ready: true, resolved: true, state: { cinematicMode: "enhanced", entryInert: false, hash: "", manifestoReveal: "resolved", mediaState: "ready", path: "/", route: "/" }, wheelSteps: 12 } : null },
       engine, expectedHash, failures: [], first, forwardFirst, forwardSecond, route: route.id, routePath: route.path, status: "PASS",
     };
   });
@@ -1339,6 +1339,22 @@ test("Phase 6-R1 canonical assembler inventory, wrappers, taxonomy and roles fai
     return wrapper;
   });
   assertBothReject(sparseAccessibility, /accessibility|keyboard/i);
+
+  for (const [name, mutate] of Object.entries({
+    alreadyAtEntryHash: (preparation) => { preparation.state.hash = "#entry"; },
+    alreadyAtEntryRoute: (preparation) => { preparation.state.route = "/#entry"; },
+    impossibleWheelStepCount: (preparation) => { preparation.wheelSteps = 25; },
+    wrongCinematicMode: (preparation) => { preparation.state.cinematicMode = "fallback"; },
+    wrongMediaState: (preparation) => { preparation.state.mediaState = "loading"; },
+  })) {
+    const contradictoryPreparation = rebindAssemblerMutation(fixtureR1PayloadEntries(), "09-accessibility/accessibility-chromium.json", (bytes) => {
+      const wrapper = JSON.parse(bytes.toString("utf8"));
+      const preparation = wrapper.payload.engines[0].keyboard.find(({ route }) => route === "home").desktopHome.preparation;
+      mutate(preparation);
+      return wrapper;
+    });
+    assertBothReject(contradictoryPreparation, /accessibility|keyboard|preparation/i, `${name} passed package boundaries`);
+  }
 
   const falseKeyboardPass = rebindAssemblerMutation(fixtureR1PayloadEntries(), "09-accessibility/section-summary.json", (bytes) => {
     const summary = JSON.parse(bytes.toString("utf8"));
