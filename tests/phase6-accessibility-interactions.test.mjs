@@ -384,6 +384,8 @@ test("runner uses real axe and native keyboard without broad suppression", async
   assert.doesNotMatch(source, /disableRules|rules:\s*\{|exclude:\s*\[/);
   assert.match(source, /page\.keyboard\.press\("Tab"\)/);
   assert.match(source, /page\.keyboard\.press\("Shift\+Tab"\)/);
+  assert.match(source, /waitForActiveElementFullyVisible/);
+  assert.doesNotMatch(source, /waitForTimeout\(180\)/);
   assert.match(source, /prepareHomeHeaderNavigation/);
   assert.match(source, /page\.mouse\.wheel\(0, 1_200\)/);
   assert.match(source, /waitForURL\([\s\S]{0,200}waitUntil:\s*"commit"/);

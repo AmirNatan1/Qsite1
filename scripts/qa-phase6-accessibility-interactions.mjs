@@ -272,6 +272,18 @@ async function observeFocus(page) {
   });
 }
 
+async function waitForActiveElementFullyVisible(page, timeoutMs) {
+  await page.waitForFunction(() => {
+    const element = document.activeElement;
+    if (!(element instanceof HTMLElement)) return false;
+    const rect = element.getBoundingClientRect();
+    const style = getComputedStyle(element);
+    return rect.width > 0 && rect.height > 0
+      && rect.top >= 0 && rect.left >= 0 && rect.bottom <= innerHeight && rect.right <= innerWidth
+      && style.display !== "none" && style.visibility !== "hidden";
+  }, undefined, { timeout: Math.min(timeoutMs, 1_500) }).catch(() => undefined);
+}
+
 function visiblyFocused(observation) {
   return observation.focusVisible
     && observation.visible
@@ -429,7 +441,7 @@ async function runKeyboardChecks(browser, engine, options) {
       await openRoute(page, options, route);
       const expectedHash = route.id === "home" ? "#entry" : "#main-content";
       await page.keyboard.press("Tab");
-      await page.waitForTimeout(180);
+      await waitForActiveElementFullyVisible(page, options.timeoutMs);
       const first = await observeFocus(page);
       if (first.href === expectedHash) {
         await page.keyboard.press("Enter");
