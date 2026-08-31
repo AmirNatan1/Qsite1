@@ -3044,6 +3044,7 @@ export function validateDocumentAuthority(record, document, metadata) {
   if (record.role === "accessibility-summary") {
     if (!engine || document.baseUrl !== metadata.evidenceContext.browserQa.baseUrl
       || document.engine !== engine
+      || document.headed !== true
       || !Array.isArray(document.selectedEngines) || document.selectedEngines.length !== 1 || document.selectedEngines[0] !== engine
       || !Array.isArray(document.engines) || document.engines.length !== 1 || document.engines[0]?.engine !== engine
       || document.summary?.axeCases !== 20
@@ -3068,6 +3069,8 @@ export function validateDocumentAuthority(record, document, metadata) {
       && ((typeof document.limitation === "string" && document.limitation.trim()) || (Array.isArray(document.limitations) && document.limitations.some((item) => typeof item === "string" && item.trim())));
     if (document.baseUrl !== metadata.evidenceContext.browserQa.baseUrl
       || document.engine !== "webkit"
+      || document.headed !== true
+      || document.axeOnly !== false
       || !Array.isArray(document.engines) || document.engines.length !== 1 || document.engines[0]?.engine !== "webkit"
       || !Array.isArray(document.selectedEngines) || document.selectedEngines.length !== 1 || document.selectedEngines[0] !== "webkit"
       || (!failedSource && !limitedSource)) throw new Error("WebKit interaction limitation source differs");

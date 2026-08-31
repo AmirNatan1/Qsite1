@@ -125,20 +125,60 @@ function performanceReport() {
 }
 
 function accessibilityFocus(key = "a|/target|Target") {
+  const [tag, keyHref, ...textParts] = key.split("|");
+  const text = textParts.join("|");
+  const visibleAncestor = (ancestorTag) => ({ ariaHidden: null, contentVisibility: "visible", display: "block", hidden: false, inert: false, opacity: 1, tag: ancestorTag, visibility: "visible" });
   return {
-    classes: [], focusVisible: true, href: "/target", key, outlineStyle: "solid", outlineWidth: "2px",
-    rect: { bottom: 80, height: 44, left: 10, right: 110, top: 36, width: 100 }, selector: "a.target", tag: "a", text: "Target", visible: true,
+    ariaLabel: null, classes: [], focusVisible: true, href: keyHref || null, key, outlineColor: "rgb(240, 107, 160)", outlineStyle: "solid", outlineWidth: "2px",
+    rect: { bottom: 80, height: 44, left: 10, right: 110, top: 36, width: 100 }, renderedVisible: true, selector: "a.target", tag, text, visible: true,
+    visibilityChain: [visibleAncestor(tag), visibleAncestor("body"), visibleAncestor("html")], withinMobileNav: false, withinSiteHeader: false,
   };
+}
+
+function accessibilityDiagnostics(routePath, status = 200, { includeHome = false } = {}) {
+  const diagnostics = {
+    consoleErrors: [], consoleWarnings: [], pageErrors: [],
+    requests: [{
+      documentUrl: "about:blank", failure: null, fromServiceWorker: false, isMainFrame: true, isNavigation: true, method: "GET", resourceType: "document", status,
+      url: new URL(routePath, LOCAL_BASE_URL).toString(),
+    }],
+  };
+  if (includeHome && new URL(routePath, LOCAL_BASE_URL).pathname !== "/") {
+    diagnostics.requests.push({
+      documentUrl: new URL(routePath, LOCAL_BASE_URL).toString(), failure: null, fromServiceWorker: false,
+      isMainFrame: true, isNavigation: true, method: "GET", resourceType: "document", status: 200, url: LOCAL_BASE_URL,
+    });
+  }
+  return diagnostics;
+}
+
+function accessibilitySkipTarget(expectedHash) {
+  const tag = expectedHash === "#entry" ? "section" : "main";
+  const visibleAncestor = (ancestorTag) => ({ ariaHidden: null, contentVisibility: "visible", display: "block", hidden: false, inert: false, opacity: 1, tag: ancestorTag, visibility: "visible" });
+  return {
+    targetDisplay: expectedHash === "#entry" ? "grid" : "block",
+    targetRect: { bottom: 100, height: 100, left: 0, right: 100, top: 0, width: 100 },
+    targetRenderedVisible: true,
+    targetTag: tag,
+    targetVisibility: "visible",
+    targetVisibilityChain: [{ ...visibleAncestor(tag), display: expectedHash === "#entry" ? "grid" : "block" }, visibleAncestor("body"), visibleAncestor("html")],
+    targetVisible: true,
+  };
+}
+
+function accessibilityResolvedHomeState(hash = "#entry") {
+  return { cinematicMode: "enhanced", entryInert: false, hash, manifestoReveal: "resolved", mediaState: "ready", path: "/", route: `/${hash}` };
 }
 
 function accessibilityDesktopHome(routePath) {
   return {
     activationError: null,
-    arrival: { entryInert: false, hash: "#entry", manifestoReveal: "resolved", path: "/", route: "/#entry" },
-    back: { entryInert: false, hash: "", manifestoReveal: "resolved", path: routePath, route: routePath },
+    arrival: accessibilityResolvedHomeState(),
+    arrivalReady: true,
+    back: routePath === "/" ? accessibilityResolvedHomeState("") : { cinematicMode: null, entryInert: null, hash: "", manifestoReveal: null, mediaState: null, path: routePath, route: routePath },
     backError: null,
-    focus: { ...accessibilityFocus("a|/#entry|Home"), href: "/#entry" },
-    forward: { entryInert: false, hash: "#entry", manifestoReveal: "resolved", path: "/", route: "/#entry" },
+    focus: { ...accessibilityFocus("a|/#entry|"), ariaLabel: "Quantum home", classes: ["brand-link"], href: "/#entry", withinSiteHeader: true },
+    forward: accessibilityResolvedHomeState(),
     forwardError: null,
     preparation: routePath === "/" ? {
       input: "NATIVE WHEEL",
@@ -159,9 +199,10 @@ function accessibilityKeyboardRow(engine, route) {
     ? { ...accessibilityFocus("a|/for-startups/|For startups"), classes: ["audience-trajectory"], href: "/for-startups/" }
     : accessibilityFocus("a|/two|Two");
   const row = {
-    afterActivation: { activeId: expectedHash.slice(1), hash: expectedHash, targetVisible: true },
-    backward: { ...forwardFirst }, desktopHome: accessibilityDesktopHome(route.path), engine, expectedHash,
-    first: { ...accessibilityFocus(`a|${expectedHash}|Skip to content`), classes: ["skip-link"], href: expectedHash }, firstVisibilityReady: true,
+    activationReady: true,
+    afterActivation: { activeId: expectedHash.slice(1), hash: expectedHash, path: route.path, ...accessibilitySkipTarget(expectedHash) },
+    backward: { ...forwardFirst }, desktopHome: accessibilityDesktopHome(route.path), diagnostics: accessibilityDiagnostics(route.path, route.expectedStatus, { includeHome: true }), engine, expectedHash,
+    first: { ...accessibilityFocus(`a|${expectedHash}|${route.id === "home" ? "Skip cinematic intro" : "Skip to content"}`), classes: ["skip-link"], href: expectedHash }, firstVisibilityReady: true,
     forwardFirst, forwardSecond, route: route.id, routePath: route.path,
   };
   row.failures = accessibilityKeyboardFailures(row);
@@ -173,10 +214,10 @@ function accessibilityMenuRow(engine) {
   const closed = { activeIsTrigger: true, ariaExpanded: "false", hash: "", open: false, path: "/about/" };
   const open = { activeIsTrigger: true, ariaExpanded: "true", hash: "", open: true, path: "/about/" };
   const row = {
-    cycles: Array.from({ length: 4 }, () => ({ close: { ...closed }, open: { ...open } })), engine,
-    escapeClose: { ...closed }, firstMenuLink: accessibilityFocus("a|/#entry|Home"),
-    navigation: { activationError: null, arrival: { activeIsTrigger: false, ariaExpanded: "false", hash: "#entry", open: false, path: "/" }, back: { ...closed }, backError: null, focus: { ...accessibilityFocus("a|/#entry|Home"), href: "/#entry" } },
-    ordinaryClose: { ...closed }, ordinaryOpen: { ...open }, triggerFocus: accessibilityFocus("summary||Menu"),
+    cycles: Array.from({ length: 4 }, () => ({ close: { ...closed }, open: { ...open } })), diagnostics: accessibilityDiagnostics("/about/", 200, { includeHome: true }), engine,
+    escapeClose: { ...closed }, firstMenuLink: { ...accessibilityFocus("a|/#entry|Home"), withinMobileNav: true },
+    navigation: { activationError: null, arrival: { activeIsTrigger: false, ariaExpanded: "false", hash: "#entry", open: false, path: "/" }, back: { ...closed, activeIsTrigger: false }, backError: null, focus: { ...accessibilityFocus("a|/#entry|Home"), href: "/#entry", withinMobileNav: true } },
+    ordinaryClose: { ...closed }, ordinaryOpen: { ...open }, triggerFocus: { ...accessibilityFocus("summary||Menu"), withinMobileNav: true },
   };
   row.failures = accessibilityMobileMenuFailures(row);
   row.status = row.failures.length ? "FAIL" : "PASS";
@@ -185,10 +226,12 @@ function accessibilityMenuRow(engine) {
 
 function accessibilityHistoryRow(engine) {
   const row = {
-    back: { entryAlignmentDelta: null, hash: "", path: "/", scrollY: 0 },
-    bare: { entryAlignmentDelta: null, hash: "", path: "/", scrollY: 0 }, engine,
+    back: { entryAlignmentDelta: 4200, hash: "", path: "/", scrollY: 0 },
+    bare: { entryAlignmentDelta: 4200, hash: "", path: "/", scrollY: 0 }, diagnostics: accessibilityDiagnostics("/"), engine,
     entry: { entryAlignmentDelta: 0, hash: "#entry", path: "/", scrollY: 4200 },
+    entryReady: true,
     forward: { entryAlignmentDelta: 0, hash: "#entry", path: "/", scrollY: 4200 },
+    forwardReady: true,
   };
   row.failures = accessibilityHistoryFailures(row);
   row.status = row.failures.length ? "FAIL" : "PASS";
@@ -208,7 +251,7 @@ function accessibilityReport(engine, { axeOnly = false, failed = false } = {}) {
     { expectedStatus: 200, id: "contact", path: "/contact/" },
     { expectedStatus: 404, id: "404", path: "/__phase6-intentional-404__/" },
   ];
-  const axe = ACCESSIBILITY_VIEWPORTS.flatMap((viewport) => routes.map((route) => ({ engine, failures: [], httpStatus: route.expectedStatus, incompleteCount: 0, route: route.id, status: "PASS", violations: [], viewport: { ...viewport } })));
+  const axe = ACCESSIBILITY_VIEWPORTS.flatMap((viewport) => routes.map((route) => ({ caseError: null, diagnostics: accessibilityDiagnostics(route.path, route.expectedStatus), engine, failures: [], httpStatus: route.expectedStatus, incompleteCount: 0, route: route.id, status: "PASS", violations: [], viewport: { ...viewport } })));
   const keyboard = axeOnly ? [] : routes.map((route) => accessibilityKeyboardRow(engine, route));
   if (failed) {
     const mutations = [];
@@ -245,7 +288,7 @@ function accessibilityReport(engine, { axeOnly = false, failed = false } = {}) {
   ];
   const engineResult = {
     axe,
-    browser: { engine, executable: `${engine}.exe`, headed: false, version: "1" },
+    browser: { engine, executable: { chromium: "chrome.exe", firefox: "firefox.exe", webkit: "Playwright.exe" }[engine], headed: true, version: "1.0" },
     engine,
     failures: engineFailures,
     history,
@@ -262,6 +305,7 @@ function accessibilityReport(engine, { axeOnly = false, failed = false } = {}) {
     selectedEngines: [engine],
     engines: [engineResult],
     axeOnly,
+    headed: true,
     failures: engineFailures.map((failure) => ({ engine, ...failure })),
     routes,
     status: engineFailures.length ? "FAIL" : "PASS",
@@ -1387,10 +1431,84 @@ test("accessibility PASS requires the exact ten-route interaction matrix, four c
   menuFailure.engines[0].mobileMenu.failures.push({ code: "escape-focus-return" });
   assert.throws(() => validateDocumentAuthority(record, menuFailure, metadata), /mobile-menu raw evidence differs|four-cycle authority differs/);
 
+  const truthyMenuState = accessibilityReport("chromium");
+  truthyMenuState.engines[0].mobileMenu.ordinaryOpen.open = "true";
+  assert.throws(() => validateDocumentAuthority(record, truthyMenuState, metadata), /mobile-menu raw evidence differs|four-cycle authority differs/);
+
+  const wrongMenuRoute = accessibilityReport("chromium");
+  wrongMenuRoute.engines[0].mobileMenu.cycles[2].open.path = "/contact/";
+  assert.throws(() => validateDocumentAuthority(record, wrongMenuRoute, metadata), /mobile-menu raw evidence differs|four-cycle authority differs/);
+
+  const outsideMenuFocus = accessibilityReport("chromium");
+  outsideMenuFocus.engines[0].mobileMenu.firstMenuLink.withinMobileNav = false;
+  outsideMenuFocus.engines[0].mobileMenu.navigation.focus.withinMobileNav = false;
+  assert.throws(() => validateDocumentAuthority(record, outsideMenuFocus, metadata), /mobile-menu raw evidence differs|four-cycle authority differs/);
+
+  const mislabeledMenuIdentity = accessibilityReport("chromium");
+  mislabeledMenuIdentity.engines[0].mobileMenu.triggerFocus.text = "Navigation";
+  mislabeledMenuIdentity.engines[0].mobileMenu.triggerFocus.key = "summary||Navigation";
+  mislabeledMenuIdentity.engines[0].mobileMenu.firstMenuLink.text = "Start";
+  mislabeledMenuIdentity.engines[0].mobileMenu.firstMenuLink.key = "a|/#entry|Start";
+  assert.throws(() => validateDocumentAuthority(record, mislabeledMenuIdentity, metadata), /mobile-menu raw evidence differs|four-cycle authority differs/);
+
+  for (const mutate of [
+    (document) => { delete document.engines[0].keyboard[0].diagnostics; },
+    (document) => { document.engines[0].keyboard[0].diagnostics.pageErrors.push({ message: "boom", name: "Error" }); },
+    (document) => { const request = document.engines[0].keyboard[0].diagnostics.requests[0]; request.status = null; delete request.fromServiceWorker; },
+    (document) => { document.engines[0].keyboard[0].diagnostics.requests[0].fromServiceWorker = true; },
+    (document) => { document.engines[0].keyboard[0].diagnostics.requests[0].isMainFrame = false; },
+    (document) => { document.engines[0].keyboard[0].diagnostics.requests[0].resourceType = "image"; },
+    (document) => {
+      const row = document.engines[0].keyboard.find(({ route }) => route === "about");
+      row.diagnostics.requests = row.diagnostics.requests.filter(({ url }) => new URL(url).pathname !== "/");
+    },
+    (document) => { delete document.engines[0].axe[0].diagnostics; },
+    (document) => { document.engines[0].axe[0].caseError = "axe timed out"; },
+    (document) => {
+      const row = document.engines[0].keyboard.find(({ route }) => route === "404");
+      row.diagnostics.consoleErrors.push({ documentUrl: LOCAL_BASE_URL, location: { columnNumber: 0, lineNumber: 0, url: LOCAL_BASE_URL }, text: "Failed to load resource with status of 404" });
+    },
+    (document) => { document.engines[0].keyboard[0].diagnostics.requests.push({ documentUrl: new URL("/about/", LOCAL_BASE_URL).toString(), failure: "net::ERR_ABORTED", fromServiceWorker: false, isMainFrame: true, isNavigation: false, method: "GET", resourceType: "media", status: 200, url: "blob:http://127.0.0.1:4338/wrong-document" }); },
+    (document) => { document.engines[0].keyboard[0].diagnostics.requests.push({ documentUrl: LOCAL_BASE_URL, failure: "net::ERR_ABORTED", fromServiceWorker: false, isMainFrame: true, isNavigation: false, method: "GET", resourceType: "media", status: 200, url: "blob:https://evil.example/cross-origin" }); },
+  ]) {
+    const malformedDiagnostics = accessibilityReport("chromium");
+    mutate(malformedDiagnostics);
+    assert.throws(() => validateDocumentAuthority(record, malformedDiagnostics, metadata), /keyboard raw row\/status differs|axe raw failure ledger differs/);
+  }
+
   const historyFailure = accessibilityReport("chromium");
   historyFailure.engines[0].history.status = "FAIL";
   historyFailure.engines[0].history.failures.push({ code: "forward" });
   assert.throws(() => validateDocumentAuthority(record, historyFailure, metadata), /history raw evidence differs|history authority differs/);
+
+  for (const mutate of [
+    (history) => { history.bare.scrollY = "0"; },
+    (history) => { delete history.forward.scrollY; },
+    (history) => { delete history.forward.entryAlignmentDelta; },
+    (history) => { history.entry.entryAlignmentDelta = "0"; },
+    (history) => { history.entryReady = false; },
+    (history) => { history.forwardReady = false; },
+  ]) {
+    const malformedHistory = accessibilityReport("chromium");
+    mutate(malformedHistory.engines[0].history);
+    assert.throws(() => validateDocumentAuthority(record, malformedHistory, metadata), /history raw evidence differs|history authority differs/);
+  }
+
+  for (const [mutate, pattern] of [
+    [(document) => { delete document.engines[0].browser; }, /browser identity differs/],
+    [(document) => { document.engines[0].browser.engine = "webkit"; }, /browser identity differs/],
+    [(document) => { document.engines[0].browser.executable = "Playwright.exe"; }, /browser identity differs/],
+    [(document) => { document.engines[0].browser.version = "latest"; }, /browser identity differs/],
+    [(document) => { document.engines[0].browser.headed = false; }, /browser identity differs/],
+    [(document) => { document.engines[0].mobileMenu.engine = "webkit"; }, /mobile-menu cycles are incomplete/],
+    [(document) => { document.engines[0].history.engine = "webkit"; }, /history evidence is absent or mislabeled/],
+    [(document) => { document.headed = false; document.engines[0].browser.headed = false; }, /accessibility exact tuple differs/],
+    [(document) => { document.baseUrl = "http://127.0.0.1:4999/"; }, /accessibility exact tuple differs/],
+  ]) {
+    const mislabeled = accessibilityReport("chromium");
+    mutate(mislabeled);
+    assert.throws(() => validateDocumentAuthority(record, mislabeled, metadata), pattern);
+  }
 
   for (const mutate of [
     (preparation) => { preparation.state.hash = "#entry"; },
@@ -1407,15 +1525,76 @@ test("accessibility PASS requires the exact ten-route interaction matrix, four c
 
   for (const mutate of [
     (row) => { row.firstVisibilityReady = false; },
+    (row) => { row.activationReady = false; },
     (row) => { row.first.rect.top = -1; },
     (row) => { row.first.rect.left = -1; },
     (row) => { row.first.rect.bottom = 901; },
     (row) => { row.first.rect.right = 1441; },
+    (row) => { row.first.rect.right = row.first.rect.left - 1; },
+    (row) => { row.first.rect.bottom = row.first.rect.top - 1; },
+    (row) => { row.first.rect.width += 1; },
+    (row) => { row.first.rect.height += 1; },
+    (row) => { row.first.focusVisible = "true"; },
+    (row) => { row.first.visible = "true"; },
+    (row) => { row.first.classes = "skip-link"; },
+    (row) => { row.first.tag = "div"; row.first.key = `div|${row.first.href}|${row.first.text}`; },
+    (row) => { row.first.outlineStyle = ""; },
+    (row) => { row.first.outlineStyle = " "; },
+    (row) => { row.first.outlineStyle = "SOLID"; },
+    (row) => { row.first.outlineStyle = "none "; },
+    (row) => { row.first.outlineStyle = "garbage"; },
+    (row) => { row.first.outlineWidth = "2garbage"; },
+    (row) => { row.first.outlineColor = "rgba(0, 0, 0, 0)"; },
+    (row) => { row.afterActivation.path = "/contact/"; },
+    (row) => { row.afterActivation.targetVisible = "true"; },
+    (row) => { row.afterActivation.targetRect.right = 0; row.afterActivation.targetRect.width = 0; },
+    (row) => { row.afterActivation.targetRect.left = 1440; row.afterActivation.targetRect.right = 1540; },
+    (row) => { row.afterActivation.targetDisplay = "block"; },
+    (row) => { row.afterActivation.targetDisplay = "none"; },
+    (row) => { row.afterActivation.targetVisibility = "hidden"; },
+    (row) => { row.first.visibilityChain[1].opacity = 0.001; },
+    (row) => { row.first.visibilityChain[1].ariaHidden = "TRUE"; },
+    (row) => { row.first.visibilityChain[1].display = "NONE"; },
+    (row) => { row.first.visibilityChain[1].visibility = "HIDDEN"; },
+    (row) => { row.first.visibilityChain[1].contentVisibility = "HIDDEN"; },
+    (row) => { row.afterActivation.targetVisibilityChain[1].opacity = 0.001; },
+    (row) => { row.afterActivation.targetVisibilityChain[1].ariaHidden = "TRUE"; },
+    (row) => { row.afterActivation.targetVisibilityChain[0].display = "flex"; },
+    (row) => { row.afterActivation.targetTag = "div"; row.afterActivation.targetVisibilityChain[0].tag = "div"; },
+    (row) => { delete row.forwardFirst.key; delete row.backward.key; },
+    (row) => { row.forwardFirst.key = "a|/contradiction/|One"; },
+    (row) => { row.desktopHome.activationError = ""; },
+    (row) => { row.desktopHome.arrivalReady = false; },
+    (row) => { delete row.desktopHome.backError; },
+    (row) => { row.desktopHome.forwardError = false; },
+    (row) => { row.desktopHome.arrival.route = "/"; },
+    (row) => { row.desktopHome.forward.entryInert = true; },
+    (row) => { row.desktopHome.focus.withinSiteHeader = false; },
+    (row) => { row.desktopHome.focus.classes = []; },
+    (row) => { row.desktopHome.focus.ariaLabel = "Home"; },
+    (row) => {
+      row.expectedHash = "#main-content";
+      row.first.href = "#main-content";
+      row.first.key = `a|#main-content|${row.first.text}`;
+      row.afterActivation.hash = "#main-content";
+      row.afterActivation.activeId = "main-content";
+      row.afterActivation.targetDisplay = "block";
+    },
   ]) {
     const incompleteFocusVisibility = accessibilityReport("chromium");
     mutate(incompleteFocusVisibility.engines[0].keyboard[0]);
     assert.throws(() => validateDocumentAuthority(record, incompleteFocusVisibility, metadata), /keyboard raw row\/status differs/);
   }
+
+  const swappedSupportingHash = accessibilityReport("chromium");
+  const supportingRow = swappedSupportingHash.engines[0].keyboard.find(({ route }) => route === "about");
+  supportingRow.expectedHash = "#entry";
+  supportingRow.first.href = "#entry";
+  supportingRow.first.key = `a|#entry|${supportingRow.first.text}`;
+  supportingRow.afterActivation.hash = "#entry";
+  supportingRow.afterActivation.activeId = "entry";
+  supportingRow.afterActivation.targetDisplay = "grid";
+  assert.throws(() => validateDocumentAuthority(record, swappedSupportingHash, metadata), /keyboard raw row\/status differs/);
 });
 
 test("guarded requirement statuses reject every known false PASS promotion", async (t) => {

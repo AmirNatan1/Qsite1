@@ -603,49 +603,80 @@ function accessibilityFixture(engine, { axeOnly = false, failed = false } = {}) 
   if (failed) {
     const failure = "WebKit interaction host timed out";
     return {
-      schema: "quantum-hub.phase-6.accessibility-interactions.v1", status: "FAIL", engine, routes, viewports, selectedEngines: [engine], axeOnly: false,
+      schema: "quantum-hub.phase-6.accessibility-interactions.v1", status: "FAIL", engine, routes, viewports, selectedEngines: [engine], axeOnly: false, baseUrl: "http://127.0.0.1:4338/", headed: true,
       engines: [{ engine, status: "ERROR", failure }],
       failures: [{ actual: failure, code: "engine-error", engine, section: "engine" }],
       summary: { axeCases: 0, axeExpected: 20, axeViolations: 0, engineErrors: 1, failures: 1, seriousCritical: 0 },
     };
   }
   const visibleFocus = (href, classes = ["fixture-link"], key = `a|${href}|Fixture`) => ({
-    classes, focusVisible: true, href, key, outlineStyle: "solid", outlineWidth: "2px",
-    rect: { bottom: 40, height: 20, left: 0, right: 120, top: 20, width: 120 }, selector: "a.fixture-link", tag: "a", text: "Fixture", visible: true,
+    ...(() => {
+      const tag = key.split("|")[0];
+      const visibleAncestor = (ancestorTag) => ({ ariaHidden: null, contentVisibility: "visible", display: "block", hidden: false, inert: false, opacity: 1, tag: ancestorTag, visibility: "visible" });
+      return { renderedVisible: true, visibilityChain: [visibleAncestor(tag), visibleAncestor("body"), visibleAncestor("html")] };
+    })(),
+    ariaLabel: null, classes, focusVisible: true, href, key, outlineColor: "rgb(240, 107, 160)", outlineStyle: "solid", outlineWidth: "2px",
+    rect: { bottom: 40, height: 20, left: 0, right: 120, top: 20, width: 120 }, selector: "a.fixture-link", tag: key.split("|")[0], text: key.split("|").slice(2).join("|"), visible: true,
+    withinMobileNav: false, withinSiteHeader: false,
   });
+  const diagnostics = (routePath, status = 200, { includeHome = false } = {}) => {
+    const baseUrl = "http://127.0.0.1:4338/";
+    const report = {
+      consoleErrors: [], consoleWarnings: [], pageErrors: [],
+      requests: [{ documentUrl: "about:blank", failure: null, fromServiceWorker: false, isMainFrame: true, isNavigation: true, method: "GET", resourceType: "document", status, url: new URL(routePath, baseUrl).toString() }],
+    };
+    if (includeHome && new URL(routePath, baseUrl).pathname !== "/") {
+      report.requests.push({ documentUrl: new URL(routePath, baseUrl).toString(), failure: null, fromServiceWorker: false, isMainFrame: true, isNavigation: true, method: "GET", resourceType: "document", status: 200, url: baseUrl });
+    }
+    return report;
+  };
+  const skipTarget = (expectedHash) => {
+    const tag = expectedHash === "#entry" ? "section" : "main";
+    const visibleAncestor = (ancestorTag) => ({ ariaHidden: null, contentVisibility: "visible", display: "block", hidden: false, inert: false, opacity: 1, tag: ancestorTag, visibility: "visible" });
+    return {
+      targetDisplay: expectedHash === "#entry" ? "grid" : "block",
+      targetRect: { bottom: 100, height: 100, left: 0, right: 100, top: 0, width: 100 },
+      targetRenderedVisible: true,
+      targetTag: tag,
+      targetVisibility: "visible",
+      targetVisibilityChain: [{ ...visibleAncestor(tag), display: expectedHash === "#entry" ? "grid" : "block" }, visibleAncestor("body"), visibleAncestor("html")],
+      targetVisible: true,
+    };
+  };
   const axe = viewports.flatMap((viewport) => routes.map((route) => ({
-    engine, failures: [], httpStatus: route.expectedStatus, incompleteCount: 0, route: route.id, status: "PASS", violations: [], viewport,
+    caseError: null, diagnostics: diagnostics(route.path, route.expectedStatus), engine, failures: [], httpStatus: route.expectedStatus, incompleteCount: 0, route: route.id, status: "PASS", violations: [], viewport,
   })));
+  const resolvedHomeState = (hash = "#entry") => ({ cinematicMode: "enhanced", entryInert: false, hash, manifestoReveal: "resolved", mediaState: "ready", path: "/", route: `/${hash}` });
   const keyboard = axeOnly ? [] : routes.map((route) => {
     const expectedHash = route.id === "home" ? "#entry" : "#main-content";
-    const first = visibleFocus(expectedHash, ["skip-link"], `a|${expectedHash}|Skip`);
+    const first = visibleFocus(expectedHash, ["skip-link"], `a|${expectedHash}|${route.id === "home" ? "Skip cinematic intro" : "Skip to content"}`);
     const forwardFirst = route.id === "home" ? visibleFocus("/for-partners/", ["audience-trajectory"], "a|/for-partners/|Industry") : visibleFocus("/fixture-one/", ["fixture-link"], "a|/fixture-one/|One");
     const forwardSecond = route.id === "home" ? visibleFocus("/for-startups/", ["audience-trajectory"], "a|/for-startups/|Startups") : visibleFocus("/fixture-two/", ["fixture-link"], "a|/fixture-two/|Two");
     return {
-      afterActivation: { activeId: expectedHash.slice(1), hash: expectedHash, targetVisible: true }, backward: { ...forwardFirst },
-      desktopHome: { activationError: null, arrival: { entryInert: false, hash: "#entry", manifestoReveal: "resolved", path: "/", route: "/#entry" }, back: { hash: "", path: route.path, route: route.path }, backError: null, focus: visibleFocus("/#entry"), forward: { hash: "#entry", path: "/", route: "/#entry" }, forwardError: null, preparation: route.id === "home" ? { input: "NATIVE WHEEL", ready: true, resolved: true, state: { cinematicMode: "enhanced", entryInert: false, hash: "", manifestoReveal: "resolved", mediaState: "ready", path: "/", route: "/" }, wheelSteps: 12 } : null },
-      engine, expectedHash, failures: [], first, firstVisibilityReady: true, forwardFirst, forwardSecond, route: route.id, routePath: route.path, status: "PASS",
+      activationReady: true, afterActivation: { activeId: expectedHash.slice(1), hash: expectedHash, path: route.path, ...skipTarget(expectedHash) }, backward: { ...forwardFirst },
+      desktopHome: { activationError: null, arrival: resolvedHomeState(), arrivalReady: true, back: route.id === "home" ? resolvedHomeState("") : { cinematicMode: null, entryInert: null, hash: "", manifestoReveal: null, mediaState: null, path: route.path, route: route.path }, backError: null, focus: { ...visibleFocus("/#entry", ["brand-link"], "a|/#entry|"), ariaLabel: "Quantum home", withinSiteHeader: true }, forward: resolvedHomeState(), forwardError: null, preparation: route.id === "home" ? { input: "NATIVE WHEEL", ready: true, resolved: true, state: resolvedHomeState(""), wheelSteps: 12 } : null },
+      diagnostics: diagnostics(route.path, route.expectedStatus, { includeHome: true }), engine, expectedHash, failures: [], first, firstVisibilityReady: true, forwardFirst, forwardSecond, route: route.id, routePath: route.path, status: "PASS",
     };
   });
   const closedMenu = { activeIsTrigger: true, ariaExpanded: "false", hash: "", open: false, path: "/about/" };
   const openMenu = { activeIsTrigger: true, ariaExpanded: "true", hash: "", open: true, path: "/about/" };
   const mobileMenu = axeOnly ? null : {
     cycles: Array.from({ length: 4 }, () => ({ close: { ...closedMenu }, open: { ...openMenu } })), engine,
-    escapeClose: { ...closedMenu }, failures: [], firstMenuLink: visibleFocus("/#entry"),
-    navigation: { activationError: null, arrival: { ...closedMenu, hash: "#entry", path: "/" }, back: { ...closedMenu }, backError: null, focus: visibleFocus("/#entry") },
-    ordinaryClose: { ...closedMenu }, ordinaryOpen: { ...openMenu }, status: "PASS", triggerFocus: visibleFocus(null, ["mobile-nav-trigger"], "summary||Menu"),
+    diagnostics: diagnostics("/about/", 200, { includeHome: true }), escapeClose: { ...closedMenu }, failures: [], firstMenuLink: { ...visibleFocus("/#entry", ["fixture-link"], "a|/#entry|Home"), withinMobileNav: true },
+    navigation: { activationError: null, arrival: { ...closedMenu, activeIsTrigger: false, hash: "#entry", path: "/" }, back: { ...closedMenu, activeIsTrigger: false }, backError: null, focus: { ...visibleFocus("/#entry", ["fixture-link"], "a|/#entry|Home"), withinMobileNav: true } },
+    ordinaryClose: { ...closedMenu }, ordinaryOpen: { ...openMenu }, status: "PASS", triggerFocus: { ...visibleFocus(null, ["mobile-nav-trigger"], "summary||Menu"), withinMobileNav: true },
   };
   const history = axeOnly ? null : {
-    back: { entryAlignmentDelta: null, hash: "", path: "/", scrollY: 0 }, bare: { entryAlignmentDelta: null, hash: "", path: "/", scrollY: 0 }, engine,
-    entry: { entryAlignmentDelta: 0, hash: "#entry", path: "/", scrollY: 900 }, failures: [],
-    forward: { entryAlignmentDelta: 0, hash: "#entry", path: "/", scrollY: 900 }, status: "PASS",
+    back: { entryAlignmentDelta: 900, hash: "", path: "/", scrollY: 0 }, bare: { entryAlignmentDelta: 900, hash: "", path: "/", scrollY: 0 }, diagnostics: diagnostics("/"), engine,
+    entry: { entryAlignmentDelta: 0, hash: "#entry", path: "/", scrollY: 900 }, entryReady: true, failures: [],
+    forward: { entryAlignmentDelta: 0, hash: "#entry", path: "/", scrollY: 900 }, forwardReady: true, status: "PASS",
   };
   const result = {
-    axe, browser: { engine, executable: `${engine}.exe`, headed: false, version: `fixture-${engine}` }, engine, failures: [], history, keyboard, mobileMenu, status: "PASS",
+    axe, browser: { engine, executable: { chromium: "chrome.exe", firefox: "firefox.exe", webkit: "Playwright.exe" }[engine], headed: true, version: "1.0" }, engine, failures: [], history, keyboard, mobileMenu, status: "PASS",
     summary: { axeCases: 20, axeViolations: 0, failures: 0, keyboardCases: keyboard.length, seriousCritical: 0 },
   };
   return {
-    schema: "quantum-hub.phase-6.accessibility-interactions.v1", status: "PASS", engine, routes, viewports, selectedEngines: [engine], engines: [result], axeOnly,
+    schema: "quantum-hub.phase-6.accessibility-interactions.v1", status: "PASS", engine, routes, viewports, selectedEngines: [engine], engines: [result], axeOnly, baseUrl: "http://127.0.0.1:4338/", headed: true,
     failures: [], summary: { axeCases: 20, axeExpected: 20, axeViolations: 0, engineErrors: 0, failures: 0, seriousCritical: 0 },
   };
 }
@@ -1340,6 +1371,71 @@ test("Phase 6-R1 canonical assembler inventory, wrappers, taxonomy and roles fai
   });
   assertBothReject(sparseAccessibility, /accessibility|keyboard/i);
 
+  const legacySchemaRawBypass = rebindAssemblerMutation(fixtureR1PayloadEntries(), "09-accessibility/accessibility-chromium.json", (bytes) => {
+    const wrapper = JSON.parse(bytes.toString("utf8"));
+    const report = wrapper.payload;
+    report.schema = "quantum-hub.phase-6.global-hardening.v1";
+    delete report.engines[0].browser;
+    report.engines[0].keyboard = [];
+    report.engines[0].mobileMenu = null;
+    report.engines[0].history = null;
+    return wrapper;
+  });
+  assertBothReject(legacySchemaRawBypass, /accessibility report schema differs|accessibility summary differs/);
+
+  for (const [name, mutate] of Object.entries({
+    missingBaseUrl: (report) => { delete report.baseUrl; },
+    wrongBaseUrl: (report) => { report.baseUrl = "http://127.0.0.1:4999/"; },
+  })) {
+    const unboundOrigin = rebindAssemblerMutation(fixtureR1PayloadEntries(), "09-accessibility/accessibility-chromium.json", (bytes) => {
+      const wrapper = JSON.parse(bytes.toString("utf8"));
+      mutate(wrapper.payload);
+      return wrapper;
+    });
+    assertBothReject(unboundOrigin, /accessibility|base URL|browser-QA context|axe raw failure ledger/i, `${name} passed package boundaries`);
+  }
+
+  let swappedAccessibilityPaths = fixtureR1PayloadEntries();
+  const chromiumBytes = Buffer.from(swappedAccessibilityPaths.find(({ path: relativePath }) => relativePath === "09-accessibility/accessibility-chromium.json").data);
+  const webkitBytes = Buffer.from(swappedAccessibilityPaths.find(({ path: relativePath }) => relativePath === "09-accessibility/accessibility-webkit.json").data);
+  swappedAccessibilityPaths = rebindAssemblerMutation(swappedAccessibilityPaths, "09-accessibility/accessibility-chromium.json", () => webkitBytes);
+  swappedAccessibilityPaths = rebindAssemblerMutation(swappedAccessibilityPaths, "09-accessibility/accessibility-webkit.json", () => chromiumBytes);
+  assertBothReject(swappedAccessibilityPaths, /accessibility summary differs|accessibility engine inventory|accessibility|axe raw failure ledger/i);
+
+  for (const [name, mutate] of Object.entries({
+    missingBrowserIdentity: (report) => { delete report.engines[0].browser; },
+    transplantedBrowserEngine: (report) => { report.engines[0].browser.engine = "webkit"; },
+    transplantedBrowserExecutable: (report) => { report.engines[0].browser.executable = "Playwright.exe"; },
+    malformedBrowserVersion: (report) => { report.engines[0].browser.version = "latest"; },
+    headedBrowserMismatch: (report) => { report.engines[0].browser.headed = false; },
+    transplantedMenuEngine: (report) => { report.engines[0].mobileMenu.engine = "webkit"; },
+    transplantedHistoryEngine: (report) => { report.engines[0].history.engine = "webkit"; },
+    unheadedReport: (report) => { report.headed = false; report.engines[0].browser.headed = false; },
+  })) {
+    const mislabeledAccessibility = rebindAssemblerMutation(fixtureR1PayloadEntries(), "09-accessibility/accessibility-chromium.json", (bytes) => {
+      const wrapper = JSON.parse(bytes.toString("utf8"));
+      mutate(wrapper.payload);
+      return wrapper;
+    });
+    assertBothReject(mislabeledAccessibility, /accessibility|browser|mobile-menu|history/i, `${name} passed package boundaries`);
+  }
+
+  for (const [name, mutate] of Object.entries({
+    stringBareScroll: (history) => { history.bare.scrollY = "0"; },
+    missingForwardScroll: (history) => { delete history.forward.scrollY; },
+    missingForwardAlignment: (history) => { delete history.forward.entryAlignmentDelta; },
+    stringEntryAlignment: (history) => { history.entry.entryAlignmentDelta = "0"; },
+    lateCorrectEntry: (history) => { history.entryReady = false; },
+    lateCorrectForward: (history) => { history.forwardReady = false; },
+  })) {
+    const malformedHistory = rebindAssemblerMutation(fixtureR1PayloadEntries(), "09-accessibility/accessibility-chromium.json", (bytes) => {
+      const wrapper = JSON.parse(bytes.toString("utf8"));
+      mutate(wrapper.payload.engines[0].history);
+      return wrapper;
+    });
+    assertBothReject(malformedHistory, /accessibility|history/i, `${name} passed package boundaries`);
+  }
+
   for (const [name, mutate] of Object.entries({
     alreadyAtEntryHash: (preparation) => { preparation.state.hash = "#entry"; },
     alreadyAtEntryRoute: (preparation) => { preparation.state.route = "/#entry"; },
@@ -1358,10 +1454,61 @@ test("Phase 6-R1 canonical assembler inventory, wrappers, taxonomy and roles fai
 
   for (const [name, mutate] of Object.entries({
     focusVisibilityTimeout: (row) => { row.firstVisibilityReady = false; },
+    activationTimeoutThenLateCorrect: (row) => { row.activationReady = false; },
     partialTop: (row) => { row.first.rect.top = -1; },
     partialLeft: (row) => { row.first.rect.left = -1; },
     partialBottom: (row) => { row.first.rect.bottom = 901; },
     partialRight: (row) => { row.first.rect.right = 1441; },
+    invertedHorizontalEdges: (row) => { row.first.rect.right = row.first.rect.left - 1; },
+    invertedVerticalEdges: (row) => { row.first.rect.bottom = row.first.rect.top - 1; },
+    mismatchedWidth: (row) => { row.first.rect.width += 1; },
+    mismatchedHeight: (row) => { row.first.rect.height += 1; },
+    truthyFocusVisible: (row) => { row.first.focusVisible = "true"; },
+    truthyVisible: (row) => { row.first.visible = "true"; },
+    stringClassList: (row) => { row.first.classes = "skip-link"; },
+    nonAnchorSkipIdentity: (row) => { row.first.tag = "div"; row.first.key = `div|${row.first.href}|${row.first.text}`; },
+    emptyOutlineStyle: (row) => { row.first.outlineStyle = ""; },
+    whitespaceOutlineStyle: (row) => { row.first.outlineStyle = " "; },
+    noncanonicalOutlineStyleCase: (row) => { row.first.outlineStyle = "SOLID"; },
+    paddedNoneOutlineStyle: (row) => { row.first.outlineStyle = "none "; },
+    impossibleOutlineStyle: (row) => { row.first.outlineStyle = "garbage"; },
+    malformedOutlineWidth: (row) => { row.first.outlineWidth = "2garbage"; },
+    transparentOutlineColor: (row) => { row.first.outlineColor = "rgba(0, 0, 0, 0)"; },
+    wrongActivationPath: (row) => { row.afterActivation.path = "/contact/"; },
+    truthyTargetVisible: (row) => { row.afterActivation.targetVisible = "true"; },
+    zeroWidthActivationTarget: (row) => { row.afterActivation.targetRect.right = 0; row.afterActivation.targetRect.width = 0; },
+    offRightActivationTarget: (row) => { row.afterActivation.targetRect.left = 1440; row.afterActivation.targetRect.right = 1540; },
+    wrongActivationDisplay: (row) => { row.afterActivation.targetDisplay = "block"; },
+    hiddenActivationDisplay: (row) => { row.afterActivation.targetDisplay = "none"; },
+    hiddenActivationVisibility: (row) => { row.afterActivation.targetVisibility = "hidden"; },
+    hiddenFocusAncestor: (row) => { row.first.visibilityChain[1].opacity = 0.001; },
+    uppercaseAriaHiddenFocusAncestor: (row) => { row.first.visibilityChain[1].ariaHidden = "TRUE"; },
+    uppercaseDisplayNoneFocusAncestor: (row) => { row.first.visibilityChain[1].display = "NONE"; },
+    uppercaseVisibilityHiddenFocusAncestor: (row) => { row.first.visibilityChain[1].visibility = "HIDDEN"; },
+    uppercaseContentVisibilityHiddenFocusAncestor: (row) => { row.first.visibilityChain[1].contentVisibility = "HIDDEN"; },
+    hiddenActivationAncestor: (row) => { row.afterActivation.targetVisibilityChain[1].opacity = 0.001; },
+    uppercaseAriaHiddenActivationAncestor: (row) => { row.afterActivation.targetVisibilityChain[1].ariaHidden = "TRUE"; },
+    inconsistentActivationChainDisplay: (row) => { row.afterActivation.targetVisibilityChain[0].display = "flex"; },
+    wrongActivationTargetTag: (row) => { row.afterActivation.targetTag = "div"; row.afterActivation.targetVisibilityChain[0].tag = "div"; },
+    footerHomeSubstitutedForHeaderHome: (row) => { row.desktopHome.focus.withinSiteHeader = false; },
+    headerNonBrandAnchorSubstituted: (row) => { row.desktopHome.focus.classes = []; },
+    wrongHeaderBrandLabel: (row) => { row.desktopHome.focus.ariaLabel = "Home"; },
+    missingReverseIdentity: (row) => { delete row.forwardFirst.key; delete row.backward.key; },
+    contradictoryIdentity: (row) => { row.forwardFirst.key = "a|/contradiction/|One"; },
+    emptyActivationError: (row) => { row.desktopHome.activationError = ""; },
+    arrivalTimeoutThenLateResolved: (row) => { row.desktopHome.arrivalReady = false; },
+    missingBackError: (row) => { delete row.desktopHome.backError; },
+    falseForwardError: (row) => { row.desktopHome.forwardError = false; },
+    contradictoryArrivalRoute: (row) => { row.desktopHome.arrival.route = "/"; },
+    inertForwardState: (row) => { row.desktopHome.forward.entryInert = true; },
+    swappedHomeHash: (row) => {
+      row.expectedHash = "#main-content";
+      row.first.href = "#main-content";
+      row.first.key = `a|#main-content|${row.first.text}`;
+      row.afterActivation.hash = "#main-content";
+      row.afterActivation.activeId = "main-content";
+      row.afterActivation.targetDisplay = "block";
+    },
   })) {
     const incompleteFocusVisibility = rebindAssemblerMutation(fixtureR1PayloadEntries(), "09-accessibility/accessibility-chromium.json", (bytes) => {
       const wrapper = JSON.parse(bytes.toString("utf8"));
@@ -1370,6 +1517,84 @@ test("Phase 6-R1 canonical assembler inventory, wrappers, taxonomy and roles fai
     });
     assertBothReject(incompleteFocusVisibility, /accessibility|keyboard|focus/i, `${name} passed package boundaries`);
   }
+
+  const swappedSupportingHash = rebindAssemblerMutation(fixtureR1PayloadEntries(), "09-accessibility/accessibility-chromium.json", (bytes) => {
+    const wrapper = JSON.parse(bytes.toString("utf8"));
+    const row = wrapper.payload.engines[0].keyboard.find(({ route }) => route === "about");
+    row.expectedHash = "#entry";
+    row.first.href = "#entry";
+    row.first.key = `a|#entry|${row.first.text}`;
+    row.afterActivation.hash = "#entry";
+    row.afterActivation.activeId = "entry";
+    row.afterActivation.targetDisplay = "grid";
+    return wrapper;
+  });
+  assertBothReject(swappedSupportingHash, /accessibility|keyboard|focus/i);
+
+  for (const [name, mutate] of Object.entries({
+    missingKeyboardDiagnostics: (report) => { delete report.engines[0].keyboard[0].diagnostics; },
+    keyboardPageError: (report) => { report.engines[0].keyboard[0].diagnostics.pageErrors.push({ message: "boom", name: "Error" }); },
+    pendingKeyboardRequest: (report) => { const request = report.engines[0].keyboard[0].diagnostics.requests[0]; request.status = null; delete request.fromServiceWorker; },
+    serviceWorkerKeyboardResponse: (report) => { report.engines[0].keyboard[0].diagnostics.requests[0].fromServiceWorker = true; },
+    subframeKeyboardNavigation: (report) => { report.engines[0].keyboard[0].diagnostics.requests[0].isMainFrame = false; },
+    nonDocumentKeyboardNavigation: (report) => { report.engines[0].keyboard[0].diagnostics.requests[0].resourceType = "image"; },
+    missingSupportingHomeNavigation: (report) => {
+      const row = report.engines[0].keyboard.find(({ route }) => route === "about");
+      row.diagnostics.requests = row.diagnostics.requests.filter(({ url }) => new URL(url).pathname !== "/");
+    },
+    missingAxeDiagnostics: (report) => { delete report.engines[0].axe[0].diagnostics; },
+    unledgeredAxeCaseError: (report) => { report.engines[0].axe[0].caseError = "axe timed out"; },
+    misattributed404Console: (report) => {
+      const row = report.engines[0].keyboard.find(({ route }) => route === "404");
+      row.diagnostics.consoleErrors.push({ documentUrl: "http://127.0.0.1:4338/", location: { columnNumber: 0, lineNumber: 0, url: "http://127.0.0.1:4338/" }, text: "Failed to load resource with status of 404" });
+    },
+    homeAbortFromWrongDocument: (report) => {
+      report.engines[0].keyboard[0].diagnostics.requests.push({ documentUrl: "http://127.0.0.1:4338/about/", failure: "net::ERR_ABORTED", fromServiceWorker: false, isMainFrame: true, isNavigation: false, method: "GET", resourceType: "media", status: 200, url: "blob:http://127.0.0.1:4338/wrong-document" });
+    },
+    crossOriginHomeBlobAbort: (report) => {
+      report.engines[0].keyboard[0].diagnostics.requests.push({ documentUrl: "http://127.0.0.1:4338/", failure: "net::ERR_ABORTED", fromServiceWorker: false, isMainFrame: true, isNavigation: false, method: "GET", resourceType: "media", status: 200, url: "blob:https://evil.example/cross-origin" });
+    },
+  })) {
+    const malformedDiagnostics = rebindAssemblerMutation(fixtureR1PayloadEntries(), "09-accessibility/accessibility-chromium.json", (bytes) => {
+      const wrapper = JSON.parse(bytes.toString("utf8"));
+      mutate(wrapper.payload);
+      return wrapper;
+    });
+    assertBothReject(malformedDiagnostics, /accessibility|keyboard|axe raw failure ledger/i, `${name} passed package boundaries`);
+  }
+
+  const truthyMenuState = rebindAssemblerMutation(fixtureR1PayloadEntries(), "09-accessibility/accessibility-chromium.json", (bytes) => {
+    const wrapper = JSON.parse(bytes.toString("utf8"));
+    wrapper.payload.engines[0].mobileMenu.ordinaryOpen.open = "true";
+    return wrapper;
+  });
+  assertBothReject(truthyMenuState, /accessibility|mobile-menu/i);
+
+  const wrongMenuRoute = rebindAssemblerMutation(fixtureR1PayloadEntries(), "09-accessibility/accessibility-chromium.json", (bytes) => {
+    const wrapper = JSON.parse(bytes.toString("utf8"));
+    wrapper.payload.engines[0].mobileMenu.cycles[2].open.path = "/contact/";
+    return wrapper;
+  });
+  assertBothReject(wrongMenuRoute, /accessibility|mobile-menu/i);
+
+  const outsideMenuFocus = rebindAssemblerMutation(fixtureR1PayloadEntries(), "09-accessibility/accessibility-chromium.json", (bytes) => {
+    const wrapper = JSON.parse(bytes.toString("utf8"));
+    wrapper.payload.engines[0].mobileMenu.firstMenuLink.withinMobileNav = false;
+    wrapper.payload.engines[0].mobileMenu.navigation.focus.withinMobileNav = false;
+    return wrapper;
+  });
+  assertBothReject(outsideMenuFocus, /accessibility|mobile-menu/i);
+
+  const mislabeledMenuIdentity = rebindAssemblerMutation(fixtureR1PayloadEntries(), "09-accessibility/accessibility-chromium.json", (bytes) => {
+    const wrapper = JSON.parse(bytes.toString("utf8"));
+    const menu = wrapper.payload.engines[0].mobileMenu;
+    menu.triggerFocus.text = "Navigation";
+    menu.triggerFocus.key = "summary||Navigation";
+    menu.firstMenuLink.text = "Start";
+    menu.firstMenuLink.key = "a|/#entry|Start";
+    return wrapper;
+  });
+  assertBothReject(mislabeledMenuIdentity, /accessibility|mobile-menu/i);
 
   const falseKeyboardPass = rebindAssemblerMutation(fixtureR1PayloadEntries(), "09-accessibility/section-summary.json", (bytes) => {
     const summary = JSON.parse(bytes.toString("utf8"));

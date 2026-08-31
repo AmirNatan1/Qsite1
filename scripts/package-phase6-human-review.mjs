@@ -73,6 +73,7 @@ const EVIDENCE_ASSEMBLY_SCHEMA = "quantum-hub.phase-6.final-evidence-assembly.v1
 const EVIDENCE_ASSEMBLY_INVENTORY_PATH = "13-package/evidence-assembly-summary.json";
 const R1_MOTION_EVIDENCE_SCHEMA = "quantum-hub.phase-6-r1.motion-evidence.v1";
 const R1_PERSISTENT_LIFECYCLE_SCHEMA = "quantum-hub.phase-6-r1.persistent-lifecycle.v1";
+const R1_BROWSER_QA_CONTEXT = Object.freeze({ origin: "LOCAL", baseUrl: "http://127.0.0.1:4338/" });
 const R1_MOTION_RECORDINGS = Object.freeze([
   "01-forward-physical-to-manifesto.mp4",
   "02-reverse-manifesto-to-f1.mp4",
@@ -906,16 +907,22 @@ function validateR1MotionObservations(recording, engine) {
 }
 
 function validateR1Accessibility(entries, roleRecords, summaries) {
+  const deploymentSummary = parseR1Json(entries.get("00-provenance/deployment-authority-summary.json"), "00-provenance/deployment-authority-summary.json");
+  if (stableJson(deploymentSummary.evidenceContext?.browserQa) !== stableJson(R1_BROWSER_QA_CONTEXT)) {
+    throw new Error("R1 canonical accessibility browser-QA context differs");
+  }
   const reports = roleRecords.get("accessibility-summary") ?? [];
   const byEngine = new Map();
   for (const record of reports) {
     const wrapper = r1DistilledWrapper(entries, record.path, "accessibility-summary");
     const report = wrapper.payload;
-    if (report.schema === "quantum-hub.phase-6.accessibility-interactions.v1") validateCanonicalAccessibilityReport(report);
+    validateCanonicalAccessibilityReport(report);
     const engine = report.engine;
     if (!["chromium", "webkit", "firefox"].includes(engine) || byEngine.has(engine)
-      || !["quantum-hub.phase-6.accessibility-interactions.v1", "quantum-hub.phase-6.global-hardening.v1"].includes(report.schema)
-      || wrapper.status !== "PASS" || report.status !== "PASS" || !Array.isArray(report.selectedEngines)
+      || report.schema !== "quantum-hub.phase-6.accessibility-interactions.v1"
+      || record.path !== `09-accessibility/accessibility-${engine}.json`
+      || report.baseUrl !== R1_BROWSER_QA_CONTEXT.baseUrl
+      || wrapper.status !== "PASS" || report.status !== "PASS" || report.headed !== true || !Array.isArray(report.selectedEngines)
       || stableJson(report.selectedEngines) !== stableJson([engine]) || !Array.isArray(report.engines) || report.engines.length !== 1
       || report.engines[0]?.engine !== engine || !Array.isArray(report.failures) || report.failures.length
       || report.summary?.axeCases !== 20 || report.summary?.axeExpected !== 20 || report.summary?.axeViolations !== 0
@@ -942,7 +949,9 @@ function validateR1Accessibility(entries, roleRecords, summaries) {
   validateCanonicalAccessibilityReport(limitation.payload);
   const limitationSource = normalizeR1Status(limitation.payload.status);
   if (!['FAIL', 'LIMITATION'].includes(limitation.status) || !['FAIL', 'LIMITATION'].includes(limitationSource)
-    || limitation.sourceStatus !== limitationSource || limitation.payload.engine !== "webkit" || limitation.payload.axeOnly === true) {
+    || limitation.sourceStatus !== limitationSource || limitation.payload.engine !== "webkit"
+    || limitation.payload.baseUrl !== R1_BROWSER_QA_CONTEXT.baseUrl
+    || limitation.payload.axeOnly !== false || limitation.payload.headed !== true) {
     throw new Error("R1 canonical WebKit interaction limitation binding differs");
   }
   const proxyRecord = (roleRecords.get("supplemental-reflow-proxy") ?? [])[0];

@@ -56,6 +56,7 @@ const EVIDENCE_ASSEMBLY_SCHEMA = "quantum-hub.phase-6.final-evidence-assembly.v1
 const EVIDENCE_ASSEMBLY_INVENTORY_PATH = "13-package/evidence-assembly-summary.json";
 const R1_MOTION_EVIDENCE_SCHEMA = "quantum-hub.phase-6-r1.motion-evidence.v1";
 const R1_PERSISTENT_LIFECYCLE_SCHEMA = "quantum-hub.phase-6-r1.persistent-lifecycle.v1";
+const R1_BROWSER_QA_CONTEXT = Object.freeze({ origin: "LOCAL", baseUrl: "http://127.0.0.1:4338/" });
 const R1_MOTION_RECORDINGS = Object.freeze(["01-forward-physical-to-manifesto.mp4", "02-reverse-manifesto-to-f1.mp4", "03-stop-at-authored-states.mp4", "04-resize-orientation-mid-current-and-manifesto.mp4", "05-supporting-route-entry-and-reverse.mp4"]);
 const R1_TOOLING_REPORT_FILES = Object.freeze([
   "PHASE_6_R1_VALIDATION_CLOSURE.md", "package.json", "scripts/assemble-phase6-final-evidence.mjs",
@@ -920,15 +921,21 @@ function auditIncludes720x450(value) {
 }
 
 function auditAccessibility(entries, roles, summaries) {
+  const deploymentSummary = parseJson(entries.get("00-provenance/deployment-authority-summary.json"), "00-provenance/deployment-authority-summary.json");
+  if (stableJson(deploymentSummary.evidenceContext?.browserQa) !== stableJson(R1_BROWSER_QA_CONTEXT)) {
+    throw new Error("R1 independent accessibility browser-QA context differs");
+  }
   const reports = roles.get("accessibility-summary") ?? [];
   const engines = new Set();
   for (const record of reports) {
     const wrapper = auditDistilled(entries, record.path, "accessibility-summary");
     const report = wrapper.payload;
-    if (report.schema === "quantum-hub.phase-6.accessibility-interactions.v1") validateCanonicalAccessibilityReport(report);
+    validateCanonicalAccessibilityReport(report);
     const engine = report.engine;
-    if (!["chromium", "webkit", "firefox"].includes(engine) || engines.has(engine) || wrapper.status !== "PASS" || report.status !== "PASS"
-      || !["quantum-hub.phase-6.accessibility-interactions.v1", "quantum-hub.phase-6.global-hardening.v1"].includes(report.schema)
+    if (!["chromium", "webkit", "firefox"].includes(engine) || engines.has(engine) || wrapper.status !== "PASS" || report.status !== "PASS" || report.headed !== true
+      || report.schema !== "quantum-hub.phase-6.accessibility-interactions.v1"
+      || record.path !== `09-accessibility/accessibility-${engine}.json`
+      || report.baseUrl !== R1_BROWSER_QA_CONTEXT.baseUrl
       || stableJson(report.selectedEngines) !== stableJson([engine]) || !Array.isArray(report.engines) || report.engines.length !== 1 || report.engines[0]?.engine !== engine
       || !Array.isArray(report.failures) || report.failures.length || report.summary?.axeCases !== 20 || report.summary?.axeExpected !== 20
       || report.summary?.axeViolations !== 0 || report.summary?.seriousCritical !== 0 || report.summary?.failures !== 0 || report.summary?.engineErrors !== 0) {
@@ -952,7 +959,8 @@ function auditAccessibility(entries, roles, summaries) {
   validateCanonicalAccessibilityReport(limitation.payload);
   const sourceStatus = auditR1Status(limitation.payload.status);
   if (!['FAIL', 'LIMITATION'].includes(limitation.status) || !['FAIL', 'LIMITATION'].includes(sourceStatus) || limitation.sourceStatus !== sourceStatus
-    || limitation.payload.engine !== "webkit" || limitation.payload.axeOnly === true) throw new Error("R1 independent WebKit interaction limitation binding differs");
+    || limitation.payload.engine !== "webkit" || limitation.payload.baseUrl !== R1_BROWSER_QA_CONTEXT.baseUrl || limitation.payload.axeOnly !== false
+    || limitation.payload.headed !== true) throw new Error("R1 independent WebKit interaction limitation binding differs");
   const proxyRecord = (roles.get("supplemental-reflow-proxy") ?? [])[0];
   const proxy = auditDistilled(entries, proxyRecord.path, "supplemental-reflow-proxy");
   const variants = proxy.payload.variants?.filter?.(({ id }) => id === "text-200-proxy") ?? [];

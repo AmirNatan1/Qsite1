@@ -12,7 +12,6 @@ import { PHASE6_ENGINES, PHASE6_ROUTES } from "./phase6-contract.mjs";
 import {
   assertExternalOutputPath,
   assertFreshExternalOutput,
-  diagnosticFailures,
   expectedHttpStatus,
 } from "./qa-phase6-global-hardening.mjs";
 
@@ -25,6 +24,10 @@ export const ACCESSIBILITY_VIEWPORTS = Object.freeze([
 export const KEYBOARD_VIEWPORT = ACCESSIBILITY_VIEWPORTS[0];
 export const MOBILE_VIEWPORT = ACCESSIBILITY_VIEWPORTS[1];
 export const MENU_REPEAT_CYCLES = 4;
+const VISIBLE_OUTLINE_STYLES = new Set(["auto", "dashed", "dotted", "double", "groove", "inset", "outset", "ridge", "solid"]);
+const EXPECTED_OUTLINE_COLOR = "rgb(240, 107, 160)";
+const EXPECTED_BROWSER_EXECUTABLES = Object.freeze({ chromium: "chrome.exe", firefox: "firefox.exe", webkit: "Playwright.exe" });
+const BROWSER_VERSION_PATTERN = /^\d+(?:\.\d+){1,3}$/;
 
 const BROWSER_TYPES = Object.freeze({ chromium, webkit, firefox });
 
@@ -125,7 +128,7 @@ function startDiagnostics(page) {
   const byRequest = new Map();
   const handlers = {
     console(message) {
-      const record = { location: message.location(), text: message.text() };
+      const record = { documentUrl: page.url(), location: message.location(), text: message.text() };
       if (message.type() === "error") report.consoleErrors.push(record);
       else if (message.type() === "warning") report.consoleWarnings.push(record);
     },
@@ -133,8 +136,17 @@ function startDiagnostics(page) {
       report.pageErrors.push({ message: error.message, name: error.name });
     },
     request(request) {
+      let documentUrl = null;
+      let isMainFrame = false;
+      try {
+        const frame = request.frame();
+        documentUrl = frame.url() || null;
+        isMainFrame = frame === page.mainFrame();
+      } catch {}
       const record = {
+        documentUrl,
         failure: null,
+        isMainFrame,
         isNavigation: request.isNavigationRequest(),
         method: request.method(),
         resourceType: request.resourceType(),
@@ -163,6 +175,115 @@ function startDiagnostics(page) {
       return structuredClone(report);
     },
   };
+}
+
+function canonicalDiagnostics(diagnostics) {
+  if (!diagnostics || typeof diagnostics !== "object" || Array.isArray(diagnostics)
+    || !sameJson(Object.keys(diagnostics).sort(), ["consoleErrors", "consoleWarnings", "pageErrors", "requests"])) return false;
+  const consoleRecord = (record) => {
+    if (!record || typeof record !== "object" || Array.isArray(record)
+      || !sameJson(Object.keys(record).sort(), ["documentUrl", "location", "text"])
+      || typeof record.documentUrl !== "string" || typeof record.text !== "string"
+      || !record.location || typeof record.location !== "object" || Array.isArray(record.location)) return false;
+    try { new URL(record.documentUrl); } catch { return false; }
+    return true;
+  };
+  const pageError = (record) => record && typeof record === "object" && !Array.isArray(record)
+    && typeof record.message === "string" && typeof record.name === "string";
+  const requestRecord = (record) => {
+    const expectedKeys = ["documentUrl", "failure", "isMainFrame", "isNavigation", "method", "resourceType", "status", "url"];
+    if (Object.hasOwn(record ?? {}, "fromServiceWorker")) expectedKeys.push("fromServiceWorker");
+    if (!record || typeof record !== "object" || Array.isArray(record)
+      || !sameJson(Object.keys(record).sort(), expectedKeys.sort())
+      || !(record.documentUrl === null || typeof record.documentUrl === "string")
+      || typeof record.isMainFrame !== "boolean"
+      || typeof record.isNavigation !== "boolean" || typeof record.method !== "string" || !/^[A-Z]+$/.test(record.method)
+      || typeof record.resourceType !== "string" || !record.resourceType
+      || !(record.failure === null || (typeof record.failure === "string" && record.failure.length > 0))
+      || !(record.status === null || (Number.isSafeInteger(record.status) && record.status >= 100 && record.status <= 599))
+      || !(record.fromServiceWorker === undefined || typeof record.fromServiceWorker === "boolean")
+      || typeof record.url !== "string") return false;
+    try {
+      new URL(record.url);
+      if (record.documentUrl !== null) new URL(record.documentUrl);
+    } catch { return false; }
+    return true;
+  };
+  return Array.isArray(diagnostics.consoleErrors) && diagnostics.consoleErrors.every(consoleRecord)
+    && Array.isArray(diagnostics.consoleWarnings) && diagnostics.consoleWarnings.every(consoleRecord)
+    && Array.isArray(diagnostics.pageErrors) && diagnostics.pageErrors.every(pageError)
+    && Array.isArray(diagnostics.requests) && diagnostics.requests.every(requestRecord);
+}
+
+function interactionDiagnosticFailures(diagnostics, route, baseUrl, { allowHomeTransitions = false } = {}) {
+  if (!canonicalDiagnostics(diagnostics)) return [{ code: "diagnostics-incomplete", actual: diagnostics ?? null }];
+  try {
+    const failures = [];
+    const expectedRouteUrl = new URL(route.path, baseUrl);
+    const expectedOrigin = expectedRouteUrl.origin;
+    let coveredInitialNavigation = false;
+    let coveredHomeNavigation = !allowHomeTransitions || expectedRouteUrl.pathname === "/";
+    for (const actual of diagnostics.consoleErrors) {
+      const documentUrl = new URL(actual.documentUrl);
+      const expected404 = route.expectedStatus === 404
+        && documentUrl.origin === expectedOrigin && documentUrl.pathname === expectedRouteUrl.pathname && documentUrl.search === expectedRouteUrl.search
+        && /failed to load resource.*404|status of 404/i.test(actual.text);
+      if (!expected404) failures.push({ code: "console-error", actual });
+    }
+    for (const actual of diagnostics.consoleWarnings) failures.push({ code: "console-warning", actual });
+    for (const actual of diagnostics.pageErrors) failures.push({ code: "page-error", actual });
+    for (const request of diagnostics.requests) {
+      const url = new URL(request.url);
+      const hasStatus = request.status !== null;
+      const hasFailure = request.failure !== null;
+      if (request.method !== "GET") failures.push({ code: "diagnostic-method", actual: request });
+      if (!hasStatus && !hasFailure) failures.push({ code: "diagnostic-request-terminal", actual: request });
+      if (hasStatus && request.fromServiceWorker !== false) failures.push({ code: "diagnostic-service-worker", actual: request });
+      if (!hasStatus && hasFailure && Object.hasOwn(request, "fromServiceWorker")) failures.push({ code: "diagnostic-failed-request-service-worker", actual: request });
+      if (["blob:", "http:", "https:"].includes(url.protocol) && url.origin !== expectedOrigin) failures.push({ code: "cross-origin-request", actual: request });
+      const exactInitialNavigation = request.isNavigation && request.isMainFrame && request.resourceType === "document" && request.method === "GET"
+        && url.origin === expectedRouteUrl.origin && url.pathname === expectedRouteUrl.pathname && url.search === expectedRouteUrl.search
+        && hasStatus && expectedHttpStatus(request.status, route.expectedStatus);
+      if (exactInitialNavigation) coveredInitialNavigation = true;
+      const exactHomeNavigation = request.isNavigation && request.isMainFrame && request.resourceType === "document" && request.method === "GET"
+        && url.origin === expectedRouteUrl.origin && url.pathname === "/" && url.search === ""
+        && hasStatus && expectedHttpStatus(request.status, 200);
+      if (exactHomeNavigation) coveredHomeNavigation = true;
+      const expectedIntentional404 = route.expectedStatus === 404 && exactInitialNavigation && request.status === 404;
+      if (hasStatus && request.status >= 400 && !expectedIntentional404) failures.push({ code: "http-error", actual: request });
+      if (hasFailure) {
+        let documentUrl = null;
+        try { documentUrl = request.documentUrl ? new URL(request.documentUrl) : null; } catch {}
+        const documentBoundHome = request.isMainFrame && documentUrl?.origin === expectedOrigin && documentUrl.pathname === "/"
+          && documentUrl.search === "" && ["", "#entry"].includes(documentUrl.hash);
+        const expectedHomeContext = documentBoundHome && (route.id === "home" || allowHomeTransitions);
+        const expectedHomeBlobAbort = expectedHomeContext && url.protocol === "blob:" && url.origin === expectedOrigin;
+        const expectedMaradinDocument = request.isMainFrame && documentUrl?.origin === expectedOrigin && documentUrl.pathname === "/pocs/maradin/"
+          && documentUrl.search === "" && documentUrl.hash === "";
+        const expectedMaradinReleaseAbort = route.id === "maradin" && expectedMaradinDocument && url.origin === expectedOrigin && [
+          "/media/maradin/maradin-field-aperture-approved.mp4",
+          "/media/maradin/maradin-test-contact-approved.mp4",
+        ].includes(url.pathname);
+        const expectedHomePosterCancellation = expectedHomeContext
+          && request.resourceType === "image" && url.origin === expectedOrigin
+          && /^\/media\/cinematic\/phase-4r2\/posters\/phase-4r2-(?:desktop|portrait|landscape)-poster-[a-f0-9]+\.png$/i.test(url.pathname)
+          && /NS_BINDING_ABORTED/i.test(request.failure);
+        const expectedMediaAbort = ["media", "other"].includes(request.resourceType)
+          && (expectedHomeBlobAbort || expectedMaradinReleaseAbort)
+          && /aborted|cancelled|canceled|NS_ERROR_PARSED_DATA_CACHED/i.test(request.failure);
+        if (!(expectedMediaAbort || expectedHomePosterCancellation)) failures.push({ code: "request-failure", actual: request });
+      }
+    }
+    if (!coveredInitialNavigation) {
+      failures.push({ code: "diagnostic-navigation-coverage", actual: diagnostics.requests, expected: { method: "GET", path: route.path, status: route.expectedStatus } });
+    }
+    if (!coveredHomeNavigation) {
+      failures.push({ code: "diagnostic-home-navigation-coverage", actual: diagnostics.requests, expected: { method: "GET", path: "/", status: 200 } });
+    }
+    return failures;
+  } catch (error) {
+    return [{ code: "diagnostics-invalid", actual: error instanceof Error ? error.message : String(error) }];
+  }
 }
 
 async function openRoute(page, options, route) {
@@ -225,12 +346,12 @@ async function runAxeMatrix(browser, engine, options) {
           thrown = error instanceof Error ? error.message : String(error);
         }
         const diagnostics = collector.stop();
-        const record = { engine, failures: [], httpStatus, incompleteCount, route: route.id, violations, viewport };
+        const record = { caseError: thrown, diagnostics, engine, failures: [], httpStatus, incompleteCount, route: route.id, violations, viewport };
         if (thrown) record.failures.push({ code: "axe-case-error", actual: thrown });
         if (!thrown && !expectedHttpStatus(httpStatus, route.expectedStatus)) record.failures.push({ code: "http-status", actual: httpStatus, expected: route.expectedStatus });
         if (violations.length) record.failures.push({ code: "axe-violations", actual: violations.length, expected: 0 });
         record.failures.push(...seriousCriticalAxeFailures(record));
-        record.failures.push(...diagnosticFailures(diagnostics, route, options.baseUrl, { allowExpectedMediaAbort: true }));
+        record.failures.push(...interactionDiagnosticFailures(diagnostics, route, options.baseUrl));
         record.status = record.failures.length ? "FAIL" : "PASS";
         records.push(record);
       }
@@ -256,18 +377,43 @@ async function observeFocus(page) {
       : null;
     const href = element instanceof Element ? element.getAttribute("href") : null;
     const text = element instanceof Element ? element.textContent?.replace(/\s+/g, " ").trim().slice(0, 100) ?? "" : "";
+    const visibilityChain = [];
+    for (let current = element; current instanceof Element; current = current.parentElement) {
+      const currentStyle = getComputedStyle(current);
+      visibilityChain.push({
+        ariaHidden: current.getAttribute("aria-hidden"),
+        contentVisibility: currentStyle.contentVisibility || "visible",
+        display: currentStyle.display,
+        hidden: current.hasAttribute("hidden"),
+        inert: current.hasAttribute("inert"),
+        opacity: Number.parseFloat(currentStyle.opacity),
+        tag: current.localName,
+        visibility: currentStyle.visibility,
+      });
+    }
+    const renderedVisible = visibilityChain.length > 0 && visibilityChain.every((current) => (
+      current.ariaHidden?.toLowerCase() !== "true" && current.contentVisibility !== "hidden" && current.display !== "none"
+      && current.hidden === false && current.inert === false && Number.isFinite(current.opacity) && current.opacity > 0.01
+      && !["collapse", "hidden"].includes(current.visibility)
+    ));
     return {
+      ariaLabel: element instanceof Element ? element.getAttribute("aria-label") : null,
       classes,
       focusVisible,
       href,
       key: `${element?.localName ?? "none"}|${href ?? ""}|${text}`,
+      outlineColor: style?.outlineColor ?? null,
       outlineStyle: style?.outlineStyle ?? null,
       outlineWidth: style?.outlineWidth ?? null,
       rect: rect ? { bottom: rect.bottom, height: rect.height, left: rect.left, right: rect.right, top: rect.top, width: rect.width } : null,
+      renderedVisible,
       selector,
       tag: element?.localName ?? null,
       text,
       visible: Boolean(rect && rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.top < innerHeight && style?.display !== "none" && style?.visibility !== "hidden"),
+      visibilityChain,
+      withinMobileNav: element instanceof Element && Boolean(element.closest("[data-mobile-nav]")),
+      withinSiteHeader: element instanceof Element && Boolean(element.closest(".site-header")),
     };
   });
 }
@@ -284,33 +430,101 @@ async function waitForActiveElementFullyVisible(page, timeoutMs) {
   }, undefined, { timeout: Math.min(timeoutMs, 1_500) }).then(() => true, () => false);
 }
 
+function hasConsistentRectGeometry(rect) {
+  return rect && [rect.top, rect.left, rect.bottom, rect.right, rect.width, rect.height].every(Number.isFinite)
+    && rect.right >= rect.left && rect.bottom >= rect.top
+    && Math.abs((rect.right - rect.left) - rect.width) <= 0.5
+    && Math.abs((rect.bottom - rect.top) - rect.height) <= 0.5;
+}
+
 function visiblyFocused(observation, viewport = KEYBOARD_VIEWPORT) {
   const rect = observation?.rect;
-  const fullyContained = rect && [rect.top, rect.left, rect.bottom, rect.right, rect.width, rect.height].every(Number.isFinite)
+  const classesAreStrings = Array.isArray(observation?.classes) && observation.classes.every((value) => typeof value === "string");
+  const hrefIsPrimitive = observation?.href === null || typeof observation?.href === "string";
+  const ariaLabelIsPrimitive = observation?.ariaLabel === null || typeof observation?.ariaLabel === "string";
+  const identityIsCanonical = typeof observation?.tag === "string" && /^[a-z][a-z0-9-]*$/.test(observation.tag)
+    && hrefIsPrimitive && ariaLabelIsPrimitive && typeof observation?.text === "string"
+    && typeof observation?.key === "string" && observation.key.length > 0
+    && observation.key === `${observation.tag}|${observation.href ?? ""}|${observation.text}`;
+  const outlineWidthIsCanonical = typeof observation?.outlineWidth === "string"
+    && /^(?:(?:0|[1-9]\d*)(?:\.\d+)?|\.\d+)px$/.test(observation.outlineWidth);
+  const outlineWidth = outlineWidthIsCanonical ? Number.parseFloat(observation.outlineWidth) : Number.NaN;
+  const fullyContained = hasConsistentRectGeometry(rect)
     && rect.width > 0 && rect.height > 0
     && rect.top >= 0 && rect.left >= 0 && rect.bottom <= viewport.height && rect.right <= viewport.width;
-  return observation?.focusVisible
-    && observation.visible
+  return observation?.focusVisible === true
+    && observation.visible === true
+    && renderedVisibilityIsCanonical(observation)
+    && classesAreStrings
+    && identityIsCanonical
     && fullyContained
-    && observation.outlineStyle !== "none"
-    && Number.parseFloat(observation.outlineWidth ?? "0") >= 2;
+    && observation.outlineColor === EXPECTED_OUTLINE_COLOR
+    && VISIBLE_OUTLINE_STYLES.has(observation.outlineStyle)
+    && Number.isFinite(outlineWidth) && outlineWidth >= 2;
+}
+
+function renderedVisibilityChainIsCanonical(chain, expectedTag, observedRenderedVisible) {
+  if (!Array.isArray(chain) || chain.length < 2 || chain[0]?.tag !== expectedTag || chain.at(-1)?.tag !== "html") return false;
+  const derived = chain.every((current) => current && typeof current === "object" && !Array.isArray(current)
+    && typeof current.tag === "string" && /^[a-z][a-z0-9-]*$/.test(current.tag)
+    && (current.ariaHidden === null || typeof current.ariaHidden === "string")
+    && typeof current.contentVisibility === "string" && current.contentVisibility.length > 0
+    && typeof current.display === "string" && current.display.length > 0
+    && typeof current.hidden === "boolean" && typeof current.inert === "boolean"
+    && Number.isFinite(current.opacity) && typeof current.visibility === "string" && current.visibility.length > 0)
+    && chain.every((current) => current.ariaHidden?.trim().toLowerCase() !== "true"
+      && current.contentVisibility.toLowerCase() !== "hidden" && current.display.toLowerCase() !== "none"
+      && current.hidden === false && current.inert === false && current.opacity > 0.01
+      && !["collapse", "hidden"].includes(current.visibility.toLowerCase()));
+  return observedRenderedVisible === derived && derived === true;
+}
+
+function renderedVisibilityIsCanonical(observation) {
+  return renderedVisibilityChainIsCanonical(observation?.visibilityChain, observation?.tag, observation?.renderedVisible);
+}
+
+function skipTargetIsVisible(observation, expectedHash, viewport = KEYBOARD_VIEWPORT) {
+  const rect = observation?.targetRect;
+  const expectedDisplay = expectedHash === "#entry" ? "grid" : "block";
+  const expectedTag = expectedHash === "#entry" ? "section" : "main";
+  return observation?.targetVisible === true
+    && observation.targetTag === expectedTag
+    && renderedVisibilityChainIsCanonical(observation.targetVisibilityChain, observation.targetTag, observation.targetRenderedVisible)
+    && observation.targetVisibilityChain[0].display === observation.targetDisplay
+    && observation.targetVisibilityChain[0].visibility === observation.targetVisibility
+    && observation.targetDisplay === expectedDisplay && observation.targetVisibility === "visible"
+    && hasConsistentRectGeometry(rect) && rect.width > 0 && rect.height > 0
+    && rect.bottom > 0 && rect.right > 0 && rect.top < viewport.height && rect.left < viewport.width;
+}
+
+function hasObservedClass(observation, className) {
+  return Array.isArray(observation?.classes)
+    && observation.classes.every((value) => typeof value === "string")
+    && observation.classes.includes(className);
 }
 
 export function keyboardFailures(record) {
   const failures = [];
+  const route = PHASE6_ROUTES.find(({ id }) => id === record.route);
+  const expectedHash = route ? (route.id === "home" ? "#entry" : "#main-content") : null;
+  const expectedSkipLabel = route?.id === "home" ? "Skip cinematic intro" : "Skip to content";
+  if (record.expectedHash !== expectedHash) failures.push({ code: "skip-link-route-contract", actual: record.expectedHash ?? null, expected: expectedHash });
   if (record.firstVisibilityReady !== true) failures.push({ code: "skip-link-visibility-wait", actual: record.firstVisibilityReady ?? null, expected: true });
-  if (!record.first.classes.includes("skip-link") || !visiblyFocused(record.first)) failures.push({ code: "skip-link-focus", actual: record.first });
-  if (record.first.href !== record.expectedHash) failures.push({ code: "skip-link-target", actual: record.first.href, expected: record.expectedHash });
-  if (record.afterActivation.hash !== record.expectedHash || record.afterActivation.activeId !== record.expectedHash.slice(1) || !record.afterActivation.targetVisible) {
-    failures.push({ code: "skip-link-activation", actual: record.afterActivation, expected: record.expectedHash });
+  if (record.activationReady !== true) failures.push({ code: "skip-link-activation-wait", actual: record.activationReady ?? null, expected: true });
+  if (!hasObservedClass(record.first, "skip-link") || record.first.tag !== "a" || record.first.text !== expectedSkipLabel
+    || record.first.ariaLabel !== null || !visiblyFocused(record.first)) failures.push({ code: "skip-link-focus", actual: record.first });
+  if (record.first.href !== expectedHash) failures.push({ code: "skip-link-target", actual: record.first.href, expected: expectedHash });
+  if (!expectedHash || record.afterActivation.path !== route?.path || record.afterActivation.hash !== expectedHash
+    || record.afterActivation.activeId !== expectedHash.slice(1) || !skipTargetIsVisible(record.afterActivation, expectedHash)) {
+    failures.push({ code: "skip-link-activation", actual: record.afterActivation, expected: expectedHash });
   }
-  if (!visiblyFocused(record.forwardFirst) || !visiblyFocused(record.forwardSecond)) failures.push({ code: "forward-focus-visibility", actual: [record.forwardFirst, record.forwardSecond] });
+  if (record.forwardFirst?.tag !== "a" || record.forwardSecond?.tag !== "a" || !visiblyFocused(record.forwardFirst) || !visiblyFocused(record.forwardSecond)) failures.push({ code: "forward-focus-visibility", actual: [record.forwardFirst, record.forwardSecond] });
   if (!visiblyFocused(record.backward) || record.backward.key !== record.forwardFirst.key) failures.push({ code: "shift-tab-order", actual: record.backward, expected: record.forwardFirst });
   if (record.route === "home") {
-    if (!record.forwardFirst.classes.includes("audience-trajectory") || record.forwardFirst.href !== "/for-partners/") {
+    if (!hasObservedClass(record.forwardFirst, "audience-trajectory") || record.forwardFirst.href !== "/for-partners/") {
       failures.push({ code: "home-audience-first", actual: record.forwardFirst, expected: "/for-partners/" });
     }
-    if (!record.forwardSecond.classes.includes("audience-trajectory") || record.forwardSecond.href !== "/for-startups/") {
+    if (!hasObservedClass(record.forwardSecond, "audience-trajectory") || record.forwardSecond.href !== "/for-startups/") {
       failures.push({ code: "home-audience-second", actual: record.forwardSecond, expected: "/for-startups/" });
     }
   }
@@ -326,23 +540,36 @@ export function keyboardFailures(record) {
       failures.push({ code: "desktop-home-preparation", actual: preparation ?? null });
     }
   }
-  if (desktopHome?.activationError) failures.push({ code: "desktop-home-navigation-wait", actual: desktopHome.activationError });
-  if (desktopHome?.backError) failures.push({ code: "desktop-home-back-wait", actual: desktopHome.backError });
-  if (desktopHome?.forwardError) failures.push({ code: "desktop-home-forward-wait", actual: desktopHome.forwardError });
-  if (!desktopHome || !visiblyFocused(desktopHome.focus) || desktopHome.focus.href !== "/#entry") {
+  if (desktopHome?.activationError !== null) failures.push({ code: "desktop-home-navigation-wait", actual: desktopHome?.activationError ?? null });
+  if (desktopHome?.arrivalReady !== true) failures.push({ code: "desktop-home-arrival-wait", actual: desktopHome?.arrivalReady ?? null, expected: true });
+  if (desktopHome?.backError !== null) failures.push({ code: "desktop-home-back-wait", actual: desktopHome?.backError ?? null });
+  if (desktopHome?.forwardError !== null) failures.push({ code: "desktop-home-forward-wait", actual: desktopHome?.forwardError ?? null });
+  if (!desktopHome || desktopHome.focus?.tag !== "a" || desktopHome.focus.withinSiteHeader !== true
+    || !hasObservedClass(desktopHome.focus, "brand-link") || desktopHome.focus.ariaLabel !== "Quantum home"
+    || desktopHome.focus.text !== "" || !visiblyFocused(desktopHome.focus) || desktopHome.focus.href !== "/#entry") {
     failures.push({ code: "desktop-home-focus", actual: desktopHome?.focus ?? null, expected: "/#entry" });
   }
-  if (!desktopHome?.arrival || desktopHome.arrival.path !== "/" || desktopHome.arrival.hash !== "#entry"
-    || desktopHome.arrival.entryInert !== false || desktopHome.arrival.manifestoReveal !== "resolved") {
+  if (!resolvedHomeState(desktopHome?.arrival, "#entry")) {
     failures.push({ code: "desktop-home-arrival", actual: desktopHome?.arrival ?? null });
   }
-  if (!desktopHome?.back || desktopHome.back.route !== record.routePath || desktopHome.back.hash !== "") {
+  const validBack = record.route === "home"
+    ? resolvedHomeState(desktopHome?.back, "")
+    : desktopHome?.back?.path === record.routePath && desktopHome.back.hash === "" && desktopHome.back.route === record.routePath
+      && desktopHome.back.cinematicMode === null && desktopHome.back.mediaState === null
+      && desktopHome.back.entryInert === null && desktopHome.back.manifestoReveal === null;
+  if (!validBack) {
     failures.push({ code: "desktop-home-back", actual: desktopHome?.back ?? null, expected: record.routePath });
   }
-  if (!desktopHome?.forward || desktopHome.forward.path !== "/" || desktopHome.forward.hash !== "#entry") {
+  if (!resolvedHomeState(desktopHome?.forward, "#entry")) {
     failures.push({ code: "desktop-home-forward", actual: desktopHome?.forward ?? null });
   }
   return failures;
+}
+
+function resolvedHomeState(state, hash) {
+  return state?.path === "/" && state.hash === hash && state.route === `/${hash}`
+    && state.cinematicMode === "enhanced" && state.mediaState === "ready"
+    && state.entryInert === false && state.manifestoReveal === "resolved";
 }
 
 async function observeDesktopHomeState(page) {
@@ -359,6 +586,18 @@ async function observeDesktopHomeState(page) {
       route: `${location.pathname}${location.hash}`,
     };
   });
+}
+
+async function waitForResolvedHomeState(page, timeoutMs) {
+  await page.waitForFunction(() => {
+    const entry = document.querySelector("#entry");
+    const shell = document.querySelector("[data-cinematic-shell]");
+    return location.pathname === "/" && location.hash === "#entry"
+      && document.documentElement.dataset.cinematicMode === "enhanced"
+      && shell?.getAttribute("data-media-state") === "ready"
+      && shell.getAttribute("data-manifesto-reveal") === "resolved"
+      && !entry?.hasAttribute("inert");
+  }, undefined, { timeout: Math.min(timeoutMs, 6_000) });
 }
 
 async function prepareHomeHeaderNavigation(page, options) {
@@ -390,6 +629,7 @@ async function observeDesktopHomeNavigation(page, options, route) {
   let back = null;
   let forward = null;
   let activationError = null;
+  let arrivalReady = false;
   let backError = null;
   let forwardError = null;
   if (focus.href === "/#entry") {
@@ -402,7 +642,7 @@ async function observeDesktopHomeNavigation(page, options, route) {
       activationError = error instanceof Error ? error.message : String(error);
     }
     await settle(page, options.timeoutMs).catch(() => undefined);
-    await page.waitForFunction(() => document.querySelector("[data-cinematic-shell]")?.getAttribute("data-manifesto-reveal") === "resolved", undefined, { timeout: Math.min(options.timeoutMs, 5_000) }).catch(() => undefined);
+    arrivalReady = await waitForResolvedHomeState(page, options.timeoutMs).then(() => true, () => false);
     arrival = await observeDesktopHomeState(page);
     if (arrival.path === "/" && arrival.hash === "#entry") {
       try {
@@ -416,6 +656,7 @@ async function observeDesktopHomeNavigation(page, options, route) {
         try {
           await page.goForward({ waitUntil: "domcontentloaded", timeout: options.timeoutMs });
           await settle(page, options.timeoutMs);
+          await waitForResolvedHomeState(page, options.timeoutMs);
           forward = await observeDesktopHomeState(page);
         } catch (error) {
           forwardError = error instanceof Error ? error.message : String(error);
@@ -423,17 +664,47 @@ async function observeDesktopHomeNavigation(page, options, route) {
       }
     }
   }
-  return { activationError, arrival, back, backError, focus, forward, forwardError, preparation };
+  return { activationError, arrival, arrivalReady, back, backError, focus, forward, forwardError, preparation };
 }
 
 async function observeSkipActivation(page, expectedHash) {
   return page.evaluate((hash) => {
     const target = document.querySelector(hash);
     const rect = target?.getBoundingClientRect();
+    const style = target instanceof Element ? getComputedStyle(target) : null;
+    const targetVisibilityChain = [];
+    for (let current = target; current instanceof Element; current = current.parentElement) {
+      const currentStyle = getComputedStyle(current);
+      targetVisibilityChain.push({
+        ariaHidden: current.getAttribute("aria-hidden"),
+        contentVisibility: currentStyle.contentVisibility || "visible",
+        display: currentStyle.display,
+        hidden: current.hasAttribute("hidden"),
+        inert: current.hasAttribute("inert"),
+        opacity: Number.parseFloat(currentStyle.opacity),
+        tag: current.localName,
+        visibility: currentStyle.visibility,
+      });
+    }
+    const targetRenderedVisible = targetVisibilityChain.length > 0 && targetVisibilityChain.every((current) => (
+      current.ariaHidden?.toLowerCase() !== "true" && current.contentVisibility !== "hidden" && current.display !== "none"
+      && current.hidden === false && current.inert === false && Number.isFinite(current.opacity) && current.opacity > 0.01
+      && !["collapse", "hidden"].includes(current.visibility)
+    ));
+    const targetRect = rect ? { bottom: rect.bottom, height: rect.height, left: rect.left, right: rect.right, top: rect.top, width: rect.width } : null;
     return {
       activeId: document.activeElement?.id ?? null,
       hash: location.hash,
-      targetVisible: Boolean(rect && rect.bottom > 0 && rect.top < innerHeight),
+      path: location.pathname,
+      targetDisplay: style?.display ?? null,
+      targetRenderedVisible,
+      targetRect,
+      targetTag: target?.localName ?? null,
+      targetVisibility: style?.visibility ?? null,
+      targetVisibilityChain,
+      targetVisible: Boolean(rect && rect.width > 0 && rect.height > 0
+        && rect.bottom > 0 && rect.right > 0 && rect.top < innerHeight && rect.left < innerWidth
+        && ["block", "grid"].includes(style?.display) && style.visibility === "visible"),
     };
   }, expectedHash);
 }
@@ -444,14 +715,16 @@ async function runKeyboardChecks(browser, engine, options) {
   const records = [];
   try {
     for (const route of PHASE6_ROUTES) {
+      const collector = startDiagnostics(page);
       await openRoute(page, options, route);
       const expectedHash = route.id === "home" ? "#entry" : "#main-content";
       await page.keyboard.press("Tab");
       const firstVisibilityReady = await waitForActiveElementFullyVisible(page, options.timeoutMs);
       const first = await observeFocus(page);
+      let activationReady = false;
       if (first.href === expectedHash) {
         await page.keyboard.press("Enter");
-        await page.waitForFunction((hash) => location.hash === hash, expectedHash, { timeout: Math.min(options.timeoutMs, 5_000) }).catch(() => undefined);
+        activationReady = await page.waitForFunction((hash) => location.hash === hash, expectedHash, { timeout: Math.min(options.timeoutMs, 5_000) }).then(() => true, () => false);
         await page.waitForTimeout(100);
       }
       const afterActivation = await observeSkipActivation(page, expectedHash);
@@ -465,8 +738,9 @@ async function runKeyboardChecks(browser, engine, options) {
       await page.waitForTimeout(80);
       const backward = await observeFocus(page);
       const desktopHome = await observeDesktopHomeNavigation(page, options, route);
-      const record = { afterActivation, backward, desktopHome, engine, expectedHash, first, firstVisibilityReady, forwardFirst, forwardSecond, route: route.id, routePath: route.path };
-      record.failures = keyboardFailures(record);
+      const diagnostics = collector.stop();
+      const record = { activationReady, afterActivation, backward, desktopHome, diagnostics, engine, expectedHash, first, firstVisibilityReady, forwardFirst, forwardSecond, route: route.id, routePath: route.path };
+      record.failures = [...keyboardFailures(record), ...interactionDiagnosticFailures(diagnostics, route, options.baseUrl, { allowHomeTransitions: true })];
       record.status = record.failures.length ? "FAIL" : "PASS";
       records.push(record);
     }
@@ -510,23 +784,35 @@ async function waitForMenu(page, open, timeoutMs) {
 
 export function mobileMenuFailures(record) {
   const failures = [];
-  if (!visiblyFocused(record.triggerFocus, MOBILE_VIEWPORT)) failures.push({ code: "mobile-menu-trigger-focus", actual: record.triggerFocus });
-  if (!record.ordinaryOpen.open || record.ordinaryOpen.ariaExpanded !== "true") failures.push({ code: "mobile-menu-open", actual: record.ordinaryOpen });
-  if (record.ordinaryClose.open || record.ordinaryClose.ariaExpanded !== "false" || !record.ordinaryClose.activeIsTrigger) failures.push({ code: "mobile-menu-close", actual: record.ordinaryClose });
-  if (!visiblyFocused(record.firstMenuLink, MOBILE_VIEWPORT)) failures.push({ code: "mobile-menu-link-focus", actual: record.firstMenuLink });
-  if (record.escapeClose.open || record.escapeClose.ariaExpanded !== "false" || !record.escapeClose.activeIsTrigger) failures.push({ code: "mobile-menu-escape-focus-return", actual: record.escapeClose });
+  const onAboutRoute = (state) => state?.path === "/about/" && state.hash === "";
+  if (record.triggerFocus?.tag !== "summary" || record.triggerFocus.withinMobileNav !== true
+    || record.triggerFocus.href !== null || record.triggerFocus.ariaLabel !== null || record.triggerFocus.text !== "Menu"
+    || !visiblyFocused(record.triggerFocus, MOBILE_VIEWPORT)) failures.push({ code: "mobile-menu-trigger-focus", actual: record.triggerFocus });
+  if (!onAboutRoute(record.ordinaryOpen) || record.ordinaryOpen.open !== true || record.ordinaryOpen.ariaExpanded !== "true" || record.ordinaryOpen.activeIsTrigger !== true) failures.push({ code: "mobile-menu-open", actual: record.ordinaryOpen });
+  if (!onAboutRoute(record.ordinaryClose) || record.ordinaryClose.open !== false || record.ordinaryClose.ariaExpanded !== "false" || record.ordinaryClose.activeIsTrigger !== true) failures.push({ code: "mobile-menu-close", actual: record.ordinaryClose });
+  if (record.firstMenuLink?.tag !== "a" || record.firstMenuLink.withinMobileNav !== true
+    || record.firstMenuLink.href !== "/#entry" || record.firstMenuLink.ariaLabel !== null || record.firstMenuLink.text !== "Home"
+    || !visiblyFocused(record.firstMenuLink, MOBILE_VIEWPORT)) failures.push({ code: "mobile-menu-link-focus", actual: record.firstMenuLink });
+  if (!onAboutRoute(record.escapeClose) || record.escapeClose.open !== false || record.escapeClose.ariaExpanded !== "false" || record.escapeClose.activeIsTrigger !== true) failures.push({ code: "mobile-menu-escape-focus-return", actual: record.escapeClose });
   for (const [index, cycle] of record.cycles.entries()) {
-    if (!cycle.open.open || cycle.open.ariaExpanded !== "true" || cycle.close.open || cycle.close.ariaExpanded !== "false" || !cycle.close.activeIsTrigger) {
+    if (!onAboutRoute(cycle.open) || cycle.open.open !== true || cycle.open.ariaExpanded !== "true" || cycle.open.activeIsTrigger !== true
+      || !onAboutRoute(cycle.close) || cycle.close.open !== false || cycle.close.ariaExpanded !== "false" || cycle.close.activeIsTrigger !== true) {
       failures.push({ code: "mobile-menu-repeat-cycle", cycle: index + 1, actual: cycle });
     }
   }
-  if (!visiblyFocused(record.navigation.focus, MOBILE_VIEWPORT) || record.navigation.focus.href !== "/#entry") {
+  if (record.navigation.focus?.tag !== "a" || record.navigation.focus.withinMobileNav !== true
+    || !visiblyFocused(record.navigation.focus, MOBILE_VIEWPORT) || record.navigation.focus.href !== "/#entry"
+    || record.navigation.focus.ariaLabel !== null || record.navigation.focus.text !== "Home") {
     failures.push({ code: "mobile-menu-navigation-focus", actual: record.navigation.focus, expected: "/#entry" });
   }
-  if (record.navigation.activationError) failures.push({ code: "mobile-menu-navigation-wait", actual: record.navigation.activationError });
-  if (record.navigation.backError) failures.push({ code: "mobile-menu-history-wait", actual: record.navigation.backError });
-  if (record.navigation.arrival.path !== "/" || record.navigation.arrival.hash !== "#entry") failures.push({ code: "mobile-menu-navigation", actual: record.navigation.arrival });
-  if (!record.navigation.back || record.navigation.back.path !== "/about/" || record.navigation.back.open || record.navigation.back.ariaExpanded !== "false") {
+  if (record.navigation.activationError !== null) failures.push({ code: "mobile-menu-navigation-wait", actual: record.navigation.activationError });
+  if (record.navigation.backError !== null) failures.push({ code: "mobile-menu-history-wait", actual: record.navigation.backError });
+  if (record.navigation.arrival?.path !== "/" || record.navigation.arrival.hash !== "#entry"
+    || record.navigation.arrival.open !== false || record.navigation.arrival.ariaExpanded !== "false" || record.navigation.arrival.activeIsTrigger !== false) {
+    failures.push({ code: "mobile-menu-navigation", actual: record.navigation.arrival });
+  }
+  if (!record.navigation.back || record.navigation.back.path !== "/about/" || record.navigation.back.hash !== ""
+    || record.navigation.back.open !== false || record.navigation.back.ariaExpanded !== "false" || record.navigation.back.activeIsTrigger !== false) {
     failures.push({ code: "mobile-menu-history-return", actual: record.navigation.back });
   }
   return failures;
@@ -536,6 +822,7 @@ async function runMobileMenuChecks(browser, engine, options) {
   const context = await browser.newContext({ colorScheme: "dark", serviceWorkers: "block", viewport: { width: MOBILE_VIEWPORT.width, height: MOBILE_VIEWPORT.height } });
   const page = await context.newPage();
   try {
+    const collector = startDiagnostics(page);
     await page.goto(targetUrl(options.baseUrl, "/about/"), { waitUntil: "domcontentloaded", timeout: options.timeoutMs });
     await settle(page, options.timeoutMs);
     const triggerFocus = await focusByTab(page, "[data-mobile-nav] summary");
@@ -591,8 +878,10 @@ async function runMobileMenuChecks(browser, engine, options) {
         }
       }
     }
-    const record = { cycles, engine, escapeClose, firstMenuLink, navigation: { activationError, arrival, back, backError, focus: navigationFocus }, ordinaryClose, ordinaryOpen, triggerFocus };
-    record.failures = mobileMenuFailures(record);
+    const diagnostics = collector.stop();
+    const record = { cycles, diagnostics, engine, escapeClose, firstMenuLink, navigation: { activationError, arrival, back, backError, focus: navigationFocus }, ordinaryClose, ordinaryOpen, triggerFocus };
+    const route = PHASE6_ROUTES.find(({ id }) => id === "about");
+    record.failures = [...mobileMenuFailures(record), ...interactionDiagnosticFailures(diagnostics, route, options.baseUrl, { allowHomeTransitions: true })];
     record.status = record.failures.length ? "FAIL" : "PASS";
     return record;
   } finally {
@@ -616,21 +905,25 @@ async function observeHistory(page) {
 }
 
 async function waitForEntry(page, timeoutMs) {
-  await page.waitForFunction(() => {
+  const ready = await page.waitForFunction(() => {
     const entry = document.querySelector("#entry");
     const header = document.querySelector(".site-header");
     if (!entry || !header || location.hash !== "#entry") return false;
     return Math.abs(entry.getBoundingClientRect().top - Math.max(0, header.getBoundingClientRect().bottom)) <= 12;
-  }, undefined, { timeout: Math.min(timeoutMs, 5_000) }).catch(() => undefined);
+  }, undefined, { timeout: Math.min(timeoutMs, 5_000) }).then(() => true, () => false);
   await page.waitForTimeout(80);
+  return ready;
 }
 
 export function historyFailures(record) {
   const failures = [];
-  if (record.bare.path !== "/" || record.bare.hash !== "" || record.bare.scrollY > 2) failures.push({ code: "same-document-bare", actual: record.bare });
-  if (record.entry.path !== "/" || record.entry.hash !== "#entry" || record.entry.scrollY <= 0 || Math.abs(record.entry.entryAlignmentDelta ?? Infinity) > 12) failures.push({ code: "same-document-entry", actual: record.entry });
-  if (record.back.path !== "/" || record.back.hash !== "") failures.push({ code: "same-document-back", actual: record.back });
-  if (record.forward.path !== "/" || record.forward.hash !== "#entry") failures.push({ code: "same-document-forward", actual: record.forward });
+  const hasMetrics = (state) => Number.isSafeInteger(state?.scrollY) && state.scrollY >= 0 && Number.isFinite(state.entryAlignmentDelta);
+  if (record.entryReady !== true) failures.push({ code: "same-document-entry-wait", actual: record.entryReady ?? null, expected: true });
+  if (record.forwardReady !== true) failures.push({ code: "same-document-forward-wait", actual: record.forwardReady ?? null, expected: true });
+  if (!hasMetrics(record.bare) || record.bare.path !== "/" || record.bare.hash !== "" || record.bare.scrollY > 2) failures.push({ code: "same-document-bare", actual: record.bare });
+  if (!hasMetrics(record.entry) || record.entry.path !== "/" || record.entry.hash !== "#entry" || record.entry.scrollY <= 0 || Math.abs(record.entry.entryAlignmentDelta) > 12) failures.push({ code: "same-document-entry", actual: record.entry });
+  if (!hasMetrics(record.back) || record.back.path !== "/" || record.back.hash !== "" || record.back.scrollY > 2) failures.push({ code: "same-document-back", actual: record.back });
+  if (!hasMetrics(record.forward) || record.forward.path !== "/" || record.forward.hash !== "#entry" || record.forward.scrollY <= 0 || Math.abs(record.forward.entryAlignmentDelta) > 12) failures.push({ code: "same-document-forward", actual: record.forward });
   return failures;
 }
 
@@ -638,20 +931,23 @@ async function runHistoryChecks(browser, engine, options) {
   const context = await browser.newContext({ colorScheme: "dark", serviceWorkers: "block", viewport: { width: KEYBOARD_VIEWPORT.width, height: KEYBOARD_VIEWPORT.height } });
   const page = await context.newPage();
   try {
+    const collector = startDiagnostics(page);
     await page.goto(targetUrl(options.baseUrl, "/"), { waitUntil: "domcontentloaded", timeout: options.timeoutMs });
     await settle(page, options.timeoutMs);
     const bare = await observeHistory(page);
     await page.goto(targetUrl(options.baseUrl, "/#entry"), { waitUntil: "domcontentloaded", timeout: options.timeoutMs });
-    await waitForEntry(page, options.timeoutMs);
+    const entryReady = await waitForEntry(page, options.timeoutMs);
     const entry = await observeHistory(page);
     await page.goBack({ waitUntil: "domcontentloaded", timeout: options.timeoutMs });
     await page.waitForTimeout(100);
     const back = await observeHistory(page);
     await page.goForward({ waitUntil: "domcontentloaded", timeout: options.timeoutMs });
-    await waitForEntry(page, options.timeoutMs);
+    const forwardReady = await waitForEntry(page, options.timeoutMs);
     const forward = await observeHistory(page);
-    const record = { back, bare, engine, entry, forward };
-    record.failures = historyFailures(record);
+    const diagnostics = collector.stop();
+    const record = { back, bare, diagnostics, engine, entry, entryReady, forward, forwardReady };
+    const route = PHASE6_ROUTES.find(({ id }) => id === "home");
+    record.failures = [...historyFailures(record), ...interactionDiagnosticFailures(diagnostics, route, options.baseUrl)];
     record.status = record.failures.length ? "FAIL" : "PASS";
     return record;
   } finally {
@@ -708,6 +1004,15 @@ async function runEngine(engine, options) {
 
 export function validateReport(report) {
   assert(report.schema === SCHEMA, "accessibility report schema differs");
+  assert([...PHASE6_ENGINES, "all"].includes(report.engine), "accessibility report engine differs");
+  assert(typeof report.axeOnly === "boolean", "accessibility axe-only authority differs");
+  assert(typeof report.headed === "boolean", "accessibility headed authority differs");
+  let reportBaseUrl = null;
+  try { reportBaseUrl = new URL(report.baseUrl); } catch {}
+  assert(reportBaseUrl && ["http:", "https:"].includes(reportBaseUrl.protocol)
+    && !reportBaseUrl.username && !reportBaseUrl.password && !reportBaseUrl.search && !reportBaseUrl.hash
+    && reportBaseUrl.pathname.endsWith("/") && reportBaseUrl.toString() === report.baseUrl,
+  "accessibility base URL authority differs");
   const expectedRoutes = PHASE6_ROUTES.map(({ expectedStatus, id, path: routePath }) => ({ expectedStatus, id, path: routePath }));
   assert(sameJson(report.routes, expectedRoutes), "accessibility report route inventory differs");
   assert(sameJson(report.viewports, ACCESSIBILITY_VIEWPORTS), "accessibility report viewport inventory differs");
@@ -722,6 +1027,11 @@ export function validateReport(report) {
       topFailures.push({ actual: result.failure, code: "engine-error", engine: result.engine, section: "engine" });
       continue;
     }
+    assert(result.browser && typeof result.browser === "object" && !Array.isArray(result.browser)
+      && result.browser.engine === result.engine && result.browser.headed === report.headed
+      && result.browser.executable === EXPECTED_BROWSER_EXECUTABLES[result.engine]
+      && typeof result.browser.version === "string" && BROWSER_VERSION_PATTERN.test(result.browser.version),
+    `${result.engine} browser identity differs`);
     assert(Array.isArray(result.axe) && result.axe.length === PHASE6_ROUTES.length * ACCESSIBILITY_VIEWPORTS.length, `${result.engine} axe matrix is incomplete`);
     const axeKeys = new Set();
     for (const record of result.axe) {
@@ -732,11 +1042,19 @@ export function validateReport(report) {
       assert(!axeKeys.has(key), `${result.engine} axe row is duplicated`);
       axeKeys.add(key);
       assert(record.engine === result.engine
+        && (record.caseError === null || (typeof record.caseError === "string" && record.caseError.length > 0))
         && Array.isArray(record.violations)
         && Array.isArray(record.failures)
         && Number.isSafeInteger(record.incompleteCount) && record.incompleteCount >= 0
-        && expectedHttpStatus(record.httpStatus, route.expectedStatus), `${result.engine} axe raw row differs`);
-      const expectedStatus = record.failures.length ? "FAIL" : "PASS";
+        && (record.httpStatus === null || (Number.isSafeInteger(record.httpStatus) && record.httpStatus >= 100 && record.httpStatus <= 599)), `${result.engine} axe raw row differs`);
+      const expectedFailures = [];
+      if (record.caseError !== null) expectedFailures.push({ code: "axe-case-error", actual: record.caseError });
+      if (record.caseError === null && !expectedHttpStatus(record.httpStatus, route.expectedStatus)) expectedFailures.push({ code: "http-status", actual: record.httpStatus, expected: route.expectedStatus });
+      if (record.violations.length) expectedFailures.push({ code: "axe-violations", actual: record.violations.length, expected: 0 });
+      expectedFailures.push(...seriousCriticalAxeFailures(record));
+      expectedFailures.push(...interactionDiagnosticFailures(record.diagnostics, route, report.baseUrl));
+      assert(sameJson(record.failures, expectedFailures), `${result.engine} axe raw failure ledger differs`);
+      const expectedStatus = expectedFailures.length ? "FAIL" : "PASS";
       assert(record.status === expectedStatus, `${result.engine} axe row status differs`);
       if (record.status === "PASS") assert(record.violations.length === 0, `${result.engine} PASS axe row contains violations`);
     }
@@ -750,15 +1068,17 @@ export function validateReport(report) {
         const route = PHASE6_ROUTES.find(({ id }) => id === record?.route);
         assert(route && record.engine === result.engine && record.routePath === route.path && !keyboardRoutes.has(record.route), `${result.engine} keyboard route row differs`);
         keyboardRoutes.add(record.route);
-        const failures = keyboardFailures(record);
+        const failures = [...keyboardFailures(record), ...interactionDiagnosticFailures(record.diagnostics, route, report.baseUrl, { allowHomeTransitions: true })];
         assert(sameJson(record.failures, failures) && record.status === (failures.length ? "FAIL" : "PASS"), `${result.engine} keyboard raw row/status differs`);
       }
-      assert(result.mobileMenu && Array.isArray(result.mobileMenu.cycles) && result.mobileMenu.cycles.length === MENU_REPEAT_CYCLES, `${result.engine} mobile-menu cycles are incomplete`);
-      const menuFailures = mobileMenuFailures(result.mobileMenu);
+      assert(result.mobileMenu && result.mobileMenu.engine === result.engine && Array.isArray(result.mobileMenu.cycles) && result.mobileMenu.cycles.length === MENU_REPEAT_CYCLES, `${result.engine} mobile-menu cycles are incomplete`);
+      const menuRoute = PHASE6_ROUTES.find(({ id }) => id === "about");
+      const menuFailures = [...mobileMenuFailures(result.mobileMenu), ...interactionDiagnosticFailures(result.mobileMenu.diagnostics, menuRoute, report.baseUrl, { allowHomeTransitions: true })];
       assert(sameJson(result.mobileMenu.failures, menuFailures)
         && result.mobileMenu.status === (menuFailures.length ? "FAIL" : "PASS"), `${result.engine} mobile-menu raw evidence differs`);
-      assert(result.history, `${result.engine} history evidence is absent`);
-      const derivedHistoryFailures = historyFailures(result.history);
+      assert(result.history && result.history.engine === result.engine, `${result.engine} history evidence is absent or mislabeled`);
+      const historyRoute = PHASE6_ROUTES.find(({ id }) => id === "home");
+      const derivedHistoryFailures = [...historyFailures(result.history), ...interactionDiagnosticFailures(result.history.diagnostics, historyRoute, report.baseUrl)];
       assert(sameJson(result.history.failures, derivedHistoryFailures)
         && result.history.status === (derivedHistoryFailures.length ? "FAIL" : "PASS"), `${result.engine} history raw evidence differs`);
       derivedEngineFailures.push(
