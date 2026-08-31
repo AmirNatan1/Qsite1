@@ -11,6 +11,7 @@ import {
   aggregateVisibilityScenarios,
   assertExternalPath,
   bfcacheResult,
+  bindRequestDocumentIdentity,
   deriveTopLevelStatus,
   evaluateVisibilityScenario,
   homeVisibilityScenarioChecks,
@@ -142,8 +143,13 @@ function mediaRequest(requestPath, range, frameNavigationId = "navigation-home-d
   const inferredDocumentId = frameNavigationId.startsWith("navigation-")
     ? frameNavigationId.slice("navigation-".length)
     : null;
+  const documentUrl = overrides.documentUrl ?? "https://example.pages.dev/";
+  const inferredGeneration = inferredDocumentId === "entry-document" ? 2 : 1;
   return {
-    documentUrl: "https://example.pages.dev/",
+    correlatedDocumentUrl: overrides.correlatedDocumentUrl ?? documentUrl,
+    documentIdentityCorrelation: "CORRELATED",
+    documentUrl,
+    frameDocumentGeneration: overrides.frameDocumentGeneration ?? inferredGeneration,
     frameDocumentId: inferredDocumentId,
     frameNavigationId,
     method: "GET",
@@ -621,6 +627,10 @@ test("logical Phase 4 media telemetry requires presence and ignores repeated ran
   assert.equal(result.network.rangeRequestCount, 2);
   assert.equal(result.network.nonRangeRequestCount, 0);
   assert.equal(result.noDuplicateNonRangeRequests, true);
+  assert.equal(summarizeMediaTelemetry([
+    records[0],
+    { ...records[1], frameDocumentGeneration: 4 },
+  ], [mediaState]).status, STATUS.PASS, "range traffic for one BFCache-restored Document was rejected across browser generations");
   assert.equal(summarizeMediaTelemetry([], [mediaState]).status, STATUS.FAIL);
   const duplicateNonRangeRequests = [
     mediaRequest("/media/cinematic/phase-4r2/media/mobile.mp4", null),
@@ -722,6 +732,7 @@ test("logical Phase 4 media telemetry requires presence and ignores repeated ran
     }),
     mediaRequest("/media/cinematic/phase-4r2/media/mobile.mp4", null, secondDocument.navigationId, {
       documentUrl: "https://example.pages.dev/#entry",
+      frameDocumentGeneration: 3,
       frameDocumentId: sameRouteReload.documentId,
     }),
   ];
@@ -734,8 +745,34 @@ test("logical Phase 4 media telemetry requires presence and ignores repeated ran
   ], [secondDocument, sameRouteReload]).status, STATUS.FAIL, "one correlated Document identity covered two fresh Documents");
   assert.equal(summarizeMediaTelemetry([
     sameRouteReloadRecords[0],
+    { ...sameRouteReloadRecords[1], frameDocumentGeneration: sameRouteReloadRecords[0].frameDocumentGeneration },
+  ], [secondDocument, sameRouteReload]).status, STATUS.FAIL, "one browser generation covered two fresh Documents");
+  assert.equal(summarizeMediaTelemetry([
+    sameRouteReloadRecords[0],
     { ...sameRouteReloadRecords[1], frameDocumentId: null },
   ], [secondDocument, sameRouteReload]).status, STATUS.FAIL, "an uncorrelated Phase 4 request became authoritative");
+  assert.equal(summarizeMediaTelemetry([
+    sameRouteReloadRecords[0],
+    { ...sameRouteReloadRecords[1], documentIdentityCorrelation: "PENDING" },
+  ], [secondDocument, sameRouteReload]).status, STATUS.FAIL, "a pending Document correlation became authoritative");
+  assert.equal(summarizeMediaTelemetry([
+    sameRouteReloadRecords[0],
+    { ...sameRouteReloadRecords[1], correlatedDocumentUrl: "https://example.pages.dev/" },
+  ], [secondDocument, sameRouteReload]).status, STATUS.FAIL, "a request correlated to another Home route became authoritative");
+
+  const deferredSameRouteRequest = {
+    correlatedDocumentUrl: null,
+    documentIdentityCorrelation: "PENDING",
+    documentUrl: "https://example.pages.dev/#entry",
+    frameDocumentGeneration: 10,
+    frameDocumentId: null,
+  };
+  assert.equal(bindRequestDocumentIdentity(deferredSameRouteRequest, {
+    documentId: "next-entry-document",
+    documentUrl: "https://example.pages.dev/#entry",
+  }, 11), false);
+  assert.equal(deferredSameRouteRequest.documentIdentityCorrelation, "DOCUMENT GENERATION CHANGED");
+  assert.equal(deferredSameRouteRequest.frameDocumentId, null, "a delayed request bound to the next same-route Document");
 });
 
 test("listener telemetry detects duplicate attempts and same-Document listener growth", () => {

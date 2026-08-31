@@ -921,11 +921,12 @@ export function bfcacheResult(events, states) {
   };
 }
 
-async function runHistory(page, options, navigationIdForPage) {
+async function runHistory(page, options, navigationIdForPage, settleRequestCorrelations) {
   const states = {};
   await page.goto(targetUrl(options.baseUrl, "/"), { waitUntil: "domcontentloaded", timeout: options.timeoutMs });
   await settle(page, options.timeoutMs);
   await page.waitForFunction(() => document.documentElement.dataset.cinematicMode === "enhanced" && document.querySelector("[data-cinematic-shell]")?.getAttribute("data-media-state") === "ready", undefined, { timeout: options.timeoutMs });
+  await settleRequestCorrelations();
   states.bare = await snapshot(page, "bare-home", navigationIdForPage(page));
   await wheelToEnd(page, options.timeoutMs, navigationIdForPage);
   await page.waitForFunction(() => document.querySelector("[data-cinematic-shell]")?.getAttribute("data-manifesto-reveal") === "resolved", undefined, { timeout: options.timeoutMs });
@@ -933,9 +934,11 @@ async function runHistory(page, options, navigationIdForPage) {
   await barePartner.scrollIntoViewIfNeeded({ timeout: options.timeoutMs });
   await settle(page, options.timeoutMs);
   states.bareManifesto = await snapshot(page, "bare-home-manifesto", navigationIdForPage(page));
+  await settleRequestCorrelations();
   await barePartner.click({ timeout: options.timeoutMs });
   await waitForUrl(page, (url) => url.pathname === "/for-partners/", options.timeoutMs);
   states.supportAfterBare = await snapshot(page, "support-after-bare", navigationIdForPage(page));
+  await settleRequestCorrelations();
   await page.goBack({ waitUntil: "domcontentloaded", timeout: options.timeoutMs });
   await settle(page, options.timeoutMs);
   await waitForRestoredHome(page, options.timeoutMs);
@@ -947,23 +950,29 @@ async function runHistory(page, options, navigationIdForPage) {
       { timeout: Math.min(options.timeoutMs, 3_000) },
     ).catch(() => false);
   }
+  await settleRequestCorrelations();
   states.bareBack = await snapshot(page, "bare-back", navigationIdForPage(page));
+  await settleRequestCorrelations();
   await page.goForward({ waitUntil: "domcontentloaded", timeout: options.timeoutMs });
   await settle(page, options.timeoutMs);
   states.supportForward = await snapshot(page, "support-forward", navigationIdForPage(page));
 
+  await settleRequestCorrelations();
   await page.locator(".brand-link[href='/#entry']").first().click({ timeout: options.timeoutMs });
   await waitForUrl(page, (url) => url.pathname === "/" && url.hash === "#entry", options.timeoutMs);
   await page.waitForFunction(() => document.documentElement.dataset.cinematicMode === "enhanced" && document.querySelector("[data-cinematic-shell]")?.getAttribute("data-media-state") === "ready", undefined, { timeout: options.timeoutMs });
+  await settleRequestCorrelations();
   states.entryInitial = await snapshot(page, "entry-initial", navigationIdForPage(page));
   await page.waitForFunction(() => document.querySelector("[data-cinematic-shell]")?.getAttribute("data-manifesto-reveal") === "resolved", undefined, { timeout: options.timeoutMs });
   const entryPartner = page.locator("[data-audience-routing] a[href='/for-partners/']");
   await entryPartner.scrollIntoViewIfNeeded({ timeout: options.timeoutMs });
   await settle(page, options.timeoutMs);
   states.entryResolved = await snapshot(page, "entry-resolved", navigationIdForPage(page));
+  await settleRequestCorrelations();
   await entryPartner.click({ timeout: options.timeoutMs });
   await waitForUrl(page, (url) => url.pathname === "/for-partners/", options.timeoutMs);
   states.supportAfterEntry = await snapshot(page, "support-after-entry", navigationIdForPage(page));
+  await settleRequestCorrelations();
   await page.goBack({ waitUntil: "domcontentloaded", timeout: options.timeoutMs });
   await settle(page, options.timeoutMs);
   await page.waitForFunction(() => document.documentElement.dataset.cinematicMode === "enhanced" && document.querySelector("[data-cinematic-shell]")?.getAttribute("data-media-state") === "ready", undefined, { timeout: options.timeoutMs });
@@ -972,7 +981,9 @@ async function runHistory(page, options, navigationIdForPage) {
     undefined,
     { timeout: Math.min(options.timeoutMs, 3_000) },
   ).catch(() => false);
+  await settleRequestCorrelations();
   states.entryBack = await snapshot(page, "entry-back", navigationIdForPage(page));
+  await settleRequestCorrelations();
   await page.goForward({ waitUntil: "domcontentloaded", timeout: options.timeoutMs });
   await settle(page, options.timeoutMs);
   states.entryForward = await snapshot(page, "entry-forward", navigationIdForPage(page));
@@ -1226,6 +1237,7 @@ async function runVisibility(context, options, navigationIdForPage, settleReques
     await primary.goto(targetUrl(options.baseUrl, "/"), { waitUntil: "domcontentloaded", timeout: options.timeoutMs });
     await settle(primary, options.timeoutMs);
     await primary.waitForFunction(() => document.documentElement.dataset.cinematicMode === "enhanced" && document.querySelector("[data-cinematic-shell]")?.getAttribute("data-media-state") === "ready", undefined, { timeout: options.timeoutMs });
+    await settleRequestCorrelations();
     await primary.mouse.wheel(0, 900);
     await primary.waitForTimeout(350);
     const current = await tabSwitch(primary, background, options, "home-current", navigationIdForPage);
@@ -1233,6 +1245,7 @@ async function runVisibility(context, options, navigationIdForPage, settleReques
     await primary.waitForFunction(() => document.querySelector("[data-cinematic-shell]")?.getAttribute("data-manifesto-reveal") === "resolved", undefined, { timeout: options.timeoutMs });
     const manifesto = await tabSwitch(primary, background, options, "home-manifesto", navigationIdForPage);
 
+    await settleRequestCorrelations();
     await primary.goto(targetUrl(options.baseUrl, "/pocs/maradin/"), { waitUntil: "domcontentloaded", timeout: options.timeoutMs });
     await settle(primary, options.timeoutMs);
     await primary.locator("[data-maradin-play]").first().click({ timeout: options.timeoutMs });
@@ -1319,18 +1332,50 @@ function validByteRange(value) {
   }
 }
 
+export function bindRequestDocumentIdentity(record, identity, currentGeneration) {
+  record.frameDocumentId = null;
+  record.correlatedDocumentUrl = identity?.documentUrl ?? null;
+  if (!Number.isSafeInteger(record.frameDocumentGeneration)
+    || record.frameDocumentGeneration <= 0
+    || currentGeneration !== record.frameDocumentGeneration) {
+    record.documentIdentityCorrelation = "DOCUMENT GENERATION CHANGED";
+    return false;
+  }
+  if (typeof identity?.documentId !== "string" || identity.documentId.length === 0) {
+    record.documentIdentityCorrelation = "PROBE UNAVAILABLE";
+    return false;
+  }
+  try {
+    if (new URL(identity.documentUrl).href !== new URL(record.documentUrl).href) {
+      record.documentIdentityCorrelation = "DOCUMENT URL CHANGED";
+      return false;
+    }
+  } catch {
+    record.documentIdentityCorrelation = "INVALID DOCUMENT URL";
+    return false;
+  }
+  record.frameDocumentId = identity.documentId;
+  record.documentIdentityCorrelation = "CORRELATED";
+  return true;
+}
+
 function authoritativePhase4Request(request) {
   try {
     const requestUrl = new URL(request.url);
     const documentUrl = new URL(request.documentUrl);
+    const correlatedDocumentUrl = new URL(request.correlatedDocumentUrl);
     const documentRoute = `${documentUrl.pathname}${documentUrl.hash}`;
     return request.method === "GET"
       && request.resourceType === "fetch"
+      && request.documentIdentityCorrelation === "CORRELATED"
       && typeof request.frameDocumentId === "string"
       && request.frameDocumentId.length > 0
+      && Number.isSafeInteger(request.frameDocumentGeneration)
+      && request.frameDocumentGeneration > 0
       && typeof request.frameNavigationId === "string"
       && request.frameNavigationId.length > 0
       && request.frameNavigationId !== "pre-navigation"
+      && correlatedDocumentUrl.href === documentUrl.href
       && documentUrl.origin === requestUrl.origin
       && documentUrl.search === ""
       && ["/", "/#entry"].includes(documentRoute)
@@ -1415,7 +1460,11 @@ export function summarizeMediaTelemetry(records, snapshotInput) {
   }
   const expectedSelectionNavigationIds = expectedDocuments.map(({ selectionNavigationId }) => selectionNavigationId);
   const selectionKeys = new Map();
+  const documentUrlsByNavigationId = new Map();
   for (const document of expectedDocuments) {
+    const documentUrls = documentUrlsByNavigationId.get(document.selectionNavigationId) ?? new Set();
+    documentUrls.add(document.selectionDocumentUrl);
+    documentUrlsByNavigationId.set(document.selectionNavigationId, documentUrls);
     for (const selectedPath of document.paths) {
       const key = `${document.documentId}\u0000${selectedPath}`;
       const selection = selectionKeys.get(key) ?? {
@@ -1431,11 +1480,15 @@ export function summarizeMediaTelemetry(records, snapshotInput) {
   }
   const documentIdsByPath = new Map();
   const nonRangeRequestsByDocumentPath = new Map();
+  const documentIdsByGeneration = new Map();
   for (const request of phase4Requests) {
     const requestPath = phase4MediaUrl(request.path);
     const documentIds = documentIdsByPath.get(requestPath) ?? new Set();
     documentIds.add(request.frameDocumentId);
     documentIdsByPath.set(requestPath, documentIds);
+    const generationDocumentIds = documentIdsByGeneration.get(request.frameDocumentGeneration) ?? new Set();
+    generationDocumentIds.add(request.frameDocumentId);
+    documentIdsByGeneration.set(request.frameDocumentGeneration, generationDocumentIds);
     if (!validByteRange(request.range)) {
       const key = `${request.frameDocumentId}\u0000${requestPath}`;
       nonRangeRequestsByDocumentPath.set(key, (nonRangeRequestsByDocumentPath.get(key) ?? 0) + 1);
@@ -1445,6 +1498,8 @@ export function summarizeMediaTelemetry(records, snapshotInput) {
   const documentCoverageValid = expectedSelectionNavigationIds.every((navigationId) => typeof navigationId === "string" && navigationId.length > 0 && navigationId !== "pre-navigation")
     && expectedDocuments.length === enhancedMediaDocuments.length
     && expectedDocuments.every(({ selectionDocumentUrl, selectionStable }) => typeof selectionDocumentUrl === "string" && selectionDocumentUrl.length > 0 && selectionStable)
+    && [...documentUrlsByNavigationId.values()].every((documentUrls) => documentUrls.size === 1)
+    && [...documentIdsByGeneration.values()].every((documentIds) => documentIds.size === 1)
     && selectionKeys.size === expectedDocuments.length
     && [...selectionKeys.values()].every(({ count, documentUrl, navigationId }) => count === 1
       && typeof documentUrl === "string"
@@ -1679,8 +1734,10 @@ export async function runPersistentLifecycle(options) {
   const requests = [];
   const requestDocumentCorrelations = [];
   const frameNavigationIds = new WeakMap();
+  const frameDocumentGenerations = new WeakMap();
   const frameRouteNavigationIds = new WeakMap();
   let nextNavigationId = 0;
+  let nextDocumentGeneration = 0;
   let context;
   let collected = null;
   let runError = null;
@@ -1695,6 +1752,7 @@ export async function runPersistentLifecycle(options) {
     const registerPage = (page) => {
       page.on("framenavigated", (frame) => {
         if (frame !== page.mainFrame()) return;
+        frameDocumentGenerations.set(frame, ++nextDocumentGeneration);
         let route = frame.url();
         try {
           const url = new URL(route);
@@ -1722,6 +1780,7 @@ export async function runPersistentLifecycle(options) {
       const record = {
         documentIdentityCorrelation: frame ? "NOT APPLICABLE" : "NO FRAME",
         frameNavigationId: frame ? frameNavigationIds.get(frame) ?? "pre-navigation" : null,
+        frameDocumentGeneration: frame ? frameDocumentGenerations.get(frame) ?? null : null,
         frameDocumentId: null,
         documentUrl: frame?.url() ?? null,
         method: request.method(),
@@ -1737,22 +1796,7 @@ export async function runPersistentLifecycle(options) {
           const probe = globalThis.__phase6R1PersistentProbe?.() ?? null;
           return { documentId: probe?.documentId ?? null, documentUrl: location.href };
         }).then((identity) => {
-          record.correlatedDocumentUrl = identity?.documentUrl ?? null;
-          if (typeof identity?.documentId !== "string" || identity.documentId.length === 0) {
-            record.documentIdentityCorrelation = "PROBE UNAVAILABLE";
-            return;
-          }
-          try {
-            if (new URL(identity.documentUrl).href !== new URL(record.documentUrl).href) {
-              record.documentIdentityCorrelation = "DOCUMENT URL CHANGED";
-              return;
-            }
-          } catch {
-            record.documentIdentityCorrelation = "INVALID DOCUMENT URL";
-            return;
-          }
-          record.frameDocumentId = identity.documentId;
-          record.documentIdentityCorrelation = "CORRELATED";
+          bindRequestDocumentIdentity(record, identity, frameDocumentGenerations.get(frame) ?? null);
         }, (error) => {
           record.documentIdentityCorrelation = "EVALUATION ERROR";
           record.documentIdentityError = error instanceof Error ? error.message : String(error);
@@ -1761,7 +1805,7 @@ export async function runPersistentLifecycle(options) {
     });
     const pages = context.pages();
     const page = pages[0] ?? await context.newPage();
-    const history = await runHistory(page, options, navigationIdForPage);
+    const history = await runHistory(page, options, navigationIdForPage, settleRequestCorrelations);
     await settleRequestCorrelations();
     await page.close();
     const visibility = await runVisibility(context, options, navigationIdForPage, settleRequestCorrelations);

@@ -653,10 +653,23 @@ function accessibilityFixture(engine, { axeOnly = false, failed = false } = {}) 
 function persistentLifecycleFixture() {
   const origin = new URL(R1_EXPECTED.branchUrl).origin;
   const phase4Path = "/media/cinematic/phase-4r2/media/mobile.mp4";
-  const phase4Request = (frameNavigationId, range = "bytes=0-1023") => ({
-    documentUrl: new URL(frameNavigationId === "navigation-entry" ? "/#entry" : "/", R1_EXPECTED.branchUrl).href,
-    frameNavigationId, method: "GET", path: phase4Path, range, resourceType: "fetch", url: new URL(phase4Path, R1_EXPECTED.branchUrl).href,
-  });
+  const phase4Request = (frameNavigationId, range = "bytes=0-1023") => {
+    const entryDocument = frameNavigationId === "navigation-entry";
+    const documentUrl = new URL(entryDocument ? "/#entry" : "/", R1_EXPECTED.branchUrl).href;
+    return {
+      correlatedDocumentUrl: documentUrl,
+      documentIdentityCorrelation: "CORRELATED",
+      documentUrl,
+      frameDocumentGeneration: entryDocument ? 2 : 1,
+      frameDocumentId: entryDocument ? "entry-document" : "bare-document",
+      frameNavigationId,
+      method: "GET",
+      path: phase4Path,
+      range,
+      resourceType: "fetch",
+      url: new URL(phase4Path, R1_EXPECTED.branchUrl).href,
+    };
+  };
   const listenerTelemetry = () => ({ active: 3, activeByType: { click: 2, visibilitychange: 1 }, added: 3, duplicateAttempts: 0, removed: 0 });
   const navigationIds = { "bare-document": "navigation-bare", "entry-document": "navigation-entry", "support-bare-document": "navigation-support-bare", "support-entry-document": "navigation-support-entry" };
   let sequence = 0;
@@ -1233,6 +1246,78 @@ test("Phase 6-R1 canonical assembler inventory, wrappers, taxonomy and roles fai
     return wrapper;
   });
   assertBothReject(lifecycleWithoutRawStates, /history state ledger|persistent-lifecycle|history authority/);
+
+  const sameRouteFreshDocumentEntries = (mutateRequest = () => undefined) => rebindAssemblerMutation(
+    fixtureR1PayloadEntries(),
+    "05-history-bfcache/r1-persistent-lifecycle.json",
+    (bytes) => {
+      const wrapper = JSON.parse(bytes.toString("utf8"));
+      const report = wrapper.payload;
+      const selectedPath = report.mediaRequests.documents[0].paths[0];
+      const entryBackDocumentId = "entry-back-document";
+      const entryBackState = report.history.states.entryBack;
+      entryBackState.documentId = entryBackDocumentId;
+      entryBackState.probe.documentId = entryBackDocumentId;
+      entryBackState.probe.resources[0].startTime = 30;
+      for (const field of ["src", "currentSrc", "srcAttribute"]) {
+        entryBackState.home.source[field] = `blob:https://example.pages.dev/${entryBackDocumentId}`;
+      }
+      report.listeners.comparisons = report.listeners.comparisons.filter(({ name }) => name !== "entry-back");
+      const bareDocument = structuredClone(report.mediaRequests.documents.find(({ documentId }) => documentId === "bare-document"));
+      const entryDocument = structuredClone(report.mediaRequests.documents.find(({ documentId }) => documentId === "entry-document"));
+      entryDocument.labels = ["entry-initial", "entry-resolved"];
+      const entryBackDocument = { ...structuredClone(entryDocument), documentId: entryBackDocumentId, labels: ["entry-back"] };
+      report.mediaRequests.documents = [bareDocument, entryBackDocument, entryDocument]
+        .sort((left, right) => left.documentId.localeCompare(right.documentId));
+      const bareRequest = structuredClone(report.mediaRequests.network.phase4Requests[0]);
+      const entryRequest = { ...structuredClone(report.mediaRequests.network.phase4Requests[1]), range: null };
+      const entryBackRequest = {
+        ...structuredClone(entryRequest),
+        frameDocumentGeneration: 3,
+        frameDocumentId: entryBackDocumentId,
+      };
+      mutateRequest(entryBackRequest);
+      report.mediaRequests.network.phase4Requests = [bareRequest, entryRequest, entryBackRequest];
+      Object.assign(report.mediaRequests.network, {
+        requestCount: 3,
+        rangeRequestCount: 1,
+        nonRangeRequestCount: 2,
+        nonRangeSelections: [{ path: selectedPath, count: 2, logicalHomeDocuments: 3 }],
+      });
+      return wrapper;
+    },
+  );
+  const sameRouteFreshDocument = sameRouteFreshDocumentEntries();
+  assert.doesNotThrow(() => validateR1CanonicalEvidencePayload(sameRouteFreshDocument), "packager rejected distinct same-route Document correlations");
+  assert.doesNotThrow(() => validateR1CanonicalEvidenceEntries(r1EntryMap(sameRouteFreshDocument)), "auditor rejected distinct same-route Document correlations");
+  const restoredDocumentRangeTraffic = rebindAssemblerMutation(
+    sameRouteFreshDocumentEntries(),
+    "05-history-bfcache/r1-persistent-lifecycle.json",
+    (bytes) => {
+      const wrapper = JSON.parse(bytes.toString("utf8"));
+      wrapper.payload.mediaRequests.network.phase4Requests.push({
+        ...structuredClone(wrapper.payload.mediaRequests.network.phase4Requests[1]),
+        frameDocumentGeneration: 4,
+        range: "bytes=1024-2047",
+      });
+      wrapper.payload.mediaRequests.network.requestCount = 4;
+      wrapper.payload.mediaRequests.network.rangeRequestCount = 2;
+      return wrapper;
+    },
+  );
+  assert.doesNotThrow(() => validateR1CanonicalEvidencePayload(restoredDocumentRangeTraffic), "packager rejected one restored Document across browser generations");
+  assert.doesNotThrow(() => validateR1CanonicalEvidenceEntries(r1EntryMap(restoredDocumentRangeTraffic)), "auditor rejected one restored Document across browser generations");
+  for (const [name, mutate] of Object.entries({
+    missingFrameDocumentId: (request) => { request.frameDocumentId = null; },
+    collapsedFrameDocumentId: (request) => { request.frameDocumentId = "entry-document"; },
+    missingDocumentGeneration: (request) => { request.frameDocumentGeneration = null; },
+    collapsedDocumentGeneration: (request) => { request.frameDocumentGeneration = 2; },
+    pendingCorrelation: (request) => { request.documentIdentityCorrelation = "PENDING"; },
+    mismatchedCorrelatedUrl: (request) => { request.correlatedDocumentUrl = R1_EXPECTED.branchUrl; },
+    mismatchedNavigationProvenance: (request) => { request.frameNavigationId = "navigation-bare"; },
+  })) {
+    assertBothReject(sameRouteFreshDocumentEntries(mutate), /expectedPhase4Present contradicts raw documents\/requests|persistent-lifecycle/, `${name} passed package boundaries`);
+  }
 
   const motionWithoutObservations = rebindAssemblerMutation(fixtureR1PayloadEntries(), "03-homepage-motion/r1/chromium/motion-evidence-report.json", (bytes) => {
     const wrapper = JSON.parse(bytes.toString("utf8"));

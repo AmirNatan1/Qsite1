@@ -2074,13 +2074,20 @@ function r1AuthoritativePhase4Request(request, baseUrl) {
   try {
     const requestUrl = new URL(request.url);
     const documentUrl = new URL(request.documentUrl);
+    const correlatedDocumentUrl = new URL(request.correlatedDocumentUrl);
     const expectedOrigin = new URL(baseUrl).origin;
     const documentRoute = `${documentUrl.pathname}${documentUrl.hash}`;
     return request.method === "GET"
       && request.resourceType === "fetch"
+      && request.documentIdentityCorrelation === "CORRELATED"
+      && typeof request.frameDocumentId === "string"
+      && request.frameDocumentId.length > 0
+      && Number.isSafeInteger(request.frameDocumentGeneration)
+      && request.frameDocumentGeneration > 0
       && typeof request.frameNavigationId === "string"
       && request.frameNavigationId.length > 0
       && request.frameNavigationId !== "pre-navigation"
+      && correlatedDocumentUrl.href === documentUrl.href
       && requestUrl.origin === expectedOrigin
       && documentUrl.origin === expectedOrigin
       && documentUrl.search === ""
@@ -2196,50 +2203,69 @@ function validateR1MediaRequests(document, status) {
   for (const record of media.documents) {
     for (const selectedPath of record.paths) selectingDocumentsByPath.set(selectedPath, (selectingDocumentsByPath.get(selectedPath) ?? 0) + 1);
   }
-  const expectedSelectionIds = expectedDocuments.map(({ selectionNavigationId }) => selectionNavigationId);
-  const uniqueExpectedSelectionIds = new Set(expectedSelectionIds);
+  const expectedSelectionNavigationIds = expectedDocuments.map(({ selectionNavigationId }) => selectionNavigationId);
   const selectionKeys = new Map();
+  const documentUrlsByNavigationId = new Map();
   for (const record of expectedDocuments) {
+    const documentUrls = documentUrlsByNavigationId.get(record.selectionNavigationId) ?? new Set();
+    documentUrls.add(record.selectionDocumentUrl);
+    documentUrlsByNavigationId.set(record.selectionNavigationId, documentUrls);
     for (const selectedPath of record.paths) {
-      const key = `${record.selectionNavigationId}\u0000${selectedPath}`;
-      const selection = selectionKeys.get(key) ?? { count: 0, documentUrl: record.selectionDocumentUrl };
+      const key = `${record.documentId}\u0000${selectedPath}`;
+      const selection = selectionKeys.get(key) ?? {
+        count: 0,
+        documentUrl: record.selectionDocumentUrl,
+        navigationId: record.selectionNavigationId,
+      };
       selection.count += 1;
       if (selection.documentUrl !== record.selectionDocumentUrl) selection.documentUrl = null;
+      if (selection.navigationId !== record.selectionNavigationId) selection.navigationId = null;
       selectionKeys.set(key, selection);
     }
   }
-  const navigationIdsByPath = new Map();
-  const nonRangeRequestsByNavigationPath = new Map();
+  const documentIdsByPath = new Map();
+  const nonRangeRequestsByDocumentPath = new Map();
+  const documentIdsByGeneration = new Map();
   for (const request of phase4Requests) {
     const requestPath = r1Phase4MediaUrl(request.path);
-    const navigationIds = navigationIdsByPath.get(requestPath) ?? new Set();
-    navigationIds.add(request.frameNavigationId);
-    navigationIdsByPath.set(requestPath, navigationIds);
+    const documentIdsForPath = documentIdsByPath.get(requestPath) ?? new Set();
+    documentIdsForPath.add(request.frameDocumentId);
+    documentIdsByPath.set(requestPath, documentIdsForPath);
+    const generationDocumentIds = documentIdsByGeneration.get(request.frameDocumentGeneration) ?? new Set();
+    generationDocumentIds.add(request.frameDocumentId);
+    documentIdsByGeneration.set(request.frameDocumentGeneration, generationDocumentIds);
     if (!r1ValidByteRange(request.range)) {
-      const key = `${request.frameNavigationId}\u0000${requestPath}`;
-      nonRangeRequestsByNavigationPath.set(key, (nonRangeRequestsByNavigationPath.get(key) ?? 0) + 1);
+      const key = `${request.frameDocumentId}\u0000${requestPath}`;
+      nonRangeRequestsByDocumentPath.set(key, (nonRangeRequestsByDocumentPath.get(key) ?? 0) + 1);
     }
   }
   const requestAuthorityValid = phase4Requests.every((request) => r1AuthoritativePhase4Request(request, document.baseUrl));
-  const navigationCoverageValid = expectedSelectionIds.every((navigationId) => typeof navigationId === "string" && navigationId.length > 0 && navigationId !== "pre-navigation")
+  const documentCoverageValid = expectedSelectionNavigationIds.every((navigationId) => typeof navigationId === "string" && navigationId.length > 0 && navigationId !== "pre-navigation")
     && expectedDocuments.length === enhancedMediaDocuments.length
     && expectedDocuments.every(({ selectionDocumentUrl, selectionStable }) => typeof selectionDocumentUrl === "string" && selectionDocumentUrl.length > 0 && selectionStable)
-    && uniqueExpectedSelectionIds.size === expectedDocuments.length
+    && [...documentUrlsByNavigationId.values()].every((documentUrls) => documentUrls.size === 1)
+    && [...documentIdsByGeneration.values()].every((documentIdsForGeneration) => documentIdsForGeneration.size === 1)
     && selectionKeys.size === expectedDocuments.length
-    && [...selectionKeys.values()].every(({ count, documentUrl }) => count === 1 && typeof documentUrl === "string")
+    && [...selectionKeys.values()].every(({ count, documentUrl, navigationId }) => count === 1
+      && typeof documentUrl === "string"
+      && typeof navigationId === "string")
     && phase4Requests.every((request) => {
-      const selection = selectionKeys.get(`${request.frameNavigationId}\u0000${r1Phase4MediaUrl(request.path)}`);
-      try { return selection?.count === 1 && new URL(request.documentUrl).href === selection.documentUrl; }
+      const selection = selectionKeys.get(`${request.frameDocumentId}\u0000${r1Phase4MediaUrl(request.path)}`);
+      try {
+        return selection?.count === 1
+          && request.frameNavigationId === selection.navigationId
+          && new URL(request.documentUrl).href === selection.documentUrl;
+      }
       catch { return false; }
     })
-    && [...selectionKeys.keys()].every((key) => phase4Requests.some((request) => `${request.frameNavigationId}\u0000${r1Phase4MediaUrl(request.path)}` === key))
-    && selectedPaths.every((selectedPath) => navigationIdsByPath.get(selectedPath)?.size === selectingDocumentsByPath.get(selectedPath));
+    && [...selectionKeys.keys()].every((key) => phase4Requests.some((request) => `${request.frameDocumentId}\u0000${r1Phase4MediaUrl(request.path)}` === key))
+    && selectedPaths.every((selectedPath) => documentIdsByPath.get(selectedPath)?.size === selectingDocumentsByPath.get(selectedPath));
   const expectedPhase4Present = expectedDocuments.length > 0
     && expectedDocuments.every(({ paths }) => paths.length >= 1)
     && phase4Requests.length >= 1
     && selectedPathsMatchNetwork
     && requestAuthorityValid
-    && navigationCoverageValid;
+    && documentCoverageValid;
   const nonRangeRequestsByPath = new Map();
   for (const request of phase4Requests) {
     if (r1ValidByteRange(request.range)) continue;
@@ -2262,7 +2288,7 @@ function validateR1MediaRequests(document, status) {
     if (stableJson(media.network[field]) !== stableJson(expectedValue)) throw new Error(`R1 persistent-lifecycle network ${field} contradicts raw Phase 4 requests`);
   }
   const noDuplicateNonRangeRequests = nonRangeSelections.every(({ count, logicalHomeDocuments }) => count <= logicalHomeDocuments)
-    && [...nonRangeRequestsByNavigationPath.values()].every((count) => count <= 1);
+    && [...nonRangeRequestsByDocumentPath.values()].every((count) => count <= 1);
   if (media.expectedPhase4Present !== expectedPhase4Present) throw new Error("R1 persistent-lifecycle expectedPhase4Present contradicts raw documents/requests");
   if (media.bypassDocumentsSourceFree !== bypassDocumentsSourceFree) throw new Error("R1 persistent-lifecycle bypassDocumentsSourceFree contradicts raw static Home documents");
   if (media.noDuplicateSourceWithinDocument !== noDuplicateSourceWithinDocument) throw new Error("R1 persistent-lifecycle noDuplicateSourceWithinDocument contradicts raw document selections");

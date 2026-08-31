@@ -770,15 +770,23 @@ async function attachR1MachineEvidence(fixture) {
   }
 
   const phase4Path = "/media/cinematic/phase-4r2/media/mobile.mp4";
-  const phase4Request = (frameNavigationId, range = "bytes=0-1023", requestPath = phase4Path) => ({
-    documentUrl: new URL(frameNavigationId === "navigation-entry" ? "/#entry" : "/", R1_REQUIRED_BRANCH_URL).href,
-    frameNavigationId,
-    method: "GET",
-    path: requestPath,
-    range,
-    resourceType: "fetch",
-    url: new URL(requestPath, R1_REQUIRED_BRANCH_URL).href,
-  });
+  const phase4Request = (frameNavigationId, range = "bytes=0-1023", requestPath = phase4Path) => {
+    const entryDocument = frameNavigationId === "navigation-entry";
+    const documentUrl = new URL(entryDocument ? "/#entry" : "/", R1_REQUIRED_BRANCH_URL).href;
+    return {
+      correlatedDocumentUrl: documentUrl,
+      documentIdentityCorrelation: "CORRELATED",
+      documentUrl,
+      frameDocumentGeneration: entryDocument ? 2 : 1,
+      frameDocumentId: entryDocument ? "entry-document" : "bare-document",
+      frameNavigationId,
+      method: "GET",
+      path: requestPath,
+      range,
+      resourceType: "fetch",
+      url: new URL(requestPath, R1_REQUIRED_BRANCH_URL).href,
+    };
+  };
   const listenerTelemetry = () => ({
     active: 3,
     activeByType: { click: 2, visibilitychange: 1 },
@@ -1947,6 +1955,69 @@ test("R1 persistent lifecycle rejects every raw-history, BFCache, visibility, li
   });
   assert.doesNotThrow(() => validate(report));
 
+  const sameRouteFreshDocument = structuredClone(report);
+  const entryBackDocumentId = "entry-back-document";
+  const entryBackState = sameRouteFreshDocument.history.states.entryBack;
+  entryBackState.documentId = entryBackDocumentId;
+  entryBackState.probe.documentId = entryBackDocumentId;
+  entryBackState.probe.resources[0].startTime = 30;
+  for (const field of ["src", "currentSrc", "srcAttribute"]) {
+    entryBackState.home.source[field] = `blob:https://example.pages.dev/${entryBackDocumentId}`;
+  }
+  sameRouteFreshDocument.listeners.comparisons = sameRouteFreshDocument.listeners.comparisons.filter(({ name }) => name !== "entry-back");
+  const bareMediaDocument = structuredClone(sameRouteFreshDocument.mediaRequests.documents.find(({ documentId }) => documentId === "bare-document"));
+  const entryMediaDocument = structuredClone(sameRouteFreshDocument.mediaRequests.documents.find(({ documentId }) => documentId === "entry-document"));
+  entryMediaDocument.labels = ["entry-initial", "entry-resolved"];
+  const entryBackMediaDocument = {
+    ...structuredClone(entryMediaDocument),
+    documentId: entryBackDocumentId,
+    labels: ["entry-back"],
+  };
+  sameRouteFreshDocument.mediaRequests.documents = [bareMediaDocument, entryBackMediaDocument, entryMediaDocument]
+    .sort((left, right) => left.documentId.localeCompare(right.documentId));
+  const bareNetworkRequest = structuredClone(sameRouteFreshDocument.mediaRequests.network.phase4Requests[0]);
+  const entryNetworkRequest = {
+    ...structuredClone(sameRouteFreshDocument.mediaRequests.network.phase4Requests[1]),
+    range: null,
+  };
+  const entryBackNetworkRequest = {
+    ...structuredClone(entryNetworkRequest),
+    frameDocumentGeneration: 3,
+    frameDocumentId: entryBackDocumentId,
+  };
+  sameRouteFreshDocument.mediaRequests.network.phase4Requests = [bareNetworkRequest, entryNetworkRequest, entryBackNetworkRequest];
+  Object.assign(sameRouteFreshDocument.mediaRequests.network, {
+    requestCount: 3,
+    rangeRequestCount: 1,
+    nonRangeRequestCount: 2,
+    nonRangeSelections: [{ path: lifecyclePhase4Path, count: 2, logicalHomeDocuments: 3 }],
+  });
+  assert.doesNotThrow(() => validate(sameRouteFreshDocument), "two fresh same-route Documents with one correlated request each were rejected");
+  const restoredDocumentRangeTraffic = structuredClone(sameRouteFreshDocument);
+  restoredDocumentRangeTraffic.mediaRequests.network.phase4Requests.push({
+    ...structuredClone(restoredDocumentRangeTraffic.mediaRequests.network.phase4Requests[1]),
+    frameDocumentGeneration: 4,
+    range: "bytes=1024-2047",
+  });
+  restoredDocumentRangeTraffic.mediaRequests.network.requestCount = 4;
+  restoredDocumentRangeTraffic.mediaRequests.network.rangeRequestCount = 2;
+  assert.doesNotThrow(() => validate(restoredDocumentRangeTraffic), "range traffic for one restored Document was rejected across browser generations");
+
+  for (const [name, mutate] of Object.entries({
+    missingFrameDocumentId: (request) => { request.frameDocumentId = null; },
+    collapsedFrameDocumentId: (request) => { request.frameDocumentId = "entry-document"; },
+    collapsedDocumentGeneration: (request) => { request.frameDocumentGeneration = 2; },
+    missingDocumentGeneration: (request) => { request.frameDocumentGeneration = null; },
+    pendingCorrelation: (request) => { request.documentIdentityCorrelation = "PENDING"; },
+    evaluationErrorCorrelation: (request) => { request.documentIdentityCorrelation = "EVALUATION ERROR"; },
+    mismatchedCorrelatedUrl: (request) => { request.correlatedDocumentUrl = new URL("/", R1_REQUIRED_BRANCH_URL).href; },
+    mismatchedNavigationProvenance: (request) => { request.frameNavigationId = "navigation-bare"; },
+  })) {
+    const invalidCorrelation = structuredClone(sameRouteFreshDocument);
+    mutate(invalidCorrelation.mediaRequests.network.phase4Requests[2]);
+    assert.throws(() => validate(invalidCorrelation), /expectedPhase4Present contradicts raw documents\/requests/, `${name} became authoritative`);
+  }
+
   const staticRestoredHistory = structuredClone(report);
   staticRestoredHistory.history.states.bareManifesto.home.continuation = {
     ...staticRestoredHistory.history.states.bareManifesto.home.continuation,
@@ -2568,6 +2639,8 @@ test("R1 persistent lifecycle rejects every raw-history, BFCache, visibility, li
   });
   observedVisibility.mediaRequests.network.phase4Requests.push({
     ...observedVisibility.mediaRequests.network.phase4Requests[0],
+    frameDocumentGeneration: 3,
+    frameDocumentId: visibilityDocumentId,
     frameNavigationId: visibilityNavigationId,
   });
   observedVisibility.mediaRequests.network.requestCount += 1;
