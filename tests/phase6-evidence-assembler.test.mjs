@@ -161,7 +161,7 @@ function accessibilityKeyboardRow(engine, route) {
   const row = {
     afterActivation: { activeId: expectedHash.slice(1), hash: expectedHash, targetVisible: true },
     backward: { ...forwardFirst }, desktopHome: accessibilityDesktopHome(route.path), engine, expectedHash,
-    first: { ...accessibilityFocus(`a|${expectedHash}|Skip to content`), classes: ["skip-link"], href: expectedHash },
+    first: { ...accessibilityFocus(`a|${expectedHash}|Skip to content`), classes: ["skip-link"], href: expectedHash }, firstVisibilityReady: true,
     forwardFirst, forwardSecond, route: route.id, routePath: route.path,
   };
   row.failures = accessibilityKeyboardFailures(row);
@@ -1403,6 +1403,18 @@ test("accessibility PASS requires the exact ten-route interaction matrix, four c
     const preparation = contradictoryPreparation.engines[0].keyboard.find(({ route }) => route === "home").desktopHome.preparation;
     mutate(preparation);
     assert.throws(() => validateDocumentAuthority(record, contradictoryPreparation, metadata), /keyboard raw row\/status differs/);
+  }
+
+  for (const mutate of [
+    (row) => { row.firstVisibilityReady = false; },
+    (row) => { row.first.rect.top = -1; },
+    (row) => { row.first.rect.left = -1; },
+    (row) => { row.first.rect.bottom = 901; },
+    (row) => { row.first.rect.right = 1441; },
+  ]) {
+    const incompleteFocusVisibility = accessibilityReport("chromium");
+    mutate(incompleteFocusVisibility.engines[0].keyboard[0]);
+    assert.throws(() => validateDocumentAuthority(record, incompleteFocusVisibility, metadata), /keyboard raw row\/status differs/);
   }
 });
 

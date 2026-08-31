@@ -71,6 +71,7 @@ function keyboardRow(engine, route) {
     engine,
     expectedHash,
     first: { ...focused(`a|${expectedHash}|Skip to content`), classes: ["skip-link"], href: expectedHash },
+    firstVisibilityReady: true,
     forwardFirst,
     forwardSecond,
     route: route.id,
@@ -234,6 +235,7 @@ test("keyboard validator covers visible skip activation and reverse focus order"
     expectedHash: "#main-content",
     desktopHome: desktopHome("/about/"),
     first,
+    firstVisibilityReady: true,
     forwardFirst,
     forwardSecond: focused("a|/two|Two"),
     route: "about",
@@ -245,6 +247,19 @@ test("keyboard validator covers visible skip activation and reverse focus order"
   const codes = keyboardFailures(record).map(({ code }) => code);
   assert.ok(codes.includes("skip-link-focus"));
   assert.ok(codes.includes("shift-tab-order"));
+});
+
+test("keyboard validator rejects focus-wait timeouts and every partial viewport edge", () => {
+  const route = PHASE6_ROUTES.find(({ id }) => id === "about");
+  const timedOut = keyboardRow("chromium", route);
+  timedOut.firstVisibilityReady = false;
+  assert.ok(keyboardFailures(timedOut).some(({ code }) => code === "skip-link-visibility-wait"));
+
+  for (const [edge, value] of [["top", -1], ["left", -1], ["bottom", 901], ["right", 1441]]) {
+    const partial = keyboardRow("chromium", route);
+    partial.first.rect[edge] = value;
+    assert.ok(keyboardFailures(partial).some(({ code }) => code === "skip-link-focus"), `${edge} partial geometry passed`);
+  }
 });
 
 test("Home desktop navigation requires native cinematic preparation evidence", () => {

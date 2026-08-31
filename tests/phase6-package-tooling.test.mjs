@@ -624,7 +624,7 @@ function accessibilityFixture(engine, { axeOnly = false, failed = false } = {}) 
     return {
       afterActivation: { activeId: expectedHash.slice(1), hash: expectedHash, targetVisible: true }, backward: { ...forwardFirst },
       desktopHome: { activationError: null, arrival: { entryInert: false, hash: "#entry", manifestoReveal: "resolved", path: "/", route: "/#entry" }, back: { hash: "", path: route.path, route: route.path }, backError: null, focus: visibleFocus("/#entry"), forward: { hash: "#entry", path: "/", route: "/#entry" }, forwardError: null, preparation: route.id === "home" ? { input: "NATIVE WHEEL", ready: true, resolved: true, state: { cinematicMode: "enhanced", entryInert: false, hash: "", manifestoReveal: "resolved", mediaState: "ready", path: "/", route: "/" }, wheelSteps: 12 } : null },
-      engine, expectedHash, failures: [], first, forwardFirst, forwardSecond, route: route.id, routePath: route.path, status: "PASS",
+      engine, expectedHash, failures: [], first, firstVisibilityReady: true, forwardFirst, forwardSecond, route: route.id, routePath: route.path, status: "PASS",
     };
   });
   const closedMenu = { activeIsTrigger: true, ariaExpanded: "false", hash: "", open: false, path: "/about/" };
@@ -1354,6 +1354,21 @@ test("Phase 6-R1 canonical assembler inventory, wrappers, taxonomy and roles fai
       return wrapper;
     });
     assertBothReject(contradictoryPreparation, /accessibility|keyboard|preparation/i, `${name} passed package boundaries`);
+  }
+
+  for (const [name, mutate] of Object.entries({
+    focusVisibilityTimeout: (row) => { row.firstVisibilityReady = false; },
+    partialTop: (row) => { row.first.rect.top = -1; },
+    partialLeft: (row) => { row.first.rect.left = -1; },
+    partialBottom: (row) => { row.first.rect.bottom = 901; },
+    partialRight: (row) => { row.first.rect.right = 1441; },
+  })) {
+    const incompleteFocusVisibility = rebindAssemblerMutation(fixtureR1PayloadEntries(), "09-accessibility/accessibility-chromium.json", (bytes) => {
+      const wrapper = JSON.parse(bytes.toString("utf8"));
+      mutate(wrapper.payload.engines[0].keyboard[0]);
+      return wrapper;
+    });
+    assertBothReject(incompleteFocusVisibility, /accessibility|keyboard|focus/i, `${name} passed package boundaries`);
   }
 
   const falseKeyboardPass = rebindAssemblerMutation(fixtureR1PayloadEntries(), "09-accessibility/section-summary.json", (bytes) => {

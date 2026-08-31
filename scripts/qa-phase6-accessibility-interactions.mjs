@@ -273,7 +273,7 @@ async function observeFocus(page) {
 }
 
 async function waitForActiveElementFullyVisible(page, timeoutMs) {
-  await page.waitForFunction(() => {
+  return page.waitForFunction(() => {
     const element = document.activeElement;
     if (!(element instanceof HTMLElement)) return false;
     const rect = element.getBoundingClientRect();
@@ -281,18 +281,24 @@ async function waitForActiveElementFullyVisible(page, timeoutMs) {
     return rect.width > 0 && rect.height > 0
       && rect.top >= 0 && rect.left >= 0 && rect.bottom <= innerHeight && rect.right <= innerWidth
       && style.display !== "none" && style.visibility !== "hidden";
-  }, undefined, { timeout: Math.min(timeoutMs, 1_500) }).catch(() => undefined);
+  }, undefined, { timeout: Math.min(timeoutMs, 1_500) }).then(() => true, () => false);
 }
 
-function visiblyFocused(observation) {
-  return observation.focusVisible
+function visiblyFocused(observation, viewport = KEYBOARD_VIEWPORT) {
+  const rect = observation?.rect;
+  const fullyContained = rect && [rect.top, rect.left, rect.bottom, rect.right, rect.width, rect.height].every(Number.isFinite)
+    && rect.width > 0 && rect.height > 0
+    && rect.top >= 0 && rect.left >= 0 && rect.bottom <= viewport.height && rect.right <= viewport.width;
+  return observation?.focusVisible
     && observation.visible
+    && fullyContained
     && observation.outlineStyle !== "none"
     && Number.parseFloat(observation.outlineWidth ?? "0") >= 2;
 }
 
 export function keyboardFailures(record) {
   const failures = [];
+  if (record.firstVisibilityReady !== true) failures.push({ code: "skip-link-visibility-wait", actual: record.firstVisibilityReady ?? null, expected: true });
   if (!record.first.classes.includes("skip-link") || !visiblyFocused(record.first)) failures.push({ code: "skip-link-focus", actual: record.first });
   if (record.first.href !== record.expectedHash) failures.push({ code: "skip-link-target", actual: record.first.href, expected: record.expectedHash });
   if (record.afterActivation.hash !== record.expectedHash || record.afterActivation.activeId !== record.expectedHash.slice(1) || !record.afterActivation.targetVisible) {
@@ -441,7 +447,7 @@ async function runKeyboardChecks(browser, engine, options) {
       await openRoute(page, options, route);
       const expectedHash = route.id === "home" ? "#entry" : "#main-content";
       await page.keyboard.press("Tab");
-      await waitForActiveElementFullyVisible(page, options.timeoutMs);
+      const firstVisibilityReady = await waitForActiveElementFullyVisible(page, options.timeoutMs);
       const first = await observeFocus(page);
       if (first.href === expectedHash) {
         await page.keyboard.press("Enter");
@@ -459,7 +465,7 @@ async function runKeyboardChecks(browser, engine, options) {
       await page.waitForTimeout(80);
       const backward = await observeFocus(page);
       const desktopHome = await observeDesktopHomeNavigation(page, options, route);
-      const record = { afterActivation, backward, desktopHome, engine, expectedHash, first, forwardFirst, forwardSecond, route: route.id, routePath: route.path };
+      const record = { afterActivation, backward, desktopHome, engine, expectedHash, first, firstVisibilityReady, forwardFirst, forwardSecond, route: route.id, routePath: route.path };
       record.failures = keyboardFailures(record);
       record.status = record.failures.length ? "FAIL" : "PASS";
       records.push(record);
@@ -504,17 +510,17 @@ async function waitForMenu(page, open, timeoutMs) {
 
 export function mobileMenuFailures(record) {
   const failures = [];
-  if (!visiblyFocused(record.triggerFocus)) failures.push({ code: "mobile-menu-trigger-focus", actual: record.triggerFocus });
+  if (!visiblyFocused(record.triggerFocus, MOBILE_VIEWPORT)) failures.push({ code: "mobile-menu-trigger-focus", actual: record.triggerFocus });
   if (!record.ordinaryOpen.open || record.ordinaryOpen.ariaExpanded !== "true") failures.push({ code: "mobile-menu-open", actual: record.ordinaryOpen });
   if (record.ordinaryClose.open || record.ordinaryClose.ariaExpanded !== "false" || !record.ordinaryClose.activeIsTrigger) failures.push({ code: "mobile-menu-close", actual: record.ordinaryClose });
-  if (!visiblyFocused(record.firstMenuLink)) failures.push({ code: "mobile-menu-link-focus", actual: record.firstMenuLink });
+  if (!visiblyFocused(record.firstMenuLink, MOBILE_VIEWPORT)) failures.push({ code: "mobile-menu-link-focus", actual: record.firstMenuLink });
   if (record.escapeClose.open || record.escapeClose.ariaExpanded !== "false" || !record.escapeClose.activeIsTrigger) failures.push({ code: "mobile-menu-escape-focus-return", actual: record.escapeClose });
   for (const [index, cycle] of record.cycles.entries()) {
     if (!cycle.open.open || cycle.open.ariaExpanded !== "true" || cycle.close.open || cycle.close.ariaExpanded !== "false" || !cycle.close.activeIsTrigger) {
       failures.push({ code: "mobile-menu-repeat-cycle", cycle: index + 1, actual: cycle });
     }
   }
-  if (!visiblyFocused(record.navigation.focus) || record.navigation.focus.href !== "/#entry") {
+  if (!visiblyFocused(record.navigation.focus, MOBILE_VIEWPORT) || record.navigation.focus.href !== "/#entry") {
     failures.push({ code: "mobile-menu-navigation-focus", actual: record.navigation.focus, expected: "/#entry" });
   }
   if (record.navigation.activationError) failures.push({ code: "mobile-menu-navigation-wait", actual: record.navigation.activationError });
