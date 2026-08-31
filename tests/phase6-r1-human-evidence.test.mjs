@@ -7,6 +7,7 @@ import test from "node:test";
 import {
   DEVICE_REVIEW_CHECKS,
   HUMAN_STATUSES,
+  LEDGER_STATUSES,
   REQUIRED_RECORDINGS,
   REVIEW_SCHEMA,
   ROOT,
@@ -105,6 +106,7 @@ test("human evidence requires the four exact filenames and explicit statuses", (
     "chrome-200-percent.mp4",
   ]);
   assert.deepEqual(HUMAN_STATUSES, ["PASS", "FAIL", "PENDING HUMAN REVIEW"]);
+  assert.deepEqual(LEDGER_STATUSES, ["PASS", "FAIL", "PENDING HUMAN REVIEW", "NOT AVAILABLE TO EXECUTION ENVIRONMENT"]);
   assert.equal(DEVICE_REVIEW_CHECKS["iphone-safari-opening.mp4"].length, 10);
   assert.equal(DEVICE_REVIEW_CHECKS["iphone-safari-maradin.mp4"].length, 5);
   assert.equal(DEVICE_REVIEW_CHECKS["physical-scroll-input.mp4"].length, 7);
@@ -134,6 +136,12 @@ test("file presence cannot manufacture a human PASS", () => {
   assert.throws(() => validateReviewEntry(incomplete, REQUIRED_RECORDINGS[0]), /observations/);
   const pending = validEntry(REQUIRED_RECORDINGS[0], "PENDING HUMAN REVIEW");
   assert.equal(validateReviewEntry(pending, REQUIRED_RECORDINGS[0]).status, "PENDING HUMAN REVIEW");
+});
+
+test("a present recording cannot be relabelled as unavailable hardware", () => {
+  const present = validEntry(REQUIRED_RECORDINGS[0], "PENDING HUMAN REVIEW");
+  present.status = "NOT AVAILABLE TO EXECUTION ENVIRONMENT";
+  assert.throws(() => validateReviewEntry(present, present.filename), /review status is invalid/);
 });
 
 test("PASS and FAIL reviews are bound to the exact recording hash and byte size", () => {

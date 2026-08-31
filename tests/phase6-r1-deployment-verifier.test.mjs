@@ -124,7 +124,15 @@ test("package authority requires exact R1 commands while preserving the complete
 });
 
 test("R1 repository authority rejects every path outside the literal changed-path allowlist", () => {
-  const allowed = ALLOWED_R1_CHANGED_PATHS.map((file) => `${file.startsWith("scripts/capture-") || file.startsWith("scripts/ingest-") || file.startsWith("scripts/qa-phase6-r1") || file.startsWith("scripts/verify-phase6-r1") || file.startsWith("tests/phase6-r1") || file === "PHASE_6_R1_VALIDATION_CLOSURE.md" ? "A" : "M"}\t${file}`).join("\n");
+  const added = new Set([
+    "PHASE_6_R1_ENVIRONMENTAL_LIMITATIONS.md", "PHASE_6_R1_VALIDATION_CLOSURE.md",
+    "scripts/audit-phase6-r1-installed-chrome-zoom.mjs", "scripts/build-phase6-r1-host-validation.mjs",
+    "scripts/capture-phase6-r1-motion-evidence.mjs", "scripts/ingest-phase6-r1-human-evidence.mjs",
+    "scripts/probe-phase6-r1-webkit-interactions.mjs", "scripts/qa-phase6-r1-persistent-lifecycle.mjs",
+    "scripts/verify-phase6-r1-deployment.mjs",
+    ...ALLOWED_R1_CHANGED_PATHS.filter((file) => file.startsWith("tests/phase6-r1")),
+  ]);
+  const allowed = ALLOWED_R1_CHANGED_PATHS.map((file) => `${added.has(file) ? "A" : "M"}\t${file}`).join("\n");
   assert.deepEqual(validateChangedPathAuthority(allowed), allowed.split("\n"));
   assert.throws(() => validateChangedPathAuthority(allowed.replace(/^A\t/, "M\t")), /statuses\/order differ/);
   assert.throws(() => validateChangedPathAuthority(`${allowed}\nM\tscripts/run-phase4-build.mjs`), /outside the exact allowlist/);

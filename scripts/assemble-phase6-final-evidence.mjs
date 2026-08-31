@@ -39,8 +39,10 @@ export const R1_REQUIRED_PARENT = "aee036740b129624c54b8f1b878229f955d187ae";
 export const FROZEN_MAIN = "501040c42bba30b9d9517b88a8f9857992a2dba4";
 export const POSTER_DECISION = "NO PRODUCTION POSTER CHANGE — CURRENT AUTHORITY RETAINED";
 export const HUMAN_EVIDENCE_SCHEMA = "quantum-hub.phase-6-r1.human-evidence-ledger.v1";
+export const R1_ENVIRONMENTAL_LIMITATIONS_PATH = "11-physical-device/PHASE_6_R1_ENVIRONMENTAL_LIMITATIONS.md";
 export const R1_MOTION_EVIDENCE_SCHEMA = "quantum-hub.phase-6-r1.motion-evidence.v1";
 export const R1_PERSISTENT_LIFECYCLE_SCHEMA = "quantum-hub.phase-6-r1.persistent-lifecycle.v1";
+export const R1_HOST_VALIDATION_SCHEMA = "quantum-hub.phase-6-r1.host-validation-closure.v1";
 export const R1_NODE22_VALIDATION_SCHEMA_PREFIX = "quantum-hub.phase-6-r1.node22-integrated-validation.v";
 export const R1_TOOLING_REPORT_FILES = Object.freeze([...ALLOWED_R1_CHANGED_PATHS]);
 export const REQUIRED_HUMAN_EVIDENCE_FILES = Object.freeze([
@@ -116,6 +118,7 @@ export const RESERVED_PATHS = Object.freeze(new Set([
   "01-baseline/PHASE_6_R1_VALIDATION_CLOSURE.md",
   "10-poster-study/PHASE_6_POSTER_STUDY.md",
   "11-physical-device/PHASE_6_PHYSICAL_DEVICE_HANDOFF.md",
+  R1_ENVIRONMENTAL_LIMITATIONS_PATH,
   "13-package/README.md",
   "13-package/package-metadata.json",
 ]));
@@ -136,6 +139,7 @@ export const EVIDENCE_STATUS_VALUES = Object.freeze([
   "LIMITATION",
   "NOT OBSERVED",
   "PENDING HUMAN REVIEW",
+  "NOT AVAILABLE TO EXECUTION ENVIRONMENT",
   "NOT APPLICABLE",
 ]);
 const STATUS_VALUES = new Set(EVIDENCE_STATUS_VALUES);
@@ -197,11 +201,14 @@ export const REQUIRED_ARTIFACT_ROLES = Object.freeze({
 
 export const R1_REQUIRED_ARTIFACT_ROLES = Object.freeze({
   "r1-node22-validation-summary": Object.freeze({ section: "00-provenance", kind: "document", minimum: 1 }),
+  "r1-host-validation-summary": Object.freeze({ section: "00-provenance", kind: "document", minimum: 1 }),
   "r1-motion-summary": Object.freeze({ section: "03-homepage-motion", kind: "document", minimum: 2, engines: ["chromium", "firefox"] }),
   "r1-motion-recording": Object.freeze({ section: "03-homepage-motion", kind: "video", minimum: 10, engines: ["chromium", "firefox"] }),
+  "r1-native-windows-input-recording": Object.freeze({ section: "03-homepage-motion", kind: "video", minimum: 1 }),
   "r1-persistent-lifecycle-summary": Object.freeze({ section: "05-history-bfcache", kind: "document", minimum: 1, engines: ["chromium"] }),
+  "r1-installed-chrome-zoom-recording": Object.freeze({ section: "09-accessibility", kind: "video", minimum: 1 }),
   "physical-device-result": Object.freeze({ section: "11-physical-device", kind: "document", minimum: 1 }),
-  "physical-device-recording": Object.freeze({ section: "11-physical-device", kind: "video", minimum: 4 }),
+  "physical-device-recording": Object.freeze({ section: "11-physical-device", kind: "video", minimum: 0 }),
 });
 
 const OPTIONAL_ARTIFACT_ROLES = Object.freeze({
@@ -229,6 +236,7 @@ const JSON_ROLE_SCHEMAS = Object.freeze({
   "physical-device-result": Object.freeze([HUMAN_EVIDENCE_SCHEMA]),
   "r1-motion-summary": Object.freeze([R1_MOTION_EVIDENCE_SCHEMA]),
   "r1-persistent-lifecycle-summary": Object.freeze([R1_PERSISTENT_LIFECYCLE_SCHEMA]),
+  "r1-host-validation-summary": Object.freeze([R1_HOST_VALIDATION_SCHEMA]),
   "r1-node22-validation-summary": Object.freeze([]),
 });
 
@@ -308,6 +316,7 @@ export function normalizeEvidenceStatus(value) {
 function aggregateEvidenceStatuses(statuses, fallback = "NOT OBSERVED") {
   const normalized = statuses.map(normalizeEvidenceStatus).filter(Boolean);
   if (normalized.includes("FAIL")) return "FAIL";
+  if (normalized.includes("NOT AVAILABLE TO EXECUTION ENVIRONMENT")) return "NOT AVAILABLE TO EXECUTION ENVIRONMENT";
   if (normalized.includes("LIMITATION")) return "LIMITATION";
   if (normalized.includes("PENDING HUMAN REVIEW")) return "PENDING HUMAN REVIEW";
   if (normalized.includes("PASS")) return "PASS";
@@ -318,6 +327,7 @@ function aggregateEvidenceStatuses(statuses, fallback = "NOT OBSERVED") {
 function aggregateCoverageStatuses(statuses, fallback = "NOT OBSERVED") {
   const normalized = statuses.map(normalizeEvidenceStatus).filter(Boolean);
   if (normalized.includes("FAIL")) return "FAIL";
+  if (normalized.includes("NOT AVAILABLE TO EXECUTION ENVIRONMENT")) return "NOT AVAILABLE TO EXECUTION ENVIRONMENT";
   if (normalized.includes("LIMITATION")) return "LIMITATION";
   if (normalized.includes("PENDING HUMAN REVIEW")) return "PENDING HUMAN REVIEW";
   if (normalized.includes("NOT OBSERVED")) return "NOT OBSERVED";
@@ -490,7 +500,7 @@ function validateSectionMetadata(sections, artifacts, posterStudyDirectory) {
   if (!posterStudyDirectory || sections["10-poster-study"].status !== "PASS") throw new Error("final assembly requires a PASS poster study and --poster-study-directory");
   const physical = sections["11-physical-device"];
   if (physical.status === "PASS" && !roleSet.has("physical-device-result")) throw new Error("physical-device PASS requires genuine physical-device-result evidence");
-  if (!["PASS", "FAIL", "LIMITATION", "PENDING HUMAN REVIEW"].includes(physical.status)) throw new Error("physical-device status must be genuine PASS/FAIL or an explicit pending/limitation status");
+  if (!["PASS", "FAIL", "LIMITATION", "PENDING HUMAN REVIEW", "NOT AVAILABLE TO EXECUTION ENVIRONMENT"].includes(physical.status)) throw new Error("physical-device status must be genuine PASS/FAIL or an explicit pending/environmental status");
 }
 
 function validateMediaContract(contract, label) {
@@ -546,9 +556,16 @@ function validateR1ArtifactTopology(artifacts) {
   const humanLedgers = artifacts.filter(({ role }) => role === "physical-device-result");
   const humanRecordings = artifacts.filter(({ role }) => role === "physical-device-recording");
   const node22 = artifacts.filter(({ role }) => role === "r1-node22-validation-summary");
-  if (summaries.length !== 2 || recordings.length !== 10 || lifecycle.length !== 1 || humanLedgers.length !== 1 || humanRecordings.length !== 4 || node22.length !== 1) {
+  const hostValidation = artifacts.filter(({ role }) => role === "r1-host-validation-summary");
+  const nativeInputRecordings = artifacts.filter(({ role }) => role === "r1-native-windows-input-recording");
+  const zoomRecordings = artifacts.filter(({ role }) => role === "r1-installed-chrome-zoom-recording");
+  if (summaries.length !== 2 || recordings.length !== 10 || lifecycle.length !== 1 || humanLedgers.length !== 1 || node22.length !== 1
+    || hostValidation.length !== 1 || nativeInputRecordings.length !== 1 || zoomRecordings.length !== 1) {
     throw new Error("R1 motion/lifecycle/human artifact topology differs");
   }
+  if (hostValidation[0].destination !== "00-provenance/host-validation-closure.json" || hostValidation[0].status !== "LIMITATION" || hostValidation[0].select !== undefined) throw new Error("R1 host-validation summary authority differs");
+  if (nativeInputRecordings[0].destination !== "03-homepage-motion/native-windows-input-state-review.mp4" || nativeInputRecordings[0].status !== "PASS") throw new Error("R1 native Windows input recording authority differs");
+  if (zoomRecordings[0].destination !== "09-accessibility/installed-chrome-200-percent-route-review.mp4" || zoomRecordings[0].status !== "PASS") throw new Error("R1 installed-Chrome zoom recording authority differs");
   if (node22[0].destination !== "00-provenance/node22-integrated-validation.json" || node22[0].status !== "PASS" || node22[0].select !== undefined) throw new Error("R1 Node 22 validation artifact authority differs");
   for (const engine of engines) {
     const engineSummaries = summaries.filter((record) => record.engine === engine);
@@ -574,8 +591,12 @@ function validateR1ArtifactTopology(artifacts) {
   if (humanLedgers[0].destination !== "11-physical-device/human-evidence-ledger.json" || humanLedgers[0].select !== undefined) {
     throw new Error("R1 human-evidence ledger authority differs");
   }
+  const humanUnavailable = humanLedgers[0].status === "NOT AVAILABLE TO EXECUTION ENVIRONMENT";
+  if ((humanUnavailable && humanRecordings.length !== 0) || (!humanUnavailable && humanRecordings.length !== 4)) {
+    throw new Error("R1 human recording count contradicts the physical-device ledger status");
+  }
   const humanFilenames = humanRecordings.map(({ source }) => path.posix.basename(source)).sort(lexicalCompare);
-  if (stableJson(humanFilenames) !== stableJson([...REQUIRED_HUMAN_EVIDENCE_FILES].sort(lexicalCompare))
+  if ((!humanUnavailable && stableJson(humanFilenames) !== stableJson([...REQUIRED_HUMAN_EVIDENCE_FILES].sort(lexicalCompare)))
     || humanRecordings.some((record) => record.destination !== `11-physical-device/recordings/${path.posix.basename(record.source)}` || record.mediaContract !== undefined)) {
     throw new Error("R1 human recording inventory differs");
   }
@@ -674,8 +695,8 @@ export function validateFinalMetadata(input, { posterStudyDirectory = null } = {
   validatePathList(changes.newTrackedFilesAbove1MiB ?? [], "new tracked files above 1 MiB");
   if (authority.id === "phase6-r1") {
     if (stableJson(pathValues(changes.productionFiles)) !== stableJson([])) throw new Error("R1 production-source change ledger must be empty");
-    if (stableJson([...pathValues(changes.toolingReportFiles)].sort(lexicalCompare)) !== stableJson([...R1_TOOLING_REPORT_FILES].sort(lexicalCompare))) throw new Error("R1 tooling/report change ledger differs from the exact 18-path authority");
-    if (changes.trackedFileDelta !== R1_TOOLING_REPORT_FILES.length) throw new Error("R1 trackedFileDelta must equal the exact 18-path tooling/report authority");
+    if (stableJson([...pathValues(changes.toolingReportFiles)].sort(lexicalCompare)) !== stableJson([...R1_TOOLING_REPORT_FILES].sort(lexicalCompare))) throw new Error("R1 tooling/report change ledger differs from the exact path authority");
+    if (changes.trackedFileDelta !== R1_TOOLING_REPORT_FILES.length) throw new Error("R1 trackedFileDelta must equal the exact tooling/report path authority");
   }
   for (const record of changes.newTrackedFilesAbove1MiB ?? []) if (!Number.isSafeInteger(record.bytes) || record.bytes <= 1024 * 1024 || typeof record.justification !== "string" || !record.justification.trim()) throw new Error(`large tracked file justification differs: ${record.path}`);
   const verification = metadata.verification;
@@ -880,6 +901,31 @@ async function validateCaptureBoundMedia(sourceRoot, record, bytes) {
     || validation.media?.fps !== "30/1"
     || Math.abs(validation.duration - contract.durationSeconds) > 0.001) {
     throw new Error(`video/capture-report contract differs: ${record.source}`);
+  }
+  return { ...contract, container: "mp4", validationReportSha256: sha256(reportBytes) };
+}
+
+async function validateR1HostBoundMedia(sourceRoot, record, bytes, metadata) {
+  const contract = validateMediaContract(record.mediaContract, record.destination);
+  const binding = contract.validationReport;
+  const expectedVideoSource = path.posix.join(path.posix.dirname(binding.source), binding.recordingRelativePath);
+  if (expectedVideoSource !== record.source) throw new Error(`R1 host video source is not bound to its report: ${record.source}`);
+  const { bytes: reportBytes } = await checkedSourceFile(sourceRoot, binding.source);
+  if (sha256(reportBytes) !== binding.expectedSha256) throw new Error(`R1 host report SHA-256 differs: ${binding.source}`);
+  let report;
+  try { report = JSON.parse(reportBytes.toString("utf8")); } catch { throw new Error(`invalid R1 host report JSON: ${binding.source}`); }
+  validateR1HostValidationReport(report, metadata);
+  const file = report.files?.find((item) => item?.relativePath === binding.recordingRelativePath);
+  const recording = report.recordings?.find((item) => item?.relativePath === binding.recordingRelativePath);
+  const validation = recording?.validation;
+  const encoder = report.encoder;
+  if (!file || file.bytes !== bytes.length || file.sha256 !== sha256(bytes)
+    || validation?.status !== "PASS" || !validation.checks || Object.values(validation.checks).some((value) => value !== true)
+    || encoder?.fullDecodeValidated !== true || encoder?.contract?.codec !== contract.codec || encoder?.contract?.pixelFormat !== contract.pixelFormat
+    || encoder?.contract?.fps !== contract.fps || encoder?.contract?.audioStreams !== contract.audioStreams
+    || validation.media?.codec !== contract.codec || validation.media?.pixelFormat !== contract.pixelFormat || validation.media?.audioStreams !== contract.audioStreams
+    || validation.media?.fps !== "30/1" || Math.abs(validation.duration - contract.durationSeconds) > 0.001) {
+    throw new Error(`R1 host video/report contract differs: ${record.source}`);
   }
   return { ...contract, container: "mp4", validationReportSha256: sha256(reportBytes) };
 }
@@ -2379,11 +2425,16 @@ function validateFailureReferences(record, label, failedChecks = []) {
 }
 
 export function validateHumanEvidenceLedger(document) {
-  if (document?.schema !== HUMAN_EVIDENCE_SCHEMA || document.evidenceClass !== "HUMAN DEVICE EVIDENCE" || document.rootExists !== true
-    || !Array.isArray(document.entries) || !Array.isArray(document.requiredFilenames) || !Array.isArray(document.missingFilenames) || document.missingFilenames.length) throw new Error("physical-device human-evidence ledger authority differs");
+  const unavailable = document?.status === "NOT AVAILABLE TO EXECUTION ENVIRONMENT";
+  if (document?.schema !== HUMAN_EVIDENCE_SCHEMA || document.evidenceClass !== "HUMAN DEVICE EVIDENCE" || (document.rootExists !== true && !unavailable)
+    || !Array.isArray(document.entries) || !Array.isArray(document.requiredFilenames) || !Array.isArray(document.missingFilenames) || (!unavailable && document.missingFilenames.length)) throw new Error("physical-device human-evidence ledger authority differs");
   validateIsoTimestamp(document.createdAt, "physical-device ledger createdAt");
   if (stableJson(document.policy) !== stableJson(HUMAN_EVIDENCE_POLICY)) throw new Error("physical-device ledger policy authority differs");
   if (stableJson(document.requiredFilenames) !== stableJson(REQUIRED_HUMAN_EVIDENCE_FILES)) throw new Error("physical-device ledger required filename authority differs");
+  if (unavailable) {
+    if (stableJson(document.missingFilenames) !== stableJson(REQUIRED_HUMAN_EVIDENCE_FILES) || document.entries.length) throw new Error("unavailable physical-device ledger must name every required missing recording exactly and cannot fabricate entries");
+    return document;
+  }
   const filenames = document.entries.map(({ filename }) => filename);
   if (stableJson(filenames) !== stableJson(REQUIRED_HUMAN_EVIDENCE_FILES)) throw new Error("physical-device human-evidence ledger omits, reorders or duplicates a required recording");
   for (const [index, record] of document.entries.entries()) {
@@ -2542,7 +2593,10 @@ export function evidenceTaxonomy(record, document) {
   if (record.role === "physical-device-result") {
     const ledger = validateHumanEvidenceLedger(document);
     const zoom = ledger.entries.find(({ filename }) => filename === "chrome-200-percent.mp4");
-    const zoomStatuses = Array.isArray(zoom.routeOutcomes) ? zoom.routeOutcomes.map(({ status }) => status) : ["PENDING HUMAN REVIEW"];
+    const unavailable = ledger.status === "NOT AVAILABLE TO EXECUTION ENVIRONMENT";
+    const zoomStatuses = Array.isArray(zoom?.routeOutcomes)
+      ? zoom.routeOutcomes.map(({ status }) => status)
+      : [unavailable ? "NOT AVAILABLE TO EXECUTION ENVIRONMENT" : "PENDING HUMAN REVIEW"];
     const opening = ledger.entries.find(({ filename }) => filename === "iphone-safari-opening.mp4");
     const maradin = ledger.entries.find(({ filename }) => filename === "iphone-safari-maradin.mp4");
     const safariLifecycleResults = [
@@ -2552,7 +2606,9 @@ export function evidenceTaxonomy(record, document) {
       maradin?.checks?.noPersistentRafOrInterval,
       maradin?.checks?.noLiveOrphanBlob,
     ];
-    const hiddenVisible = safariLifecycleResults.some((result) => result === false)
+    const hiddenVisible = unavailable
+      ? "NOT AVAILABLE TO EXECUTION ENVIRONMENT"
+      : safariLifecycleResults.some((result) => result === false)
       ? "FAIL"
       : safariLifecycleResults.every((result) => result === true)
         ? "PASS"
@@ -2572,6 +2628,27 @@ export function evidenceTaxonomy(record, document) {
       })),
       browserZoom: aggregateEvidenceStatuses(zoomStatuses, "PENDING HUMAN REVIEW"),
       hiddenVisible,
+    };
+  }
+  if (record.role === "r1-host-validation-summary") {
+    const host = document.hostValidation;
+    taxonomy.hostValidation = {
+      chromeZoom: normalizeEvidenceStatus(host?.chromeZoom?.status),
+      nativeWindowsInput: normalizeEvidenceStatus(host?.nativeWindowsInput?.status),
+      hiddenVisible: normalizeEvidenceStatus(host?.hiddenVisible?.status),
+      bfcache: normalizeEvidenceStatus(host?.bfcache?.status),
+      webkitInteraction: normalizeEvidenceStatus(host?.webkitInteraction?.status),
+      iosProxy: normalizeEvidenceStatus(host?.iosProxy?.status),
+      physicalIos: normalizeEvidenceStatus(host?.physicalIos?.status),
+    };
+    taxonomy.bfcache = [taxonomy.hostValidation.bfcache].filter(Boolean);
+    taxonomy.visibility = [taxonomy.hostValidation.hiddenVisible].filter(Boolean);
+    taxonomy.accessibility = {
+      keyboard: taxonomy.hostValidation.webkitInteraction,
+      focus: taxonomy.hostValidation.webkitInteraction,
+      mobileMenu: taxonomy.hostValidation.webkitInteraction,
+      genuineBrowserZoom: taxonomy.hostValidation.chromeZoom,
+      iosLayoutProxy: taxonomy.hostValidation.iosProxy,
     };
   }
   return taxonomy;
@@ -2903,6 +2980,91 @@ function validateR1DeploymentRawParity(document, metadata) {
   }
 }
 
+function validateR1HostValidationReport(document, metadata) {
+  const host = document?.hostValidation;
+  const exactRoutes = PHASE6_ROUTES.map(({ path: routePath }) => routePath);
+  const sourceIds = [
+    "installed-chrome-200-percent",
+    "native-windows-input",
+    "real-hidden-visible",
+    "bfcache-multiengine",
+    "focused-webkit-interactions",
+    "ios-execution-environment",
+    "webkit-ios-layout-proxy",
+  ];
+  const nativeChecks = ["minimalPositiveResponse", "repeatedSmallIncrements", "longSequence", "immediateReversal", "stopStates", "forwardManifesto", "reverseToF1", "supportingDocumentFlow", "supportingHomeEntry", "supportingReversePhysical"];
+  if (!Array.isArray(document?.sourceReports) || stableJson(document.sourceReports.map(({ id }) => id)) !== stableJson(sourceIds)) throw new Error("R1 host validation source-report identity differs");
+  const reports = new Map();
+  for (const report of document.sourceReports) {
+    const payloadBytes = Buffer.from(stableJson(report?.payload));
+    if (!report || reports.has(report.id) || !HASH64.test(report.sha256 ?? "") || report.sha256 !== sha256(payloadBytes)
+      || report.byteSize !== payloadBytes.length || !report.source || typeof report.source.filename !== "string" || !path.posix.basename(report.source.filename)
+      || !HASH64.test(report.source.sha256 ?? "") || !Number.isSafeInteger(report.source.byteSize) || report.source.byteSize <= 0) {
+      throw new Error(`R1 host validation source-report binding differs: ${report?.id ?? "unknown"}`);
+    }
+    reports.set(report.id, report.payload);
+  }
+  const zoomSource = reports.get("installed-chrome-200-percent");
+  const nativeSource = reports.get("native-windows-input");
+  const hiddenSource = reports.get("real-hidden-visible");
+  const bfcacheSource = reports.get("bfcache-multiengine");
+  const webkitSource = reports.get("focused-webkit-interactions");
+  const iosEnvironmentSource = reports.get("ios-execution-environment");
+  const iosProxySource = reports.get("webkit-ios-layout-proxy");
+  const zoom = host?.chromeZoom;
+  const directlyTestedFinalDeployment = document?.baseUrl === metadata.deployment.immutableUrl;
+  const binding = document?.deploymentBinding;
+  const parityBoundFromDirectParent = !directlyTestedFinalDeployment
+    && binding?.schema === "quantum-hub.phase-6-r1.host-validation-deployment-binding.v1"
+    && binding.status === "PASS"
+    && binding.testedBaseUrl === document.baseUrl
+    && binding.testedHead === metadata.repository.directParent
+    && binding.finalBaseUrl === metadata.deployment.immutableUrl
+    && binding.finalHead === metadata.repository.finalHead
+    && binding.productionSourceChanged === false
+    && binding.distByteIdentical === true
+    && binding.authority === "TOOLING-ONLY FINAL COMMIT; NODE 22 DIST BYTE-IDENTICAL";
+  const mismatchedSourceBase = document?.sourceReports.some(({ payload }) => typeof payload?.baseUrl === "string" && payload.baseUrl !== document.baseUrl);
+  if (document?.schema !== R1_HOST_VALIDATION_SCHEMA || document.status !== "CAPTURED"
+    || (!directlyTestedFinalDeployment && !parityBoundFromDirectParent) || mismatchedSourceBase
+    || document.classification !== "PHASE 6-R1 HOST VALIDATION CLOSURE — MACHINE EVIDENCE"
+    || zoom?.status !== "PASS" || zoom.classification !== "GENUINE INSTALLED GOOGLE CHROME BROWSER ZOOM"
+    || zoom.genuineInstalledChrome !== true || zoom.zoomPercent !== 200 || zoom.proxy !== false
+    || !Array.isArray(zoom.routes) || stableJson(zoom.routes.map(({ route }) => route)) !== stableJson(exactRoutes)
+    || zoom.routes.some((route) => route.status !== "PASS" || !route.checks
+      || stableJson(Object.keys(route.checks).sort(lexicalCompare)) !== stableJson([...ZOOM_ROUTE_CHECKS].sort(lexicalCompare))
+      || Object.values(route.checks).some((value) => value !== true))
+    || zoom.sourceId !== "installed-chrome-200-percent"
+    || zoomSource?.schema !== "quantum-hub.phase-6-r1.installed-chrome-native-zoom.v1" || zoomSource.status !== "PASS"
+    || zoomSource.classification !== zoom.classification || zoomSource.zoomProof?.status !== "PASS"
+    || zoomSource.routeSummary?.total !== 10 || zoomSource.routeSummary?.passed !== 10 || zoomSource.routeSummary?.failed !== 0
+    || !Array.isArray(zoomSource.results) || zoomSource.results.length !== 10 || zoomSource.results.some((result) => result.status !== "PASS" || result.failures?.length)) {
+    throw new Error("R1 installed-Chrome 200% host validation authority differs");
+  }
+  if (host.nativeWindowsInput?.status !== "PASS"
+    || host.nativeWindowsInput.classification !== "NATIVE WINDOWS INPUT INJECTION"
+    || host.nativeWindowsInput.physicalHumanMouse !== false
+    || host.nativeWindowsInput.windowsSendInput !== true || host.nativeWindowsInput.sourceId !== "native-windows-input"
+    || nativeSource?.schema !== "quantum-hub.phase-6-r1.native-windows-input.v1" || nativeSource.status !== "PASS"
+    || nativeSource.classification !== host.nativeWindowsInput.classification || nativeSource.method?.physicalHumanMouse !== false
+    || nativeSource.method?.playwrightWheel !== false || nativeSource.method?.domWheelDispatch !== false
+    || stableJson(Object.keys(nativeSource.checks ?? {}).sort(lexicalCompare)) !== stableJson([...nativeChecks].sort(lexicalCompare)) || Object.values(nativeSource.checks).some((value) => value !== true)) throw new Error("R1 native Windows input host validation authority differs");
+  if (host.hiddenVisible?.status !== "NOT OBSERVED" || host.hiddenVisible.transitionObserved !== false || host.hiddenVisible.sourceId !== "real-hidden-visible"
+    || hiddenSource?.schema !== "quantum-hub.phase-6-r1.real-chrome-hidden-visible.v1" || hiddenSource.status !== "NOT OBSERVED"
+    || !Array.isArray(hiddenSource.attempts) || hiddenSource.attempts.length < 5 || hiddenSource.attempts.some((attempt) => attempt.hiddenObserved !== false || attempt.visibilityEvents?.length)) throw new Error("R1 hidden/visible host validation authority differs");
+  if (host.bfcache?.status !== "NOT OBSERVED" || host.bfcache.persistedTrue !== 0 || !Number.isSafeInteger(host.bfcache.trials) || host.bfcache.trials < 3 || host.bfcache.sourceId !== "bfcache-multiengine"
+    || bfcacheSource?.status !== "NOT OBSERVED" || bfcacheSource.persistedTrue !== 0 || !Number.isSafeInteger(bfcacheSource.trials) || bfcacheSource.trials !== host.bfcache.trials) throw new Error("R1 BFCache host validation authority differs");
+  if (host.webkitInteraction?.status !== "LIMITATION" || host.webkitInteraction.navigation !== "PASS" || host.webkitInteraction.focus !== "LIMITATION" || host.webkitInteraction.sourceId !== "focused-webkit-interactions"
+    || webkitSource?.schema !== "quantum-hub.phase-6-r1.focused-webkit-interactions.v1" || webkitSource.status !== "LIMITATION" || !Array.isArray(webkitSource.modes) || webkitSource.modes.length !== 2
+    || webkitSource.modes.some((mode) => mode.navigation?.status !== "PASS" || mode.focus?.status !== "LIMITATION" || mode.keyboardDelivery?.status !== "PASS")) throw new Error("R1 focused WebKit host validation authority differs");
+  if (host.physicalIos?.status !== "NOT AVAILABLE TO EXECUTION ENVIRONMENT" || host.physicalIos.classification !== "PHYSICAL IOS SAFARI — NOT AVAILABLE TO EXECUTION ENVIRONMENT" || host.physicalIos.sourceId !== "ios-execution-environment"
+    || iosEnvironmentSource?.status !== "NOT AVAILABLE TO EXECUTION ENVIRONMENT" || iosEnvironmentSource.classification !== host.physicalIos.classification || iosEnvironmentSource.connectedPhysicalIosDevices !== 0) throw new Error("R1 physical iOS environment authority differs");
+  if (host.iosProxy?.status !== "LIMITATION" || host.iosProxy.layoutStatus !== "PASS" || host.iosProxy.classification !== "WEBKIT / IOS-LAYOUT PROXY" || host.iosProxy.physicalSafari !== false || host.iosProxy.sourceId !== "webkit-ios-layout-proxy"
+    || iosProxySource?.schema !== "quantum.phase6-r1.webkit-ios-layout-proxy.v1" || iosProxySource.overallStatus !== "LIMITATION" || iosProxySource.layoutStatus !== "PASS"
+    || iosProxySource.physicalIosSafari?.status !== "NOT AVAILABLE TO EXECUTION ENVIRONMENT" || iosProxySource.visibility?.status !== "NOT OBSERVED") throw new Error("R1 WebKit/iOS proxy authority differs");
+  return document;
+}
+
 export function validateDocumentAuthority(record, document, metadata) {
   const engine = record.engine;
   if (record.role === "deployment-verifier") {
@@ -3086,6 +3248,7 @@ export function validateDocumentAuthority(record, document, metadata) {
   if (record.role === "regression-summary") {
     if (document.status !== "PASS" || document.target?.baseUrl !== metadata.evidenceContext.browserQa.baseUrl || document.checks?.length !== 7 || document.checks.some((check) => check?.status !== "PASS") || document.sharedDom?.status !== "PASS" || !Array.isArray(document.sharedDom?.assertions) || document.sharedDom.assertions.some((assertion) => assertion?.pass !== true) || document.failures?.length !== 0) throw new Error("repair-regression exact tuple differs");
   }
+  if (record.role === "r1-host-validation-summary") validateR1HostValidationReport(document, metadata);
   if (record.role === "r1-node22-validation-summary") validateR1Node22Validation(document, metadata);
   if (record.role === "physical-device-result") validateHumanEvidenceLedger(document);
   if (record.role === "r1-motion-summary") validateR1MotionReport(document, engine, metadata);
@@ -3121,7 +3284,8 @@ async function curateArtifact(sourceRoot, record, metadata) {
       const selection = record.select
         ? Object.fromEntries(record.select.map((pointer) => [pointer, sanitizeJsonValue(getJsonPointer(sanitized, pointer, record.source), `${record.source}${pointer}`)]))
         : sanitized;
-      if (!record.select && bytes.length > 512 * 1024) throw new Error(`large JSON evidence requires an explicit select list: ${record.source}`);
+      const wholeDocumentLimit = ["accessibility-summary", "accessibility-interaction-limitation"].includes(record.role) ? 2 * 1024 * 1024 : 512 * 1024;
+      if (!record.select && bytes.length > wholeDocumentLimit) throw new Error(`large JSON evidence exceeds its role-scoped whole-document limit or requires an explicit select list: ${record.source}`);
       data = Buffer.from(stableJson({
         schema: `${SCHEMA}.distilled-json`,
         status: record.status,
@@ -3150,6 +3314,8 @@ async function curateArtifact(sourceRoot, record, metadata) {
       ? { ...mp4, humanSupplied: true, byteSize: bytes.length, sha256: sha256(bytes) }
       : record.role === "r1-motion-recording"
         ? await validateR1MotionBoundMedia(sourceRoot, record, bytes, metadata)
+        : ["r1-native-windows-input-recording", "r1-installed-chrome-zoom-recording"].includes(record.role)
+          ? await validateR1HostBoundMedia(sourceRoot, record, bytes, metadata)
         : await validateCaptureBoundMedia(sourceRoot, record, bytes);
     data = Buffer.from(bytes);
   } else throw new Error(`unsupported evidence artifact: ${record.destination}`);
@@ -3177,6 +3343,11 @@ function validateHumanEvidenceBindings(metadata, entries) {
   const ledgerEntry = ledgerEntries[0];
   const ledger = ledgerEntry.taxonomy?.humanEvidence;
   if (!ledger) throw new Error("physical-device human-evidence ledger taxonomy is unavailable");
+  if (ledger.status === "NOT AVAILABLE TO EXECUTION ENVIRONMENT") {
+    if (ledger.recordings.length || recordingEntries.length) throw new Error("unavailable physical-device evidence cannot contain fabricated recordings");
+    ledger.verified = true;
+    return { status: ledger.status, verified: true };
+  }
   for (const record of ledger.recordings) {
     const artifactRecord = metadata.artifacts.find((artifact) => artifact.role === "physical-device-recording" && path.posix.basename(artifact.source) === record.filename);
     const assembled = artifactRecord && recordingEntries.find(({ source }) => source === artifactRecord.source);
@@ -3531,7 +3702,9 @@ export function guardedRequirementAssessment(section, requirement, entries) {
       .filter((entry) => entry.role === "r1-persistent-lifecycle-summary")
       .flatMap((entry) => entry.taxonomy?.visibility ?? []);
     const humanStatuses = entries
-      .filter((entry) => entry.taxonomy?.humanEvidence?.verified && entry.taxonomy.humanEvidence.hiddenVisible)
+      .filter((entry) => entry.taxonomy?.humanEvidence?.verified
+        && entry.taxonomy.humanEvidence.status !== "NOT AVAILABLE TO EXECUTION ENVIRONMENT"
+        && entry.taxonomy.humanEvidence.hiddenVisible)
       .map((entry) => entry.taxonomy.humanEvidence.hiddenVisible);
     const statuses = [...machineStatuses, ...humanStatuses];
     const status = aggregateCoverageStatuses(statuses, "NOT OBSERVED");
@@ -3560,16 +3733,20 @@ export function guardedRequirementAssessment(section, requirement, entries) {
     };
   }
   if (section === "09-accessibility" && requirement === "200%") {
-    const zoomStatuses = entries
+    const humanZoomStatuses = entries
       .filter((entry) => entry.taxonomy?.humanEvidence?.verified)
       .map((entry) => entry.taxonomy.humanEvidence.browserZoom)
+      .filter((status) => status && status !== "NOT AVAILABLE TO EXECUTION ENVIRONMENT");
+    const hostZoomStatuses = entries
+      .map((entry) => entry.taxonomy?.accessibility?.genuineBrowserZoom)
       .filter(Boolean);
+    const zoomStatuses = [...humanZoomStatuses, ...hostZoomStatuses];
     const proxyOnly = entries.some((entry) => entry.taxonomy?.accessibility?.proxy720x450);
     const status = zoomStatuses.length ? aggregateEvidenceStatuses(zoomStatuses, "PENDING HUMAN REVIEW") : "PENDING HUMAN REVIEW";
     return {
       status,
       statement: status === "PASS"
-        ? "A hash-bound human recording verified genuine 200% browser zoom across all ten route outcomes."
+        ? "Hash-bound evidence verified genuine installed-Chrome 200% browser zoom across all ten route outcomes."
         : status === "FAIL"
           ? "The hash-bound genuine 200% browser-zoom review recorded one or more failed route outcomes; see the addressed recording observations and failure references."
         : proxyOnly
@@ -3588,7 +3765,9 @@ export function guardedRequirementAssessment(section, requirement, entries) {
         ? "All required physical-device recordings were ingested, hash/size bound and reviewed as PASS."
         : status === "FAIL"
           ? "One or more hash/size-bound physical-device reviews recorded a visible failure; see the addressed recording observations and failure references."
-          : "Physical-device requirements remain pending until all required human recordings are ingested, hash/size bound and actually reviewed.",
+          : status === "NOT AVAILABLE TO EXECUTION ENVIRONMENT"
+            ? "Physical iOS Safari and human tactile hardware were unavailable to this execution environment; machine substitutes remain explicitly non-physical."
+            : "Physical-device requirements remain pending until all required human recordings are ingested, hash/size bound and actually reviewed.",
     };
   }
   return null;
@@ -3598,6 +3777,7 @@ function aggregateRequirementStatus(requirements, configuredStatus) {
   const statuses = requirements.map(({ status }) => status).filter((status) => status !== "NOT APPLICABLE");
   if (!statuses.length) return configuredStatus;
   if (statuses.includes("FAIL")) return "FAIL";
+  if (statuses.includes("NOT AVAILABLE TO EXECUTION ENVIRONMENT")) return "NOT AVAILABLE TO EXECUTION ENVIRONMENT";
   if (statuses.includes("PENDING HUMAN REVIEW")) return "PENDING HUMAN REVIEW";
   if (statuses.includes("LIMITATION")) return "LIMITATION";
   if (statuses.includes("NOT OBSERVED")) return "NOT OBSERVED";
@@ -3613,9 +3793,9 @@ function evidenceRolesForRequirement(section, requirement, { posterIncluded }) {
     return ["cross-engine-summary"];
   }
   if (section === "03-homepage-motion") return requirement === "hidden/visible behavior"
-    ? ["homepage-motion-summary", "homepage-motion-recording", "r1-motion-summary", "r1-motion-recording", "memory-summary", "r1-persistent-lifecycle-summary", "physical-device-result"]
+    ? ["homepage-motion-summary", "homepage-motion-recording", "r1-motion-summary", "r1-motion-recording", "r1-native-windows-input-recording", "memory-summary", "r1-persistent-lifecycle-summary", "r1-host-validation-summary", "physical-device-result"]
     : requirement.includes("fade") || ["fresh forward", "reverse", "fast skip", "stop-at-state", "resize/orientation"].some((token) => requirement.includes(token))
-      ? ["homepage-motion-summary", "homepage-motion-recording", "r1-motion-summary", "r1-motion-recording"]
+      ? ["homepage-motion-summary", "homepage-motion-recording", "r1-motion-summary", "r1-motion-recording", "r1-native-windows-input-recording"]
     : ["homepage-motion-summary"];
   if (section === "04-supporting-routes") {
     const direct = {
@@ -3627,14 +3807,14 @@ function evidenceRolesForRequirement(section, requirement, { posterIncluded }) {
     }[requirement];
     return direct ? [direct] : ["supporting-route-summary"];
   }
-  if (section === "05-history-bfcache") return ["history-bfcache-summary", "r1-persistent-lifecycle-summary"];
+  if (section === "05-history-bfcache") return ["history-bfcache-summary", "r1-persistent-lifecycle-summary", "r1-host-validation-summary"];
   if (section === "06-performance") return ["performance-summary"];
   if (section === "07-memory") return ["memory-summary", "r1-persistent-lifecycle-summary"];
   if (section === "08-network-media") return ["network-media-summary", "r1-persistent-lifecycle-summary"];
   if (section === "09-accessibility") {
     if (requirement === "axe") return ["accessibility-summary"];
-    if (["keyboard", "focus", "mobile menu"].includes(requirement)) return ["accessibility-summary", "accessibility-interaction-limitation"];
-    if (requirement === "200%") return ["accessibility-summary", "supplemental-reflow-proxy", "physical-device-result", "physical-device-recording"];
+    if (["keyboard", "focus", "mobile menu"].includes(requirement)) return ["accessibility-summary", "accessibility-interaction-limitation", "r1-host-validation-summary"];
+    if (requirement === "200%") return ["accessibility-summary", "supplemental-reflow-proxy", "r1-host-validation-summary", "r1-installed-chrome-zoom-recording", "physical-device-result", "physical-device-recording"];
     return ["accessibility-summary"];
   }
   if (section === "10-poster-study") {
@@ -3642,7 +3822,7 @@ function evidenceRolesForRequirement(section, requirement, { posterIncluded }) {
     if (requirement === "difference images") return posterIncluded ? ["poster-difference"] : ["packager-injected-report"];
     return posterIncluded ? ["poster-study-summary", "packager-injected-report"] : ["packager-injected-report"];
   }
-  if (section === "11-physical-device") return ["physical-device-result", "physical-device-recording", "packager-injected-report"];
+  if (section === "11-physical-device") return ["physical-device-result", "physical-device-recording", "r1-host-validation-summary", "packager-injected-report"];
   if (section === "12-regression") return ["regression-summary"];
   if (section === "13-package") return ["packager-generated"];
   throw new Error(`no evidence-role mapping for ${section}/${requirement}`);
@@ -3666,6 +3846,7 @@ function sectionSummary(section, metadata, existingEntries, { posterIncluded }) 
   );
   if (section === "10-poster-study") evidence.push({ path: "10-poster-study/PHASE_6_POSTER_STUDY.md", role: "packager-injected-report", generatedByPackager: true });
   if (section === "11-physical-device") evidence.push({ path: "11-physical-device/PHASE_6_PHYSICAL_DEVICE_HANDOFF.md", role: "packager-injected-report", generatedByPackager: true });
+  if (section === "11-physical-device" && authority.id === "phase6-r1") evidence.push({ path: R1_ENVIRONMENTAL_LIMITATIONS_PATH, role: "packager-injected-report", generatedByPackager: true });
   const configured = metadata.sections?.[section];
   if (section === "13-package") {
     evidence.push(
@@ -3767,7 +3948,7 @@ export async function buildEvidenceEntries({ sourceEvidenceRoot, finalMetadata, 
     inventoryExcludingSelf: preliminary.entries.map((entry) => ({ path: entry.path, byteSize: entry.data.length, sha256: sha256(entry.data), role: entry.role })),
     inventoryExcludingSelfBytes: preliminary.totalBytes,
     reservedPathsAbsent: [...RESERVED_PATHS].sort(lexicalCompare),
-    downstream: { packagerAddsTrackedReports: authority.id === "phase6-r1" ? 5 : 4, packagerAddsGitProvenance: true, packagerAddsManifestAndPackageMetadata: true, independentAuditIsSibling: true },
+    downstream: { packagerAddsTrackedReports: authority.id === "phase6-r1" ? 6 : 4, packagerAddsGitProvenance: true, packagerAddsManifestAndPackageMetadata: true, independentAuditIsSibling: true },
     humanReviewGates: HUMAN_REVIEW_GATES,
     authorization: AUTHORIZATION,
   };
@@ -3864,7 +4045,7 @@ export function parseArguments(argv) {
 
 export function selfTest() {
   if (TOPOLOGY_SECTIONS.length !== 14 || Object.keys(BRIEF_REQUIREMENTS).length !== 14 || FINAL_HANDOFF_FIELDS.length !== 66 || Object.keys(HUMAN_REVIEW_GATES).length !== 6 || Object.values(AUTHORIZATION).some(Boolean)
-    || R1_MOTION_RECORDING_SPECS.length !== 5 || Object.keys(R1_REQUIRED_ARTIFACT_ROLES).length !== 6) throw new Error("Phase 6 evidence assembler contract differs");
+    || R1_MOTION_RECORDING_SPECS.length !== 5 || Object.keys(R1_REQUIRED_ARTIFACT_ROLES).length !== 9) throw new Error("Phase 6 evidence assembler contract differs");
   return {
     schema: `${SCHEMA}.self-test`,
     status: "PASS",

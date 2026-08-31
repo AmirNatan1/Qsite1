@@ -23,12 +23,14 @@ export const REQUIRED_RECORDINGS = Object.freeze([
   "chrome-200-percent.mp4",
 ]);
 export const HUMAN_STATUSES = Object.freeze(["PASS", "FAIL", "PENDING HUMAN REVIEW"]);
-export const OBSERVATION_STATUSES = Object.freeze([...HUMAN_STATUSES, "LIMITATION"]);
+export const LEDGER_STATUSES = Object.freeze([...HUMAN_STATUSES, "NOT AVAILABLE TO EXECUTION ENVIRONMENT"]);
+export const OBSERVATION_STATUSES = Object.freeze([...HUMAN_STATUSES, "LIMITATION", "NOT OBSERVED"]);
 export const HUMAN_EVIDENCE_POLICY = Object.freeze({
   filePresenceIsPass: false,
   machineRecordingSubstitutionAllowed: false,
   failRequiresTimestampOrFrame: true,
-  allFourFilesRequiredBeforePackaging: true,
+  allFourFilesRequiredBeforePackaging: false,
+  unavailableHardwareDoesNotBlockPackaging: true,
 });
 export const DEVICE_REVIEW_CHECKS = Object.freeze({
   "iphone-safari-opening.mp4": Object.freeze([
@@ -606,11 +608,15 @@ export async function ingestHumanEvidence(options) {
   const reviewByFilename = new Map((reviews ?? []).map((entry) => [entry.filename, entry]));
   const inventoryByFilename = new Map(inventory.files.map((entry) => [entry.filename, entry]));
   const entries = inventory.files.map((record) => ({ ...record, ...(reviewByFilename.get(record.filename) ?? pendingReview(record.filename)) }));
-  const blocked = inventory.missing.length > 0;
+  // The R1 superseding authority deliberately separates unavailable physical
+  // hardware from a production failure.  Missing recordings therefore remain
+  // visible in the ledger but can no longer prevent construction of the
+  // external review package.
+  const unavailable = inventory.missing.length > 0;
   const document = {
     schema: SCHEMA,
     createdAt: new Date().toISOString(),
-    status: blocked ? "BLOCKED" : overallStatus(entries),
+    status: unavailable ? "NOT AVAILABLE TO EXECUTION ENVIRONMENT" : overallStatus(entries),
     evidenceClass: "HUMAN DEVICE EVIDENCE",
     requiredFilenames: [...REQUIRED_RECORDINGS],
     rootExists: inventory.rootExists,
@@ -637,7 +643,7 @@ function usage() {
     "  node scripts/ingest-phase6-r1-human-evidence.mjs --input-root <phase-6-human-device-evidence> --output <fresh-external-json> [--reviews <human-review-json>]",
     "  node scripts/ingest-phase6-r1-human-evidence.mjs --self-test",
     "",
-    "Without --reviews, present files remain PENDING HUMAN REVIEW. Missing required files produce a BLOCKED ledger and a non-zero exit status.",
+    "Without --reviews, present files remain PENDING HUMAN REVIEW. Missing physical recordings produce a NOT AVAILABLE TO EXECUTION ENVIRONMENT ledger and do not stop review packaging.",
   ].join("\n");
 }
 
@@ -647,7 +653,6 @@ async function main() {
   if (options.selfTest) return void process.stdout.write(`${JSON.stringify(runSelfTest(), null, 2)}\n`);
   const document = await ingestHumanEvidence(options);
   process.stdout.write(`${JSON.stringify({ status: document.status, missingFilenames: document.missingFilenames }, null, 2)}\n`);
-  if (document.status === "BLOCKED") process.exitCode = 2;
 }
 
 const invokedDirectly = process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url));

@@ -37,7 +37,9 @@ export const R1_REQUIRED_BRANCH_URL = "https://repair-phase-6-r1-validation.qsit
 export const R1_REQUIRED_ARCHIVE_FILENAME = "phase-6-r1-validation-closure-human-review.zip";
 export const R1_DEPLOYMENT_VERIFICATION_SCHEMA = "quantum-hub.phase-6-r1.deployment-verification.v1";
 export const R1_HUMAN_EVIDENCE_SCHEMA = "quantum-hub.phase-6-r1.human-evidence-ledger.v1";
+export const R1_HOST_VALIDATION_SCHEMA = "quantum-hub.phase-6-r1.host-validation-closure.v1";
 export const R1_HUMAN_LEDGER_PATH = "11-physical-device/human-evidence-ledger.json";
+export const R1_ENVIRONMENTAL_LIMITATIONS_PATH = "11-physical-device/PHASE_6_R1_ENVIRONMENTAL_LIMITATIONS.md";
 export const R1_REQUIRED_HUMAN_RECORDINGS = Object.freeze([
   "iphone-safari-opening.mp4",
   "iphone-safari-maradin.mp4",
@@ -45,6 +47,7 @@ export const R1_REQUIRED_HUMAN_RECORDINGS = Object.freeze([
   "chrome-200-percent.mp4",
 ]);
 const R1_HUMAN_STATUSES = Object.freeze(["PASS", "FAIL", "PENDING HUMAN REVIEW"]);
+const R1_LEDGER_STATUSES = Object.freeze([...R1_HUMAN_STATUSES, "NOT AVAILABLE TO EXECUTION ENVIRONMENT"]);
 const R1_DEVICE_REVIEW_CHECKS = Object.freeze({
   "iphone-safari-opening.mp4": Object.freeze(["correctDormantOpening", "firstPracticalSwipeResponse", "nativeMomentum", "stopAtPhysicalState", "reverseReconstruction", "lineRasterQ", "autonomousManifestoFade", "noF1FlashFromIntentionalHome", "orientationStability", "backgroundForeground"]),
   "iphone-safari-maradin.mp4": Object.freeze(["onePlayerLifecycle", "backgroundForeground", "retryableSourceFree", "noPersistentRafOrInterval", "noLiveOrphanBlob"]),
@@ -59,9 +62,10 @@ const R1_PERSISTENT_LIFECYCLE_SCHEMA = "quantum-hub.phase-6-r1.persistent-lifecy
 const R1_BROWSER_QA_CONTEXT = Object.freeze({ origin: "LOCAL", baseUrl: "http://127.0.0.1:4338/" });
 const R1_MOTION_RECORDINGS = Object.freeze(["01-forward-physical-to-manifesto.mp4", "02-reverse-manifesto-to-f1.mp4", "03-stop-at-authored-states.mp4", "04-resize-orientation-mid-current-and-manifesto.mp4", "05-supporting-route-entry-and-reverse.mp4"]);
 const R1_TOOLING_REPORT_FILES = Object.freeze([
-  "PHASE_6_R1_VALIDATION_CLOSURE.md", "package.json", "scripts/assemble-phase6-final-evidence.mjs",
-  "scripts/audit-phase6-human-review-package.mjs", "scripts/capture-phase6-r1-motion-evidence.mjs",
+  "PHASE_6_R1_ENVIRONMENTAL_LIMITATIONS.md", "PHASE_6_R1_VALIDATION_CLOSURE.md", "package.json", "scripts/assemble-phase6-final-evidence.mjs",
+  "scripts/audit-phase6-human-review-package.mjs", "scripts/audit-phase6-r1-installed-chrome-zoom.mjs", "scripts/build-phase6-r1-host-validation.mjs", "scripts/capture-phase6-r1-motion-evidence.mjs",
   "scripts/ingest-phase6-r1-human-evidence.mjs", "scripts/package-phase6-human-review.mjs",
+  "scripts/probe-phase6-r1-webkit-interactions.mjs",
   "scripts/qa-phase6-accessibility-interactions.mjs", "scripts/qa-phase6-r1-persistent-lifecycle.mjs",
   "scripts/verify-phase6-deployment.mjs", "scripts/verify-phase6-r1-deployment.mjs",
   "tests/phase6-accessibility-interactions.test.mjs", "tests/phase6-evidence-assembler.test.mjs",
@@ -70,9 +74,10 @@ const R1_TOOLING_REPORT_FILES = Object.freeze([
   "tests/phase6-r1-persistent-lifecycle.test.mjs",
 ]);
 const EXPECTED_R1_CHANGED_PATH_RECORDS = Object.freeze([
-  "A\tPHASE_6_R1_VALIDATION_CLOSURE.md", "M\tpackage.json", "M\tscripts/assemble-phase6-final-evidence.mjs",
-  "M\tscripts/audit-phase6-human-review-package.mjs", "A\tscripts/capture-phase6-r1-motion-evidence.mjs",
+  "A\tPHASE_6_R1_ENVIRONMENTAL_LIMITATIONS.md", "A\tPHASE_6_R1_VALIDATION_CLOSURE.md", "M\tpackage.json", "M\tscripts/assemble-phase6-final-evidence.mjs",
+  "M\tscripts/audit-phase6-human-review-package.mjs", "A\tscripts/audit-phase6-r1-installed-chrome-zoom.mjs", "A\tscripts/build-phase6-r1-host-validation.mjs", "A\tscripts/capture-phase6-r1-motion-evidence.mjs",
   "A\tscripts/ingest-phase6-r1-human-evidence.mjs", "M\tscripts/package-phase6-human-review.mjs",
+  "A\tscripts/probe-phase6-r1-webkit-interactions.mjs",
   "M\tscripts/qa-phase6-accessibility-interactions.mjs", "A\tscripts/qa-phase6-r1-persistent-lifecycle.mjs",
   "M\tscripts/verify-phase6-deployment.mjs", "A\tscripts/verify-phase6-r1-deployment.mjs",
   "M\ttests/phase6-accessibility-interactions.test.mjs", "M\ttests/phase6-evidence-assembler.test.mjs",
@@ -102,7 +107,7 @@ const R1_REQUIRED_HEADER_POLICIES = Object.freeze({
   "/media/cinematic/phase-4r2/posters/*": "public, max-age=31556952, immutable",
 });
 const R1_NODE22_REQUIRED_OUTCOMES = Object.freeze(["npm-ci", "astro-check", "production-build", "complete-postbuild-test-suite", "phase4-source-verification", "phase5b-phase6-r1-focused-regression", "standalone-verifier-self-tests"]);
-const R1_EVIDENCE_STATUSES = new Set(["PASS", "FAIL", "LIMITATION", "NOT OBSERVED", "PENDING HUMAN REVIEW", "NOT APPLICABLE"]);
+const R1_EVIDENCE_STATUSES = new Set(["PASS", "FAIL", "LIMITATION", "NOT OBSERVED", "PENDING HUMAN REVIEW", "NOT AVAILABLE TO EXECUTION ENVIRONMENT", "NOT APPLICABLE"]);
 const R1_REQUIRED_ROLE_INVENTORY = Object.freeze({
   "deployment-verifier": { section: "00-provenance", kind: "document", minimum: 1, exact: 1 },
   "cross-engine-summary": { section: "02-cross-engine", kind: "document", minimum: 3, exact: 3 },
@@ -125,12 +130,15 @@ const R1_REQUIRED_ROLE_INVENTORY = Object.freeze({
   "regression-summary": { section: "12-regression", kind: "document", minimum: 1, exact: 1 },
   "r1-motion-summary": { section: "03-homepage-motion", kind: "document", minimum: 2, exact: 2 },
   "r1-motion-recording": { section: "03-homepage-motion", kind: "video", minimum: 10, exact: 10 },
+  "r1-native-windows-input-recording": { section: "03-homepage-motion", kind: "video", minimum: 1, exact: 1 },
   "r1-persistent-lifecycle-summary": { section: "05-history-bfcache", kind: "document", minimum: 1, exact: 1 },
   "r1-node22-validation-summary": { section: "00-provenance", kind: "document", minimum: 1, exact: 1 },
+  "r1-host-validation-summary": { section: "00-provenance", kind: "document", minimum: 1, exact: 1 },
   "accessibility-interaction-limitation": { section: "09-accessibility", kind: "document", minimum: 1, exact: 1 },
   "supplemental-reflow-proxy": { section: "09-accessibility", kind: "document", minimum: 1, exact: 1 },
+  "r1-installed-chrome-zoom-recording": { section: "09-accessibility", kind: "video", minimum: 1, exact: 1 },
   "physical-device-result": { section: "11-physical-device", kind: "document", minimum: 1, exact: 1 },
-  "physical-device-recording": { section: "11-physical-device", kind: "video", minimum: 4, exact: 4 },
+  "physical-device-recording": { section: "11-physical-device", kind: "video", minimum: 0 },
   "poster-study-summary": { section: "10-poster-study", kind: "document", minimum: 1, exact: 1 },
   "poster-side-by-side": { section: "10-poster-study", kind: "image", minimum: 3, exact: 3 },
   "poster-difference": { section: "10-poster-study", kind: "image", minimum: 3, exact: 3 },
@@ -140,11 +148,13 @@ const R1_EXACT_ASSEMBLER_PATH_ROLES = new Map([
   ["00-provenance/deployment-verification.json", "deployment-verifier"],
   ...["repository-authority.json", "checkpoint-chain.json", "production-source-diff.txt", "change-ledger.json", "deployment-authority-summary.json", "dist-deployment-parity.json", "final-build-test.json", "final-limitations.md", "final-handoff-seed.json"].map((name) => [`00-provenance/${name}`, "generated-authority"]),
   ["00-provenance/node22-integrated-validation.json", "r1-node22-validation-summary"],
+  ["00-provenance/host-validation-closure.json", "r1-host-validation-summary"],
   ...["accepted-phase5b-reference-hashes.json", "initial-browser-runtime-inventory.json"].map((name) => [`01-baseline/${name}`, "generated-authority"]),
   ...["chromium", "webkit", "firefox"].map((engine) => [`02-cross-engine/global-${engine}.json`, "cross-engine-summary"]),
   ...["chromium", "webkit", "firefox"].map((engine) => [`02-cross-engine/screenshots/home-${engine}.png`, "cross-engine-screenshot"]),
   ["02-cross-engine/recordings/home-forward-reverse-stop.mp4", "cross-engine-recording"], ["03-homepage-motion/homepage.json", "homepage-motion-summary"],
   ["03-homepage-motion/home-entry-manifesto-history.mp4", "homepage-motion-recording"],
+  ["03-homepage-motion/native-windows-input-state-review.mp4", "r1-native-windows-input-recording"],
   ...["chromium", "firefox"].flatMap((engine) => [[`03-homepage-motion/r1/${engine}/motion-evidence-report.json`, "r1-motion-summary"], ...R1_MOTION_RECORDINGS.map((filename) => [`03-homepage-motion/r1/${engine}/${filename}`, "r1-motion-recording"])]),
   ["04-supporting-routes/supporting.json", "supporting-route-summary"],
   ...[["desktop", "supporting-desktop-sheet"], ["portrait", "supporting-portrait-sheet"], ["narrow", "supporting-narrow-sheet"], ["landscape", "supporting-landscape-sheet"]].map(([name, role]) => [`04-supporting-routes/contact-sheets/${name}.png`, role]),
@@ -154,10 +164,12 @@ const R1_EXACT_ASSEMBLER_PATH_ROLES = new Map([
   ["08-network-media/maradin-media-lifecycle.mp4", "supplemental-maradin-lifecycle-recording"],
   ...["chromium", "webkit", "firefox"].map((engine) => [`09-accessibility/accessibility-${engine}.json`, "accessibility-summary"]),
   ["09-accessibility/accessibility-webkit-interaction-limitation.json", "accessibility-interaction-limitation"], ["09-accessibility/720x450-reflow-proxy.json", "supplemental-reflow-proxy"],
+  ["09-accessibility/installed-chrome-200-percent-route-review.mp4", "r1-installed-chrome-zoom-recording"],
   ["10-poster-study/poster-request-decode-summary.json", "poster-study-summary"],
   ...["desktop", "portrait", "landscape"].map((family) => [`10-poster-study/comparisons/${family}-original-lossless-lossy.png`, "poster-side-by-side"]),
   ...["desktop", "portrait", "landscape"].map((family) => [`10-poster-study/differences/${family}-lossy-q95-difference-x32.png`, "poster-difference"]),
-  [R1_HUMAN_LEDGER_PATH, "physical-device-result"], ...R1_REQUIRED_HUMAN_RECORDINGS.map((filename) => [`11-physical-device/recordings/${filename}`, "physical-device-recording"]),
+  [R1_HUMAN_LEDGER_PATH, "physical-device-result"],
+  ...R1_REQUIRED_HUMAN_RECORDINGS.map((filename) => [`11-physical-device/recordings/${filename}`, "physical-device-recording"]),
   ["12-regression/repair-regressions.json", "regression-summary"],
   ...["00-provenance", "01-baseline", "02-cross-engine", "03-homepage-motion", "04-supporting-routes", "05-history-bfcache", "06-performance", "07-memory", "08-network-media", "09-accessibility", "10-poster-study", "11-physical-device", "12-regression", "13-package"].map((section) => [`${section}/section-summary.json`, "generated"]),
 ]);
@@ -202,8 +214,9 @@ export const REPORT_SPECS = Object.freeze([
   Object.freeze({ source: "PHASE_6_PHYSICAL_DEVICE_HANDOFF.md", archive: "11-physical-device/PHASE_6_PHYSICAL_DEVICE_HANDOFF.md" }),
 ]);
 export const R1_CLOSURE_REPORT_SPEC = Object.freeze({ source: "PHASE_6_R1_VALIDATION_CLOSURE.md", archive: "01-baseline/PHASE_6_R1_VALIDATION_CLOSURE.md" });
+export const R1_ENVIRONMENTAL_LIMITATIONS_REPORT_SPEC = Object.freeze({ source: "PHASE_6_R1_ENVIRONMENTAL_LIMITATIONS.md", archive: R1_ENVIRONMENTAL_LIMITATIONS_PATH });
 function reportSpecsForProfile(profile) {
-  return profile.id === "phase6-r1" ? [...REPORT_SPECS, R1_CLOSURE_REPORT_SPEC] : [...REPORT_SPECS];
+  return profile.id === "phase6-r1" ? [...REPORT_SPECS, R1_CLOSURE_REPORT_SPEC, R1_ENVIRONMENTAL_LIMITATIONS_REPORT_SPEC] : [...REPORT_SPECS];
 }
 
 export const HUMAN_REVIEW_GATES = Object.freeze({
@@ -797,6 +810,7 @@ function auditR1Aggregate(statuses, fallback = "NOT OBSERVED") {
   if (!values.length) return fallback;
   if (values.includes("FAIL")) return "FAIL";
   if (values.includes("PENDING HUMAN REVIEW")) return "PENDING HUMAN REVIEW";
+  if (values.includes("NOT AVAILABLE TO EXECUTION ENVIRONMENT")) return "NOT AVAILABLE TO EXECUTION ENVIRONMENT";
   if (values.includes("LIMITATION")) return "LIMITATION";
   if (values.includes("NOT OBSERVED")) return "NOT OBSERVED";
   return values.every((status) => status === "PASS") ? "PASS" : fallback;
@@ -918,6 +932,76 @@ function auditIncludes720x450(value) {
   if (!value || typeof value !== "object") return false;
   if (value.width === 720 && value.height === 450) return true;
   return Object.values(value).some(auditIncludes720x450);
+}
+
+function auditR1HostValidation(entries, roles) {
+  const records = roles.get("r1-host-validation-summary") ?? [];
+  if (records.length !== 1 || records[0].path !== "00-provenance/host-validation-closure.json") throw new Error("R1 independent host-validation summary inventory differs");
+  const wrapper = auditDistilled(entries, records[0].path, "r1-host-validation-summary");
+  const document = wrapper.payload;
+  const host = document?.hostValidation;
+  const sourceIds = ["installed-chrome-200-percent", "native-windows-input", "real-hidden-visible", "bfcache-multiengine", "focused-webkit-interactions", "ios-execution-environment", "webkit-ios-layout-proxy"];
+  const nativeChecks = ["minimalPositiveResponse", "repeatedSmallIncrements", "longSequence", "immediateReversal", "stopStates", "forwardManifesto", "reverseToF1", "supportingDocumentFlow", "supportingHomeEntry", "supportingReversePhysical"];
+  if (wrapper.status !== "LIMITATION" || document?.schema !== R1_HOST_VALIDATION_SCHEMA || document.status !== "CAPTURED"
+    || document.classification !== "PHASE 6-R1 HOST VALIDATION CLOSURE — MACHINE EVIDENCE" || !Array.isArray(document.sourceReports)
+    || stableJson(document.sourceReports.map(({ id }) => id)) !== stableJson(sourceIds)) throw new Error("R1 independent host-validation wrapper differs");
+  const reports = new Map();
+  for (const report of document.sourceReports) {
+    if (!report || !report.payload || typeof report.payload !== "object" || Array.isArray(report.payload) || reports.has(report.id)) {
+      throw new Error(`R1 independent host source binding differs: ${report?.id ?? "unknown"}`);
+    }
+    const payloadBytes = Buffer.from(stableJson(report.payload));
+    if (report.sha256 !== sha256(payloadBytes) || report.byteSize !== payloadBytes.length
+      || !report.source || typeof report.source.filename !== "string" || path.posix.basename(report.source.filename) !== report.source.filename
+      || !HASH64.test(report.source.sha256 ?? "") || !Number.isSafeInteger(report.source.byteSize) || report.source.byteSize <= 0) throw new Error(`R1 independent host source binding differs: ${report?.id ?? "unknown"}`);
+    reports.set(report.id, report.payload);
+  }
+  const zoomSource = reports.get("installed-chrome-200-percent");
+  const nativeSource = reports.get("native-windows-input");
+  const hiddenSource = reports.get("real-hidden-visible");
+  const bfcacheSource = reports.get("bfcache-multiengine");
+  const webkitSource = reports.get("focused-webkit-interactions");
+  const iosEnvironmentSource = reports.get("ios-execution-environment");
+  const iosProxySource = reports.get("webkit-ios-layout-proxy");
+  const zoom = host?.chromeZoom;
+  const deploymentAuthority = parseJson(entries.get("00-provenance/deployment-authority-summary.json"), "00-provenance/deployment-authority-summary.json");
+  const repositoryAuthority = parseJson(entries.get("00-provenance/repository-authority.json"), "00-provenance/repository-authority.json");
+  const directlyTestedFinalDeployment = document?.baseUrl === deploymentAuthority.deployment?.immutableUrl;
+  const binding = document?.deploymentBinding;
+  const parityBoundFromDirectParent = !directlyTestedFinalDeployment
+    && binding?.schema === "quantum-hub.phase-6-r1.host-validation-deployment-binding.v1" && binding.status === "PASS"
+    && binding.testedBaseUrl === document.baseUrl && binding.testedHead === repositoryAuthority.repository?.directParent
+    && binding.finalBaseUrl === deploymentAuthority.deployment?.immutableUrl && binding.finalHead === repositoryAuthority.repository?.finalHead
+    && binding.productionSourceChanged === false && binding.distByteIdentical === true
+    && binding.authority === "TOOLING-ONLY FINAL COMMIT; NODE 22 DIST BYTE-IDENTICAL";
+  if ((!directlyTestedFinalDeployment && !parityBoundFromDirectParent)
+    || document.sourceReports.some(({ payload }) => typeof payload?.baseUrl === "string" && payload.baseUrl !== document.baseUrl)) throw new Error("R1 independent host deployment binding differs");
+  if (zoom?.status !== "PASS" || zoom.classification !== "GENUINE INSTALLED GOOGLE CHROME BROWSER ZOOM" || zoom.genuineInstalledChrome !== true || zoom.zoomPercent !== 200 || zoom.proxy !== false || zoom.sourceId !== "installed-chrome-200-percent"
+    || !Array.isArray(zoom.routes) || stableJson(zoom.routes.map(({ route }) => route)) !== stableJson(R1_ZOOM_ROUTES)
+    || zoom.routes.some((route) => route.status !== "PASS" || stableJson(Object.keys(route.checks ?? {}).sort(lexicalCompare)) !== stableJson([...R1_ZOOM_ROUTE_CHECKS].sort(lexicalCompare)) || Object.values(route.checks).some((value) => value !== true))
+    || zoomSource?.schema !== "quantum-hub.phase-6-r1.installed-chrome-native-zoom.v1" || zoomSource.status !== "PASS" || zoomSource.zoomProof?.status !== "PASS"
+    || zoomSource.classification !== zoom.classification || zoomSource.routeSummary?.total !== 10 || zoomSource.routeSummary?.passed !== 10 || zoomSource.routeSummary?.failed !== 0
+    || !Array.isArray(zoomSource.results) || zoomSource.results.length !== 10
+    || zoomSource.results.some((result) => result.status !== "PASS" || !Array.isArray(result.failures) || result.failures.length)) throw new Error("R1 independent installed-Chrome zoom authority differs");
+  if (host.nativeWindowsInput?.status !== "PASS" || host.nativeWindowsInput.classification !== "NATIVE WINDOWS INPUT INJECTION" || host.nativeWindowsInput.physicalHumanMouse !== false || host.nativeWindowsInput.windowsSendInput !== true || host.nativeWindowsInput.sourceId !== "native-windows-input"
+    || nativeSource?.schema !== "quantum-hub.phase-6-r1.native-windows-input.v1" || nativeSource.status !== "PASS" || nativeSource.method?.physicalHumanMouse !== false || nativeSource.method?.playwrightWheel !== false || nativeSource.method?.domWheelDispatch !== false || stableJson(Object.keys(nativeSource.checks ?? {}).sort(lexicalCompare)) !== stableJson([...nativeChecks].sort(lexicalCompare)) || Object.values(nativeSource.checks).some((value) => value !== true)) throw new Error("R1 independent native Windows input authority differs");
+  if (host.hiddenVisible?.status !== "NOT OBSERVED" || host.hiddenVisible.transitionObserved !== false || host.hiddenVisible.sourceId !== "real-hidden-visible" || hiddenSource?.schema !== "quantum-hub.phase-6-r1.real-chrome-hidden-visible.v1" || hiddenSource.status !== "NOT OBSERVED" || !Array.isArray(hiddenSource.attempts) || hiddenSource.attempts.length < 5 || hiddenSource.attempts.some((attempt) => attempt.hiddenObserved !== false || attempt.visibilityEvents?.length)) throw new Error("R1 independent hidden/visible authority differs");
+  if (host.bfcache?.status !== "NOT OBSERVED" || host.bfcache.persistedTrue !== 0 || host.bfcache.sourceId !== "bfcache-multiengine" || !Number.isSafeInteger(host.bfcache.trials) || host.bfcache.trials < 3 || bfcacheSource?.status !== "NOT OBSERVED" || bfcacheSource.persistedTrue !== 0 || bfcacheSource.trials !== host.bfcache.trials) throw new Error("R1 independent BFCache host authority differs");
+  if (host.webkitInteraction?.status !== "LIMITATION" || host.webkitInteraction.navigation !== "PASS" || host.webkitInteraction.focus !== "LIMITATION" || host.webkitInteraction.sourceId !== "focused-webkit-interactions" || webkitSource?.schema !== "quantum-hub.phase-6-r1.focused-webkit-interactions.v1" || webkitSource.status !== "LIMITATION"
+    || !Array.isArray(webkitSource.modes) || webkitSource.modes.length !== 2 || stableJson(webkitSource.modes.map(({ headed }) => headed)) !== stableJson([false, true])
+    || webkitSource.modes.some((mode) => mode.navigation?.status !== "PASS" || mode.focus?.status !== "LIMITATION" || mode.keyboardDelivery?.status !== "PASS")) throw new Error("R1 independent focused WebKit authority differs");
+  if (host.physicalIos?.status !== "NOT AVAILABLE TO EXECUTION ENVIRONMENT" || host.physicalIos.classification !== "PHYSICAL IOS SAFARI — NOT AVAILABLE TO EXECUTION ENVIRONMENT" || host.physicalIos.sourceId !== "ios-execution-environment" || iosEnvironmentSource?.status !== "NOT AVAILABLE TO EXECUTION ENVIRONMENT" || iosEnvironmentSource.classification !== host.physicalIos.classification || iosEnvironmentSource.connectedPhysicalIosDevices !== 0) throw new Error("R1 independent physical iOS environment authority differs");
+  if (host.iosProxy?.status !== "LIMITATION" || host.iosProxy.layoutStatus !== "PASS" || host.iosProxy.classification !== "WEBKIT / IOS-LAYOUT PROXY" || host.iosProxy.physicalSafari !== false || host.iosProxy.sourceId !== "webkit-ios-layout-proxy" || iosProxySource?.schema !== "quantum.phase6-r1.webkit-ios-layout-proxy.v1" || iosProxySource.overallStatus !== "LIMITATION" || iosProxySource.layoutStatus !== "PASS" || iosProxySource.physicalIosSafari?.status !== "NOT AVAILABLE TO EXECUTION ENVIRONMENT" || iosProxySource.visibility?.status !== "NOT OBSERVED") throw new Error("R1 independent WebKit/iOS proxy authority differs");
+  for (const binding of [
+    { relativePath: "native-windows-input-state-review.mp4", archive: "03-homepage-motion/native-windows-input-state-review.mp4" },
+    { relativePath: "installed-chrome-200-percent-route-review.mp4", archive: "09-accessibility/installed-chrome-200-percent-route-review.mp4" },
+  ]) {
+    const file = document.files?.find(({ relativePath }) => relativePath === binding.relativePath);
+    const recording = document.recordings?.find(({ relativePath }) => relativePath === binding.relativePath);
+    const bytes = entries.get(binding.archive);
+    if (!file || !recording || !bytes || file.bytes !== bytes.length || file.sha256 !== sha256(bytes) || recording.validation?.status !== "PASS" || Object.values(recording.validation?.checks ?? {}).some((value) => value !== true)) throw new Error(`R1 independent host recording binding differs: ${binding.relativePath}`);
+  }
+  return document;
 }
 
 function auditAccessibility(entries, roles, summaries) {
@@ -1145,7 +1229,7 @@ function auditR1NodeAndChangeAuthority(entries, roles) {
     || stableJson(tooling.records) !== stableJson(EXPECTED_R1_CHANGED_PATH_RECORDS)
     || stableJson([...tooling.paths].sort(lexicalCompare)) !== stableJson([...R1_TOOLING_REPORT_FILES].sort(lexicalCompare))
     || changeLedger.trackedFileDelta !== R1_TOOLING_REPORT_FILES.length || !Number.isSafeInteger(changeLedger.trackedByteDelta)
-    || !Array.isArray(changeLedger.newTrackedFilesAbove1MiB) || changeLedger.newTrackedFilesAbove1MiB.length) throw new Error("R1 independent change ledger differs from the exact 18-path authority");
+    || !Array.isArray(changeLedger.newTrackedFilesAbove1MiB) || changeLedger.newTrackedFilesAbove1MiB.length) throw new Error("R1 independent change ledger differs from the exact path authority");
   const deployment = parseJson(entries.get(DEPLOYMENT_VERIFICATION_PATH), DEPLOYMENT_VERIFICATION_PATH);
   const deployedRepository = deployment.repository?.data;
   assertR1DeploymentStatusClosure(deployment, "R1 independent deployment verification");
@@ -1211,6 +1295,11 @@ export function validateR1CanonicalEvidenceEntries(entries) {
   const r1Reports = reportSpecsForProfile(authorityProfileById("phase6-r1"));
   const reservedPaths = [IN_ARCHIVE_MANIFEST, "00-provenance/git-provenance.json", ...r1Reports.map(({ archive }) => archive), "13-package/README.md", "13-package/package-metadata.json"].sort(lexicalCompare);
   for (const { archive } of r1Reports) if (!entries.has(archive)) throw new Error(`R1 independent canonical package omits tracked report: ${archive}`);
+  const humanLedgerWrapper = parseJson(entries.get(R1_HUMAN_LEDGER_PATH), R1_HUMAN_LEDGER_PATH);
+  const expectedPathRoles = new Map(R1_EXACT_ASSEMBLER_PATH_ROLES);
+  if (humanLedgerWrapper?.payload?.status === "NOT AVAILABLE TO EXECUTION ENVIRONMENT") {
+    for (const filename of R1_REQUIRED_HUMAN_RECORDINGS) expectedPathRoles.delete(`11-physical-device/recordings/${filename}`);
+  }
   const inventoryBytes = entries.get(EVIDENCE_ASSEMBLY_INVENTORY_PATH);
   const inventory = parseJson(inventoryBytes, EVIDENCE_ASSEMBLY_INVENTORY_PATH);
   if (inventory.schema !== `${EVIDENCE_ASSEMBLY_SCHEMA}.evidence-root-inventory` || inventory.status !== "PASS" || !Array.isArray(inventory.inventoryExcludingSelf)
@@ -1223,12 +1312,12 @@ export function validateR1CanonicalEvidenceEntries(entries) {
   const downstream = new Set([IN_ARCHIVE_MANIFEST, "00-provenance/git-provenance.json", "13-package/README.md", "13-package/package-metadata.json", ...r1Reports.map(({ archive }) => archive), EVIDENCE_ASSEMBLY_INVENTORY_PATH]);
   const actualPaths = [...entries.keys()].filter((relativePath) => !downstream.has(relativePath)).sort(lexicalCompare);
   const roles = new Map();
-  if (inventory.inventoryExcludingSelf.length !== R1_EXACT_ASSEMBLER_PATH_ROLES.size) throw new Error("R1 independent evidence inventory path/role topology differs");
+  if (inventory.inventoryExcludingSelf.length !== expectedPathRoles.size) throw new Error("R1 independent evidence inventory path/role topology differs");
   let total = 0;
   let previous = null;
   const listed = [];
   for (const record of inventory.inventoryExcludingSelf) {
-    const expectedRole = R1_EXACT_ASSEMBLER_PATH_ROLES.get(record?.path);
+    const expectedRole = expectedPathRoles.get(record?.path);
     if (!record || typeof record.path !== "string" || (previous !== null && lexicalCompare(previous, record.path) >= 0) || !Number.isSafeInteger(record.byteSize) || record.byteSize <= 0 || !HASH64.test(record.sha256 ?? "") || typeof record.role !== "string" || record.role !== expectedRole
       || /(?:^|[-_/])(?:repository|repo)[-_ ]source(?:[-_.\/]|$)/i.test(record.path)) throw new Error("R1 independent evidence inventory record differs");
     const bytes = entries.get(record.path);
@@ -1262,7 +1351,10 @@ export function validateR1CanonicalEvidenceEntries(entries) {
     const injected = {
       "01-baseline": [...REPORT_SPECS.slice(0, 2), R1_CLOSURE_REPORT_SPEC].map(({ archive }) => ({ path: archive, role: "packager-injected-report", generatedByPackager: true })),
       "10-poster-study": [{ path: REPORT_SPECS[2].archive, role: "packager-injected-report", generatedByPackager: true }],
-      "11-physical-device": [{ path: REPORT_SPECS[3].archive, role: "packager-injected-report", generatedByPackager: true }],
+      "11-physical-device": [
+        { path: REPORT_SPECS[3].archive, role: "packager-injected-report", generatedByPackager: true },
+        { path: R1_ENVIRONMENTAL_LIMITATIONS_PATH, role: "packager-injected-report", generatedByPackager: true },
+      ],
       "13-package": ["MANIFEST.json", "13-package/README.md", "13-package/package-metadata.json"].map((evidencePath) => ({ path: evidencePath, role: "packager-generated", generatedByPackager: true })),
     }[section] ?? [];
     const ordered = (value) => [...value].sort((left, right) => lexicalCompare(left.path, right.path));
@@ -1281,6 +1373,7 @@ export function validateR1CanonicalEvidenceEntries(entries) {
     }
     summaries.set(section, summary);
   }
+  const hostValidation = auditR1HostValidation(entries, roles);
   auditAccessibility(entries, roles, summaries);
   auditMotion(entries, roles);
   const lifecycleReport = auditLifecycle(entries, roles, summaries);
@@ -1290,11 +1383,13 @@ export function validateR1CanonicalEvidenceEntries(entries) {
   const zoom = ledger.entries?.find(({ filename }) => filename === "chrome-200-percent.mp4");
   const opening = ledger.entries?.find(({ filename }) => filename === "iphone-safari-opening.mp4");
   const maradin = ledger.entries?.find(({ filename }) => filename === "iphone-safari-maradin.mp4");
-  const zoomStatus = zoom?.routeOutcomes ? auditR1Aggregate(zoom.routeOutcomes.map(({ status }) => status), "PENDING HUMAN REVIEW") : "PENDING HUMAN REVIEW";
+  const unavailable = ledger.status === "NOT AVAILABLE TO EXECUTION ENVIRONMENT";
+  const humanZoomStatuses = zoom?.routeOutcomes ? zoom.routeOutcomes.map(({ status }) => status) : [];
+  const zoomStatus = auditR1Aggregate([hostValidation.hostValidation.chromeZoom.status, ...humanZoomStatuses], "PENDING HUMAN REVIEW");
   if (auditRequirement(summaries.get("09-accessibility"), "200%").status !== zoomStatus) throw new Error("R1 independent genuine 200% taxonomy contradicts human evidence");
   const lifecycleChecks = [opening?.checks?.backgroundForeground, maradin?.checks?.backgroundForeground, maradin?.checks?.retryableSourceFree, maradin?.checks?.noPersistentRafOrInterval, maradin?.checks?.noLiveOrphanBlob];
-  const humanHidden = lifecycleChecks.includes(false) ? "FAIL" : lifecycleChecks.every((value) => value === true) ? "PASS" : "PENDING HUMAN REVIEW";
-  const hidden = auditR1Aggregate([...auditMachineLifecycleStatuses(entries, roles, "visibility"), humanHidden], "NOT OBSERVED");
+  const humanHidden = unavailable ? null : lifecycleChecks.includes(false) ? "FAIL" : lifecycleChecks.every((value) => value === true) ? "PASS" : "PENDING HUMAN REVIEW";
+  const hidden = auditR1Aggregate([...auditMachineLifecycleStatuses(entries, roles, "visibility"), hostValidation.hostValidation.hiddenVisible.status, humanHidden].filter(Boolean), "NOT OBSERVED");
   if (auditRequirement(summaries.get("03-homepage-motion"), "hidden/visible behavior").status !== hidden) throw new Error("R1 independent hidden/visible taxonomy contradicts human evidence");
   if (summaries.get("11-physical-device").requirements.some(({ status }) => status !== ledger.status)) throw new Error("R1 independent physical-device taxonomy contradicts human evidence");
   return { path: EVIDENCE_ASSEMBLY_INVENTORY_PATH, schema: inventory.schema, status: "PASS", byteSize: inventoryBytes.length, sha256: sha256(inventoryBytes), inventoryEntries: inventory.inventoryExcludingSelf.length };
@@ -1422,7 +1517,7 @@ function validateR1HumanLedgerSemantics(ledger) {
   if (typeof ledger.createdAt !== "string" || !Number.isFinite(Date.parse(ledger.createdAt)) || new Date(ledger.createdAt).toISOString() !== ledger.createdAt) {
     throw new Error("R1 archive human-evidence ledger createdAt is not canonical");
   }
-  exactJson(ledger.policy, { filePresenceIsPass: false, machineRecordingSubstitutionAllowed: false, failRequiresTimestampOrFrame: true, allFourFilesRequiredBeforePackaging: true }, "R1 archive human-evidence ledger policy");
+  exactJson(ledger.policy, { filePresenceIsPass: false, machineRecordingSubstitutionAllowed: false, failRequiresTimestampOrFrame: true, allFourFilesRequiredBeforePackaging: false, unavailableHardwareDoesNotBlockPackaging: true }, "R1 archive human-evidence ledger policy");
   for (const record of ledger.entries) {
     const label = `R1 archive human recording ${record?.filename ?? "unknown"}`;
     if (!R1_HUMAN_STATUSES.includes(record?.status)
@@ -1501,12 +1596,42 @@ function validateR1HumanLedgerSemantics(ledger) {
   if (ledger.status !== expectedStatus) throw new Error(`R1 archive human-evidence ledger status must be ${expectedStatus}`);
 }
 
+const R1_ENVIRONMENTAL_LIMITATION_HEADINGS = Object.freeze([
+  { label: "physical iOS hardware unavailable", pattern: /^PHYSICAL IOS SAFARI\s*[—-]\s*NOT AVAILABLE TO EXECUTION ENVIRONMENT$/i },
+  { label: "what was attempted", pattern: /^What was attempted$/i },
+  { label: "machine proxy evidence", pattern: /^Machine proxy evidence$/i },
+  { label: "what remains unproven", pattern: /^What remains unproven$/i },
+  { label: "why no production defect is inferred", pattern: /^Why no production defect is inferred$/i },
+]);
+
+function auditR1EnvironmentalLimitationsReport(text) {
+  if (typeof text !== "string" || !text.trim()) throw new Error("R1 environmental limitations report is empty");
+  const headings = [...text.matchAll(/^##[ \t]+([^\r\n]+?)[ \t]*\r?$/gm)]
+    .map((match) => ({ title: match[1], index: match.index, end: match.index + match[0].length }));
+  let previousIndex = -1;
+  for (const requirement of R1_ENVIRONMENTAL_LIMITATION_HEADINGS) {
+    const matches = headings.filter(({ title }) => requirement.pattern.test(title));
+    if (matches.length !== 1) throw new Error(`R1 environmental limitations report requires exactly one heading: ${requirement.label}`);
+    const [heading] = matches;
+    if (heading.index <= previousIndex) throw new Error(`R1 environmental limitations report heading order differs: ${requirement.label}`);
+    const nextHeading = headings.find(({ index }) => index > heading.index);
+    const body = text.slice(heading.end, nextHeading?.index ?? text.length)
+      .replace(/<!--[\s\S]*?-->/g, "")
+      .trim();
+    if (body.length < 24 || /^(?:tbd|todo|pending|n\/?a|none)[.!]?$/i.test(body)) {
+      throw new Error(`R1 environmental limitations report section is hollow: ${requirement.label}`);
+    }
+    previousIndex = heading.index;
+  }
+}
+
 export function validateR1HumanEvidenceEntries(entries) {
   const ledgerBytes = entries.get(R1_HUMAN_LEDGER_PATH);
   if (!ledgerBytes) throw new Error(`R1 archive requires the human-evidence ledger: ${R1_HUMAN_LEDGER_PATH}`);
   const wrapper = parseJson(ledgerBytes, R1_HUMAN_LEDGER_PATH);
   const ledger = wrapper?.payload;
-  const permittedStatuses = new Set(R1_HUMAN_STATUSES);
+  const permittedStatuses = new Set(R1_LEDGER_STATUSES);
+  const unavailable = ledger?.status === "NOT AVAILABLE TO EXECUTION ENVIRONMENT";
   if (wrapper?.schema !== "quantum-hub.phase-6.final-evidence-assembly.v1.distilled-json"
     || wrapper.role !== "physical-device-result"
     || wrapper.selection !== null
@@ -1514,17 +1639,28 @@ export function validateR1HumanEvidenceEntries(entries) {
     || !wrapper.source || !HASH64.test(wrapper.source.sha256 ?? "")
     || ledger?.schema !== R1_HUMAN_EVIDENCE_SCHEMA
     || ledger.evidenceClass !== "HUMAN DEVICE EVIDENCE"
-    || ledger.rootExists !== true
+    || (ledger.rootExists !== true && !unavailable)
     || ledger.status !== wrapper.status
     || !Array.isArray(ledger.requiredFilenames)
-    || !Array.isArray(ledger.missingFilenames) || ledger.missingFilenames.length
+    || !Array.isArray(ledger.missingFilenames)
     || !Array.isArray(ledger.entries)) {
     throw new Error("R1 archive human-evidence ledger authority differs");
   }
   const expectedFilenames = [...R1_REQUIRED_HUMAN_RECORDINGS].sort(lexicalCompare);
   if (stableJson([...ledger.requiredFilenames].sort(lexicalCompare)) !== stableJson(expectedFilenames)
-    || stableJson(ledger.entries.map(({ filename }) => filename).sort(lexicalCompare)) !== stableJson(expectedFilenames)) {
+    || (!unavailable && stableJson(ledger.entries.map(({ filename }) => filename).sort(lexicalCompare)) !== stableJson(expectedFilenames))
+    || (unavailable && (stableJson(ledger.missingFilenames) !== stableJson(R1_REQUIRED_HUMAN_RECORDINGS) || ledger.entries.length))) {
     throw new Error("R1 archive human-evidence ledger omits or duplicates a required recording");
+  }
+  if (unavailable) {
+    const limitations = entries.get(R1_ENVIRONMENTAL_LIMITATIONS_PATH)?.toString("utf8");
+    auditR1EnvironmentalLimitationsReport(limitations);
+    return {
+      status: ledger.status,
+      ledger: { path: R1_HUMAN_LEDGER_PATH, byteSize: ledgerBytes.length, sha256: sha256(ledgerBytes), schema: R1_HUMAN_EVIDENCE_SCHEMA },
+      recordings: [],
+      unavailableToExecutionEnvironment: true,
+    };
   }
   validateR1HumanLedgerSemantics(ledger);
   const physicalVideoPaths = [...entries.keys()]
@@ -1821,7 +1957,7 @@ export function auditBuffers({ archiveBytes: archiveInput, detachedBytes: detach
   assertGatePolicy(metadata, "package metadata");
   const readme = entries.get("13-package/README.md")?.toString("utf8") ?? "";
   if (!/All six Phase 6 gates remain \*\*PENDING HUMAN REVIEW\*\*/.test(readme) || !/does not accept Phase 6, authorize Phase 7, or merge main/.test(readme)
-    || (profile.id === "phase6-r1" && !/five tracked Phase 6-R1 reports/.test(readme))) throw new Error("package README review policy differs");
+    || (profile.id === "phase6-r1" && !/6 tracked Phase 6-R1 reports/.test(readme))) throw new Error("package README review policy differs");
 
   return {
     manifest,

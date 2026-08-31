@@ -45,13 +45,17 @@ export const PRODUCTION_DIFF_PATHS = Object.freeze([
   "tsconfig.json",
 ]);
 export const EXPECTED_R1_CHANGED_PATH_RECORDS = Object.freeze([
+  "A\tPHASE_6_R1_ENVIRONMENTAL_LIMITATIONS.md",
   "A\tPHASE_6_R1_VALIDATION_CLOSURE.md",
   "M\tpackage.json",
   "M\tscripts/assemble-phase6-final-evidence.mjs",
   "M\tscripts/audit-phase6-human-review-package.mjs",
+  "A\tscripts/audit-phase6-r1-installed-chrome-zoom.mjs",
+  "A\tscripts/build-phase6-r1-host-validation.mjs",
   "A\tscripts/capture-phase6-r1-motion-evidence.mjs",
   "A\tscripts/ingest-phase6-r1-human-evidence.mjs",
   "M\tscripts/package-phase6-human-review.mjs",
+  "A\tscripts/probe-phase6-r1-webkit-interactions.mjs",
   "M\tscripts/qa-phase6-accessibility-interactions.mjs",
   "A\tscripts/qa-phase6-r1-persistent-lifecycle.mjs",
   "M\tscripts/verify-phase6-deployment.mjs",

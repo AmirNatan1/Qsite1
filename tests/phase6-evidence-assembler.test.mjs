@@ -1059,6 +1059,58 @@ async function attachR1MachineEvidence(fixture) {
     status: "LIMITATION",
     limitation: "BFCache and real hidden visibility were not observed on this host.",
   });
+  const hostRoot = "r1-host-validation";
+  const hostVideos = [];
+  for (const [id, filename] of [["native", "native-windows-input-state-review.mp4"], ["zoom", "installed-chrome-200-percent-route-review.mp4"]]) {
+    const file = await put(fixture.sourceRoot, `${hostRoot}/${filename}`, fakeMp4(`host-${id}`, { duration: 4_000, sampleCount: 120 }));
+    hostVideos.push({ filename, ...file });
+  }
+  const zoomRoutes = ["/", "/for-partners/", "/for-startups/", "/industries/", "/pocs/", "/pocs/maradin/", "/spark/", "/about/", "/contact/", "/__phase6-intentional-404__/"];
+  const zoomChecks = ["completeH1", "completeOpeningProposition", "readableNavigation", "usableMobileMenuWhereApplicable", "noTextClipping", "noInternalWordSplitting", "noHiddenContent", "noHorizontalOverflow", "usableControlsAndLinks", "reasonableDocumentContinuation"];
+  const sourcePayloads = [
+    ["installed-chrome-200-percent", { schema: "quantum-hub.phase-6-r1.installed-chrome-native-zoom.v1", status: "PASS", classification: "GENUINE INSTALLED GOOGLE CHROME BROWSER ZOOM", zoomProof: { status: "PASS" }, routeSummary: { total: 10, passed: 10, failed: 0 }, results: zoomRoutes.map((pathname) => ({ pathname, status: "PASS", failures: [] })) }],
+    ["native-windows-input", { schema: "quantum-hub.phase-6-r1.native-windows-input.v1", status: "PASS", classification: "NATIVE WINDOWS INPUT INJECTION", method: { physicalHumanMouse: false, playwrightWheel: false, domWheelDispatch: false }, checks: { minimalPositiveResponse: true, repeatedSmallIncrements: true, longSequence: true, immediateReversal: true, stopStates: true, forwardManifesto: true, reverseToF1: true, supportingDocumentFlow: true, supportingHomeEntry: true, supportingReversePhysical: true } }],
+    ["real-hidden-visible", { schema: "quantum-hub.phase-6-r1.real-chrome-hidden-visible.v1", status: "NOT OBSERVED", attempts: Array.from({ length: 5 }, (_, index) => ({ scenario: `fixture-${index}`, hiddenObserved: false, visibilityEvents: [] })) }],
+    ["bfcache-multiengine", { schema: "quantum-hub.phase-6-r1.bfcache-multiengine.v1", status: "NOT OBSERVED", trials: 9, persistedTrue: 0 }],
+    ["focused-webkit-interactions", { schema: "quantum-hub.phase-6-r1.focused-webkit-interactions.v1", status: "LIMITATION", modes: [false, true].map((headed) => ({ headed, navigation: { status: "PASS" }, focus: { status: "LIMITATION" }, keyboardDelivery: { status: "PASS" } })) }],
+    ["ios-execution-environment", { schema: "quantum-hub.phase-6-r1.ios-execution-environment.v1", status: "NOT AVAILABLE TO EXECUTION ENVIRONMENT", classification: "PHYSICAL IOS SAFARI — NOT AVAILABLE TO EXECUTION ENVIRONMENT", connectedPhysicalIosDevices: 0 }],
+    ["webkit-ios-layout-proxy", { schema: "quantum.phase6-r1.webkit-ios-layout-proxy.v1", overallStatus: "LIMITATION", layoutStatus: "PASS", physicalIosSafari: { status: "NOT AVAILABLE TO EXECUTION ENVIRONMENT" }, visibility: { status: "NOT OBSERVED" } }],
+  ];
+  const sourceReports = sourcePayloads.map(([id, payload]) => {
+    const payloadBytes = Buffer.from(stableJson(payload));
+    return { id, sha256: sha256(payloadBytes), byteSize: payloadBytes.length, source: { filename: `${id}.json`, sha256: "a".repeat(64), byteSize: 1 }, payload };
+  });
+  const hostReport = {
+    schema: "quantum-hub.phase-6-r1.host-validation-closure.v1", status: "CAPTURED", createdAt: GENERATED_AT,
+    baseUrl: IMMUTABLE_URL, classification: "PHASE 6-R1 HOST VALIDATION CLOSURE — MACHINE EVIDENCE",
+    hostValidation: {
+      chromeZoom: { status: "PASS", classification: "GENUINE INSTALLED GOOGLE CHROME BROWSER ZOOM", genuineInstalledChrome: true, zoomPercent: 200, proxy: false, sourceId: "installed-chrome-200-percent", routes: zoomRoutes.map((route) => ({ route, status: "PASS", checks: Object.fromEntries(zoomChecks.map((check) => [check, true])) })) },
+      nativeWindowsInput: { status: "PASS", classification: "NATIVE WINDOWS INPUT INJECTION", physicalHumanMouse: false, windowsSendInput: true, sourceId: "native-windows-input" },
+      hiddenVisible: { status: "NOT OBSERVED", transitionObserved: false, sourceId: "real-hidden-visible" },
+      bfcache: { status: "NOT OBSERVED", persistedTrue: 0, trials: 9, sourceId: "bfcache-multiengine" },
+      webkitInteraction: { status: "LIMITATION", navigation: "PASS", focus: "LIMITATION", sourceId: "focused-webkit-interactions" },
+      physicalIos: { status: "NOT AVAILABLE TO EXECUTION ENVIRONMENT", classification: "PHYSICAL IOS SAFARI — NOT AVAILABLE TO EXECUTION ENVIRONMENT", sourceId: "ios-execution-environment" },
+      iosProxy: { status: "LIMITATION", layoutStatus: "PASS", classification: "WEBKIT / IOS-LAYOUT PROXY", physicalSafari: false, sourceId: "webkit-ios-layout-proxy" },
+    },
+    sourceReports,
+    encoder: { contract: { container: "mp4", codec: "h264", pixelFormat: "yuv420p", fps: 30, audioStreams: 0 }, fullDecodeValidated: true },
+    files: hostVideos.map(({ filename, bytes, expectedSha256 }) => ({ relativePath: filename, bytes: bytes.length, sha256: expectedSha256 })),
+    recordings: hostVideos.map(({ filename }) => ({ relativePath: filename, validation: { status: "PASS", checks: { mp4Container: true, oneVideoStream: true, zeroAudioStreams: true, h264: true, yuv420p: true, constant30Fps: true, fullDecode: true }, duration: 4, media: { codec: "h264", pixelFormat: "yuv420p", fps: "30/1", audioStreams: 0 } } })),
+  };
+  const hostReportFile = await put(fixture.sourceRoot, `${hostRoot}/host-validation-report.json`, stableJson(hostReport));
+  fixture.metadata.artifacts.push({ source: hostReportFile.source, destination: "00-provenance/host-validation-closure.json", role: "r1-host-validation-summary", final: true, expectedSha256: hostReportFile.expectedSha256, status: "LIMITATION", limitation: "Physical iOS, BFCache, hidden visibility and faithful WebKit focus retain explicit limitations." });
+  for (const video of hostVideos) {
+    const native = video.filename.startsWith("native-");
+    fixture.metadata.artifacts.push({
+      source: video.source,
+      destination: native ? "03-homepage-motion/native-windows-input-state-review.mp4" : "09-accessibility/installed-chrome-200-percent-route-review.mp4",
+      role: native ? "r1-native-windows-input-recording" : "r1-installed-chrome-zoom-recording",
+      final: true,
+      expectedSha256: video.expectedSha256,
+      status: "PASS",
+      mediaContract: { codec: "h264", pixelFormat: "yuv420p", fps: 30, audioStreams: 0, constantFrameRate: true, fullDecodeValidated: true, durationSeconds: 4, validationReport: { source: hostReportFile.source, expectedSha256: hostReportFile.expectedSha256, recordingRelativePath: video.filename } },
+    });
+  }
   const outcome = (id, fields = {}) => {
     const logText = `${id}: fixture command completed successfully.\n`;
     return { id, status: "PASS", log: `${id}.log`, logText, logSha256: sha256(Buffer.from(logText)), ...fields };
@@ -1266,7 +1318,7 @@ test("contract exposes exact topology, review gates, 104 bullets and 66 final fi
   assert.equal(Object.values(BRIEF_REQUIREMENTS).flat().length, 104);
   assert.equal(FINAL_HANDOFF_FIELDS.length, 66);
   assert.equal(Object.keys(REQUIRED_ARTIFACT_ROLES).length, 18);
-  assert.equal(Object.keys(R1_REQUIRED_ARTIFACT_ROLES).length, 6);
+  assert.equal(Object.keys(R1_REQUIRED_ARTIFACT_ROLES).length, 9);
   assert.equal(R1_MOTION_RECORDING_SPECS.length, 5);
   assert.equal(Object.keys(HUMAN_REVIEW_GATES).length, 6);
   assert.equal(REQUIRED_BRANCH_URL, "https://feature-phase-6-global-harde.qsite1.pages.dev/");
@@ -1276,7 +1328,7 @@ test("contract exposes exact topology, review gates, 104 bullets and 66 final fi
   assert.ok(Object.values(HUMAN_REVIEW_GATES).every((value) => value === "PENDING HUMAN REVIEW"));
   assert.deepEqual(EVIDENCE_STATUS_VALUES.slice(0, 5), ["PASS", "FAIL", "LIMITATION", "NOT OBSERVED", "PENDING HUMAN REVIEW"]);
   assert.deepEqual(selfTest().status, "PASS");
-  assert.equal(selfTest().r1MandatoryArtifactRoles, 6);
+  assert.equal(selfTest().r1MandatoryArtifactRoles, 9);
   assert.equal(parseArguments(["--source-evidence-root", "x", "--final-metadata", "m.json", "--output-root", "out", "--poster-study-directory", "posters"]).posterStudyDirectory, path.resolve("posters"));
 });
 
@@ -1807,6 +1859,33 @@ test("human recording ledger bindings reject direct SHA-256, byte-size and statu
   await assert.rejects(() => buildEvidenceEntries(options()), /hash\/size\/status bound.*iphone-safari-opening\.mp4/);
 });
 
+test("unavailable physical-device ledgers must name all four missing recordings and contain no fabricated entry", () => {
+  const unavailable = {
+    schema: "quantum-hub.phase-6-r1.human-evidence-ledger.v1",
+    createdAt: GENERATED_AT,
+    evidenceClass: "HUMAN DEVICE EVIDENCE",
+    status: "NOT AVAILABLE TO EXECUTION ENVIRONMENT",
+    rootExists: false,
+    requiredFilenames: [...REQUIRED_HUMAN_EVIDENCE_FILES],
+    missingFilenames: [...REQUIRED_HUMAN_EVIDENCE_FILES],
+    entries: [],
+    policy: {
+      filePresenceIsPass: false,
+      machineRecordingSubstitutionAllowed: false,
+      failRequiresTimestampOrFrame: true,
+      allFourFilesRequiredBeforePackaging: false,
+      unavailableHardwareDoesNotBlockPackaging: true,
+    },
+  };
+  assert.equal(validateHumanEvidenceLedger(unavailable).status, "NOT AVAILABLE TO EXECUTION ENVIRONMENT");
+  const bogusMissing = structuredClone(unavailable);
+  bogusMissing.missingFilenames[0] = "invented-device-video.mp4";
+  assert.throws(() => validateHumanEvidenceLedger(bogusMissing), /must name every required missing recording exactly/);
+  const fabricated = structuredClone(unavailable);
+  fabricated.entries.push({ filename: REQUIRED_HUMAN_EVIDENCE_FILES[0] });
+  assert.throws(() => validateHumanEvidenceLedger(fabricated), /cannot fabricate entries/);
+});
+
 test("human ledger rejects reviews rebound to different bytes and out-of-media failure positions", async (t) => {
   const fixture = await createFixture();
   t.after(() => rm(fixture.parent, { recursive: true, force: true }));
@@ -1938,10 +2017,10 @@ test("R1 authority accepts only the repair branch, exact parent, frozen main, 28
   assert.throws(() => validateFinalMetadata(productionChange, { posterStudyDirectory: fixture.candidates }), /production-source change ledger must be empty/);
   const missingTool = structuredClone(fixture.metadata);
   missingTool.changes.toolingReportFiles.pop();
-  assert.throws(() => validateFinalMetadata(missingTool, { posterStudyDirectory: fixture.candidates }), /exact 18-path authority/);
+  assert.throws(() => validateFinalMetadata(missingTool, { posterStudyDirectory: fixture.candidates }), /exact path authority/);
   const extraTool = structuredClone(fixture.metadata);
   extraTool.changes.toolingReportFiles.push("scripts/not-authorized.mjs");
-  assert.throws(() => validateFinalMetadata(extraTool, { posterStudyDirectory: fixture.candidates }), /exact 18-path authority/);
+  assert.throws(() => validateFinalMetadata(extraTool, { posterStudyDirectory: fixture.candidates }), /exact path authority/);
   const wrongDelta = structuredClone(fixture.metadata);
   wrongDelta.changes.trackedFileDelta = 17;
   assert.throws(() => validateFinalMetadata(wrongDelta, { posterStudyDirectory: fixture.candidates }), /trackedFileDelta/);
@@ -2022,7 +2101,7 @@ test("R1 authority accepts only the repair branch, exact parent, frozen main, 28
   assert.equal(finalBuild.node22Validation.distributionComparison.status, "BYTE-IDENTICAL");
   assert.equal(finalBuild.node22Validation.artifact.path, "00-provenance/node22-integrated-validation.json");
   const assemblyInventory = JSON.parse(built.entries.find(({ path: evidencePath }) => evidencePath === "13-package/evidence-assembly-summary.json").data);
-  assert.equal(assemblyInventory.downstream.packagerAddsTrackedReports, 5);
+  assert.equal(assemblyInventory.downstream.packagerAddsTrackedReports, 6);
   const baselineSummary = JSON.parse(built.entries.find(({ path: evidencePath }) => evidencePath === "01-baseline/section-summary.json").data);
   assert.ok(baselineSummary.evidence.some(({ path: evidencePath, generatedByPackager }) => evidencePath === "01-baseline/PHASE_6_R1_VALIDATION_CLOSURE.md" && generatedByPackager === true));
   for (const engine of ["chromium", "firefox"]) {

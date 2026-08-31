@@ -19,6 +19,7 @@ import {
   R1_AUDIT_SCHEMA,
   R1_CLOSURE_REPORT_SPEC,
   R1_DEPLOYMENT_VERIFICATION_SCHEMA,
+  R1_ENVIRONMENTAL_LIMITATIONS_REPORT_SPEC,
   R1_HUMAN_EVIDENCE_SCHEMA,
   R1_HUMAN_LEDGER_PATH,
   R1_PACKAGE_SCHEMA,
@@ -72,17 +73,19 @@ const R1_MOTION_RECORDINGS = Object.freeze(["01-forward-physical-to-manifesto.mp
 const R1_ZOOM_ROUTE_CHECKS = Object.freeze(["completeH1", "completeOpeningProposition", "readableNavigation", "usableMobileMenuWhereApplicable", "noTextClipping", "noInternalWordSplitting", "noHiddenContent", "noHorizontalOverflow", "usableControlsAndLinks", "reasonableDocumentContinuation"]);
 const R1_ZOOM_ROUTES = Object.freeze(["/", "/for-partners/", "/for-startups/", "/industries/", "/pocs/", "/pocs/maradin/", "/spark/", "/about/", "/contact/", "/__phase6-intentional-404__/"]);
 const R1_TOOLING_REPORT_FILES = Object.freeze([
-  "PHASE_6_R1_VALIDATION_CLOSURE.md", "package.json", "scripts/assemble-phase6-final-evidence.mjs", "scripts/audit-phase6-human-review-package.mjs",
-  "scripts/capture-phase6-r1-motion-evidence.mjs", "scripts/ingest-phase6-r1-human-evidence.mjs", "scripts/package-phase6-human-review.mjs",
+  "PHASE_6_R1_ENVIRONMENTAL_LIMITATIONS.md", "PHASE_6_R1_VALIDATION_CLOSURE.md", "package.json", "scripts/assemble-phase6-final-evidence.mjs", "scripts/audit-phase6-human-review-package.mjs",
+  "scripts/audit-phase6-r1-installed-chrome-zoom.mjs", "scripts/build-phase6-r1-host-validation.mjs", "scripts/capture-phase6-r1-motion-evidence.mjs", "scripts/ingest-phase6-r1-human-evidence.mjs", "scripts/package-phase6-human-review.mjs",
+  "scripts/probe-phase6-r1-webkit-interactions.mjs",
   "scripts/qa-phase6-accessibility-interactions.mjs", "scripts/qa-phase6-r1-persistent-lifecycle.mjs", "scripts/verify-phase6-deployment.mjs",
   "scripts/verify-phase6-r1-deployment.mjs", "tests/phase6-accessibility-interactions.test.mjs", "tests/phase6-evidence-assembler.test.mjs",
   "tests/phase6-package-tooling.test.mjs", "tests/phase6-r1-deployment-verifier.test.mjs", "tests/phase6-r1-human-evidence.test.mjs",
   "tests/phase6-r1-motion-capture.test.mjs", "tests/phase6-r1-persistent-lifecycle.test.mjs",
 ]);
 const R1_CHANGED_PATH_RECORDS = Object.freeze([
-  "A\tPHASE_6_R1_VALIDATION_CLOSURE.md", "M\tpackage.json", "M\tscripts/assemble-phase6-final-evidence.mjs",
-  "M\tscripts/audit-phase6-human-review-package.mjs", "A\tscripts/capture-phase6-r1-motion-evidence.mjs",
+  "A\tPHASE_6_R1_ENVIRONMENTAL_LIMITATIONS.md", "A\tPHASE_6_R1_VALIDATION_CLOSURE.md", "M\tpackage.json", "M\tscripts/assemble-phase6-final-evidence.mjs",
+  "M\tscripts/audit-phase6-human-review-package.mjs", "A\tscripts/audit-phase6-r1-installed-chrome-zoom.mjs", "A\tscripts/build-phase6-r1-host-validation.mjs", "A\tscripts/capture-phase6-r1-motion-evidence.mjs",
   "A\tscripts/ingest-phase6-r1-human-evidence.mjs", "M\tscripts/package-phase6-human-review.mjs",
+  "A\tscripts/probe-phase6-r1-webkit-interactions.mjs",
   "M\tscripts/qa-phase6-accessibility-interactions.mjs", "A\tscripts/qa-phase6-r1-persistent-lifecycle.mjs",
   "M\tscripts/verify-phase6-deployment.mjs", "A\tscripts/verify-phase6-r1-deployment.mjs",
   "M\ttests/phase6-accessibility-interactions.test.mjs", "M\ttests/phase6-evidence-assembler.test.mjs",
@@ -363,7 +366,7 @@ function fixtureR1DeploymentVerification(overrides = {}) {
         productionDiffScope: [...R1_PRODUCTION_DIFF_SCOPE],
         toolingReportDiff: [...R1_CHANGED_PATH_RECORDS],
         packageScriptChanges: [...R1_PACKAGE_SCRIPT_CHANGES],
-        trackedFileDelta: 18,
+        trackedFileDelta: R1_TOOLING_REPORT_FILES.length,
         trackedByteDelta: 4096,
       },
     },
@@ -512,7 +515,7 @@ function fixtureR1HumanEvidenceEntries() {
       }
       return record;
     }),
-    policy: { filePresenceIsPass: false, machineRecordingSubstitutionAllowed: false, failRequiresTimestampOrFrame: true, allFourFilesRequiredBeforePackaging: true },
+    policy: { filePresenceIsPass: false, machineRecordingSubstitutionAllowed: false, failRequiresTimestampOrFrame: true, allFourFilesRequiredBeforePackaging: false, unavailableHardwareDoesNotBlockPackaging: true },
   };
   const sourceBytes = Buffer.from(stableJson(ledger));
   const wrapper = {
@@ -526,6 +529,43 @@ function fixtureR1HumanEvidenceEntries() {
   return [
     { path: R1_HUMAN_LEDGER_PATH, data: Buffer.from(stableJson(wrapper)) },
     ...recordings.map(({ filename, data }) => ({ path: `11-physical-device/recordings/${filename}`, data })),
+  ];
+}
+
+const R1_ENVIRONMENTAL_LIMITATIONS_FIXTURE = `# Phase 6-R1 environmental limitations
+
+## PHYSICAL IOS SAFARI — NOT AVAILABLE TO EXECUTION ENVIRONMENT
+
+No connected or already-authorized physical iOS device, bridge, or testing entitlement was available to this execution environment.
+
+## What was attempted
+
+Installed Windows browsers, headed sessions, browser automation, and safe host-side input and lifecycle methods were attempted.
+
+## Machine proxy evidence
+
+Clearly labelled WebKit / iOS-layout proxy and native Windows input-injection evidence covers only its stated machine conditions.
+
+## What remains unproven
+
+Physical iPhone Safari touch, momentum, orientation, background lifecycle, and Maradin behavior remain unproven.
+
+## Why no production defect is inferred
+
+Unavailable hardware is an environmental limitation rather than evidence of a user-facing production defect.
+`;
+
+function fixtureR1UnavailableHumanEvidenceEntries(limitations = R1_ENVIRONMENTAL_LIMITATIONS_FIXTURE) {
+  const [ledgerEntry] = fixtureR1HumanEvidenceEntries();
+  const wrapper = JSON.parse(ledgerEntry.data.toString("utf8"));
+  wrapper.status = "NOT AVAILABLE TO EXECUTION ENVIRONMENT";
+  wrapper.payload.status = "NOT AVAILABLE TO EXECUTION ENVIRONMENT";
+  wrapper.payload.rootExists = false;
+  wrapper.payload.missingFilenames = [...R1_REQUIRED_HUMAN_RECORDINGS];
+  wrapper.payload.entries = [];
+  return [
+    { ...ledgerEntry, data: Buffer.from(stableJson(wrapper)) },
+    { path: R1_ENVIRONMENTAL_LIMITATIONS_REPORT_SPEC.archive, data: Buffer.from(limitations) },
   ];
 }
 
@@ -551,9 +591,9 @@ function fixtureR1EvidenceRoles(section, requirement) {
   if (section === "01-baseline") return ["generated-authority", "packager-injected-report"];
   if (section === "02-cross-engine") return requirement.includes("screenshots") ? ["cross-engine-screenshot"] : requirement.includes("recordings") ? ["cross-engine-recording"] : ["cross-engine-summary"];
   if (section === "03-homepage-motion") return requirement === "hidden/visible behavior"
-    ? ["homepage-motion-summary", "homepage-motion-recording", "r1-motion-summary", "r1-motion-recording", "memory-summary", "r1-persistent-lifecycle-summary", "physical-device-result"]
+    ? ["homepage-motion-summary", "homepage-motion-recording", "r1-motion-summary", "r1-motion-recording", "r1-native-windows-input-recording", "memory-summary", "r1-persistent-lifecycle-summary", "r1-host-validation-summary", "physical-device-result"]
     : requirement.includes("fade") || ["fresh forward", "reverse", "fast skip", "stop-at-state", "resize/orientation"].some((token) => requirement.includes(token))
-      ? ["homepage-motion-summary", "homepage-motion-recording", "r1-motion-summary", "r1-motion-recording"] : ["homepage-motion-summary"];
+      ? ["homepage-motion-summary", "homepage-motion-recording", "r1-motion-summary", "r1-motion-recording", "r1-native-windows-input-recording"] : ["homepage-motion-summary"];
   if (section === "04-supporting-routes") {
     const direct = {
       "cross-route desktop sheet": "supporting-desktop-sheet", "cross-route portrait sheet": "supporting-portrait-sheet",
@@ -562,13 +602,13 @@ function fixtureR1EvidenceRoles(section, requirement) {
     }[requirement];
     return direct ? [direct] : ["supporting-route-summary"];
   }
-  if (section === "05-history-bfcache") return ["history-bfcache-summary", "r1-persistent-lifecycle-summary"];
+  if (section === "05-history-bfcache") return ["history-bfcache-summary", "r1-persistent-lifecycle-summary", "r1-host-validation-summary"];
   if (section === "06-performance") return ["performance-summary"];
   if (section === "07-memory") return ["memory-summary", "r1-persistent-lifecycle-summary"];
   if (section === "08-network-media") return ["network-media-summary", "r1-persistent-lifecycle-summary"];
-  if (section === "09-accessibility") return requirement === "axe" ? ["accessibility-summary"] : ["keyboard", "focus", "mobile menu"].includes(requirement) ? ["accessibility-summary", "accessibility-interaction-limitation"] : requirement === "200%" ? ["accessibility-summary", "supplemental-reflow-proxy", "physical-device-result", "physical-device-recording"] : ["accessibility-summary"];
+  if (section === "09-accessibility") return requirement === "axe" ? ["accessibility-summary"] : ["keyboard", "focus", "mobile menu"].includes(requirement) ? ["accessibility-summary", "accessibility-interaction-limitation", "r1-host-validation-summary"] : requirement === "200%" ? ["accessibility-summary", "supplemental-reflow-proxy", "r1-host-validation-summary", "r1-installed-chrome-zoom-recording", "physical-device-result", "physical-device-recording"] : ["accessibility-summary"];
   if (section === "10-poster-study") return requirement === "side-by-side comparison" ? ["poster-side-by-side"] : requirement === "difference images" ? ["poster-difference"] : ["poster-study-summary", "packager-injected-report"];
-  if (section === "11-physical-device") return ["physical-device-result", "physical-device-recording", "packager-injected-report"];
+  if (section === "11-physical-device") return ["physical-device-result", "physical-device-recording", "r1-host-validation-summary", "packager-injected-report"];
   if (section === "12-regression") return ["regression-summary"];
   if (section === "13-package") return ["packager-generated"];
   throw new Error(`missing R1 fixture role mapping: ${section}/${requirement}`);
@@ -911,7 +951,7 @@ function canonicalR1AssemblerEntries(deploymentEntry, humanEntries) {
   add({ path: "00-provenance/change-ledger.json", role: "generated-authority", data: Buffer.from(stableJson({
     schema: "quantum-hub.phase-6.final-evidence-assembly.v1.change-ledger", status: "PASS", productionFiles: [],
     toolingReportFiles: R1_CHANGED_PATH_RECORDS.map((record) => ({ status: record[0], path: record.slice(2) })),
-    trackedFileDelta: 18, trackedByteDelta: 4096, newTrackedFilesAbove1MiB: [],
+    trackedFileDelta: R1_TOOLING_REPORT_FILES.length, trackedByteDelta: 4096, newTrackedFilesAbove1MiB: [],
   })) });
   add({ path: "00-provenance/deployment-authority-summary.json", role: "generated-authority", data: Buffer.from(stableJson({
     schema: "quantum-hub.phase-6.final-evidence-assembly.v1.deployment-authority-summary",
@@ -935,6 +975,43 @@ function canonicalR1AssemblerEntries(deploymentEntry, humanEntries) {
   add({ path: "00-provenance/dist-deployment-parity.json", role: "generated-authority", data: Buffer.from(stableJson({ schema: "quantum-hub.phase-6.final-evidence-assembly.v1.dist-deployment-parity", status: "PASS", differenceCount: 0 })) });
   const nodeDocument = node22ValidationFixture(repository);
   const nodeEntry = add(distilledFixture("00-provenance/node22-integrated-validation.json", "r1-node22-validation-summary", nodeDocument));
+  const nativeInputVideo = fixtureMp4("native-windows-input");
+  const chromeZoomVideo = fixtureMp4("installed-chrome-zoom");
+  const sourcePayloads = [
+    ["installed-chrome-200-percent", { schema: "quantum-hub.phase-6-r1.installed-chrome-native-zoom.v1", status: "PASS", classification: "GENUINE INSTALLED GOOGLE CHROME BROWSER ZOOM", zoomProof: { status: "PASS" }, routeSummary: { total: 10, passed: 10, failed: 0 }, results: R1_ZOOM_ROUTES.map((pathname) => ({ pathname, status: "PASS", failures: [] })) }],
+    ["native-windows-input", { schema: "quantum-hub.phase-6-r1.native-windows-input.v1", status: "PASS", classification: "NATIVE WINDOWS INPUT INJECTION", method: { physicalHumanMouse: false, playwrightWheel: false, domWheelDispatch: false }, checks: { minimalPositiveResponse: true, repeatedSmallIncrements: true, longSequence: true, immediateReversal: true, stopStates: true, forwardManifesto: true, reverseToF1: true, supportingDocumentFlow: true, supportingHomeEntry: true, supportingReversePhysical: true } }],
+    ["real-hidden-visible", { schema: "quantum-hub.phase-6-r1.real-chrome-hidden-visible.v1", status: "NOT OBSERVED", attempts: Array.from({ length: 5 }, (_, index) => ({ scenario: `fixture-${index}`, hiddenObserved: false, visibilityEvents: [] })) }],
+    ["bfcache-multiengine", { schema: "quantum-hub.phase-6-r1.bfcache-multiengine.v1", status: "NOT OBSERVED", trials: 9, persistedTrue: 0 }],
+    ["focused-webkit-interactions", { schema: "quantum-hub.phase-6-r1.focused-webkit-interactions.v1", status: "LIMITATION", modes: [false, true].map((headed) => ({ headed, navigation: { status: "PASS" }, focus: { status: "LIMITATION" }, keyboardDelivery: { status: "PASS" } })) }],
+    ["ios-execution-environment", { schema: "quantum-hub.phase-6-r1.ios-execution-environment.v1", status: "NOT AVAILABLE TO EXECUTION ENVIRONMENT", classification: "PHYSICAL IOS SAFARI — NOT AVAILABLE TO EXECUTION ENVIRONMENT", connectedPhysicalIosDevices: 0 }],
+    ["webkit-ios-layout-proxy", { schema: "quantum.phase6-r1.webkit-ios-layout-proxy.v1", overallStatus: "LIMITATION", layoutStatus: "PASS", physicalIosSafari: { status: "NOT AVAILABLE TO EXECUTION ENVIRONMENT" }, visibility: { status: "NOT OBSERVED" } }],
+  ];
+  const sourceReports = sourcePayloads.map(([id, payload]) => {
+    const payloadBytes = Buffer.from(stableJson(payload));
+    return { id, sha256: sha256(payloadBytes), byteSize: payloadBytes.length, source: { filename: `${id}.json`, sha256: "a".repeat(64), byteSize: 1 }, payload };
+  });
+  const hostValidation = {
+    schema: "quantum-hub.phase-6-r1.host-validation-closure.v1", status: "CAPTURED", createdAt: GENERATED_AT,
+    baseUrl: R1_EXPECTED.immutableUrl, classification: "PHASE 6-R1 HOST VALIDATION CLOSURE — MACHINE EVIDENCE",
+    hostValidation: {
+      chromeZoom: { status: "PASS", classification: "GENUINE INSTALLED GOOGLE CHROME BROWSER ZOOM", genuineInstalledChrome: true, zoomPercent: 200, proxy: false, sourceId: "installed-chrome-200-percent", routes: R1_ZOOM_ROUTES.map((route) => ({ route, status: "PASS", checks: Object.fromEntries(R1_ZOOM_ROUTE_CHECKS.map((check) => [check, true])) })) },
+      nativeWindowsInput: { status: "PASS", classification: "NATIVE WINDOWS INPUT INJECTION", physicalHumanMouse: false, windowsSendInput: true, sourceId: "native-windows-input" },
+      hiddenVisible: { status: "NOT OBSERVED", transitionObserved: false, sourceId: "real-hidden-visible" },
+      bfcache: { status: "NOT OBSERVED", persistedTrue: 0, trials: 9, sourceId: "bfcache-multiengine" },
+      webkitInteraction: { status: "LIMITATION", navigation: "PASS", focus: "LIMITATION", sourceId: "focused-webkit-interactions" },
+      physicalIos: { status: "NOT AVAILABLE TO EXECUTION ENVIRONMENT", classification: "PHYSICAL IOS SAFARI — NOT AVAILABLE TO EXECUTION ENVIRONMENT", sourceId: "ios-execution-environment" },
+      iosProxy: { status: "LIMITATION", layoutStatus: "PASS", classification: "WEBKIT / IOS-LAYOUT PROXY", physicalSafari: false, sourceId: "webkit-ios-layout-proxy" },
+    },
+    sourceReports,
+    files: [
+      { relativePath: "native-windows-input-state-review.mp4", bytes: nativeInputVideo.length, sha256: sha256(nativeInputVideo) },
+      { relativePath: "installed-chrome-200-percent-route-review.mp4", bytes: chromeZoomVideo.length, sha256: sha256(chromeZoomVideo) },
+    ],
+    recordings: ["native-windows-input-state-review.mp4", "installed-chrome-200-percent-route-review.mp4"].map((relativePath) => ({ relativePath, validation: { status: "PASS", checks: { mp4Container: true } } })),
+  };
+  add(distilledFixture("00-provenance/host-validation-closure.json", "r1-host-validation-summary", hostValidation, { status: "LIMITATION" }));
+  add({ path: "03-homepage-motion/native-windows-input-state-review.mp4", role: "r1-native-windows-input-recording", data: nativeInputVideo });
+  add({ path: "09-accessibility/installed-chrome-200-percent-route-review.mp4", role: "r1-installed-chrome-zoom-recording", data: chromeZoomVideo });
   const nodeWrapper = JSON.parse(nodeEntry.data.toString("utf8"));
   add({ path: "00-provenance/final-build-test.json", role: "generated-authority", data: Buffer.from(stableJson({
     schema: "quantum-hub.phase-6.final-evidence-assembly.v1.final-build-test", status: "PASS",
@@ -1003,7 +1080,10 @@ function canonicalR1AssemblerEntries(deploymentEntry, humanEntries) {
     const injected = [];
     if (section === "01-baseline") injected.push(...[...REPORT_SPECS.slice(0, 2), R1_CLOSURE_REPORT_SPEC].map(({ archive }) => ({ path: archive, role: "packager-injected-report", generatedByPackager: true })));
     if (section === "10-poster-study") injected.push({ path: REPORT_SPECS[2].archive, role: "packager-injected-report", generatedByPackager: true });
-    if (section === "11-physical-device") injected.push({ path: REPORT_SPECS[3].archive, role: "packager-injected-report", generatedByPackager: true });
+    if (section === "11-physical-device") injected.push(
+      { path: REPORT_SPECS[3].archive, role: "packager-injected-report", generatedByPackager: true },
+      { path: R1_ENVIRONMENTAL_LIMITATIONS_REPORT_SPEC.archive, role: "packager-injected-report", generatedByPackager: true },
+    );
     if (section === "13-package") injected.push(...["MANIFEST.json", "13-package/README.md", "13-package/package-metadata.json"].map((relativePath) => ({ path: relativePath, role: "packager-generated", generatedByPackager: true })));
     const requirementEvidence = [
       ...entries.filter(({ path: relativePath }) => !relativePath.endsWith("/section-summary.json")).map(({ path: relativePath, role }) => ({ path: relativePath, role })),
@@ -1031,15 +1111,15 @@ function canonicalR1AssemblerEntries(deploymentEntry, humanEntries) {
     schema: "quantum-hub.phase-6.final-evidence-assembly.v1.evidence-root-inventory", status: "PASS", generatedAt: GENERATED_AT,
     sourcePolicy: { explicitFinalSelectionsOnly: true, sourceHashesBound: true, rawFramesRetained: false, cachesRetained: false, nestedArchivesRetained: false, privatePathsRetained: false, identicalPayloadsRetained: false },
     topology: TOPOLOGY_SECTIONS, inventoryExcludingSelf: inventory, inventoryExcludingSelfBytes: inventory.reduce((sum, record) => sum + record.byteSize, 0),
-    reservedPathsAbsent: ["MANIFEST.json", "00-provenance/git-provenance.json", ...[...REPORT_SPECS, R1_CLOSURE_REPORT_SPEC].map(({ archive }) => archive), "13-package/README.md", "13-package/package-metadata.json"].sort(),
-    downstream: { packagerAddsTrackedReports: 5, packagerAddsGitProvenance: true, packagerAddsManifestAndPackageMetadata: true, independentAuditIsSibling: true }, humanReviewGates: HUMAN_REVIEW_GATES, authorization: AUTHORIZATION,
+    reservedPathsAbsent: ["MANIFEST.json", "00-provenance/git-provenance.json", ...[...REPORT_SPECS, R1_CLOSURE_REPORT_SPEC, R1_ENVIRONMENTAL_LIMITATIONS_REPORT_SPEC].map(({ archive }) => archive), "13-package/README.md", "13-package/package-metadata.json"].sort(),
+    downstream: { packagerAddsTrackedReports: 6, packagerAddsGitProvenance: true, packagerAddsManifestAndPackageMetadata: true, independentAuditIsSibling: true }, humanReviewGates: HUMAN_REVIEW_GATES, authorization: AUTHORIZATION,
   })) });
   return entries;
 }
 
 function fixtureR1PayloadEntries() {
   const entries = [];
-  const r1Reports = [...REPORT_SPECS, R1_CLOSURE_REPORT_SPEC];
+  const r1Reports = [...REPORT_SPECS, R1_CLOSURE_REPORT_SPEC, R1_ENVIRONMENTAL_LIMITATIONS_REPORT_SPEC];
   const trackedReports = r1Reports.map(({ source }) => source).sort();
   entries.push({
     path: "00-provenance/git-provenance.json",
@@ -1195,7 +1275,7 @@ test("Phase 6-R1 packaging selects only the exact repair authority while preserv
   assert.equal(packageOptions.authorityProfile, "phase6-r1");
   assert.equal(packageOptions.deploymentCheckRunId, R1_DEPLOYMENT_CHECK_RUN_ID);
   assert.equal(dryRunReport("phase6").requiredReports.length, 4);
-  assert.deepEqual(dryRunReport("phase6-r1").requiredReports, [...REPORT_SPECS, R1_CLOSURE_REPORT_SPEC]);
+  assert.deepEqual(dryRunReport("phase6-r1").requiredReports, [...REPORT_SPECS, R1_CLOSURE_REPORT_SPEC, R1_ENVIRONMENTAL_LIMITATIONS_REPORT_SPEC]);
   assert.equal(packageSelfTest("phase6-r1").humanEvidenceStatus, "PENDING HUMAN REVIEW");
   const { stdout: selfTestStdout } = await execFileAsync(process.execPath, [PACKAGER, "--authority-profile", "phase6-r1", "--self-test"], { cwd: TEST_ROOT, encoding: "utf8", windowsHide: true });
   assert.deepEqual(JSON.parse(selfTestStdout), packageSelfTest("phase6-r1"));
@@ -1233,7 +1313,7 @@ test("an assembled Phase 6-R1 artifact passes only under its R1 package and depl
     expected: R1_EXPECTED,
   });
   assert.equal(result.manifest.schema, R1_PACKAGE_SCHEMA);
-  assert.match(parseStoredZip(artifacts.archiveBytes).entries.get("13-package/README.md").toString("utf8"), /five tracked Phase 6-R1 reports/);
+  assert.match(parseStoredZip(artifacts.archiveBytes).entries.get("13-package/README.md").toString("utf8"), /6 tracked Phase 6-R1 reports/);
   assert.equal(result.deploymentVerification.binding.schema, R1_DEPLOYMENT_VERIFICATION_SCHEMA);
   assert.deepEqual(result.manifest.humanEvidence, humanBinding);
   assert.deepEqual(validateR1HumanEvidenceEntries(parseStoredZip(artifacts.archiveBytes).entries), humanBinding);
@@ -1289,6 +1369,43 @@ test("Phase 6-R1 canonical assembler inventory, wrappers, taxonomy and roles fai
     return wrapper;
   });
   assertBothReject(lifecycleWithoutRawStates, /history state ledger|persistent-lifecycle|history authority/);
+
+  const mutateHostSource = (id, mutate) => rebindAssemblerMutation(fixtureR1PayloadEntries(), "00-provenance/host-validation-closure.json", (bytes) => {
+    const wrapper = JSON.parse(bytes.toString("utf8"));
+    const report = wrapper.payload.sourceReports.find(({ id: reportId }) => reportId === id);
+    assert.ok(report, `missing host source report ${id}`);
+    const replacement = mutate(report.payload, wrapper.payload);
+    if (replacement !== undefined) report.payload = replacement;
+    const payloadBytes = Buffer.from(stableJson(report.payload));
+    report.sha256 = sha256(payloadBytes);
+    report.byteSize = payloadBytes.length;
+    return wrapper;
+  });
+
+  const hollowHostSource = mutateHostSource("installed-chrome-200-percent", () => ({}));
+  assertBothReject(hollowHostSource, /installed-Chrome zoom authority/);
+
+  const reboundHostSource = mutateHostSource("installed-chrome-200-percent", (_payload, document) => (
+    structuredClone(document.sourceReports.find(({ id }) => id === "focused-webkit-interactions").payload)
+  ));
+  assertBothReject(reboundHostSource, /installed-Chrome zoom authority/);
+
+  const missingZoomResults = mutateHostSource("installed-chrome-200-percent", (payload) => {
+    delete payload.results;
+  });
+  assertBothReject(missingZoomResults, /installed-Chrome zoom authority/);
+
+  const missingWebkitModes = mutateHostSource("focused-webkit-interactions", (payload) => {
+    delete payload.modes;
+  });
+  assertBothReject(missingWebkitModes, /focused WebKit authority/);
+
+  const duplicateHostSource = rebindAssemblerMutation(fixtureR1PayloadEntries(), "00-provenance/host-validation-closure.json", (bytes) => {
+    const wrapper = JSON.parse(bytes.toString("utf8"));
+    wrapper.payload.sourceReports[1] = structuredClone(wrapper.payload.sourceReports[0]);
+    return wrapper;
+  });
+  assertBothReject(duplicateHostSource, /host-validation wrapper/);
 
   const sameRouteFreshDocumentEntries = (mutateRequest = () => undefined) => rebindAssemblerMutation(
     fixtureR1PayloadEntries(),
@@ -1732,14 +1849,14 @@ test("Phase 6-R1 Node 22 and change-ledger authority cannot be replaced by gener
     ledger.trackedFileDelta -= 1;
     return ledger;
   });
-  assertBothReject(omittedTooling, /18-path authority|change ledger differs/i);
+  assertBothReject(omittedTooling, /path authority|change ledger differs/i);
 
   const forgedChangeStatus = rebindAssemblerMutation(fixtureR1PayloadEntries(), "00-provenance/change-ledger.json", (bytes) => {
     const ledger = JSON.parse(bytes.toString("utf8"));
     ledger.toolingReportFiles[0].status = "M";
     return ledger;
   });
-  assertBothReject(forgedChangeStatus, /18-path authority|change ledger differs/i);
+  assertBothReject(forgedChangeStatus, /path authority|change ledger differs/i);
 
   const fakeTreeHash = rebindAssemblerMutation(fixtureR1PayloadEntries(), "00-provenance/repository-authority.json", (bytes) => {
     const authority = JSON.parse(bytes.toString("utf8"));
@@ -1858,6 +1975,34 @@ test("Phase 6-R1 human review semantics reject contradictory status, false ident
   });
   assertHumanBothReject(failedPhysicalReview({ timestamp: "00:02.000", frame: null }), /failure timestamp exceeds the recording duration/);
   assertHumanBothReject(failedPhysicalReview({ timestamp: null, frame: 2 }), /failure frame exceeds the recording sample count/);
+});
+
+test("Phase 6-R1 unavailable hardware requires a complete, substantive environmental-limitations report", () => {
+  const validEntries = fixtureR1UnavailableHumanEvidenceEntries();
+  assert.equal(validateR1HumanEvidencePayload(validEntries).unavailableToExecutionEnvironment, true);
+  assert.equal(validateR1HumanEvidenceEntries(r1EntryMap(validEntries)).unavailableToExecutionEnvironment, true);
+
+  const requiredHeadings = [
+    "PHYSICAL IOS SAFARI — NOT AVAILABLE TO EXECUTION ENVIRONMENT",
+    "What was attempted",
+    "Machine proxy evidence",
+    "What remains unproven",
+    "Why no production defect is inferred",
+  ];
+  for (const heading of requiredHeadings) {
+    const omitted = R1_ENVIRONMENTAL_LIMITATIONS_FIXTURE.replace(`## ${heading}`, `### ${heading}`);
+    const entries = fixtureR1UnavailableHumanEvidenceEntries(omitted);
+    assert.throws(() => validateR1HumanEvidencePayload(entries), /environmental limitations report/);
+    assert.throws(() => validateR1HumanEvidenceEntries(r1EntryMap(entries)), /environmental limitations report/);
+  }
+
+  const hollowProxySection = R1_ENVIRONMENTAL_LIMITATIONS_FIXTURE.replace(
+    "Clearly labelled WebKit / iOS-layout proxy and native Windows input-injection evidence covers only its stated machine conditions.",
+    "TBD",
+  );
+  const hollowEntries = fixtureR1UnavailableHumanEvidenceEntries(hollowProxySection);
+  assert.throws(() => validateR1HumanEvidencePayload(hollowEntries), /environmental limitations report section is hollow: machine proxy evidence/);
+  assert.throws(() => validateR1HumanEvidenceEntries(r1EntryMap(hollowEntries)), /environmental limitations report section is hollow: machine proxy evidence/);
 });
 
 test("Phase 6-R1 packager and auditor reject missing, unbound, invalid, or falsely promoted human recordings", () => {
