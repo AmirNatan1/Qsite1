@@ -139,8 +139,12 @@ function lifecycleEvent(type, documentId, route, persisted = true, documentEvent
 }
 
 function mediaRequest(requestPath, range, frameNavigationId = "navigation-home-document", overrides = {}) {
+  const inferredDocumentId = frameNavigationId.startsWith("navigation-")
+    ? frameNavigationId.slice("navigation-".length)
+    : null;
   return {
     documentUrl: "https://example.pages.dev/",
+    frameDocumentId: inferredDocumentId,
     frameNavigationId,
     method: "GET",
     path: requestPath,
@@ -703,9 +707,35 @@ test("logical Phase 4 media telemetry requires presence and ignores repeated ran
   assert.equal(summarizeMediaTelemetry([
     twoDocumentRecords[0],
     { ...twoDocumentRecords[1], frameNavigationId: mediaState.navigationId },
-  ], [mediaState, secondDocument]).status, STATUS.FAIL, "one navigation ID covered two logical Home documents");
+  ], [mediaState, secondDocument]).status, STATUS.FAIL, "request navigation provenance was detached from its correlated Document");
   const forgedSelectionNavigation = { ...secondDocument, navigationId: mediaState.navigationId };
-  assert.equal(summarizeMediaTelemetry(twoDocumentRecords, [mediaState, forgedSelectionNavigation]).status, STATUS.FAIL, "duplicate logical-document selection navigation became PASS");
+  assert.equal(summarizeMediaTelemetry(twoDocumentRecords, [mediaState, forgedSelectionNavigation]).status, STATUS.FAIL, "snapshot navigation provenance was detached from its correlated Document");
+
+  const sameRouteReload = homeState("entry-reloaded", "entry-reloaded-document", "/#entry", {
+    navigationId: secondDocument.navigationId,
+    probe: probe("entry-reloaded-document", { resources: [{ startTime: 30, url: "/media/cinematic/phase-4r2/media/mobile.mp4" }] }),
+  });
+  const sameRouteReloadRecords = [
+    mediaRequest("/media/cinematic/phase-4r2/media/mobile.mp4", null, secondDocument.navigationId, {
+      documentUrl: "https://example.pages.dev/#entry",
+      frameDocumentId: secondDocument.documentId,
+    }),
+    mediaRequest("/media/cinematic/phase-4r2/media/mobile.mp4", null, secondDocument.navigationId, {
+      documentUrl: "https://example.pages.dev/#entry",
+      frameDocumentId: sameRouteReload.documentId,
+    }),
+  ];
+  const sameRouteReloadResult = summarizeMediaTelemetry(sameRouteReloadRecords, [secondDocument, sameRouteReload]);
+  assert.equal(sameRouteReloadResult.status, STATUS.PASS, "two fresh Documents at the same route were collapsed into one media selection");
+  assert.equal(sameRouteReloadResult.noDuplicateNonRangeRequests, true);
+  assert.equal(summarizeMediaTelemetry([
+    sameRouteReloadRecords[0],
+    { ...sameRouteReloadRecords[1], frameDocumentId: secondDocument.documentId },
+  ], [secondDocument, sameRouteReload]).status, STATUS.FAIL, "one correlated Document identity covered two fresh Documents");
+  assert.equal(summarizeMediaTelemetry([
+    sameRouteReloadRecords[0],
+    { ...sameRouteReloadRecords[1], frameDocumentId: null },
+  ], [secondDocument, sameRouteReload]).status, STATUS.FAIL, "an uncorrelated Phase 4 request became authoritative");
 });
 
 test("listener telemetry detects duplicate attempts and same-Document listener growth", () => {

@@ -52,6 +52,8 @@ The lifecycle producer and assembler re-derive their conclusions from raw browse
 
 The harness repair for ordinary Back accepts only the intended static restoration on a new Document. It does not weaken the same-Document or BFCache path. No production controller change was made for this evidence behavior.
 
+A fresh persistent-profile run also reproduced a tooling-only identity defect: the harness deliberately reused one route-stable navigation ID when a non-BFCache Back created a fresh Document at the same `/#entry` route, but its media classifier incorrectly treated that route ID as a unique Document ID. The repair preserves the route-stable ID for history provenance, separately correlates every governed Phase 4 request to the probe's actual Document ID, and keys media coverage and non-range duplicate checks to that Document identity. Missing, raced, duplicated, or navigation-mismatched correlations fail closed. The exact regression case—two fresh `/#entry` Documents, one governed request each, and one shared route ID—is unit tested. This was not a site interaction or production media defect, so no production source was changed.
+
 The canonical post-commit lifecycle report must be regenerated with the current schema. Its final status and SHA-256 will be reported in the final handoff; an older lifecycle payload or hash is not authoritative.
 
 ## Accessibility and WebKit authority

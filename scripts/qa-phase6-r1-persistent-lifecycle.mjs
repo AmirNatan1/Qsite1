@@ -1218,7 +1218,7 @@ export function maradinVisibilityScenarioChecks(name, transition, retryActive = 
   throw new Error(`unsupported Maradin visibility scenario: ${name}`);
 }
 
-async function runVisibility(context, options, navigationIdForPage) {
+async function runVisibility(context, options, navigationIdForPage, settleRequestCorrelations) {
   const primary = await context.newPage();
   const background = await context.newPage();
   try {
@@ -1280,6 +1280,7 @@ async function runVisibility(context, options, navigationIdForPage) {
     ];
     return { ...aggregateVisibilityScenarios(scenarios), current, manifesto, maradin, retryActive, maradinRetry };
   } finally {
+    await settleRequestCorrelations();
     await Promise.all([primary.close().catch(() => undefined), background.close().catch(() => undefined)]);
   }
 }
@@ -1325,6 +1326,8 @@ function authoritativePhase4Request(request) {
     const documentRoute = `${documentUrl.pathname}${documentUrl.hash}`;
     return request.method === "GET"
       && request.resourceType === "fetch"
+      && typeof request.frameDocumentId === "string"
+      && request.frameDocumentId.length > 0
       && typeof request.frameNavigationId === "string"
       && request.frameNavigationId.length > 0
       && request.frameNavigationId !== "pre-navigation"
@@ -1410,50 +1413,59 @@ export function summarizeMediaTelemetry(records, snapshotInput) {
       selectingDocumentsByPath.set(selectedPath, (selectingDocumentsByPath.get(selectedPath) ?? 0) + 1);
     }
   }
-  const expectedSelectionIds = expectedDocuments.map(({ selectionNavigationId }) => selectionNavigationId);
-  const uniqueExpectedSelectionIds = new Set(expectedSelectionIds);
+  const expectedSelectionNavigationIds = expectedDocuments.map(({ selectionNavigationId }) => selectionNavigationId);
   const selectionKeys = new Map();
   for (const document of expectedDocuments) {
     for (const selectedPath of document.paths) {
-      const key = `${document.selectionNavigationId}\u0000${selectedPath}`;
-      const selection = selectionKeys.get(key) ?? { count: 0, documentUrl: document.selectionDocumentUrl };
+      const key = `${document.documentId}\u0000${selectedPath}`;
+      const selection = selectionKeys.get(key) ?? {
+        count: 0,
+        documentUrl: document.selectionDocumentUrl,
+        navigationId: document.selectionNavigationId,
+      };
       selection.count += 1;
       if (selection.documentUrl !== document.selectionDocumentUrl) selection.documentUrl = null;
+      if (selection.navigationId !== document.selectionNavigationId) selection.navigationId = null;
       selectionKeys.set(key, selection);
     }
   }
-  const navigationIdsByPath = new Map();
-  const nonRangeRequestsByNavigationPath = new Map();
+  const documentIdsByPath = new Map();
+  const nonRangeRequestsByDocumentPath = new Map();
   for (const request of phase4Requests) {
     const requestPath = phase4MediaUrl(request.path);
-    const navigationIds = navigationIdsByPath.get(requestPath) ?? new Set();
-    navigationIds.add(request.frameNavigationId);
-    navigationIdsByPath.set(requestPath, navigationIds);
+    const documentIds = documentIdsByPath.get(requestPath) ?? new Set();
+    documentIds.add(request.frameDocumentId);
+    documentIdsByPath.set(requestPath, documentIds);
     if (!validByteRange(request.range)) {
-      const key = `${request.frameNavigationId}\u0000${requestPath}`;
-      nonRangeRequestsByNavigationPath.set(key, (nonRangeRequestsByNavigationPath.get(key) ?? 0) + 1);
+      const key = `${request.frameDocumentId}\u0000${requestPath}`;
+      nonRangeRequestsByDocumentPath.set(key, (nonRangeRequestsByDocumentPath.get(key) ?? 0) + 1);
     }
   }
   const requestAuthorityValid = phase4Requests.every(authoritativePhase4Request);
-  const navigationCoverageValid = expectedSelectionIds.every((navigationId) => typeof navigationId === "string" && navigationId.length > 0 && navigationId !== "pre-navigation")
+  const documentCoverageValid = expectedSelectionNavigationIds.every((navigationId) => typeof navigationId === "string" && navigationId.length > 0 && navigationId !== "pre-navigation")
     && expectedDocuments.length === enhancedMediaDocuments.length
     && expectedDocuments.every(({ selectionDocumentUrl, selectionStable }) => typeof selectionDocumentUrl === "string" && selectionDocumentUrl.length > 0 && selectionStable)
-    && uniqueExpectedSelectionIds.size === expectedDocuments.length
     && selectionKeys.size === expectedDocuments.length
-    && [...selectionKeys.values()].every(({ count, documentUrl }) => count === 1 && typeof documentUrl === "string")
+    && [...selectionKeys.values()].every(({ count, documentUrl, navigationId }) => count === 1
+      && typeof documentUrl === "string"
+      && typeof navigationId === "string")
     && phase4Requests.every((request) => {
-      const selection = selectionKeys.get(`${request.frameNavigationId}\u0000${phase4MediaUrl(request.path)}`);
-      try { return selection?.count === 1 && new URL(request.documentUrl).href === selection.documentUrl; }
+      const selection = selectionKeys.get(`${request.frameDocumentId}\u0000${phase4MediaUrl(request.path)}`);
+      try {
+        return selection?.count === 1
+          && request.frameNavigationId === selection.navigationId
+          && new URL(request.documentUrl).href === selection.documentUrl;
+      }
       catch { return false; }
     })
-    && [...selectionKeys.keys()].every((key) => phase4Requests.some((request) => `${request.frameNavigationId}\u0000${phase4MediaUrl(request.path)}` === key))
-    && selectedPaths.every((selectedPath) => navigationIdsByPath.get(selectedPath)?.size === selectingDocumentsByPath.get(selectedPath));
+    && [...selectionKeys.keys()].every((key) => phase4Requests.some((request) => `${request.frameDocumentId}\u0000${phase4MediaUrl(request.path)}` === key))
+    && selectedPaths.every((selectedPath) => documentIdsByPath.get(selectedPath)?.size === selectingDocumentsByPath.get(selectedPath));
   const expectedPhase4Present = expectedDocuments.length > 0
     && expectedDocuments.every(({ paths }) => paths.length >= 1)
     && phase4Requests.length >= 1
     && selectedPathsMatchNetwork
     && requestAuthorityValid
-    && navigationCoverageValid;
+    && documentCoverageValid;
   const nonRangeRequestsByPath = new Map();
   for (const request of phase4Requests) {
     if (validByteRange(request.range)) continue;
@@ -1466,7 +1478,7 @@ export function summarizeMediaTelemetry(records, snapshotInput) {
     logicalHomeDocuments: selectingDocumentsByPath.get(requestPath) ?? 0,
   })).sort((left, right) => left.path.localeCompare(right.path));
   const noDuplicateNonRangeRequests = nonRangeSelections.every(({ count, logicalHomeDocuments }) => count <= logicalHomeDocuments)
-    && [...nonRangeRequestsByNavigationPath.values()].every((count) => count <= 1);
+    && [...nonRangeRequestsByDocumentPath.values()].every((count) => count <= 1);
   return {
     status: expectedPhase4Present && bypassDocumentsSourceFree && noDuplicateSourceWithinDocument && noDuplicateNonRangeRequests ? STATUS.PASS : STATUS.FAIL,
     bypassDocumentsSourceFree,
@@ -1481,7 +1493,7 @@ export function summarizeMediaTelemetry(records, snapshotInput) {
       nonRangeRequestCount: phase4Requests.filter(({ range }) => !validByteRange(range)).length,
       nonRangeSelections,
       uniquePaths: uniqueNetworkPaths,
-      interpretation: "Repeated HTTP range requests for one selected path are telemetry. Non-range selections may occur at most once per logical Home Document selecting that exact path.",
+      interpretation: "Repeated HTTP range requests for one selected path are telemetry. Requests are correlated to the probe's Document identity; non-range selections may occur at most once per logical Home Document selecting that exact path.",
     },
   };
 }
@@ -1665,6 +1677,7 @@ export async function runPersistentLifecycle(options) {
   assert(within(resolvedParent, profile), "profile escaped output parent");
   await mkdir(profile, { recursive: false });
   const requests = [];
+  const requestDocumentCorrelations = [];
   const frameNavigationIds = new WeakMap();
   const frameRouteNavigationIds = new WeakMap();
   let nextNavigationId = 0;
@@ -1696,26 +1709,63 @@ export async function runPersistentLifecycle(options) {
     for (const page of context.pages()) registerPage(page);
     context.on("page", registerPage);
     const navigationIdForPage = (page) => frameNavigationIds.get(page.mainFrame()) ?? null;
+    const settleRequestCorrelations = async () => {
+      while (requestDocumentCorrelations.length > 0) {
+        await Promise.all(requestDocumentCorrelations.splice(0));
+      }
+    };
     context.on("request", (request) => {
       const url = new URL(request.url());
       const headers = request.headers();
       let frame = null;
       try { frame = request.frame(); } catch { /* frame-less browser request */ }
-      requests.push({
+      const record = {
+        documentIdentityCorrelation: frame ? "NOT APPLICABLE" : "NO FRAME",
         frameNavigationId: frame ? frameNavigationIds.get(frame) ?? "pre-navigation" : null,
+        frameDocumentId: null,
         documentUrl: frame?.url() ?? null,
         method: request.method(),
         path: `${url.pathname}${url.search}`,
         range: headers.range ?? null,
         resourceType: request.resourceType(),
         url: request.url(),
-      });
+      };
+      requests.push(record);
+      if (frame && phase4MediaUrl(record.path)) {
+        record.documentIdentityCorrelation = "PENDING";
+        requestDocumentCorrelations.push(frame.evaluate(() => {
+          const probe = globalThis.__phase6R1PersistentProbe?.() ?? null;
+          return { documentId: probe?.documentId ?? null, documentUrl: location.href };
+        }).then((identity) => {
+          record.correlatedDocumentUrl = identity?.documentUrl ?? null;
+          if (typeof identity?.documentId !== "string" || identity.documentId.length === 0) {
+            record.documentIdentityCorrelation = "PROBE UNAVAILABLE";
+            return;
+          }
+          try {
+            if (new URL(identity.documentUrl).href !== new URL(record.documentUrl).href) {
+              record.documentIdentityCorrelation = "DOCUMENT URL CHANGED";
+              return;
+            }
+          } catch {
+            record.documentIdentityCorrelation = "INVALID DOCUMENT URL";
+            return;
+          }
+          record.frameDocumentId = identity.documentId;
+          record.documentIdentityCorrelation = "CORRELATED";
+        }, (error) => {
+          record.documentIdentityCorrelation = "EVALUATION ERROR";
+          record.documentIdentityError = error instanceof Error ? error.message : String(error);
+        }));
+      }
     });
     const pages = context.pages();
     const page = pages[0] ?? await context.newPage();
     const history = await runHistory(page, options, navigationIdForPage);
+    await settleRequestCorrelations();
     await page.close();
-    const visibility = await runVisibility(context, options, navigationIdForPage);
+    const visibility = await runVisibility(context, options, navigationIdForPage, settleRequestCorrelations);
+    await settleRequestCorrelations();
     collected = { browserVersion: context.browser()?.version() ?? null, history, visibility };
   } catch (error) {
     runError = error;
