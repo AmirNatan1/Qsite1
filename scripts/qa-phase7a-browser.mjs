@@ -210,7 +210,10 @@ async function routeMatrix(browser, baseUrl, timeoutMs, engine) {
       const checks = {
         status: response?.status() === route.expectedStatus,
         ...documentChecks(state, route.h1),
-        console: diag.consoleErrors.length === 0 && diag.pageErrors.length === 0,
+        console: diag.pageErrors.length === 0 && (diag.consoleErrors.length === 0 || (
+          route.expectedStatus === 404
+          && diag.consoleErrors.every((message) => /failed to load resource.*404|status of 404/i.test(message))
+        )),
       };
       cases.push({ route: route.route, viewport, responseStatus: response?.status() ?? null, state, diagnostics: diag, checks, status: Object.values(checks).every(Boolean) ? "PASS" : "FAIL" });
       await context.close();
