@@ -73,6 +73,8 @@ async function inspect(page) {
   return page.evaluate(() => {
     const visible = (element) => {
       if (!(element instanceof Element)) return false;
+      const closedDisclosure = element.closest("details:not([open])");
+      if (closedDisclosure && element !== closedDisclosure.querySelector(":scope > summary") && !element.closest("summary")) return false;
       const style = getComputedStyle(element);
       const rect = element.getBoundingClientRect();
       return style.display !== "none" && style.visibility !== "hidden" && Number(style.opacity) > 0 && rect.width > 0 && rect.height > 0;
@@ -124,8 +126,8 @@ async function main() {
   const routes = [...PUBLIC_ROUTES.map((route) => ({ path: route.route, h1: route.h1, status: 200 })), { path: REAL_404_PATH, h1: EXPECTED_404_H1, status: 404 }];
   const results = [];
   for (const route of routes) {
-    const target = route.path === "/" ? "/#entry" : route.path;
-    const response = await page.goto(new URL(target, options.baseUrl).toString(), { waitUntil: "load" });
+    const response = await page.goto(new URL(route.path, options.baseUrl).toString(), { waitUntil: "load" });
+    if (route.path === "/") await page.goto(new URL("/#entry", options.baseUrl).toString(), { waitUntil: "load" });
     await page.evaluate(() => document.fonts?.ready);
     if (route.path === "/") await page.waitForFunction(() => document.querySelector("[data-cinematic-shell]")?.getAttribute("data-manifesto-reveal") === "resolved", null, { timeout: 8_000 }).catch(() => undefined);
     await page.waitForTimeout(180);
@@ -201,4 +203,3 @@ async function main() {
 if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))) {
   main().catch((error) => { process.stderr.write(`Phase 7A installed-Chrome zoom FAIL: ${error.stack ?? error}\n`); process.exitCode = 1; });
 }
-
