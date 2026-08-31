@@ -717,6 +717,19 @@ function scenarioSegments(scenario) {
   return [{ id: scenario, context: {}, action }];
 }
 
+export function recordingBrowserLaunchPlan() {
+  return Object.freeze(CAPTURE_RECORDING_SPECS.flatMap((authority) => (
+    scenarioSegments(authority.scenario).map((segment) => Object.freeze({
+      engine: authority.engine,
+      scenario: authority.scenario,
+      segment: segment.id,
+      sessionId: authority.engine === "firefox"
+        ? `firefox:${authority.scenario}:${segment.id}`
+        : "chromium:shared",
+    }))
+  )));
+}
+
 function orderedNonIncreasing(values) {
   return values.every((value, index) => Number.isFinite(value) && (index === 0 || value <= values[index - 1]));
 }
@@ -849,15 +862,39 @@ async function normalizeRecording(tools, staging, authority, rawFiles) {
   };
 }
 
-async function captureRecordingsForEngine(browser, engine, options, staging, tools, runtime, ledger) {
+async function captureRecordingsForEngine({
+  browserAuthority,
+  engine,
+  ledger,
+  options,
+  runtime,
+  sharedBrowser = null,
+  staging,
+  tools,
+}) {
   const records = [];
+  const browserVersions = new Set();
+  let browserLaunches = sharedBrowser ? 1 : 0;
+  if (sharedBrowser) browserVersions.add(sharedBrowser.version());
   for (const authority of CAPTURE_RECORDING_SPECS.filter((record) => record.engine === engine)) {
     const segments = scenarioSegments(authority.scenario);
     const targetSeconds = (authority.minimumSeconds + 1.5) / segments.length;
     const raw = [];
     const states = {};
     for (const segment of segments) {
-      const result = await recordRawSegment(browser, engine, authority, segment, options, staging, runtime, ledger, targetSeconds);
+      let browser = sharedBrowser;
+      const ownsBrowser = !browser;
+      if (ownsBrowser) {
+        browser = await browserAuthority.browserType.launch({ executablePath: browserAuthority.executablePath, headless: !options.headed });
+        browserLaunches += 1;
+        browserVersions.add(browser.version());
+      }
+      let result;
+      try {
+        result = await recordRawSegment(browser, engine, authority, segment, options, staging, runtime, ledger, targetSeconds);
+      } finally {
+        if (ownsBrowser) await browser.close().catch(() => undefined);
+      }
       raw.push(result.rawFile);
       states[segment.id] = { ...result.states, evidenceNetwork: result.network };
     }
@@ -865,7 +902,7 @@ async function captureRecordingsForEngine(browser, engine, options, staging, too
     const normalized = await normalizeRecording(tools, staging, authority, raw);
     records.push({ ...normalized, scenarioValidation: "PASS", states });
   }
-  return records;
+  return { browserLaunches, browserVersions: [...browserVersions], records };
 }
 
 function pngDimensions(bytes) {
@@ -1026,6 +1063,12 @@ export function runSelfTest() {
   invariant(SCREENSHOT_SPECS.some(({ mode }) => mode === "field-map-open") && SCREENSHOT_SPECS.some(({ mode }) => mode === "field-map-focus-return"), "self-test Field Map screenshot coverage differs");
   invariant(new Set(paths).size === paths.length && !paths.some((value) => STALE_PHASE_PATH.test(value)), "self-test topology is duplicate or stale");
   for (const scenario of new Set(CAPTURE_RECORDING_SPECS.map(({ scenario }) => scenario))) invariant(scenarioSegments(scenario).length >= 1, `self-test scenario action differs: ${scenario}`);
+  const browserLaunches = recordingBrowserLaunchPlan();
+  const chromiumLaunches = browserLaunches.filter(({ engine }) => engine === "chromium");
+  const firefoxLaunches = browserLaunches.filter(({ engine }) => engine === "firefox");
+  invariant(browserLaunches.length === 16 && chromiumLaunches.length === 8 && firefoxLaunches.length === 8, "self-test recording segment count differs");
+  invariant(new Set(chromiumLaunches.map(({ sessionId }) => sessionId)).size === 1, "self-test Chromium shared-browser policy differs");
+  invariant(new Set(firefoxLaunches.map(({ sessionId }) => sessionId)).size === firefoxLaunches.length, "self-test Firefox fresh-segment browser policy differs");
   const one = encoderArguments(["one.webm"], "one.mp4");
   const two = encoderArguments(["one.webm", "two.webm"], "two.mp4");
   for (const token of ["-an", "-sn", "-dn", "cfr", "30", "libx264", "+faststart"]) invariant(one.includes(token), `encoder self-test misses ${token}`);
@@ -1072,21 +1115,52 @@ export async function capturePhase7AReviewEvidence(options) {
 
     const ledger = { blocked: [], console: [], failedRequests: [], pageErrors: [] };
     const runtime = { typographyHtml };
-    const browserAuthorities = { chromium: chromiumAuthority, firefox: firefoxAuthority };
     const browsers = [];
     const recordings = [];
     let screenshots = [];
-    for (const engine of ["chromium", "firefox"]) {
-      const authority = browserAuthorities[engine];
-      const browser = await authority.browserType.launch({ executablePath: authority.executablePath, headless: !options.headed });
-      try {
-        browsers.push({ engine, executable: path.basename(authority.executablePath), headed: options.headed, version: browser.version() });
-        if (engine === "chromium") screenshots = await captureScreenshots(browser, options, staging, ledger);
-        recordings.push(...await captureRecordingsForEngine(browser, engine, options, staging, tools, runtime, ledger));
-      } finally {
-        await browser.close().catch(() => undefined);
-      }
+    const chromiumBrowser = await chromiumAuthority.browserType.launch({ executablePath: chromiumAuthority.executablePath, headless: !options.headed });
+    try {
+      screenshots = await captureScreenshots(chromiumBrowser, options, staging, ledger);
+      const chromiumCapture = await captureRecordingsForEngine({
+        browserAuthority: chromiumAuthority,
+        engine: "chromium",
+        ledger,
+        options,
+        runtime,
+        sharedBrowser: chromiumBrowser,
+        staging,
+        tools,
+      });
+      invariant(chromiumCapture.browserLaunches === 1 && chromiumCapture.browserVersions.length === 1, "Chromium shared-browser launch authority differs");
+      recordings.push(...chromiumCapture.records);
+      browsers.push({
+        engine: "chromium",
+        executable: path.basename(chromiumAuthority.executablePath),
+        headed: options.headed,
+        version: chromiumCapture.browserVersions[0],
+      });
+    } finally {
+      await chromiumBrowser.close().catch(() => undefined);
     }
+
+    const firefoxCapture = await captureRecordingsForEngine({
+      browserAuthority: firefoxAuthority,
+      engine: "firefox",
+      ledger,
+      options,
+      runtime,
+      staging,
+      tools,
+    });
+    const expectedFirefoxLaunches = recordingBrowserLaunchPlan().filter(({ engine }) => engine === "firefox").length;
+    invariant(firefoxCapture.browserLaunches === expectedFirefoxLaunches && firefoxCapture.browserVersions.length === 1, "Firefox fresh-segment browser launch authority differs");
+    recordings.push(...firefoxCapture.records);
+    browsers.push({
+      engine: "firefox",
+      executable: path.basename(firefoxAuthority.executablePath),
+      headed: options.headed,
+      version: firefoxCapture.browserVersions[0],
+    });
 
     const unexpectedConsoleErrors = ledger.console.filter(({ type, scope }) => type === "error" && scope !== "screenshot:fallback-font-narrow");
     const externalRequestAttempts = ledger.blocked.filter(({ reason }) => reason === "origin-isolation");

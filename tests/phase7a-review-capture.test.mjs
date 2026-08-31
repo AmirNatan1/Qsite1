@@ -20,6 +20,7 @@ import {
   fullDecodeArguments,
   normalizeBaseUrl,
   parseArguments,
+  recordingBrowserLaunchPlan,
   recordingContractResult,
   renderPortableTypographySpecimen,
   runSelfTest,
@@ -79,6 +80,26 @@ test("Phase 7A review capture freezes the exact 14-recording authority", () => {
     width: 1280,
     height: 720,
   });
+});
+
+test("Firefox gets one fresh browser per recording segment while Chromium stays shared", () => {
+  const launches = recordingBrowserLaunchPlan();
+  const chromium = launches.filter(({ engine }) => engine === "chromium");
+  const firefox = launches.filter(({ engine }) => engine === "firefox");
+  assert.equal(launches.length, 16);
+  assert.equal(chromium.length, 8);
+  assert.equal(firefox.length, 8);
+  assert.deepEqual(new Set(chromium.map(({ sessionId }) => sessionId)), new Set(["chromium:shared"]));
+  assert.equal(new Set(firefox.map(({ sessionId }) => sessionId)).size, firefox.length);
+  assert.ok(firefox.every(({ sessionId }) => sessionId.startsWith("firefox:")));
+  assert.deepEqual(
+    firefox.filter(({ scenario }) => scenario === "reduced-motion-and-no-js").map(({ segment }) => segment),
+    ["reduced-motion", "no-javascript"],
+  );
+  assert.notEqual(
+    firefox.find(({ segment }) => segment === "reduced-motion").sessionId,
+    firefox.find(({ segment }) => segment === "no-javascript").sessionId,
+  );
 });
 
 test("screenshot authority covers all thirteen core viewports and key alternatives", () => {
