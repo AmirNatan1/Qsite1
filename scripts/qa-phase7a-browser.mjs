@@ -279,6 +279,11 @@ async function fieldMapCase(browser, baseUrl, timeoutMs) {
   page.setDefaultTimeout(timeoutMs);
   await page.goto(new URL("#entry", baseUrl).toString(), { waitUntil: "load" });
   await settle(page);
+  await page.evaluate(() => {
+    const threshold = document.querySelector("[data-field-map-threshold]");
+    if (threshold) window.scrollTo(0, threshold.getBoundingClientRect().top + scrollY + 12);
+  });
+  await page.waitForFunction(() => document.querySelector("[data-cinematic-shell]")?.getAttribute("data-route-navigation") === "released");
   const summary = page.locator("[data-field-map] > summary");
   await summary.focus();
   const focusBefore = await page.evaluate(() => document.activeElement?.tagName);
