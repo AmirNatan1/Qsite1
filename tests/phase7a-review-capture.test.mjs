@@ -104,7 +104,7 @@ test("Firefox gets one fresh browser per recording segment while Chromium stays 
 });
 
 test("capture settling is bounded when Firefox suppresses animation frames", () => {
-  assert.deepEqual(CAPTURE_SETTLE_TIMEOUTS, { fontsMs: 1_000, animationFramesMs: 500 });
+  assert.deepEqual(CAPTURE_SETTLE_TIMEOUTS, { fontsMs: 1_000, visualMs: 500 });
   assert.ok(Object.isFrozen(CAPTURE_SETTLE_TIMEOUTS));
 });
 
