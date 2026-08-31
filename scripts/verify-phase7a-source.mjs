@@ -33,10 +33,10 @@ function git(root, args) {
 }
 
 function gitOptionalRef(root, ref) {
-  const result = spawnSync("git", ["show-ref", "--verify", "--hash", ref], { cwd: root, encoding: "utf8" });
+  const result = spawnSync("git", ["rev-parse", "--verify", "--quiet", `${ref}^{commit}`], { cwd: root, encoding: "utf8" });
   if (result.status === 0) return result.stdout.trim();
   if (result.status === 1) return null;
-  throw new Error(result.stderr || `git show-ref --verify --hash ${ref} failed`);
+  throw new Error(result.stderr || `git rev-parse --verify --quiet ${ref}^{commit} failed`);
 }
 
 export function resolveGitAuthority({ localBranch, head, localMain, originMain, environment = process.env }) {
