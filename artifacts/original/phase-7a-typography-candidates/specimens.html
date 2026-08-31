@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Phase 7A typography specimens</title>
+    <style>
+      @font-face { font-family: AnybodyStudy; src: url("/public/fonts/anybody-latin-variable.woff2") format("woff2-variations"); font-weight: 100 900; font-stretch: 50% 150%; font-display: swap; }
+      @font-face { font-family: MonaStudy; src: url("/artifacts/original/phase-7a-typography-candidates/mona-sans-v2.0.27-variable.woff2") format("woff2-variations"); font-weight: 200 900; font-stretch: 75% 125%; font-display: swap; }
+      @font-face { font-family: BricolageStudy; src: url("/artifacts/original/phase-7a-typography-candidates/bricolage-grotesque-variable.woff2") format("woff2-variations"); font-weight: 200 800; font-stretch: 75% 100%; font-display: swap; }
+      @font-face { font-family: ArchivoStudy; src: url("/artifacts/original/phase-7a-typography-candidates/archivo-variable.ttf") format("truetype-variations"); font-weight: 100 900; font-stretch: 62% 125%; font-display: swap; }
+      :root { color-scheme: dark; background: #0e1112; color: #fff; font-family: Arial, sans-serif; }
+      * { box-sizing: border-box; }
+      body { margin: 0; overflow-x: clip; background: #0e1112; }
+      main { width: min(calc(100% - 2rem), 92rem); margin: auto; padding: 2rem 0 5rem; }
+      header { display: flex; justify-content: space-between; gap: 1rem; padding-block: 1rem 2rem; border-bottom: 1px solid #394041; color: #aeb8b8; font: 600 0.72rem/1.4 Arial, sans-serif; letter-spacing: 0.12em; text-transform: uppercase; }
+      article { min-height: 100svh; padding: clamp(3rem, 8vh, 7rem) 0; border-bottom: 1px solid #394041; }
+      article > p { margin: 0 0 2.5rem; color: #aeb8b8; font: 600 0.72rem/1.4 Arial, sans-serif; letter-spacing: 0.12em; text-transform: uppercase; }
+      .specimens { display: grid; gap: clamp(2rem, 6vh, 4.5rem); }
+      .specimens p { max-width: 100%; margin: 0; overflow-wrap: normal; word-break: normal; }
+      .manifesto { font-size: clamp(2rem, 7.1vw, 7.2rem); font-weight: 700; font-stretch: 112%; letter-spacing: -0.055em; line-height: 0.84; text-transform: uppercase; }
+      .route { font-size: clamp(1.8rem, 4.4vw, 4.6rem); font-weight: 650; font-stretch: 106%; letter-spacing: -0.04em; line-height: 0.94; }
+      .domain { font-size: clamp(1.3rem, 2.6vw, 2.8rem); font-weight: 620; font-stretch: 103%; letter-spacing: -0.025em; line-height: 1; }
+      .anybody { font-family: AnybodyStudy, "Arial Narrow", Arial, sans-serif; }
+      .mona { font-family: MonaStudy, Arial, sans-serif; }
+      .bricolage { font-family: BricolageStudy, Arial, sans-serif; }
+      .archivo { font-family: ArchivoStudy, Arial, sans-serif; }
+      @media (max-width: 25rem) { main { width: calc(100% - 2rem); } .manifesto { font-size: clamp(1.85rem, 9.2vw, 2.35rem); } }
+      @media (max-height: 30rem) and (orientation: landscape) { article { min-height: 0; } .specimens { gap: 1.5rem; } .manifesto { font-size: clamp(2.2rem, 7vw, 4rem); } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header><span>Quantum / Phase 7A</span><span>Identical specimen authority</span></header>
+      <article class="anybody" data-candidate="Anybody">
+        <p>01 / Anybody / provisional</p>
+        <div class="specimens">
+          <p class="manifesto">We turn industrial needs into field evidence.</p>
+          <p class="route">One operating field. Two trajectories.</p>
+          <p class="route">Built between industry and technology.</p>
+          <p class="route">Start with the challenge.</p>
+          <p class="domain">Automotive &amp; Mobility</p>
+          <p class="domain">Industry 4.0 / Advanced Manufacturing</p>
+        </div>
+      </article>
+      <article class="mona" data-candidate="Mona Sans">
+        <p>02 / Mona Sans / industrial control</p>
+        <div class="specimens">
+          <p class="manifesto">We turn industrial needs into field evidence.</p>
+          <p class="route">One operating field. Two trajectories.</p>
+          <p class="route">Built between industry and technology.</p>
+          <p class="route">Start with the challenge.</p>
+          <p class="domain">Automotive &amp; Mobility</p>
+          <p class="domain">Industry 4.0 / Advanced Manufacturing</p>
+        </div>
+      </article>
+      <article class="bricolage" data-candidate="Bricolage Grotesque">
+        <p>03 / Bricolage Grotesque / authored challenger</p>
+        <div class="specimens">
+          <p class="manifesto">We turn industrial needs into field evidence.</p>
+          <p class="route">One operating field. Two trajectories.</p>
+          <p class="route">Built between industry and technology.</p>
+          <p class="route">Start with the challenge.</p>
+          <p class="domain">Automotive &amp; Mobility</p>
+          <p class="domain">Industry 4.0 / Advanced Manufacturing</p>
+        </div>
+      </article>
+      <article class="archivo" data-candidate="Archivo">
+        <p>04 / Archivo / legibility backstop</p>
+        <div class="specimens">
+          <p class="manifesto">We turn industrial needs into field evidence.</p>
+          <p class="route">One operating field. Two trajectories.</p>
+          <p class="route">Built between industry and technology.</p>
+          <p class="route">Start with the challenge.</p>
+          <p class="domain">Automotive &amp; Mobility</p>
+          <p class="domain">Industry 4.0 / Advanced Manufacturing</p>
+        </div>
+      </article>
+    </main>
+  </body>
+</html>
+

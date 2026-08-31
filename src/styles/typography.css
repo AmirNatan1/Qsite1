@@ -66,6 +66,15 @@ h4 {
 
 .maradin-page {
   --font-display: "Syne", "Arial Black", Arial, sans-serif;
+  --header-height: 88px;
+}
+
+.maradin-page h1,
+.maradin-page h2,
+.maradin-page h3,
+.maradin-page h4 {
+  font-stretch: normal;
+  font-weight: 800;
 }
 
 h1 {

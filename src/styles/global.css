@@ -20,19 +20,32 @@ body {
   min-height: 100vh;
   margin: 0;
   overflow-x: clip;
-  background:
-    linear-gradient(118deg, rgba(255, 255, 255, 0.018), transparent 32%),
-    linear-gradient(180deg, #0e1112 0%, #101415 56%, #0a0d0e 100%);
+  background: var(--surface-page);
 }
 
-body::before {
+/* Phase 7A does not redesign the accepted Maradin proof environment. */
+.maradin-page {
+  background:
+    radial-gradient(circle at 82% 18%, rgba(216, 43, 114, 0.09), transparent 27rem),
+    radial-gradient(circle at 8% 78%, rgba(216, 43, 114, 0.055), transparent 30rem),
+    linear-gradient(180deg, #0e1112 0%, #1a2020 58%, #14090f 120%);
+}
+
+.maradin-page::before {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background-image: repeating-linear-gradient(103deg, transparent 0 7px, rgba(255, 255, 255, 0.01) 8px, transparent 9px 17px);
-  opacity: 0.55;
+  background-image: repeating-linear-gradient(112deg, transparent 0 5rem, rgba(255, 255, 255, 0.012) 5rem calc(5rem + 1px));
   content: "";
   pointer-events: none;
+}
+
+.maradin-page :focus-visible {
+  border-radius: 0.5rem;
+}
+
+.maradin-page .skip-link {
+  border-radius: 999px;
 }
 
 img,
@@ -63,7 +76,7 @@ a {
 }
 
 :focus-visible {
-  border-radius: var(--radius-sm);
+  border-radius: 2px;
   outline: 2px solid var(--q-magenta-soft);
   outline-offset: 4px;
   box-shadow: var(--shadow-focus);
@@ -82,7 +95,7 @@ a {
   min-height: 2.75rem;
   padding: 0.65rem 1rem;
   border: 1px solid var(--border-accent);
-  border-radius: var(--radius-pill);
+  border-radius: 0;
   color: var(--q-white);
   background: var(--q-black);
   font-family: var(--font-ui);

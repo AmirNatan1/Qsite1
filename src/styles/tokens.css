@@ -3,10 +3,6 @@
   --q-black: #0e1112;
   --q-black-soft: #121617;
   --q-neutral-900: #14181a;
-  --q-neutral-850: #1a2020;
-  --q-neutral-800: #283030;
-  --q-neutral-700: #3a4444;
-  --q-neutral-600: #4d5a5a;
   --q-neutral-400: #8a9797;
   --q-neutral-300: #c2cbcb;
   --q-white: #ffffff;
@@ -22,11 +18,7 @@
   --text-muted: var(--q-neutral-400);
   --text-link: var(--q-magenta-soft);
   --surface-page: var(--q-black);
-  --surface-card: rgba(255, 255, 255, 0.04);
-  --surface-card-hover: rgba(255, 255, 255, 0.065);
-  --surface-strong: rgba(255, 255, 255, 0.075);
   --border-default: rgba(255, 255, 255, 0.09);
-  --border-strong: rgba(255, 255, 255, 0.17);
   --border-accent: rgba(240, 107, 160, 0.58);
   --font-display: "Anybody", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
   --font-body: "Newsreader", Georgia, "Times New Roman", serif;
@@ -50,19 +42,11 @@
   --space-9: 6rem;
   --space-10: 8rem;
   --space-section: clamp(5.5rem, 10vw, 10rem);
-  --radius-sm: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1.125rem;
-  --radius-xl: 1.75rem;
-  --radius-pill: 999px;
-  --container-max: 90rem;
-  --container-copy: 75rem;
   --gutter: clamp(16px, 4vw, 48px);
   --field-gutter: clamp(1rem, 4vw, 4rem);
   --header-height: 76px;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --duration-fast: 140ms;
-  --duration-base: 220ms;
   --shadow-focus: 0 0 0 3px rgba(216, 43, 114, 0.3);
 }
 

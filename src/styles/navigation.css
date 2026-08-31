@@ -7,6 +7,10 @@
   backdrop-filter: blur(14px) saturate(0.7);
 }
 
+.maradin-page .site-header {
+  position: relative;
+}
+
 .site-header__inner {
   display: flex;
   align-items: center;
