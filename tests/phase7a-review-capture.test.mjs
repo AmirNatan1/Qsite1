@@ -23,6 +23,7 @@ import {
   parseArguments,
   recordingBrowserLaunchPlan,
   recordingContractResult,
+  requestFailureDisposition,
   renderPortableTypographySpecimen,
   runSelfTest,
   validateManifestLedger,
@@ -106,6 +107,24 @@ test("Firefox gets one fresh browser per recording segment while Chromium stays 
 test("capture settling is bounded when Firefox suppresses animation frames", () => {
   assert.deepEqual(CAPTURE_SETTLE_TIMEOUTS, { fontsMs: 1_000, visualMs: 500 });
   assert.ok(Object.isFrozen(CAPTURE_SETTLE_TIMEOUTS));
+});
+
+test("capture records only aborted in-memory media reads as expected lifecycle cancellations", () => {
+  assert.equal(requestFailureDisposition({
+    failure: "net::ERR_ABORTED",
+    resourceType: "media",
+    url: "blob:http://127.0.0.1:4322/fixture",
+  }), "EXPECTED_BLOB_MEDIA_ABORT");
+  assert.equal(requestFailureDisposition({
+    failure: "NS_BINDING_ABORTED",
+    resourceType: "media",
+    url: "blob:http://127.0.0.1:4322/fixture",
+  }), "EXPECTED_BLOB_MEDIA_ABORT");
+  for (const fixture of [
+    { failure: "net::ERR_FAILED", resourceType: "media", url: "blob:http://127.0.0.1:4322/fixture" },
+    { failure: "net::ERR_ABORTED", resourceType: "media", url: "http://127.0.0.1:4322/media/file.mp4" },
+    { failure: "net::ERR_ABORTED", resourceType: "document", url: "blob:http://127.0.0.1:4322/fixture" },
+  ]) assert.equal(requestFailureDisposition(fixture), "UNEXPECTED");
 });
 
 test("screenshot authority covers all thirteen core viewports and key alternatives", () => {

@@ -421,6 +421,15 @@ function safeRequestUrl(value) {
   } catch { return "unparseable-request"; }
 }
 
+export function requestFailureDisposition({ failure, resourceType, url }) {
+  if (
+    resourceType === "media"
+    && String(url).startsWith("blob:")
+    && /ABORTED/i.test(String(failure))
+  ) return "EXPECTED_BLOB_MEDIA_ABORT";
+  return "UNEXPECTED";
+}
+
 async function installNetworkGuard(context, baseUrl, ledger, { blockFonts = false } = {}) {
   const origin = new URL(baseUrl).origin;
   await context.route("**/*", async (route) => {
@@ -447,15 +456,28 @@ function attachDiagnostics(page, ledger, scope) {
     },
     pageerror(error) { ledger.pageErrors.push({ scope, message: error.message.slice(0, 500) }); },
     requestfailed(request) {
+      const requestUrl = request.url();
       const requestPath = safeRequestUrl(request.url());
+      const failure = request.failure()?.errorText ?? "unknown";
+      const resourceType = request.resourceType();
       const intentionallyBlocked = ledger.blocked.some(({ path: blockedPath }) => blockedPath === requestPath);
-      if (!intentionallyBlocked && !request.failure()?.errorText?.includes("ERR_BLOCKED_BY_CLIENT")) ledger.failedRequests.push({
+      if (requestFailureDisposition({ failure, resourceType, url: requestUrl }) === "EXPECTED_BLOB_MEDIA_ABORT") {
+        ledger.expectedCancellations.push({
+          scope,
+          failure,
+          method: request.method(),
+          navigation: request.isNavigationRequest(),
+          reason: "in-memory blob media lifecycle cancellation",
+          resourceType,
+          scheme: "blob:",
+        });
+      } else if (!intentionallyBlocked && !failure.includes("ERR_BLOCKED_BY_CLIENT")) ledger.failedRequests.push({
         scope,
         path: requestPath,
-        failure: request.failure()?.errorText ?? "unknown",
+        failure,
         method: request.method(),
         navigation: request.isNavigationRequest(),
-        resourceType: request.resourceType(),
+        resourceType,
       });
     },
   };
@@ -1122,7 +1144,7 @@ export async function capturePhase7AReviewEvidence(options) {
     await mkdir(path.dirname(specimenPath), { recursive: true });
     await writeFile(specimenPath, typographyHtml, { encoding: "utf8", flag: "wx" });
 
-    const ledger = { blocked: [], console: [], failedRequests: [], pageErrors: [] };
+    const ledger = { blocked: [], console: [], expectedCancellations: [], failedRequests: [], pageErrors: [] };
     const runtime = { typographyHtml };
     const browsers = [];
     const recordings = [];
