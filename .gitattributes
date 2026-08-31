@@ -1,5 +1,6 @@
 # Keep the governed upstream OFL license files byte-for-byte intact.
 public/fonts/licenses/OFL-*.txt whitespace=-trailing-space
+artifacts/original/phase-7a-typography-candidates/OFL-*.txt -text whitespace=-trailing-space
 
 # Preserve exact governed Phase 4-R1 evidence and producer bytes on every checkout.
 artifacts/original/phase-4r1-refined-proving-hall/source/** -text whitespace=cr-at-eol

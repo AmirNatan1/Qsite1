@@ -78,6 +78,11 @@ test("governed Phase 4-R2 authority bytes survive Windows checkouts", async () =
   assert.match(attributes, /artifacts\/reports\/phase-4r2\/\*\* -text/);
 });
 
+test("typography candidate licences survive Windows checkouts byte-for-byte", async () => {
+  const attributes = await read(".gitattributes");
+  assert.match(attributes, /artifacts\/original\/phase-7a-typography-candidates\/OFL-\*\.txt -text/);
+});
+
 test("Maradin remains lazily sourced with one-player replacement and teardown", async () => {
   const [component, controller] = await Promise.all([
     read("src/components/routes/maradin/MaradinExperience.astro"),
