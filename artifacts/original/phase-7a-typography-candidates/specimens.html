@@ -3,80 +3,446 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Phase 7A typography specimens</title>
+    <meta name="color-scheme" content="dark" />
+    <title>Phase 7A typography proof specimen</title>
     <style>
-      @font-face { font-family: AnybodyStudy; src: url("/public/fonts/anybody-latin-variable.woff2") format("woff2-variations"); font-weight: 100 900; font-stretch: 50% 150%; font-display: swap; }
-      @font-face { font-family: MonaStudy; src: url("/artifacts/original/phase-7a-typography-candidates/mona-sans-v2.0.27-variable.woff2") format("woff2-variations"); font-weight: 200 900; font-stretch: 75% 125%; font-display: swap; }
-      @font-face { font-family: BricolageStudy; src: url("/artifacts/original/phase-7a-typography-candidates/bricolage-grotesque-variable.woff2") format("woff2-variations"); font-weight: 200 800; font-stretch: 75% 100%; font-display: swap; }
-      @font-face { font-family: ArchivoStudy; src: url("/artifacts/original/phase-7a-typography-candidates/archivo-variable.ttf") format("truetype-variations"); font-weight: 100 900; font-stretch: 62% 125%; font-display: swap; }
-      :root { color-scheme: dark; background: #0e1112; color: #fff; font-family: Arial, sans-serif; }
-      * { box-sizing: border-box; }
-      body { margin: 0; overflow-x: clip; background: #0e1112; }
-      main { width: min(calc(100% - 2rem), 92rem); margin: auto; padding: 2rem 0 5rem; }
-      header { display: flex; justify-content: space-between; gap: 1rem; padding-block: 1rem 2rem; border-bottom: 1px solid #394041; color: #aeb8b8; font: 600 0.72rem/1.4 Arial, sans-serif; letter-spacing: 0.12em; text-transform: uppercase; }
-      article { min-height: 100svh; padding: clamp(3rem, 8vh, 7rem) 0; border-bottom: 1px solid #394041; }
-      article > p { margin: 0 0 2.5rem; color: #aeb8b8; font: 600 0.72rem/1.4 Arial, sans-serif; letter-spacing: 0.12em; text-transform: uppercase; }
-      .specimens { display: grid; gap: clamp(2rem, 6vh, 4.5rem); }
-      .specimens p { max-width: 100%; margin: 0; overflow-wrap: normal; word-break: normal; }
-      .manifesto { font-size: clamp(2rem, 7.1vw, 7.2rem); font-weight: 700; font-stretch: 112%; letter-spacing: -0.055em; line-height: 0.84; text-transform: uppercase; }
-      .route { font-size: clamp(1.8rem, 4.4vw, 4.6rem); font-weight: 650; font-stretch: 106%; letter-spacing: -0.04em; line-height: 0.94; }
-      .domain { font-size: clamp(1.3rem, 2.6vw, 2.8rem); font-weight: 620; font-stretch: 103%; letter-spacing: -0.025em; line-height: 1; }
-      .anybody { font-family: AnybodyStudy, "Arial Narrow", Arial, sans-serif; }
-      .mona { font-family: MonaStudy, Arial, sans-serif; }
-      .bricolage { font-family: BricolageStudy, Arial, sans-serif; }
-      .archivo { font-family: ArchivoStudy, Arial, sans-serif; }
-      @media (max-width: 25rem) { main { width: calc(100% - 2rem); } .manifesto { font-size: clamp(1.85rem, 9.2vw, 2.35rem); } }
-      @media (max-height: 30rem) and (orientation: landscape) { article { min-height: 0; } .specimens { gap: 1.5rem; } .manifesto { font-size: clamp(2.2rem, 7vw, 4rem); } }
+      @font-face {
+        font-family: "Anybody Study";
+        src: url("./anybody-variable.woff2") format("woff2-variations");
+        font-weight: 100 900;
+        font-stretch: 50% 150%;
+        font-display: swap;
+      }
+
+      @font-face {
+        font-family: "Mona Study";
+        src: url("./mona-sans-v2.0.27-variable.woff2") format("woff2-variations");
+        font-weight: 200 900;
+        font-stretch: 75% 125%;
+        font-display: swap;
+      }
+
+      @font-face {
+        font-family: "Bricolage Study";
+        src: url("./bricolage-grotesque-variable.woff2") format("woff2-variations");
+        font-weight: 200 800;
+        font-stretch: 75% 100%;
+        font-display: swap;
+      }
+
+      @font-face {
+        font-family: "Archivo Study";
+        src: url("./archivo-variable.ttf") format("truetype-variations");
+        font-weight: 100 900;
+        font-stretch: 62% 125%;
+        font-display: swap;
+      }
+
+      :root {
+        color-scheme: dark;
+        background: #080b0c;
+        color: #fff;
+        font-family: Arial, Helvetica, sans-serif;
+        --gutter: clamp(1rem, 4vw, 4rem);
+        --muted: #9ba7a7;
+        --rule: rgba(255, 255, 255, 0.16);
+        --signal: #d82b72;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html {
+        min-width: 0;
+        background: #080b0c;
+      }
+
+      body {
+        min-width: 0;
+        margin: 0;
+        overflow-x: clip;
+        background:
+          linear-gradient(112deg, transparent 0 42%, rgba(255, 255, 255, 0.025) 50%, transparent 58%),
+          #080b0c;
+      }
+
+      .study-header,
+      main,
+      .study-footer {
+        width: min(calc(100% - (2 * var(--gutter))), 100rem);
+        margin-inline: auto;
+      }
+
+      .study-header {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(14rem, 0.42fr);
+        gap: clamp(2rem, 8vw, 9rem);
+        padding-block: clamp(2.5rem, 8vw, 7rem);
+      }
+
+      .study-kicker,
+      .candidate-index,
+      .candidate-role,
+      .state-label,
+      .state-axis,
+      .study-status {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        line-height: 1.45;
+        text-transform: uppercase;
+      }
+
+      .study-header h1 {
+        max-width: 15ch;
+        margin: 1.5rem 0 0;
+        font-size: clamp(2.4rem, 6.5vw, 6.8rem);
+        letter-spacing: -0.055em;
+        line-height: 0.88;
+      }
+
+      .study-header__context {
+        align-self: end;
+        max-width: 42ch;
+        color: #c8d0d0;
+        font-size: clamp(1rem, 1.4vw, 1.2rem);
+        line-height: 1.55;
+      }
+
+      .study-status {
+        display: block;
+        margin-top: 1.5rem;
+        color: #f06ba0;
+      }
+
+      .candidate {
+        --stored-stretch: 75%;
+        --resolved-stretch: 100%;
+        padding-block: clamp(3rem, 8vw, 7rem);
+        border-top: 1px solid var(--rule);
+      }
+
+      .candidate--anybody {
+        --stored-stretch: 58%;
+        --resolved-stretch: 112%;
+        font-family: "Anybody Study", Arial, sans-serif;
+      }
+
+      .candidate--mona {
+        --stored-stretch: 75%;
+        --resolved-stretch: 125%;
+        font-family: "Mona Study", Arial, sans-serif;
+      }
+
+      .candidate--bricolage {
+        --stored-stretch: 75%;
+        --resolved-stretch: 100%;
+        font-family: "Bricolage Study", Arial, sans-serif;
+      }
+
+      .candidate--archivo {
+        --stored-stretch: 62%;
+        --resolved-stretch: 125%;
+        font-family: "Archivo Study", Arial, sans-serif;
+      }
+
+      .candidate__header {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(13rem, 0.36fr);
+        gap: 1.5rem clamp(2rem, 7vw, 8rem);
+        align-items: end;
+      }
+
+      .candidate h2 {
+        margin: 0.65rem 0 0;
+        font-size: clamp(2.1rem, 4.5vw, 4.8rem);
+        font-stretch: var(--resolved-stretch);
+        font-weight: 700;
+        letter-spacing: -0.045em;
+        line-height: 0.92;
+      }
+
+      .candidate-role {
+        align-self: end;
+      }
+
+      .state-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        margin-top: clamp(2rem, 5vw, 4.5rem);
+        border-block: 1px solid var(--rule);
+      }
+
+      .state {
+        min-width: 0;
+        padding: clamp(1.25rem, 3vw, 3rem) 0 clamp(2rem, 5vw, 4rem);
+      }
+
+      .state + .state {
+        padding-left: clamp(1.25rem, 3vw, 3rem);
+        border-left: 1px solid var(--rule);
+      }
+
+      .state__header {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 0.5rem 1rem;
+        padding-bottom: clamp(1.5rem, 4vw, 3.5rem);
+      }
+
+      .state--resolved .state-label,
+      .state--resolved .state-axis {
+        color: #f06ba0;
+      }
+
+      .specimens {
+        display: grid;
+        gap: clamp(2rem, 5vw, 4rem);
+        min-width: 0;
+      }
+
+      .manifesto,
+      .route-title {
+        max-width: 100%;
+        margin: 0;
+        hyphens: none;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .manifesto {
+        font-size: clamp(2rem, 4.8vw, 5.75rem);
+        font-weight: 700;
+        letter-spacing: -0.055em;
+        line-height: 0.88;
+        text-transform: uppercase;
+      }
+
+      .route-title {
+        max-width: 21ch;
+        font-size: clamp(1.35rem, 2.65vw, 3rem);
+        font-weight: 650;
+        letter-spacing: -0.035em;
+        line-height: 0.96;
+      }
+
+      .state--stored .manifesto,
+      .state--stored .route-title {
+        font-stretch: var(--stored-stretch);
+      }
+
+      .state--resolved .manifesto,
+      .state--resolved .route-title {
+        font-stretch: var(--resolved-stretch);
+      }
+
+      .study-footer {
+        padding-block: 2rem 4rem;
+        border-top: 1px solid var(--rule);
+      }
+
+      .study-footer p {
+        margin: 0;
+      }
+
+      @media (max-width: 48rem) {
+        .study-header,
+        .candidate__header,
+        .state-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .study-header__context,
+        .candidate-role {
+          max-width: 54ch;
+        }
+
+        .state + .state {
+          padding-left: 0;
+          border-top: 1px solid var(--rule);
+          border-left: 0;
+        }
+
+        .manifesto {
+          font-size: clamp(2rem, 9.4vw, 4.5rem);
+        }
+
+        .route-title {
+          font-size: clamp(1.4rem, 6vw, 2.8rem);
+        }
+      }
+
+      @media (max-width: 22.5rem) {
+        .study-header,
+        main,
+        .study-footer {
+          width: calc(100% - 2rem);
+        }
+
+        .manifesto {
+          font-size: clamp(1.85rem, 9.25vw, 2.1rem);
+        }
+      }
+
+      @media (forced-colors: active) {
+        :root {
+          --muted: CanvasText;
+          --rule: CanvasText;
+          --signal: CanvasText;
+        }
+      }
     </style>
   </head>
   <body>
+    <header class="study-header">
+      <div>
+        <p class="study-kicker">Quantum / Phase 7A / typography proof</p>
+        <h1>Stored signal. Resolved authority.</h1>
+      </div>
+      <p class="study-header__context">
+        Four legally self-hosted candidates. Each proof uses the complete manifesto and the same representative route title at a candidate-specific narrow and wide state.
+        <span class="study-status">Final display-font decision: pending human review</span>
+      </p>
+    </header>
+
     <main>
-      <header><span>Quantum / Phase 7A</span><span>Identical specimen authority</span></header>
-      <article class="anybody" data-candidate="Anybody">
-        <p>01 / Anybody / provisional</p>
-        <div class="specimens">
-          <p class="manifesto">We turn industrial needs into field evidence.</p>
-          <p class="route">One operating field. Two trajectories.</p>
-          <p class="route">Built between industry and technology.</p>
-          <p class="route">Start with the challenge.</p>
-          <p class="domain">Automotive &amp; Mobility</p>
-          <p class="domain">Industry 4.0 / Advanced Manufacturing</p>
+      <article class="candidate candidate--anybody" data-candidate="Anybody">
+        <header class="candidate__header">
+          <div>
+            <p class="candidate-index">01 / provisional</p>
+            <h2>Anybody</h2>
+          </div>
+          <p class="candidate-role">Range 50–150 / proof 58→112 / wght 700</p>
+        </header>
+        <div class="state-grid" aria-label="Anybody stored and resolved comparison">
+          <section class="state state--stored" aria-labelledby="anybody-stored">
+            <header class="state__header">
+              <h3 class="state-label" id="anybody-stored">Stored / narrow</h3>
+              <span class="state-axis">wdth 58</span>
+            </header>
+            <div class="specimens">
+              <p class="manifesto">WE TURN INDUSTRIAL NEEDS INTO FIELD EVIDENCE.</p>
+              <p class="route-title">Industry 4.0 / Advanced Manufacturing</p>
+            </div>
+          </section>
+          <section class="state state--resolved" aria-labelledby="anybody-resolved">
+            <header class="state__header">
+              <h3 class="state-label" id="anybody-resolved">Resolved / wide</h3>
+              <span class="state-axis">wdth 112</span>
+            </header>
+            <div class="specimens">
+              <p class="manifesto">WE TURN INDUSTRIAL NEEDS INTO FIELD EVIDENCE.</p>
+              <p class="route-title">Industry 4.0 / Advanced Manufacturing</p>
+            </div>
+          </section>
         </div>
       </article>
-      <article class="mona" data-candidate="Mona Sans">
-        <p>02 / Mona Sans / industrial control</p>
-        <div class="specimens">
-          <p class="manifesto">We turn industrial needs into field evidence.</p>
-          <p class="route">One operating field. Two trajectories.</p>
-          <p class="route">Built between industry and technology.</p>
-          <p class="route">Start with the challenge.</p>
-          <p class="domain">Automotive &amp; Mobility</p>
-          <p class="domain">Industry 4.0 / Advanced Manufacturing</p>
+
+      <article class="candidate candidate--mona" data-candidate="Mona Sans">
+        <header class="candidate__header">
+          <div>
+            <p class="candidate-index">02 / industrial control</p>
+            <h2>Mona Sans</h2>
+          </div>
+          <p class="candidate-role">Range 75–125 / proof 75→125 / wght 700</p>
+        </header>
+        <div class="state-grid" aria-label="Mona Sans stored and resolved comparison">
+          <section class="state state--stored" aria-labelledby="mona-stored">
+            <header class="state__header">
+              <h3 class="state-label" id="mona-stored">Stored / narrow</h3>
+              <span class="state-axis">wdth 75</span>
+            </header>
+            <div class="specimens">
+              <p class="manifesto">WE TURN INDUSTRIAL NEEDS INTO FIELD EVIDENCE.</p>
+              <p class="route-title">Industry 4.0 / Advanced Manufacturing</p>
+            </div>
+          </section>
+          <section class="state state--resolved" aria-labelledby="mona-resolved">
+            <header class="state__header">
+              <h3 class="state-label" id="mona-resolved">Resolved / wide</h3>
+              <span class="state-axis">wdth 125</span>
+            </header>
+            <div class="specimens">
+              <p class="manifesto">WE TURN INDUSTRIAL NEEDS INTO FIELD EVIDENCE.</p>
+              <p class="route-title">Industry 4.0 / Advanced Manufacturing</p>
+            </div>
+          </section>
         </div>
       </article>
-      <article class="bricolage" data-candidate="Bricolage Grotesque">
-        <p>03 / Bricolage Grotesque / authored challenger</p>
-        <div class="specimens">
-          <p class="manifesto">We turn industrial needs into field evidence.</p>
-          <p class="route">One operating field. Two trajectories.</p>
-          <p class="route">Built between industry and technology.</p>
-          <p class="route">Start with the challenge.</p>
-          <p class="domain">Automotive &amp; Mobility</p>
-          <p class="domain">Industry 4.0 / Advanced Manufacturing</p>
+
+      <article class="candidate candidate--bricolage" data-candidate="Bricolage Grotesque">
+        <header class="candidate__header">
+          <div>
+            <p class="candidate-index">03 / authored challenger</p>
+            <h2>Bricolage Grotesque</h2>
+          </div>
+          <p class="candidate-role">Range 75–100 / proof 75→100 / wght 700</p>
+        </header>
+        <div class="state-grid" aria-label="Bricolage Grotesque stored and resolved comparison">
+          <section class="state state--stored" aria-labelledby="bricolage-stored">
+            <header class="state__header">
+              <h3 class="state-label" id="bricolage-stored">Stored / narrow</h3>
+              <span class="state-axis">wdth 75</span>
+            </header>
+            <div class="specimens">
+              <p class="manifesto">WE TURN INDUSTRIAL NEEDS INTO FIELD EVIDENCE.</p>
+              <p class="route-title">Industry 4.0 / Advanced Manufacturing</p>
+            </div>
+          </section>
+          <section class="state state--resolved" aria-labelledby="bricolage-resolved">
+            <header class="state__header">
+              <h3 class="state-label" id="bricolage-resolved">Resolved / wide</h3>
+              <span class="state-axis">wdth 100</span>
+            </header>
+            <div class="specimens">
+              <p class="manifesto">WE TURN INDUSTRIAL NEEDS INTO FIELD EVIDENCE.</p>
+              <p class="route-title">Industry 4.0 / Advanced Manufacturing</p>
+            </div>
+          </section>
         </div>
       </article>
-      <article class="archivo" data-candidate="Archivo">
-        <p>04 / Archivo / legibility backstop</p>
-        <div class="specimens">
-          <p class="manifesto">We turn industrial needs into field evidence.</p>
-          <p class="route">One operating field. Two trajectories.</p>
-          <p class="route">Built between industry and technology.</p>
-          <p class="route">Start with the challenge.</p>
-          <p class="domain">Automotive &amp; Mobility</p>
-          <p class="domain">Industry 4.0 / Advanced Manufacturing</p>
+
+      <article class="candidate candidate--archivo" data-candidate="Archivo">
+        <header class="candidate__header">
+          <div>
+            <p class="candidate-index">04 / legibility backstop</p>
+            <h2>Archivo</h2>
+          </div>
+          <p class="candidate-role">Range 62–125 / proof 62→125 / wght 700</p>
+        </header>
+        <div class="state-grid" aria-label="Archivo stored and resolved comparison">
+          <section class="state state--stored" aria-labelledby="archivo-stored">
+            <header class="state__header">
+              <h3 class="state-label" id="archivo-stored">Stored / narrow</h3>
+              <span class="state-axis">wdth 62</span>
+            </header>
+            <div class="specimens">
+              <p class="manifesto">WE TURN INDUSTRIAL NEEDS INTO FIELD EVIDENCE.</p>
+              <p class="route-title">Industry 4.0 / Advanced Manufacturing</p>
+            </div>
+          </section>
+          <section class="state state--resolved" aria-labelledby="archivo-resolved">
+            <header class="state__header">
+              <h3 class="state-label" id="archivo-resolved">Resolved / wide</h3>
+              <span class="state-axis">wdth 125</span>
+            </header>
+            <div class="specimens">
+              <p class="manifesto">WE TURN INDUSTRIAL NEEDS INTO FIELD EVIDENCE.</p>
+              <p class="route-title">Industry 4.0 / Advanced Manufacturing</p>
+            </div>
+          </section>
         </div>
       </article>
     </main>
+
+    <footer class="study-footer">
+      <p class="study-status">Typography + material authority: pending human review</p>
+    </footer>
   </body>
 </html>
-
