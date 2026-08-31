@@ -32,21 +32,57 @@ function git(root, args) {
   return result.stdout.trim();
 }
 
-export async function verifySource(root = process.cwd()) {
+function gitOptionalRef(root, ref) {
+  const result = spawnSync("git", ["show-ref", "--verify", "--hash", ref], { cwd: root, encoding: "utf8" });
+  if (result.status === 0) return result.stdout.trim();
+  if (result.status === 1) return null;
+  throw new Error(result.stderr || `git show-ref --verify --hash ${ref} failed`);
+}
+
+export function resolveGitAuthority({ localBranch, head, localMain, originMain, environment = process.env }) {
+  const onCloudflarePages = environment.CF_PAGES === "1";
+  const branch = localBranch || (onCloudflarePages ? environment.CF_PAGES_BRANCH ?? "" : "");
+
+  assert.equal(branch, PHASE7A_BRANCH, "wrong Phase 7A branch");
+  if (onCloudflarePages) {
+    assert.equal(environment.CF_PAGES_COMMIT_SHA, head, "Cloudflare Pages commit differs from checked-out HEAD");
+  }
+
+  for (const [label, value] of [["local main", localMain], ["origin/main", originMain]]) {
+    if (value === null) {
+      assert.equal(onCloudflarePages, true, `${label} is unavailable outside Cloudflare Pages`);
+    } else {
+      assert.equal(value, FROZEN_MAIN, `${label} moved`);
+    }
+  }
+
+  return {
+    branch,
+    head,
+    localMain,
+    originMain,
+    mainAuthorityMode: localMain !== null && originMain !== null ? "refs" : "cloudflare-pages-ancestry",
+  };
+}
+
+export async function verifySource(root = process.cwd(), environment = process.env) {
   const read = (relative) => readFile(path.join(root, relative), "utf8");
-  const branch = git(root, ["branch", "--show-current"]);
+  const localBranch = git(root, ["branch", "--show-current"]);
   const head = git(root, ["rev-parse", "HEAD"]);
-  const localMain = git(root, ["rev-parse", "main"]);
-  const originMain = git(root, ["rev-parse", "origin/main"]);
+  const localMain = gitOptionalRef(root, "refs/heads/main");
+  const originMain = gitOptionalRef(root, "refs/remotes/origin/main");
+  const authority = resolveGitAuthority({ localBranch, head, localMain, originMain, environment });
+  const { branch, mainAuthorityMode } = authority;
   const firstCommit = git(root, ["rev-list", "--reverse", `${PHASE7A_PARENT}..${head}`]).split(/\r?\n/)[0];
   const firstParent = firstCommit ? git(root, ["rev-parse", `${firstCommit}^`]) : "";
   const merges = git(root, ["rev-list", "--merges", `${PHASE7A_PARENT}..${head}`]);
 
-  assert.equal(branch, PHASE7A_BRANCH, "wrong Phase 7A branch");
   assert.equal(firstParent, PHASE7A_PARENT, "first Phase 7A commit must descend directly from accepted Phase 6");
-  assert.equal(localMain, FROZEN_MAIN, "local main moved");
-  assert.equal(originMain, FROZEN_MAIN, "origin/main moved");
   assert.equal(merges, "", "Phase 7A history must remain linear");
+  if (mainAuthorityMode === "cloudflare-pages-ancestry") {
+    assert.equal(git(root, ["rev-parse", `${FROZEN_MAIN}^{commit}`]), FROZEN_MAIN, "frozen main commit is unavailable");
+    git(root, ["merge-base", "--is-ancestor", FROZEN_MAIN, head]);
+  }
 
   for (const relative of DELETED_PRODUCTION_PATHS) {
     assert.equal(await exists(path.join(root, relative)), false, `${relative} must remain demolished`);
@@ -146,6 +182,8 @@ export async function verifySource(root = process.cwd()) {
     parent: PHASE7A_PARENT,
     main: localMain,
     originMain,
+    frozenMain: FROZEN_MAIN,
+    mainAuthorityMode,
     physicalAssetCount: PHYSICAL_ASSETS.length,
     typographyAuthorityCount: TYPOGRAPHY_ASSETS.length,
     deletedProductionPathCount: DELETED_PRODUCTION_PATHS.length,

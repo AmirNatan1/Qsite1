@@ -14,7 +14,7 @@ import {
   REQUIRED_NODE,
   REVIEW_ZIP_NAME,
 } from "../scripts/phase7a-contract.mjs";
-import { verifySource } from "../scripts/verify-phase7a-source.mjs";
+import { resolveGitAuthority, verifySource } from "../scripts/verify-phase7a-source.mjs";
 
 const root = process.cwd();
 const read = (relative) => readFile(path.join(root, relative), "utf8");
@@ -37,6 +37,35 @@ test("Phase 7A source authority passes as one fail-closed report", async () => {
   assert.equal(report.parent, PHASE7A_PARENT);
   assert.equal(report.runtimeDependenciesAdded, 0);
   assert.equal(report.maradinFrozen, true);
+});
+
+test("Phase 7A source authority supports Cloudflare Pages detached checkouts without weakening commit identity", () => {
+  const head = "a".repeat(40);
+  const report = resolveGitAuthority({
+    localBranch: "",
+    head,
+    localMain: null,
+    originMain: null,
+    environment: {
+      CF_PAGES: "1",
+      CF_PAGES_BRANCH: PHASE7A_BRANCH,
+      CF_PAGES_COMMIT_SHA: head,
+    },
+  });
+
+  assert.equal(report.branch, PHASE7A_BRANCH);
+  assert.equal(report.mainAuthorityMode, "cloudflare-pages-ancestry");
+  assert.throws(() => resolveGitAuthority({
+    localBranch: "",
+    head,
+    localMain: null,
+    originMain: null,
+    environment: {
+      CF_PAGES: "1",
+      CF_PAGES_BRANCH: PHASE7A_BRANCH,
+      CF_PAGES_COMMIT_SHA: "b".repeat(40),
+    },
+  }), /Cloudflare Pages commit differs/);
 });
 
 test("Signal Field keeps semantic text and links outside decorative SVG", async () => {
