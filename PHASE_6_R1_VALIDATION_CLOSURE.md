@@ -102,11 +102,11 @@ The R1 assembler now requires a dedicated Node 22 integrated-validation artifact
 - Phase 5B/Phase 6/R1 focused regression; and
 - standalone verifier self-tests.
 
-The same artifact must provide a byte-identical Node 22 versus Node 24 `dist` comparison with equal file count, byte count, and manifest SHA-256. Older Node results are not relabelled as the final version-7 result.
+The same artifact must provide a byte-identical Node 22 versus Node 24 `dist` comparison with equal file count, byte count, and manifest SHA-256. Older Node results are not relabelled as final-candidate authority.
 
 Deployment evidence is also re-derived from its raw ledgers. The exact signed GitHub check-run ID is bound independently through final metadata and package provenance. The canonical route outcomes, ten HTML authorities, header policies, sorted dist inventory, totals, file sizes and hashes, HTTP 200/404 outcomes, origin sizes and hashes, canonical results, and exercised cache policies must agree. The complete deployment dist ledger must then match the hash-bound Node 22 distribution manifest exactly; a self-consistent but forged deployment ledger is rejected.
 
-The final Node 22 version-7 artifact hash, deployment-verification hash, persistent-lifecycle hash, and regenerated accessibility hashes will be produced externally after the final commit and listed in the final handoff.
+The final Node 22 artifact hash, deployment-verification hash, persistent-lifecycle hash, and regenerated accessibility hashes will be produced externally after the final commit and listed in the final handoff.
 
 ## Package and independent-audit stop
 
