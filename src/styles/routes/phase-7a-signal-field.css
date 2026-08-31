@@ -259,8 +259,8 @@ html[data-cinematic-mode="enhanced"] .cinematic-shell[data-manifesto-reveal="res
   transform: none;
 }
 
-html[data-cinematic-mode="candidate"] .cinematic-shell:not([data-manifesto-reveal="resolved"]) .signal-field__live,
-html[data-cinematic-mode="enhanced"] .cinematic-shell:not([data-manifesto-reveal="resolved"]) .signal-field__live {
+html[data-cinematic-mode="candidate"] .cinematic-shell:not([data-manifesto-reveal="revealing"]):not([data-manifesto-reveal="resolved"]) .signal-field__live,
+html[data-cinematic-mode="enhanced"] .cinematic-shell:not([data-manifesto-reveal="revealing"]):not([data-manifesto-reveal="resolved"]) .signal-field__live {
   stroke-dashoffset: 1;
 }
 

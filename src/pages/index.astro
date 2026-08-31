@@ -231,7 +231,7 @@ try {
             document.querySelector(".site-header")?.removeAttribute("inert");
             document.querySelector(".site-footer")?.removeAttribute("inert");
             document.querySelector("#entry")?.removeAttribute("inert");
-              document.querySelectorAll("[data-field-section]").forEach((field) => field.removeAttribute("inert"));
+            document.querySelectorAll("[data-field-section]").forEach((field) => field.removeAttribute("inert"));
             const shell = document.querySelector("[data-cinematic-shell]");
             if (shell instanceof HTMLElement) {
               shell.dataset.cinematicInteractive = "true";
