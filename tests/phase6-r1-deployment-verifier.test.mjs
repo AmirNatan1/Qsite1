@@ -23,6 +23,11 @@ import {
   validateSignedR1Authority,
   validateOptions,
 } from "../scripts/verify-phase6-r1-deployment.mjs";
+import {
+  parseHeadersFile,
+  publicPathForDistFile,
+  validateDeployedRecord,
+} from "../scripts/verify-phase6-deployment.mjs";
 
 const DEPLOYMENT_ID = "12345678-1234-4234-8234-123456789abc";
 const HEAD = "b".repeat(40);
@@ -55,6 +60,30 @@ test("R1 preview inputs bind UUID, exact branch alias and repository dist", () =
   assert.throws(() => options(["--branch-url", "https://qsite1.pages.dev/"]), /exact R1 branch alias/);
   assert.throws(() => options(["--branch-url", "https://another-branch.qsite1.pages.dev/"]), /exact R1 branch alias/);
   assert.throws(() => options(["--dist", path.join(ROOT, "elsewhere")]), /repository dist/);
+});
+
+test("shared deployment URL, MIME and Cache-Control authority rejects parser ambiguities", () => {
+  assert.throws(() => publicPathForDistFile("nested/%2e%2e/robots.txt"), /URL-ambiguous/);
+  assert.throws(() => publicPathForDistFile("robots.txt#shadow.txt"), /URL-ambiguous/);
+  assert.throws(() => publicPathForDistFile("robots.txt?shadow=1"), /URL-ambiguous/);
+  assert.throws(() => publicPathForDistFile("404.html", "/missing-proof/#shadow"), /does not round-trip/);
+
+  const policies = parseHeadersFile("/_astro/*\n  Cache-Control: public, max-age=31556952, immutable");
+  const asset = { relativePath: "_astro/app.js", bytes: Buffer.from("export{}") };
+  const response = {
+    publicPath: "/_astro/app.js",
+    status: 200,
+    bytes: Buffer.from("export{}"),
+    contentType: "application/javascript",
+    cacheControl: "public, max-age=31556952, immutable",
+  };
+  assert.equal(validateDeployedRecord(response, asset, policies).status, "PASS");
+  assert.throws(() => validateDeployedRecord({ ...response, contentType: "not-application/javascript" }, asset, policies), /MIME mismatch/);
+  assert.throws(() => validateDeployedRecord({ ...response, contentType: ["application/javascript"] }, asset, policies), /MIME mismatch/);
+  assert.throws(() => validateDeployedRecord({ ...response, cacheControl: ["public, max-age=31556952, immutable"] }, asset, policies), /primitive nonempty string/);
+  assert.throws(() => validateDeployedRecord({ ...response, cacheControl: 'public, max-age=31556952, immutable, private="set-cookie"' }, asset, policies), /does not enforce|unsafe/);
+  assert.throws(() => validateDeployedRecord({ ...response, cacheControl: "public, max-age=31556952, max-age=0, immutable" }, asset, policies), /duplicate, or conflicting/);
+  assert.throws(() => validateDeployedRecord({ ...response, cacheControl: "public, max-age=31556952, immutable, no-cache" }, asset, policies), /does not enforce/);
 });
 
 test("package authority requires exact R1 commands while preserving the complete parent test and check authority", () => {
@@ -97,6 +126,7 @@ test("package authority requires exact R1 commands while preserving the complete
 test("R1 repository authority rejects every path outside the literal changed-path allowlist", () => {
   const allowed = ALLOWED_R1_CHANGED_PATHS.map((file) => `${file.startsWith("scripts/capture-") || file.startsWith("scripts/ingest-") || file.startsWith("scripts/qa-phase6-r1") || file.startsWith("scripts/verify-phase6-r1") || file.startsWith("tests/phase6-r1") || file === "PHASE_6_R1_VALIDATION_CLOSURE.md" ? "A" : "M"}\t${file}`).join("\n");
   assert.deepEqual(validateChangedPathAuthority(allowed), allowed.split("\n"));
+  assert.throws(() => validateChangedPathAuthority(allowed.replace(/^A\t/, "M\t")), /statuses\/order differ/);
   assert.throws(() => validateChangedPathAuthority(`${allowed}\nM\tscripts/run-phase4-build.mjs`), /outside the exact allowlist/);
   assert.throws(() => validateChangedPathAuthority("M\tpublic/favicon.svg"), /outside the exact allowlist/);
   assert.throws(() => validateChangedPathAuthority("D\tscripts/assemble-phase6-final-evidence.mjs"), /forbidden status D/);

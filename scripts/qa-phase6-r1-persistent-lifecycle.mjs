@@ -108,6 +108,7 @@ async function installProbe(context) {
     const intervalActive = new Set();
     const blobLive = new Map();
     const listenerRecords = [];
+    const manifestoRevealEvents = [];
     const probe = {
       blob: { created: 0, revoked: 0 },
       intervals: { created: 0, cleared: 0 },
@@ -139,6 +140,24 @@ async function installProbe(context) {
         sessionStorage.setItem(STORAGE_KEY, JSON.stringify(events.slice(-250)));
       } catch { /* labelled unsupported by snapshot */ }
     };
+
+    let lastManifestoReveal = Symbol("unobserved");
+    const recordManifestoReveal = () => {
+      const shell = document.querySelector("[data-cinematic-shell]");
+      if (!shell) return;
+      const value = shell.getAttribute("data-manifesto-reveal");
+      if (value === lastManifestoReveal) return;
+      lastManifestoReveal = value;
+      manifestoRevealEvents.push({ atEpochMs: Date.now(), value });
+    };
+    const manifestoObserver = new MutationObserver(recordManifestoReveal);
+    manifestoObserver.observe(document, {
+      attributeFilter: ["data-manifesto-reveal"],
+      attributes: true,
+      childList: true,
+      subtree: true,
+    });
+    queueMicrotask(recordManifestoReveal);
 
     const nativeRaf = globalThis.requestAnimationFrame.bind(globalThis);
     const nativeCancelRaf = globalThis.cancelAnimationFrame.bind(globalThis);
@@ -181,8 +200,7 @@ async function installProbe(context) {
         return value;
       };
       URL.revokeObjectURL = (value) => {
-        blobLive.delete(value);
-        probe.blob.revoked += 1;
+        if (blobLive.delete(value)) probe.blob.revoked += 1;
         return nativeRevoke(value);
       };
     } catch { /* current-document snapshot labels availability */ }
@@ -273,6 +291,7 @@ async function installProbe(context) {
           },
           raf: { ...probe.raf, active: rafActive.size },
           events: readEvents(),
+          manifestoRevealEvents: manifestoRevealEvents.map((event) => ({ ...event })),
           navigation: { type: navigation?.type ?? null, notRestoredReasons },
           resources: performance.getEntriesByType("resource").flatMap((entry) => {
             try {
@@ -304,8 +323,8 @@ async function settle(page, timeoutMs) {
   await page.waitForTimeout(250);
 }
 
-async function snapshot(page, label) {
-  return page.evaluate((sampleLabel) => {
+async function snapshot(page, label, navigationId) {
+  return page.evaluate(({ sampleLabel, snapshotNavigationId }) => {
     const shell = document.querySelector("[data-cinematic-shell]");
     const homeVideo = document.querySelector("[data-cinematic-media]");
     const manifestoContent = shell?.querySelector(".manifesto-field__content");
@@ -329,6 +348,8 @@ async function snapshot(page, label) {
       capturedAtEpochMs: Date.now(),
       documentId: probe?.documentId ?? null,
       label: sampleLabel,
+      navigationId: snapshotNavigationId,
+      origin: location.origin,
       url: `${location.pathname}${location.hash}`,
       scrollY: Math.round(scrollY),
       maximumScroll: Math.max(0, document.documentElement.scrollHeight - innerHeight),
@@ -356,7 +377,16 @@ async function snapshot(page, label) {
           text: manifestoContent.textContent?.replace(/\s+/g, " ").trim() ?? "",
         } : null,
         mediaState: shell.getAttribute("data-media-state"),
-        source: homeVideo ? { hasSource: Boolean(homeVideo.currentSrc || homeVideo.getAttribute("src")), paused: homeVideo.paused, readyState: homeVideo.readyState } : null,
+        source: homeVideo ? {
+          hasSource: Boolean(homeVideo.currentSrc || homeVideo.getAttribute("src")),
+          src: homeVideo.src || null,
+          currentSrc: homeVideo.currentSrc || null,
+          srcAttribute: homeVideo.getAttribute("src") ?? null,
+          videoNodeCount: shell.querySelectorAll("[data-cinematic-media]").length,
+          sourceNodeCount: homeVideo.querySelectorAll("source").length,
+          paused: homeVideo.paused,
+          readyState: homeVideo.readyState,
+        } : null,
         continuation: {
           audienceRouting: audienceRouting ? { ...visibleGeometry(audienceRouting), inert: audienceRouting.hasAttribute("inert") } : null,
           partnerLink: visibleGeometry(partnerLink),
@@ -369,9 +399,12 @@ async function snapshot(page, label) {
         return {
           state: player.getAttribute("data-video-state"),
           hasSource: Boolean(video?.currentSrc || video?.getAttribute("src")),
+          src: video?.src || null,
           currentSrc: video?.currentSrc || null,
           currentTime: Number.isFinite(video?.currentTime) ? video.currentTime : null,
           srcAttribute: video?.getAttribute("src") ?? null,
+          videoNodeCount: player.querySelectorAll("video").length,
+          sourceNodeCount: video?.querySelectorAll("source").length ?? 0,
           paused: video?.paused ?? null,
           readyState: video?.readyState ?? null,
           tabIndex: video?.tabIndex ?? null,
@@ -380,7 +413,7 @@ async function snapshot(page, label) {
         };
       }),
     };
-  }, label);
+  }, { sampleLabel: label, snapshotNavigationId: navigationId });
 }
 
 async function waitForRestoredHome(page, timeoutMs) {
@@ -417,11 +450,245 @@ export function staticRestorationCoherent(state) {
     && state.home.manifesto.text === "We turn industrial needs into field evidence."
     && state.home.continuation?.audienceRouting?.inert === false
     && state.home.source?.hasSource === false
+    && state.home.source.src === null
+    && state.home.source.currentSrc === null
+    && state.home.source.srcAttribute === null
+    && state.home.source.videoNodeCount === 1
+    && state.home.source.sourceNodeCount === 0
+    && state.probe?.raf?.active === 0
+    && state.probe?.intervals?.active === 0
+    && state.probe?.blob?.live === 0
     && Number.isFinite(state.scrollY)
     && Number.isFinite(state.maximumScroll)
     && state.scrollY > 0
     && state.scrollY <= state.maximumScroll
     && phase4Resources(state).length === 0;
+}
+
+function menuStateClosed(state) {
+  return state?.mobileMenu?.open === false && state.mobileMenu.expanded === "false";
+}
+
+function attachedHomeSource(source) {
+  return source?.hasSource === true
+    && typeof source.src === "string" && source.src.length > 0
+    && typeof source.currentSrc === "string" && source.currentSrc.length > 0
+    && typeof source.srcAttribute === "string" && source.srcAttribute.length > 0
+    && source.src === source.currentSrc
+    && source.currentSrc === source.srcAttribute
+    && source.videoNodeCount === 1
+    && source.sourceNodeCount === 0;
+}
+
+export function enhancedRestorationCoherent(state, expectedBootstrap) {
+  return state?.home?.mode === "enhanced"
+    && state.home.bootstrap === expectedBootstrap
+    && state.home.eligibility === "eligible"
+    && state.home.fallback === null
+    && state.home.header === "released"
+    && state.home.phase === "settled"
+    && state.home.interactive === "true"
+    && state.home.routeNavigation === "released"
+    && state.home.mediaState === "ready"
+    && attachedHomeSource(state.home.source)
+    && state.probe?.raf?.active === 0
+    && state.probe?.intervals?.active === 0
+    && state.probe?.blob?.live === 1
+    && state.home.manifestoReveal === "resolved"
+    && state.home.manifesto?.rendered === true
+    && state.home.manifesto.text === "We turn industrial needs into field evidence."
+    && state.home.continuation?.audienceRouting?.inert === false
+    && menuStateClosed(state);
+}
+
+function sourceIdentityStable(before, after) {
+  const beforeSource = before?.home?.source;
+  const afterSource = after?.home?.source;
+  return attachedHomeSource(beforeSource)
+    && attachedHomeSource(afterSource)
+    && beforeSource.currentSrc === afterSource.currentSrc
+    && beforeSource.srcAttribute === afterSource.srcAttribute
+    && beforeSource.videoNodeCount === afterSource.videoNodeCount
+    && beforeSource.sourceNodeCount === afterSource.sourceNodeCount;
+}
+
+function nonemptyNavigationId(state) {
+  return typeof state?.navigationId === "string"
+    && state.navigationId.length > 0
+    && state.navigationId !== "pre-navigation";
+}
+
+function navigationIdentityStable(before, after) {
+  return nonemptyNavigationId(before)
+    && nonemptyNavigationId(after)
+    && before.navigationId === after.navigationId;
+}
+
+function enhancedHomeReturnResourcesCoherent(state) {
+  return state?.probe?.raf?.active === 0
+    && state.probe?.intervals?.active === 0
+    && state.probe?.blob?.live === 1;
+}
+
+function hiddenHomeSourceCoherent(before, hidden) {
+  return sourceIdentityStable(before, hidden)
+    && hidden?.home?.source?.paused === true
+    && hidden.probe?.raf?.active === 0
+    && hidden.probe?.intervals?.active === 0
+    && hidden.probe?.blob?.live === 1;
+}
+
+function homeCurrentSemanticState(state) {
+  return state?.url === "/"
+    && state?.home?.mode === "enhanced"
+    && state.home.phase === "physical"
+    && state.home.segment === "current-orbit";
+}
+
+function homeManifestoSemanticState(state) {
+  return state?.url === "/"
+    && state?.home?.mode === "enhanced"
+    && state.home.phase === "settled"
+    && state.home.manifestoReveal === "resolved"
+    && state.home.manifesto?.rendered === true
+    && state.home.manifesto.text === "We turn industrial needs into field evidence.";
+}
+
+function transitionStatesEvery(transition, predicate) {
+  return [transition?.before, transition?.hidden, transition?.visible].every(predicate);
+}
+
+function transitionRouteStable(transition, expectedRoute) {
+  const origin = transition?.before?.origin;
+  return deployedSnapshotOrigin(transition?.before)
+    && [transition?.before, transition?.hidden, transition?.visible].every((state) => state?.origin === origin && state.url === expectedRoute);
+}
+
+function transitionNavigationStable(transition) {
+  return navigationIdentityStable(transition?.before, transition?.hidden)
+    && navigationIdentityStable(transition?.hidden, transition?.visible);
+}
+
+function activeResourceIsZero(state, resource) {
+  const active = state?.probe?.[resource]?.active;
+  return Number.isFinite(active) ? active === 0 : null;
+}
+
+export function homeVisibilityScenarioChecks(name, transition) {
+  const whenHidden = (predicate) => observedTransitionValue(transition, "hidden", predicate);
+  const whenVisible = (predicate) => observedTransitionValue(transition, "visible", predicate);
+  if (name === "home-current") {
+    return {
+      routeStateStable: whenVisible(() => transitionRouteStable(transition, "/") && transitionNavigationStable(transition)),
+      currentOrbitStateStable: whenVisible(() => transitionStatesEvery(transition, homeCurrentSemanticState)),
+      homeMediaPausedWhileHidden: whenHidden((state) => hiddenHomeSourceCoherent(transition.before, state)),
+      noPersistentRafWhileHidden: whenHidden((state) => activeResourceIsZero(state, "raf")),
+      noPersistentIntervalWhileHidden: whenHidden((state) => activeResourceIsZero(state, "intervals")),
+      noStaleTargetFrameAfterReturn: whenVisible((state) => Number.isFinite(state.home?.targetFrame)
+        && Number.isFinite(state.home?.presentedFrame)
+        && Math.abs(state.home.targetFrame - state.home.presentedFrame) <= 1),
+      sourcePresenceStableAfterReturn: whenVisible((state) => sourceIdentityStable(transition.before, transition.hidden)
+        && sourceIdentityStable(transition.hidden, state)
+        && enhancedHomeReturnResourcesCoherent(state)),
+    };
+  }
+  if (name === "home-manifesto") {
+    return {
+      routeStateStable: whenVisible(() => transitionRouteStable(transition, "/") && transitionNavigationStable(transition)),
+      manifestoStateStable: whenVisible(() => transitionStatesEvery(transition, homeManifestoSemanticState)),
+      homeMediaPausedWhileHidden: whenHidden((state) => hiddenHomeSourceCoherent(transition.before, state)),
+      manifestoCoherentAfterReturn: whenVisible((state) => state.home?.manifestoReveal === "resolved"
+        && state.home.manifesto?.rendered === true
+        && state.home.manifesto.text === "We turn industrial needs into field evidence."
+        && sourceIdentityStable(transition.before, transition.hidden)
+        && sourceIdentityStable(transition.hidden, state)
+        && enhancedHomeReturnResourcesCoherent(state)),
+      noPersistentRafWhileHidden: whenHidden((state) => activeResourceIsZero(state, "raf")),
+      noPersistentIntervalWhileHidden: whenHidden((state) => activeResourceIsZero(state, "intervals")),
+    };
+  }
+  throw new Error(`unsupported Home visibility scenario: ${name}`);
+}
+
+function eventLedgersAppendOnly(before, after) {
+  const beforeEvents = before?.probe?.events;
+  const afterEvents = after?.probe?.events;
+  return Array.isArray(beforeEvents)
+    && Array.isArray(afterEvents)
+    && beforeEvents.length <= afterEvents.length
+    && JSON.stringify(beforeEvents) === JSON.stringify(afterEvents.slice(0, beforeEvents.length));
+}
+
+function manifestoRevealLedgerValid(state) {
+  const events = state?.probe?.manifestoRevealEvents;
+  return Array.isArray(events)
+    && events.every((event, index) => (
+      event
+      && typeof event === "object"
+      && !Array.isArray(event)
+      && Number.isFinite(event.atEpochMs)
+      && event.atEpochMs > 0
+      && event.atEpochMs <= state.capturedAtEpochMs
+      && (event.value === null || typeof event.value === "string")
+      && (index === 0 || event.atEpochMs >= events[index - 1].atEpochMs)
+    ));
+}
+
+function manifestoRevealLedgersAppendOnly(before, after) {
+  const beforeEvents = before?.probe?.manifestoRevealEvents;
+  const afterEvents = after?.probe?.manifestoRevealEvents;
+  return manifestoRevealLedgerValid(before)
+    && manifestoRevealLedgerValid(after)
+    && beforeEvents.length <= afterEvents.length
+    && JSON.stringify(beforeEvents) === JSON.stringify(afterEvents.slice(0, beforeEvents.length));
+}
+
+function resolvedManifestoObserved(state) {
+  const events = state?.probe?.manifestoRevealEvents;
+  return manifestoRevealLedgerValid(state)
+    && events.some(({ value }) => value === "resolved")
+    && state.home?.manifestoReveal === "resolved";
+}
+
+function manifestoRemainedResolvedAfterDeparture(departure, restored) {
+  if (!manifestoRevealLedgersAppendOnly(departure, restored)
+    || !resolvedManifestoObserved(departure)
+    || !resolvedManifestoObserved(restored)) return false;
+  const departureEvents = departure.probe.manifestoRevealEvents;
+  const postDepartureEvents = restored.probe.manifestoRevealEvents.slice(departureEvents.length);
+  return postDepartureEvents.every((event) => event.atEpochMs > departure.capturedAtEpochMs
+    && event.atEpochMs <= restored.capturedAtEpochMs
+    && event.value === "resolved");
+}
+
+function initialEnhancedHomeCoherent(state, expectedBootstrap) {
+  return state?.home?.mode === "enhanced"
+    && state.home.bootstrap === expectedBootstrap
+    && state.home.eligibility === "eligible"
+    && state.home.fallback === null
+    && state.home.mediaState === "ready"
+    && attachedHomeSource(state.home.source)
+    && state.probe?.blob?.live === 1
+    && menuStateClosed(state);
+}
+
+function homeProgressionCoherent(initial, resolved, expectedBootstrap) {
+  return Boolean(initial?.documentId)
+    && initial.documentId === resolved?.documentId
+    && navigationIdentityStable(initial, resolved)
+    && initial.origin === resolved.origin
+    && initial.url === resolved.url
+    && Number.isFinite(initial.capturedAtEpochMs) && initial.capturedAtEpochMs > 0
+    && Number.isFinite(resolved.capturedAtEpochMs) && resolved.capturedAtEpochMs >= initial.capturedAtEpochMs
+    && Number.isSafeInteger(initial.probe?.documentEventSequence) && initial.probe.documentEventSequence >= 0
+    && Number.isSafeInteger(resolved.probe?.documentEventSequence)
+    && resolved.probe.documentEventSequence >= initial.probe.documentEventSequence
+    && eventLedgersAppendOnly(initial, resolved)
+    && manifestoRevealLedgersAppendOnly(initial, resolved)
+    && resolvedManifestoObserved(resolved)
+    && initialEnhancedHomeCoherent(initial, expectedBootstrap)
+    && enhancedRestorationCoherent(resolved, expectedBootstrap)
+    && sourceIdentityStable(initial, resolved);
 }
 
 function visibleContextRestored(before, after) {
@@ -434,13 +701,13 @@ function visibleContextRestored(before, after) {
     && Math.abs(beforeLink.top - afterLink.top) <= 3;
 }
 
-async function wheelToEnd(page, timeoutMs) {
+async function wheelToEnd(page, timeoutMs, navigationIdForPage) {
   const started = Date.now();
   let previous = -1;
   let unchanged = 0;
   await page.mouse.move(20, 20);
   for (;;) {
-    const state = await snapshot(page, "wheel-progress");
+    const state = await snapshot(page, "wheel-progress", navigationIdForPage(page));
     if (state.scrollY >= state.maximumScroll - 1) return;
     if (Date.now() - started > timeoutMs) throw new Error(`native wheel timed out at ${state.scrollY}`);
     unchanged = state.scrollY === previous ? unchanged + 1 : 0;
@@ -460,33 +727,65 @@ export function navigationChecks(states) {
   const bareSameDocument = Boolean(states.bareManifesto.documentId)
     && states.bareManifesto.documentId === states.bareBack.documentId;
   const bareExactRestoration = bareSameDocument
+    && enhancedRestorationCoherent(states.bareBack, "eligible")
+    && sourceIdentityStable(states.bareManifesto, states.bareBack)
+    && navigationIdentityStable(states.bareManifesto, states.bareBack)
+    && Number.isFinite(states.bareBack.scrollY)
+    && Number.isFinite(states.bareManifesto.scrollY)
     && Math.abs(states.bareBack.scrollY - states.bareManifesto.scrollY) <= 2;
   const bareStaticRestoration = !bareSameDocument
     && staticRestorationCoherent(states.bareBack)
     && visibleContextRestored(states.bareManifesto, states.bareBack);
   const bareCorrect = states.bare.url === "/" && states.bare.scrollY === 0
-    && states.bare.probe?.navigation?.type === "navigate";
+    && states.bare.probe?.navigation?.type === "navigate"
+    && states.bareManifesto.url === "/"
+    && states.bareManifesto.probe?.navigation?.type === "navigate"
+    && homeProgressionCoherent(states.bare, states.bareManifesto, "eligible");
   const bareBackCorrect = states.bareBack.url === "/"
     && states.bareBack.probe?.navigation?.type === "back_forward"
     && (bareExactRestoration || bareStaticRestoration);
   const bareBackNoManifestoReplay = bareSameDocument
-    ? states.bareBack.home?.manifestoReveal === "resolved"
-    : staticRestorationCoherent(states.bareBack);
-  const bareForwardCorrect = states.supportForward.url === "/for-partners/"
+    ? manifestoRemainedResolvedAfterDeparture(states.bareManifesto, states.bareBack)
+    : null;
+  const bareForwardCorrect = states.supportAfterBare.url === "/for-partners/"
+    && states.supportAfterBare.probe?.navigation?.type === "navigate"
+    && states.supportForward.url === "/for-partners/"
     && states.supportForward.probe?.navigation?.type === "back_forward"
     && Math.abs(states.supportForward.scrollY - states.supportAfterBare.scrollY) <= 2;
-  const entryCorrect = states.entryResolved.url === "/#entry"
+  const entryCorrect = states.entryInitial.url === "/#entry"
+    && states.entryInitial.probe?.navigation?.type === "navigate"
+    && states.entryResolved.url === "/#entry"
     && states.entryResolved.probe?.navigation?.type === "navigate"
-    && states.entryResolved.home?.manifestoReveal === "resolved";
-  const entryBackCorrect = states.entryBack.url === "/#entry"
+    && homeProgressionCoherent(states.entryInitial, states.entryResolved, "semantic-entry");
+  const entrySameDocument = Boolean(states.entryResolved.documentId)
+    && states.entryResolved.documentId === states.entryBack.documentId;
+  const entryBackCorrect = states.supportAfterEntry.url === "/for-partners/"
+    && states.supportAfterEntry.probe?.navigation?.type === "navigate"
+    && states.entryBack.url === "/#entry"
     && states.entryBack.probe?.navigation?.type === "back_forward"
+    && enhancedRestorationCoherent(states.entryBack, "semantic-entry")
+    && (!entrySameDocument || (sourceIdentityStable(states.entryResolved, states.entryBack)
+      && navigationIdentityStable(states.entryResolved, states.entryBack)
+      && manifestoRemainedResolvedAfterDeparture(states.entryResolved, states.entryBack)))
+    && Number.isFinite(states.entryBack.scrollY)
+    && Number.isFinite(states.entryResolved.scrollY)
     && Math.abs(states.entryBack.scrollY - states.entryResolved.scrollY) <= 2;
   const entryBackManifestoResolved = states.entryBack.home?.manifestoReveal === "resolved";
   const entryForwardCorrect = states.entryForward.url === "/for-partners/"
     && states.entryForward.probe?.navigation?.type === "back_forward"
     && Math.abs(states.entryForward.scrollY - states.supportAfterEntry.scrollY) <= 2;
-  const menuClosed = [states.bareBack, states.supportForward, states.entryBack, states.entryForward]
-    .every((state) => state.mobileMenu?.open === false);
+  const menuClosed = [
+    states.bare,
+    states.bareManifesto,
+    states.supportAfterBare,
+    states.bareBack,
+    states.supportForward,
+    states.entryInitial,
+    states.entryResolved,
+    states.supportAfterEntry,
+    states.entryBack,
+    states.entryForward,
+  ].every(menuStateClosed);
   return {
     bareCorrect,
     bareBackCorrect,
@@ -500,12 +799,58 @@ export function navigationChecks(states) {
   };
 }
 
-function eventRoute(event) {
+function eventUrlMatches(event, expectedOrigin, expectedRoute) {
   try {
     const url = new URL(event.href);
-    return `${url.pathname}${url.hash}`;
+    return url.protocol === "https:"
+      && url.origin === expectedOrigin
+      && url.search === ""
+      && `${url.pathname}${url.hash}` === expectedRoute;
   }
   catch { return false; }
+}
+
+function deployedSnapshotOrigin(state) {
+  try {
+    const url = new URL(state?.origin);
+    return url.protocol === "https:" && url.origin === state.origin;
+  } catch {
+    return false;
+  }
+}
+
+function ledgerContainsEvent(ledger, expected) {
+  const serialized = JSON.stringify(expected);
+  return Array.isArray(ledger) && ledger.some((event) => JSON.stringify(event) === serialized);
+}
+
+function bfcachePairBoundToSnapshots(departure, restored, pagehide, pageshow, expectedRoute) {
+  const departureEvents = departure?.probe?.events;
+  const restoredEvents = restored?.probe?.events;
+  if (!deployedSnapshotOrigin(departure)
+    || restored?.origin !== departure.origin
+    || departure.url !== expectedRoute
+    || restored.url !== expectedRoute
+    || !eventUrlMatches(pagehide, departure.origin, expectedRoute)
+    || !eventUrlMatches(pageshow, departure.origin, expectedRoute)
+    || !Number.isFinite(departure.capturedAtEpochMs) || departure.capturedAtEpochMs <= 0
+    || !Number.isFinite(restored.capturedAtEpochMs) || restored.capturedAtEpochMs <= 0
+    || !Number.isFinite(pagehide?.atEpochMs) || pagehide.atEpochMs <= departure.capturedAtEpochMs
+    || !Number.isFinite(pageshow?.atEpochMs) || pageshow.atEpochMs <= pagehide.atEpochMs
+    || pageshow.atEpochMs > restored.capturedAtEpochMs
+    || !Number.isSafeInteger(departure.probe?.documentEventSequence) || departure.probe.documentEventSequence < 0
+    || !Number.isSafeInteger(restored.probe?.documentEventSequence) || restored.probe.documentEventSequence < 0
+    || !Number.isSafeInteger(pagehide?.documentEventSequence) || pagehide.documentEventSequence <= departure.probe.documentEventSequence
+    || !Number.isSafeInteger(pageshow?.documentEventSequence) || pageshow.documentEventSequence <= pagehide.documentEventSequence
+    || pageshow.documentEventSequence > restored.probe.documentEventSequence
+    || !eventLedgersAppendOnly(departure, restored)
+    || ledgerContainsEvent(departureEvents, pagehide)
+    || ledgerContainsEvent(departureEvents, pageshow)
+    || !ledgerContainsEvent(restoredEvents, pagehide)
+    || !ledgerContainsEvent(restoredEvents, pageshow)) return false;
+  const hideIndex = restoredEvents.findIndex((event) => JSON.stringify(event) === JSON.stringify(pagehide));
+  const showIndex = restoredEvents.findIndex((event) => JSON.stringify(event) === JSON.stringify(pageshow));
+  return hideIndex >= departureEvents.length && showIndex > hideIndex;
 }
 
 export function bfcacheResult(events, states) {
@@ -521,13 +866,21 @@ export function bfcacheResult(events, states) {
     }
     for (let showIndex = 0; showIndex < events.length; showIndex += 1) {
       const show = events[showIndex];
-      if (show?.type !== "pageshow" || show.persisted !== true || show.documentId !== state.documentId || eventRoute(show) !== expectedRoute) continue;
+      if (show?.type !== "pageshow" || show.persisted !== true || show.synthetic === true || show.documentId !== state.documentId || !eventUrlMatches(show, departure.origin, expectedRoute)) continue;
       for (let hideIndex = showIndex - 1; hideIndex >= 0; hideIndex -= 1) {
         const hide = events[hideIndex];
-        if (hide?.documentId !== state.documentId || eventRoute(hide) !== expectedRoute || (hide.type !== "pagehide" && hide.type !== "pageshow")) continue;
-        if (usedHideIndexes.has(hideIndex) || hide.type !== "pagehide" || hide.persisted !== true) break;
+        if (hide?.documentId !== state.documentId || !eventUrlMatches(hide, departure.origin, expectedRoute) || (hide.type !== "pagehide" && hide.type !== "pageshow")) continue;
+        if (usedHideIndexes.has(hideIndex) || hide.type !== "pagehide" || hide.persisted !== true || hide.synthetic === true) break;
         usedHideIndexes.add(hideIndex);
-        const coherent = state.home?.manifestoReveal === "resolved" && state.mobileMenu?.open === false;
+        const expectedBootstrap = expectedRoute === "/#entry" ? "semantic-entry" : "eligible";
+        const coherent = bfcachePairBoundToSnapshots(departure, state, hide, show, expectedRoute)
+          && enhancedRestorationCoherent(state, expectedBootstrap)
+          && sourceIdentityStable(departure, state)
+          && navigationIdentityStable(departure, state)
+          && manifestoRemainedResolvedAfterDeparture(departure, state)
+          && Number.isFinite(state.scrollY)
+          && Number.isFinite(departure.scrollY)
+          && Math.abs(state.scrollY - departure.scrollY) <= 2;
         return {
           departureKey,
           stateKey,
@@ -551,9 +904,11 @@ export function bfcacheResult(events, states) {
       statement: "No relevant Home pageshow.persisted=true restoration paired to an earlier pagehide.persisted=true for the same Document was observed; ordinary Back/Forward evidence remains separate.",
     };
   }
-  const failed = scenarios.some(({ status }) => status === STATUS.FAIL);
-  const passed = scenarios.some(({ status }) => status === STATUS.PASS);
-  const status = failed ? STATUS.FAIL : passed ? STATUS.PASS : STATUS.NOT_OBSERVED;
+  const status = scenarios.some(({ status: scenarioStatus }) => scenarioStatus === STATUS.FAIL)
+    ? STATUS.FAIL
+    : scenarios.some(({ status: scenarioStatus }) => scenarioStatus === STATUS.NOT_OBSERVED)
+      ? STATUS.NOT_OBSERVED
+      : STATUS.PASS;
   return {
     status,
     persistedEvents,
@@ -561,26 +916,26 @@ export function bfcacheResult(events, states) {
     scenarios,
     notRestoredReasons: Object.fromEntries(Object.entries(states).map(([key, state]) => [key, state.probe?.navigation?.notRestoredReasons ?? null])),
     statement: status === STATUS.PASS
-      ? "A relevant Home pageshow.persisted=true restoration was paired to pagehide.persisted=true for the same Document and remained coherent."
+      ? "Both Home routes produced snapshot-bound pagehide/pageshow persisted pairs for the same Document and remained coherent."
       : "A paired persisted Home restoration was observed but failed state-coherence checks.",
   };
 }
 
-async function runHistory(page, options) {
+async function runHistory(page, options, navigationIdForPage) {
   const states = {};
   await page.goto(targetUrl(options.baseUrl, "/"), { waitUntil: "domcontentloaded", timeout: options.timeoutMs });
   await settle(page, options.timeoutMs);
   await page.waitForFunction(() => document.documentElement.dataset.cinematicMode === "enhanced" && document.querySelector("[data-cinematic-shell]")?.getAttribute("data-media-state") === "ready", undefined, { timeout: options.timeoutMs });
-  states.bare = await snapshot(page, "bare-home");
-  await wheelToEnd(page, options.timeoutMs);
+  states.bare = await snapshot(page, "bare-home", navigationIdForPage(page));
+  await wheelToEnd(page, options.timeoutMs, navigationIdForPage);
   await page.waitForFunction(() => document.querySelector("[data-cinematic-shell]")?.getAttribute("data-manifesto-reveal") === "resolved", undefined, { timeout: options.timeoutMs });
   const barePartner = page.locator("[data-audience-routing] a[href='/for-partners/']");
   await barePartner.scrollIntoViewIfNeeded({ timeout: options.timeoutMs });
   await settle(page, options.timeoutMs);
-  states.bareManifesto = await snapshot(page, "bare-home-manifesto");
+  states.bareManifesto = await snapshot(page, "bare-home-manifesto", navigationIdForPage(page));
   await barePartner.click({ timeout: options.timeoutMs });
   await waitForUrl(page, (url) => url.pathname === "/for-partners/", options.timeoutMs);
-  states.supportAfterBare = await snapshot(page, "support-after-bare");
+  states.supportAfterBare = await snapshot(page, "support-after-bare", navigationIdForPage(page));
   await page.goBack({ waitUntil: "domcontentloaded", timeout: options.timeoutMs });
   await settle(page, options.timeoutMs);
   await waitForRestoredHome(page, options.timeoutMs);
@@ -592,22 +947,23 @@ async function runHistory(page, options) {
       { timeout: Math.min(options.timeoutMs, 3_000) },
     ).catch(() => false);
   }
-  states.bareBack = await snapshot(page, "bare-back");
+  states.bareBack = await snapshot(page, "bare-back", navigationIdForPage(page));
   await page.goForward({ waitUntil: "domcontentloaded", timeout: options.timeoutMs });
   await settle(page, options.timeoutMs);
-  states.supportForward = await snapshot(page, "support-forward");
+  states.supportForward = await snapshot(page, "support-forward", navigationIdForPage(page));
 
   await page.locator(".brand-link[href='/#entry']").first().click({ timeout: options.timeoutMs });
   await waitForUrl(page, (url) => url.pathname === "/" && url.hash === "#entry", options.timeoutMs);
-  states.entryInitial = await snapshot(page, "entry-initial");
+  await page.waitForFunction(() => document.documentElement.dataset.cinematicMode === "enhanced" && document.querySelector("[data-cinematic-shell]")?.getAttribute("data-media-state") === "ready", undefined, { timeout: options.timeoutMs });
+  states.entryInitial = await snapshot(page, "entry-initial", navigationIdForPage(page));
   await page.waitForFunction(() => document.querySelector("[data-cinematic-shell]")?.getAttribute("data-manifesto-reveal") === "resolved", undefined, { timeout: options.timeoutMs });
   const entryPartner = page.locator("[data-audience-routing] a[href='/for-partners/']");
   await entryPartner.scrollIntoViewIfNeeded({ timeout: options.timeoutMs });
   await settle(page, options.timeoutMs);
-  states.entryResolved = await snapshot(page, "entry-resolved");
+  states.entryResolved = await snapshot(page, "entry-resolved", navigationIdForPage(page));
   await entryPartner.click({ timeout: options.timeoutMs });
   await waitForUrl(page, (url) => url.pathname === "/for-partners/", options.timeoutMs);
-  states.supportAfterEntry = await snapshot(page, "support-after-entry");
+  states.supportAfterEntry = await snapshot(page, "support-after-entry", navigationIdForPage(page));
   await page.goBack({ waitUntil: "domcontentloaded", timeout: options.timeoutMs });
   await settle(page, options.timeoutMs);
   await page.waitForFunction(() => document.documentElement.dataset.cinematicMode === "enhanced" && document.querySelector("[data-cinematic-shell]")?.getAttribute("data-media-state") === "ready", undefined, { timeout: options.timeoutMs });
@@ -616,40 +972,54 @@ async function runHistory(page, options) {
     undefined,
     { timeout: Math.min(options.timeoutMs, 3_000) },
   ).catch(() => false);
-  states.entryBack = await snapshot(page, "entry-back");
+  states.entryBack = await snapshot(page, "entry-back", navigationIdForPage(page));
   await page.goForward({ waitUntil: "domcontentloaded", timeout: options.timeoutMs });
   await settle(page, options.timeoutMs);
-  states.entryForward = await snapshot(page, "entry-forward");
+  states.entryForward = await snapshot(page, "entry-forward", navigationIdForPage(page));
 
   const checks = navigationChecks(states);
   const events = states.entryForward.probe?.events ?? [];
-  return { status: Object.values(checks).every(Boolean) ? STATUS.PASS : STATUS.FAIL, checks, events, states, bfcache: bfcacheResult(events, states) };
+  return { status: Object.values(checks).every((value) => value === true || value === null) ? STATUS.PASS : STATUS.FAIL, checks, events, states, bfcache: bfcacheResult(events, states) };
 }
 
-async function tabSwitch(primary, background, options, label) {
+async function tabSwitch(primary, background, options, label, navigationIdForPage) {
   const transitionTimeoutMs = Math.min(options.timeoutMs, 5_000);
   await primary.bringToFront();
   const beforeVisible = await primary.waitForFunction(() => document.visibilityState === "visible", undefined, { polling: 100, timeout: transitionTimeoutMs })
     .then(() => true, () => false);
-  const before = await snapshot(primary, `${label}-before`);
+  const before = await snapshot(primary, `${label}-before`, navigationIdForPage(primary));
   await background.bringToFront();
   const hiddenReached = await primary.waitForFunction(() => document.visibilityState === "hidden", undefined, { polling: 100, timeout: transitionTimeoutMs })
     .then(() => true, () => false);
   if (hiddenReached) await primary.waitForTimeout(150);
-  const hidden = await snapshot(primary, `${label}-background`);
+  const hidden = await snapshot(primary, `${label}-background`, navigationIdForPage(primary));
   await primary.bringToFront();
   const visibleReached = await primary.waitForFunction(() => document.visibilityState === "visible", undefined, { polling: 100, timeout: transitionTimeoutMs })
     .then(() => true, () => false);
   if (visibleReached) await primary.waitForTimeout(150);
-  const visible = await snapshot(primary, `${label}-foreground`);
+  const visible = await snapshot(primary, `${label}-foreground`, navigationIdForPage(primary));
   return { before, hidden, visible, waits: { beforeVisible, hiddenReached, visibleReached } };
 }
 
 export function visibilityTransitionEvidence(transition) {
   const { before, hidden, visible } = transition ?? {};
   const documentId = before?.documentId;
-  const sameDocument = Boolean(documentId) && hidden?.documentId === documentId && visible?.documentId === documentId;
-  const sequenceBound = Number.isInteger(before?.probe?.documentEventSequence);
+  const sameDocument = Boolean(documentId)
+    && hidden?.documentId === documentId
+    && visible?.documentId === documentId
+    && deployedSnapshotOrigin(before)
+    && hidden?.origin === before.origin
+    && visible?.origin === before.origin
+    && hidden?.url === before.url
+    && visible?.url === before.url
+    && navigationIdentityStable(before, hidden)
+    && navigationIdentityStable(hidden, visible);
+  const sequenceBound = Number.isSafeInteger(before?.probe?.documentEventSequence)
+    && before.probe.documentEventSequence >= 0
+    && Number.isSafeInteger(hidden?.probe?.documentEventSequence)
+    && hidden.probe.documentEventSequence >= before.probe.documentEventSequence
+    && Number.isSafeInteger(visible?.probe?.documentEventSequence)
+    && visible.probe.documentEventSequence >= hidden.probe.documentEventSequence;
   const sequenceStart = sequenceBound ? before.probe.documentEventSequence : -1;
   const events = (visible?.probe?.events ?? []).filter((event) => (
     event?.type === "visibilitychange"
@@ -660,13 +1030,45 @@ export function visibilityTransitionEvidence(transition) {
   const visibleEventIndex = hiddenEventIndex < 0
     ? -1
     : events.findIndex(({ visibilityState }, index) => index > hiddenEventIndex && visibilityState === "visible");
+  const hiddenEvent = events[hiddenEventIndex];
+  const visibleEvent = events[visibleEventIndex];
+  const hiddenEventSequence = Number(hiddenEvent?.documentEventSequence);
+  const visibleEventSequence = Number(visibleEvent?.documentEventSequence);
+  const beforeEvents = before?.probe?.events;
+  const hiddenEvents = hidden?.probe?.events;
+  const visibleEvents = visible?.probe?.events;
+  const temporalSnapshots = [before, hidden, visible].every((state) => Number.isFinite(state?.capturedAtEpochMs) && state.capturedAtEpochMs > 0);
+  const appendOnlyLedgers = eventLedgersAppendOnly(before, hidden) && eventLedgersAppendOnly(hidden, visible);
+  const hiddenEventBound = hiddenEventIndex >= 0
+    && eventUrlMatches(hiddenEvent, before?.origin, before?.url)
+    && Number.isFinite(hiddenEvent?.atEpochMs)
+    && hiddenEvent.atEpochMs > before.capturedAtEpochMs
+    && hiddenEvent.atEpochMs <= hidden.capturedAtEpochMs
+    && hiddenEventSequence > sequenceStart
+    && hiddenEventSequence <= Number(hidden?.probe?.documentEventSequence)
+    && !ledgerContainsEvent(beforeEvents, hiddenEvent)
+    && ledgerContainsEvent(hiddenEvents, hiddenEvent);
+  const visibleEventBound = visibleEventIndex > hiddenEventIndex
+    && eventUrlMatches(visibleEvent, before?.origin, before?.url)
+    && Number.isFinite(visibleEvent?.atEpochMs)
+    && visibleEvent.atEpochMs > hidden.capturedAtEpochMs
+    && visibleEvent.atEpochMs <= visible.capturedAtEpochMs
+    && visibleEventSequence > Number(hidden?.probe?.documentEventSequence)
+    && visibleEventSequence <= Number(visible?.probe?.documentEventSequence)
+    && !ledgerContainsEvent(hiddenEvents, visibleEvent)
+    && ledgerContainsEvent(visibleEvents, visibleEvent);
   const checks = {
     sameDocument,
     sequenceBound,
     beforeVisible: before?.visibilityState === "visible",
     hiddenObserved: hidden?.visibilityState === "hidden",
     visibleRestored: visible?.visibilityState === "visible",
-    orderedVisibilityEvents: hiddenEventIndex >= 0 && visibleEventIndex > hiddenEventIndex,
+    orderedVisibilityEvents: hiddenEventIndex >= 0
+      && visibleEventIndex > hiddenEventIndex
+      && temporalSnapshots
+      && appendOnlyLedgers
+      && hiddenEventBound
+      && visibleEventBound,
   };
   return {
     status: Object.values(checks).every(Boolean) ? STATUS.PASS : STATUS.NOT_OBSERVED,
@@ -717,8 +1119,11 @@ export function aggregateVisibilityScenarios(scenarios) {
 function maradinMediaSourceFree(media) {
   return media?.state === "dormant"
     && media.hasSource === false
+    && media.src === null
     && media.currentSrc === null
     && media.srcAttribute === null
+    && media.videoNodeCount === 1
+    && media.sourceNodeCount === 0
     && media.paused === true
     && media.readyState === 0
     && media.tabIndex === -1
@@ -730,26 +1135,90 @@ export function maradinSourceFreeState(state) {
   return Array.isArray(state?.maradin) && state.maradin.length === 2 && state.maradin.every(maradinMediaSourceFree);
 }
 
+function attachedMaradinMedia(media) {
+  return media?.state === "active"
+    && media.hasSource === true
+    && typeof media.src === "string" && media.src.length > 0
+    && typeof media.currentSrc === "string" && media.currentSrc.length > 0
+    && typeof media.srcAttribute === "string" && media.srcAttribute.length > 0
+    && media.src === media.currentSrc
+    && media.currentSrc === media.srcAttribute
+    && media.videoNodeCount === 1
+    && media.sourceNodeCount === 0
+    && media.paused === false
+    && media.readyState >= 2
+    && media.tabIndex === 0
+    && media.launchHidden === true
+    && media.launchDisabled === false;
+}
+
+export function maradinActiveState(state) {
+  if (!Array.isArray(state?.maradin) || state.maradin.length !== 2 || state.probe?.blob?.live !== 1) return false;
+  const active = state.maradin.filter(attachedMaradinMedia);
+  const dormant = state.maradin.filter(maradinMediaSourceFree);
+  return active.length === 1 && dormant.length === 1;
+}
+
 export function maradinRetryActiveState(state) {
-  if (!Array.isArray(state?.maradin) || state.maradin.length !== 2) return false;
-  const active = state.maradin.filter((media) => media.state === "active");
-  const inactive = state.maradin.filter((media) => media.state !== "active");
-  return state.retryActivated === true
+  return maradinActiveState(state)
+    && state.retryActivated === true
     && state.retryPlayback?.advanced === true
     && Number.isFinite(state.retryPlayback?.startTime)
     && Number.isFinite(state.retryPlayback?.endTime)
-    && state.retryPlayback.endTime > state.retryPlayback.startTime
-    && active.length === 1
-    && active[0].hasSource === true
-    && active[0].paused === false
-    && active[0].readyState >= 2
-    && active[0].tabIndex === 0
-    && active[0].launchHidden === true
-    && inactive.length === 1
-    && maradinMediaSourceFree(inactive[0]);
+    && state.retryPlayback.endTime > state.retryPlayback.startTime;
 }
 
-async function runVisibility(context, options) {
+function sameDocumentSnapshotProgression(before, after, expectedRoute) {
+  return Boolean(before?.documentId)
+    && after?.documentId === before.documentId
+    && deployedSnapshotOrigin(before)
+    && after?.origin === before.origin
+    && before.url === expectedRoute
+    && after.url === expectedRoute
+    && navigationIdentityStable(before, after)
+    && Number.isFinite(before.capturedAtEpochMs) && before.capturedAtEpochMs > 0
+    && Number.isFinite(after.capturedAtEpochMs) && after.capturedAtEpochMs >= before.capturedAtEpochMs
+    && Number.isSafeInteger(before.probe?.documentEventSequence) && before.probe.documentEventSequence >= 0
+    && Number.isSafeInteger(after.probe?.documentEventSequence)
+    && after.probe.documentEventSequence >= before.probe.documentEventSequence
+    && eventLedgersAppendOnly(before, after);
+}
+
+export function maradinVisibilityScenarioChecks(name, transition, retryActive = null) {
+  const whenHidden = (predicate) => observedTransitionValue(transition, "hidden", predicate);
+  const whenVisible = (predicate) => observedTransitionValue(transition, "visible", predicate);
+  const routeStateStable = transition == null ? null : whenVisible(() => transitionRouteStable(transition, "/pocs/maradin/") && transitionNavigationStable(transition));
+  if (name === "maradin-release") {
+    return {
+      routeStateStable,
+      activeBeforeHide: transition == null ? null : observedTransitionValue(transition, "hidden", () => maradinActiveState(transition.before)),
+      sourceFreeWhileHidden: whenHidden(maradinSourceFreeState),
+      sourceFreeAfterReturn: whenVisible((state) => maradinSourceFreeState(state)
+        && state.probe?.blob?.live === 0
+        && state.probe?.raf?.active === 0
+        && state.probe?.intervals?.active === 0),
+      noLiveOrphanBlobWhileHidden: whenHidden((state) => state.probe?.blob?.live === 0),
+      noPersistentRafWhileHidden: whenHidden((state) => activeResourceIsZero(state, "raf")),
+      noPersistentIntervalWhileHidden: whenHidden((state) => activeResourceIsZero(state, "intervals")),
+    };
+  }
+  if (name === "maradin-retry-release") {
+    return {
+      routeStateStable,
+      retryActivatedWithSource: retryActive == null || transition == null ? null : maradinRetryActiveState(retryActive)
+        && sameDocumentSnapshotProgression(retryActive, transition.before, "/pocs/maradin/"),
+      sourceFreeOnSecondHide: whenHidden(maradinSourceFreeState),
+      sourceFreeAfterSecondReturn: whenVisible((state) => maradinSourceFreeState(state)
+        && state.probe?.blob?.live === 0
+        && state.probe?.raf?.active === 0
+        && state.probe?.intervals?.active === 0),
+      noLiveOrphanBlobOnSecondHide: whenHidden((state) => state.probe?.blob?.live === 0),
+    };
+  }
+  throw new Error(`unsupported Maradin visibility scenario: ${name}`);
+}
+
+async function runVisibility(context, options, navigationIdForPage) {
   const primary = await context.newPage();
   const background = await context.newPage();
   try {
@@ -759,10 +1228,10 @@ async function runVisibility(context, options) {
     await primary.waitForFunction(() => document.documentElement.dataset.cinematicMode === "enhanced" && document.querySelector("[data-cinematic-shell]")?.getAttribute("data-media-state") === "ready", undefined, { timeout: options.timeoutMs });
     await primary.mouse.wheel(0, 900);
     await primary.waitForTimeout(350);
-    const current = await tabSwitch(primary, background, options, "home-current");
-    await wheelToEnd(primary, options.timeoutMs);
+    const current = await tabSwitch(primary, background, options, "home-current", navigationIdForPage);
+    await wheelToEnd(primary, options.timeoutMs, navigationIdForPage);
     await primary.waitForFunction(() => document.querySelector("[data-cinematic-shell]")?.getAttribute("data-manifesto-reveal") === "resolved", undefined, { timeout: options.timeoutMs });
-    const manifesto = await tabSwitch(primary, background, options, "home-manifesto");
+    const manifesto = await tabSwitch(primary, background, options, "home-manifesto", navigationIdForPage);
 
     await primary.goto(targetUrl(options.baseUrl, "/pocs/maradin/"), { waitUntil: "domcontentloaded", timeout: options.timeoutMs });
     await settle(primary, options.timeoutMs);
@@ -773,7 +1242,7 @@ async function runVisibility(context, options) {
       const video = active[0]?.querySelector("video");
       return players.length === 2 && active.length === 1 && Boolean(video?.currentSrc || video?.getAttribute("src")) && video.paused === false && video.readyState >= 2;
     }, undefined, { timeout: options.timeoutMs });
-    const maradin = await tabSwitch(primary, background, options, "maradin");
+    const maradin = await tabSwitch(primary, background, options, "maradin", navigationIdForPage);
     const maradinSourceFreeAfterReturn = observedTransitionValue(maradin, "visible", maradinSourceFreeState);
     let retryActive = null;
     let maradinRetry = null;
@@ -785,7 +1254,7 @@ async function runVisibility(context, options) {
         const video = active[0]?.querySelector("video");
         return players.length === 2 && active.length === 1 && Boolean(video?.currentSrc || video?.getAttribute("src")) && video.paused === false && video.readyState >= 2;
       }, undefined, { timeout: options.timeoutMs }).then(() => true, () => false);
-      const retryStart = await snapshot(primary, "maradin-retry-start");
+      const retryStart = await snapshot(primary, "maradin-retry-start", navigationIdForPage(primary));
       const retryStartTime = retryStart.maradin[0]?.currentTime;
       const retryAdvanced = retryActivated && Number.isFinite(retryStartTime)
         ? await primary.waitForFunction((startTime) => {
@@ -793,52 +1262,21 @@ async function runVisibility(context, options) {
           return video?.paused === false && Number.isFinite(video.currentTime) && video.currentTime >= startTime + 0.05;
         }, retryStartTime, { polling: 50, timeout: options.timeoutMs }).then(() => true, () => false)
         : false;
-      retryActive = await snapshot(primary, "maradin-retry-active");
+      retryActive = await snapshot(primary, "maradin-retry-active", navigationIdForPage(primary));
       retryActive.retryActivated = retryActivated;
       retryActive.retryPlayback = {
         advanced: retryAdvanced,
         endTime: retryActive.maradin[0]?.currentTime ?? null,
         startTime: retryStartTime ?? null,
       };
-      maradinRetry = await tabSwitch(primary, background, options, "maradin-retry");
+      maradinRetry = await tabSwitch(primary, background, options, "maradin-retry", navigationIdForPage);
     }
 
-    const whenHidden = (transition, predicate) => observedTransitionValue(transition, "hidden", predicate);
-    const whenVisible = (transition, predicate) => observedTransitionValue(transition, "visible", predicate);
-    const activeResourceIsZero = (state, resource) => {
-      const active = state.probe?.[resource]?.active;
-      return Number.isFinite(active) ? active === 0 : null;
-    };
     const scenarios = [
-      evaluateVisibilityScenario("home-current", current, {
-        homeMediaPausedWhileHidden: whenHidden(current, (state) => state.home?.source?.paused === true),
-        noPersistentRafWhileHidden: whenHidden(current, (state) => activeResourceIsZero(state, "raf")),
-        noPersistentIntervalWhileHidden: whenHidden(current, (state) => activeResourceIsZero(state, "intervals")),
-        noStaleTargetFrameAfterReturn: whenVisible(current, (state) => Math.abs(state.home?.targetFrame - state.home?.presentedFrame) <= 1),
-        sourcePresenceStableAfterReturn: whenVisible(current, (state) => {
-          const beforeSource = current.before.home?.source?.hasSource;
-          const afterSource = state.home?.source?.hasSource;
-          return typeof beforeSource === "boolean" && typeof afterSource === "boolean" ? beforeSource === afterSource : null;
-        }),
-      }),
-      evaluateVisibilityScenario("home-manifesto", manifesto, {
-        manifestoCoherentAfterReturn: whenVisible(manifesto, (state) => state.home?.manifestoReveal === "resolved"),
-        noPersistentRafWhileHidden: whenHidden(manifesto, (state) => activeResourceIsZero(state, "raf")),
-        noPersistentIntervalWhileHidden: whenHidden(manifesto, (state) => activeResourceIsZero(state, "intervals")),
-      }),
-      evaluateVisibilityScenario("maradin-release", maradin, {
-        sourceFreeWhileHidden: whenHidden(maradin, maradinSourceFreeState),
-        sourceFreeAfterReturn: maradinSourceFreeAfterReturn,
-        noLiveOrphanBlobWhileHidden: whenHidden(maradin, (state) => state.probe?.blob?.live === 0),
-        noPersistentRafWhileHidden: whenHidden(maradin, (state) => activeResourceIsZero(state, "raf")),
-        noPersistentIntervalWhileHidden: whenHidden(maradin, (state) => activeResourceIsZero(state, "intervals")),
-      }),
-      evaluateVisibilityScenario("maradin-retry-release", maradinRetry, {
-        retryActivatedWithSource: retryActive == null ? null : maradinRetryActiveState(retryActive),
-        sourceFreeOnSecondHide: maradinRetry == null ? null : whenHidden(maradinRetry, maradinSourceFreeState),
-        sourceFreeAfterSecondReturn: maradinRetry == null ? null : whenVisible(maradinRetry, maradinSourceFreeState),
-        noLiveOrphanBlobOnSecondHide: maradinRetry == null ? null : whenHidden(maradinRetry, (state) => state.probe?.blob?.live === 0),
-      }),
+      evaluateVisibilityScenario("home-current", current, homeVisibilityScenarioChecks("home-current", current)),
+      evaluateVisibilityScenario("home-manifesto", manifesto, homeVisibilityScenarioChecks("home-manifesto", manifesto)),
+      evaluateVisibilityScenario("maradin-release", maradin, maradinVisibilityScenarioChecks("maradin-release", maradin)),
+      evaluateVisibilityScenario("maradin-retry-release", maradinRetry, maradinVisibilityScenarioChecks("maradin-retry-release", maradinRetry, retryActive)),
     ];
     return { ...aggregateVisibilityScenarios(scenarios), current, manifesto, maradin, retryActive, maradinRetry };
   } finally {
@@ -863,6 +1301,43 @@ function phase4MediaUrl(value) {
   }
 }
 
+function validByteRange(value) {
+  if (typeof value !== "string" || !/^bytes=/i.test(value)) return false;
+  const ranges = value.slice(value.indexOf("=") + 1).split(",");
+  if (!ranges.length) return false;
+  try {
+    return ranges.every((range) => {
+      const match = /^\s*(\d*)-(\d*)\s*$/.exec(range);
+      if (!match || (!match[1] && !match[2])) return false;
+      if (!match[1]) return BigInt(match[2]) > 0n;
+      if (!match[2]) return true;
+      return BigInt(match[1]) <= BigInt(match[2]);
+    });
+  } catch {
+    return false;
+  }
+}
+
+function authoritativePhase4Request(request) {
+  try {
+    const requestUrl = new URL(request.url);
+    const documentUrl = new URL(request.documentUrl);
+    const documentRoute = `${documentUrl.pathname}${documentUrl.hash}`;
+    return request.method === "GET"
+      && request.resourceType === "fetch"
+      && typeof request.frameNavigationId === "string"
+      && request.frameNavigationId.length > 0
+      && request.frameNavigationId !== "pre-navigation"
+      && documentUrl.origin === requestUrl.origin
+      && documentUrl.search === ""
+      && ["/", "/#entry"].includes(documentRoute)
+      && (request.range === null || validByteRange(request.range))
+      && phase4MediaUrl(requestUrl.href) === request.path;
+  } catch {
+    return false;
+  }
+}
+
 export function summarizeMediaTelemetry(records, snapshotInput) {
   const snapshots = Array.isArray(snapshotInput) ? snapshotInput : collectLifecycleSnapshots(snapshotInput);
   const homeDocuments = new Map();
@@ -874,6 +1349,9 @@ export function summarizeMediaTelemetry(records, snapshotInput) {
       modes: new Set(),
       observations: new Set(),
       paths: new Set(),
+      selectionDocumentUrl: null,
+      selectionNavigationId: null,
+      selectionStable: true,
       sourceObserved: false,
     };
     document.labels.add(state.label);
@@ -884,6 +1362,14 @@ export function summarizeMediaTelemetry(records, snapshotInput) {
       if (!mediaUrl) continue;
       document.paths.add(mediaUrl);
       document.observations.add(`${mediaUrl}\u0000${Number(resource.startTime ?? -1)}`);
+      let selectionDocumentUrl = null;
+      try { selectionDocumentUrl = new URL(state.url, state.origin).href; } catch { /* invalidated below */ }
+      if (document.selectionNavigationId === null) {
+        document.selectionNavigationId = state.navigationId ?? null;
+        document.selectionDocumentUrl = selectionDocumentUrl;
+      } else if (document.selectionNavigationId !== state.navigationId || document.selectionDocumentUrl !== selectionDocumentUrl) {
+        document.selectionStable = false;
+      }
     }
     homeDocuments.set(state.documentId, document);
   }
@@ -898,15 +1384,16 @@ export function summarizeMediaTelemetry(records, snapshotInput) {
       modes,
       paths,
       resourceObservations: document.observations.size,
+      selectionDocumentUrl: document.selectionDocumentUrl,
+      selectionNavigationId: document.selectionNavigationId,
+      selectionStable: document.selectionStable,
       sourceFree: !document.sourceObserved,
     };
   }).sort((left, right) => left.documentId.localeCompare(right.documentId));
   const phase4Requests = records.filter(({ path: requestPath }) => phase4MediaUrl(requestPath));
   const expectedDocuments = documents.filter(({ mediaExpected }) => mediaExpected);
+  const enhancedMediaDocuments = documents.filter(({ modes }) => modes.includes("enhanced"));
   const bypassDocuments = documents.filter(({ mediaExpected }) => !mediaExpected);
-  const expectedPhase4Present = expectedDocuments.length > 0
-    && expectedDocuments.every(({ paths }) => paths.length >= 1)
-    && phase4Requests.length >= 1;
   const bypassDocumentsSourceFree = bypassDocuments.every(({ modes, paths, sourceFree }) => (
     modes.length === 1 && modes[0] === "static" && paths.length === 0 && sourceFree
   ));
@@ -914,15 +1401,62 @@ export function summarizeMediaTelemetry(records, snapshotInput) {
     mediaExpected ? paths.length === 1 : paths.length === 0
   ));
   const uniqueNetworkPaths = [...new Set(phase4Requests.map(({ path: requestPath }) => phase4MediaUrl(requestPath)).filter(Boolean))].sort();
+  const selectedPaths = [...new Set(documents.flatMap(({ paths }) => paths))].sort();
+  const selectedPathsMatchNetwork = selectedPaths.length === uniqueNetworkPaths.length
+    && selectedPaths.every((selectedPath, index) => selectedPath === uniqueNetworkPaths[index]);
   const selectingDocumentsByPath = new Map();
   for (const document of documents) {
     for (const selectedPath of document.paths) {
       selectingDocumentsByPath.set(selectedPath, (selectingDocumentsByPath.get(selectedPath) ?? 0) + 1);
     }
   }
+  const expectedSelectionIds = expectedDocuments.map(({ selectionNavigationId }) => selectionNavigationId);
+  const uniqueExpectedSelectionIds = new Set(expectedSelectionIds);
+  const selectionKeys = new Map();
+  for (const document of expectedDocuments) {
+    for (const selectedPath of document.paths) {
+      const key = `${document.selectionNavigationId}\u0000${selectedPath}`;
+      const selection = selectionKeys.get(key) ?? { count: 0, documentUrl: document.selectionDocumentUrl };
+      selection.count += 1;
+      if (selection.documentUrl !== document.selectionDocumentUrl) selection.documentUrl = null;
+      selectionKeys.set(key, selection);
+    }
+  }
+  const navigationIdsByPath = new Map();
+  const nonRangeRequestsByNavigationPath = new Map();
+  for (const request of phase4Requests) {
+    const requestPath = phase4MediaUrl(request.path);
+    const navigationIds = navigationIdsByPath.get(requestPath) ?? new Set();
+    navigationIds.add(request.frameNavigationId);
+    navigationIdsByPath.set(requestPath, navigationIds);
+    if (!validByteRange(request.range)) {
+      const key = `${request.frameNavigationId}\u0000${requestPath}`;
+      nonRangeRequestsByNavigationPath.set(key, (nonRangeRequestsByNavigationPath.get(key) ?? 0) + 1);
+    }
+  }
+  const requestAuthorityValid = phase4Requests.every(authoritativePhase4Request);
+  const navigationCoverageValid = expectedSelectionIds.every((navigationId) => typeof navigationId === "string" && navigationId.length > 0 && navigationId !== "pre-navigation")
+    && expectedDocuments.length === enhancedMediaDocuments.length
+    && expectedDocuments.every(({ selectionDocumentUrl, selectionStable }) => typeof selectionDocumentUrl === "string" && selectionDocumentUrl.length > 0 && selectionStable)
+    && uniqueExpectedSelectionIds.size === expectedDocuments.length
+    && selectionKeys.size === expectedDocuments.length
+    && [...selectionKeys.values()].every(({ count, documentUrl }) => count === 1 && typeof documentUrl === "string")
+    && phase4Requests.every((request) => {
+      const selection = selectionKeys.get(`${request.frameNavigationId}\u0000${phase4MediaUrl(request.path)}`);
+      try { return selection?.count === 1 && new URL(request.documentUrl).href === selection.documentUrl; }
+      catch { return false; }
+    })
+    && [...selectionKeys.keys()].every((key) => phase4Requests.some((request) => `${request.frameNavigationId}\u0000${phase4MediaUrl(request.path)}` === key))
+    && selectedPaths.every((selectedPath) => navigationIdsByPath.get(selectedPath)?.size === selectingDocumentsByPath.get(selectedPath));
+  const expectedPhase4Present = expectedDocuments.length > 0
+    && expectedDocuments.every(({ paths }) => paths.length >= 1)
+    && phase4Requests.length >= 1
+    && selectedPathsMatchNetwork
+    && requestAuthorityValid
+    && navigationCoverageValid;
   const nonRangeRequestsByPath = new Map();
   for (const request of phase4Requests) {
-    if (request.range) continue;
+    if (validByteRange(request.range)) continue;
     const requestPath = phase4MediaUrl(request.path);
     nonRangeRequestsByPath.set(requestPath, (nonRangeRequestsByPath.get(requestPath) ?? 0) + 1);
   }
@@ -931,7 +1465,8 @@ export function summarizeMediaTelemetry(records, snapshotInput) {
     count,
     logicalHomeDocuments: selectingDocumentsByPath.get(requestPath) ?? 0,
   })).sort((left, right) => left.path.localeCompare(right.path));
-  const noDuplicateNonRangeRequests = nonRangeSelections.every(({ count, logicalHomeDocuments }) => count <= logicalHomeDocuments);
+  const noDuplicateNonRangeRequests = nonRangeSelections.every(({ count, logicalHomeDocuments }) => count <= logicalHomeDocuments)
+    && [...nonRangeRequestsByNavigationPath.values()].every((count) => count <= 1);
   return {
     status: expectedPhase4Present && bypassDocumentsSourceFree && noDuplicateSourceWithinDocument && noDuplicateNonRangeRequests ? STATUS.PASS : STATUS.FAIL,
     bypassDocumentsSourceFree,
@@ -942,8 +1477,8 @@ export function summarizeMediaTelemetry(records, snapshotInput) {
     network: {
       phase4Requests,
       requestCount: phase4Requests.length,
-      rangeRequestCount: phase4Requests.filter(({ range }) => Boolean(range)).length,
-      nonRangeRequestCount: phase4Requests.filter(({ range }) => !range).length,
+      rangeRequestCount: phase4Requests.filter(({ range }) => validByteRange(range)).length,
+      nonRangeRequestCount: phase4Requests.filter(({ range }) => !validByteRange(range)).length,
       nonRangeSelections,
       uniquePaths: uniqueNetworkPaths,
       interpretation: "Repeated HTTP range requests for one selected path are telemetry. Non-range selections may occur at most once per logical Home Document selecting that exact path.",
@@ -953,16 +1488,21 @@ export function summarizeMediaTelemetry(records, snapshotInput) {
 
 function listenerSnapshot(state) {
   const listeners = state?.probe?.listeners;
+  const activeByType = listeners?.activeByType;
   if (!listeners
-    || !Number.isFinite(listeners.active)
-    || !Number.isFinite(listeners.duplicateAttempts)
+    || ![listeners.active, listeners.added, listeners.removed, listeners.duplicateAttempts].every((value) => Number.isSafeInteger(value) && value >= 0)
     || !listeners.activeByType
     || typeof listeners.activeByType !== "object"
-    || Array.isArray(listeners.activeByType)) return null;
+    || Array.isArray(listeners.activeByType)
+    || Object.values(activeByType).some((value) => !Number.isSafeInteger(value) || value < 0)
+    || listeners.active !== Object.values(activeByType).reduce((sum, value) => sum + value, 0)
+    || listeners.active !== listeners.added - listeners.removed) return null;
   return {
     active: listeners.active,
     activeByType: listeners.activeByType,
+    added: listeners.added,
     duplicateAttempts: listeners.duplicateAttempts,
+    removed: listeners.removed,
   };
 }
 
@@ -974,23 +1514,99 @@ function listenerGrowth(before, after) {
     if (Number(count) > Number(before.activeByType[type] ?? 0)) failures.push(`active-${type}-listeners-grew`);
   }
   if (after.duplicateAttempts > before.duplicateAttempts) failures.push("duplicate-registration-attempted-during-restore");
+  if (after.added < before.added) failures.push("listener-added-counter-decreased");
+  if (after.removed < before.removed) failures.push("listener-removed-counter-decreased");
+  if (after.duplicateAttempts < before.duplicateAttempts) failures.push("listener-duplicate-counter-decreased");
   return failures;
+}
+
+function lifecycleResourceKey(resource) {
+  if (!resource || typeof resource !== "object" || Array.isArray(resource)
+    || !Number.isFinite(resource.startTime) || resource.startTime < 0) return null;
+  try {
+    const value = resource.url ?? resource.path;
+    if (typeof value !== "string" || !value) return null;
+    return `${new URL(value, TEST_RESOURCE_ORIGIN).href}\u0000${resource.startTime}`;
+  } catch {
+    return null;
+  }
+}
+
+const TEST_RESOURCE_ORIGIN = "https://phase6.invalid/";
+
+function cumulativeTelemetryFailures(before, after) {
+  if (!before?.probe || !after?.probe || before.documentId !== after.documentId) return ["same-document-telemetry-unavailable"];
+  const failures = [];
+  const cumulativeFields = [
+    ["raf", "scheduled"], ["raf", "executed"], ["raf", "cancelled"],
+    ["intervals", "created"], ["intervals", "cleared"],
+    ["blob", "created"], ["blob", "revoked"],
+    ["listeners", "added"], ["listeners", "removed"], ["listeners", "duplicateAttempts"],
+  ];
+  for (const [section, field] of cumulativeFields) {
+    if (after.probe?.[section]?.[field] < before.probe?.[section]?.[field]) failures.push(`${section}-${field}-counter-decreased`);
+  }
+  const beforeKeys = (before.probe.resources ?? []).map(lifecycleResourceKey);
+  const afterKeys = new Set((after.probe.resources ?? []).map(lifecycleResourceKey));
+  if (beforeKeys.includes(null) || afterKeys.has(null)) failures.push("resource-ledger-invalid");
+  else if (beforeKeys.some((key) => !afterKeys.has(key))) failures.push("resource-observation-disappeared");
+  return failures;
+}
+
+function chronologicalSameDocumentPairs(snapshots) {
+  const indexed = snapshots.map((state, index) => ({ index, state }));
+  const groups = new Map();
+  for (const item of indexed) {
+    if (!item.state?.documentId) continue;
+    const group = groups.get(item.state.documentId) ?? [];
+    group.push(item);
+    groups.set(item.state.documentId, group);
+  }
+  return [...groups.entries()].flatMap(([documentId, group]) => {
+    group.sort((left, right) => left.state.capturedAtEpochMs - right.state.capturedAtEpochMs || left.index - right.index);
+    return group.slice(1).map((item, index) => ({
+      after: item.state,
+      before: group[index].state,
+      documentId,
+    }));
+  });
 }
 
 export function summarizeListenerTelemetry(history, visibility) {
   const snapshots = collectLifecycleSnapshots({ history, visibility });
+  const invalidCounterSnapshots = snapshots.filter((state) => {
+    const listenersValid = listenerSnapshot(state) !== null;
+    const raf = state.probe?.raf;
+    const intervals = state.probe?.intervals;
+    const blob = state.probe?.blob;
+    const safeCounters = (record, keys) => record && keys.every((key) => Number.isSafeInteger(record[key]) && record[key] >= 0);
+    return !listenersValid
+      || !safeCounters(raf, ["scheduled", "executed", "cancelled", "active"])
+      || raf.active !== raf.scheduled - raf.executed - raf.cancelled
+      || !safeCounters(intervals, ["created", "cleared", "active"])
+      || intervals.active !== intervals.created - intervals.cleared
+      || !safeCounters(blob, ["created", "revoked", "live"])
+      || blob.live !== blob.created - blob.revoked;
+  });
   const duplicateDocuments = [...new Map(snapshots.filter((state) => (state.probe?.listeners?.duplicateAttempts ?? 0) > 0)
     .map((state) => [state.documentId, {
       documentId: state.documentId,
       duplicateAttempts: state.probe.listeners.duplicateAttempts,
       label: state.label,
     }])).values()];
+  const telemetryRegressions = chronologicalSameDocumentPairs(snapshots).flatMap(({ before, after, documentId }) => {
+    const failures = cumulativeTelemetryFailures(before, after);
+    return failures.length ? [{ after: after.label, before: before.label, documentId, failures }] : [];
+  });
   const candidatePairs = [
     ["bare-back", history?.states?.bareManifesto, history?.states?.bareBack],
     ["entry-back", history?.states?.entryResolved, history?.states?.entryBack],
     ...(visibility?.scenarios ?? [])
       .filter((scenario) => scenario.observation?.status === STATUS.PASS)
-      .map((scenario) => [`${scenario.name}-foreground`, scenario.transition?.before, scenario.transition?.visible]),
+      .flatMap((scenario) => [
+        [`${scenario.name}-hidden`, scenario.transition?.before, scenario.transition?.hidden],
+        [`${scenario.name}-foreground`, scenario.transition?.hidden, scenario.transition?.visible],
+      ]),
   ];
   const comparisons = candidatePairs.flatMap(([name, beforeState, afterState]) => {
     if (!beforeState?.documentId || beforeState.documentId !== afterState?.documentId) return [];
@@ -999,11 +1615,12 @@ export function summarizeListenerTelemetry(history, visibility) {
     const failures = listenerGrowth(before, after);
     return [{ name, documentId: beforeState.documentId, before, after, failures, stable: failures.length === 0 }];
   });
-  const failed = duplicateDocuments.length > 0 || comparisons.some(({ stable }) => !stable);
+  const failed = invalidCounterSnapshots.length > 0 || duplicateDocuments.length > 0 || telemetryRegressions.length > 0 || comparisons.some(({ stable }) => !stable);
   return {
     status: failed ? STATUS.FAIL : comparisons.length > 0 ? STATUS.PASS : STATUS.NOT_OBSERVED,
     duplicateDocuments,
     comparisons,
+    telemetryRegressions,
     statement: failed
       ? "Duplicate registration attempts or listener growth were observed."
       : comparisons.length > 0
@@ -1049,6 +1666,7 @@ export async function runPersistentLifecycle(options) {
   await mkdir(profile, { recursive: false });
   const requests = [];
   const frameNavigationIds = new WeakMap();
+  const frameRouteNavigationIds = new WeakMap();
   let nextNavigationId = 0;
   let context;
   let collected = null;
@@ -1063,11 +1681,21 @@ export async function runPersistentLifecycle(options) {
     await installProbe(context);
     const registerPage = (page) => {
       page.on("framenavigated", (frame) => {
-        if (frame === page.mainFrame()) frameNavigationIds.set(frame, `navigation-${++nextNavigationId}`);
+        if (frame !== page.mainFrame()) return;
+        let route = frame.url();
+        try {
+          const url = new URL(route);
+          route = `${url.pathname}${url.hash}`;
+        } catch { /* non-URL frame state gets its own opaque key */ }
+        const routeIds = frameRouteNavigationIds.get(frame) ?? new Map();
+        if (!routeIds.has(route)) routeIds.set(route, `navigation-${++nextNavigationId}`);
+        frameRouteNavigationIds.set(frame, routeIds);
+        frameNavigationIds.set(frame, routeIds.get(route));
       });
     };
     for (const page of context.pages()) registerPage(page);
     context.on("page", registerPage);
+    const navigationIdForPage = (page) => frameNavigationIds.get(page.mainFrame()) ?? null;
     context.on("request", (request) => {
       const url = new URL(request.url());
       const headers = request.headers();
@@ -1080,13 +1708,14 @@ export async function runPersistentLifecycle(options) {
         path: `${url.pathname}${url.search}`,
         range: headers.range ?? null,
         resourceType: request.resourceType(),
+        url: request.url(),
       });
     });
     const pages = context.pages();
     const page = pages[0] ?? await context.newPage();
-    const history = await runHistory(page, options);
+    const history = await runHistory(page, options, navigationIdForPage);
     await page.close();
-    const visibility = await runVisibility(context, options);
+    const visibility = await runVisibility(context, options, navigationIdForPage);
     collected = { browserVersion: context.browser()?.version() ?? null, history, visibility };
   } catch (error) {
     runError = error;

@@ -23,6 +23,7 @@ import {
   R1_REQUIRED_BRANCH,
   R1_REQUIRED_BRANCH_URL,
   R1_REQUIRED_PARENT,
+  R1_TOOLING_REPORT_FILES,
   R1_MOTION_EVIDENCE_SCHEMA,
   R1_MOTION_RECORDING_SPECS,
   R1_PERSISTENT_LIFECYCLE_SCHEMA,
@@ -33,6 +34,7 @@ import {
   assembleFinalEvidence,
   buildEvidenceEntries,
   createMetadataTemplate,
+  evidenceTaxonomy,
   generatePosterEvidence,
   guardedRequirementAssessment,
   parseArguments,
@@ -42,9 +44,16 @@ import {
   stableJson,
   validateDocumentAuthority,
   validateEvidenceEntries,
+  validateFinalMetadata,
   validateHumanEvidenceLedger,
 } from "../scripts/assemble-phase6-final-evidence.mjs";
-import { DEVICE_REVIEW_CHECKS } from "../scripts/ingest-phase6-r1-human-evidence.mjs";
+import { DEVICE_REVIEW_CHECKS, HUMAN_EVIDENCE_POLICY } from "../scripts/ingest-phase6-r1-human-evidence.mjs";
+import {
+  ACCESSIBILITY_VIEWPORTS,
+  historyFailures as accessibilityHistoryFailures,
+  keyboardFailures as accessibilityKeyboardFailures,
+  mobileMenuFailures as accessibilityMobileMenuFailures,
+} from "../scripts/qa-phase6-accessibility-interactions.mjs";
 import {
   PACKAGE_SCHEMA,
   REPORT_SPECS,
@@ -54,10 +63,19 @@ import {
   buildPackageArtifacts,
 } from "../scripts/package-phase6-human-review.mjs";
 import { auditBuffers } from "../scripts/audit-phase6-human-review-package.mjs";
+import {
+  HTML_AUTHORITY_FILES,
+  PUBLIC_ROUTE_OUTCOMES,
+  REQUIRED_HEADER_POLICIES,
+  canonicalForDistFile,
+  publicPathForDistFile,
+} from "../scripts/verify-phase6-deployment.mjs";
+import { EXPECTED_R1_CHANGED_PATH_RECORDS } from "../scripts/verify-phase6-r1-deployment.mjs";
 
 const GENERATED_AT = "2026-08-30T14:00:00.000Z";
 const FINAL_HEAD = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 const R1_FINAL_HEAD = "dddddddddddddddddddddddddddddddddddddddd";
+const R1_FINAL_TREE = "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 const DEPLOYMENT_ID = "12345678-1234-4234-8234-123456789abc";
 const IMMUTABLE_URL = "https://12345678.qsite1.pages.dev/";
 const BRANCH_URL = REQUIRED_BRANCH_URL;
@@ -106,6 +124,70 @@ function performanceReport() {
   };
 }
 
+function accessibilityFocus(key = "a|/target|Target") {
+  return {
+    classes: [], focusVisible: true, href: "/target", key, outlineStyle: "solid", outlineWidth: "2px",
+    rect: { bottom: 80, height: 44, left: 10, right: 110, top: 36, width: 100 }, selector: "a.target", tag: "a", text: "Target", visible: true,
+  };
+}
+
+function accessibilityDesktopHome(routePath) {
+  return {
+    activationError: null,
+    arrival: { entryInert: false, hash: "#entry", manifestoReveal: "resolved", path: "/", route: "/#entry" },
+    back: { entryInert: false, hash: "", manifestoReveal: "resolved", path: routePath, route: routePath },
+    backError: null,
+    focus: { ...accessibilityFocus("a|/#entry|Home"), href: "/#entry" },
+    forward: { entryInert: false, hash: "#entry", manifestoReveal: "resolved", path: "/", route: "/#entry" },
+    forwardError: null,
+  };
+}
+
+function accessibilityKeyboardRow(engine, route) {
+  const expectedHash = route.id === "home" ? "#entry" : "#main-content";
+  const forwardFirst = route.id === "home"
+    ? { ...accessibilityFocus("a|/for-partners/|For partners"), classes: ["audience-trajectory"], href: "/for-partners/" }
+    : accessibilityFocus("a|/one|One");
+  const forwardSecond = route.id === "home"
+    ? { ...accessibilityFocus("a|/for-startups/|For startups"), classes: ["audience-trajectory"], href: "/for-startups/" }
+    : accessibilityFocus("a|/two|Two");
+  const row = {
+    afterActivation: { activeId: expectedHash.slice(1), hash: expectedHash, targetVisible: true },
+    backward: { ...forwardFirst }, desktopHome: accessibilityDesktopHome(route.path), engine, expectedHash,
+    first: { ...accessibilityFocus(`a|${expectedHash}|Skip to content`), classes: ["skip-link"], href: expectedHash },
+    forwardFirst, forwardSecond, route: route.id, routePath: route.path,
+  };
+  row.failures = accessibilityKeyboardFailures(row);
+  row.status = row.failures.length ? "FAIL" : "PASS";
+  return row;
+}
+
+function accessibilityMenuRow(engine) {
+  const closed = { activeIsTrigger: true, ariaExpanded: "false", hash: "", open: false, path: "/about/" };
+  const open = { activeIsTrigger: true, ariaExpanded: "true", hash: "", open: true, path: "/about/" };
+  const row = {
+    cycles: Array.from({ length: 4 }, () => ({ close: { ...closed }, open: { ...open } })), engine,
+    escapeClose: { ...closed }, firstMenuLink: accessibilityFocus("a|/#entry|Home"),
+    navigation: { activationError: null, arrival: { activeIsTrigger: false, ariaExpanded: "false", hash: "#entry", open: false, path: "/" }, back: { ...closed }, backError: null, focus: { ...accessibilityFocus("a|/#entry|Home"), href: "/#entry" } },
+    ordinaryClose: { ...closed }, ordinaryOpen: { ...open }, triggerFocus: accessibilityFocus("summary||Menu"),
+  };
+  row.failures = accessibilityMobileMenuFailures(row);
+  row.status = row.failures.length ? "FAIL" : "PASS";
+  return row;
+}
+
+function accessibilityHistoryRow(engine) {
+  const row = {
+    back: { entryAlignmentDelta: null, hash: "", path: "/", scrollY: 0 },
+    bare: { entryAlignmentDelta: null, hash: "", path: "/", scrollY: 0 }, engine,
+    entry: { entryAlignmentDelta: 0, hash: "#entry", path: "/", scrollY: 4200 },
+    forward: { entryAlignmentDelta: 0, hash: "#entry", path: "/", scrollY: 4200 },
+  };
+  row.failures = accessibilityHistoryFailures(row);
+  row.status = row.failures.length ? "FAIL" : "PASS";
+  return row;
+}
+
 function accessibilityReport(engine, { axeOnly = false, failed = false } = {}) {
   const routes = [
     { expectedStatus: 200, id: "home", path: "/" },
@@ -119,12 +201,51 @@ function accessibilityReport(engine, { axeOnly = false, failed = false } = {}) {
     { expectedStatus: 200, id: "contact", path: "/contact/" },
     { expectedStatus: 404, id: "404", path: "/__phase6-intentional-404__/" },
   ];
-  const interaction = axeOnly || failed ? {} : {
-    failures: [],
-    history: { failures: [], status: "PASS" },
-    keyboard: routes.map(({ id: route }) => ({ route, failures: [], status: "PASS" })),
-    mobileMenu: { cycles: Array.from({ length: 4 }, (_, index) => ({ cycle: index + 1, status: "PASS" })), failures: [], status: "PASS" },
-    summary: { keyboardCases: 10 },
+  const axe = ACCESSIBILITY_VIEWPORTS.flatMap((viewport) => routes.map((route) => ({ engine, failures: [], httpStatus: route.expectedStatus, incompleteCount: 0, route: route.id, status: "PASS", violations: [], viewport: { ...viewport } })));
+  const keyboard = axeOnly ? [] : routes.map((route) => accessibilityKeyboardRow(engine, route));
+  if (failed) {
+    const mutations = [];
+    for (const row of keyboard) {
+      mutations.push(
+        () => { row.first.focusVisible = false; },
+        () => { row.first.href = "#wrong"; },
+        () => { row.afterActivation.hash = "#wrong"; },
+        () => { row.forwardSecond.focusVisible = false; },
+        () => { row.backward.key = "wrong"; },
+        () => { row.desktopHome.activationError = "waitForURL timed out"; },
+        () => { row.desktopHome.backError = "goBack timed out"; },
+        () => { row.desktopHome.forwardError = "goForward timed out"; },
+        () => { row.desktopHome.focus.href = "/wrong"; },
+        () => { row.desktopHome.arrival.hash = ""; },
+        () => { row.desktopHome.back.route = "/wrong/"; },
+        () => { row.desktopHome.forward.hash = ""; },
+      );
+    }
+    for (const mutate of mutations.slice(0, 51)) mutate();
+    for (const row of keyboard) {
+      row.failures = accessibilityKeyboardFailures(row);
+      row.status = row.failures.length ? "FAIL" : "PASS";
+    }
+    assert.equal(keyboard.reduce((sum, row) => sum + row.failures.length, 0), 51);
+  }
+  const mobileMenu = axeOnly ? null : accessibilityMenuRow(engine);
+  const history = axeOnly ? null : accessibilityHistoryRow(engine);
+  const engineFailures = [
+    ...axe.flatMap((row) => row.failures.map((failure) => ({ section: "axe", route: row.route, viewport: row.viewport.id, ...failure }))),
+    ...keyboard.flatMap((row) => row.failures.map((failure) => ({ section: "keyboard", route: row.route, ...failure }))),
+    ...(mobileMenu?.failures ?? []).map((failure) => ({ section: "mobile-menu", ...failure })),
+    ...(history?.failures ?? []).map((failure) => ({ section: "history", ...failure })),
+  ];
+  const engineResult = {
+    axe,
+    browser: { engine, executable: `${engine}.exe`, headed: false, version: "1" },
+    engine,
+    failures: engineFailures,
+    history,
+    keyboard,
+    mobileMenu,
+    status: engineFailures.length ? "FAIL" : "PASS",
+    summary: { axeCases: 20, axeViolations: 0, failures: engineFailures.length, keyboardCases: keyboard.length, seriousCritical: 0 },
   };
   return {
     schema: "quantum-hub.phase-6.accessibility-interactions.v1",
@@ -132,11 +253,13 @@ function accessibilityReport(engine, { axeOnly = false, failed = false } = {}) {
     baseUrl: LOCAL_BASE_URL,
     engine,
     selectedEngines: [engine],
-    engines: [{ engine, status: failed ? "ERROR" : "PASS", ...interaction }],
+    engines: [engineResult],
     axeOnly,
-    failures: failed ? [{ check: "webkit-interaction", message: "engine timeout" }] : [],
+    failures: engineFailures.map((failure) => ({ engine, ...failure })),
     routes,
-    summary: { axeCases: failed ? 0 : 20, axeExpected: 20, axeViolations: 0, engineErrors: failed ? 1 : 0, failures: failed ? 1 : 0, seriousCritical: 0 },
+    status: engineFailures.length ? "FAIL" : "PASS",
+    summary: { axeCases: 20, axeExpected: 20, axeViolations: 0, engineErrors: 0, failures: engineFailures.length, seriousCritical: 0 },
+    viewports: ACCESSIBILITY_VIEWPORTS,
   };
 }
 
@@ -191,17 +314,107 @@ function r1DeploymentReport() {
   report.inputs.branch = R1_REQUIRED_BRANCH;
   report.inputs.branchUrl = R1_REQUIRED_BRANCH_URL;
   report.repository.data.branch = R1_REQUIRED_BRANCH;
+  report.repository.data.status = "PASS";
   report.repository.data.head = R1_FINAL_HEAD;
   report.repository.data.exactParent = R1_REQUIRED_PARENT;
   delete report.repository.data.acceptedBase;
   report.repository.data.directParent = R1_REQUIRED_PARENT;
   report.repository.data.history = [{ commit: R1_FINAL_HEAD, parents: [R1_REQUIRED_PARENT], subject: "Phase 6-R1 validation closure" }];
-  report.repository.data.upstream = { ref: `origin/${R1_REQUIRED_BRANCH}`, headSha: R1_FINAL_HEAD, parity: true };
-  report.repository.data.liveRemote = { branchRef: `refs/heads/${R1_REQUIRED_BRANCH}`, branchHeadSha: R1_FINAL_HEAD, mainRef: "refs/heads/main", mainHeadSha: FROZEN_MAIN, parity: true };
+  report.repository.data.productionSourceDiff = [];
+  report.repository.data.productionDiffScope = ["src", "public", "astro.config.mjs", "package-lock.json", ".nvmrc", "tsconfig.json", "package.json except approved R1 evidence/test scripts"];
+  delete report.repository.data.productionDelta;
+  report.repository.data.toolingReportDiff = [...EXPECTED_R1_CHANGED_PATH_RECORDS];
+  report.repository.data.packageScriptChanges = ["audit:phase6-r1-review", "capture:phase6-r1-motion", "check", "ingest:phase6-r1-human", "package:phase6-r1-review", "qa:phase6-r1-lifecycle", "test", "verify:phase6-r1-deployment"];
+  report.repository.data.main = { local: FROZEN_MAIN, upstream: FROZEN_MAIN, live: FROZEN_MAIN, modifiedOrMerged: false };
+  report.repository.data.upstream = { ref: `origin/${R1_REQUIRED_BRANCH}`, head: R1_FINAL_HEAD, live: R1_FINAL_HEAD, parity: true };
+  delete report.repository.data.liveRemote;
   report.deployment.data.branchUrl = R1_REQUIRED_BRANCH_URL;
   report.deployment.data.branch = R1_REQUIRED_BRANCH;
   report.deployment.data.commitHash = R1_FINAL_HEAD;
-  report.origins.branch.data.origin = R1_REQUIRED_BRANCH_URL;
+  report.deployment.data.appSlug = "cloudflare-workers-and-pages";
+  report.deployment.data.branchBinding = { status: "PASS", source: "SIGNED_CHECK_EXACT_BRANCH_ALIAS", branch: R1_REQUIRED_BRANCH, branchUrl: R1_REQUIRED_BRANCH_URL };
+  const distPaths = [
+    ...HTML_AUTHORITY_FILES,
+    "_headers",
+    "robots.txt",
+    "sitemap.xml",
+    "_astro/about.css",
+    "_astro/About.js",
+    "_astro/app.js",
+    "media/cinematic/phase-4r2/manifests/home.json",
+    "media/cinematic/phase-4r2/media/home.mp4",
+    "media/cinematic/phase-4r2/posters/home.webp",
+  ].sort((left, right) => left.localeCompare(right));
+  const files = distPaths.map((relativePath) => {
+    const bytes = Buffer.byteLength(`fixture:${relativePath}`);
+    return {
+      relativePath,
+      deploymentComparison: relativePath === "_headers" ? "EXCLUDED_CLOUDFLARE_CONFIGURATION" : "REQUIRED",
+      requestPath: publicPathForDistFile(relativePath),
+      bytes,
+      sha256: sha256(Buffer.from(`fixture:${relativePath}`)),
+    };
+  });
+  const canonicalAuthority = Object.fromEntries(HTML_AUTHORITY_FILES.map((relativePath) => [relativePath, {
+    canonical: canonicalForDistFile(relativePath),
+    robotsNoindex: relativePath === "404.html",
+    status: "PASS",
+  }]));
+  const missing404Path = `/__phase6-real-404-${R1_FINAL_HEAD.slice(0, 12)}-${DEPLOYMENT_ID.slice(0, 8)}/`;
+  const comparable = files.filter(({ relativePath }) => relativePath !== "_headers");
+  const responses = comparable.map((file) => {
+    const publicPath = file.relativePath === "404.html" ? missing404Path : file.requestPath;
+    const matchedPolicies = Object.keys(REQUIRED_HEADER_POLICIES).filter((pattern) => publicPath.startsWith(pattern.slice(0, -1)));
+    const contentType = ({
+      ".html": "text/html; charset=utf-8",
+      ".css": "text/css; charset=utf-8",
+      ".js": "application/javascript",
+      ".json": "application/json",
+      ".mp4": "video/mp4",
+      ".txt": "text/plain; charset=utf-8",
+      ".webp": "image/webp",
+      ".xml": "application/xml",
+    })[path.posix.extname(file.relativePath)];
+    return {
+      relativePath: file.relativePath,
+      publicPath,
+      expectedHttpStatus: file.relativePath === "404.html" ? 404 : 200,
+      actualHttpStatus: file.relativePath === "404.html" ? 404 : 200,
+      bytes: file.bytes,
+      sha256: file.sha256,
+      headers: {
+        contentType,
+        cacheControl: matchedPolicies.length
+          ? REQUIRED_HEADER_POLICIES[matchedPolicies[0]]
+          : file.relativePath === "404.html" ? "no-store" : "public, max-age=0, must-revalidate",
+        matchedPolicies,
+        status: "PASS",
+      },
+      canonical: file.relativePath.endsWith(".html") ? canonicalAuthority[file.relativePath] : null,
+      status: "PASS",
+    };
+  });
+  report.dist = {
+    status: "PASS",
+    files,
+    totals: { files: files.length, comparableFiles: comparable.length, bytes: files.reduce((sum, file) => sum + file.bytes, 0) },
+    exactHtmlAuthority: HTML_AUTHORITY_FILES,
+    routeOutcomes: PUBLIC_ROUTE_OUTCOMES,
+    canonicalAuthority,
+    requiredHeaderPolicies: REQUIRED_HEADER_POLICIES,
+  };
+  const originData = (origin) => ({
+    origin,
+    status: "PASS",
+    real404: { publicPath: missing404Path, httpStatus: 404, localAuthority: "404.html", byteParity: true },
+    fileCount: comparable.length,
+    totalBytes: comparable.reduce((sum, file) => sum + file.bytes, 0),
+    responses: structuredClone(responses),
+  });
+  report.origins = {
+    immutable: { status: "PASS", data: originData(IMMUTABLE_URL) },
+    branch: { status: "PASS", data: originData(R1_REQUIRED_BRANCH_URL) },
+  };
   report.checks = {
     exactR1BranchParentAndFrozenMain: true,
     zeroProductionSourceDiff: true,
@@ -224,13 +437,31 @@ function regressionReport() {
   };
 }
 
-function fakeMp4(marker) {
-  const bytes = Buffer.alloc(20, 0);
-  bytes.writeUInt32BE(20, 0);
-  bytes.write("ftyp", 4, "ascii");
-  bytes.write("isom", 8, "ascii");
-  bytes.write(marker.slice(0, 8), 12, "ascii");
-  return bytes;
+function fakeMp4(marker, { duration = 1_000, sampleCount = 1 } = {}) {
+  const box = (type, ...payloads) => {
+    const payload = Buffer.concat(payloads);
+    const header = Buffer.alloc(8);
+    header.writeUInt32BE(8 + payload.length, 0);
+    header.write(type, 4, "ascii");
+    return Buffer.concat([header, payload]);
+  };
+  const timedHeader = () => {
+    const payload = Buffer.alloc(20);
+    payload.writeUInt32BE(1_000, 12);
+    payload.writeUInt32BE(duration, 16);
+    return payload;
+  };
+  const handler = Buffer.alloc(12);
+  handler.write("vide", 8, "ascii");
+  const sampleSize = Buffer.alloc(12);
+  sampleSize.writeUInt32BE(1, 4);
+  sampleSize.writeUInt32BE(sampleCount, 8);
+  const trak = box("trak", box("mdia", box("mdhd", timedHeader()), box("hdlr", handler), box("minf", box("stbl", box("stsz", sampleSize)))));
+  return Buffer.concat([
+    box("ftyp", Buffer.from("isom\0\0\0\0", "binary")),
+    box("moov", box("mvhd", timedHeader()), trak),
+    box("mdat", Buffer.from(marker || "frame")),
+  ]);
 }
 
 async function createPosterFixture(parent) {
@@ -379,6 +610,99 @@ function r1MotionValidation(duration) {
   };
 }
 
+function r1MotionSample(label, { url = "/", scrollY = 0, targetFrame = 1, viewport = { width: 1280, height: 720 }, phase, segment, manifestoReveal } = {}) {
+  if (label === "supporting-about") return {
+    label,
+    url: "/about/",
+    viewport,
+    documentHidden: false,
+    scrollY: 0,
+    maximumScroll: 2_500,
+    horizontalOverflow: 0,
+    mode: null,
+    mediaState: null,
+    phase: null,
+    segment: null,
+    targetFrame: 0,
+    presentedFrame: 0,
+    manifestoReveal: null,
+    navigationReleased: null,
+    video: null,
+  };
+  return {
+    label,
+    url,
+    viewport,
+    documentHidden: false,
+    scrollY,
+    maximumScroll: 5_000,
+    horizontalOverflow: 0,
+    mode: "enhanced",
+    mediaState: "ready",
+    phase,
+    segment,
+    targetFrame,
+    presentedFrame: targetFrame,
+    manifestoReveal,
+    navigationReleased: "concealed",
+    video: { currentTime: Number((targetFrame / 30).toFixed(4)), paused: true, readyState: 4, hasSource: true },
+  };
+}
+
+function r1MotionObservations(id) {
+  const state = (label, url = "/") => {
+    const definitions = {
+      F1: [0, 1, "physical", "top-dormancy", "hidden"],
+      "F1-rest": [0, 1, "physical", "top-dormancy", "hidden"],
+      current: [900, 150, "physical", "current-orbit", "hidden"],
+      arrival: [1_900, 285, "physical", "crt-arrival", "hidden"],
+      indicator: [1_970, 292, "physical", "indicator", "hidden"],
+      line: [2_070, 307, "physical", "phosphor-line", "hidden"],
+      raster: [2_300, 341, "physical", "raster-settling", "hidden"],
+      Q: [2_500, 370, "physical", "q-hold", "hidden"],
+      threshold: [4_100, 490, "physical", "physical-threshold", "hidden"],
+      "manifesto-threshold": [4_500, 500, "entry", "entry-reveal", "revealing"],
+      "manifesto-resolved": [4_500, 500, "entry", "entry-reveal", "resolved"],
+      manifesto: [4_800, 500, "settled", "entry-reveal", "resolved"],
+      "home-entry": [4_800, 500, "settled", "entry-reveal", "resolved"],
+    };
+    const [scrollY, targetFrame, phase, segment, manifestoReveal] = definitions[label];
+    return r1MotionSample(label, { url, scrollY, targetFrame, phase, segment, manifestoReveal });
+  };
+  if (id === "forward-physical-to-manifesto") return { status: "PASS", samples: ["F1", "current", "arrival", "indicator", "line", "raster", "Q", "threshold", "manifesto-threshold", "manifesto-resolved"].map((label) => state(label)) };
+  if (id === "reverse-manifesto-to-f1") return { status: "PASS", samples: ["manifesto", "threshold", "Q", "raster", "line", "arrival", "current", "F1", "F1-rest"].map((label) => state(label, "/#entry")) };
+  if (id === "supporting-route-entry-and-reverse") return { status: "PASS", samples: [
+    r1MotionSample("supporting-about"),
+    ...["home-entry", "Q", "raster", "line", "arrival", "current", "F1"].map((label) => state(label, "/#entry")),
+  ] };
+  if (id === "resize-orientation-mid-current-and-manifesto") {
+    const resizeState = (label, viewport, manifesto = false) => r1MotionSample(label, {
+      scrollY: manifesto ? 4_500 : 900,
+      targetFrame: manifesto ? 500 : 150,
+      viewport,
+      phase: manifesto ? "entry" : "physical",
+      segment: manifesto ? "entry-reveal" : "current-orbit",
+      manifestoReveal: manifesto ? "resolved" : "hidden",
+    });
+    return { status: "PASS", samples: [
+      resizeState("current-landscape-before", { width: 1280, height: 720 }),
+      resizeState("current-portrait", { width: 720, height: 1280 }),
+      resizeState("current-landscape-return", { width: 1280, height: 720 }),
+      resizeState("manifesto-landscape-before", { width: 1280, height: 720 }, true),
+      resizeState("manifesto-portrait", { width: 720, height: 1280 }, true),
+      resizeState("manifesto-landscape-return", { width: 1280, height: 720 }, true),
+    ] };
+  }
+  if (id === "stop-at-authored-states") return { status: "PASS", stops: ["current", "line", "raster", "Q"].map((label) => {
+    const before = state(label);
+    before.label = `${label}-before-pause`;
+    const after = structuredClone(before);
+    after.label = `${label}-after-pause`;
+    return { label, before, after, status: "PASS" };
+  }) };
+  throw new Error(`unknown fixture motion story: ${id}`);
+}
+
 async function attachR1MachineEvidence(fixture) {
   for (const [engineIndex, engine] of ["chromium", "firefox"].entries()) {
     const sourceRoot = `r1-motion-${engine}`;
@@ -402,7 +726,7 @@ async function attachR1MachineEvidence(fixture) {
         id: video.id,
         filename: video.filename,
         evidenceClass: "SUPPLEMENTAL MACHINE RECORDING",
-        observations: { samples: [], status: "PASS" },
+        observations: r1MotionObservations(video.id),
         relativePath: video.relativePath,
         byteSize: video.bytes.length,
         sha256: video.expectedSha256,
@@ -446,26 +770,80 @@ async function attachR1MachineEvidence(fixture) {
   }
 
   const phase4Path = "/media/cinematic/phase-4r2/media/mobile.mp4";
+  const phase4Request = (frameNavigationId, range = "bytes=0-1023", requestPath = phase4Path) => ({
+    documentUrl: new URL(frameNavigationId === "navigation-entry" ? "/#entry" : "/", R1_REQUIRED_BRANCH_URL).href,
+    frameNavigationId,
+    method: "GET",
+    path: requestPath,
+    range,
+    resourceType: "fetch",
+    url: new URL(requestPath, R1_REQUIRED_BRANCH_URL).href,
+  });
   const listenerTelemetry = () => ({
     active: 3,
     activeByType: { click: 2, visibilitychange: 1 },
+    added: 3,
     duplicateAttempts: 0,
+    removed: 0,
   });
-  const lifecycleState = (label, documentId, url, scrollY, manifestoReveal = null, mediaStartTime = null, navigationType = "navigate") => ({
-    label,
-    documentId,
-    url,
-    scrollY,
-    mobileMenu: { open: false },
-    ...(manifestoReveal === null ? {} : { home: { manifestoReveal, mode: "enhanced", source: { hasSource: true } } }),
-    probe: {
+  const lifecycleNavigationIds = {
+    "bare-document": "navigation-bare",
+    "entry-document": "navigation-entry",
+    "support-bare-document": "navigation-support-bare",
+    "support-entry-document": "navigation-support-entry",
+  };
+  let lifecycleCaptureSequence = 0;
+  const lifecycleState = (label, documentId, url, scrollY, manifestoReveal = null, mediaStartTime = null, navigationType = "navigate") => {
+    const hasHome = manifestoReveal !== null;
+    return {
+      capturedAtEpochMs: 1_800_000_000_000 + (++lifecycleCaptureSequence * 100),
+      label,
+      documentId,
+      maximumScroll: 1_200,
+      navigationId: lifecycleNavigationIds[documentId] ?? `navigation-${documentId}`,
+      origin: new URL(R1_REQUIRED_BRANCH_URL).origin,
+      url,
+      scrollY,
+      mobileMenu: { open: false, expanded: "false" },
+      ...(hasHome ? { home: {
+      bootstrap: url === "/#entry" ? "semantic-entry" : "eligible",
+      continuation: { audienceRouting: { inert: false }, partnerLink: { top: 100, visible: true } },
+      eligibility: "eligible",
+      fallback: null,
+      header: "released",
+      interactive: "true",
+      manifesto: { rendered: manifestoReveal === "resolved", text: "We turn industrial needs into field evidence." },
+      manifestoReveal,
+      mediaState: "ready",
+      mode: "enhanced",
+      phase: "settled",
+      routeNavigation: "released",
+      source: {
+        hasSource: true,
+        src: `blob:https://example.pages.dev/${documentId}`,
+        currentSrc: `blob:https://example.pages.dev/${documentId}`,
+        srcAttribute: `blob:https://example.pages.dev/${documentId}`,
+        videoNodeCount: 1,
+        sourceNodeCount: 0,
+      },
+      } } : {}),
+      probe: {
+      documentId,
       documentEventSequence: 0,
       events: [],
+      manifestoRevealEvents: hasHome ? [
+        { atEpochMs: 1_800_000_000_001, value: "hidden" },
+        ...(manifestoReveal === "resolved" ? [{ atEpochMs: 1_800_000_000_002, value: "resolved" }] : []),
+      ] : [],
+      blob: hasHome ? { created: 1, revoked: 0, live: 1 } : { created: 0, revoked: 0, live: 0 },
+      intervals: { created: 0, cleared: 0, active: 0 },
       listeners: listenerTelemetry(),
       navigation: { type: navigationType, notRestoredReasons: null },
+      raf: { scheduled: 0, executed: 0, cancelled: 0, active: 0 },
       resources: mediaStartTime == null ? [] : [{ url: phase4Path, startTime: mediaStartTime }],
-    },
-  });
+      },
+    };
+  };
   const historyStates = {
     bare: lifecycleState("bare-home", "bare-document", "/", 0, "hidden", 10),
     bareManifesto: lifecycleState("bare-home-manifesto", "bare-document", "/", 800, "resolved", 10),
@@ -503,6 +881,8 @@ async function attachR1MachineEvidence(fixture) {
   };
   const visibilityChecks = {
     "home-current": {
+      routeStateStable: null,
+      currentOrbitStateStable: null,
       homeMediaPausedWhileHidden: null,
       noPersistentRafWhileHidden: null,
       noPersistentIntervalWhileHidden: null,
@@ -510,11 +890,16 @@ async function attachR1MachineEvidence(fixture) {
       sourcePresenceStableAfterReturn: null,
     },
     "home-manifesto": {
+      routeStateStable: null,
+      manifestoStateStable: null,
+      homeMediaPausedWhileHidden: null,
       manifestoCoherentAfterReturn: null,
       noPersistentRafWhileHidden: null,
       noPersistentIntervalWhileHidden: null,
     },
     "maradin-release": {
+      routeStateStable: null,
+      activeBeforeHide: null,
       sourceFreeWhileHidden: null,
       sourceFreeAfterReturn: null,
       noLiveOrphanBlobWhileHidden: null,
@@ -522,6 +907,7 @@ async function attachR1MachineEvidence(fixture) {
       noPersistentIntervalWhileHidden: null,
     },
     "maradin-retry-release": {
+      routeStateStable: null,
       retryActivatedWithSource: null,
       sourceFreeOnSecondHide: null,
       sourceFreeAfterSecondReturn: null,
@@ -572,7 +958,7 @@ async function attachR1MachineEvidence(fixture) {
       maradinRetry: null,
       statement: "A real hidden transition was not observed.",
     },
-    listeners: { status: "PASS", comparisons: listenerComparisons, duplicateDocuments: [], statement: "Same-Document listener telemetry remained stable." },
+    listeners: { status: "PASS", comparisons: listenerComparisons, duplicateDocuments: [], telemetryRegressions: [], statement: "Same-Document listener telemetry remained stable." },
     mediaRequests: {
       status: "PASS",
       bypassDocumentsSourceFree: true,
@@ -580,13 +966,13 @@ async function attachR1MachineEvidence(fixture) {
       noDuplicateSourceWithinDocument: true,
       noDuplicateNonRangeRequests: true,
       documents: [
-        { documentId: "bare-document", labels: ["bare-back", "bare-home", "bare-home-manifesto"], mediaExpected: true, modes: ["enhanced"], paths: [phase4Path], resourceObservations: 1, sourceFree: false },
-        { documentId: "entry-document", labels: ["entry-back", "entry-initial", "entry-resolved"], mediaExpected: true, modes: ["enhanced"], paths: [phase4Path], resourceObservations: 1, sourceFree: false },
+        { documentId: "bare-document", labels: ["bare-back", "bare-home", "bare-home-manifesto"], mediaExpected: true, modes: ["enhanced"], paths: [phase4Path], resourceObservations: 1, selectionDocumentUrl: new URL("/", R1_REQUIRED_BRANCH_URL).href, selectionNavigationId: "navigation-bare", selectionStable: true, sourceFree: false },
+        { documentId: "entry-document", labels: ["entry-back", "entry-initial", "entry-resolved"], mediaExpected: true, modes: ["enhanced"], paths: [phase4Path], resourceObservations: 1, selectionDocumentUrl: new URL("/#entry", R1_REQUIRED_BRANCH_URL).href, selectionNavigationId: "navigation-entry", selectionStable: true, sourceFree: false },
       ],
       network: {
-        phase4Requests: [{ path: phase4Path, range: "bytes=0-1023" }],
-        requestCount: 1,
-        rangeRequestCount: 1,
+        phase4Requests: [phase4Request("navigation-bare"), phase4Request("navigation-entry")],
+        requestCount: 2,
+        rangeRequestCount: 2,
         nonRangeRequestCount: 0,
         nonRangeSelections: [],
         uniquePaths: [phase4Path],
@@ -604,6 +990,67 @@ async function attachR1MachineEvidence(fixture) {
     expectedSha256: lifecycleFile.expectedSha256,
     status: "LIMITATION",
     limitation: "BFCache and real hidden visibility were not observed on this host.",
+  });
+  const outcome = (id, fields = {}) => {
+    const logText = `${id}: fixture command completed successfully.\n`;
+    return { id, status: "PASS", log: `${id}.log`, logText, logSha256: sha256(Buffer.from(logText)), ...fields };
+  };
+  const deploymentArtifact = fixture.metadata.artifacts.find(({ role }) => role === "deployment-verifier");
+  const deploymentDocument = JSON.parse(await readFile(path.join(fixture.sourceRoot, ...deploymentArtifact.source.split("/")), "utf8"));
+  const distManifestText = [
+    '"path","bytes","sha256"',
+    ...deploymentDocument.dist.files.map(({ relativePath, bytes, sha256: fileSha256 }) => `"${relativePath}","${bytes}","${fileSha256}"`),
+    "",
+  ].join("\n");
+  const distFiles = deploymentDocument.dist.files.length;
+  const distBytes = deploymentDocument.dist.files.reduce((sum, file) => sum + file.bytes, 0);
+  const differencesText = '"input","sideIndicator"\n';
+  const comparisonText = "Node 22 and Node 24 distribution manifests are byte-identical.\n";
+  const node22 = {
+    schema: "quantum-hub.phase-6-r1.node22-integrated-validation.v7",
+    status: "PASS",
+    sealedAtUtc: GENERATED_AT,
+    scope: "Node 22.16.0 integrated validation of the frozen Phase 6 R1 validation-closure tree",
+    repository: {
+      branch: R1_REQUIRED_BRANCH,
+      requiredParent: R1_REQUIRED_PARENT,
+      captureHeadBeforeFinalCommit: R1_REQUIRED_PARENT,
+      finalHead: R1_FINAL_HEAD,
+      finalHeadDirectParent: R1_REQUIRED_PARENT,
+      finalTree: R1_FINAL_TREE,
+      main: FROZEN_MAIN,
+      originMain: FROZEN_MAIN,
+      workingTreeCleanAtSeal: true,
+      productionDiff: { base: R1_REQUIRED_PARENT, scope: ["src/**", "public/**"], changedPathCount: 0, status: "ZERO PRODUCTION-SOURCE DIFF" },
+      packageLock: { changedLinesFromRequiredParent: 0, sha256: "f".repeat(64) },
+    },
+    runtime: { nvmrc: "22.16.0", node: "v22.16.0", npm: "10.9.2", node24ComparisonRuntime: "v24.18.0", node24ComparisonNpm: "11.16.0" },
+    outcomes: [
+      outcome("npm-ci", { command: "npm ci", packagesInstalled: 285 }),
+      outcome("astro-check", { command: "astro check", files: 223, errors: 0, warnings: 0, hints: 0 }),
+      outcome("production-build", { command: "npm run build", pages: 10, phase4OutputVerification: "PASS", phase5bProductionVerification: "PASS" }),
+      outcome("complete-postbuild-test-suite", { command: "npm test", tests: 400, passed: 400, failed: 0, cancelled: 0, skipped: 0, todo: 0 }),
+      outcome("phase4-source-verification", { command: "node scripts/verify-phase4-source.mjs --allow-phase5b-route-scope --allow-phase6-global-hardening", stagedPhase3Assets: 7, stagedPhase4RuntimeFiles: 7 }),
+      outcome("phase5b-phase6-r1-focused-regression", { command: "node --test <focused files>", testFiles: 24, tests: 300, passed: 300, failed: 0, cancelled: 0, skipped: 0, todo: 0 }),
+      outcome("standalone-verifier-self-tests", { checks: 12, passed: 12, failed: 0, checkNames: Array.from({ length: 12 }, (_, index) => `self-test-${index + 1}`) }),
+    ],
+    distributionComparison: {
+      status: "BYTE-IDENTICAL", differenceCount: 0,
+      node22: { files: distFiles, bytes: distBytes, manifest: "node22.csv", manifestText: distManifestText, manifestSha256: sha256(Buffer.from(distManifestText)) },
+      node24: { files: distFiles, bytes: distBytes, manifest: "node24.csv", manifestText: distManifestText, manifestSha256: sha256(Buffer.from(distManifestText)) },
+      differences: "differences.csv", differencesText, differencesSha256: sha256(Buffer.from(differencesText)),
+      comparison: "comparison.txt", comparisonText, comparisonSha256: sha256(Buffer.from(comparisonText)),
+    },
+    limitations: [],
+  };
+  const node22File = await put(fixture.sourceRoot, "node22/FINAL-v7-node22-command-outcomes.json", stableJson(node22));
+  fixture.metadata.artifacts.push({
+    source: node22File.source,
+    destination: "00-provenance/node22-integrated-validation.json",
+    role: "r1-node22-validation-summary",
+    final: true,
+    expectedSha256: node22File.expectedSha256,
+    status: "PASS",
   });
 }
 
@@ -630,6 +1077,7 @@ async function convertFixtureToR1(fixture) {
     branch: R1_REQUIRED_BRANCH,
     exactParent: R1_REQUIRED_PARENT,
     finalHead: R1_FINAL_HEAD,
+    finalTree: R1_FINAL_TREE,
     directParent: R1_REQUIRED_PARENT,
     localHead: R1_FINAL_HEAD,
     upstreamHead: R1_FINAL_HEAD,
@@ -637,9 +1085,17 @@ async function convertFixtureToR1(fixture) {
     commitChain: [{ sha: R1_FINAL_HEAD, parents: [R1_REQUIRED_PARENT], subject: "Phase 6-R1 validation closure" }],
   });
   Object.assign(fixture.metadata.deployment, {
+    checkRunId: "123",
     branchUrl: R1_REQUIRED_BRANCH_URL,
     deployedSha: R1_FINAL_HEAD,
   });
+  fixture.metadata.changes = {
+    productionFiles: [],
+    toolingReportFiles: [...R1_TOOLING_REPORT_FILES],
+    trackedFileDelta: R1_TOOLING_REPORT_FILES.length,
+    trackedByteDelta: 32_768,
+    newTrackedFilesAbove1MiB: [],
+  };
   await attachR1MachineEvidence(fixture);
   await attachVerifiedHumanEvidence(fixture);
 }
@@ -657,7 +1113,7 @@ async function attachVerifiedHumanEvidence(fixture) {
   const zoomRoutes = ["/", "/for-partners/", "/for-startups/", "/industries/", "/pocs/", "/pocs/maradin/", "/spark/", "/about/", "/contact/", "/__phase6-intentional-404__/"];
   for (const [index, filename] of REQUIRED_HUMAN_EVIDENCE_FILES.entries()) {
     const source = `human-device/${filename}`;
-    const file = await put(fixture.sourceRoot, source, fakeMp4(`human${index + 1}`));
+    const file = await put(fixture.sourceRoot, source, fakeMp4(`human${index + 1}`, { duration: 30_000, sampleCount: 900 }));
     fixture.metadata.artifacts.push({
       source,
       destination: `11-physical-device/recordings/${filename}`,
@@ -670,18 +1126,24 @@ async function attachVerifiedHumanEvidence(fixture) {
       filename,
       sha256: file.expectedSha256,
       byteSize: file.bytes.length,
+      mediaValidation: { container: "ISO-BMFF MP4", durationSeconds: 30, sampleCount: 900, videoTrackCount: 1 },
       evidenceClass: "PHYSICAL HUMAN RECORDING",
-      device: filename.startsWith("iphone-") ? "Physical iPhone" : "Physical Windows host",
+      device: filename.startsWith("iphone-") ? "Physical iPhone 15" : filename === "physical-scroll-input.mp4" ? "Physical trackpad" : "Desktop PC",
       os: filename.startsWith("iphone-") ? "iOS (version supplied in recording)" : "Windows (version supplied in recording)",
       browser: filename === "physical-scroll-input.mp4" ? null : (filename.startsWith("iphone-") ? "Safari" : "Chrome"),
       browserVersion: null,
       testSteps: ["The required interaction sequence is visibly demonstrated in the supplied recording."],
-      observations: ["The reviewed sequence remains coherent at the visible checkpoints."],
-      observedResult: "The visibly demonstrated checks completed without a recorded failure.",
+      observations: [],
+      observedResult: "The visibly demonstrated checks completed successfully.",
       status: "PASS",
+      reviewedSha256: file.expectedSha256,
+      reviewedByteSize: file.bytes.length,
       failureReferences: [],
     };
-    if (DEVICE_REVIEW_CHECKS[filename]) evidence.checks = Object.fromEntries(DEVICE_REVIEW_CHECKS[filename].map((check) => [check, true]));
+    if (DEVICE_REVIEW_CHECKS[filename]) {
+      evidence.checks = Object.fromEntries(DEVICE_REVIEW_CHECKS[filename].map((check) => [check, true]));
+      evidence.observations = DEVICE_REVIEW_CHECKS[filename].map((check) => ({ checkId: check, status: "PASS", result: "The visible check completed successfully.", timestamp: null, frame: null }));
+    }
     if (filename === "chrome-200-percent.mp4") {
       evidence.genuineBrowserZoom = true;
       evidence.zoomPercent = 200;
@@ -703,17 +1165,20 @@ async function attachVerifiedHumanEvidence(fixture) {
           reasonableDocumentContinuation: true,
         },
       }));
+      evidence.observations = evidence.routeOutcomes.flatMap((outcome) => Object.keys(outcome.checks).map((check) => ({ checkId: `${outcome.route}:${check}`, status: "PASS", result: "The route check completed successfully.", timestamp: null, frame: null })));
     }
     humanEvidence.push(evidence);
   }
   const ledger = {
     schema: HUMAN_EVIDENCE_SCHEMA,
+    createdAt: GENERATED_AT,
     status: "PASS",
     evidenceClass: "HUMAN DEVICE EVIDENCE",
     rootExists: true,
     requiredFilenames: [...REQUIRED_HUMAN_EVIDENCE_FILES],
     missingFilenames: [],
     entries: humanEvidence,
+    policy: { ...HUMAN_EVIDENCE_POLICY },
   };
   const ledgerFile = await put(fixture.sourceRoot, "human-device/ledger.json", stableJson(ledger));
   fixture.metadata.artifacts.push({
@@ -733,7 +1198,7 @@ test("contract exposes exact topology, review gates, 104 bullets and 66 final fi
   assert.equal(Object.values(BRIEF_REQUIREMENTS).flat().length, 104);
   assert.equal(FINAL_HANDOFF_FIELDS.length, 66);
   assert.equal(Object.keys(REQUIRED_ARTIFACT_ROLES).length, 18);
-  assert.equal(Object.keys(R1_REQUIRED_ARTIFACT_ROLES).length, 5);
+  assert.equal(Object.keys(R1_REQUIRED_ARTIFACT_ROLES).length, 6);
   assert.equal(R1_MOTION_RECORDING_SPECS.length, 5);
   assert.equal(Object.keys(HUMAN_REVIEW_GATES).length, 6);
   assert.equal(REQUIRED_BRANCH_URL, "https://feature-phase-6-global-harde.qsite1.pages.dev/");
@@ -743,7 +1208,7 @@ test("contract exposes exact topology, review gates, 104 bullets and 66 final fi
   assert.ok(Object.values(HUMAN_REVIEW_GATES).every((value) => value === "PENDING HUMAN REVIEW"));
   assert.deepEqual(EVIDENCE_STATUS_VALUES.slice(0, 5), ["PASS", "FAIL", "LIMITATION", "NOT OBSERVED", "PENDING HUMAN REVIEW"]);
   assert.deepEqual(selfTest().status, "PASS");
-  assert.equal(selfTest().r1MandatoryArtifactRoles, 5);
+  assert.equal(selfTest().r1MandatoryArtifactRoles, 6);
   assert.equal(parseArguments(["--source-evidence-root", "x", "--final-metadata", "m.json", "--output-root", "out", "--poster-study-directory", "posters"]).posterStudyDirectory, path.resolve("posters"));
 });
 
@@ -767,15 +1232,11 @@ test("authority validators match final report array/object tuples", () => {
   for (const engine of ["chromium", "firefox", "webkit"]) assert.doesNotThrow(() => validateDocumentAuthority({ role: "accessibility-summary", engine }, accessibilityReport(engine, { axeOnly: engine === "webkit" }), metadata));
   assert.doesNotThrow(() => validateDocumentAuthority({ role: "accessibility-interaction-limitation", engine: "webkit" }, accessibilityReport("webkit", { failed: true }), metadata));
   const completedStructuredFailure = accessibilityReport("webkit", { failed: true });
-  completedStructuredFailure.summary = { ...completedStructuredFailure.summary, axeCases: 20, engineErrors: 0, failures: 51 };
-  completedStructuredFailure.failures = [{ check: "native-focus-policy", message: "Implicit links were not reached by Tab." }];
+  assert.equal(completedStructuredFailure.summary.failures, 51);
+  assert.equal(completedStructuredFailure.summary.engineErrors, 0);
   assert.doesNotThrow(() => validateDocumentAuthority({ role: "accessibility-interaction-limitation", engine: "webkit" }, completedStructuredFailure, metadata));
   const explicitLimitation = accessibilityReport("webkit", { failed: true });
-  explicitLimitation.status = "LIMITATION";
-  explicitLimitation.limitations = ["The isolated interaction run did not complete."];
-  explicitLimitation.failures = [];
-  explicitLimitation.summary = { ...explicitLimitation.summary, engineErrors: 0, failures: 0 };
-  assert.doesNotThrow(() => validateDocumentAuthority({ role: "accessibility-interaction-limitation", engine: "webkit" }, explicitLimitation, metadata));
+  assert.doesNotThrow(() => validateDocumentAuthority({ role: "accessibility-interaction-limitation", engine: "webkit", status: "LIMITATION", limitation: "The isolated interaction run completed with a host focus limitation." }, explicitLimitation, metadata));
   assert.doesNotThrow(() => validateDocumentAuthority({ role: "supplemental-reflow-proxy" }, reflowProxyReport(), metadata));
   const malformedProxy = reflowProxyReport();
   malformedProxy.variants[0].viewports = [{ id: "text-200-proxy-721x450", width: 721, height: 450 }];
@@ -834,6 +1295,11 @@ test("legacy BFCache and performance visibility PASS require raw real-event obse
     { type: "visibilitychange", visibilityState: "visible" },
   ];
   assert.doesNotThrow(() => validateDocumentAuthority({ role: "performance-summary" }, observedTransition, metadata));
+  const unrelatedEngineVisibility = performanceReport();
+  delete unrelatedEngineVisibility.visibility;
+  unrelatedEngineVisibility.engines = [{ visibility: { status: "PASS" } }];
+  assert.doesNotThrow(() => validateDocumentAuthority({ role: "performance-summary" }, unrelatedEngineVisibility, metadata));
+  assert.deepEqual(evidenceTaxonomy({ role: "performance-summary", status: "PASS" }, unrelatedEngineVisibility).visibility, []);
 });
 
 test("honest R1 NOT OBSERVED lifecycle authority is not overridden by a legacy PASS taxonomy", () => {
@@ -845,10 +1311,46 @@ test("honest R1 NOT OBSERVED lifecycle authority is not overridden by a legacy P
   assert.equal(guardedRequirementAssessment("05-history-bfcache", "BFCache", entries).status, "NOT OBSERVED");
   assert.equal(guardedRequirementAssessment("03-homepage-motion", "hidden/visible behavior", entries).status, "NOT OBSERVED");
 
+  const mixedLegacyOnly = [
+    { role: "history-bfcache-summary", taxonomy: { bfcache: ["PASS", "NOT OBSERVED"] } },
+    { role: "performance-summary", taxonomy: { visibility: ["PASS", "NOT OBSERVED"] } },
+  ];
+  assert.equal(guardedRequirementAssessment("05-history-bfcache", "BFCache", mixedLegacyOnly).status, "NOT OBSERVED");
+  assert.equal(guardedRequirementAssessment("03-homepage-motion", "hidden/visible behavior", mixedLegacyOnly).status, "NOT OBSERVED");
+
   const verifiedHumanPass = [...entries, { role: "physical-device-result", taxonomy: { humanEvidence: { verified: true, hiddenVisible: "PASS" } } }];
-  assert.equal(guardedRequirementAssessment("03-homepage-motion", "hidden/visible behavior", verifiedHumanPass).status, "PASS");
+  assert.equal(guardedRequirementAssessment("03-homepage-motion", "hidden/visible behavior", verifiedHumanPass).status, "NOT OBSERVED");
+  const everyRealSourcePasses = [
+    { role: "r1-persistent-lifecycle-summary", taxonomy: { visibility: ["PASS"] } },
+    { role: "physical-device-result", taxonomy: { humanEvidence: { verified: true, hiddenVisible: "PASS" } } },
+  ];
+  assert.equal(guardedRequirementAssessment("03-homepage-motion", "hidden/visible behavior", everyRealSourcePasses).status, "PASS");
   const observedFailure = [...entries, { role: "performance-summary", taxonomy: { visibility: ["FAIL"] } }];
   assert.equal(guardedRequirementAssessment("03-homepage-motion", "hidden/visible behavior", observedFailure).status, "FAIL");
+  const zoomFail = guardedRequirementAssessment("09-accessibility", "200%", [{ role: "physical-device-result", taxonomy: { humanEvidence: { verified: true, browserZoom: "FAIL" } } }]);
+  assert.equal(zoomFail.status, "FAIL");
+  assert.doesNotMatch(zoomFail.statement, /pending/i);
+  const physicalPending = guardedRequirementAssessment("11-physical-device", "real-device results if genuinely performed", []);
+  assert.equal(physicalPending.status, "PENDING HUMAN REVIEW");
+  assert.doesNotMatch(physicalPending.statement, /passed/i);
+});
+
+test("legacy BFCache and unrelated visibility fields cannot create unobserved PASS taxonomy", () => {
+  assert.throws(
+    () => validateDocumentAuthority(
+      { role: "history-bfcache-summary" },
+      { schema: "quantum-hub.phase-6.global-hardening.v1", status: "PASS", bfcache: { status: "PASS" } },
+      {},
+    ),
+    /top-level BFCache PASS requires a real ordered/,
+  );
+  const unrelated = evidenceTaxonomy(
+    { role: "homepage-motion-summary", status: "PASS" },
+    { schema: "quantum-hub.phase-6.global-hardening.v1", status: "PASS", bfcache: { status: "PASS" }, visibility: { status: "PASS" } },
+  );
+  assert.deepEqual(unrelated.bfcache, []);
+  assert.deepEqual(unrelated.visibility, []);
+  assert.equal(guardedRequirementAssessment("03-homepage-motion", "hidden/visible behavior", [{ role: "homepage-motion-summary", taxonomy: unrelated }]).status, "NOT OBSERVED");
 });
 
 test("accessibility PASS requires the exact ten-route interaction matrix, four clean menu cycles and clean history", () => {
@@ -856,24 +1358,24 @@ test("accessibility PASS requires the exact ten-route interaction matrix, four c
   const record = { role: "accessibility-summary", engine: "chromium" };
   const incompleteKeyboard = accessibilityReport("chromium");
   incompleteKeyboard.engines[0].keyboard.pop();
-  assert.throws(() => validateDocumentAuthority(record, incompleteKeyboard, metadata), /keyboard\/focus matrix differs/);
+  assert.throws(() => validateDocumentAuthority(record, incompleteKeyboard, metadata), /keyboard (matrix is incomplete|focus matrix differs)/);
 
   const duplicateRoute = accessibilityReport("chromium");
   duplicateRoute.engines[0].keyboard[9].route = duplicateRoute.engines[0].keyboard[0].route;
-  assert.throws(() => validateDocumentAuthority(record, duplicateRoute, metadata), /keyboard\/focus matrix differs/);
+  assert.throws(() => validateDocumentAuthority(record, duplicateRoute, metadata), /keyboard (route row|focus matrix) differs/);
 
   const shortMenu = accessibilityReport("chromium");
   shortMenu.engines[0].mobileMenu.cycles.pop();
-  assert.throws(() => validateDocumentAuthority(record, shortMenu, metadata), /four-cycle authority differs/);
+  assert.throws(() => validateDocumentAuthority(record, shortMenu, metadata), /mobile-menu cycles are incomplete|four-cycle authority differs/);
 
   const menuFailure = accessibilityReport("chromium");
   menuFailure.engines[0].mobileMenu.failures.push({ code: "escape-focus-return" });
-  assert.throws(() => validateDocumentAuthority(record, menuFailure, metadata), /four-cycle authority differs/);
+  assert.throws(() => validateDocumentAuthority(record, menuFailure, metadata), /mobile-menu raw evidence differs|four-cycle authority differs/);
 
   const historyFailure = accessibilityReport("chromium");
   historyFailure.engines[0].history.status = "FAIL";
   historyFailure.engines[0].history.failures.push({ code: "forward" });
-  assert.throws(() => validateDocumentAuthority(record, historyFailure, metadata), /history authority differs/);
+  assert.throws(() => validateDocumentAuthority(record, historyFailure, metadata), /history raw evidence differs|history authority differs/);
 });
 
 test("guarded requirement statuses reject every known false PASS promotion", async (t) => {
@@ -903,7 +1405,19 @@ test("axe-only sources cannot satisfy keyboard, focus or mobile-menu requirement
   const fixture = await createFixture();
   t.after(() => rm(fixture.parent, { recursive: true, force: true }));
   fixture.metadata.artifacts = fixture.metadata.artifacts.filter(({ role }) => role !== "accessibility-interaction-limitation");
-  await rewriteArtifactJson(fixture, ({ role }) => role === "accessibility-summary", (document) => { document.axeOnly = true; });
+  await rewriteArtifactJson(fixture, ({ role }) => role === "accessibility-summary", (document) => {
+    document.axeOnly = true;
+    const result = document.engines[0];
+    result.keyboard = [];
+    result.mobileMenu = null;
+    result.history = null;
+    result.failures = [];
+    result.status = "PASS";
+    result.summary = { ...result.summary, failures: 0, keyboardCases: 0 };
+    document.failures = [];
+    document.status = "PASS";
+    document.summary = { ...document.summary, failures: 0 };
+  });
   const built = await buildEvidenceEntries({ sourceEvidenceRoot: fixture.sourceRoot, finalMetadata: fixture.metadata, posterStudyDirectory: fixture.candidates, originalPosterDirectory: fixture.originals, verifyTrackedPosterAuthority: false });
   const summary = JSON.parse(built.entries.find(({ path: evidencePath }) => evidencePath === "09-accessibility/section-summary.json").data);
   for (const requirement of ["keyboard", "focus", "mobile menu"]) {
@@ -919,8 +1433,8 @@ test("a completed WebKit run with engineErrors 0 and 51 interaction failures rem
   interaction.status = "FAIL";
   delete interaction.limitation;
   await rewriteArtifactJson(fixture, ({ role }) => role === "accessibility-interaction-limitation", (document) => {
-    document.summary = { ...document.summary, axeCases: 20, axeExpected: 20, engineErrors: 0, failures: 51 };
-    document.failures = Array.from({ length: 51 }, (_, index) => ({ check: `webkit-focus-${index + 1}`, message: "Native WebKit focus policy did not advance to the expected control." }));
+    assert.equal(document.summary.engineErrors, 0);
+    assert.equal(document.summary.failures, 51);
   });
   const built = await buildEvidenceEntries({ sourceEvidenceRoot: fixture.sourceRoot, finalMetadata: fixture.metadata, posterStudyDirectory: fixture.candidates, originalPosterDirectory: fixture.originals, verifyTrackedPosterAuthority: false });
   const summary = JSON.parse(built.entries.find(({ path: evidencePath }) => evidencePath === "09-accessibility/section-summary.json").data);
@@ -947,9 +1461,15 @@ test("a completed WebKit run with engineErrors 0 and 51 interaction failures rem
 test("physical PASS requires a complete verified ledger and hash-bound recordings", async (t) => {
   const fixture = await createFixture();
   t.after(() => rm(fixture.parent, { recursive: true, force: true }));
-  const incomplete = { schema: HUMAN_EVIDENCE_SCHEMA, status: "PASS", evidenceClass: "HUMAN DEVICE EVIDENCE", rootExists: true, requiredFilenames: [...REQUIRED_HUMAN_EVIDENCE_FILES], missingFilenames: [], entries: [{ filename: REQUIRED_HUMAN_EVIDENCE_FILES[0] }] };
-  assert.throws(() => validateHumanEvidenceLedger(incomplete), /omits or duplicates a required recording/);
+  const incomplete = { schema: HUMAN_EVIDENCE_SCHEMA, createdAt: GENERATED_AT, status: "PASS", evidenceClass: "HUMAN DEVICE EVIDENCE", rootExists: true, requiredFilenames: [...REQUIRED_HUMAN_EVIDENCE_FILES], missingFilenames: [], entries: [{ filename: REQUIRED_HUMAN_EVIDENCE_FILES[0] }], policy: { ...HUMAN_EVIDENCE_POLICY } };
+  assert.throws(() => validateHumanEvidenceLedger(incomplete), /omits, reorders or duplicates a required recording/);
   const ledger = await attachVerifiedHumanEvidence(fixture);
+  const missingTimestamp = structuredClone(ledger);
+  delete missingTimestamp.createdAt;
+  assert.throws(() => validateHumanEvidenceLedger(missingTimestamp), /createdAt/);
+  const falsePolicy = structuredClone(ledger);
+  falsePolicy.policy.filePresenceIsPass = true;
+  assert.throws(() => validateHumanEvidenceLedger(falsePolicy), /policy authority differs/);
   const opening = ledger.entries.find(({ filename }) => filename === "iphone-safari-opening.mp4");
   assert.deepEqual(Object.keys(opening.checks).sort(), [...DEVICE_REVIEW_CHECKS[opening.filename]].sort());
   assert.equal(opening.checks.backgroundForeground, true);
@@ -958,40 +1478,68 @@ test("physical PASS requires a complete verified ledger and hash-bound recording
   assert.ok(zoom.routeOutcomes.every(({ checks }) => Object.keys(checks).length === 10 && Object.values(checks).every((value) => value === true)));
   const incompleteZoom = structuredClone(ledger);
   delete incompleteZoom.entries.find(({ filename }) => filename === "chrome-200-percent.mp4").routeOutcomes[0].checks.completeH1;
-  assert.throws(() => validateHumanEvidenceLedger(incompleteZoom), /genuine 200% route outcome 0 is incomplete/);
+  assert.throws(() => validateHumanEvidenceLedger(incompleteZoom), /route \/ checks must contain exactly the ten required checks|genuine 200% route outcome 0 is incomplete/);
   const pendingReview = structuredClone(ledger);
   pendingReview.status = "PENDING HUMAN REVIEW";
   for (const entry of pendingReview.entries) {
     entry.status = "PENDING HUMAN REVIEW";
-    delete entry.checks;
+    entry.reviewedSha256 = null;
+    entry.reviewedByteSize = null;
+    if (entry.checks) for (const check of Object.keys(entry.checks)) entry.checks[check] = null;
+    entry.observedResult = "Pending human review.";
     if (entry.filename === "chrome-200-percent.mp4") {
-      delete entry.genuineBrowserZoom;
-      delete entry.zoomPercent;
-      delete entry.proxy;
-      delete entry.routeOutcomes;
+      entry.genuineBrowserZoom = null;
+      entry.zoomPercent = null;
+      entry.proxy = null;
+      for (const outcome of entry.routeOutcomes) {
+        outcome.status = "PENDING HUMAN REVIEW";
+        for (const check of Object.keys(outcome.checks)) outcome.checks[check] = null;
+      }
     }
+    entry.observations = entry.observations.map((observation) => ({ ...observation, status: "PENDING HUMAN REVIEW", result: "Pending human review.", timestamp: null, frame: null }));
   }
   assert.equal(validateHumanEvidenceLedger(pendingReview).status, "PENDING HUMAN REVIEW");
   const built = await buildEvidenceEntries({ sourceEvidenceRoot: fixture.sourceRoot, finalMetadata: fixture.metadata, posterStudyDirectory: fixture.candidates, originalPosterDirectory: fixture.originals, verifyTrackedPosterAuthority: false });
   const readSummary = (section) => JSON.parse(built.entries.find(({ path: evidencePath }) => evidencePath === `${section}/section-summary.json`).data);
   assert.ok(readSummary("11-physical-device").requirements.every(({ status }) => status === "PASS"));
   assert.equal(readSummary("09-accessibility").requirements.find(({ requirement }) => requirement === "200%").status, "PASS");
-  assert.equal(readSummary("03-homepage-motion").requirements.find(({ requirement }) => requirement === "hidden/visible behavior").status, "PASS");
+  assert.equal(readSummary("03-homepage-motion").requirements.find(({ requirement }) => requirement === "hidden/visible behavior").status, "NOT OBSERVED");
   const ledgerTaxonomy = built.entries.find(({ role }) => role === "physical-device-result").taxonomy.humanEvidence;
   assert.equal(ledgerTaxonomy.verified, true);
   assert.equal(ledgerTaxonomy.recordings.find(({ filename }) => filename === "iphone-safari-opening.mp4").checks.backgroundForeground, true);
+
+  const pseudoMp4 = Buffer.from("\0\0\0\x0cftypisom", "binary");
+  const openingArtifact = fixture.metadata.artifacts.find(({ role, source }) => role === "physical-device-recording" && source.endsWith("iphone-safari-opening.mp4"));
+  await writeFile(path.join(fixture.sourceRoot, ...openingArtifact.source.split("/")), pseudoMp4);
+  openingArtifact.expectedSha256 = sha256(pseudoMp4);
+  opening.sha256 = openingArtifact.expectedSha256;
+  opening.byteSize = pseudoMp4.length;
+  opening.reviewedSha256 = opening.sha256;
+  opening.reviewedByteSize = opening.byteSize;
+  await writeHumanLedger(fixture, ledger);
+  await assert.rejects(() => buildEvidenceEntries({ sourceEvidenceRoot: fixture.sourceRoot, finalMetadata: fixture.metadata, posterStudyDirectory: fixture.candidates, originalPosterDirectory: fixture.originals, verifyTrackedPosterAuthority: false }), /too small to be a coherent MP4|missing a non-empty moov/);
 });
 
 test("hidden-visible aggregation combines human and machine sources with observed FAIL dominance", async (t) => {
   const fixture = await createFixture();
   t.after(() => rm(fixture.parent, { recursive: true, force: true }));
-  await attachVerifiedHumanEvidence(fixture);
-  await rewriteArtifactJson(fixture, ({ source }) => source === "final/phase6-performance-final.json", (document) => {
-    document.visibility = { status: "FAIL", failures: [{ check: "stale-target-frame" }] };
-  });
+  const ledger = await attachVerifiedHumanEvidence(fixture);
+  const maradin = ledger.entries.find(({ filename }) => filename === "iphone-safari-maradin.mp4");
+  maradin.status = "FAIL";
+  maradin.checks.noLiveOrphanBlob = false;
+  maradin.failureReferences = [{ check: "noLiveOrphanBlob", timestamp: "00:12.000", frame: null, observation: "A live orphan Blob remained visible in telemetry." }];
+  maradin.observedResult = "A visible failure was observed.";
+  Object.assign(maradin.observations.find(({ checkId }) => checkId === "noLiveOrphanBlob"), { status: "FAIL", result: "A visible failure was observed.", timestamp: "00:12.000", frame: null });
+  ledger.status = "FAIL";
+  fixture.metadata.artifacts.find(({ role, source }) => role === "physical-device-recording" && source.endsWith("iphone-safari-maradin.mp4")).status = "FAIL";
+  await writeHumanLedger(fixture, ledger, "FAIL");
   const built = await buildEvidenceEntries({ sourceEvidenceRoot: fixture.sourceRoot, finalMetadata: fixture.metadata, posterStudyDirectory: fixture.candidates, originalPosterDirectory: fixture.originals, verifyTrackedPosterAuthority: false });
   const summary = JSON.parse(built.entries.find(({ path: evidencePath }) => evidencePath === "03-homepage-motion/section-summary.json").data);
   assert.equal(summary.requirements.find(({ requirement }) => requirement === "hidden/visible behavior").status, "FAIL");
+  const physicalSummary = JSON.parse(built.entries.find(({ path: evidencePath }) => evidencePath === "11-physical-device/section-summary.json").data);
+  const physicalRequirement = physicalSummary.requirements.find(({ requirement }) => requirement === "real-device results if genuinely performed");
+  assert.equal(physicalRequirement.status, "FAIL");
+  assert.doesNotMatch(physicalRequirement.statement, /pending/i);
 });
 
 test("human recording ledger bindings reject direct SHA-256, byte-size and status mismatches", async (t) => {
@@ -1002,19 +1550,57 @@ test("human recording ledger bindings reject direct SHA-256, byte-size and statu
 
   const wrongHash = structuredClone(ledger);
   wrongHash.entries[0].sha256 = "f".repeat(64);
+  wrongHash.entries[0].reviewedSha256 = wrongHash.entries[0].sha256;
   await writeHumanLedger(fixture, wrongHash);
   await assert.rejects(() => buildEvidenceEntries(options()), /hash\/size\/status bound.*iphone-safari-opening\.mp4/);
 
   const wrongSize = structuredClone(ledger);
   wrongSize.entries[0].byteSize += 1;
+  wrongSize.entries[0].reviewedByteSize = wrongSize.entries[0].byteSize;
   await writeHumanLedger(fixture, wrongSize);
   await assert.rejects(() => buildEvidenceEntries(options()), /hash\/size\/status bound.*iphone-safari-opening\.mp4/);
 
   const wrongStatus = structuredClone(ledger);
   wrongStatus.entries[0].status = "PENDING HUMAN REVIEW";
+  wrongStatus.entries[0].reviewedSha256 = null;
+  wrongStatus.entries[0].reviewedByteSize = null;
+  for (const check of Object.keys(wrongStatus.entries[0].checks)) wrongStatus.entries[0].checks[check] = null;
+  wrongStatus.entries[0].observedResult = "Pending human review.";
+  wrongStatus.entries[0].observations = wrongStatus.entries[0].observations.map((observation) => ({
+    ...observation,
+    status: "PENDING HUMAN REVIEW",
+    result: "Pending human review.",
+    timestamp: null,
+    frame: null,
+  }));
   wrongStatus.status = "PENDING HUMAN REVIEW";
   await writeHumanLedger(fixture, wrongStatus);
   await assert.rejects(() => buildEvidenceEntries(options()), /hash\/size\/status bound.*iphone-safari-opening\.mp4/);
+});
+
+test("human ledger rejects reviews rebound to different bytes and out-of-media failure positions", async (t) => {
+  const fixture = await createFixture();
+  t.after(() => rm(fixture.parent, { recursive: true, force: true }));
+  const ledger = await attachVerifiedHumanEvidence(fixture);
+  const replaced = structuredClone(ledger);
+  replaced.entries[0].sha256 = "f".repeat(64);
+  assert.throws(() => validateHumanEvidenceLedger(replaced), /review is not bound to the supplied recording bytes/);
+
+  const outOfDuration = structuredClone(ledger);
+  const opening = outOfDuration.entries[0];
+  const check = DEVICE_REVIEW_CHECKS[opening.filename][0];
+  opening.status = "FAIL";
+  opening.checks[check] = false;
+  opening.observedResult = "A visible failure was observed.";
+  opening.failureReferences = [{ check, timestamp: "00:31.000", frame: null, observation: "Visible after the recording ended." }];
+  Object.assign(opening.observations.find(({ checkId }) => checkId === check), { status: "FAIL", result: "A visible failure was observed.", timestamp: "00:31.000", frame: null });
+  outOfDuration.status = "FAIL";
+  assert.throws(() => validateHumanEvidenceLedger(outOfDuration), /timestamp exceeds the recording duration/);
+
+  opening.failureReferences[0].timestamp = null;
+  opening.failureReferences[0].frame = "F901";
+  Object.assign(opening.observations.find(({ checkId }) => checkId === check), { timestamp: null, frame: "F901" });
+  assert.throws(() => validateHumanEvidenceLedger(outOfDuration), /frame exceeds the recording sample count/);
 });
 
 test("human ledger rejects status drift and any false check without its own addressed failure reference", async (t) => {
@@ -1024,8 +1610,8 @@ test("human ledger rejects status drift and any false check without its own addr
 
   const statusDrift = structuredClone(ledger);
   const driftZoom = statusDrift.entries.find(({ filename }) => filename === "chrome-200-percent.mp4");
-  driftZoom.routeOutcomes[0].status = "PENDING HUMAN REVIEW";
-  assert.throws(() => validateHumanEvidenceLedger(statusDrift), /chrome-200-percent recording status must be PENDING HUMAN REVIEW/);
+  driftZoom.routeOutcomes[0].status = "FAIL";
+  assert.throws(() => validateHumanEvidenceLedger(statusDrift), /chrome-200-percent FAIL route \/ contains no failed check/);
 
   const physical = structuredClone(ledger);
   const opening = physical.entries.find(({ filename }) => filename === "iphone-safari-opening.mp4");
@@ -1033,7 +1619,10 @@ test("human ledger rejects status drift and any false check without its own addr
   opening.status = "FAIL";
   opening.checks[first] = false;
   opening.checks[second] = false;
+  opening.observedResult = "A visible failure was observed.";
   opening.failureReferences = [{ check: first, timestamp: "00:12.000", frame: null, observation: "First failure." }];
+  Object.assign(opening.observations.find(({ checkId }) => checkId === first), { status: "FAIL", result: "A visible failure was observed.", timestamp: "00:12.000", frame: null });
+  Object.assign(opening.observations.find(({ checkId }) => checkId === second), { status: "FAIL", result: "A second visible failure was observed.", timestamp: null, frame: "F220" });
   physical.status = "FAIL";
   assert.throws(() => validateHumanEvidenceLedger(physical), new RegExp(`false check ${second} requires a failureReference`));
   opening.failureReferences.push({ check: second, timestamp: null, frame: "F220", observation: "Second failure." });
@@ -1047,7 +1636,10 @@ test("human ledger rejects status drift and any false check without its own addr
   route.checks.completeOpeningProposition = false;
   route.failureReferences = [{ check: "completeH1", timestamp: "00:20.000", frame: null, observation: "H1 failure." }];
   zoom.status = "FAIL";
+  zoom.observedResult = "A visible failure was observed.";
   zoom.failureReferences = [{ check: "/:completeH1", timestamp: "00:20.000", frame: null, observation: "Route failure." }];
+  Object.assign(zoom.observations.find(({ checkId }) => checkId === "/:completeH1"), { status: "FAIL", result: "A visible failure was observed.", timestamp: "00:20.000", frame: null });
+  Object.assign(zoom.observations.find(({ checkId }) => checkId === "/:completeOpeningProposition"), { status: "FAIL", result: "A second visible failure was observed.", timestamp: "00:21.000", frame: null });
   zoomFailure.status = "FAIL";
   assert.throws(() => validateHumanEvidenceLedger(zoomFailure), /false check completeOpeningProposition requires a failureReference/);
 });
@@ -1112,12 +1704,98 @@ test("R1 authority accepts only the repair branch, exact parent, frozen main, 28
   assert.equal(deployment.inputs.exactParent, R1_REQUIRED_PARENT);
   assert.equal(deployment.inputs.branchUrl, R1_REQUIRED_BRANCH_URL);
   assert.equal(Object.hasOwn(deployment.inputs, "acceptedBase"), false);
+  const productionChange = structuredClone(fixture.metadata);
+  productionChange.changes.productionFiles = ["src/pages/index.astro"];
+  assert.throws(() => validateFinalMetadata(productionChange, { posterStudyDirectory: fixture.candidates }), /production-source change ledger must be empty/);
+  const missingTool = structuredClone(fixture.metadata);
+  missingTool.changes.toolingReportFiles.pop();
+  assert.throws(() => validateFinalMetadata(missingTool, { posterStudyDirectory: fixture.candidates }), /exact 18-path authority/);
+  const extraTool = structuredClone(fixture.metadata);
+  extraTool.changes.toolingReportFiles.push("scripts/not-authorized.mjs");
+  assert.throws(() => validateFinalMetadata(extraTool, { posterStudyDirectory: fixture.candidates }), /exact 18-path authority/);
+  const wrongDelta = structuredClone(fixture.metadata);
+  wrongDelta.changes.trackedFileDelta = 17;
+  assert.throws(() => validateFinalMetadata(wrongDelta, { posterStudyDirectory: fixture.candidates }), /trackedFileDelta/);
+  const unknownSupplemental = structuredClone(fixture.metadata);
+  const regressionArtifact = unknownSupplemental.artifacts.find(({ role }) => role === "regression-summary");
+  unknownSupplemental.artifacts.push({ ...regressionArtifact, destination: "00-provenance/repository-source-dump.json", role: "supplemental-repository-source-dump" });
+  assert.throws(() => validateFinalMetadata(unknownSupplemental, { posterStudyDirectory: fixture.candidates }), /unknown supplemental evidence role is forbidden/);
+  const deploymentMismatch = structuredClone(deployment);
+  deploymentMismatch.repository.data.toolingReportDiff.pop();
+  assert.throws(() => validateDocumentAuthority(fixture.metadata.artifacts.find(({ role }) => role === "deployment-verifier"), deploymentMismatch, fixture.metadata), /inner repository\/deployment\/origin authority|tooling\/report diff/);
+  const deploymentStatusMismatch = structuredClone(deployment);
+  deploymentStatusMismatch.repository.data.toolingReportDiff[0] = deploymentStatusMismatch.repository.data.toolingReportDiff[0].replace(/^A\t/, "M\t");
+  assert.throws(() => validateDocumentAuthority(fixture.metadata.artifacts.find(({ role }) => role === "deployment-verifier"), deploymentStatusMismatch, fixture.metadata), /inner repository\/deployment\/origin authority/);
+  const innerRepositoryMismatch = structuredClone(deployment);
+  innerRepositoryMismatch.repository.data.cleanTree = false;
+  assert.throws(() => validateDocumentAuthority(fixture.metadata.artifacts.find(({ role }) => role === "deployment-verifier"), innerRepositoryMismatch, fixture.metadata), /inner repository\/deployment\/origin authority/);
+  const innerDeploymentMismatch = structuredClone(deployment);
+  innerDeploymentMismatch.deployment.data.commitHash = "0".repeat(40);
+  assert.throws(() => validateDocumentAuthority(fixture.metadata.artifacts.find(({ role }) => role === "deployment-verifier"), innerDeploymentMismatch, fixture.metadata), /inner repository\/deployment\/origin authority/);
+  const legacyDeploymentSlug = structuredClone(deployment);
+  legacyDeploymentSlug.deployment.data.appSlug = "cloudflare-pages";
+  assert.throws(() => validateDocumentAuthority(fixture.metadata.artifacts.find(({ role }) => role === "deployment-verifier"), legacyDeploymentSlug, fixture.metadata), /inner repository\/deployment\/origin authority/);
+  const nestedBranchFailure = structuredClone(deployment);
+  nestedBranchFailure.deployment.data.branchBinding.status = "FAIL";
+  assert.throws(() => validateDocumentAuthority(fixture.metadata.artifacts.find(({ role }) => role === "deployment-verifier"), nestedBranchFailure, fixture.metadata), /nested status is not PASS/);
+  const nestedOriginFailure = structuredClone(deployment);
+  nestedOriginFailure.origins.immutable.data.responses = [{ status: "FAIL" }];
+  assert.throws(() => validateDocumentAuthority(fixture.metadata.artifacts.find(({ role }) => role === "deployment-verifier"), nestedOriginFailure, fixture.metadata), /nested status is not PASS/);
+  const packageScriptMismatch = structuredClone(deployment);
+  packageScriptMismatch.repository.data.packageScriptChanges.pop();
+  assert.throws(() => validateDocumentAuthority(fixture.metadata.artifacts.find(({ role }) => role === "deployment-verifier"), packageScriptMismatch, fixture.metadata), /inner repository\/deployment\/origin authority/);
+  const productionScopeMismatch = structuredClone(deployment);
+  productionScopeMismatch.repository.data.productionDiffScope.pop();
+  assert.throws(() => validateDocumentAuthority(fixture.metadata.artifacts.find(({ role }) => role === "deployment-verifier"), productionScopeMismatch, fixture.metadata), /inner repository\/deployment\/origin authority/);
+  const forgedRouteStatus = structuredClone(deployment);
+  forgedRouteStatus.dist.routeOutcomes[0].status = 500;
+  assert.throws(() => validateDocumentAuthority(fixture.metadata.artifacts.find(({ role }) => role === "deployment-verifier"), forgedRouteStatus, fixture.metadata), /dist route\/header authority differs/);
+  const forgedDistSha = structuredClone(deployment);
+  forgedDistSha.dist.files.find(({ relativePath }) => relativePath === "index.html").sha256 = "f".repeat(64);
+  assert.throws(() => validateDocumentAuthority(fixture.metadata.artifacts.find(({ role }) => role === "deployment-verifier"), forgedDistSha, fixture.metadata), /raw response parity differs/);
+  const ambiguousDistPath = structuredClone(deployment);
+  ambiguousDistPath.dist.files.find(({ relativePath }) => relativePath === "robots.txt").relativePath = "nested/%2e%2e/robots.txt";
+  assert.throws(() => validateDocumentAuthority(fixture.metadata.artifacts.find(({ role }) => role === "deployment-verifier"), ambiguousDistPath, fixture.metadata), /URL-ambiguous/);
+  const forgedHttpStatus = structuredClone(deployment);
+  forgedHttpStatus.origins.immutable.data.responses.find(({ relativePath }) => relativePath === "index.html").actualHttpStatus = 500;
+  assert.throws(() => validateDocumentAuthority(fixture.metadata.artifacts.find(({ role }) => role === "deployment-verifier"), forgedHttpStatus, fixture.metadata), /raw response parity differs/);
+  const forgedOriginSha = structuredClone(deployment);
+  forgedOriginSha.origins.branch.data.responses.find(({ relativePath }) => relativePath === "index.html").sha256 = "e".repeat(64);
+  assert.throws(() => validateDocumentAuthority(fixture.metadata.artifacts.find(({ role }) => role === "deployment-verifier"), forgedOriginSha, fixture.metadata), /raw response parity differs/);
+  const forgedMime = structuredClone(deployment);
+  forgedMime.origins.immutable.data.responses.find(({ relativePath }) => relativePath === "index.html").headers.contentType = "not-text/html";
+  assert.throws(() => validateDocumentAuthority(fixture.metadata.artifacts.find(({ role }) => role === "deployment-verifier"), forgedMime, fixture.metadata), /response header authority differs/);
+  const nonPrimitiveCache = structuredClone(deployment);
+  nonPrimitiveCache.origins.branch.data.responses.find(({ relativePath }) => relativePath === "index.html").headers.cacheControl = [];
+  assert.throws(() => validateDocumentAuthority(fixture.metadata.artifacts.find(({ role }) => role === "deployment-verifier"), nonPrimitiveCache, fixture.metadata), /response header authority differs/);
+  const parameterizedPrivate = structuredClone(deployment);
+  parameterizedPrivate.origins.branch.data.responses.find(({ relativePath }) => relativePath === "index.html").headers.cacheControl = 'public, max-age=0, must-revalidate, private="set-cookie"';
+  assert.throws(() => validateDocumentAuthority(fixture.metadata.artifacts.find(({ role }) => role === "deployment-verifier"), parameterizedPrivate, fixture.metadata), /unsafe Cache-Control/);
+  const conflictingMaxAge = structuredClone(deployment);
+  conflictingMaxAge.origins.immutable.data.responses.find(({ relativePath }) => relativePath === "_astro/app.js").headers.cacheControl = "public, max-age=31556952, max-age=0, immutable";
+  assert.throws(() => validateDocumentAuthority(fixture.metadata.artifacts.find(({ role }) => role === "deployment-verifier"), conflictingMaxAge, fixture.metadata), /duplicate, or conflicting directive/);
+  const contradictoryCache = structuredClone(deployment);
+  contradictoryCache.origins.branch.data.responses.find(({ relativePath }) => relativePath === "_astro/app.js").headers.cacheControl = "public, max-age=31556952, immutable, no-cache";
+  assert.throws(() => validateDocumentAuthority(fixture.metadata.artifacts.find(({ role }) => role === "deployment-verifier"), contradictoryCache, fixture.metadata), /Cache-Control differs/);
+  const forgedCheckRunId = structuredClone(deployment);
+  forgedCheckRunId.deployment.data.checkRunId = "999";
+  assert.throws(() => validateDocumentAuthority(fixture.metadata.artifacts.find(({ role }) => role === "deployment-verifier"), forgedCheckRunId, fixture.metadata), /checkRunId is not independently bound/);
   const motionSummaries = built.entries.filter(({ role }) => role === "r1-motion-summary");
   const motionRecordings = built.entries.filter(({ role }) => role === "r1-motion-recording");
   const persistentLifecycle = built.entries.filter(({ role }) => role === "r1-persistent-lifecycle-summary");
+  const node22Entries = built.entries.filter(({ role }) => role === "r1-node22-validation-summary");
   assert.equal(motionSummaries.length, 2);
   assert.equal(motionRecordings.length, 10);
   assert.equal(persistentLifecycle.length, 1);
+  assert.equal(node22Entries.length, 1);
+  const finalBuild = JSON.parse(built.entries.find(({ path: evidencePath }) => evidencePath === "00-provenance/final-build-test.json").data);
+  assert.equal(finalBuild.node22Validation.runtime.node, "v22.16.0");
+  assert.equal(finalBuild.node22Validation.distributionComparison.status, "BYTE-IDENTICAL");
+  assert.equal(finalBuild.node22Validation.artifact.path, "00-provenance/node22-integrated-validation.json");
+  const assemblyInventory = JSON.parse(built.entries.find(({ path: evidencePath }) => evidencePath === "13-package/evidence-assembly-summary.json").data);
+  assert.equal(assemblyInventory.downstream.packagerAddsTrackedReports, 5);
+  const baselineSummary = JSON.parse(built.entries.find(({ path: evidencePath }) => evidencePath === "01-baseline/section-summary.json").data);
+  assert.ok(baselineSummary.evidence.some(({ path: evidencePath, generatedByPackager }) => evidencePath === "01-baseline/PHASE_6_R1_VALIDATION_CLOSURE.md" && generatedByPackager === true));
   for (const engine of ["chromium", "firefox"]) {
     assert.deepEqual(
       motionRecordings.filter((entry) => entry.engine === engine).map((entry) => entry.media.story),
@@ -1125,6 +1803,22 @@ test("R1 authority accepts only the repair branch, exact parent, frozen main, 28
     );
     assert.ok(motionRecordings.filter((entry) => entry.engine === engine).every((entry) => entry.media.codec === "h264" && entry.media.fullDecodeValidated));
   }
+
+  const nodeRecord = fixture.metadata.artifacts.find(({ role }) => role === "r1-node22-validation-summary");
+  const nodeReport = JSON.parse(await readFile(path.join(fixture.sourceRoot, ...nodeRecord.source.split("/")), "utf8"));
+  const wrongRuntime = structuredClone(nodeReport);
+  wrongRuntime.runtime.node = "v24.18.0";
+  assert.throws(() => validateDocumentAuthority(nodeRecord, wrongRuntime, fixture.metadata), /Node\/npm runtime authority/);
+  const incompleteOutcome = structuredClone(nodeReport);
+  incompleteOutcome.outcomes = incompleteOutcome.outcomes.filter(({ id }) => id !== "phase4-source-verification");
+  assert.throws(() => validateDocumentAuthority(nodeRecord, incompleteOutcome, fixture.metadata), /outcome inventory must contain exactly/);
+  const extraFailedOutcome = structuredClone(nodeReport);
+  extraFailedOutcome.outcomes.push({ id: "extra-authority", status: "FAIL", log: "extra.log", logText: "failed\n", logSha256: sha256(Buffer.from("failed\n")) });
+  assert.throws(() => validateDocumentAuthority(nodeRecord, extraFailedOutcome, fixture.metadata), /outcome inventory must contain exactly/);
+  const differentDist = structuredClone(nodeReport);
+  differentDist.distributionComparison.status = "DIFFERENT";
+  differentDist.distributionComparison.differenceCount = 1;
+  assert.throws(() => validateDocumentAuthority(nodeRecord, differentDist, fixture.metadata), /dist comparison is not byte-identical/);
 
   const chromiumSummaryRecord = fixture.metadata.artifacts.find((record) => record.role === "r1-motion-summary" && record.engine === "chromium");
   const chromiumReport = JSON.parse(await readFile(path.join(fixture.sourceRoot, ...chromiumSummaryRecord.source.split("/")), "utf8"));
@@ -1144,6 +1838,12 @@ test("R1 authority accepts only the repair branch, exact parent, frozen main, 28
   diagnosticsPromoted.diagnostics = { status: "FAIL", failures: [{ type: "PAGE ERROR" }] };
   diagnosticsPromoted.summary.failures = 1;
   assert.throws(() => validateDocumentAuthority(chromiumSummaryRecord, diagnosticsPromoted, fixture.metadata), /motion report authority differs/);
+  const hollowMotion = structuredClone(chromiumReport);
+  hollowMotion.recordings[0].observations = { status: "PASS" };
+  assert.throws(() => validateDocumentAuthority(chromiumSummaryRecord, hollowMotion, fixture.metadata), /motion sample inventory differs/);
+  const mislabeledMotion = structuredClone(chromiumReport);
+  mislabeledMotion.recordings[0].observations.samples[1].segment = "top-dormancy";
+  assert.throws(() => validateDocumentAuthority(chromiumSummaryRecord, mislabeledMotion, fixture.metadata), /authored-state semantics differ/);
 
   const lifecycleRecord = fixture.metadata.artifacts.find(({ role }) => role === "r1-persistent-lifecycle-summary");
   const lifecycleReport = JSON.parse(await readFile(path.join(fixture.sourceRoot, ...lifecycleRecord.source.split("/")), "utf8"));
@@ -1158,15 +1858,16 @@ test("R1 authority accepts only the repair branch, exact parent, frozen main, 28
   assert.throws(() => validateDocumentAuthority(lifecycleRecord, hiddenManifestoPromoted, fixture.metadata), /history check bareBackNoManifestoReplay contradicts raw states/);
   const hiddenManifestoRawContradiction = structuredClone(lifecycleReport);
   hiddenManifestoRawContradiction.history.states.bareBack.home.manifestoReveal = "hidden";
-  assert.throws(() => validateDocumentAuthority(lifecycleRecord, hiddenManifestoRawContradiction, fixture.metadata), /history check bareBackNoManifestoReplay contradicts raw states/);
+  assert.throws(() => validateDocumentAuthority(lifecycleRecord, hiddenManifestoRawContradiction, fixture.metadata), /history check bareBack(?:Correct|NoManifestoReplay) contradicts raw states/);
   const duplicateMediaPromoted = structuredClone(lifecycleReport);
   duplicateMediaPromoted.mediaRequests.noDuplicateNonRangeRequests = false;
   assert.throws(() => validateDocumentAuthority(lifecycleRecord, duplicateMediaPromoted, fixture.metadata), /noDuplicateNonRangeRequests contradicts raw non-range selections/);
   const duplicateMediaRawContradiction = structuredClone(lifecycleReport);
+  const lifecycleRequests = lifecycleReport.mediaRequests.network.phase4Requests;
   duplicateMediaRawContradiction.mediaRequests.network.phase4Requests = [
-    { path: "/media/cinematic/phase-4r2/media/mobile.mp4", range: null },
-    { path: "/media/cinematic/phase-4r2/media/mobile.mp4", range: null },
-    { path: "/media/cinematic/phase-4r2/media/mobile.mp4", range: null },
+    { ...lifecycleRequests[0], range: null },
+    { ...lifecycleRequests[0], range: null },
+    { ...lifecycleRequests[1], range: null },
   ];
   duplicateMediaRawContradiction.mediaRequests.network.requestCount = 3;
   duplicateMediaRawContradiction.mediaRequests.network.rangeRequestCount = 0;
@@ -1177,6 +1878,9 @@ test("R1 authority accepts only the repair branch, exact parent, frozen main, 28
   const missingLifecycle = structuredClone(fixture.metadata);
   missingLifecycle.artifacts = missingLifecycle.artifacts.filter(({ role }) => role !== "r1-persistent-lifecycle-summary");
   await assert.rejects(() => buildEvidenceEntries(optionsFor(missingLifecycle)), /mandatory evidence role is missing: r1-persistent-lifecycle-summary/);
+  const missingNode22 = structuredClone(fixture.metadata);
+  missingNode22.artifacts = missingNode22.artifacts.filter(({ role }) => role !== "r1-node22-validation-summary");
+  await assert.rejects(() => buildEvidenceEntries(optionsFor(missingNode22)), /mandatory evidence role is missing: r1-node22-validation-summary/);
 
   const missingHumanEvidence = structuredClone(fixture.metadata);
   missingHumanEvidence.artifacts = missingHumanEvidence.artifacts.filter(({ role }) => !["physical-device-result", "physical-device-recording"].includes(role));
@@ -1206,17 +1910,48 @@ test("R1 authority accepts only the repair branch, exact parent, frozen main, 28
   await assert.rejects(() => buildEvidenceEntries(optionsFor(fixture.metadata)), /deployment-verifier authority differs from final metadata/);
 });
 
+test("R1 assembly cross-binds a self-consistent deployment ledger to the Node 22 dist manifest", async (t) => {
+  const fixture = await createFixture();
+  t.after(() => rm(fixture.parent, { recursive: true, force: true }));
+  await convertFixtureToR1(fixture);
+  await rewriteArtifactJson(fixture, ({ role }) => role === "deployment-verifier", (document) => {
+    const forgedSha256 = "9".repeat(64);
+    document.dist.files.find(({ relativePath }) => relativePath === "index.html").sha256 = forgedSha256;
+    for (const origin of [document.origins.immutable.data, document.origins.branch.data]) {
+      origin.responses.find(({ relativePath }) => relativePath === "index.html").sha256 = forgedSha256;
+    }
+  });
+  await assert.rejects(() => buildEvidenceEntries({
+    sourceEvidenceRoot: fixture.sourceRoot,
+    finalMetadata: fixture.metadata,
+    posterStudyDirectory: fixture.candidates,
+    originalPosterDirectory: fixture.originals,
+    verifyTrackedPosterAuthority: false,
+  }), /does not exactly match the hash-bound Node 22 distribution manifest/);
+});
+
 test("R1 persistent lifecycle rejects every raw-history, BFCache, visibility, listener and media false PASS", async (t) => {
   const fixture = await createFixture();
   t.after(() => rm(fixture.parent, { recursive: true, force: true }));
   await convertFixtureToR1(fixture);
   const record = fixture.metadata.artifacts.find(({ role }) => role === "r1-persistent-lifecycle-summary");
   const report = JSON.parse(await readFile(path.join(fixture.sourceRoot, ...record.source.split("/")), "utf8"));
+  const lifecyclePhase4Path = report.mediaRequests.documents[0].paths[0];
   const validate = (document) => validateDocumentAuthority(record, document, fixture.metadata);
+  const requestFor = (index, requestPath, range = null, overrides = {}) => ({
+    ...report.mediaRequests.network.phase4Requests[index],
+    path: requestPath,
+    range,
+    url: new URL(requestPath, R1_REQUIRED_BRANCH_URL).href,
+    ...overrides,
+  });
   assert.doesNotThrow(() => validate(report));
 
   const staticRestoredHistory = structuredClone(report);
-  staticRestoredHistory.history.states.bareManifesto.home.continuation = { partnerLink: { top: 360, visible: true } };
+  staticRestoredHistory.history.states.bareManifesto.home.continuation = {
+    ...staticRestoredHistory.history.states.bareManifesto.home.continuation,
+    partnerLink: { top: 360, visible: true },
+  };
   staticRestoredHistory.history.states.bareBack = {
     ...staticRestoredHistory.history.states.bareBack,
     documentId: "bare-static-document",
@@ -1234,23 +1969,37 @@ test("R1 persistent lifecycle rejects every raw-history, BFCache, visibility, li
       mode: "static",
       phase: "fallback",
       routeNavigation: "released",
-      source: { hasSource: false },
+      mediaState: null,
+      source: { hasSource: false, src: null, currentSrc: null, srcAttribute: null, videoNodeCount: 1, sourceNodeCount: 0 },
     },
     probe: {
       ...staticRestoredHistory.history.states.bareBack.probe,
+      blob: { created: 0, revoked: 0, live: 0 },
+      documentId: "bare-static-document",
+      manifestoRevealEvents: [],
       navigation: { type: "back_forward", notRestoredReasons: null },
       resources: [],
     },
   };
+  staticRestoredHistory.history.checks.bareBackNoManifestoReplay = null;
   staticRestoredHistory.listeners.comparisons = staticRestoredHistory.listeners.comparisons.filter(({ name }) => name !== "bare-back");
   const staticRestorationPhase4Path = staticRestoredHistory.mediaRequests.documents.find(({ documentId }) => documentId === "bare-document").paths[0];
   staticRestoredHistory.mediaRequests.documents = [
-    { documentId: "bare-document", labels: ["bare-home", "bare-home-manifesto"], mediaExpected: true, modes: ["enhanced"], paths: [staticRestorationPhase4Path], resourceObservations: 1, sourceFree: false },
-    { documentId: "bare-static-document", labels: ["bare-back"], mediaExpected: false, modes: ["static"], paths: [], resourceObservations: 0, sourceFree: true },
+    { documentId: "bare-document", labels: ["bare-home", "bare-home-manifesto"], mediaExpected: true, modes: ["enhanced"], paths: [staticRestorationPhase4Path], resourceObservations: 1, selectionDocumentUrl: new URL("/", R1_REQUIRED_BRANCH_URL).href, selectionNavigationId: "navigation-bare", selectionStable: true, sourceFree: false },
+    { documentId: "bare-static-document", labels: ["bare-back"], mediaExpected: false, modes: ["static"], paths: [], resourceObservations: 0, selectionDocumentUrl: null, selectionNavigationId: null, selectionStable: true, sourceFree: true },
     staticRestoredHistory.mediaRequests.documents.find(({ documentId }) => documentId === "entry-document"),
   ];
   assert.equal(staticRestoredHistory.bfcache.status, "NOT OBSERVED");
   assert.doesNotThrow(() => validate(staticRestoredHistory), "intentional static/restored-scroll Back was rejected by the assembler");
+  for (const [name, mutate] of Object.entries({
+    liveBlob: (state) => { state.probe.blob = { created: 1, revoked: 0, live: 1 }; },
+    activeRaf: (state) => { state.probe.raf = { scheduled: 1, executed: 0, cancelled: 0, active: 1 }; },
+    activeInterval: (state) => { state.probe.intervals = { created: 1, cleared: 0, active: 1 }; },
+  })) {
+    const contradiction = structuredClone(staticRestoredHistory);
+    mutate(contradiction.history.states.bareBack);
+    assert.throws(() => validate(contradiction), /history check bareBack(?:Correct|NoManifestoReplay) contradicts raw states/, `static restored Home accepted ${name}`);
+  }
 
   const headlessHostAttempt = structuredClone(report);
   headlessHostAttempt.browser.headed = false;
@@ -1287,18 +2036,188 @@ test("R1 persistent lifecycle rejects every raw-history, BFCache, visibility, li
   for (const [check, contradict] of Object.entries(rawHistoryContradictions)) {
     const falsePass = structuredClone(report);
     contradict(falsePass);
+    const expectedCheck = check === "bareBackNoManifestoReplay"
+      ? "bareBack(?:Correct|NoManifestoReplay)"
+      : check === "entryBackManifestoResolved"
+        ? "entryBack(?:Correct|ManifestoResolved)"
+        : check;
     assert.throws(
       () => validate(falsePass),
-      new RegExp(`history check ${check} contradicts raw states`),
+      new RegExp(`history check ${expectedCheck} contradicts raw states`),
       `${check} PASS was not bound to its raw states`,
     );
   }
 
+  const routeAndNavigationMatrix = {
+    bare: ["/", "navigate"],
+    bareManifesto: ["/", "navigate"],
+    supportAfterBare: ["/for-partners/", "navigate"],
+    bareBack: ["/", "back_forward"],
+    supportForward: ["/for-partners/", "back_forward"],
+    entryInitial: ["/#entry", "navigate"],
+    entryResolved: ["/#entry", "navigate"],
+    supportAfterEntry: ["/for-partners/", "navigate"],
+    entryBack: ["/#entry", "back_forward"],
+    entryForward: ["/for-partners/", "back_forward"],
+  };
+  for (const [stateKey, [expectedUrl, expectedNavigationType]] of Object.entries(routeAndNavigationMatrix)) {
+    const wrongUrl = structuredClone(report);
+    wrongUrl.history.states[stateKey].url = `${expectedUrl}wrong`;
+    assert.throws(() => validate(wrongUrl), /history check .* contradicts raw states/, `${stateKey} URL contradiction was accepted`);
+    const wrongNavigation = structuredClone(report);
+    wrongNavigation.history.states[stateKey].probe.navigation.type = expectedNavigationType === "navigate" ? "back_forward" : "navigate";
+    assert.throws(() => validate(wrongNavigation), /history check .* contradicts raw states/, `${stateKey} navigation contradiction was accepted`);
+    for (const menu of [{ open: true, expanded: "true" }, { open: false, expanded: "true" }]) {
+      const wrongMenu = structuredClone(report);
+      wrongMenu.history.states[stateKey].mobileMenu = menu;
+      assert.throws(() => validate(wrongMenu), /history check menuClosed contradicts raw states|history check .* contradicts raw states/, `${stateKey} menu contradiction was accepted`);
+    }
+  }
+
+  const strictEnhancedMutations = [
+    (state) => { state.home.mode = "static"; },
+    (state) => { state.home.bootstrap = "restored-scroll"; },
+    (state) => { state.home.eligibility = "bypass"; },
+    (state) => { state.home.fallback = "media"; },
+    (state) => { state.home.mediaState = "loading"; },
+    (state) => { state.home.source.hasSource = false; },
+    (state) => { state.home.source.currentSrc = ""; },
+    (state) => { state.home.source.srcAttribute = ""; },
+    (state) => { state.home.source.currentSrc = "blob:https://example.pages.dev/replaced"; },
+    (state) => { state.home.source.srcAttribute = "blob:https://example.pages.dev/replaced"; },
+    (state) => { state.home.source.videoNodeCount = 2; },
+    (state) => { state.home.source.sourceNodeCount = 1; },
+    (state) => { state.home.manifestoReveal = "hidden"; },
+    (state) => { state.home.manifesto.rendered = false; },
+    (state) => { state.home.manifesto.text = "Wrong manifesto"; },
+    (state) => { state.home.interactive = "false"; },
+    (state) => { state.home.routeNavigation = "concealed"; },
+    (state) => { state.home.header = "concealed"; },
+    (state) => { state.home.phase = "current"; },
+    (state) => { state.probe.raf.active = 1; },
+    (state) => { state.probe.intervals.active = 1; },
+    (state) => { state.probe.blob.live = 0; },
+  ];
+  for (const stateKey of ["bareBack", "entryBack"]) {
+    for (const mutate of strictEnhancedMutations) {
+      const contradiction = structuredClone(report);
+      mutate(contradiction.history.states[stateKey]);
+      assert.throws(() => validate(contradiction), /history check .* contradicts raw states/, `${stateKey} accepted an incoherent enhanced restoration`);
+    }
+  }
+
+  for (const [initialKey, resolvedKey, expectedCheck] of [
+    ["bare", "bareManifesto", "bareCorrect"],
+    ["entryInitial", "entryResolved", "entryCorrect"],
+  ]) {
+    const mutations = {
+      differentDocument: (document) => { document.history.states[resolvedKey].documentId = `${document.history.states[resolvedKey].documentId}-other`; },
+      changedSource: (document) => { document.history.states[resolvedKey].home.source.currentSrc = "blob:https://example.invalid/replaced"; },
+      changedNavigation: (document) => { document.history.states[resolvedKey].navigationId = `${document.history.states[resolvedKey].navigationId}-other`; },
+      initialNotReady: (document) => { document.history.states[initialKey].home.mediaState = "loading"; },
+      initialSourceFree: (document) => { document.history.states[initialKey].home.source.hasSource = false; },
+      initialBlobMissing: (document) => { document.history.states[initialKey].probe.blob.live = 0; },
+      unresolvedDeparture: (document) => { document.history.states[resolvedKey].home.manifesto.rendered = false; },
+      reversedCapture: (document) => { document.history.states[resolvedKey].capturedAtEpochMs = document.history.states[initialKey].capturedAtEpochMs - 1; },
+      nonPrefixLedger: (document) => {
+        document.history.states[initialKey].probe.events = [{
+          atEpochMs: document.history.states[initialKey].capturedAtEpochMs - 1,
+          documentEventSequence: 1,
+          documentId: document.history.states[initialKey].documentId,
+          href: new URL(document.history.states[initialKey].url, R1_REQUIRED_BRANCH_URL).href,
+          persisted: null,
+          type: "popstate",
+          visibilityState: "visible",
+        }];
+        document.history.states[initialKey].probe.documentEventSequence = 1;
+      },
+    };
+    for (const [name, mutate] of Object.entries(mutations)) {
+      const contradiction = structuredClone(report);
+      mutate(contradiction);
+      assert.throws(() => validate(contradiction), new RegExp(`history check ${expectedCheck} contradicts raw states`), `${initialKey}→${resolvedKey} ${name} contradiction was accepted`);
+    }
+  }
+
+  for (const [departureKey, restoredKey, expectedCheck] of [
+    ["bareManifesto", "bareBack", "bareBackNoManifestoReplay"],
+    ["entryResolved", "entryBack", "entryBackCorrect"],
+  ]) {
+    const replayed = structuredClone(report);
+    replayed.history.states[restoredKey].probe.manifestoRevealEvents.push({
+      atEpochMs: replayed.history.states[departureKey].capturedAtEpochMs + 1,
+      value: "hidden",
+    });
+    assert.throws(() => validate(replayed), new RegExp(`history check ${expectedCheck} contradicts raw states`), `${restoredKey} accepted a delayed manifesto replay`);
+    const erased = structuredClone(report);
+    erased.history.states[restoredKey].probe.manifestoRevealEvents = [];
+    assert.throws(() => validate(erased), /history check .* contradicts raw states/, `${restoredKey} accepted an erased manifesto ledger`);
+  }
+
+  for (const [name, mutate] of Object.entries({
+    mismatchedProbeDocument: (document) => { document.history.states.bare.probe.documentId = "wrong-document"; },
+    negativeDocumentSequence: (document) => { document.history.states.bare.probe.documentEventSequence = -1; },
+    nonArrayEventLedger: (document) => { document.history.states.bare.probe.events = null; },
+    missingOrigin: (document) => { delete document.history.states.bare.origin; },
+    wrongOrigin: (document) => { document.history.states.bare.origin = "https://wrong.example"; },
+    missingNavigationId: (document) => { document.history.states.bare.navigationId = null; },
+    nonPositiveCaptureTime: (document) => { document.history.states.bare.capturedAtEpochMs = 0; },
+    negativeMaximumScroll: (document) => { document.history.states.bare.maximumScroll = -1; },
+    negativeScroll: (document) => { document.history.states.entryInitial.scrollY = -1; },
+    scrollBeyondMaximum: (document) => { document.history.states.bareManifesto.maximumScroll = document.history.states.bareManifesto.scrollY - 1; },
+    impossibleListenerCount: (document) => { document.history.states.bare.probe.listeners.active = -1; },
+    listenerSumMismatch: (document) => { document.history.states.bare.probe.listeners.active += 1; },
+    impossibleRafCount: (document) => { document.history.states.bare.probe.raf.active = -1; },
+    impossibleIntervalArithmetic: (document) => { document.history.states.bare.probe.intervals.active = 1; },
+    impossibleBlobArithmetic: (document) => { document.history.states.bare.probe.blob.live = 2; },
+  })) {
+    const contradiction = structuredClone(report);
+    mutate(contradiction);
+    assert.throws(() => validate(contradiction), /history check .* contradicts raw states|raw snapshot differs|raw counter telemetry differs/, `${name} raw snapshot contradiction was accepted`);
+  }
+
+  const cumulativeCounterCases = {
+    rafScheduled: [{ raf: { scheduled: 5, executed: 4, cancelled: 1, active: 0 } }, { raf: { scheduled: 4, executed: 3, cancelled: 1, active: 0 } }],
+    rafExecuted: [{ raf: { scheduled: 5, executed: 4, cancelled: 1, active: 0 } }, { raf: { scheduled: 5, executed: 3, cancelled: 2, active: 0 } }],
+    rafCancelled: [{ raf: { scheduled: 5, executed: 3, cancelled: 2, active: 0 } }, { raf: { scheduled: 5, executed: 4, cancelled: 1, active: 0 } }],
+    intervalCreated: [{ intervals: { created: 2, cleared: 2, active: 0 } }, { intervals: { created: 1, cleared: 1, active: 0 } }],
+    intervalCleared: [{ intervals: { created: 2, cleared: 2, active: 0 } }, { intervals: { created: 1, cleared: 1, active: 0 } }],
+    blobCreated: [{ blob: { created: 3, revoked: 2, live: 1 } }, { blob: { created: 2, revoked: 1, live: 1 } }],
+    blobRevoked: [{ blob: { created: 3, revoked: 2, live: 1 } }, { blob: { created: 2, revoked: 1, live: 1 } }],
+    listenerAdded: [{ listeners: { active: 3, activeByType: { click: 2, visibilitychange: 1 }, added: 5, removed: 2, duplicateAttempts: 0 } }, { listeners: { active: 3, activeByType: { click: 2, visibilitychange: 1 }, added: 4, removed: 1, duplicateAttempts: 0 } }],
+    listenerRemoved: [{ listeners: { active: 3, activeByType: { click: 2, visibilitychange: 1 }, added: 5, removed: 2, duplicateAttempts: 0 } }, { listeners: { active: 3, activeByType: { click: 2, visibilitychange: 1 }, added: 4, removed: 1, duplicateAttempts: 0 } }],
+    listenerDuplicates: [{ listeners: { active: 3, activeByType: { click: 2, visibilitychange: 1 }, added: 3, removed: 0, duplicateAttempts: 1 } }, { listeners: { active: 3, activeByType: { click: 2, visibilitychange: 1 }, added: 3, removed: 0, duplicateAttempts: 0 } }],
+  };
+  for (const [name, [beforeOverride, afterOverride]] of Object.entries(cumulativeCounterCases)) {
+    const contradiction = structuredClone(report);
+    Object.assign(contradiction.history.states.bareManifesto.probe, beforeOverride);
+    Object.assign(contradiction.history.states.bareBack.probe, afterOverride);
+    assert.throws(() => validate(contradiction), /cumulative telemetry differs/, `${name} cumulative counter decrease was accepted`);
+  }
+  const disappearingResource = structuredClone(report);
+  disappearingResource.history.states.bareBack.probe.resources = [];
+  assert.throws(() => validate(disappearingResource), /cumulative telemetry differs/, "a prior resource observation disappeared from a later same-Document snapshot");
+
+  const inventedEarlyHistoryEvent = structuredClone(report);
+  const inventedEvent = {
+    atEpochMs: inventedEarlyHistoryEvent.history.states.bare.capturedAtEpochMs - 1,
+    documentEventSequence: 1,
+    documentId: inventedEarlyHistoryEvent.history.states.bare.documentId,
+    href: R1_REQUIRED_BRANCH_URL,
+    persisted: false,
+    type: "pageshow",
+    visibilityState: "visible",
+  };
+  inventedEarlyHistoryEvent.history.states.bare.probe.documentEventSequence = 1;
+  inventedEarlyHistoryEvent.history.states.bare.probe.events = [inventedEvent];
+  assert.throws(() => validate(inventedEarlyHistoryEvent), /history check bareCorrect contradicts raw states|history event view differs: bare/, "invented early history event was accepted");
+
+  const historyEpoch = 1_800_000_000_000;
   const persistedEvents = [
-    { type: "pagehide", persisted: true, documentId: "bare-document", href: new URL("/", R1_REQUIRED_BRANCH_URL).href, documentEventSequence: 1 },
-    { type: "pageshow", persisted: true, documentId: "bare-document", href: new URL("/", R1_REQUIRED_BRANCH_URL).href, documentEventSequence: 2 },
-    { type: "pagehide", persisted: true, documentId: "entry-document", href: new URL("/#entry", R1_REQUIRED_BRANCH_URL).href, documentEventSequence: 1 },
-    { type: "pageshow", persisted: true, documentId: "entry-document", href: new URL("/#entry", R1_REQUIRED_BRANCH_URL).href, documentEventSequence: 2 },
+    { type: "pagehide", persisted: true, documentId: "bare-document", href: new URL("/", R1_REQUIRED_BRANCH_URL).href, documentEventSequence: 1, atEpochMs: historyEpoch + 10, visibilityState: "hidden" },
+    { type: "pageshow", persisted: true, documentId: "bare-document", href: new URL("/", R1_REQUIRED_BRANCH_URL).href, documentEventSequence: 2, atEpochMs: historyEpoch + 20, visibilityState: "visible" },
+    { type: "pagehide", persisted: true, documentId: "entry-document", href: new URL("/#entry", R1_REQUIRED_BRANCH_URL).href, documentEventSequence: 1, atEpochMs: historyEpoch + 30, visibilityState: "hidden" },
+    { type: "pageshow", persisted: true, documentId: "entry-document", href: new URL("/#entry", R1_REQUIRED_BRANCH_URL).href, documentEventSequence: 2, atEpochMs: historyEpoch + 40, visibilityState: "visible" },
   ];
   const pairedBfcache = {
     status: "PASS",
@@ -1315,11 +2234,116 @@ test("R1 persistent lifecycle rejects every raw-history, BFCache, visibility, li
     statement: "Two real persisted restoration pairs were observed.",
   };
   const withPairedBfcache = structuredClone(report);
+  const historyViews = {
+    bare: [historyEpoch + 5, 0],
+    bareManifesto: [historyEpoch + 5, 0],
+    supportAfterBare: [historyEpoch + 15, 1],
+    bareBack: [historyEpoch + 25, 2],
+    supportForward: [historyEpoch + 25, 2],
+    entryInitial: [historyEpoch + 25, 2],
+    entryResolved: [historyEpoch + 25, 2],
+    supportAfterEntry: [historyEpoch + 35, 3],
+    entryBack: [historyEpoch + 45, 4],
+    entryForward: [historyEpoch + 50, 4],
+  };
+  for (const [stateKey, [capturedAtEpochMs, eventCount]] of Object.entries(historyViews)) {
+    const state = withPairedBfcache.history.states[stateKey];
+    state.capturedAtEpochMs = capturedAtEpochMs;
+    state.probe.events = structuredClone(persistedEvents.slice(0, eventCount));
+    state.probe.documentEventSequence = Math.max(0, ...state.probe.events
+      .filter(({ documentId }) => documentId === state.documentId)
+      .map(({ documentEventSequence }) => documentEventSequence));
+  }
   withPairedBfcache.history.events = persistedEvents;
-  withPairedBfcache.history.states.entryForward.probe.events = structuredClone(persistedEvents);
   withPairedBfcache.bfcache = pairedBfcache;
   withPairedBfcache.history.bfcache = structuredClone(pairedBfcache);
   assert.doesNotThrow(() => validate(withPairedBfcache));
+
+  const mutatePersistedEvent = (document, template, mutate) => {
+    const visit = (value) => {
+      if (!value || typeof value !== "object") return;
+      if (value.type === template.type
+        && value.documentId === template.documentId
+        && value.documentEventSequence === template.documentEventSequence) mutate(value);
+      for (const child of Array.isArray(value) ? value : Object.values(value)) visit(child);
+    };
+    visit(document);
+  };
+
+  const oneRouteOnly = structuredClone(withPairedBfcache);
+  oneRouteOnly.history.events = oneRouteOnly.history.events.slice(0, 2);
+  for (const state of Object.values(oneRouteOnly.history.states)) {
+    state.probe.events = state.probe.events.filter(({ documentId }) => documentId !== "entry-document");
+    state.probe.documentEventSequence = Math.max(0, ...state.probe.events
+      .filter(({ documentId }) => documentId === state.documentId)
+      .map(({ documentEventSequence }) => documentEventSequence));
+  }
+  oneRouteOnly.bfcache.persistedEvents = oneRouteOnly.bfcache.persistedEvents.slice(0, 2);
+  oneRouteOnly.bfcache.pairedRestorations = oneRouteOnly.bfcache.pairedRestorations.slice(0, 1);
+  Object.assign(oneRouteOnly.bfcache.scenarios[1], { status: "NOT OBSERVED", pair: null, coherent: null });
+  oneRouteOnly.bfcache.status = "PASS";
+  oneRouteOnly.history.bfcache = structuredClone(oneRouteOnly.bfcache);
+  assert.throws(() => validate(oneRouteOnly), /BFCache status must be NOT OBSERVED/, "one passing route promoted aggregate BFCache to PASS");
+
+  const staleHideAggregate = structuredClone(withPairedBfcache);
+  mutatePersistedEvent(staleHideAggregate, persistedEvents[0], (event) => { event.atEpochMs = historyEpoch + 1; });
+  Object.assign(staleHideAggregate.bfcache.scenarios[0], { status: "FAIL", coherent: false });
+  staleHideAggregate.bfcache.status = "PASS";
+  staleHideAggregate.history.bfcache = structuredClone(staleHideAggregate.bfcache);
+  assert.throws(() => validate(staleHideAggregate), /BFCache status must be FAIL/, "a failed route did not dominate aggregate BFCache");
+
+  const staleHide = structuredClone(withPairedBfcache);
+  mutatePersistedEvent(staleHide, persistedEvents[0], (event) => { event.atEpochMs = historyEpoch + 1; });
+  assert.throws(() => validate(staleHide), /BFCache scenario ledger contradicts raw evidence/, "pagehide predating departure capture became BFCache PASS");
+
+  const postdatedShow = structuredClone(withPairedBfcache);
+  mutatePersistedEvent(postdatedShow, persistedEvents[1], (event) => { event.atEpochMs = historyEpoch + 26; });
+  assert.throws(() => validate(postdatedShow), /BFCache scenario ledger contradicts raw evidence/, "pageshow postdating the restored snapshot became BFCache PASS");
+
+  const departureContainsHide = structuredClone(withPairedBfcache);
+  departureContainsHide.history.states.bareManifesto.probe.events = [structuredClone(departureContainsHide.history.events[0])];
+  departureContainsHide.history.states.bareManifesto.probe.documentEventSequence = 1;
+  assert.throws(() => validate(departureContainsHide), /BFCache scenario ledger contradicts raw evidence/, "pagehide already present at departure became BFCache PASS");
+
+  const wrongPersistedOrigin = structuredClone(withPairedBfcache);
+  mutatePersistedEvent(wrongPersistedOrigin, persistedEvents[0], (event) => { event.href = "https://wrong.example/"; });
+  assert.throws(() => validate(wrongPersistedOrigin), /BFCache paired-restoration ledger contradicts raw evidence|BFCache scenario ledger contradicts raw evidence/, "cross-origin persisted event became BFCache PASS");
+
+  const withAuxiliaryEvent = structuredClone(withPairedBfcache);
+  const auxiliaryEvent = {
+    atEpochMs: historyEpoch + 46,
+    documentEventSequence: 3,
+    documentId: "entry-document",
+    href: new URL("/#entry", R1_REQUIRED_BRANCH_URL).href,
+    persisted: null,
+    type: "popstate",
+    visibilityState: "visible",
+  };
+  withAuxiliaryEvent.history.events = [...withAuxiliaryEvent.history.events, auxiliaryEvent];
+  withAuxiliaryEvent.history.states.entryForward.probe.events.push(structuredClone(auxiliaryEvent));
+  withAuxiliaryEvent.history.bfcache = structuredClone(withAuxiliaryEvent.bfcache);
+  assert.doesNotThrow(() => validate(withAuxiliaryEvent), "valid auxiliary native event schema was rejected");
+  for (const [name, mutate] of Object.entries({
+    nonPositiveEventTime: (event) => { event.atEpochMs = 0; },
+    missingHref: (event) => { event.href = ""; },
+    missingType: (event) => { event.type = ""; },
+    missingVisibility: (event) => { event.visibilityState = null; },
+    nonPrimitivePersisted: (event) => { event.persisted = "false"; },
+    nonPrimitiveSynthetic: (event) => { event.synthetic = "false"; },
+  })) {
+    const malformed = structuredClone(withAuxiliaryEvent);
+    mutate(malformed.history.events.at(-1));
+    mutate(malformed.history.states.entryForward.probe.events.at(-1));
+    assert.throws(() => validate(malformed), /raw event(?: URL| sequence)? differs/, `${name} event schema was accepted`);
+  }
+
+  const staticSameDocumentBfcache = structuredClone(withPairedBfcache);
+  staticSameDocumentBfcache.history.states.bareBack.home.mode = "static";
+  assert.throws(() => validate(staticSameDocumentBfcache), /history check bareBackCorrect contradicts raw states|BFCache scenario ledger contradicts raw evidence/, "static same-Document state became BFCache PASS");
+
+  const erasedEntryBackEvents = structuredClone(withPairedBfcache);
+  erasedEntryBackEvents.history.states.entryBack.probe.events = persistedEvents.slice(0, 2);
+  assert.throws(() => validate(erasedEntryBackEvents), /history event view differs: entryBack|BFCache scenario ledger contradicts raw evidence/, "erased prior entryBack events were accepted");
 
   const promotedWithoutPairs = structuredClone(report);
   promotedWithoutPairs.bfcache.status = "PASS";
@@ -1421,6 +2445,23 @@ test("R1 persistent lifecycle rejects every raw-history, BFCache, visibility, li
   }
   assert.throws(() => validate(visibilityWithReversedEventOrder), /visibility raw observation home-current contradicts raw evidence/);
 
+  const visibilityHiddenSnapshotPredatesEvent = structuredClone(visibilityWithoutEvents);
+  const currentScenario = visibilityHiddenSnapshotPredatesEvent.visibility.scenarios[0];
+  const currentDocumentId = currentScenario.transition.before.documentId;
+  const hiddenEvent = { type: "visibilitychange", visibilityState: "hidden", documentId: currentDocumentId, documentEventSequence: 1 };
+  const visibleEvent = { type: "visibilitychange", visibilityState: "visible", documentId: currentDocumentId, documentEventSequence: 2 };
+  currentScenario.transition.hidden.probe.events = [hiddenEvent];
+  currentScenario.transition.hidden.probe.documentEventSequence = 0;
+  currentScenario.transition.visible.probe.events = [hiddenEvent, visibleEvent];
+  currentScenario.transition.visible.probe.documentEventSequence = 2;
+  currentScenario.observation = {
+    status: "PASS",
+    checks: { sameDocument: true, sequenceBound: true, beforeVisible: true, hiddenObserved: true, visibleRestored: true, orderedVisibilityEvents: true },
+    transitionEvents: [hiddenEvent, visibleEvent],
+  };
+  visibilityHiddenSnapshotPredatesEvent.visibility.current = structuredClone(currentScenario.transition);
+  assert.throws(() => validate(visibilityHiddenSnapshotPredatesEvent), /visibility raw observation home-current contradicts raw evidence/, "hidden snapshot predating its claimed native event became PASS");
+
   for (const scenarioName of Object.keys(visibilityTransitionFields)) {
     const forgedVisibilityChecks = structuredClone(report);
     forgedVisibilityChecks.visibility.status = "PASS";
@@ -1434,6 +2475,164 @@ test("R1 persistent lifecycle rejects every raw-history, BFCache, visibility, li
       new RegExp(`visibility lifecycle checks ${scenarioName} contradicts raw evidence`),
       `${scenarioName} accepted forged true lifecycle checks over null raw snapshots`,
     );
+  }
+
+  const observedVisibility = structuredClone(report);
+  const visibilityEpoch = 1_900_000_000_000;
+  const visibilityDocumentId = "visibility-home-document";
+  const visibilityNavigationId = "navigation-visibility-home";
+  const hiddenVisibilityEvent = {
+    atEpochMs: visibilityEpoch + 10,
+    documentEventSequence: 1,
+    documentId: visibilityDocumentId,
+    href: new URL("/", R1_REQUIRED_BRANCH_URL).href,
+    persisted: null,
+    type: "visibilitychange",
+    visibilityState: "hidden",
+  };
+  const visibleVisibilityEvent = {
+    ...hiddenVisibilityEvent,
+    atEpochMs: visibilityEpoch + 30,
+    documentEventSequence: 2,
+    visibilityState: "visible",
+  };
+  const visibilityState = (label, capturedAtEpochMs, visibilityStateValue, events, documentEventSequence) => {
+    const state = structuredClone(report.history.states.bare);
+    Object.assign(state, {
+      capturedAtEpochMs,
+      documentId: visibilityDocumentId,
+      label,
+      navigationId: visibilityNavigationId,
+      scrollY: 400,
+      visibilityState: visibilityStateValue,
+    });
+    Object.assign(state.home, { targetFrame: 10, presentedFrame: 10 });
+    Object.assign(state.home, { phase: "physical", segment: "current-orbit" });
+    Object.assign(state.home.source, {
+      src: `blob:${new URL(R1_REQUIRED_BRANCH_URL).origin}/${visibilityDocumentId}`,
+      currentSrc: `blob:${new URL(R1_REQUIRED_BRANCH_URL).origin}/${visibilityDocumentId}`,
+      srcAttribute: `blob:${new URL(R1_REQUIRED_BRANCH_URL).origin}/${visibilityDocumentId}`,
+      paused: true,
+    });
+    Object.assign(state.probe, {
+      documentId: visibilityDocumentId,
+      documentEventSequence,
+      events: structuredClone(events),
+      resources: [{ url: lifecyclePhase4Path, startTime: 30 }],
+    });
+    return state;
+  };
+  const currentTransition = {
+    before: visibilityState("home-current-before", visibilityEpoch + 1, "visible", [], 0),
+    hidden: visibilityState("home-current-background", visibilityEpoch + 20, "hidden", [hiddenVisibilityEvent], 1),
+    visible: visibilityState("home-current-foreground", visibilityEpoch + 40, "visible", [hiddenVisibilityEvent, visibleVisibilityEvent], 2),
+  };
+  const observedCurrentScenario = observedVisibility.visibility.scenarios.find(({ name }) => name === "home-current");
+  Object.assign(observedCurrentScenario, {
+    status: "PASS",
+    observation: {
+      status: "PASS",
+      checks: { sameDocument: true, sequenceBound: true, beforeVisible: true, hiddenObserved: true, visibleRestored: true, orderedVisibilityEvents: true },
+      transitionEvents: [hiddenVisibilityEvent, visibleVisibilityEvent],
+    },
+    checks: {
+      routeStateStable: true,
+      currentOrbitStateStable: true,
+      homeMediaPausedWhileHidden: true,
+      noPersistentRafWhileHidden: true,
+      noPersistentIntervalWhileHidden: true,
+      noStaleTargetFrameAfterReturn: true,
+      sourcePresenceStableAfterReturn: true,
+    },
+    failedChecks: [],
+    unavailableChecks: [],
+    transition: currentTransition,
+  });
+  observedVisibility.visibility.current = structuredClone(currentTransition);
+  const stableListener = structuredClone(observedVisibility.listeners.comparisons[0].before);
+  observedVisibility.listeners.comparisons.push(
+    { name: "home-current-hidden", documentId: visibilityDocumentId, before: stableListener, after: stableListener, failures: [], stable: true },
+    { name: "home-current-foreground", documentId: visibilityDocumentId, before: stableListener, after: stableListener, failures: [], stable: true },
+  );
+  observedVisibility.mediaRequests.documents.push({
+    documentId: visibilityDocumentId,
+    labels: ["home-current-background", "home-current-before", "home-current-foreground"],
+    mediaExpected: true,
+    modes: ["enhanced"],
+    paths: [lifecyclePhase4Path],
+    resourceObservations: 1,
+    selectionDocumentUrl: new URL("/", R1_REQUIRED_BRANCH_URL).href,
+    selectionNavigationId: visibilityNavigationId,
+    selectionStable: true,
+    sourceFree: false,
+  });
+  observedVisibility.mediaRequests.network.phase4Requests.push({
+    ...observedVisibility.mediaRequests.network.phase4Requests[0],
+    frameNavigationId: visibilityNavigationId,
+  });
+  observedVisibility.mediaRequests.network.requestCount += 1;
+  observedVisibility.mediaRequests.network.rangeRequestCount += 1;
+  assert.doesNotThrow(() => validate(observedVisibility), "valid snapshot-bound hidden/visible scenario was rejected");
+
+  const mutateCurrentTransition = (document, mutate) => {
+    const scenario = document.visibility.scenarios.find(({ name }) => name === "home-current");
+    mutate(scenario.transition);
+    document.visibility.current = structuredClone(scenario.transition);
+  };
+  for (const [name, mutate] of Object.entries({
+    hiddenAlreadyAtBefore: (transition) => {
+      transition.before.probe.events = [structuredClone(transition.hidden.probe.events[0])];
+      transition.before.probe.documentEventSequence = 1;
+    },
+    hiddenLedgerNotPrefix: (transition) => {
+      transition.hidden.probe.events.unshift({ ...transition.hidden.probe.events[0], type: "popstate", documentEventSequence: 0 });
+    },
+    visibleAlreadyAtHidden: (transition) => {
+      transition.hidden.probe.events.push(structuredClone(transition.visible.probe.events[1]));
+      transition.hidden.probe.documentEventSequence = 2;
+    },
+    staleHiddenTime: (transition) => {
+      transition.hidden.probe.events[0].atEpochMs = transition.before.capturedAtEpochMs;
+      transition.visible.probe.events[0].atEpochMs = transition.before.capturedAtEpochMs;
+    },
+    visibleBeforeHiddenCapture: (transition) => {
+      transition.visible.probe.events[1].atEpochMs = transition.hidden.capturedAtEpochMs;
+    },
+    visibleAfterCapture: (transition) => {
+      transition.visible.probe.events[1].atEpochMs = transition.visible.capturedAtEpochMs + 1;
+    },
+    wrongTransitionOrigin: (transition) => { transition.hidden.origin = "https://wrong.example"; },
+    wrongTransitionRoute: (transition) => { transition.hidden.url = "/for-partners/"; },
+    wrongTransitionNavigation: (transition) => { transition.hidden.navigationId = "navigation-other"; },
+  })) {
+    const stale = structuredClone(observedVisibility);
+    mutateCurrentTransition(stale, mutate);
+    assert.throws(() => validate(stale), /visibility raw observation home-current contradicts raw evidence/, `${name} visibility evidence became PASS`);
+  }
+  for (const [name, mutate] of Object.entries({
+    missingAttachedBlob: (state) => { state.probe.blob = { created: 0, revoked: 0, live: 0 }; },
+    activeReturnRaf: (state) => { state.probe.raf = { scheduled: 1, executed: 0, cancelled: 0, active: 1 }; },
+    activeReturnInterval: (state) => { state.probe.intervals = { created: 1, cleared: 0, active: 1 }; },
+  })) {
+    const incoherentReturn = structuredClone(observedVisibility);
+    mutateCurrentTransition(incoherentReturn, (transition) => mutate(transition.visible));
+    assert.throws(() => validate(incoherentReturn), /visibility lifecycle checks home-current contradicts raw evidence/, `${name} Home foreground return became PASS`);
+  }
+  for (const [name, mutate] of Object.entries({
+    hiddenSourceRemoved: (transition) => { transition.hidden.home.source.hasSource = false; },
+    hiddenSourceSwapped: (transition) => {
+      const replacement = "blob:https://example.pages.dev/replaced";
+      Object.assign(transition.hidden.home.source, { src: replacement, currentSrc: replacement, srcAttribute: replacement });
+    },
+    hiddenCurrentSrcMismatch: (transition) => { transition.hidden.home.source.currentSrc = "blob:https://example.pages.dev/mismatch"; },
+    hiddenVideoNodeCount: (transition) => { transition.hidden.home.source.videoNodeCount = 2; },
+    hiddenNotPaused: (transition) => { transition.hidden.home.source.paused = false; },
+    wrongCurrentPhase: (transition) => { transition.hidden.home.phase = "settled"; },
+    wrongCurrentSegment: (transition) => { transition.visible.home.segment = "arrival"; },
+  })) {
+    const contradiction = structuredClone(observedVisibility);
+    mutateCurrentTransition(contradiction, mutate);
+    assert.throws(() => validate(contradiction), /visibility lifecycle checks home-current contradicts raw evidence/, `${name} Home transition became PASS`);
   }
 
   const listenerSummaryWithoutRawBinding = structuredClone(report);
@@ -1468,7 +2667,7 @@ test("R1 persistent lifecycle rejects every raw-history, BFCache, visibility, li
 
   const changedRawStartTime = structuredClone(report);
   changedRawStartTime.history.states.bareBack.probe.resources[0].startTime += 1;
-  assert.throws(() => validate(changedRawStartTime), /media document ledger contradicts raw evidence/);
+  assert.throws(() => validate(changedRawStartTime), /(?:cumulative telemetry|media document ledger).*differs|media document ledger contradicts raw evidence/);
 
   const inventedDocumentMasksDuplicateRequests = structuredClone(report);
   const maskedPath = inventedDocumentMasksDuplicateRequests.mediaRequests.documents[0].paths[0];
@@ -1479,9 +2678,9 @@ test("R1 persistent lifecycle rejects every raw-history, BFCache, visibility, li
     resourceObservations: 1,
   });
   inventedDocumentMasksDuplicateRequests.mediaRequests.network.phase4Requests = [
-    { path: maskedPath, range: null },
-    { path: maskedPath, range: null },
-    { path: maskedPath, range: null },
+    requestFor(0, maskedPath),
+    requestFor(0, maskedPath, null, { frameNavigationId: "navigation-invented" }),
+    requestFor(1, maskedPath),
   ];
   Object.assign(inventedDocumentMasksDuplicateRequests.mediaRequests.network, {
     requestCount: 3,
@@ -1503,6 +2702,9 @@ test("R1 persistent lifecycle rejects every raw-history, BFCache, visibility, li
     modes: ["enhanced"],
     paths: [],
     resourceObservations: 0,
+    selectionDocumentUrl: null,
+    selectionNavigationId: null,
+    selectionStable: true,
     sourceFree: false,
   }));
   Object.assign(noObservedMedia.mediaRequests.network, {
@@ -1515,16 +2717,94 @@ test("R1 persistent lifecycle rejects every raw-history, BFCache, visibility, li
   });
   assert.throws(() => validate(noObservedMedia), /expectedPhase4Present contradicts raw documents\/requests/);
 
+  const missingSelectedNetworkPath = structuredClone(report);
+  const desktopPath = "/media/cinematic/phase-4r2/media/desktop.mp4";
+  missingSelectedNetworkPath.mediaRequests.network.phase4Requests = [
+    requestFor(0, desktopPath, "bytes=0-1023"),
+    requestFor(1, desktopPath, "bytes=0-1023"),
+  ];
+  missingSelectedNetworkPath.mediaRequests.network.uniquePaths = [desktopPath];
+  assert.throws(() => validate(missingSelectedNetworkPath), /expectedPhase4Present contradicts raw documents\/requests/, "selected path absent from the network became PASS");
+
+  const orphanNetworkPath = structuredClone(report);
+  orphanNetworkPath.mediaRequests.network.phase4Requests.push(requestFor(0, desktopPath, "bytes=0-1023", { frameNavigationId: "navigation-orphan" }));
+  orphanNetworkPath.mediaRequests.network.requestCount += 1;
+  orphanNetworkPath.mediaRequests.network.rangeRequestCount += 1;
+  orphanNetworkPath.mediaRequests.network.uniquePaths = [desktopPath, report.mediaRequests.documents[0].paths[0]].sort();
+  assert.throws(() => validate(orphanNetworkPath), /expectedPhase4Present contradicts raw documents\/requests/, "orphan ranged network path became PASS");
+
+  for (const [name, mutate] of Object.entries({
+    wrongMethod: (request) => { request.method = "POST"; },
+    wrongResourceType: (request) => { request.resourceType = "media"; },
+    preNavigationRequest: (request) => { request.frameNavigationId = "pre-navigation"; },
+    supportingRouteDocument: (request) => { request.documentUrl = new URL("/for-partners/", R1_REQUIRED_BRANCH_URL).href; },
+    queriedHomeDocument: (request) => { request.documentUrl = new URL("/?forged=1", R1_REQUIRED_BRANCH_URL).href; },
+    queriedEntryDocument: (request) => { request.documentUrl = new URL("/?forged=1#entry", R1_REQUIRED_BRANCH_URL).href; },
+    crossOriginRequest: (request) => { request.url = `https://example.invalid${request.path}`; },
+  })) {
+    const invalidRequestAuthority = structuredClone(report);
+    mutate(invalidRequestAuthority.mediaRequests.network.phase4Requests[0]);
+    assert.throws(() => validate(invalidRequestAuthority), /expectedPhase4Present contradicts raw documents\/requests/, `${name} media request became PASS`);
+  }
+
+  const validNonRangeRequest = structuredClone(report);
+  validNonRangeRequest.mediaRequests.network.phase4Requests[0].range = null;
+  Object.assign(validNonRangeRequest.mediaRequests.network, {
+    rangeRequestCount: 1,
+    nonRangeRequestCount: 1,
+    nonRangeSelections: [{ path: lifecyclePhase4Path, count: 1, logicalHomeDocuments: 2 }],
+  });
+  assert.doesNotThrow(() => validate(validNonRangeRequest), "a genuine null/non-range request was rejected");
+
+  for (const malformedRange of ["", "items=0-1", "bytes=", "bytes=-", "bytes=5-3", "bytes=-0", 42, false]) {
+    const malformed = structuredClone(report);
+    malformed.mediaRequests.network.phase4Requests[0].range = malformedRange;
+    Object.assign(malformed.mediaRequests.network, {
+      rangeRequestCount: 1,
+      nonRangeRequestCount: 1,
+      nonRangeSelections: [{ path: lifecyclePhase4Path, count: 1, logicalHomeDocuments: 2 }],
+    });
+    assert.throws(() => validate(malformed), /expectedPhase4Present contradicts raw documents\/requests/, `malformed Range ${String(malformedRange)} became PASS or bypassed accounting`);
+  }
+  for (const validRange of ["bytes=0-", "bytes=-5", "bytes=0-1, 4-9"]) {
+    const valid = structuredClone(report);
+    valid.mediaRequests.network.phase4Requests[0].range = validRange;
+    assert.doesNotThrow(() => validate(valid), `valid Range ${validRange} was rejected`);
+  }
+
+  const swappedLogicalDocumentUrls = structuredClone(report);
+  const [bareRequest, entryRequest] = swappedLogicalDocumentUrls.mediaRequests.network.phase4Requests;
+  [bareRequest.documentUrl, entryRequest.documentUrl] = [entryRequest.documentUrl, bareRequest.documentUrl];
+  assert.throws(() => validate(swappedLogicalDocumentUrls), /expectedPhase4Present contradicts raw documents\/requests/, "request document URLs were accepted after swapping logical Home routes");
+
+  const forgedRawSelectionNavigation = structuredClone(report);
+  forgedRawSelectionNavigation.history.states.bare.navigationId = "navigation-forged";
+  assert.throws(() => validate(forgedRawSelectionNavigation), /history check bareCorrect contradicts raw states|media document ledger contradicts raw evidence/, "first raw media observation navigation was not bound");
+
+  const forgedSummarySelectionNavigation = structuredClone(report);
+  forgedSummarySelectionNavigation.mediaRequests.documents[0].selectionNavigationId = "navigation-forged";
+  assert.throws(() => validate(forgedSummarySelectionNavigation), /media document ledger contradicts raw evidence/, "document selectionNavigationId was not bound to raw snapshots");
+
+  const duplicateDocumentNavigation = structuredClone(report);
+  for (const stateKey of ["entryInitial", "entryResolved", "entryBack"]) duplicateDocumentNavigation.history.states[stateKey].navigationId = "navigation-bare";
+  duplicateDocumentNavigation.mediaRequests.documents.find(({ documentId }) => documentId === "entry-document").selectionNavigationId = "navigation-bare";
+  duplicateDocumentNavigation.mediaRequests.network.phase4Requests[1].frameNavigationId = "navigation-bare";
+  assert.throws(() => validate(duplicateDocumentNavigation), /expectedPhase4Present contradicts raw documents\/requests/, "one selection navigation represented two enhanced logical Home documents");
+
+  const collapsedNavigationCoverage = structuredClone(report);
+  collapsedNavigationCoverage.mediaRequests.network.phase4Requests[1].frameNavigationId = collapsedNavigationCoverage.mediaRequests.network.phase4Requests[0].frameNavigationId;
+  assert.throws(() => validate(collapsedNavigationCoverage), /expectedPhase4Present contradicts raw documents\/requests/, "one navigation ID was allowed to cover two logical Home documents");
+
   const duplicateDocumentSelection = structuredClone(report);
   const secondPhase4Path = "/media/cinematic/phase-4r2/media/desktop.mp4";
   duplicateDocumentSelection.history.states.bareBack.probe.resources.push({ url: secondPhase4Path, startTime: 11 });
   duplicateDocumentSelection.mediaRequests.documents[0].paths = [secondPhase4Path, duplicateDocumentSelection.mediaRequests.documents[0].paths[0]].sort();
   duplicateDocumentSelection.mediaRequests.documents[0].resourceObservations = 2;
-  duplicateDocumentSelection.mediaRequests.network.phase4Requests.push({ path: secondPhase4Path, range: "bytes=0-1023" });
-  duplicateDocumentSelection.mediaRequests.network.requestCount = 2;
-  duplicateDocumentSelection.mediaRequests.network.rangeRequestCount = 2;
+  duplicateDocumentSelection.mediaRequests.network.phase4Requests.push(requestFor(0, secondPhase4Path, "bytes=0-1023"));
+  duplicateDocumentSelection.mediaRequests.network.requestCount = 3;
+  duplicateDocumentSelection.mediaRequests.network.rangeRequestCount = 3;
   duplicateDocumentSelection.mediaRequests.network.uniquePaths = [secondPhase4Path, report.mediaRequests.documents[0].paths[0]].sort();
-  assert.throws(() => validate(duplicateDocumentSelection), /noDuplicateSourceWithinDocument contradicts raw document selections/);
+  assert.throws(() => validate(duplicateDocumentSelection), /expectedPhase4Present contradicts raw documents\/requests|noDuplicateSourceWithinDocument contradicts raw document selections/);
 
   const selectedWithoutObservation = structuredClone(report);
   selectedWithoutObservation.mediaRequests.documents[0].resourceObservations = 0;
@@ -1533,9 +2813,9 @@ test("R1 persistent lifecycle rejects every raw-history, BFCache, visibility, li
   const duplicateNonRangeSelection = structuredClone(report);
   const selectedPath = duplicateNonRangeSelection.mediaRequests.documents[0].paths[0];
   duplicateNonRangeSelection.mediaRequests.network.phase4Requests = [
-    { path: selectedPath, range: null },
-    { path: selectedPath, range: null },
-    { path: selectedPath, range: null },
+    requestFor(0, selectedPath),
+    requestFor(0, selectedPath),
+    requestFor(1, selectedPath),
   ];
   Object.assign(duplicateNonRangeSelection.mediaRequests.network, {
     requestCount: 3,
@@ -1640,6 +2920,7 @@ test("metadata template inventories exact hashes without embedding its external 
   assert.equal(r1Template.authorityConstants.deploymentSchema, "quantum-hub.phase-6-r1.deployment-verification.v1");
   assert.equal(r1Template.repository.branch, R1_REQUIRED_BRANCH);
   assert.equal(r1Template.deployment.branchUrl, R1_REQUIRED_BRANCH_URL);
+  assert.match(r1Template.deployment.checkRunId, /check-run numeric ID/);
 });
 
 test("fails closed for missing posters, missing roles, bad hashes, private secrets and duplicate payloads", async (t) => {

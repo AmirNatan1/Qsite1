@@ -32,6 +32,16 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+function canonicalJson(value) {
+  if (Array.isArray(value)) return value.map(canonicalJson);
+  if (value && typeof value === "object") return Object.fromEntries(Object.keys(value).sort().map((key) => [key, canonicalJson(value[key])]));
+  return value;
+}
+
+function sameJson(left, right) {
+  return JSON.stringify(canonicalJson(left)) === JSON.stringify(canonicalJson(right));
+}
+
 function valueAfter(argv, index, flag) {
   const value = argv[index + 1];
   if (!value || value.startsWith("--")) throw new Error(`${flag} requires a value`);
@@ -218,6 +228,7 @@ async function runAxeMatrix(browser, engine, options) {
         const record = { engine, failures: [], httpStatus, incompleteCount, route: route.id, violations, viewport };
         if (thrown) record.failures.push({ code: "axe-case-error", actual: thrown });
         if (!thrown && !expectedHttpStatus(httpStatus, route.expectedStatus)) record.failures.push({ code: "http-status", actual: httpStatus, expected: route.expectedStatus });
+        if (violations.length) record.failures.push({ code: "axe-violations", actual: violations.length, expected: 0 });
         record.failures.push(...seriousCriticalAxeFailures(record));
         record.failures.push(...diagnosticFailures(diagnostics, route, options.baseUrl, { allowExpectedMediaAbort: true }));
         record.status = record.failures.length ? "FAIL" : "PASS";
@@ -277,7 +288,89 @@ export function keyboardFailures(record) {
   }
   if (!visiblyFocused(record.forwardFirst) || !visiblyFocused(record.forwardSecond)) failures.push({ code: "forward-focus-visibility", actual: [record.forwardFirst, record.forwardSecond] });
   if (!visiblyFocused(record.backward) || record.backward.key !== record.forwardFirst.key) failures.push({ code: "shift-tab-order", actual: record.backward, expected: record.forwardFirst });
+  if (record.route === "home") {
+    if (!record.forwardFirst.classes.includes("audience-trajectory") || record.forwardFirst.href !== "/for-partners/") {
+      failures.push({ code: "home-audience-first", actual: record.forwardFirst, expected: "/for-partners/" });
+    }
+    if (!record.forwardSecond.classes.includes("audience-trajectory") || record.forwardSecond.href !== "/for-startups/") {
+      failures.push({ code: "home-audience-second", actual: record.forwardSecond, expected: "/for-startups/" });
+    }
+  }
+  const desktopHome = record.desktopHome;
+  if (desktopHome?.activationError) failures.push({ code: "desktop-home-navigation-wait", actual: desktopHome.activationError });
+  if (desktopHome?.backError) failures.push({ code: "desktop-home-back-wait", actual: desktopHome.backError });
+  if (desktopHome?.forwardError) failures.push({ code: "desktop-home-forward-wait", actual: desktopHome.forwardError });
+  if (!desktopHome || !visiblyFocused(desktopHome.focus) || desktopHome.focus.href !== "/#entry") {
+    failures.push({ code: "desktop-home-focus", actual: desktopHome?.focus ?? null, expected: "/#entry" });
+  }
+  if (!desktopHome?.arrival || desktopHome.arrival.path !== "/" || desktopHome.arrival.hash !== "#entry"
+    || desktopHome.arrival.entryInert !== false || desktopHome.arrival.manifestoReveal !== "resolved") {
+    failures.push({ code: "desktop-home-arrival", actual: desktopHome?.arrival ?? null });
+  }
+  if (!desktopHome?.back || desktopHome.back.route !== record.routePath || desktopHome.back.hash !== "") {
+    failures.push({ code: "desktop-home-back", actual: desktopHome?.back ?? null, expected: record.routePath });
+  }
+  if (!desktopHome?.forward || desktopHome.forward.path !== "/" || desktopHome.forward.hash !== "#entry") {
+    failures.push({ code: "desktop-home-forward", actual: desktopHome?.forward ?? null });
+  }
   return failures;
+}
+
+async function observeDesktopHomeState(page) {
+  return page.evaluate(() => {
+    const entry = document.querySelector("#entry");
+    const shell = document.querySelector("[data-cinematic-shell]");
+    return {
+      entryInert: entry?.hasAttribute("inert") ?? null,
+      hash: location.hash,
+      manifestoReveal: shell?.getAttribute("data-manifesto-reveal") ?? null,
+      path: location.pathname,
+      route: `${location.pathname}${location.hash}`,
+    };
+  });
+}
+
+async function observeDesktopHomeNavigation(page, options, route) {
+  await openRoute(page, options, route);
+  const focus = await focusByTab(page, ".site-header .brand-link[href='/#entry']", 40);
+  let arrival = await observeDesktopHomeState(page);
+  let back = null;
+  let forward = null;
+  let activationError = null;
+  let backError = null;
+  let forwardError = null;
+  if (focus.href === "/#entry") {
+    try {
+      await Promise.all([
+        page.waitForURL((url) => url.pathname === "/" && url.hash === "#entry", { timeout: options.timeoutMs, waitUntil: "commit" }),
+        page.keyboard.press("Enter"),
+      ]);
+    } catch (error) {
+      activationError = error instanceof Error ? error.message : String(error);
+    }
+    await settle(page, options.timeoutMs).catch(() => undefined);
+    await page.waitForFunction(() => document.querySelector("[data-cinematic-shell]")?.getAttribute("data-manifesto-reveal") === "resolved", undefined, { timeout: Math.min(options.timeoutMs, 5_000) }).catch(() => undefined);
+    arrival = await observeDesktopHomeState(page);
+    if (arrival.path === "/" && arrival.hash === "#entry") {
+      try {
+        await page.goBack({ waitUntil: "domcontentloaded", timeout: options.timeoutMs });
+        await settle(page, options.timeoutMs);
+        back = await observeDesktopHomeState(page);
+      } catch (error) {
+        backError = error instanceof Error ? error.message : String(error);
+      }
+      if (back) {
+        try {
+          await page.goForward({ waitUntil: "domcontentloaded", timeout: options.timeoutMs });
+          await settle(page, options.timeoutMs);
+          forward = await observeDesktopHomeState(page);
+        } catch (error) {
+          forwardError = error instanceof Error ? error.message : String(error);
+        }
+      }
+    }
+  }
+  return { activationError, arrival, back, backError, focus, forward, forwardError };
 }
 
 async function observeSkipActivation(page, expectedHash) {
@@ -318,7 +411,8 @@ async function runKeyboardChecks(browser, engine, options) {
       await page.keyboard.press("Shift+Tab");
       await page.waitForTimeout(80);
       const backward = await observeFocus(page);
-      const record = { afterActivation, backward, engine, expectedHash, first, forwardFirst, forwardSecond, route: route.id };
+      const desktopHome = await observeDesktopHomeNavigation(page, options, route);
+      const record = { afterActivation, backward, desktopHome, engine, expectedHash, first, forwardFirst, forwardSecond, route: route.id, routePath: route.path };
       record.failures = keyboardFailures(record);
       record.status = record.failures.length ? "FAIL" : "PASS";
       records.push(record);
@@ -376,6 +470,8 @@ export function mobileMenuFailures(record) {
   if (!visiblyFocused(record.navigation.focus) || record.navigation.focus.href !== "/#entry") {
     failures.push({ code: "mobile-menu-navigation-focus", actual: record.navigation.focus, expected: "/#entry" });
   }
+  if (record.navigation.activationError) failures.push({ code: "mobile-menu-navigation-wait", actual: record.navigation.activationError });
+  if (record.navigation.backError) failures.push({ code: "mobile-menu-history-wait", actual: record.navigation.backError });
   if (record.navigation.arrival.path !== "/" || record.navigation.arrival.hash !== "#entry") failures.push({ code: "mobile-menu-navigation", actual: record.navigation.arrival });
   if (!record.navigation.back || record.navigation.back.path !== "/about/" || record.navigation.back.open || record.navigation.back.ariaExpanded !== "false") {
     failures.push({ code: "mobile-menu-history-return", actual: record.navigation.back });
@@ -419,18 +515,30 @@ async function runMobileMenuChecks(browser, engine, options) {
     const navigationFocus = await observeFocus(page);
     let arrival = await observeMenu(page);
     let back = null;
+    let activationError = null;
+    let backError = null;
     if (navigationFocus.href === "/#entry") {
-      await Promise.all([
-        page.waitForURL((url) => url.pathname === "/" && url.hash === "#entry", { timeout: options.timeoutMs, waitUntil: "commit" }),
-        page.keyboard.press("Enter"),
-      ]);
-      await settle(page, options.timeoutMs);
+      try {
+        await Promise.all([
+          page.waitForURL((url) => url.pathname === "/" && url.hash === "#entry", { timeout: options.timeoutMs, waitUntil: "commit" }),
+          page.keyboard.press("Enter"),
+        ]);
+      } catch (error) {
+        activationError = error instanceof Error ? error.message : String(error);
+      }
+      await settle(page, options.timeoutMs).catch(() => undefined);
       arrival = await observeMenu(page);
-      await page.goBack({ waitUntil: "domcontentloaded", timeout: options.timeoutMs });
-      await settle(page, options.timeoutMs);
-      back = await observeMenu(page);
+      if (arrival.path === "/" && arrival.hash === "#entry") {
+        try {
+          await page.goBack({ waitUntil: "domcontentloaded", timeout: options.timeoutMs });
+          await settle(page, options.timeoutMs);
+          back = await observeMenu(page);
+        } catch (error) {
+          backError = error instanceof Error ? error.message : String(error);
+        }
+      }
     }
-    const record = { cycles, engine, escapeClose, firstMenuLink, navigation: { arrival, back, focus: navigationFocus }, ordinaryClose, ordinaryOpen, triggerFocus };
+    const record = { cycles, engine, escapeClose, firstMenuLink, navigation: { activationError, arrival, back, backError, focus: navigationFocus }, ordinaryClose, ordinaryOpen, triggerFocus };
     record.failures = mobileMenuFailures(record);
     record.status = record.failures.length ? "FAIL" : "PASS";
     return record;
@@ -547,19 +655,90 @@ async function runEngine(engine, options) {
 
 export function validateReport(report) {
   assert(report.schema === SCHEMA, "accessibility report schema differs");
-  assert(report.routes.length === 10, "accessibility report route inventory differs");
-  assert(report.viewports.length === 2, "accessibility report viewport inventory differs");
+  const expectedRoutes = PHASE6_ROUTES.map(({ expectedStatus, id, path: routePath }) => ({ expectedStatus, id, path: routePath }));
+  assert(sameJson(report.routes, expectedRoutes), "accessibility report route inventory differs");
+  assert(sameJson(report.viewports, ACCESSIBILITY_VIEWPORTS), "accessibility report viewport inventory differs");
+  assert(sameJson(report.selectedEngines, selectedEngines(report.engine)), "accessibility selected-engine inventory differs");
   assert(report.engines.length === report.selectedEngines.length, "accessibility engine inventory is incomplete");
+  assert(sameJson(report.engines.map(({ engine }) => engine), report.selectedEngines), "accessibility engine result inventory differs");
+  const topFailures = [];
   for (const result of report.engines) {
-    if (result.status === "ERROR") continue;
-    assert(result.axe.length === PHASE6_ROUTES.length * ACCESSIBILITY_VIEWPORTS.length, `${result.engine} axe matrix is incomplete`);
+    assert(report.selectedEngines.includes(result.engine), `${result.engine} is not a selected accessibility engine`);
+    if (result.status === "ERROR") {
+      assert(typeof result.failure === "string" && result.failure.length > 0, `${result.engine} engine error is incomplete`);
+      topFailures.push({ actual: result.failure, code: "engine-error", engine: result.engine, section: "engine" });
+      continue;
+    }
+    assert(Array.isArray(result.axe) && result.axe.length === PHASE6_ROUTES.length * ACCESSIBILITY_VIEWPORTS.length, `${result.engine} axe matrix is incomplete`);
+    const axeKeys = new Set();
+    for (const record of result.axe) {
+      const route = PHASE6_ROUTES.find(({ id }) => id === record?.route);
+      const viewport = ACCESSIBILITY_VIEWPORTS.find(({ id }) => id === record?.viewport?.id);
+      assert(route && viewport && sameJson(record.viewport, viewport), `${result.engine} axe row route/viewport differs`);
+      const key = `${record.route}\u0000${record.viewport.id}`;
+      assert(!axeKeys.has(key), `${result.engine} axe row is duplicated`);
+      axeKeys.add(key);
+      assert(record.engine === result.engine
+        && Array.isArray(record.violations)
+        && Array.isArray(record.failures)
+        && Number.isSafeInteger(record.incompleteCount) && record.incompleteCount >= 0
+        && expectedHttpStatus(record.httpStatus, route.expectedStatus), `${result.engine} axe raw row differs`);
+      const expectedStatus = record.failures.length ? "FAIL" : "PASS";
+      assert(record.status === expectedStatus, `${result.engine} axe row status differs`);
+      if (record.status === "PASS") assert(record.violations.length === 0, `${result.engine} PASS axe row contains violations`);
+    }
+    const derivedEngineFailures = [
+      ...result.axe.flatMap((record) => record.failures.map((failure) => ({ section: "axe", route: record.route, viewport: record.viewport.id, ...failure }))),
+    ];
     if (!report.axeOnly) {
       assert(result.keyboard.length === PHASE6_ROUTES.length, `${result.engine} keyboard matrix is incomplete`);
-      assert(result.mobileMenu.cycles.length === MENU_REPEAT_CYCLES, `${result.engine} mobile-menu cycles are incomplete`);
+      const keyboardRoutes = new Set();
+      for (const record of result.keyboard) {
+        const route = PHASE6_ROUTES.find(({ id }) => id === record?.route);
+        assert(route && record.engine === result.engine && record.routePath === route.path && !keyboardRoutes.has(record.route), `${result.engine} keyboard route row differs`);
+        keyboardRoutes.add(record.route);
+        const failures = keyboardFailures(record);
+        assert(sameJson(record.failures, failures) && record.status === (failures.length ? "FAIL" : "PASS"), `${result.engine} keyboard raw row/status differs`);
+      }
+      assert(result.mobileMenu && Array.isArray(result.mobileMenu.cycles) && result.mobileMenu.cycles.length === MENU_REPEAT_CYCLES, `${result.engine} mobile-menu cycles are incomplete`);
+      const menuFailures = mobileMenuFailures(result.mobileMenu);
+      assert(sameJson(result.mobileMenu.failures, menuFailures)
+        && result.mobileMenu.status === (menuFailures.length ? "FAIL" : "PASS"), `${result.engine} mobile-menu raw evidence differs`);
       assert(result.history, `${result.engine} history evidence is absent`);
+      const derivedHistoryFailures = historyFailures(result.history);
+      assert(sameJson(result.history.failures, derivedHistoryFailures)
+        && result.history.status === (derivedHistoryFailures.length ? "FAIL" : "PASS"), `${result.engine} history raw evidence differs`);
+      derivedEngineFailures.push(
+        ...result.keyboard.flatMap((record) => record.failures.map((failure) => ({ section: "keyboard", route: record.route, ...failure }))),
+        ...result.mobileMenu.failures.map((failure) => ({ section: "mobile-menu", ...failure })),
+        ...result.history.failures.map((failure) => ({ section: "history", ...failure })),
+      );
+    } else {
+      assert(Array.isArray(result.keyboard) && result.keyboard.length === 0 && result.mobileMenu === null && result.history === null, `${result.engine} axe-only interaction evidence differs`);
     }
+    assert(sameJson(result.failures, derivedEngineFailures), `${result.engine} failure ledger differs`);
+    assert(result.status === (derivedEngineFailures.length ? "FAIL" : "PASS"), `${result.engine} status differs`);
+    const expectedEngineSummary = {
+      axeCases: result.axe.length,
+      axeViolations: result.axe.reduce((sum, record) => sum + record.violations.length, 0),
+      failures: derivedEngineFailures.length,
+      keyboardCases: result.keyboard.length,
+      seriousCritical: result.axe.reduce((sum, record) => sum + record.violations.filter(({ impact }) => impact === "serious" || impact === "critical").length, 0),
+    };
+    assert(sameJson(result.summary, expectedEngineSummary), `${result.engine} summary differs`);
+    topFailures.push(...derivedEngineFailures.map((failure) => ({ engine: result.engine, ...failure })));
   }
-  assert(report.summary.axeExpected === expectedAxeCases(report.engine), "expected axe summary differs");
+  assert(sameJson(report.failures, topFailures), "accessibility top-level failure ledger differs");
+  const expectedSummary = {
+    axeCases: report.engines.reduce((sum, result) => sum + (result.axe?.length ?? 0), 0),
+    axeExpected: expectedAxeCases(report.engine),
+    axeViolations: report.engines.reduce((sum, result) => sum + (result.summary?.axeViolations ?? 0), 0),
+    engineErrors: report.engines.filter(({ status }) => status === "ERROR").length,
+    failures: topFailures.length,
+    seriousCritical: report.engines.reduce((sum, result) => sum + (result.summary?.seriousCritical ?? 0), 0),
+  };
+  assert(sameJson(report.summary, expectedSummary), "accessibility top-level summary differs");
+  assert(report.status === (topFailures.length ? "FAIL" : "PASS"), "accessibility top-level status differs");
   if (report.status === "PASS") {
     assert(report.failures.length === 0, "PASS report contains failures");
     assert(report.summary.seriousCritical === 0, "PASS report contains serious/critical axe violations");

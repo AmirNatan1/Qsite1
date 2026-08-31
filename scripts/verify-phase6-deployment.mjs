@@ -255,6 +255,18 @@ function normalizedHeaderDirectives(value) {
   return String(value ?? "").toLowerCase().split(",").map((part) => part.trim()).filter(Boolean).sort();
 }
 
+function strictCacheControlDirectives(value, label) {
+  if (typeof value !== "string" || !value.trim()) throw new Error(`${label} Cache-Control must be a primitive nonempty string`);
+  const byName = new Map();
+  for (const directive of value.toLowerCase().split(",").map((part) => part.trim()).filter(Boolean)) {
+    const match = /^([a-z][a-z0-9-]*)(?:=(?:"[^"]*"|[^\s,]+))?$/.exec(directive);
+    if (!match || byName.has(match[1])) throw new Error(`${label} Cache-Control contains an invalid, duplicate, or conflicting directive`);
+    byName.set(match[1], directive);
+  }
+  if (!byName.size) throw new Error(`${label} Cache-Control contains no directives`);
+  return byName;
+}
+
 export function assertRequiredHeaderPolicies(policies) {
   for (const [pattern, requiredValue] of Object.entries(REQUIRED_HEADER_POLICIES)) {
     const matches = policies.filter((policy) => policy.pattern === pattern);
@@ -284,9 +296,9 @@ function expectedMime(relativePath) {
     ".ico": ["image/x-icon", "image/vnd.microsoft.icon"],
     ".jpeg": ["image/jpeg"],
     ".jpg": ["image/jpeg"],
-    ".js": ["javascript"],
+    ".js": ["application/javascript", "text/javascript", "application/x-javascript"],
     ".json": ["application/json"],
-    ".mjs": ["javascript"],
+    ".mjs": ["application/javascript", "text/javascript", "application/x-javascript"],
     ".mp4": ["video/mp4"],
     ".pdf": ["application/pdf"],
     ".png": ["image/png"],
@@ -303,21 +315,21 @@ function expectedMime(relativePath) {
 
 export function validateObservedHeaders(record, relativePath, policies) {
   const expected = expectedMime(relativePath);
-  const contentType = String(record.contentType ?? "").toLowerCase();
-  if (expected.length < 1 || !expected.some((mime) => contentType.includes(mime))) {
+  const contentType = typeof record.contentType === "string" ? record.contentType.split(";", 1)[0].trim().toLowerCase() : "";
+  if (expected.length < 1 || !expected.includes(contentType)) {
     throw new Error(`MIME mismatch for ${relativePath}: ${record.contentType}`);
   }
+  const actualDirectives = strictCacheControlDirectives(record.cacheControl, `observed ${relativePath}`);
   const matched = matchingHeaderPolicies(policies, record.publicPath);
   for (const policy of matched) {
-    const required = normalizedHeaderDirectives(policy.headers["cache-control"]);
-    const actual = normalizedHeaderDirectives(record.cacheControl);
-    if (!required.every((directive) => actual.includes(directive))) {
+    const required = strictCacheControlDirectives(policy.headers["cache-control"], `_headers ${policy.pattern}`);
+    if (actualDirectives.size !== required.size
+      || ![...required.entries()].every(([name, directive]) => actualDirectives.get(name) === directive)) {
       throw new Error(`observed Cache-Control does not enforce _headers rule ${policy.pattern}`);
     }
   }
-  const cacheControl = String(record.cacheControl ?? "");
-  const privateResponse = /(?:^|,)\s*private(?:\s|,|$)/i.test(cacheControl);
-  const noStoreResponse = /(?:^|,)\s*no-store(?:\s|,|$)/i.test(cacheControl);
+  const privateResponse = actualDirectives.has("private");
+  const noStoreResponse = actualDirectives.has("no-store");
   const real404 = relativePath === "404.html" && record.status === 404;
   if (privateResponse || (noStoreResponse && !real404)) throw new Error(`unsafe deployed Cache-Control for ${relativePath}`);
   return {
@@ -366,11 +378,19 @@ export function validateCanonicalHtml(html, relativePath) {
 }
 
 export function publicPathForDistFile(relativePath, missing404Path = "/__phase6-real-404-probe__/") {
+  if (typeof relativePath !== "string" || !relativePath || /[%#?]/.test(relativePath)) throw new Error(`dist path is URL-ambiguous: ${relativePath}`);
   if (relativePath === "_headers") return null;
-  if (relativePath === "404.html") return missing404Path;
-  if (relativePath === "index.html") return "/";
-  if (relativePath.endsWith("/index.html")) return `/${relativePath.slice(0, -"index.html".length)}`;
-  return `/${relativePath}`;
+  const publicPath = relativePath === "404.html"
+    ? missing404Path
+    : relativePath === "index.html"
+      ? "/"
+      : relativePath.endsWith("/index.html")
+        ? `/${relativePath.slice(0, -"index.html".length)}`
+        : `/${relativePath}`;
+  let parsed;
+  try { parsed = new URL(publicPath, "https://phase6.invalid/"); } catch { throw new Error(`dist public path is invalid: ${relativePath}`); }
+  if (!publicPath.startsWith("/") || parsed.pathname !== publicPath || parsed.search || parsed.hash) throw new Error(`dist public path does not round-trip exactly: ${relativePath}`);
+  return publicPath;
 }
 
 async function recursiveFiles(root, relative = "") {
@@ -425,6 +445,8 @@ export function validateDistRecords(records) {
     sha256: sha256(byPath.get(relativePath).bytes),
   }));
   const comparablePaths = paths.filter((relativePath) => relativePath !== "_headers");
+  const requestPaths = fileLedger.filter(({ requestPath }) => requestPath !== null).map(({ requestPath }) => requestPath);
+  if (new Set(requestPaths).size !== requestPaths.length) throw new Error("dist deployable files do not map to unique public request paths");
   return { byPath, paths, comparablePaths, htmlPaths, canonicalAuthority, headerPolicies, fileLedger };
 }
 
@@ -708,10 +730,13 @@ async function fetchPublicFile(origin, publicPath, timeoutMs) {
 export async function verifyOrigin(origin, distAuthority, options) {
   const missing404Path = `/__phase6-real-404-${options.expectedHead.slice(0, 12)}-${options.deploymentId.slice(0, 8)}/`;
   const responses = [];
+  const requestedPublicPaths = new Set();
   const exercisedPolicies = new Set();
   for (const relativePath of distAuthority.comparablePaths) {
     const local = distAuthority.byPath.get(relativePath);
     const publicPath = publicPathForDistFile(relativePath, missing404Path);
+    if (requestedPublicPaths.has(publicPath)) throw new Error(`deployed origin request path is duplicated: ${publicPath}`);
+    requestedPublicPaths.add(publicPath);
     const response = await fetchPublicFile(origin, publicPath, options.timeoutMs);
     const verified = validateDeployedRecord(response, local, distAuthority.headerPolicies);
     for (const policy of verified.headers.matchedPolicies) exercisedPolicies.add(policy);

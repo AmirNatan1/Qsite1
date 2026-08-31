@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 
@@ -10,22 +12,30 @@ import {
   ROOT,
   ZOOM_ROUTE_CHECKS,
   ZOOM_ROUTE_OUTCOMES,
+  inventoryRecordings,
   runSelfTest,
   validateReviewEntry,
   validateReviews,
 } from "../scripts/ingest-phase6-r1-human-evidence.mjs";
 
 function validEntry(filename, status = "PASS") {
+  const device = filename.startsWith("iphone-safari-")
+    ? "Physical iPhone 15"
+    : filename === "physical-scroll-input.mp4"
+      ? "Physical trackpad"
+      : "Desktop PC";
   const entry = {
     filename,
-    device: "Physical device supplied by reviewer",
-    os: "Version not supplied",
+    device,
+    os: filename.startsWith("iphone-safari-") ? "iOS 18.6" : "Windows 11",
     browser: filename.startsWith("iphone-safari-") ? "Mobile Safari" : filename === "chrome-200-percent.mp4" ? "Google Chrome" : null,
     browserVersion: null,
     testSteps: ["Visible physical interaction was inspected."],
-    observations: ["The stated result was visible in the supplied recording."],
-    observedResult: status === "FAIL" ? "A visible defect was observed." : "The demonstrated requirement passed.",
+    observations: [],
+    observedResult: status === "FAIL" ? "A visible failure was observed." : status === "PASS" ? "The demonstrated requirements were visibly successful." : "Pending human review.",
     status,
+    reviewedSha256: status === "PENDING HUMAN REVIEW" ? null : "a".repeat(64),
+    reviewedByteSize: status === "PENDING HUMAN REVIEW" ? null : 1_024,
     failureReferences: [],
   };
   if (DEVICE_REVIEW_CHECKS[filename]) {
@@ -35,22 +45,56 @@ function validEntry(filename, status = "PASS") {
       entry.checks[failedCheck] = false;
       entry.failureReferences = [{ check: failedCheck, timestamp: "00:12.400", frame: null, observation: "Visible failure." }];
     }
+    entry.observations = DEVICE_REVIEW_CHECKS[filename].map((check) => {
+      const checkStatus = entry.checks[check] === false ? "FAIL" : entry.checks[check] === null ? "PENDING HUMAN REVIEW" : "PASS";
+      const failure = entry.failureReferences.find((reference) => reference.check === check);
+      return {
+        checkId: check,
+        status: checkStatus,
+        result: checkStatus === "FAIL" ? "A visible failure was observed." : checkStatus === "PASS" ? "The visible check completed successfully." : "Pending human review.",
+        timestamp: failure?.timestamp ?? null,
+        frame: failure?.frame ?? null,
+      };
+    });
   }
   if (filename === "chrome-200-percent.mp4") Object.assign(entry, {
-    genuineBrowserZoom: true,
-    zoomPercent: 200,
-    proxy: false,
+    genuineBrowserZoom: status === "PENDING HUMAN REVIEW" ? null : true,
+    zoomPercent: status === "PENDING HUMAN REVIEW" ? null : 200,
+    proxy: status === "PENDING HUMAN REVIEW" ? null : false,
     routeOutcomes: ZOOM_ROUTE_OUTCOMES.map((route, index) => ({
       route,
-      status: status === "FAIL" ? (index === 0 ? "FAIL" : "PASS") : status === "PENDING HUMAN REVIEW" ? (index === 0 ? "PENDING HUMAN REVIEW" : "PASS") : "PASS",
-      checks: Object.fromEntries(ZOOM_ROUTE_CHECKS.map((check) => [check, !(status === "FAIL" && index === 0 && check === ZOOM_ROUTE_CHECKS[0])])),
+      status: status === "FAIL" ? (index === 0 ? "FAIL" : "PASS") : status,
+      checks: Object.fromEntries(ZOOM_ROUTE_CHECKS.map((check) => [check, status === "PENDING HUMAN REVIEW" ? null : !(status === "FAIL" && index === 0 && check === ZOOM_ROUTE_CHECKS[0])])),
       failureReferences: status === "FAIL" && index === 0 ? [{ check: ZOOM_ROUTE_CHECKS[0], timestamp: "00:20.000", frame: null, observation: "Visible route failure." }] : [],
     })),
   });
   if (filename === "chrome-200-percent.mp4" && status === "FAIL") {
     entry.failureReferences = [{ check: `${ZOOM_ROUTE_OUTCOMES[0]}:${ZOOM_ROUTE_CHECKS[0]}`, timestamp: "00:20.000", frame: null, observation: "Visible route failure." }];
   }
+  if (filename === "chrome-200-percent.mp4") {
+    entry.observations = entry.routeOutcomes.flatMap((outcome) => ZOOM_ROUTE_CHECKS.map((check) => {
+      const checkStatus = outcome.checks[check] === false ? "FAIL" : outcome.status === "PENDING HUMAN REVIEW" ? "PENDING HUMAN REVIEW" : "PASS";
+      const failure = outcome.failureReferences.find((reference) => reference.check === check);
+      return {
+        checkId: `${outcome.route}:${check}`,
+        status: checkStatus,
+        result: checkStatus === "FAIL" ? "A visible failure was observed." : checkStatus === "PASS" ? "The route check completed successfully." : "Pending human review.",
+        timestamp: failure?.timestamp ?? null,
+        frame: failure?.frame ?? null,
+      };
+    }));
+  }
   return entry;
+}
+
+function mediaBinding(filename, overrides = {}) {
+  return {
+    filename,
+    sha256: "a".repeat(64),
+    byteSize: 1_024,
+    mediaValidation: { container: "ISO-BMFF MP4", durationSeconds: 30, sampleCount: 900, videoTrackCount: 1 },
+    ...overrides,
+  };
 }
 
 test("human evidence requires the four exact filenames and explicit statuses", () => {
@@ -92,6 +136,30 @@ test("file presence cannot manufacture a human PASS", () => {
   assert.equal(validateReviewEntry(pending, REQUIRED_RECORDINGS[0]).status, "PENDING HUMAN REVIEW");
 });
 
+test("PASS and FAIL reviews are bound to the exact recording hash and byte size", () => {
+  const filename = REQUIRED_RECORDINGS[0];
+  const review = validEntry(filename);
+  assert.equal(validateReviewEntry(review, filename, mediaBinding(filename)).reviewedSha256, "a".repeat(64));
+  assert.throws(() => validateReviewEntry(review, filename, mediaBinding(filename, { sha256: "b".repeat(64) })), /not bound to the supplied recording bytes/);
+  assert.throws(() => validateReviewEntry(review, filename, mediaBinding(filename, { byteSize: 2_048 })), /not bound to the supplied recording bytes/);
+  const unbound = structuredClone(review);
+  delete unbound.reviewedSha256;
+  assert.throws(() => validateReviewEntry(unbound, filename), /requires reviewedSha256 and reviewedByteSize/);
+});
+
+test("failure timestamps and frames cannot exceed the bound recording", () => {
+  const filename = REQUIRED_RECORDINGS[0];
+  const timestamp = validEntry(filename, "FAIL");
+  assert.throws(() => validateReviewEntry(timestamp, filename, mediaBinding(filename, { mediaValidation: { container: "ISO-BMFF MP4", durationSeconds: 10, sampleCount: 900, videoTrackCount: 1 } })), /timestamp exceeds the recording duration/);
+  const frame = validEntry(filename, "FAIL");
+  frame.failureReferences[0].timestamp = null;
+  frame.failureReferences[0].frame = "F901";
+  const observation = frame.observations.find(({ status }) => status === "FAIL");
+  observation.timestamp = null;
+  observation.frame = "F901";
+  assert.throws(() => validateReviewEntry(frame, filename, mediaBinding(filename)), /frame exceeds the recording sample count/);
+});
+
 test("FAIL requires a timestamp or frame and non-FAIL forbids failure references", () => {
   const missingReference = validEntry(REQUIRED_RECORDINGS[0], "FAIL");
   missingReference.failureReferences = [];
@@ -120,10 +188,20 @@ test("genuine 200% requires exact ten-route outcomes and all ten checks", () => 
 test("Chrome 200% entry status derives exactly from all ten route statuses", () => {
   const allPassDeclaredPending = validEntry("chrome-200-percent.mp4", "PASS");
   allPassDeclaredPending.status = "PENDING HUMAN REVIEW";
-  assert.throws(() => validateReviewEntry(allPassDeclaredPending, allPassDeclaredPending.filename), /entry status must be PASS/);
+  allPassDeclaredPending.reviewedSha256 = null;
+  allPassDeclaredPending.reviewedByteSize = null;
+  allPassDeclaredPending.genuineBrowserZoom = null;
+  allPassDeclaredPending.zoomPercent = null;
+  allPassDeclaredPending.proxy = null;
+  assert.throws(() => validateReviewEntry(allPassDeclaredPending, allPassDeclaredPending.filename), /pending review requires all ten routes|entry status must be PASS/);
 
   const onePendingDeclaredPass = validEntry("chrome-200-percent.mp4", "PASS");
   onePendingDeclaredPass.routeOutcomes[0].status = "PENDING HUMAN REVIEW";
+  for (const check of ZOOM_ROUTE_CHECKS) onePendingDeclaredPass.routeOutcomes[0].checks[check] = null;
+  for (const observation of onePendingDeclaredPass.observations.filter(({ checkId }) => checkId.startsWith("/:"))) {
+    observation.status = "PENDING HUMAN REVIEW";
+    observation.result = "Pending human review.";
+  }
   onePendingDeclaredPass.status = "PASS";
   assert.throws(() => validateReviewEntry(onePendingDeclaredPass, onePendingDeclaredPass.filename), /entry status must be PENDING HUMAN REVIEW/);
 
@@ -139,6 +217,7 @@ test("every false human check requires a matching check-addressed timestamp or f
   physical.checks[secondCheck] = false;
   assert.throws(() => validateReviewEntry(physical, physical.filename), new RegExp(`false check ${secondCheck} requires a failureReference`));
   physical.failureReferences.push({ check: secondCheck, timestamp: null, frame: "F182", observation: "Second visible failure." });
+  Object.assign(physical.observations.find(({ checkId }) => checkId === secondCheck), { status: "FAIL", result: "A second visible failure was observed.", timestamp: null, frame: "F182" });
   assert.equal(validateReviewEntry(physical, physical.filename).status, "FAIL");
 
   const zoom = validEntry("chrome-200-percent.mp4", "FAIL");
@@ -147,13 +226,59 @@ test("every false human check requires a matching check-addressed timestamp or f
   failedRoute.checks[secondZoomCheck] = false;
   assert.throws(() => validateReviewEntry(zoom, zoom.filename), new RegExp(`false check ${secondZoomCheck} requires a failureReference`));
   failedRoute.failureReferences.push({ check: secondZoomCheck, timestamp: "00:21.000", frame: null, observation: "Second route failure." });
+  Object.assign(zoom.observations.find(({ checkId }) => checkId === `${failedRoute.route}:${secondZoomCheck}`), { status: "FAIL", result: "A second visible failure was observed.", timestamp: "00:21.000", frame: null });
   assert.equal(validateReviewEntry(zoom, zoom.filename).status, "FAIL");
 });
 
 test("structured hidden-visible evidence survives normalization", () => {
   const opening = validEntry("iphone-safari-opening.mp4");
-  opening.observations.push({ id: "background-foreground", status: "PASS", result: "Coherent return" });
+  opening.observations.find(({ checkId }) => checkId === "backgroundForeground").result = "Coherent return was visibly demonstrated.";
   const normalized = validateReviewEntry(opening, opening.filename);
   assert.equal(normalized.checks.backgroundForeground, true);
-  assert.equal(normalized.observations.at(-1).id, "background-foreground");
+  assert.equal(normalized.observations.find(({ checkId }) => checkId === "backgroundForeground").checkId, "backgroundForeground");
+});
+
+test("human identity, status text and timestamp/frame references fail closed", () => {
+  const wrongIphone = validEntry("iphone-safari-opening.mp4");
+  wrongIphone.device = "Desktop PC";
+  wrongIphone.os = "Windows 11";
+  assert.throws(() => validateReviewEntry(wrongIphone, wrongIphone.filename), /physical iPhone|identify iOS/);
+
+  const simulatedInput = validEntry("physical-scroll-input.mp4");
+  simulatedInput.device = "Simulated generic input";
+  assert.throws(() => validateReviewEntry(simulatedInput, simulatedInput.filename), /physical mouse or trackpad/);
+
+  const mobileZoom = validEntry("chrome-200-percent.mp4");
+  mobileZoom.device = "Mobile phone";
+  assert.throws(() => validateReviewEntry(mobileZoom, mobileZoom.filename), /desktop\/laptop/);
+
+  const passWithFailure = validEntry("iphone-safari-opening.mp4");
+  passWithFailure.observedResult = "FAIL was visible despite the declared result.";
+  assert.throws(() => validateReviewEntry(passWithFailure, passWithFailure.filename), /PASS text contradicts/);
+
+  const failWithPending = validEntry("iphone-safari-opening.mp4", "FAIL");
+  failWithPending.observedResult = "Not reviewed.";
+  assert.throws(() => validateReviewEntry(failWithPending, failWithPending.filename), /FAIL text contains pending/);
+
+  const badTimestamp = validEntry("iphone-safari-opening.mp4", "FAIL");
+  badTimestamp.failureReferences[0].timestamp = "not supplied";
+  badTimestamp.observations.find(({ status }) => status === "FAIL").timestamp = "not supplied";
+  assert.throws(() => validateReviewEntry(badTimestamp, badTimestamp.filename), /parseable media timestamp/);
+
+  const badFrame = validEntry("iphone-safari-opening.mp4", "FAIL");
+  badFrame.failureReferences[0] = { ...badFrame.failureReferences[0], timestamp: null, frame: "frame twelve" };
+  badFrame.observations.find(({ status }) => status === "FAIL").timestamp = null;
+  badFrame.observations.find(({ status }) => status === "FAIL").frame = "frame twelve";
+  assert.throws(() => validateReviewEntry(badFrame, badFrame.filename), /positive frame identifier/);
+});
+
+test("missing-file preflight wins over malformed present media and malformed reviews", async (t) => {
+  const parent = await mkdtemp(path.join(os.tmpdir(), "phase6-human-preflight-"));
+  t.after(() => rm(parent, { recursive: true, force: true }));
+  const inputRoot = path.join(parent, "recordings");
+  await mkdir(inputRoot);
+  await writeFile(path.join(inputRoot, REQUIRED_RECORDINGS[0]), Buffer.from("\0\0\0\x0cftypisom", "binary"));
+  const inventory = await inventoryRecordings(inputRoot);
+  assert.deepEqual(inventory.missing, REQUIRED_RECORDINGS.slice(1));
+  assert.deepEqual(inventory.files, []);
 });

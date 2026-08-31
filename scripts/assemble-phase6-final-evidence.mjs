@@ -7,8 +7,23 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 import sharp from "sharp";
 
-import { DEVICE_REVIEW_CHECKS } from "./ingest-phase6-r1-human-evidence.mjs";
+import { DEVICE_REVIEW_CHECKS, HUMAN_EVIDENCE_POLICY, validateMp4Structure, validateReviewEntry } from "./ingest-phase6-r1-human-evidence.mjs";
+import { validateReport as validateAccessibilityReport } from "./qa-phase6-accessibility-interactions.mjs";
 import { PHASE6_ROUTES } from "./phase6-contract.mjs";
+import {
+  HTML_AUTHORITY_FILES,
+  PUBLIC_ROUTE_OUTCOMES,
+  REQUIRED_HEADER_POLICIES,
+  canonicalForDistFile,
+  publicPathForDistFile,
+} from "./verify-phase6-deployment.mjs";
+import {
+  ALLOWED_PACKAGE_SCRIPT_CHANGES as R1_ALLOWED_PACKAGE_SCRIPT_CHANGES,
+  ALLOWED_R1_CHANGED_PATHS,
+  EXPECTED_R1_CHANGED_PATH_RECORDS,
+  PRODUCTION_DIFF_PATHS as R1_PRODUCTION_DIFF_PATHS,
+  REQUIRED_REPOSITORY as R1_REQUIRED_REPOSITORY,
+} from "./verify-phase6-r1-deployment.mjs";
 
 const SCRIPT = fileURLToPath(import.meta.url);
 export const ROOT = path.resolve(path.dirname(SCRIPT), "..");
@@ -26,6 +41,8 @@ export const POSTER_DECISION = "NO PRODUCTION POSTER CHANGE — CURRENT AUTHORIT
 export const HUMAN_EVIDENCE_SCHEMA = "quantum-hub.phase-6-r1.human-evidence-ledger.v1";
 export const R1_MOTION_EVIDENCE_SCHEMA = "quantum-hub.phase-6-r1.motion-evidence.v1";
 export const R1_PERSISTENT_LIFECYCLE_SCHEMA = "quantum-hub.phase-6-r1.persistent-lifecycle.v1";
+export const R1_NODE22_VALIDATION_SCHEMA_PREFIX = "quantum-hub.phase-6-r1.node22-integrated-validation.v";
+export const R1_TOOLING_REPORT_FILES = Object.freeze([...ALLOWED_R1_CHANGED_PATHS]);
 export const REQUIRED_HUMAN_EVIDENCE_FILES = Object.freeze([
   "iphone-safari-opening.mp4",
   "iphone-safari-maradin.mp4",
@@ -96,6 +113,7 @@ export const RESERVED_PATHS = Object.freeze(new Set([
   "00-provenance/git-provenance.json",
   "01-baseline/PHASE_6_BASELINE.md",
   "01-baseline/PHASE_6_DEFECT_LEDGER.md",
+  "01-baseline/PHASE_6_R1_VALIDATION_CLOSURE.md",
   "10-poster-study/PHASE_6_POSTER_STUDY.md",
   "11-physical-device/PHASE_6_PHYSICAL_DEVICE_HANDOFF.md",
   "13-package/README.md",
@@ -178,6 +196,7 @@ export const REQUIRED_ARTIFACT_ROLES = Object.freeze({
 });
 
 export const R1_REQUIRED_ARTIFACT_ROLES = Object.freeze({
+  "r1-node22-validation-summary": Object.freeze({ section: "00-provenance", kind: "document", minimum: 1 }),
   "r1-motion-summary": Object.freeze({ section: "03-homepage-motion", kind: "document", minimum: 2, engines: ["chromium", "firefox"] }),
   "r1-motion-recording": Object.freeze({ section: "03-homepage-motion", kind: "video", minimum: 10, engines: ["chromium", "firefox"] }),
   "r1-persistent-lifecycle-summary": Object.freeze({ section: "05-history-bfcache", kind: "document", minimum: 1, engines: ["chromium"] }),
@@ -189,6 +208,7 @@ const OPTIONAL_ARTIFACT_ROLES = Object.freeze({
   ...R1_REQUIRED_ARTIFACT_ROLES,
   "accessibility-interaction-limitation": Object.freeze({ section: "09-accessibility", kind: "document" }),
   "supplemental-reflow-proxy": Object.freeze({ section: "09-accessibility", kind: "document" }),
+  "supplemental-maradin-lifecycle-recording": Object.freeze({ section: "08-network-media", kind: "video" }),
   "physical-device-result": Object.freeze({ section: "11-physical-device", kind: "document" }),
   "physical-device-recording": Object.freeze({ section: "11-physical-device", kind: "video" }),
 });
@@ -209,6 +229,7 @@ const JSON_ROLE_SCHEMAS = Object.freeze({
   "physical-device-result": Object.freeze([HUMAN_EVIDENCE_SCHEMA]),
   "r1-motion-summary": Object.freeze([R1_MOTION_EVIDENCE_SCHEMA]),
   "r1-persistent-lifecycle-summary": Object.freeze([R1_PERSISTENT_LIFECYCLE_SCHEMA]),
+  "r1-node22-validation-summary": Object.freeze([]),
 });
 
 const GENERATED_EVIDENCE_BY_SECTION = Object.freeze({
@@ -427,6 +448,24 @@ function validatePathList(values, label) {
   return values;
 }
 
+function pathValues(values) {
+  return values.map((record) => typeof record === "string" ? record : record.path);
+}
+
+function r1DiffPaths(values, label) {
+  if (!Array.isArray(values)) throw new Error(`${label} must be an array`);
+  return values.map((record) => {
+    if (typeof record === "string") {
+      const match = /^([AM])\t(.+)$/.exec(record);
+      if (!match) throw new Error(`${label} record is malformed`);
+      safeRelativePath(match[2], label);
+      return match[2];
+    }
+    if (!record || !["A", "M"].includes(record.status)) throw new Error(`${label} record is malformed`);
+    return safeRelativePath(record.path, label);
+  });
+}
+
 function validateSectionMetadata(sections, artifacts, posterStudyDirectory) {
   if (!sections || typeof sections !== "object" || Array.isArray(sections)) throw new Error("final metadata sections are required");
   const roleSet = new Set([
@@ -483,6 +522,11 @@ function roleSpec(role) {
   throw new Error(`unknown evidence artifact role: ${role}`);
 }
 
+function isR1Node22ValidationSchema(schema) {
+  const match = new RegExp(`^${R1_NODE22_VALIDATION_SCHEMA_PREFIX.replaceAll(".", "\\.")}(\\d+)$`).exec(String(schema ?? ""));
+  return Boolean(match && Number(match[1]) >= 7);
+}
+
 function requireArtifactRoleInventory(artifacts, contracts) {
   for (const [role, spec] of Object.entries(contracts)) {
     const matching = artifacts.filter((record) => record.role === role);
@@ -501,9 +545,11 @@ function validateR1ArtifactTopology(artifacts) {
   const lifecycle = artifacts.filter(({ role }) => role === "r1-persistent-lifecycle-summary");
   const humanLedgers = artifacts.filter(({ role }) => role === "physical-device-result");
   const humanRecordings = artifacts.filter(({ role }) => role === "physical-device-recording");
-  if (summaries.length !== 2 || recordings.length !== 10 || lifecycle.length !== 1 || humanLedgers.length !== 1 || humanRecordings.length !== 4) {
+  const node22 = artifacts.filter(({ role }) => role === "r1-node22-validation-summary");
+  if (summaries.length !== 2 || recordings.length !== 10 || lifecycle.length !== 1 || humanLedgers.length !== 1 || humanRecordings.length !== 4 || node22.length !== 1) {
     throw new Error("R1 motion/lifecycle/human artifact topology differs");
   }
+  if (node22[0].destination !== "00-provenance/node22-integrated-validation.json" || node22[0].status !== "PASS" || node22[0].select !== undefined) throw new Error("R1 Node 22 validation artifact authority differs");
   for (const engine of engines) {
     const engineSummaries = summaries.filter((record) => record.engine === engine);
     const engineRecordings = recordings.filter((record) => record.engine === engine);
@@ -548,12 +594,15 @@ function validateArtifactRecords(artifacts, authority) {
     if (record.status === "LIMITATION" && (typeof record.limitation !== "string" || !record.limitation.trim())) throw new Error(`LIMITATION artifact must explain its limitation: ${record.destination}`);
     if (typeof record.role !== "string") throw new Error(`artifact record ${index} omits role`);
     const spec = roleSpec(record.role);
+    if (authority.id === "phase6-r1" && spec === null) throw new Error(`R1 unknown supplemental evidence role is forbidden: ${record.role}`);
     const section = record.destination.split("/", 1)[0];
     const kind = extensionKind(record.destination);
     if (spec && (spec.section !== section || spec.kind !== kind)) throw new Error(`artifact role/destination differs: ${record.role}`);
     if (record.role === "deployment-verifier" && record.destination !== "00-provenance/deployment-verification.json") throw new Error("deployment-verifier must occupy 00-provenance/deployment-verification.json");
     if (record.role === "accessibility-interaction-limitation" && (!["FAIL", "LIMITATION"].includes(record.status) || record.engine !== "webkit")) throw new Error("WebKit interaction FAIL/LIMITATION must be explicit");
     if (record.role === "physical-device-result" && record.select !== undefined) throw new Error("physical-device human-evidence ledger must be included whole");
+    if (authority.id === "phase6-r1" && record.role === "supplemental-reflow-proxy" && record.destination !== "09-accessibility/720x450-reflow-proxy.json") throw new Error("R1 supplemental reflow-proxy path differs");
+    if (authority.id === "phase6-r1" && record.role === "supplemental-maradin-lifecycle-recording" && record.destination !== "08-network-media/maradin-media-lifecycle.mp4") throw new Error("R1 supplemental Maradin lifecycle path differs");
     if (["deployment-verifier", "cross-engine-summary", "accessibility-summary", "performance-summary"].includes(record.role) && record.status !== "PASS") throw new Error(`required PASS authority differs: ${record.role}`);
     if (record.role === "performance-summary" && path.posix.basename(record.source) !== "phase6-performance-final.json") throw new Error("performance-summary must bind phase6-performance-final.json");
     if (record.engine !== undefined && !["chromium", "webkit", "firefox"].includes(record.engine)) throw new Error(`artifact engine differs: ${record.engine}`);
@@ -591,6 +640,7 @@ export function validateFinalMetadata(input, { posterStudyDirectory = null } = {
   const authority = authorityProfileForBranch(repository?.branch);
   if (metadata.authorityProfile !== undefined && metadata.authorityProfile !== authority.id) throw new Error("final metadata authority profile differs from its branch");
   if (!repository || repository.exactParent !== authority.parent || !HASH40.test(repository.finalHead ?? "") || !HASH40.test(repository.directParent ?? "") || repository.cleanTree !== true) throw new Error("final repository authority differs");
+  if (authority.id === "phase6-r1" && !HASH40.test(repository.finalTree ?? "")) throw new Error("R1 final repository tree authority differs");
   if (repository.localHead !== repository.finalHead || repository.upstreamHead !== repository.finalHead || repository.liveHead !== repository.finalHead) throw new Error("local/upstream/live HEAD parity differs");
   if (!repository.main || repository.main.local !== FROZEN_MAIN || repository.main.upstream !== FROZEN_MAIN || repository.main.public !== FROZEN_MAIN || repository.main.modifiedOrMerged !== false) throw new Error("frozen main authority differs");
   if (!Array.isArray(repository.commitChain) || !repository.commitChain.length) throw new Error("linear commit chain is required");
@@ -604,6 +654,7 @@ export function validateFinalMetadata(input, { posterStudyDirectory = null } = {
   if (repository.commitChain.at(-1).sha !== repository.finalHead || repository.directParent !== repository.commitChain.at(-1).parents[0]) throw new Error("final HEAD/direct-parent binding differs from commit chain");
   const deployment = metadata.deployment;
   if (!deployment || !UUID.test(deployment.id ?? "") || deployment.deployedSha !== repository.finalHead || deployment.parity !== "PASS" || deployment.headers !== "PASS" || deployment.real404 !== "PASS" || deployment.canonical !== "PASS" || deployment.productionMainDeployed !== false) throw new Error("final deployment authority differs");
+  if (authority.id === "phase6-r1" && !/^[1-9]\d*$/.test(deployment.checkRunId ?? "")) throw new Error("R1 deployment checkRunId authority differs");
   deployment.immutableUrl = normalizeHttps(deployment.immutableUrl, "immutable URL");
   deployment.branchUrl = normalizeHttps(deployment.branchUrl, "branch URL");
   const immutable = new URL(deployment.immutableUrl);
@@ -621,6 +672,11 @@ export function validateFinalMetadata(input, { posterStudyDirectory = null } = {
   validatePathList(changes.productionFiles, "production-source files");
   validatePathList(changes.toolingReportFiles, "tooling/report files");
   validatePathList(changes.newTrackedFilesAbove1MiB ?? [], "new tracked files above 1 MiB");
+  if (authority.id === "phase6-r1") {
+    if (stableJson(pathValues(changes.productionFiles)) !== stableJson([])) throw new Error("R1 production-source change ledger must be empty");
+    if (stableJson([...pathValues(changes.toolingReportFiles)].sort(lexicalCompare)) !== stableJson([...R1_TOOLING_REPORT_FILES].sort(lexicalCompare))) throw new Error("R1 tooling/report change ledger differs from the exact 18-path authority");
+    if (changes.trackedFileDelta !== R1_TOOLING_REPORT_FILES.length) throw new Error("R1 trackedFileDelta must equal the exact 18-path tooling/report authority");
+  }
   for (const record of changes.newTrackedFilesAbove1MiB ?? []) if (!Number.isSafeInteger(record.bytes) || record.bytes <= 1024 * 1024 || typeof record.justification !== "string" || !record.justification.trim()) throw new Error(`large tracked file justification differs: ${record.path}`);
   const verification = metadata.verification;
   if (!verification || verification.build?.status !== "PASS" || verification.tests?.status !== "PASS" || !Number.isSafeInteger(verification.tests.total) || verification.tests.total <= 0 || !Number.isSafeInteger(verification.tests.passed) || !Number.isSafeInteger(verification.tests.skipped) || verification.tests.failed !== 0 || verification.tests.total !== verification.tests.passed + verification.tests.failed + verification.tests.skipped || verification.publication?.status !== "PASS" || verification.routeBudgets?.status !== "PASS") throw new Error("final build/test/publication/budget verification is incomplete");
@@ -696,7 +752,7 @@ async function inventorySourceEvidence(sourceEvidenceRoot) {
           const document = JSON.parse(bytes.toString("utf8"));
           item.schema = typeof document?.schema === "string" ? document.schema : null;
           item.status = typeof document?.status === "string" ? document.status : null;
-          item.compatibleRoles = Object.entries(JSON_ROLE_SCHEMAS).filter(([, schemas]) => schemas.includes(item.schema)).map(([role]) => role);
+          item.compatibleRoles = Object.entries(JSON_ROLE_SCHEMAS).filter(([role, schemas]) => schemas.includes(item.schema) || (role === "r1-node22-validation-summary" && isR1Node22ValidationSchema(item.schema))).map(([role]) => role);
         } catch {
           item.invalidJson = true;
         }
@@ -744,10 +800,12 @@ export async function createMetadataTemplate(sourceEvidenceRoot, generatedAt = n
         validationReport: { source: "<capture-*/capture-report.json>", expectedSha256: "<capture report SHA-256 from sourceInventory>", recordingRelativePath: "<recordings/*.mp4 path within capture directory>" },
       },
     },
-    repository: { branch: authority.branch, exactParent: authority.parent, finalHead: "<40-char final SHA>", directParent: "<40-char direct parent>", cleanTree: true, localHead: "<final SHA>", upstreamHead: "<final SHA>", liveHead: "<final SHA>", main: { local: FROZEN_MAIN, upstream: FROZEN_MAIN, public: FROZEN_MAIN, modifiedOrMerged: false }, commitChain: [] },
-    deployment: { id: "<lowercase Cloudflare deployment UUID>", immutableUrl: "<https://first-8-uuid.qsite1.pages.dev/>", branchUrl: authority.branchUrl, deployedSha: "<final SHA>", parity: "PASS", headers: "PASS", real404: "PASS", canonical: "PASS", productionMainDeployed: false },
+    repository: { branch: authority.branch, exactParent: authority.parent, finalHead: "<40-char final SHA>", ...(authority.id === "phase6-r1" ? { finalTree: "<40-char final tree SHA>" } : {}), directParent: "<40-char direct parent>", cleanTree: true, localHead: "<final SHA>", upstreamHead: "<final SHA>", liveHead: "<final SHA>", main: { local: FROZEN_MAIN, upstream: FROZEN_MAIN, public: FROZEN_MAIN, modifiedOrMerged: false }, commitChain: [] },
+    deployment: { id: "<lowercase Cloudflare deployment UUID>", ...(authority.id === "phase6-r1" ? { checkRunId: "<signed GitHub Cloudflare check-run numeric ID>" } : {}), immutableUrl: "<https://first-8-uuid.qsite1.pages.dev/>", branchUrl: authority.branchUrl, deployedSha: "<final SHA>", parity: "PASS", headers: "PASS", real404: "PASS", canonical: "PASS", productionMainDeployed: false },
     evidenceContext: { browserQa: { origin: "LOCAL", baseUrl: "http://127.0.0.1:4338/" }, deploymentBinding: { method: "DEPLOYMENT_VERIFIER_LOCAL_DIST_ORIGIN_BYTE_PARITY", status: "PASS", verifierArtifactRole: "deployment-verifier" } },
-    changes: { productionFiles: [], toolingReportFiles: [], trackedFileDelta: 0, trackedByteDelta: 0, newTrackedFilesAbove1MiB: [] },
+    changes: authority.id === "phase6-r1"
+      ? { productionFiles: [], toolingReportFiles: [...R1_TOOLING_REPORT_FILES], trackedFileDelta: R1_TOOLING_REPORT_FILES.length, trackedByteDelta: "<exact signed tracked byte delta>", newTrackedFilesAbove1MiB: [] }
+      : { productionFiles: [], toolingReportFiles: [], trackedFileDelta: 0, trackedByteDelta: 0, newTrackedFilesAbove1MiB: [] },
     verification: { build: { status: "PASS" }, tests: { status: "PASS", total: 0, passed: 0, failed: 0, skipped: 0 }, publication: { status: "PASS" }, routeBudgets: { status: "PASS" } },
     baseline: { acceptedPhase5bReferenceHashes: {}, initialBrowserRuntimeInventory: {} },
     limitations: ["<at least one genuine unresolved limitation>"],
@@ -784,8 +842,13 @@ async function validateImage(bytes, label) {
 }
 
 function validateMp4(bytes, label) {
-  if (bytes.length < 12 || bytes.subarray(4, 8).toString("ascii") !== "ftyp") throw new Error(`MP4 container signature failed: ${label}`);
-  return true;
+  const structure = validateMp4Structure(bytes, label);
+  return {
+    container: "ISO-BMFF MP4",
+    durationSeconds: Number((structure.movie.duration / structure.movie.timescale).toFixed(6)),
+    sampleCount: structure.videoTrack.sampleCount,
+    videoTrackCount: structure.videoTracks.length,
+  };
 }
 
 async function validateCaptureBoundMedia(sourceRoot, record, bytes) {
@@ -832,6 +895,131 @@ const R1_MOTION_VALIDATION_CHECKS = Object.freeze([
   "conciseDuration",
 ]);
 
+const R1_MOTION_SAMPLE_LABELS = Object.freeze({
+  "forward-physical-to-manifesto": Object.freeze(["F1", "current", "arrival", "indicator", "line", "raster", "Q", "threshold", "manifesto-threshold", "manifesto-resolved"]),
+  "reverse-manifesto-to-f1": Object.freeze(["manifesto", "threshold", "Q", "raster", "line", "arrival", "current", "F1", "F1-rest"]),
+  "resize-orientation-mid-current-and-manifesto": Object.freeze(["current-landscape-before", "current-portrait", "current-landscape-return", "manifesto-landscape-before", "manifesto-portrait", "manifesto-landscape-return"]),
+  "supporting-route-entry-and-reverse": Object.freeze(["supporting-about", "home-entry", "Q", "raster", "line", "arrival", "current", "F1"]),
+});
+
+const R1_MOTION_HOME_STATE = Object.freeze({
+  F1: Object.freeze({ phase: "physical", segment: "top-dormancy", manifestoReveal: "hidden" }),
+  "F1-rest": Object.freeze({ phase: "physical", segment: "top-dormancy", manifestoReveal: "hidden" }),
+  current: Object.freeze({ phase: "physical", segment: "current-orbit", manifestoReveal: "hidden" }),
+  "current-landscape-before": Object.freeze({ phase: "physical", segment: "current-orbit", manifestoReveal: "hidden" }),
+  "current-portrait": Object.freeze({ phase: "physical", segment: "current-orbit", manifestoReveal: "hidden" }),
+  "current-landscape-return": Object.freeze({ phase: "physical", segment: "current-orbit", manifestoReveal: "hidden" }),
+  arrival: Object.freeze({ phase: "physical", segments: Object.freeze(["crt-arrival", "indicator"]), manifestoReveal: "hidden" }),
+  indicator: Object.freeze({ phase: "physical", segment: "indicator", manifestoReveal: "hidden" }),
+  line: Object.freeze({ phase: "physical", segment: "phosphor-line", manifestoReveal: "hidden" }),
+  raster: Object.freeze({ phase: "physical", segment: "raster-settling", manifestoReveal: "hidden" }),
+  Q: Object.freeze({ phase: "physical", segment: "q-hold", manifestoReveal: "hidden" }),
+  threshold: Object.freeze({ phase: "physical", segment: "physical-threshold", manifestoReveal: "hidden" }),
+  "manifesto-threshold": Object.freeze({ phase: "entry", segment: "entry-reveal", manifestoReveal: "revealing" }),
+  "manifesto-resolved": Object.freeze({ phase: "entry", segment: "entry-reveal", manifestoReveal: "resolved" }),
+  manifesto: Object.freeze({ phase: "settled", segment: "entry-reveal", manifestoReveal: "resolved" }),
+  "manifesto-landscape-before": Object.freeze({ phase: "entry", segment: "entry-reveal", manifestoReveal: "resolved" }),
+  "manifesto-portrait": Object.freeze({ phase: "entry", segment: "entry-reveal", manifestoReveal: "resolved" }),
+  "manifesto-landscape-return": Object.freeze({ phase: "entry", segment: "entry-reveal", manifestoReveal: "resolved" }),
+  "home-entry": Object.freeze({ phase: "settled", segment: "entry-reveal", manifestoReveal: "resolved" }),
+});
+
+function validateR1MotionStateSample(sample, label, context, authoredLabel = label) {
+  const keys = ["documentHidden", "horizontalOverflow", "label", "manifestoReveal", "maximumScroll", "mediaState", "mode", "navigationReleased", "phase", "presentedFrame", "scrollY", "segment", "targetFrame", "url", "video", "viewport"];
+  if (!sample || typeof sample !== "object" || Array.isArray(sample)
+    || stableJson(Object.keys(sample).sort(lexicalCompare)) !== stableJson([...keys].sort(lexicalCompare))
+    || sample.label !== label || typeof sample.url !== "string" || !sample.url.startsWith("/")
+    || sample.documentHidden !== false
+    || !Number.isFinite(sample.scrollY) || sample.scrollY < 0 || !Number.isFinite(sample.maximumScroll) || sample.maximumScroll < 0 || sample.scrollY > sample.maximumScroll
+    || !Number.isFinite(sample.horizontalOverflow) || sample.horizontalOverflow < 0 || sample.horizontalOverflow > 1
+    || !Number.isSafeInteger(sample.targetFrame) || sample.targetFrame < 0 || !Number.isSafeInteger(sample.presentedFrame) || sample.presentedFrame < 0
+    || !sample.viewport || !Number.isSafeInteger(sample.viewport.width) || sample.viewport.width <= 0 || !Number.isSafeInteger(sample.viewport.height) || sample.viewport.height <= 0) {
+    throw new Error(`R1 motion observation sample differs: ${context}/${label}`);
+  }
+  if (authoredLabel === "supporting-about") {
+    if (sample.url !== "/about/" || sample.mode !== null || sample.mediaState !== null || sample.phase !== null || sample.segment !== null
+      || sample.targetFrame !== 0 || sample.presentedFrame !== 0 || sample.manifestoReveal !== null || sample.navigationReleased !== null || sample.video !== null) {
+      throw new Error(`R1 motion supporting-route document state differs: ${context}/${label}`);
+    }
+    return sample;
+  }
+  const expected = R1_MOTION_HOME_STATE[authoredLabel];
+  if (!expected || !["/", "/#entry"].includes(sample.url)
+    || sample.mode !== "enhanced" || sample.mediaState !== "ready" || sample.phase !== expected.phase
+    || (expected.segment ? sample.segment !== expected.segment : !expected.segments.includes(sample.segment))
+    || sample.manifestoReveal !== expected.manifestoReveal || sample.navigationReleased !== "concealed"
+    || sample.targetFrame !== sample.presentedFrame
+    || !sample.video || typeof sample.video !== "object" || Array.isArray(sample.video)
+    || stableJson(Object.keys(sample.video).sort(lexicalCompare)) !== stableJson(["currentTime", "hasSource", "paused", "readyState"].sort(lexicalCompare))
+    || !Number.isFinite(sample.video.currentTime) || sample.video.currentTime < 0 || sample.video.paused !== true
+    || sample.video.hasSource !== true || !Number.isSafeInteger(sample.video.readyState) || sample.video.readyState < 1 || sample.video.readyState > 4) {
+    throw new Error(`R1 motion authored-state semantics differ: ${context}/${label}`);
+  }
+  return sample;
+}
+
+function validateR1MotionSequence(samples, direction, context) {
+  for (let index = 1; index < samples.length; index += 1) {
+    const previous = samples[index - 1];
+    const current = samples[index];
+    if (direction === "forward" && (current.scrollY < previous.scrollY || current.targetFrame < previous.targetFrame)) {
+      throw new Error(`R1 motion forward sequence is not monotonic: ${context}`);
+    }
+    if (direction === "reverse" && (current.scrollY > previous.scrollY || current.targetFrame > previous.targetFrame)) {
+      throw new Error(`R1 motion reverse sequence is not monotonic: ${context}`);
+    }
+  }
+}
+
+function validateR1MotionObservations(recording, engine) {
+  const observations = recording.observations;
+  const context = `${engine}/${recording.filename}`;
+  if (!observations || typeof observations !== "object" || Array.isArray(observations) || observations.status !== "PASS") {
+    throw new Error(`R1 motion observations differ: ${context}`);
+  }
+  if (recording.id === "stop-at-authored-states") {
+    if (stableJson(Object.keys(observations).sort(lexicalCompare)) !== stableJson(["status", "stops"])
+      || !Array.isArray(observations.stops)
+      || stableJson(observations.stops.map(({ label }) => label)) !== stableJson(["current", "line", "raster", "Q"])) {
+      throw new Error(`R1 motion stop-at-state observation inventory differs: ${context}`);
+    }
+    for (const stop of observations.stops) {
+      if (!stop || stableJson(Object.keys(stop).sort(lexicalCompare)) !== stableJson(["after", "before", "label", "status"])
+        || stop.status !== "PASS") throw new Error(`R1 motion stop-at-state observation differs: ${context}`);
+      const before = validateR1MotionStateSample(stop.before, `${stop.label}-before-pause`, context, stop.label);
+      const after = validateR1MotionStateSample(stop.after, `${stop.label}-after-pause`, context, stop.label);
+      if (Math.abs(after.scrollY - before.scrollY) > 1 || after.maximumScroll !== before.maximumScroll
+        || after.targetFrame !== before.targetFrame || after.presentedFrame !== before.presentedFrame
+        || after.video.currentTime !== before.video.currentTime || after.video.paused !== true || before.video.paused !== true) {
+        throw new Error(`R1 motion stop-at-state stability differs: ${context}/${stop.label}`);
+      }
+    }
+    return;
+  }
+  const labels = R1_MOTION_SAMPLE_LABELS[recording.id];
+  if (!labels || stableJson(Object.keys(observations).sort(lexicalCompare)) !== stableJson(["samples", "status"])
+    || !Array.isArray(observations.samples) || stableJson(observations.samples.map(({ label }) => label)) !== stableJson(labels)) {
+    throw new Error(`R1 motion sample inventory differs: ${context}`);
+  }
+  const samples = observations.samples.map((sample, index) => validateR1MotionStateSample(sample, labels[index], context));
+  if (recording.id === "forward-physical-to-manifesto") validateR1MotionSequence(samples, "forward", context);
+  if (recording.id === "reverse-manifesto-to-f1") validateR1MotionSequence(samples, "reverse", context);
+  if (recording.id === "supporting-route-entry-and-reverse") {
+    if (samples[0].url !== "/about/" || samples.slice(1).some(({ url }) => url !== "/#entry")) throw new Error(`R1 motion supporting-route navigation differs: ${context}`);
+    validateR1MotionSequence(samples.slice(1), "reverse", context);
+  }
+  if (recording.id === "resize-orientation-mid-current-and-manifesto") {
+    const [currentLandscape, currentPortrait, currentReturn, manifestoLandscape, manifestoPortrait, manifestoReturn] = samples;
+    if (!(currentLandscape.viewport.width > currentLandscape.viewport.height && currentPortrait.viewport.height > currentPortrait.viewport.width
+      && currentReturn.viewport.width > currentReturn.viewport.height && manifestoLandscape.viewport.width > manifestoLandscape.viewport.height
+      && manifestoPortrait.viewport.height > manifestoPortrait.viewport.width && manifestoReturn.viewport.width > manifestoReturn.viewport.height)
+      || ![currentPortrait, currentReturn].every((sample) => sample.scrollY === currentLandscape.scrollY && sample.targetFrame === currentLandscape.targetFrame)
+      || ![manifestoPortrait, manifestoReturn].every((sample) => sample.scrollY === manifestoLandscape.scrollY && sample.targetFrame === manifestoLandscape.targetFrame)) {
+      throw new Error(`R1 motion resize/orientation state continuity differs: ${context}`);
+    }
+  }
+}
+
 function isExpectedR1MotionRequestFailure(record) {
   return record?.method === "GET"
     && record?.resourceType === "media"
@@ -840,7 +1028,7 @@ function isExpectedR1MotionRequestFailure(record) {
     && /^https?:\/\//i.test(String(record?.path ?? ""));
 }
 
-function validateR1MotionReport(document, engine, metadata = null) {
+export function validateR1MotionReport(document, engine, metadata = null) {
   if (!engine || !["chromium", "firefox"].includes(engine)
     || document?.schema !== R1_MOTION_EVIDENCE_SCHEMA
     || document.status !== "PASS"
@@ -887,7 +1075,6 @@ function validateR1MotionReport(document, engine, metadata = null) {
       || recording.relativePath !== `recordings/${spec.filename}`
       || !Number.isSafeInteger(recording.byteSize) || recording.byteSize <= 0
       || !HASH64.test(recording.sha256 ?? "")
-      || !recording.observations || typeof recording.observations !== "object" || recording.observations.status !== "PASS"
       || validation?.status !== "PASS"
       || !validation.checks
       || stableJson(Object.keys(validation.checks).sort(lexicalCompare)) !== stableJson([...R1_MOTION_VALIDATION_CHECKS].sort(lexicalCompare))
@@ -902,6 +1089,7 @@ function validateR1MotionReport(document, engine, metadata = null) {
       || !/(?:^|,)mp4(?:,|$)/.test(String(validation.media?.format ?? ""))) {
       throw new Error(`R1 motion recording contract differs: ${engine}/${spec.filename}`);
     }
+    validateR1MotionObservations(recording, engine);
   }
   return document;
 }
@@ -963,11 +1151,193 @@ function r1StaticRestorationCoherent(state) {
     && state.home.manifesto.text === "We turn industrial needs into field evidence."
     && state.home.continuation?.audienceRouting?.inert === false
     && state.home.source?.hasSource === false
+    && state.home.source.src === null
+    && state.home.source.currentSrc === null
+    && state.home.source.srcAttribute === null
+    && state.home.source.videoNodeCount === 1
+    && state.home.source.sourceNodeCount === 0
+    && state.probe?.raf?.active === 0
+    && state.probe?.intervals?.active === 0
+    && state.probe?.blob?.live === 0
     && Number.isFinite(state.scrollY)
     && Number.isFinite(state.maximumScroll)
     && state.scrollY > 0
     && state.scrollY <= state.maximumScroll
     && phase4Resources.length === 0;
+}
+
+function r1MenuStateClosed(state) {
+  return state?.mobileMenu?.open === false && state.mobileMenu.expanded === "false";
+}
+
+function r1AttachedHomeSource(source) {
+  return source?.hasSource === true
+    && typeof source.src === "string" && source.src.length > 0
+    && typeof source.currentSrc === "string" && source.currentSrc.length > 0
+    && typeof source.srcAttribute === "string" && source.srcAttribute.length > 0
+    && source.src === source.currentSrc
+    && source.currentSrc === source.srcAttribute
+    && source.videoNodeCount === 1
+    && source.sourceNodeCount === 0;
+}
+
+function r1EnhancedRestorationCoherent(state, expectedBootstrap) {
+  return state?.home?.mode === "enhanced"
+    && state.home.bootstrap === expectedBootstrap
+    && state.home.eligibility === "eligible"
+    && state.home.fallback === null
+    && state.home.header === "released"
+    && state.home.phase === "settled"
+    && state.home.interactive === "true"
+    && state.home.routeNavigation === "released"
+    && state.home.mediaState === "ready"
+    && r1AttachedHomeSource(state.home.source)
+    && state.probe?.raf?.active === 0
+    && state.probe?.intervals?.active === 0
+    && state.probe?.blob?.live === 1
+    && state.home.manifestoReveal === "resolved"
+    && state.home.manifesto?.rendered === true
+    && state.home.manifesto.text === "We turn industrial needs into field evidence."
+    && state.home.continuation?.audienceRouting?.inert === false
+    && r1MenuStateClosed(state);
+}
+
+function r1SourceIdentityStable(before, after) {
+  const beforeSource = before?.home?.source;
+  const afterSource = after?.home?.source;
+  return r1AttachedHomeSource(beforeSource)
+    && r1AttachedHomeSource(afterSource)
+    && beforeSource.currentSrc === afterSource.currentSrc
+    && beforeSource.srcAttribute === afterSource.srcAttribute
+    && beforeSource.videoNodeCount === afterSource.videoNodeCount
+    && beforeSource.sourceNodeCount === afterSource.sourceNodeCount;
+}
+
+function r1NonemptyNavigationId(state) {
+  return typeof state?.navigationId === "string"
+    && state.navigationId.length > 0
+    && state.navigationId !== "pre-navigation";
+}
+
+function r1NavigationIdentityStable(before, after) {
+  return r1NonemptyNavigationId(before)
+    && r1NonemptyNavigationId(after)
+    && before.navigationId === after.navigationId;
+}
+
+function r1EnhancedHomeReturnResourcesCoherent(state) {
+  return state?.probe?.raf?.active === 0
+    && state.probe?.intervals?.active === 0
+    && state.probe?.blob?.live === 1;
+}
+
+function r1HiddenHomeSourceCoherent(before, hidden) {
+  return r1SourceIdentityStable(before, hidden)
+    && hidden?.home?.source?.paused === true
+    && hidden.probe?.raf?.active === 0
+    && hidden.probe?.intervals?.active === 0
+    && hidden.probe?.blob?.live === 1;
+}
+
+function r1HomeCurrentSemanticState(state) {
+  return state?.url === "/"
+    && state?.home?.mode === "enhanced"
+    && state.home.phase === "physical"
+    && state.home.segment === "current-orbit";
+}
+
+function r1HomeManifestoSemanticState(state) {
+  return state?.url === "/"
+    && state?.home?.mode === "enhanced"
+    && state.home.phase === "settled"
+    && state.home.manifestoReveal === "resolved"
+    && state.home.manifesto?.rendered === true
+    && state.home.manifesto.text === "We turn industrial needs into field evidence.";
+}
+
+function r1TransitionStatesEvery(transition, predicate) {
+  return [transition?.before, transition?.hidden, transition?.visible].every(predicate);
+}
+
+function r1EventLedgersAppendOnly(before, after) {
+  const beforeEvents = before?.probe?.events;
+  const afterEvents = after?.probe?.events;
+  return Array.isArray(beforeEvents)
+    && Array.isArray(afterEvents)
+    && beforeEvents.length <= afterEvents.length
+    && stableJson(beforeEvents) === stableJson(afterEvents.slice(0, beforeEvents.length));
+}
+
+function r1ManifestoRevealLedgerValid(state) {
+  const events = state?.probe?.manifestoRevealEvents;
+  return Array.isArray(events)
+    && events.every((event, index) => (
+      event
+      && typeof event === "object"
+      && !Array.isArray(event)
+      && Number.isFinite(event.atEpochMs)
+      && event.atEpochMs > 0
+      && event.atEpochMs <= state.capturedAtEpochMs
+      && (event.value === null || typeof event.value === "string")
+      && (index === 0 || event.atEpochMs >= events[index - 1].atEpochMs)
+    ));
+}
+
+function r1ManifestoRevealLedgersAppendOnly(before, after) {
+  const beforeEvents = before?.probe?.manifestoRevealEvents;
+  const afterEvents = after?.probe?.manifestoRevealEvents;
+  return r1ManifestoRevealLedgerValid(before)
+    && r1ManifestoRevealLedgerValid(after)
+    && beforeEvents.length <= afterEvents.length
+    && stableJson(beforeEvents) === stableJson(afterEvents.slice(0, beforeEvents.length));
+}
+
+function r1ResolvedManifestoObserved(state) {
+  return r1ManifestoRevealLedgerValid(state)
+    && state.probe.manifestoRevealEvents.some(({ value }) => value === "resolved")
+    && state.home?.manifestoReveal === "resolved";
+}
+
+function r1ManifestoRemainedResolvedAfterDeparture(departure, restored) {
+  if (!r1ManifestoRevealLedgersAppendOnly(departure, restored)
+    || !r1ResolvedManifestoObserved(departure)
+    || !r1ResolvedManifestoObserved(restored)) return false;
+  const departureEvents = departure.probe.manifestoRevealEvents;
+  return restored.probe.manifestoRevealEvents.slice(departureEvents.length).every((event) => (
+    event.atEpochMs > departure.capturedAtEpochMs
+    && event.atEpochMs <= restored.capturedAtEpochMs
+    && event.value === "resolved"
+  ));
+}
+
+function r1InitialEnhancedHomeCoherent(state, expectedBootstrap) {
+  return state?.home?.mode === "enhanced"
+    && state.home.bootstrap === expectedBootstrap
+    && state.home.eligibility === "eligible"
+    && state.home.fallback === null
+    && state.home.mediaState === "ready"
+    && r1AttachedHomeSource(state.home.source)
+    && state.probe?.blob?.live === 1
+    && r1MenuStateClosed(state);
+}
+
+function r1HomeProgressionCoherent(initial, resolved, expectedBootstrap) {
+  return Boolean(initial?.documentId)
+    && initial.documentId === resolved?.documentId
+    && r1NavigationIdentityStable(initial, resolved)
+    && initial.origin === resolved.origin
+    && initial.url === resolved.url
+    && Number.isFinite(initial.capturedAtEpochMs) && initial.capturedAtEpochMs > 0
+    && Number.isFinite(resolved.capturedAtEpochMs) && resolved.capturedAtEpochMs >= initial.capturedAtEpochMs
+    && Number.isSafeInteger(initial.probe?.documentEventSequence) && initial.probe.documentEventSequence >= 0
+    && Number.isSafeInteger(resolved.probe?.documentEventSequence)
+    && resolved.probe.documentEventSequence >= initial.probe.documentEventSequence
+    && r1EventLedgersAppendOnly(initial, resolved)
+    && r1ManifestoRevealLedgersAppendOnly(initial, resolved)
+    && r1ResolvedManifestoObserved(resolved)
+    && r1InitialEnhancedHomeCoherent(initial, expectedBootstrap)
+    && r1EnhancedRestorationCoherent(resolved, expectedBootstrap)
+    && r1SourceIdentityStable(initial, resolved);
 }
 
 function r1VisibleContextRestored(before, after) {
@@ -1010,7 +1380,9 @@ const R1_VISIBILITY_TRANSITIONS = Object.freeze({
 function validateR1History(document, status) {
   const checks = document.history?.checks;
   if (!checks || stableJson(Object.keys(checks).sort(lexicalCompare)) !== stableJson([...R1_HISTORY_CHECKS].sort(lexicalCompare))
-    || R1_HISTORY_CHECKS.some((check) => typeof checks[check] !== "boolean")) {
+    || R1_HISTORY_CHECKS.some((check) => check === "bareBackNoManifestoReplay"
+      ? ![true, false, null].includes(checks[check])
+      : typeof checks[check] !== "boolean")) {
     throw new Error("R1 persistent-lifecycle ordinary-history checks differ");
   }
   const states = document.history?.states;
@@ -1026,37 +1398,79 @@ function validateR1History(document, status) {
   const bareSameDocument = Boolean(states.bareManifesto.documentId)
     && states.bareManifesto.documentId === states.bareBack.documentId;
   const bareExactRestoration = bareSameDocument
+    && r1EnhancedRestorationCoherent(states.bareBack, "eligible")
+    && r1SourceIdentityStable(states.bareManifesto, states.bareBack)
+    && r1NavigationIdentityStable(states.bareManifesto, states.bareBack)
     && Number.isFinite(states.bareBack.scrollY)
     && Number.isFinite(states.bareManifesto.scrollY)
     && Math.abs(states.bareBack.scrollY - states.bareManifesto.scrollY) <= 2;
   const bareStaticRestoration = !bareSameDocument
     && r1StaticRestorationCoherent(states.bareBack)
     && r1VisibleContextRestored(states.bareManifesto, states.bareBack);
+  const entrySameDocument = Boolean(states.entryResolved.documentId)
+    && states.entryResolved.documentId === states.entryBack.documentId;
   const derived = {
-    bareCorrect: states.bare.url === "/" && states.bare.scrollY === 0 && states.bare.probe?.navigation?.type === "navigate",
+    bareCorrect: states.bare.url === "/" && states.bare.scrollY === 0 && states.bare.probe?.navigation?.type === "navigate" && states.bareManifesto.url === "/" && states.bareManifesto.probe?.navigation?.type === "navigate" && r1HomeProgressionCoherent(states.bare, states.bareManifesto, "eligible"),
     bareBackCorrect: states.bareBack.url === "/" && states.bareBack.probe?.navigation?.type === "back_forward" && (bareExactRestoration || bareStaticRestoration),
-    bareBackNoManifestoReplay: bareSameDocument ? states.bareBack.home?.manifestoReveal === "resolved" : r1StaticRestorationCoherent(states.bareBack),
-    bareForwardCorrect: states.supportForward.url === "/for-partners/" && states.supportForward.probe?.navigation?.type === "back_forward" && Number.isFinite(states.supportForward.scrollY) && Number.isFinite(states.supportAfterBare.scrollY) && Math.abs(states.supportForward.scrollY - states.supportAfterBare.scrollY) <= 2,
-    entryCorrect: states.entryResolved.url === "/#entry" && states.entryResolved.probe?.navigation?.type === "navigate" && states.entryResolved.home?.manifestoReveal === "resolved",
-    entryBackCorrect: states.entryBack.url === "/#entry" && states.entryBack.probe?.navigation?.type === "back_forward" && Number.isFinite(states.entryBack.scrollY) && Number.isFinite(states.entryResolved.scrollY) && Math.abs(states.entryBack.scrollY - states.entryResolved.scrollY) <= 2,
+    bareBackNoManifestoReplay: bareSameDocument ? r1ManifestoRemainedResolvedAfterDeparture(states.bareManifesto, states.bareBack) : null,
+    bareForwardCorrect: states.supportAfterBare.url === "/for-partners/" && states.supportAfterBare.probe?.navigation?.type === "navigate" && states.supportForward.url === "/for-partners/" && states.supportForward.probe?.navigation?.type === "back_forward" && Number.isFinite(states.supportForward.scrollY) && Number.isFinite(states.supportAfterBare.scrollY) && Math.abs(states.supportForward.scrollY - states.supportAfterBare.scrollY) <= 2,
+    entryCorrect: states.entryInitial.url === "/#entry" && states.entryInitial.probe?.navigation?.type === "navigate" && states.entryResolved.url === "/#entry" && states.entryResolved.probe?.navigation?.type === "navigate" && r1HomeProgressionCoherent(states.entryInitial, states.entryResolved, "semantic-entry"),
+    entryBackCorrect: states.supportAfterEntry.url === "/for-partners/" && states.supportAfterEntry.probe?.navigation?.type === "navigate" && states.entryBack.url === "/#entry" && states.entryBack.probe?.navigation?.type === "back_forward" && r1EnhancedRestorationCoherent(states.entryBack, "semantic-entry") && (!entrySameDocument || (r1SourceIdentityStable(states.entryResolved, states.entryBack) && r1NavigationIdentityStable(states.entryResolved, states.entryBack) && r1ManifestoRemainedResolvedAfterDeparture(states.entryResolved, states.entryBack))) && Number.isFinite(states.entryBack.scrollY) && Number.isFinite(states.entryResolved.scrollY) && Math.abs(states.entryBack.scrollY - states.entryResolved.scrollY) <= 2,
     entryBackManifestoResolved: states.entryBack.home?.manifestoReveal === "resolved",
     entryForwardCorrect: states.entryForward.url === "/for-partners/" && states.entryForward.probe?.navigation?.type === "back_forward" && Number.isFinite(states.entryForward.scrollY) && Number.isFinite(states.supportAfterEntry.scrollY) && Math.abs(states.entryForward.scrollY - states.supportAfterEntry.scrollY) <= 2,
-    menuClosed: [states.bareBack, states.supportForward, states.entryBack, states.entryForward].every((state) => state.mobileMenu?.open === false),
+    menuClosed: R1_HISTORY_STATES.every((stateKey) => r1MenuStateClosed(states[stateKey])),
   };
   for (const check of R1_HISTORY_CHECKS) {
     if (checks[check] !== derived[check]) throw new Error(`R1 persistent-lifecycle history check ${check} contradicts raw states`);
   }
-  const expected = R1_HISTORY_CHECKS.every((check) => derived[check]) ? "PASS" : "FAIL";
+  const expected = R1_HISTORY_CHECKS.every((check) => derived[check] === true || (check === "bareBackNoManifestoReplay" && derived[check] === null)) ? "PASS" : "FAIL";
   if (status !== expected) throw new Error(`R1 persistent-lifecycle history status must be ${expected}`);
 }
 
-function lifecycleRoute(event) {
+function r1LifecycleEventUrlMatches(event, expectedOrigin, expectedRoute) {
   try {
     const url = new URL(event?.href);
-    return `${url.pathname}${url.hash}`;
+    return url.protocol === "https:"
+      && url.origin === expectedOrigin
+      && url.search === ""
+      && `${url.pathname}${url.hash}` === expectedRoute;
   } catch {
-    return null;
+    return false;
   }
+}
+
+function r1LedgerContainsEvent(ledger, expected) {
+  const serialized = stableJson(expected);
+  return Array.isArray(ledger) && ledger.some((event) => stableJson(event) === serialized);
+}
+
+function r1BfcachePairBoundToSnapshots(departure, restored, pagehide, pageshow, expectedOrigin, expectedRoute) {
+  const departureEvents = departure?.probe?.events;
+  const restoredEvents = restored?.probe?.events;
+  if (departure?.origin !== expectedOrigin
+    || restored?.origin !== expectedOrigin
+    || departure.url !== expectedRoute
+    || restored.url !== expectedRoute
+    || !r1LifecycleEventUrlMatches(pagehide, expectedOrigin, expectedRoute)
+    || !r1LifecycleEventUrlMatches(pageshow, expectedOrigin, expectedRoute)
+    || !Number.isFinite(departure.capturedAtEpochMs) || departure.capturedAtEpochMs <= 0
+    || !Number.isFinite(restored.capturedAtEpochMs) || restored.capturedAtEpochMs <= 0
+    || !Number.isFinite(pagehide?.atEpochMs) || pagehide.atEpochMs <= departure.capturedAtEpochMs
+    || !Number.isFinite(pageshow?.atEpochMs) || pageshow.atEpochMs <= pagehide.atEpochMs
+    || pageshow.atEpochMs > restored.capturedAtEpochMs
+    || !Number.isSafeInteger(departure.probe?.documentEventSequence) || departure.probe.documentEventSequence < 0
+    || !Number.isSafeInteger(restored.probe?.documentEventSequence) || restored.probe.documentEventSequence < 0
+    || !Number.isSafeInteger(pagehide?.documentEventSequence) || pagehide.documentEventSequence <= departure.probe.documentEventSequence
+    || !Number.isSafeInteger(pageshow?.documentEventSequence) || pageshow.documentEventSequence <= pagehide.documentEventSequence
+    || pageshow.documentEventSequence > restored.probe.documentEventSequence
+    || !r1EventLedgersAppendOnly(departure, restored)
+    || r1LedgerContainsEvent(departureEvents, pagehide)
+    || r1LedgerContainsEvent(departureEvents, pageshow)
+    || !r1LedgerContainsEvent(restoredEvents, pagehide)
+    || !r1LedgerContainsEvent(restoredEvents, pageshow)) return false;
+  const hideIndex = restoredEvents.findIndex((event) => stableJson(event) === stableJson(pagehide));
+  const showIndex = restoredEvents.findIndex((event) => stableJson(event) === stableJson(pageshow));
+  return hideIndex >= departureEvents.length && showIndex > hideIndex;
 }
 
 const R1_BFCACHE_SCENARIOS = Object.freeze([
@@ -1071,6 +1485,7 @@ function deriveR1Bfcache(document) {
     throw new Error("R1 persistent-lifecycle BFCache raw history evidence is incomplete");
   }
   const persistedEvents = events.filter(({ type, persisted }) => (type === "pageshow" || type === "pagehide") && persisted === true);
+  const expectedOrigin = new URL(document.baseUrl).origin;
   const usedHideIndexes = new Set();
   const scenarios = R1_BFCACHE_SCENARIOS.map(({ departureKey, stateKey, expectedRoute }) => {
     const departure = states[departureKey];
@@ -1080,13 +1495,21 @@ function deriveR1Bfcache(document) {
     }
     for (let showIndex = 0; showIndex < events.length; showIndex += 1) {
       const show = events[showIndex];
-      if (show?.type !== "pageshow" || show.persisted !== true || show.synthetic === true || show.documentId !== state.documentId || lifecycleRoute(show) !== expectedRoute) continue;
+      if (show?.type !== "pageshow" || show.persisted !== true || show.synthetic === true || show.documentId !== state.documentId || !r1LifecycleEventUrlMatches(show, expectedOrigin, expectedRoute)) continue;
       for (let hideIndex = showIndex - 1; hideIndex >= 0; hideIndex -= 1) {
         const hide = events[hideIndex];
-        if (hide?.documentId !== state.documentId || lifecycleRoute(hide) !== expectedRoute || !["pagehide", "pageshow"].includes(hide.type)) continue;
+        if (hide?.documentId !== state.documentId || !r1LifecycleEventUrlMatches(hide, expectedOrigin, expectedRoute) || !["pagehide", "pageshow"].includes(hide.type)) continue;
         if (usedHideIndexes.has(hideIndex) || hide.type !== "pagehide" || hide.persisted !== true || hide.synthetic === true) break;
         usedHideIndexes.add(hideIndex);
-        const coherent = state.home?.manifestoReveal === "resolved" && state.mobileMenu?.open === false;
+        const expectedBootstrap = expectedRoute === "/#entry" ? "semantic-entry" : "eligible";
+        const coherent = r1BfcachePairBoundToSnapshots(departure, state, hide, show, expectedOrigin, expectedRoute)
+          && r1EnhancedRestorationCoherent(state, expectedBootstrap)
+          && r1SourceIdentityStable(departure, state)
+          && r1NavigationIdentityStable(departure, state)
+          && r1ManifestoRemainedResolvedAfterDeparture(departure, state)
+          && Number.isFinite(state.scrollY)
+          && Number.isFinite(departure.scrollY)
+          && Math.abs(state.scrollY - departure.scrollY) <= 2;
         return {
           departureKey,
           stateKey,
@@ -1100,13 +1523,11 @@ function deriveR1Bfcache(document) {
     return { departureKey, stateKey, expectedRoute, status: "NOT OBSERVED", pair: null, coherent: null };
   });
   const pairedRestorations = scenarios.filter(({ pair }) => pair).map(({ pair, stateKey }) => ({ ...pair, stateKey }));
-  const status = !pairedRestorations.length
-    ? "NOT OBSERVED"
-    : scenarios.some(({ status: scenarioStatus }) => scenarioStatus === "FAIL")
-      ? "FAIL"
-      : scenarios.some(({ status: scenarioStatus }) => scenarioStatus === "PASS")
-        ? "PASS"
-        : "NOT OBSERVED";
+  const status = scenarios.some(({ status: scenarioStatus }) => scenarioStatus === "FAIL")
+    ? "FAIL"
+    : scenarios.some(({ status: scenarioStatus }) => scenarioStatus === "NOT OBSERVED")
+      ? "NOT OBSERVED"
+      : "PASS";
   return { status, persistedEvents, pairedRestorations, scenarios };
 }
 
@@ -1130,10 +1551,20 @@ function validateR1Bfcache(document, status) {
 function deriveR1VisibilityObservation(transition) {
   const { before, hidden, visible } = transition ?? {};
   const documentId = before?.documentId;
-  const sameDocument = Boolean(documentId) && hidden?.documentId === documentId && visible?.documentId === documentId;
-  const sequenceBound = Number.isInteger(before?.probe?.documentEventSequence)
-    && Number.isInteger(hidden?.probe?.documentEventSequence)
-    && Number.isInteger(visible?.probe?.documentEventSequence)
+  const sameDocument = Boolean(documentId)
+    && hidden?.documentId === documentId
+    && visible?.documentId === documentId
+    && typeof before?.origin === "string" && before.origin.length > 0
+    && hidden?.origin === before.origin
+    && visible?.origin === before.origin
+    && hidden?.url === before.url
+    && visible?.url === before.url
+    && r1NavigationIdentityStable(before, hidden)
+    && r1NavigationIdentityStable(hidden, visible);
+  const sequenceBound = Number.isSafeInteger(before?.probe?.documentEventSequence)
+    && before.probe.documentEventSequence >= 0
+    && Number.isSafeInteger(hidden?.probe?.documentEventSequence)
+    && Number.isSafeInteger(visible?.probe?.documentEventSequence)
     && hidden.probe.documentEventSequence >= before.probe.documentEventSequence
     && visible.probe.documentEventSequence >= hidden.probe.documentEventSequence;
   const sequenceStart = sequenceBound ? before.probe.documentEventSequence : -1;
@@ -1147,8 +1578,33 @@ function deriveR1VisibilityObservation(transition) {
   const visibleEventIndex = hiddenEventIndex < 0
     ? -1
     : transitionEvents.findIndex(({ visibilityState }, index) => index > hiddenEventIndex && visibilityState === "visible");
+  const hiddenEvent = transitionEvents[hiddenEventIndex];
+  const visibleEvent = transitionEvents[visibleEventIndex];
   const hiddenEventSequence = Number(transitionEvents[hiddenEventIndex]?.documentEventSequence);
   const visibleEventSequence = Number(transitionEvents[visibleEventIndex]?.documentEventSequence);
+  const beforeEvents = before?.probe?.events;
+  const hiddenEvents = hidden?.probe?.events;
+  const visibleEvents = visible?.probe?.events;
+  const temporalSnapshots = [before, hidden, visible].every((state) => Number.isFinite(state?.capturedAtEpochMs) && state.capturedAtEpochMs > 0);
+  const appendOnlyLedgers = r1EventLedgersAppendOnly(before, hidden) && r1EventLedgersAppendOnly(hidden, visible);
+  const hiddenEventBound = hiddenEventIndex >= 0
+    && r1LifecycleEventUrlMatches(hiddenEvent, before?.origin, before?.url)
+    && Number.isFinite(hiddenEvent?.atEpochMs)
+    && hiddenEvent.atEpochMs > before.capturedAtEpochMs
+    && hiddenEvent.atEpochMs <= hidden.capturedAtEpochMs
+    && hiddenEventSequence > sequenceStart
+    && hiddenEventSequence <= Number(hidden?.probe?.documentEventSequence)
+    && !r1LedgerContainsEvent(beforeEvents, hiddenEvent)
+    && r1LedgerContainsEvent(hiddenEvents, hiddenEvent);
+  const visibleEventBound = visibleEventIndex > hiddenEventIndex
+    && r1LifecycleEventUrlMatches(visibleEvent, before?.origin, before?.url)
+    && Number.isFinite(visibleEvent?.atEpochMs)
+    && visibleEvent.atEpochMs > hidden.capturedAtEpochMs
+    && visibleEvent.atEpochMs <= visible.capturedAtEpochMs
+    && visibleEventSequence > Number(hidden?.probe?.documentEventSequence)
+    && visibleEventSequence <= Number(visible?.probe?.documentEventSequence)
+    && !r1LedgerContainsEvent(hiddenEvents, visibleEvent)
+    && r1LedgerContainsEvent(visibleEvents, visibleEvent);
   const checks = {
     sameDocument,
     sequenceBound,
@@ -1157,8 +1613,10 @@ function deriveR1VisibilityObservation(transition) {
     visibleRestored: visible?.visibilityState === "visible",
     orderedVisibilityEvents: hiddenEventIndex >= 0
       && visibleEventIndex > hiddenEventIndex
-      && visibleEventSequence > hiddenEventSequence
-      && visibleEventSequence <= Number(visible?.probe?.documentEventSequence),
+      && temporalSnapshots
+      && appendOnlyLedgers
+      && hiddenEventBound
+      && visibleEventBound,
   };
   return {
     status: Object.values(checks).every(Boolean) ? "PASS" : "NOT OBSERVED",
@@ -1187,8 +1645,11 @@ function r1ActiveResourceIsZero(state, resource) {
 function r1MaradinMediaSourceFree(media) {
   return media?.state === "dormant"
     && media.hasSource === false
+    && media.src === null
     && media.currentSrc === null
     && media.srcAttribute === null
+    && media.videoNodeCount === 1
+    && media.sourceNodeCount === 0
     && media.paused === true
     && media.readyState === 0
     && media.tabIndex === -1
@@ -1200,59 +1661,120 @@ function r1MaradinSourceFreeState(state) {
   return Array.isArray(state?.maradin) && state.maradin.length === 2 && state.maradin.every(r1MaradinMediaSourceFree);
 }
 
+function r1AttachedMaradinMedia(media) {
+  return media?.state === "active"
+    && media.hasSource === true
+    && typeof media.src === "string" && media.src.length > 0
+    && typeof media.currentSrc === "string" && media.currentSrc.length > 0
+    && typeof media.srcAttribute === "string" && media.srcAttribute.length > 0
+    && media.src === media.currentSrc
+    && media.currentSrc === media.srcAttribute
+    && media.videoNodeCount === 1
+    && media.sourceNodeCount === 0
+    && media.paused === false
+    && media.readyState >= 2
+    && media.tabIndex === 0
+    && media.launchHidden === true
+    && media.launchDisabled === false;
+}
+
+function r1MaradinActiveState(state) {
+  if (!Array.isArray(state?.maradin) || state.maradin.length !== 2 || state.probe?.blob?.live !== 1) return false;
+  return state.maradin.filter(r1AttachedMaradinMedia).length === 1
+    && state.maradin.filter(r1MaradinMediaSourceFree).length === 1;
+}
+
 function r1MaradinRetryActiveState(state) {
-  if (!Array.isArray(state?.maradin) || state.maradin.length !== 2) return false;
-  const active = state.maradin.filter((media) => media.state === "active");
-  const inactive = state.maradin.filter((media) => media.state !== "active");
-  return state.retryActivated === true
+  return r1MaradinActiveState(state)
+    && state.retryActivated === true
     && state.retryPlayback?.advanced === true
     && Number.isFinite(state.retryPlayback?.startTime)
     && Number.isFinite(state.retryPlayback?.endTime)
-    && state.retryPlayback.endTime > state.retryPlayback.startTime
-    && active.length === 1
-    && active[0].hasSource === true
-    && active[0].paused === false
-    && active[0].readyState >= 2
-    && active[0].tabIndex === 0
-    && active[0].launchHidden === true
-    && inactive.length === 1
-    && r1MaradinMediaSourceFree(inactive[0]);
+    && state.retryPlayback.endTime > state.retryPlayback.startTime;
+}
+
+function r1TransitionRouteStable(transition, expectedOrigin, expectedRoute) {
+  return [transition?.before, transition?.hidden, transition?.visible].every((state) => (
+    state?.origin === expectedOrigin && state.url === expectedRoute
+  ));
+}
+
+function r1TransitionNavigationStable(transition) {
+  return r1NavigationIdentityStable(transition?.before, transition?.hidden)
+    && r1NavigationIdentityStable(transition?.hidden, transition?.visible);
+}
+
+function r1SameDocumentSnapshotProgression(before, after, expectedOrigin, expectedRoute) {
+  return Boolean(before?.documentId)
+    && after?.documentId === before.documentId
+    && before.origin === expectedOrigin
+    && after.origin === expectedOrigin
+    && before.url === expectedRoute
+    && after.url === expectedRoute
+    && r1NavigationIdentityStable(before, after)
+    && Number.isFinite(before.capturedAtEpochMs) && before.capturedAtEpochMs > 0
+    && Number.isFinite(after.capturedAtEpochMs) && after.capturedAtEpochMs >= before.capturedAtEpochMs
+    && Number.isSafeInteger(before.probe?.documentEventSequence) && before.probe.documentEventSequence >= 0
+    && Number.isSafeInteger(after.probe?.documentEventSequence)
+    && after.probe.documentEventSequence >= before.probe.documentEventSequence
+    && r1EventLedgersAppendOnly(before, after);
 }
 
 function deriveR1VisibilityChecks(document, scenario) {
   const transition = scenario.transition;
+  const expectedOrigin = new URL(document.baseUrl).origin;
   switch (scenario.name) {
     case "home-current":
       return {
-        homeMediaPausedWhileHidden: r1WhenHidden(transition, (state) => state.home?.source?.paused === true),
+        routeStateStable: r1WhenVisible(transition, () => r1TransitionRouteStable(transition, expectedOrigin, "/") && r1TransitionNavigationStable(transition)),
+        currentOrbitStateStable: r1WhenVisible(transition, () => r1TransitionStatesEvery(transition, r1HomeCurrentSemanticState)),
+        homeMediaPausedWhileHidden: r1WhenHidden(transition, (state) => r1HiddenHomeSourceCoherent(transition.before, state)),
         noPersistentRafWhileHidden: r1WhenHidden(transition, (state) => r1ActiveResourceIsZero(state, "raf")),
         noPersistentIntervalWhileHidden: r1WhenHidden(transition, (state) => r1ActiveResourceIsZero(state, "intervals")),
-        noStaleTargetFrameAfterReturn: r1WhenVisible(transition, (state) => Math.abs(state.home?.targetFrame - state.home?.presentedFrame) <= 1),
-        sourcePresenceStableAfterReturn: r1WhenVisible(transition, (state) => {
-          const beforeSource = transition?.before?.home?.source?.hasSource;
-          const afterSource = state.home?.source?.hasSource;
-          return typeof beforeSource === "boolean" && typeof afterSource === "boolean" ? beforeSource === afterSource : null;
-        }),
+        noStaleTargetFrameAfterReturn: r1WhenVisible(transition, (state) => Number.isFinite(state.home?.targetFrame)
+          && Number.isFinite(state.home?.presentedFrame)
+          && Math.abs(state.home.targetFrame - state.home.presentedFrame) <= 1),
+        sourcePresenceStableAfterReturn: r1WhenVisible(transition, (state) => r1SourceIdentityStable(transition.before, transition.hidden)
+          && r1SourceIdentityStable(transition.hidden, state)
+          && r1EnhancedHomeReturnResourcesCoherent(state)),
       };
     case "home-manifesto":
       return {
-        manifestoCoherentAfterReturn: r1WhenVisible(transition, (state) => state.home?.manifestoReveal === "resolved"),
+        routeStateStable: r1WhenVisible(transition, () => r1TransitionRouteStable(transition, expectedOrigin, "/") && r1TransitionNavigationStable(transition)),
+        manifestoStateStable: r1WhenVisible(transition, () => r1TransitionStatesEvery(transition, r1HomeManifestoSemanticState)),
+        homeMediaPausedWhileHidden: r1WhenHidden(transition, (state) => r1HiddenHomeSourceCoherent(transition.before, state)),
+        manifestoCoherentAfterReturn: r1WhenVisible(transition, (state) => state.home?.manifestoReveal === "resolved"
+          && state.home.manifesto?.rendered === true
+          && state.home.manifesto.text === "We turn industrial needs into field evidence."
+          && r1SourceIdentityStable(transition.before, transition.hidden)
+          && r1SourceIdentityStable(transition.hidden, state)
+          && r1EnhancedHomeReturnResourcesCoherent(state)),
         noPersistentRafWhileHidden: r1WhenHidden(transition, (state) => r1ActiveResourceIsZero(state, "raf")),
         noPersistentIntervalWhileHidden: r1WhenHidden(transition, (state) => r1ActiveResourceIsZero(state, "intervals")),
       };
     case "maradin-release":
       return {
+        routeStateStable: r1WhenVisible(transition, () => r1TransitionRouteStable(transition, expectedOrigin, "/pocs/maradin/") && r1TransitionNavigationStable(transition)),
+        activeBeforeHide: r1WhenHidden(transition, () => r1MaradinActiveState(transition.before)),
         sourceFreeWhileHidden: r1WhenHidden(transition, r1MaradinSourceFreeState),
-        sourceFreeAfterReturn: r1WhenVisible(transition, r1MaradinSourceFreeState),
+        sourceFreeAfterReturn: r1WhenVisible(transition, (state) => r1MaradinSourceFreeState(state)
+          && state.probe?.blob?.live === 0
+          && state.probe?.raf?.active === 0
+          && state.probe?.intervals?.active === 0),
         noLiveOrphanBlobWhileHidden: r1WhenHidden(transition, (state) => state.probe?.blob?.live === 0),
         noPersistentRafWhileHidden: r1WhenHidden(transition, (state) => r1ActiveResourceIsZero(state, "raf")),
         noPersistentIntervalWhileHidden: r1WhenHidden(transition, (state) => r1ActiveResourceIsZero(state, "intervals")),
       };
     case "maradin-retry-release":
       return {
-        retryActivatedWithSource: document.visibility.retryActive == null ? null : r1MaradinRetryActiveState(document.visibility.retryActive),
+        routeStateStable: r1WhenVisible(transition, () => r1TransitionRouteStable(transition, expectedOrigin, "/pocs/maradin/") && r1TransitionNavigationStable(transition)),
+        retryActivatedWithSource: document.visibility.retryActive == null ? null : r1MaradinRetryActiveState(document.visibility.retryActive)
+          && r1SameDocumentSnapshotProgression(document.visibility.retryActive, transition.before, expectedOrigin, "/pocs/maradin/"),
         sourceFreeOnSecondHide: r1WhenHidden(transition, r1MaradinSourceFreeState),
-        sourceFreeAfterSecondReturn: r1WhenVisible(transition, r1MaradinSourceFreeState),
+        sourceFreeAfterSecondReturn: r1WhenVisible(transition, (state) => r1MaradinSourceFreeState(state)
+          && state.probe?.blob?.live === 0
+          && state.probe?.raf?.active === 0
+          && state.probe?.intervals?.active === 0),
         noLiveOrphanBlobOnSecondHide: r1WhenHidden(transition, (state) => state.probe?.blob?.live === 0),
       };
     default:
@@ -1295,15 +1817,119 @@ function validateR1Visibility(document, status) {
   if (status !== expected) throw new Error(`R1 persistent-lifecycle visibility status must be ${expected}`);
 }
 
+const R1_LIFECYCLE_RESOURCE_ORIGIN = "https://phase6.invalid/";
+
+function r1LifecycleResourceKey(resource) {
+  if (!resource || typeof resource !== "object" || Array.isArray(resource)
+    || !Number.isFinite(resource.startTime) || resource.startTime < 0) return null;
+  try {
+    const value = resource.url ?? resource.path;
+    if (typeof value !== "string" || !value) return null;
+    return `${new URL(value, R1_LIFECYCLE_RESOURCE_ORIGIN).href}\u0000${resource.startTime}`;
+  } catch {
+    return null;
+  }
+}
+
+function r1CumulativeTelemetryFailures(before, after) {
+  if (!before?.probe || !after?.probe || before.documentId !== after.documentId) return ["same-document-telemetry-unavailable"];
+  const failures = [];
+  for (const [section, field] of [
+    ["raf", "scheduled"], ["raf", "executed"], ["raf", "cancelled"],
+    ["intervals", "created"], ["intervals", "cleared"],
+    ["blob", "created"], ["blob", "revoked"],
+    ["listeners", "added"], ["listeners", "removed"], ["listeners", "duplicateAttempts"],
+  ]) {
+    if (after.probe?.[section]?.[field] < before.probe?.[section]?.[field]) failures.push(`${section}-${field}-counter-decreased`);
+  }
+  const beforeKeys = (before.probe.resources ?? []).map(r1LifecycleResourceKey);
+  const afterKeys = new Set((after.probe.resources ?? []).map(r1LifecycleResourceKey));
+  if (beforeKeys.includes(null) || afterKeys.has(null)) failures.push("resource-ledger-invalid");
+  else if (beforeKeys.some((key) => !afterKeys.has(key))) failures.push("resource-observation-disappeared");
+  return failures;
+}
+
+function r1ChronologicalSameDocumentPairs(snapshots) {
+  const groups = new Map();
+  snapshots.forEach((state, index) => {
+    const group = groups.get(state.documentId) ?? [];
+    group.push({ index, state });
+    groups.set(state.documentId, group);
+  });
+  return [...groups.entries()].flatMap(([documentId, group]) => {
+    group.sort((left, right) => left.state.capturedAtEpochMs - right.state.capturedAtEpochMs || left.index - right.index);
+    return group.slice(1).map((item, index) => ({ after: item.state, before: group[index].state, documentId }));
+  });
+}
+
 function collectR1LifecycleSnapshots(document) {
   const snapshots = [];
+  const expectedOrigin = new URL(document.baseUrl).origin;
+  const safeCounters = (record, keys) => record && keys.every((key) => Number.isSafeInteger(record[key]) && record[key] >= 0);
   const addSnapshot = (state, label) => {
     if (state == null) return;
     if (!state || typeof state !== "object" || Array.isArray(state)
       || typeof state.label !== "string" || !state.label
       || typeof state.documentId !== "string" || !state.documentId
-      || !state.probe || typeof state.probe !== "object" || Array.isArray(state.probe)) {
+      || state.origin !== expectedOrigin
+      || typeof state.navigationId !== "string" || !state.navigationId || state.navigationId === "pre-navigation"
+      || typeof state.url !== "string" || !state.url.startsWith("/")
+      || !Number.isFinite(state.capturedAtEpochMs) || state.capturedAtEpochMs <= 0
+      || !state.probe || typeof state.probe !== "object" || Array.isArray(state.probe)
+      || state.probe.documentId !== state.documentId
+      || !Number.isSafeInteger(state.probe.documentEventSequence) || state.probe.documentEventSequence < 0
+      || !Array.isArray(state.probe.events)
+      || !Array.isArray(state.probe.resources)
+      || !r1ManifestoRevealLedgerValid(state)
+      || !Number.isFinite(state.maximumScroll) || state.maximumScroll < 0
+      || !Number.isFinite(state.scrollY) || state.scrollY < 0 || state.scrollY > state.maximumScroll) {
       throw new Error(`R1 persistent-lifecycle raw snapshot differs: ${label}`);
+    }
+    const lastSequenceByDocument = new Map();
+    const lastTimeByDocument = new Map();
+    for (const [eventIndex, event] of state.probe.events.entries()) {
+      if (!event || typeof event !== "object" || Array.isArray(event)
+        || typeof event.documentId !== "string" || !event.documentId
+        || !Number.isSafeInteger(event.documentEventSequence) || event.documentEventSequence <= 0
+        || !Number.isFinite(event.atEpochMs) || event.atEpochMs <= 0
+        || typeof event.href !== "string" || !event.href
+        || typeof event.type !== "string" || !event.type
+        || typeof event.visibilityState !== "string" || !event.visibilityState
+        || ![null, true, false].includes(event.persisted)
+        || (event.synthetic != null && typeof event.synthetic !== "boolean")) {
+        throw new Error(`R1 persistent-lifecycle raw event differs: ${label}[${eventIndex}]`);
+      }
+      let eventUrl;
+      try { eventUrl = new URL(event.href); } catch { throw new Error(`R1 persistent-lifecycle raw event URL differs: ${label}[${eventIndex}]`); }
+      const previousSequence = lastSequenceByDocument.get(event.documentId) ?? 0;
+      const previousTime = lastTimeByDocument.get(event.documentId) ?? 0;
+      if (event.documentEventSequence <= previousSequence
+        || event.atEpochMs < previousTime
+        || eventUrl.protocol !== "https:" || eventUrl.origin !== expectedOrigin
+        || (event.documentId === state.documentId && event.documentEventSequence > state.probe.documentEventSequence)
+        || event.atEpochMs > state.capturedAtEpochMs) {
+        throw new Error(`R1 persistent-lifecycle raw event sequence differs: ${label}[${eventIndex}]`);
+      }
+      lastSequenceByDocument.set(event.documentId, event.documentEventSequence);
+      lastTimeByDocument.set(event.documentId, event.atEpochMs);
+    }
+    const listeners = state.probe.listeners;
+    const activeByType = listeners?.activeByType;
+    const raf = state.probe.raf;
+    const intervals = state.probe.intervals;
+    const blob = state.probe.blob;
+    if (!safeCounters(listeners, ["active", "added", "removed", "duplicateAttempts"])
+      || !activeByType || typeof activeByType !== "object" || Array.isArray(activeByType)
+      || Object.values(activeByType).some((value) => !Number.isSafeInteger(value) || value < 0)
+      || listeners.active !== Object.values(activeByType).reduce((sum, value) => sum + value, 0)
+      || listeners.active !== listeners.added - listeners.removed
+      || !safeCounters(raf, ["scheduled", "executed", "cancelled", "active"])
+      || raf.active !== raf.scheduled - raf.executed - raf.cancelled
+      || !safeCounters(intervals, ["created", "cleared", "active"])
+      || intervals.active !== intervals.created - intervals.cleared
+      || !safeCounters(blob, ["created", "revoked", "live"])
+      || blob.live !== blob.created - blob.revoked) {
+      throw new Error(`R1 persistent-lifecycle raw counter telemetry differs: ${label}`);
     }
     snapshots.push(state);
   };
@@ -1314,6 +1940,27 @@ function collectR1LifecycleSnapshots(document) {
     for (const stateKey of ["before", "hidden", "visible"]) addSnapshot(transition?.[stateKey], `visibility.${transitionField}.${stateKey}`);
   }
   addSnapshot(document.visibility?.retryActive, "visibility.retryActive");
+  const canonicalHistoryEvents = document.history?.events;
+  if (!Array.isArray(canonicalHistoryEvents)) throw new Error("R1 persistent-lifecycle canonical history event ledger differs");
+  for (const stateKey of R1_HISTORY_STATES) {
+    const snapshot = document.history.states[stateKey];
+    const snapshotEvents = snapshot.probe.events;
+    if (snapshotEvents.length > canonicalHistoryEvents.length
+      || stableJson(snapshotEvents) !== stableJson(canonicalHistoryEvents.slice(0, snapshotEvents.length))
+      || snapshotEvents.some((event) => Number.isFinite(event.atEpochMs)
+        && Number.isFinite(snapshot.capturedAtEpochMs) && event.atEpochMs > snapshot.capturedAtEpochMs)
+      || (snapshotEvents.length < canonicalHistoryEvents.length
+        && Number.isFinite(canonicalHistoryEvents[snapshotEvents.length]?.atEpochMs)
+        && Number.isFinite(snapshot.capturedAtEpochMs)
+        && canonicalHistoryEvents[snapshotEvents.length].atEpochMs < snapshot.capturedAtEpochMs)) {
+      throw new Error(`R1 persistent-lifecycle history event view differs: ${stateKey}`);
+    }
+  }
+  const telemetryRegression = r1ChronologicalSameDocumentPairs(snapshots)
+    .find(({ before, after }) => r1CumulativeTelemetryFailures(before, after).length > 0);
+  if (telemetryRegression) {
+    throw new Error(`R1 persistent-lifecycle cumulative telemetry differs: ${telemetryRegression.before.label} -> ${telemetryRegression.after.label}`);
+  }
   return snapshots;
 }
 
@@ -1328,7 +1975,9 @@ function r1ListenerSnapshot(state) {
   return {
     active: listeners.active,
     activeByType: listeners.activeByType,
+    added: listeners.added,
     duplicateAttempts: listeners.duplicateAttempts,
+    removed: listeners.removed,
   };
 }
 
@@ -1340,6 +1989,9 @@ function r1ListenerGrowth(before, after) {
     if (Number(count) > Number(before.activeByType[type] ?? 0)) failures.push(`active-${type}-listeners-grew`);
   }
   if (after.duplicateAttempts > before.duplicateAttempts) failures.push("duplicate-registration-attempted-during-restore");
+  if (after.added < before.added) failures.push("listener-added-counter-decreased");
+  if (after.removed < before.removed) failures.push("listener-removed-counter-decreased");
+  if (after.duplicateAttempts < before.duplicateAttempts) failures.push("listener-duplicate-counter-decreased");
   return failures;
 }
 
@@ -1352,12 +2004,19 @@ function deriveR1Listeners(document) {
       duplicateAttempts: state.probe.listeners.duplicateAttempts,
       label: state.label,
     }])).values()];
+  const telemetryRegressions = r1ChronologicalSameDocumentPairs(snapshots).flatMap(({ before, after, documentId }) => {
+    const failures = r1CumulativeTelemetryFailures(before, after);
+    return failures.length ? [{ after: after.label, before: before.label, documentId, failures }] : [];
+  });
   const candidatePairs = [
     ["bare-back", document.history?.states?.bareManifesto, document.history?.states?.bareBack],
     ["entry-back", document.history?.states?.entryResolved, document.history?.states?.entryBack],
     ...(document.visibility?.scenarios ?? [])
       .filter((scenario) => scenario.observation?.status === "PASS")
-      .map((scenario) => [`${scenario.name}-foreground`, scenario.transition?.before, scenario.transition?.visible]),
+      .flatMap((scenario) => [
+        [`${scenario.name}-hidden`, scenario.transition?.before, scenario.transition?.hidden],
+        [`${scenario.name}-foreground`, scenario.transition?.hidden, scenario.transition?.visible],
+      ]),
   ];
   const comparisons = candidatePairs.flatMap(([name, beforeState, afterState]) => {
     if (!beforeState?.documentId || beforeState.documentId !== afterState?.documentId) return [];
@@ -1366,20 +2025,22 @@ function deriveR1Listeners(document) {
     const failures = r1ListenerGrowth(before, after);
     return [{ name, documentId: beforeState.documentId, before, after, failures, stable: failures.length === 0 }];
   });
-  const failed = duplicateDocuments.length > 0 || comparisons.some(({ stable }) => !stable);
+  const failed = duplicateDocuments.length > 0 || telemetryRegressions.length > 0 || comparisons.some(({ stable }) => !stable);
   return {
     status: failed ? "FAIL" : comparisons.length ? "PASS" : "NOT OBSERVED",
     duplicateDocuments,
+    telemetryRegressions,
     comparisons,
   };
 }
 
 function validateR1Listeners(document, status) {
   const listeners = document.listeners;
-  if (!Array.isArray(listeners?.duplicateDocuments) || !Array.isArray(listeners?.comparisons)) throw new Error("R1 persistent-lifecycle listener evidence is incomplete");
+  if (!Array.isArray(listeners?.duplicateDocuments) || !Array.isArray(listeners?.comparisons) || !Array.isArray(listeners?.telemetryRegressions)) throw new Error("R1 persistent-lifecycle listener evidence is incomplete");
   const derived = deriveR1Listeners(document);
   exactJson(listeners.duplicateDocuments, derived.duplicateDocuments, "R1 persistent-lifecycle duplicate-listener document ledger");
   exactJson(listeners.comparisons, derived.comparisons, "R1 persistent-lifecycle listener comparison ledger");
+  exactJson(listeners.telemetryRegressions, derived.telemetryRegressions, "R1 persistent-lifecycle cumulative telemetry regression ledger");
   if (status !== derived.status) throw new Error(`R1 persistent-lifecycle listener status must be ${derived.status}`);
 }
 
@@ -1389,6 +2050,45 @@ function r1Phase4MediaUrl(value) {
     return /\/media\/cinematic\/phase-4r2\/media\/[^/]+\.mp4$/i.test(url.pathname) ? `${url.pathname}${url.search}` : null;
   } catch {
     return null;
+  }
+}
+
+function r1ValidByteRange(value) {
+  if (typeof value !== "string" || !/^bytes=/i.test(value)) return false;
+  const ranges = value.slice(value.indexOf("=") + 1).split(",");
+  if (!ranges.length) return false;
+  try {
+    return ranges.every((range) => {
+      const match = /^\s*(\d*)-(\d*)\s*$/.exec(range);
+      if (!match || (!match[1] && !match[2])) return false;
+      if (!match[1]) return BigInt(match[2]) > 0n;
+      if (!match[2]) return true;
+      return BigInt(match[1]) <= BigInt(match[2]);
+    });
+  } catch {
+    return false;
+  }
+}
+
+function r1AuthoritativePhase4Request(request, baseUrl) {
+  try {
+    const requestUrl = new URL(request.url);
+    const documentUrl = new URL(request.documentUrl);
+    const expectedOrigin = new URL(baseUrl).origin;
+    const documentRoute = `${documentUrl.pathname}${documentUrl.hash}`;
+    return request.method === "GET"
+      && request.resourceType === "fetch"
+      && typeof request.frameNavigationId === "string"
+      && request.frameNavigationId.length > 0
+      && request.frameNavigationId !== "pre-navigation"
+      && requestUrl.origin === expectedOrigin
+      && documentUrl.origin === expectedOrigin
+      && documentUrl.search === ""
+      && ["/", "/#entry"].includes(documentRoute)
+      && (request.range === null || r1ValidByteRange(request.range))
+      && r1Phase4MediaUrl(requestUrl.href) === request.path;
+  } catch {
+    return false;
   }
 }
 
@@ -1406,6 +2106,9 @@ function deriveR1MediaDocuments(document) {
       modes: new Set(),
       observations: new Set(),
       paths: new Set(),
+      selectionDocumentUrl: null,
+      selectionNavigationId: null,
+      selectionStable: true,
       sourceObserved: false,
     };
     homeDocument.labels.add(state.label);
@@ -1414,8 +2117,19 @@ function deriveR1MediaDocuments(document) {
     for (const resource of state.probe?.resources ?? []) {
       const mediaUrl = r1Phase4MediaUrl(resource?.url ?? resource?.path);
       if (!mediaUrl) continue;
+      if (!Number.isFinite(resource.startTime) || resource.startTime < 0) {
+        throw new Error(`R1 persistent-lifecycle raw resource timing differs: ${state.label}`);
+      }
       homeDocument.paths.add(mediaUrl);
       homeDocument.observations.add(`${mediaUrl}\u0000${Number(resource.startTime ?? -1)}`);
+      let selectionDocumentUrl = null;
+      try { selectionDocumentUrl = new URL(state.url, state.origin).href; } catch { /* invalidated below */ }
+      if (homeDocument.selectionNavigationId === null) {
+        homeDocument.selectionNavigationId = state.navigationId ?? null;
+        homeDocument.selectionDocumentUrl = selectionDocumentUrl;
+      } else if (homeDocument.selectionNavigationId !== state.navigationId || homeDocument.selectionDocumentUrl !== selectionDocumentUrl) {
+        homeDocument.selectionStable = false;
+      }
     }
     homeDocuments.set(state.documentId, homeDocument);
   }
@@ -1430,6 +2144,9 @@ function deriveR1MediaDocuments(document) {
       modes,
       paths,
       resourceObservations: homeDocument.observations.size,
+      selectionDocumentUrl: homeDocument.selectionDocumentUrl,
+      selectionNavigationId: homeDocument.selectionNavigationId,
+      selectionStable: homeDocument.selectionStable,
       sourceFree: !homeDocument.sourceObserved,
     };
   }).sort((left, right) => lexicalCompare(left.documentId, right.documentId));
@@ -1448,6 +2165,9 @@ function validateR1MediaRequests(document, status) {
     if (typeof record?.documentId !== "string" || !record.documentId || documentIds.has(record.documentId)
       || !Array.isArray(record.labels) || !Array.isArray(record.paths)
       || typeof record.mediaExpected !== "boolean" || !Array.isArray(record.modes) || typeof record.sourceFree !== "boolean"
+      || !(record.selectionDocumentUrl === null || (typeof record.selectionDocumentUrl === "string" && record.selectionDocumentUrl.length > 0))
+      || !(record.selectionNavigationId === null || (typeof record.selectionNavigationId === "string" && record.selectionNavigationId.length > 0 && record.selectionNavigationId !== "pre-navigation"))
+      || typeof record.selectionStable !== "boolean"
       || !Number.isSafeInteger(record.resourceObservations) || record.resourceObservations < 0
       || record.resourceObservations < record.paths.length
       || new Set(record.paths).size !== record.paths.length
@@ -1461,10 +2181,8 @@ function validateR1MediaRequests(document, status) {
     throw new Error("R1 persistent-lifecycle raw Phase 4 request ledger differs");
   }
   const expectedDocuments = media.documents.filter(({ mediaExpected }) => mediaExpected);
+  const enhancedMediaDocuments = media.documents.filter(({ modes }) => modes.includes("enhanced"));
   const bypassDocuments = media.documents.filter(({ mediaExpected }) => !mediaExpected);
-  const expectedPhase4Present = expectedDocuments.length > 0
-    && expectedDocuments.every(({ paths }) => paths.length >= 1)
-    && phase4Requests.length >= 1;
   const bypassDocumentsSourceFree = bypassDocuments.every(({ modes, paths, sourceFree }) => (
     modes.length === 1 && modes[0] === "static" && paths.length === 0 && sourceFree
   ));
@@ -1472,13 +2190,59 @@ function validateR1MediaRequests(document, status) {
     mediaExpected ? paths.length === 1 : paths.length === 0
   ));
   const uniquePaths = [...new Set(phase4Requests.map(({ path: requestPath }) => r1Phase4MediaUrl(requestPath)))].sort(lexicalCompare);
+  const selectedPaths = [...new Set(media.documents.flatMap(({ paths }) => paths))].sort(lexicalCompare);
+  const selectedPathsMatchNetwork = stableJson(selectedPaths) === stableJson(uniquePaths);
   const selectingDocumentsByPath = new Map();
   for (const record of media.documents) {
     for (const selectedPath of record.paths) selectingDocumentsByPath.set(selectedPath, (selectingDocumentsByPath.get(selectedPath) ?? 0) + 1);
   }
+  const expectedSelectionIds = expectedDocuments.map(({ selectionNavigationId }) => selectionNavigationId);
+  const uniqueExpectedSelectionIds = new Set(expectedSelectionIds);
+  const selectionKeys = new Map();
+  for (const record of expectedDocuments) {
+    for (const selectedPath of record.paths) {
+      const key = `${record.selectionNavigationId}\u0000${selectedPath}`;
+      const selection = selectionKeys.get(key) ?? { count: 0, documentUrl: record.selectionDocumentUrl };
+      selection.count += 1;
+      if (selection.documentUrl !== record.selectionDocumentUrl) selection.documentUrl = null;
+      selectionKeys.set(key, selection);
+    }
+  }
+  const navigationIdsByPath = new Map();
+  const nonRangeRequestsByNavigationPath = new Map();
+  for (const request of phase4Requests) {
+    const requestPath = r1Phase4MediaUrl(request.path);
+    const navigationIds = navigationIdsByPath.get(requestPath) ?? new Set();
+    navigationIds.add(request.frameNavigationId);
+    navigationIdsByPath.set(requestPath, navigationIds);
+    if (!r1ValidByteRange(request.range)) {
+      const key = `${request.frameNavigationId}\u0000${requestPath}`;
+      nonRangeRequestsByNavigationPath.set(key, (nonRangeRequestsByNavigationPath.get(key) ?? 0) + 1);
+    }
+  }
+  const requestAuthorityValid = phase4Requests.every((request) => r1AuthoritativePhase4Request(request, document.baseUrl));
+  const navigationCoverageValid = expectedSelectionIds.every((navigationId) => typeof navigationId === "string" && navigationId.length > 0 && navigationId !== "pre-navigation")
+    && expectedDocuments.length === enhancedMediaDocuments.length
+    && expectedDocuments.every(({ selectionDocumentUrl, selectionStable }) => typeof selectionDocumentUrl === "string" && selectionDocumentUrl.length > 0 && selectionStable)
+    && uniqueExpectedSelectionIds.size === expectedDocuments.length
+    && selectionKeys.size === expectedDocuments.length
+    && [...selectionKeys.values()].every(({ count, documentUrl }) => count === 1 && typeof documentUrl === "string")
+    && phase4Requests.every((request) => {
+      const selection = selectionKeys.get(`${request.frameNavigationId}\u0000${r1Phase4MediaUrl(request.path)}`);
+      try { return selection?.count === 1 && new URL(request.documentUrl).href === selection.documentUrl; }
+      catch { return false; }
+    })
+    && [...selectionKeys.keys()].every((key) => phase4Requests.some((request) => `${request.frameNavigationId}\u0000${r1Phase4MediaUrl(request.path)}` === key))
+    && selectedPaths.every((selectedPath) => navigationIdsByPath.get(selectedPath)?.size === selectingDocumentsByPath.get(selectedPath));
+  const expectedPhase4Present = expectedDocuments.length > 0
+    && expectedDocuments.every(({ paths }) => paths.length >= 1)
+    && phase4Requests.length >= 1
+    && selectedPathsMatchNetwork
+    && requestAuthorityValid
+    && navigationCoverageValid;
   const nonRangeRequestsByPath = new Map();
   for (const request of phase4Requests) {
-    if (request.range) continue;
+    if (r1ValidByteRange(request.range)) continue;
     const requestPath = r1Phase4MediaUrl(request.path);
     nonRangeRequestsByPath.set(requestPath, (nonRangeRequestsByPath.get(requestPath) ?? 0) + 1);
   }
@@ -1490,14 +2254,15 @@ function validateR1MediaRequests(document, status) {
   exactJson(media.network.nonRangeSelections, nonRangeSelections, "R1 persistent-lifecycle non-range media selection ledger");
   const networkSummary = {
     requestCount: phase4Requests.length,
-    rangeRequestCount: phase4Requests.filter(({ range }) => Boolean(range)).length,
-    nonRangeRequestCount: phase4Requests.filter(({ range }) => !range).length,
+    rangeRequestCount: phase4Requests.filter(({ range }) => r1ValidByteRange(range)).length,
+    nonRangeRequestCount: phase4Requests.filter(({ range }) => !r1ValidByteRange(range)).length,
     uniquePaths,
   };
   for (const [field, expectedValue] of Object.entries(networkSummary)) {
     if (stableJson(media.network[field]) !== stableJson(expectedValue)) throw new Error(`R1 persistent-lifecycle network ${field} contradicts raw Phase 4 requests`);
   }
-  const noDuplicateNonRangeRequests = nonRangeSelections.every(({ count, logicalHomeDocuments }) => count <= logicalHomeDocuments);
+  const noDuplicateNonRangeRequests = nonRangeSelections.every(({ count, logicalHomeDocuments }) => count <= logicalHomeDocuments)
+    && [...nonRangeRequestsByNavigationPath.values()].every((count) => count <= 1);
   if (media.expectedPhase4Present !== expectedPhase4Present) throw new Error("R1 persistent-lifecycle expectedPhase4Present contradicts raw documents/requests");
   if (media.bypassDocumentsSourceFree !== bypassDocumentsSourceFree) throw new Error("R1 persistent-lifecycle bypassDocumentsSourceFree contradicts raw static Home documents");
   if (media.noDuplicateSourceWithinDocument !== noDuplicateSourceWithinDocument) throw new Error("R1 persistent-lifecycle noDuplicateSourceWithinDocument contradicts raw document selections");
@@ -1506,7 +2271,7 @@ function validateR1MediaRequests(document, status) {
   if (status !== expected) throw new Error(`R1 persistent-lifecycle media-request status must be ${expected}`);
 }
 
-function validateR1PersistentLifecycle(document, record, metadata) {
+export function validateR1PersistentLifecycle(document, record, metadata) {
   if (document?.schema !== R1_PERSISTENT_LIFECYCLE_SCHEMA
     || record.engine !== "chromium"
     || document.browser?.engine !== "chromium"
@@ -1590,59 +2355,18 @@ function validateFailureReferences(record, label, failedChecks = []) {
 export function validateHumanEvidenceLedger(document) {
   if (document?.schema !== HUMAN_EVIDENCE_SCHEMA || document.evidenceClass !== "HUMAN DEVICE EVIDENCE" || document.rootExists !== true
     || !Array.isArray(document.entries) || !Array.isArray(document.requiredFilenames) || !Array.isArray(document.missingFilenames) || document.missingFilenames.length) throw new Error("physical-device human-evidence ledger authority differs");
-  if (stableJson([...document.requiredFilenames].sort(lexicalCompare)) !== stableJson([...REQUIRED_HUMAN_EVIDENCE_FILES].sort(lexicalCompare))) throw new Error("physical-device ledger required filename authority differs");
+  validateIsoTimestamp(document.createdAt, "physical-device ledger createdAt");
+  if (stableJson(document.policy) !== stableJson(HUMAN_EVIDENCE_POLICY)) throw new Error("physical-device ledger policy authority differs");
+  if (stableJson(document.requiredFilenames) !== stableJson(REQUIRED_HUMAN_EVIDENCE_FILES)) throw new Error("physical-device ledger required filename authority differs");
   const filenames = document.entries.map(({ filename }) => filename);
-  if (stableJson([...filenames].sort(lexicalCompare)) !== stableJson([...REQUIRED_HUMAN_EVIDENCE_FILES].sort(lexicalCompare))) throw new Error("physical-device human-evidence ledger omits or duplicates a required recording");
+  if (stableJson(filenames) !== stableJson(REQUIRED_HUMAN_EVIDENCE_FILES)) throw new Error("physical-device human-evidence ledger omits, reorders or duplicates a required recording");
   for (const [index, record] of document.entries.entries()) {
     const label = `entries[${index}]`;
     const status = normalizeEvidenceStatus(record?.status);
     if (!record || status !== record.status || !["PASS", "FAIL", "PENDING HUMAN REVIEW"].includes(status)
       || !HASH64.test(record.sha256 ?? "") || !Number.isSafeInteger(record.byteSize) || record.byteSize <= 0
-      || record.evidenceClass !== "PHYSICAL HUMAN RECORDING"
-      || typeof record.device !== "string" || !record.device.trim()
-      || typeof record.os !== "string" || !record.os.trim()
-      || !Object.hasOwn(record, "browserVersion") || !["string", "object"].includes(typeof record.browserVersion) || (typeof record.browserVersion === "string" && !record.browserVersion.trim())
-      || !Array.isArray(record.testSteps) || !record.testSteps.length || record.testSteps.some((step) => typeof step !== "string" || !step.trim())
-      || !Array.isArray(record.observations) || !record.observations.length || record.observations.some((observation) => (typeof observation !== "string" || !observation.trim()) && (!observation || typeof observation !== "object" || Array.isArray(observation)))
-      || typeof record.observedResult !== "string" || !record.observedResult.trim()) throw new Error(`${label} is incomplete`);
-    if (record.browser !== undefined && record.browser !== null && (typeof record.browser !== "string" || !record.browser.trim())) throw new Error(`${label}.browser must be a supplied value, null or omitted`);
-    if (record.browserVersion !== null && typeof record.browserVersion !== "string") throw new Error(`${label}.browserVersion must be a supplied value or null`);
-    const requiredDeviceChecks = DEVICE_REVIEW_CHECKS[record.filename];
-    const hasDeviceChecks = record.checks && typeof record.checks === "object" && !Array.isArray(record.checks);
-    let failedEntryChecks = [];
-    if (requiredDeviceChecks && (record.status !== "PENDING HUMAN REVIEW" || hasDeviceChecks)) {
-      const actualKeys = hasDeviceChecks ? Object.keys(record.checks).sort(lexicalCompare) : [];
-      const expectedKeys = [...requiredDeviceChecks].sort(lexicalCompare);
-      if (stableJson(actualKeys) !== stableJson(expectedKeys)) throw new Error(`${label}.checks must contain the exact physical-device review checks`);
-      const results = expectedKeys.map((check) => record.checks[check]);
-      if (results.some((result) => typeof result !== "boolean" && !(record.status === "PENDING HUMAN REVIEW" && result === null))) throw new Error(`${label}.checks contains a non-boolean physical-device result`);
-      if (record.status === "PASS" && results.some((result) => result !== true)) throw new Error(`${label} PASS contains a failed physical-device check`);
-      if (record.status === "FAIL" && results.every((result) => result !== false)) throw new Error(`${label} FAIL contains no failed physical-device check`);
-      if (record.status !== "FAIL" && results.some((result) => result === false)) throw new Error(`${label} contains a false physical-device check without FAIL status`);
-      failedEntryChecks = expectedKeys.filter((check) => record.checks[check] === false);
-    }
-    if (record.filename === "chrome-200-percent.mp4") {
-      const hasZoomReview = ["genuineBrowserZoom", "zoomPercent", "proxy", "routeOutcomes"].some((field) => Object.hasOwn(record, field));
-      if (record.status === "PENDING HUMAN REVIEW" && !hasZoomReview) continue;
-      if (record.genuineBrowserZoom !== true || record.zoomPercent !== 200 || record.proxy !== false || !Array.isArray(record.routeOutcomes) || record.routeOutcomes.length !== 10) throw new Error("genuine 200% human browser-zoom evidence is incomplete");
-      const routes = new Set();
-      for (const [routeIndex, outcome] of record.routeOutcomes.entries()) {
-        const routeStatus = normalizeEvidenceStatus(outcome?.status);
-        if (!outcome || typeof outcome.route !== "string" || !outcome.route || routes.has(outcome.route) || routeStatus !== outcome.status || !["PASS", "FAIL", "PENDING HUMAN REVIEW"].includes(routeStatus)
-          || !outcome.checks || stableJson(Object.keys(outcome.checks).sort(lexicalCompare)) !== stableJson([...ZOOM_ROUTE_CHECKS].sort(lexicalCompare))
-          || ZOOM_ROUTE_CHECKS.some((check) => typeof outcome.checks[check] !== "boolean")) throw new Error(`genuine 200% route outcome ${routeIndex} is incomplete`);
-        routes.add(outcome.route);
-        const failedChecks = ZOOM_ROUTE_CHECKS.filter((check) => outcome.checks[check] === false);
-        if (routeStatus === "PASS" && failedChecks.length) throw new Error(`genuine 200% PASS route contains a failed check: ${outcome.route}`);
-        if (routeStatus === "FAIL" && !failedChecks.length) throw new Error(`genuine 200% FAIL route contains no failed check: ${outcome.route}`);
-        if (routeStatus !== "FAIL" && failedChecks.length) throw new Error(`genuine 200% route contains a false check without FAIL status: ${outcome.route}`);
-        validateFailureReferences(outcome, `entries chrome-200-percent route ${outcome.route}`, failedChecks);
-      }
-      if (stableJson([...routes].sort(lexicalCompare)) !== stableJson([...ZOOM_ROUTE_OUTCOMES].sort(lexicalCompare))) throw new Error("genuine 200% evidence does not cover the exact ten route outcomes");
-      const zoomStatus = aggregateCoverageStatuses(record.routeOutcomes.map(({ status: routeStatus }) => routeStatus), "PENDING HUMAN REVIEW");
-      if (record.status !== zoomStatus) throw new Error(`chrome-200-percent recording status must be ${zoomStatus}`);
-    }
-    validateFailureReferences(record, label, failedEntryChecks);
+      || record.evidenceClass !== "PHYSICAL HUMAN RECORDING") throw new Error(`${label} is incomplete`);
+    validateReviewEntry(record, record.filename, record);
   }
   const expectedStatus = aggregateEvidenceStatuses(document.entries.map(({ status }) => status), "PENDING HUMAN REVIEW");
   if (document.status !== expectedStatus) throw new Error(`physical-device ledger status must be ${expectedStatus}`);
@@ -1700,6 +2424,7 @@ function legacyHistoryEventSeries(history) {
 function legacyHistories(document) {
   const histories = [];
   if (document?.history && typeof document.history === "object" && !Array.isArray(document.history)) histories.push(document.history);
+  if (Array.isArray(document?.history)) histories.push(...document.history.filter((history) => history && typeof history === "object" && !Array.isArray(history)));
   if (Array.isArray(document?.engines)) {
     for (const engine of document.engines) {
       if (engine?.history && typeof engine.history === "object" && !Array.isArray(engine.history)) histories.push(engine.history);
@@ -1709,6 +2434,9 @@ function legacyHistories(document) {
 }
 
 function validateLegacyBfcacheObservations(document, label) {
+  if (statusAt(document?.bfcache) === "PASS" && !legacyHistoryEventSeries(document).some(hasRealPersistedEventPair)) {
+    throw new Error(`${label} top-level BFCache PASS requires a real ordered pagehide.persisted/pageshow.persisted event pair`);
+  }
   for (const history of legacyHistories(document)) {
     if (statusAt(history.bfcache) === "PASS" && !legacyHistoryEventSeries(history).some(hasRealPersistedEventPair)) {
       throw new Error(`${label} BFCache PASS requires a real ordered pagehide.persisted/pageshow.persisted event pair`);
@@ -1744,9 +2472,7 @@ function documentBfcacheStatuses(document) {
 }
 
 function documentVisibilityStatuses(document) {
-  const candidates = [document?.visibility];
-  if (Array.isArray(document?.engines)) candidates.push(...document.engines.map((engine) => engine?.visibility));
-  return candidates.map(statusAt).filter(Boolean);
+  return [document?.visibility].map(statusAt).filter(Boolean);
 }
 
 function includes720By450Proxy(value) {
@@ -1756,13 +2482,15 @@ function includes720By450Proxy(value) {
   return Object.values(value).some(includes720By450Proxy);
 }
 
-function evidenceTaxonomy(record, document) {
+export function evidenceTaxonomy(record, document) {
   const sourceStatus = normalizeEvidenceStatus(document?.status);
+  const bfcacheRoles = new Set(["history-bfcache-summary", "performance-summary", "r1-persistent-lifecycle-summary"]);
+  const visibilityRoles = new Set(["performance-summary", "r1-persistent-lifecycle-summary"]);
   const taxonomy = {
     artifactStatus: record.status,
     sourceStatus,
-    bfcache: documentBfcacheStatuses(document),
-    visibility: documentVisibilityStatuses(document),
+    bfcache: bfcacheRoles.has(record.role) ? documentBfcacheStatuses(document) : [],
+    visibility: visibilityRoles.has(record.role) ? documentVisibilityStatuses(document) : [],
   };
   if (record.role === "accessibility-summary" || record.role === "accessibility-interaction-limitation") {
     const engineResults = Array.isArray(document?.engines) ? document.engines : [];
@@ -1790,22 +2518,41 @@ function evidenceTaxonomy(record, document) {
     const zoom = ledger.entries.find(({ filename }) => filename === "chrome-200-percent.mp4");
     const zoomStatuses = Array.isArray(zoom.routeOutcomes) ? zoom.routeOutcomes.map(({ status }) => status) : ["PENDING HUMAN REVIEW"];
     const opening = ledger.entries.find(({ filename }) => filename === "iphone-safari-opening.mp4");
+    const maradin = ledger.entries.find(({ filename }) => filename === "iphone-safari-maradin.mp4");
+    const safariLifecycleResults = [
+      opening?.checks?.backgroundForeground,
+      maradin?.checks?.backgroundForeground,
+      maradin?.checks?.retryableSourceFree,
+      maradin?.checks?.noPersistentRafOrInterval,
+      maradin?.checks?.noLiveOrphanBlob,
+    ];
+    const hiddenVisible = safariLifecycleResults.some((result) => result === false)
+      ? "FAIL"
+      : safariLifecycleResults.every((result) => result === true)
+        ? "PASS"
+        : "PENDING HUMAN REVIEW";
     taxonomy.humanEvidence = {
       status: ledger.status,
       verified: false,
-      recordings: ledger.entries.map(({ filename, sha256: hash, byteSize, status, checks = null }) => ({ filename, sha256: hash, byteSize, status, checks })),
+      recordings: ledger.entries.map(({ filename, sha256: hash, byteSize, mediaValidation, reviewedSha256, reviewedByteSize, status, checks = null }) => ({
+        filename,
+        sha256: hash,
+        byteSize,
+        mediaValidation,
+        reviewedSha256,
+        reviewedByteSize,
+        status,
+        checks,
+      })),
       browserZoom: aggregateEvidenceStatuses(zoomStatuses, "PENDING HUMAN REVIEW"),
-      hiddenVisible: opening?.checks?.backgroundForeground === true
-        ? "PASS"
-        : opening?.checks?.backgroundForeground === false
-          ? "FAIL"
-          : "PENDING HUMAN REVIEW",
+      hiddenVisible,
     };
   }
   return taxonomy;
 }
 
 function validateAccessibilityInteractionMatrix(document, engine) {
+  validateAccessibilityReport(document);
   const expectedRoutes = PHASE6_ROUTES.map(({ expectedStatus, id, path: routePath }) => ({ expectedStatus, id, path: routePath }));
   if (!Array.isArray(document.routes) || stableJson(document.routes) !== stableJson(expectedRoutes)) throw new Error(`accessibility exact ten-route inventory differs: ${engine}`);
   if (document.axeOnly === true) return;
@@ -1828,6 +2575,306 @@ function validateAccessibilityInteractionMatrix(document, engine) {
   }
   const history = result.history;
   if (history?.status !== "PASS" || !Array.isArray(history.failures) || history.failures.length) throw new Error(`accessibility history authority differs: ${engine}`);
+}
+
+const R1_NODE22_REQUIRED_OUTCOMES = Object.freeze([
+  "npm-ci",
+  "astro-check",
+  "production-build",
+  "complete-postbuild-test-suite",
+  "phase4-source-verification",
+  "phase5b-phase6-r1-focused-regression",
+  "standalone-verifier-self-tests",
+]);
+
+function validateBoundNode22Text(text, expectedSha256, label) {
+  if (typeof text !== "string" || !text.length || Buffer.byteLength(text, "utf8") > 2 * 1024 * 1024
+    || !HASH64.test(expectedSha256 ?? "") || sha256(Buffer.from(text, "utf8")) !== expectedSha256) {
+    throw new Error(`R1 Node 22 embedded ${label} hash binding differs`);
+  }
+  return text;
+}
+
+function validateEmbeddedDistManifest(text, expectedSha256, label) {
+  validateBoundNode22Text(text, expectedSha256, `${label} dist manifest`);
+  const lines = text.replace(/\r\n/g, "\n").split("\n");
+  if (lines.at(-1) === "") lines.pop();
+  if (lines.shift() !== '"path","bytes","sha256"' || !lines.length) throw new Error(`R1 Node 22 ${label} dist manifest header/inventory differs`);
+  const paths = new Set();
+  const records = [];
+  let previous = null;
+  let bytes = 0;
+  for (const line of lines) {
+    const match = /^"([^"]+)","([0-9]+)","([a-f0-9]{64})"$/.exec(line);
+    if (!match) throw new Error(`R1 Node 22 ${label} dist manifest row differs`);
+    const [, entryPath, byteText, entrySha256] = match;
+    const byteSize = Number(byteText);
+    if (!entryPath || entryPath.startsWith("/") || entryPath.includes("\\") || entryPath.split("/").includes("..")
+      || !Number.isSafeInteger(byteSize) || byteSize < 0 || paths.has(entryPath)
+      || (previous !== null && previous.localeCompare(entryPath) >= 0)) {
+      throw new Error(`R1 Node 22 ${label} dist manifest path/size order differs`);
+    }
+    paths.add(entryPath);
+    records.push({ relativePath: entryPath, bytes: byteSize, sha256: entrySha256 });
+    previous = entryPath;
+    bytes += byteSize;
+    if (!Number.isSafeInteger(bytes)) throw new Error(`R1 Node 22 ${label} dist manifest byte total differs`);
+  }
+  return { files: lines.length, bytes, records };
+}
+
+export function validateR1Node22Validation(document, metadata) {
+  if (!isR1Node22ValidationSchema(document?.schema) || document.status !== "PASS") throw new Error("R1 Node 22 validation schema/status differs");
+  validateIsoTimestamp(document.sealedAtUtc, "R1 Node 22 sealedAtUtc");
+  const repository = document.repository;
+  if (!repository
+    || repository.branch !== R1_REQUIRED_BRANCH
+    || repository.requiredParent !== R1_REQUIRED_PARENT
+    || repository.finalHead !== metadata.repository.finalHead
+    || repository.finalTree !== metadata.repository.finalTree
+    || repository.finalHeadDirectParent !== metadata.repository.directParent
+    || repository.captureHeadBeforeFinalCommit !== repository.finalHeadDirectParent
+    || repository.main !== FROZEN_MAIN
+    || repository.originMain !== FROZEN_MAIN
+    || repository.workingTreeCleanAtSeal !== true
+    || repository.productionDiff?.base !== R1_REQUIRED_PARENT
+    || stableJson(repository.productionDiff?.scope) !== stableJson(["src/**", "public/**"])
+    || repository.productionDiff?.changedPathCount !== 0
+    || repository.productionDiff?.status !== "ZERO PRODUCTION-SOURCE DIFF"
+    || repository.packageLock?.changedLinesFromRequiredParent !== 0
+    || !HASH64.test(repository.packageLock?.sha256 ?? "")) throw new Error("R1 Node 22 repository/tree/zero-production authority differs");
+  const runtime = document.runtime;
+  if (runtime?.nvmrc !== "22.16.0" || runtime.node !== "v22.16.0" || !/^\d+\.\d+\.\d+$/.test(runtime.npm ?? "")
+    || runtime.node24ComparisonRuntime !== "v24.18.0" || !/^\d+\.\d+\.\d+$/.test(runtime.node24ComparisonNpm ?? "")) throw new Error("R1 Node/npm runtime authority differs");
+  if (!Array.isArray(document.outcomes)) throw new Error("R1 Node 22 outcome inventory is missing");
+  if (stableJson(document.outcomes.map(({ id }) => id)) !== stableJson(R1_NODE22_REQUIRED_OUTCOMES)) {
+    throw new Error("R1 Node 22 outcome inventory must contain exactly the required outcomes in canonical order");
+  }
+  const byId = new Map();
+  for (const outcome of document.outcomes) {
+    if (!outcome || typeof outcome.id !== "string" || byId.has(outcome.id)) throw new Error("R1 Node 22 outcome inventory is duplicated or malformed");
+    byId.set(outcome.id, outcome);
+  }
+  for (const id of R1_NODE22_REQUIRED_OUTCOMES) {
+    const outcome = byId.get(id);
+    if (!outcome || outcome.status !== "PASS" || !HASH64.test(outcome.logSha256 ?? "") || typeof outcome.log !== "string" || !outcome.log.trim()) throw new Error(`R1 Node 22 required outcome is incomplete: ${id}`);
+    validateBoundNode22Text(outcome.logText, outcome.logSha256, `${id} log`);
+  }
+  const npmCi = byId.get("npm-ci");
+  if (npmCi.command !== "npm ci" || !Number.isSafeInteger(npmCi.packagesInstalled) || npmCi.packagesInstalled <= 0) throw new Error("R1 Node 22 npm-ci outcome differs");
+  const astro = byId.get("astro-check");
+  if (!/astro check/.test(astro.command ?? "") || astro.errors !== 0 || astro.warnings !== 0) throw new Error("R1 Node 22 Astro check outcome differs");
+  const build = byId.get("production-build");
+  if (build.command !== "npm run build" || build.phase4OutputVerification !== "PASS" || build.phase5bProductionVerification !== "PASS") throw new Error("R1 Node 22 production-build outcome differs");
+  for (const id of ["complete-postbuild-test-suite", "phase5b-phase6-r1-focused-regression"]) {
+    const outcome = byId.get(id);
+    if (!Number.isSafeInteger(outcome.tests) || outcome.tests <= 0 || outcome.passed !== outcome.tests || outcome.failed !== 0 || outcome.cancelled !== 0 || outcome.skipped !== 0 || outcome.todo !== 0) throw new Error(`R1 Node 22 complete test outcome differs: ${id}`);
+  }
+  const phase4 = byId.get("phase4-source-verification");
+  if (!/verify-phase4-source\.mjs/.test(phase4.command ?? "") || !Number.isSafeInteger(phase4.stagedPhase4RuntimeFiles) || phase4.stagedPhase4RuntimeFiles <= 0) throw new Error("R1 Node 22 Phase 4 verification outcome differs");
+  const standalone = byId.get("standalone-verifier-self-tests");
+  if (!Number.isSafeInteger(standalone.checks) || standalone.checks <= 0 || standalone.passed !== standalone.checks || standalone.failed !== 0 || !Array.isArray(standalone.checkNames) || standalone.checkNames.length !== standalone.checks) throw new Error("R1 Node 22 standalone self-test outcome differs");
+  const comparison = document.distributionComparison;
+  const node22Manifest = validateEmbeddedDistManifest(comparison?.node22?.manifestText, comparison?.node22?.manifestSha256, "Node 22");
+  const node24Manifest = validateEmbeddedDistManifest(comparison?.node24?.manifestText, comparison?.node24?.manifestSha256, "Node 24");
+  if (comparison?.status !== "BYTE-IDENTICAL" || comparison.differenceCount !== 0
+    || !Number.isSafeInteger(comparison.node22?.files) || comparison.node22.files <= 0
+    || comparison.node22.files !== comparison.node24?.files
+    || !Number.isSafeInteger(comparison.node22?.bytes) || comparison.node22.bytes <= 0
+    || comparison.node22.bytes !== comparison.node24?.bytes
+    || !HASH64.test(comparison.node22?.manifestSha256 ?? "")
+    || comparison.node22.manifestSha256 !== comparison.node24?.manifestSha256
+    || comparison.node22.manifestText !== comparison.node24?.manifestText
+    || node22Manifest.files !== comparison.node22.files || node22Manifest.bytes !== comparison.node22.bytes
+    || node24Manifest.files !== comparison.node24.files || node24Manifest.bytes !== comparison.node24.bytes) throw new Error("R1 Node 22 versus Node 24 dist comparison is not byte-identical");
+  const differencesText = validateBoundNode22Text(comparison.differencesText, comparison.differencesSha256, "Node 22 versus Node 24 differences");
+  const differenceLines = differencesText.replace(/\r\n/g, "\n").split("\n").filter((line) => line.length);
+  if (stableJson(differenceLines) !== stableJson(['"input","sideIndicator"'])) throw new Error("R1 Node 22 versus Node 24 differences ledger is not empty");
+  validateBoundNode22Text(comparison.comparisonText, comparison.comparisonSha256, "Node 22 versus Node 24 comparison");
+  if (!Array.isArray(document.limitations)) throw new Error("R1 Node 22 limitations ledger differs");
+  return document;
+}
+
+function matchingR1HeaderPolicies(publicPath) {
+  return Object.keys(REQUIRED_HEADER_POLICIES).filter((pattern) => {
+    const prefix = pattern.endsWith("*") ? pattern.slice(0, -1) : pattern;
+    return pattern.endsWith("*") ? publicPath.startsWith(prefix) : publicPath === prefix;
+  });
+}
+
+function expectedR1MimeTokens(relativePath) {
+  return ({
+    ".avif": ["image/avif"],
+    ".css": ["text/css"],
+    ".html": ["text/html"],
+    ".ico": ["image/x-icon", "image/vnd.microsoft.icon"],
+    ".jpeg": ["image/jpeg"],
+    ".jpg": ["image/jpeg"],
+    ".js": ["application/javascript", "text/javascript", "application/x-javascript"],
+    ".json": ["application/json"],
+    ".mjs": ["application/javascript", "text/javascript", "application/x-javascript"],
+    ".mp4": ["video/mp4"],
+    ".pdf": ["application/pdf"],
+    ".png": ["image/png"],
+    ".svg": ["image/svg+xml"],
+    ".txt": ["text/plain"],
+    ".wasm": ["application/wasm"],
+    ".webm": ["video/webm"],
+    ".webp": ["image/webp"],
+    ".woff": ["font/woff", "application/font-woff"],
+    ".woff2": ["font/woff2", "application/font-woff2"],
+    ".xml": ["application/xml", "text/xml"],
+  })[path.posix.extname(relativePath).toLowerCase()] ?? [];
+}
+
+function strictR1CacheControlDirectives(value, label) {
+  if (typeof value !== "string" || !value.trim()) throw new Error(`${label} Cache-Control must be a primitive nonempty string`);
+  const byName = new Map();
+  for (const directive of value.toLowerCase().split(",").map((part) => part.trim()).filter(Boolean)) {
+    const match = /^([a-z][a-z0-9-]*)(?:=(?:"[^"]*"|[^\s,]+))?$/.exec(directive);
+    if (!match || byName.has(match[1])) throw new Error(`${label} Cache-Control contains an invalid, duplicate, or conflicting directive`);
+    byName.set(match[1], directive);
+  }
+  if (!byName.size) throw new Error(`${label} Cache-Control contains no directives`);
+  return byName;
+}
+
+function validateR1DeploymentRawParity(document, metadata) {
+  const deploymentData = document.deployment?.data;
+  if (!/^[1-9]\d*$/.test(metadata.deployment?.checkRunId ?? "")
+    || deploymentData?.checkRunId !== metadata.deployment.checkRunId) {
+    throw new Error("R1 deployment checkRunId is not independently bound to final metadata");
+  }
+  if (deploymentData.authoritySource !== "CLOUDFLARE_PAGES_SIGNED_GITHUB_CHECK") {
+    throw new Error("R1 deployment signed check authority source differs");
+  }
+  const completedAt = deploymentData.completedAt;
+  const normalizedCompletedAt = typeof completedAt === "string" && Number.isFinite(Date.parse(completedAt))
+    ? new Date(completedAt).toISOString()
+    : null;
+  if (!normalizedCompletedAt || ![normalizedCompletedAt, normalizedCompletedAt.replace(/\.000Z$/, "Z")].includes(completedAt)) {
+    throw new Error("R1 deployment completedAt must be a canonical UTC timestamp");
+  }
+
+  const dist = document.dist;
+  if (dist?.status !== "PASS"
+    || stableJson(dist.exactHtmlAuthority) !== stableJson(HTML_AUTHORITY_FILES)
+    || stableJson(dist.routeOutcomes) !== stableJson(PUBLIC_ROUTE_OUTCOMES)
+    || stableJson(dist.requiredHeaderPolicies) !== stableJson(REQUIRED_HEADER_POLICIES)) {
+    throw new Error("R1 deployment dist route/header authority differs");
+  }
+  if (!Array.isArray(dist.files) || !dist.files.length) throw new Error("R1 deployment dist inventory is empty");
+  const distByPath = new Map();
+  for (const file of dist.files) {
+    const relativePath = safeRelativePath(file?.relativePath, "R1 deployment dist relativePath");
+    if (distByPath.has(relativePath)
+      || !Number.isSafeInteger(file.bytes) || file.bytes <= 0
+      || !HASH64.test(file.sha256 ?? "")) throw new Error(`R1 deployment dist record differs: ${relativePath}`);
+    const excluded = relativePath === "_headers";
+    if (file.deploymentComparison !== (excluded ? "EXCLUDED_CLOUDFLARE_CONFIGURATION" : "REQUIRED")
+      || file.requestPath !== publicPathForDistFile(relativePath)) {
+      throw new Error(`R1 deployment dist comparison contract differs: ${relativePath}`);
+    }
+    if (/\.(?:map|zip|key|pem|env)$/i.test(relativePath)
+      || /(?:^|\/)(?:node_modules|src|source|cache|\.cache|\.git|artifacts)(?:\/|$)/i.test(relativePath)) {
+      throw new Error(`R1 deployment dist contains forbidden source/cache/private payload: ${relativePath}`);
+    }
+    distByPath.set(relativePath, file);
+  }
+  const distPaths = [...distByPath.keys()];
+  const sortedDistPaths = [...distPaths].sort((left, right) => left.localeCompare(right));
+  if (stableJson(distPaths) !== stableJson(sortedDistPaths)) throw new Error("R1 deployment dist inventory is not canonically sorted");
+  const htmlPaths = distPaths.filter((relativePath) => relativePath.endsWith(".html"));
+  if (stableJson(htmlPaths) !== stableJson([...HTML_AUTHORITY_FILES].sort((left, right) => left.localeCompare(right)))) throw new Error("R1 deployment exact ten-HTML authority differs");
+  for (const requiredPath of ["_headers", "robots.txt", "sitemap.xml"]) {
+    if (!distByPath.has(requiredPath)) throw new Error(`R1 deployment dist is missing ${requiredPath}`);
+  }
+  for (const prefix of ["_astro/", "media/cinematic/phase-4r2/manifests/", "media/cinematic/phase-4r2/media/", "media/cinematic/phase-4r2/posters/"]) {
+    if (!distPaths.some((relativePath) => relativePath.startsWith(prefix))) throw new Error(`R1 deployment dist does not exercise /${prefix}*`);
+  }
+  const comparable = dist.files.filter(({ relativePath }) => relativePath !== "_headers");
+  const requestPaths = comparable.map(({ requestPath }) => requestPath);
+  if (new Set(requestPaths).size !== requestPaths.length) throw new Error("R1 deployment dist request paths are not unique");
+  const expectedTotals = {
+    files: dist.files.length,
+    comparableFiles: comparable.length,
+    bytes: dist.files.reduce((sum, file) => sum + file.bytes, 0),
+  };
+  if (stableJson(dist.totals) !== stableJson(expectedTotals)) throw new Error("R1 deployment dist totals contradict its raw inventory");
+  const expectedCanonicalAuthority = Object.fromEntries(HTML_AUTHORITY_FILES.map((relativePath) => [relativePath, {
+    canonical: canonicalForDistFile(relativePath),
+    robotsNoindex: relativePath === "404.html",
+    status: "PASS",
+  }]));
+  if (stableJson(dist.canonicalAuthority) !== stableJson(expectedCanonicalAuthority)) throw new Error("R1 deployment canonical authority differs");
+
+  const missing404Path = `/__phase6-real-404-${metadata.repository.finalHead.slice(0, 12)}-${metadata.deployment.id.slice(0, 8)}/`;
+  const originSpecs = [
+    ["immutable", metadata.deployment.immutableUrl],
+    ["branch", metadata.deployment.branchUrl],
+  ];
+  for (const [originId, expectedOrigin] of originSpecs) {
+    const stage = document.origins?.[originId];
+    const data = stage?.data;
+    if (stage?.status !== "PASS" || data?.status !== "PASS" || data.origin !== expectedOrigin) {
+      throw new Error(`R1 deployment ${originId} origin authority differs`);
+    }
+    const expectedReal404 = { publicPath: missing404Path, httpStatus: 404, localAuthority: "404.html", byteParity: true };
+    if (stableJson(data.real404) !== stableJson(expectedReal404)) throw new Error(`R1 deployment ${originId} real-404 authority differs`);
+    if (!Array.isArray(data.responses) || data.responses.length !== comparable.length
+      || data.fileCount !== comparable.length
+      || data.totalBytes !== comparable.reduce((sum, file) => sum + file.bytes, 0)) {
+      throw new Error(`R1 deployment ${originId} response inventory/totals differ`);
+    }
+    const exercisedPolicies = new Set();
+    const observedPublicPaths = new Set();
+    for (let index = 0; index < comparable.length; index += 1) {
+      const file = comparable[index];
+      const response = data.responses[index];
+      const expectedStatus = file.relativePath === "404.html" ? 404 : 200;
+      const expectedPublicPath = file.relativePath === "404.html" ? missing404Path : file.requestPath;
+      if (observedPublicPaths.has(expectedPublicPath)) throw new Error(`R1 deployment ${originId} public request path is duplicated: ${expectedPublicPath}`);
+      observedPublicPaths.add(expectedPublicPath);
+      if (response?.relativePath !== file.relativePath
+        || response.publicPath !== expectedPublicPath
+        || response.expectedHttpStatus !== expectedStatus
+        || response.actualHttpStatus !== expectedStatus
+        || response.bytes !== file.bytes
+        || response.sha256 !== file.sha256
+        || response.status !== "PASS") {
+        throw new Error(`R1 deployment ${originId} raw response parity differs: ${file.relativePath}`);
+      }
+      const expectedCanonical = file.relativePath.endsWith(".html") ? expectedCanonicalAuthority[file.relativePath] : null;
+      if (stableJson(response.canonical) !== stableJson(expectedCanonical)) throw new Error(`R1 deployment ${originId} response canonical differs: ${file.relativePath}`);
+      const expectedPolicies = matchingR1HeaderPolicies(expectedPublicPath);
+      const expectedMime = expectedR1MimeTokens(file.relativePath);
+      const observedContentType = typeof response.headers?.contentType === "string"
+        ? response.headers.contentType.split(";", 1)[0].trim().toLowerCase()
+        : "";
+      if (response.headers?.status !== "PASS"
+        || typeof response.headers.contentType !== "string"
+        || typeof response.headers.cacheControl !== "string"
+        || !expectedMime.length || !expectedMime.includes(observedContentType)
+        || stableJson(response.headers.matchedPolicies) !== stableJson(expectedPolicies)) {
+        throw new Error(`R1 deployment ${originId} response header authority differs: ${file.relativePath}`);
+      }
+      const cacheDirectives = strictR1CacheControlDirectives(response.headers.cacheControl, `R1 deployment ${originId} ${file.relativePath}`);
+      for (const policy of expectedPolicies) {
+        exercisedPolicies.add(policy);
+        const requiredDirectives = strictR1CacheControlDirectives(REQUIRED_HEADER_POLICIES[policy], `R1 deployment policy ${policy}`);
+        if (cacheDirectives.size !== requiredDirectives.size
+          || ![...requiredDirectives.entries()].every(([name, directive]) => cacheDirectives.get(name) === directive)) {
+          throw new Error(`R1 deployment ${originId} Cache-Control differs for ${file.relativePath}`);
+        }
+      }
+      if (cacheDirectives.has("private") || (cacheDirectives.has("no-store") && expectedStatus !== 404)) {
+        throw new Error(`R1 deployment ${originId} unsafe Cache-Control for ${file.relativePath}`);
+      }
+    }
+    if (stableJson([...exercisedPolicies].sort(lexicalCompare)) !== stableJson(Object.keys(REQUIRED_HEADER_POLICIES).sort(lexicalCompare))) {
+      throw new Error(`R1 deployment ${originId} did not exercise every required header policy`);
+    }
+  }
 }
 
 export function validateDocumentAuthority(record, document, metadata) {
@@ -1853,6 +2900,87 @@ export function validateDocumentAuthority(record, document, metadata) {
       || Object.values(document.checks).some((value) => value !== true)
       || !Array.isArray(document.failures)
       || document.failures.length) throw new Error("deployment-verifier authority differs from final metadata");
+    if (authority.id === "phase6-r1") {
+      const assertNestedPassStatuses = (value, location = "deployment-verifier") => {
+        if (!value || typeof value !== "object") return;
+        for (const [key, child] of Object.entries(value)) {
+          const childLocation = `${location}.${key}`;
+          if (key === "status" && typeof child === "string" && child !== "PASS") throw new Error(`R1 deployment nested status is not PASS: ${childLocation}`);
+          assertNestedPassStatuses(child, childLocation);
+        }
+      };
+      assertNestedPassStatuses(document);
+      const repositoryData = document.repository.data;
+      const expectedHistory = metadata.repository.commitChain.map(({ sha, parents, subject }) => ({ commit: sha, parents, subject }));
+      const exactRepositoryAuthority = repositoryData?.status === "PASS"
+        && repositoryData.repository === R1_REQUIRED_REPOSITORY
+        && repositoryData.branch === authority.branch
+        && repositoryData.head === metadata.repository.finalHead
+        && repositoryData.exactParent === authority.parent
+        && repositoryData.directParent === metadata.repository.directParent
+        && repositoryData.cleanTree === true
+        && stableJson(repositoryData.history) === stableJson(expectedHistory)
+        && stableJson(repositoryData.main) === stableJson({
+          local: FROZEN_MAIN,
+          upstream: FROZEN_MAIN,
+          live: FROZEN_MAIN,
+          modifiedOrMerged: false,
+        })
+        && stableJson(repositoryData.upstream) === stableJson({
+          ref: `origin/${authority.branch}`,
+          head: metadata.repository.finalHead,
+          live: metadata.repository.finalHead,
+          parity: true,
+        })
+        && stableJson(repositoryData.packageScriptChanges) === stableJson(R1_ALLOWED_PACKAGE_SCRIPT_CHANGES)
+        && stableJson(repositoryData.toolingReportDiff) === stableJson(EXPECTED_R1_CHANGED_PATH_RECORDS)
+        && stableJson(repositoryData.productionDiffScope) === stableJson([
+          ...R1_PRODUCTION_DIFF_PATHS,
+          "package.json except approved R1 evidence/test scripts",
+        ]);
+      const deploymentData = document.deployment.data;
+      const exactDeploymentAuthority = deploymentData?.status === "PASS"
+        && deploymentData.appSlug === "cloudflare-workers-and-pages"
+        && deploymentData.deploymentId === metadata.deployment.id
+        && deploymentData.immutableUrl === metadata.deployment.immutableUrl
+        && deploymentData.branchUrl === metadata.deployment.branchUrl
+        && deploymentData.branch === authority.branch
+        && deploymentData.commitHash === metadata.repository.finalHead
+        && deploymentData.environment === "preview"
+        && stableJson(deploymentData.branchBinding) === stableJson({
+          status: "PASS",
+          source: "SIGNED_CHECK_EXACT_BRANCH_ALIAS",
+          branch: authority.branch,
+          branchUrl: metadata.deployment.branchUrl,
+        });
+      const exactOriginAuthority = document.origins.immutable.data?.origin === metadata.deployment.immutableUrl
+        && document.origins.immutable.data?.status === "PASS"
+        && document.origins.branch.data?.origin === metadata.deployment.branchUrl
+        && document.origins.branch.data?.status === "PASS";
+      const exactChecks = {
+        exactR1BranchParentAndFrozenMain: true,
+        zeroProductionSourceDiff: true,
+        signedSuccessfulDeploymentBindsExactHead: true,
+        immutableLocalByteParity: true,
+        branchLocalByteParity: true,
+        real404HeadersCanonicalAndTenRoutes: true,
+      };
+      if (inputs.repository !== R1_REQUIRED_REPOSITORY || inputs.localDist !== "dist"
+        || !exactRepositoryAuthority || !exactDeploymentAuthority || !exactOriginAuthority
+        || stableJson(document.checks) !== stableJson(exactChecks)) {
+        throw new Error("R1 deployment inner repository/deployment/origin authority differs from final metadata");
+      }
+      if (stableJson(repositoryData.productionSourceDiff) !== stableJson([])) throw new Error("R1 deployment production-source diff differs from the zero-production metadata authority");
+      const deploymentToolingPaths = r1DiffPaths(repositoryData.toolingReportDiff, "R1 deployment tooling/report diff");
+      const metadataToolingPaths = pathValues(metadata.changes.toolingReportFiles);
+      if (stableJson([...deploymentToolingPaths].sort(lexicalCompare)) !== stableJson([...R1_TOOLING_REPORT_FILES].sort(lexicalCompare))
+        || stableJson([...metadataToolingPaths].sort(lexicalCompare)) !== stableJson([...deploymentToolingPaths].sort(lexicalCompare))) {
+        throw new Error("R1 deployment tooling/report diff does not match the exact metadata change ledger");
+      }
+      if (repositoryData.trackedFileDelta !== undefined && repositoryData.trackedFileDelta !== metadata.changes.trackedFileDelta) throw new Error("R1 deployment trackedFileDelta differs from final metadata");
+      if (repositoryData.trackedByteDelta !== undefined && repositoryData.trackedByteDelta !== metadata.changes.trackedByteDelta) throw new Error("R1 deployment trackedByteDelta differs from final metadata");
+      validateR1DeploymentRawParity(document, metadata);
+    }
   }
   if (record.role === "cross-engine-summary") {
     const expectedCases = engine === "chromium" ? 130 : 34;
@@ -1904,6 +3032,7 @@ export function validateDocumentAuthority(record, document, metadata) {
     validateAccessibilityInteractionMatrix(document, engine);
   }
   if (record.role === "accessibility-interaction-limitation") {
+    validateAccessibilityReport(document);
     const sourceStatus = normalizeEvidenceStatus(document.status);
     const failedSource = sourceStatus === "FAIL"
       && document.summary?.failures >= 1
@@ -1928,6 +3057,7 @@ export function validateDocumentAuthority(record, document, metadata) {
   if (record.role === "regression-summary") {
     if (document.status !== "PASS" || document.target?.baseUrl !== metadata.evidenceContext.browserQa.baseUrl || document.checks?.length !== 7 || document.checks.some((check) => check?.status !== "PASS") || document.sharedDom?.status !== "PASS" || !Array.isArray(document.sharedDom?.assertions) || document.sharedDom.assertions.some((assertion) => assertion?.pass !== true) || document.failures?.length !== 0) throw new Error("repair-regression exact tuple differs");
   }
+  if (record.role === "r1-node22-validation-summary") validateR1Node22Validation(document, metadata);
   if (record.role === "physical-device-result") validateHumanEvidenceLedger(document);
   if (record.role === "r1-motion-summary") validateR1MotionReport(document, engine, metadata);
   if (record.role === "r1-persistent-lifecycle-summary") validateR1PersistentLifecycle(document, record, metadata);
@@ -1951,7 +3081,7 @@ async function curateArtifact(sourceRoot, record, metadata) {
     if (sourceStatus === "FAIL" && !["FAIL", "LIMITATION"].includes(record.status)) throw new Error(`failed JSON report requires an explicit FAIL or LIMITATION artifact: ${record.source}`);
     if (["LIMITATION", "NOT OBSERVED", "PENDING HUMAN REVIEW"].includes(sourceStatus) && record.status === "PASS") throw new Error(`non-PASS JSON report cannot be promoted to a PASS artifact: ${record.source}`);
     const acceptedSchemas = JSON_ROLE_SCHEMAS[record.role];
-    if (acceptedSchemas && !acceptedSchemas.includes(document?.schema)) throw new Error(`source JSON schema differs for ${record.role}: ${record.source}`);
+    if (acceptedSchemas && !acceptedSchemas.includes(document?.schema) && !(record.role === "r1-node22-validation-summary" && isR1Node22ValidationSchema(document?.schema))) throw new Error(`source JSON schema differs for ${record.role}: ${record.source}`);
     if (record.status === "PASS" && sourceStatus !== "PASS") throw new Error(`PASS artifact requires a PASS source report: ${record.source}`);
     validateDocumentAuthority(record, document, metadata);
     const sanitized = sanitizeJsonValue(document, record.source);
@@ -1986,9 +3116,9 @@ async function curateArtifact(sourceRoot, record, metadata) {
     data = Buffer.from(bytes);
   } else if (kind === "video") {
     if (sourceExtension !== ".mp4") throw new Error(`video evidence must be MP4: ${record.source}`);
-    validateMp4(bytes, record.source);
+    const mp4 = validateMp4(bytes, record.source);
     media = record.role === "physical-device-recording"
-      ? { container: "mp4", humanSupplied: true, byteSize: bytes.length, sha256: sha256(bytes) }
+      ? { ...mp4, humanSupplied: true, byteSize: bytes.length, sha256: sha256(bytes) }
       : record.role === "r1-motion-recording"
         ? await validateR1MotionBoundMedia(sourceRoot, record, bytes, metadata)
         : await validateCaptureBoundMedia(sourceRoot, record, bytes);
@@ -2022,13 +3152,39 @@ function validateHumanEvidenceBindings(metadata, entries) {
     const artifactRecord = metadata.artifacts.find((artifact) => artifact.role === "physical-device-recording" && path.posix.basename(artifact.source) === record.filename);
     const assembled = artifactRecord && recordingEntries.find(({ source }) => source === artifactRecord.source);
     if (!artifactRecord || !assembled || artifactRecord.status !== record.status || assembled.status !== record.status
-      || artifactRecord.expectedSha256 !== record.sha256 || assembled.data.length !== record.byteSize || sha256(assembled.data) !== record.sha256) {
+      || artifactRecord.expectedSha256 !== record.sha256 || assembled.data.length !== record.byteSize || sha256(assembled.data) !== record.sha256
+      || stableJson({
+        container: assembled.media?.container,
+        durationSeconds: assembled.media?.durationSeconds,
+        sampleCount: assembled.media?.sampleCount,
+        videoTrackCount: assembled.media?.videoTrackCount,
+      }) !== stableJson(record.mediaValidation)
+      || (record.status !== "PENDING HUMAN REVIEW" && (record.reviewedSha256 !== record.sha256 || record.reviewedByteSize !== record.byteSize))) {
       throw new Error(`human-evidence recording is not hash/size/status bound into the package: ${record.filename}`);
     }
   }
   if (recordingEntries.length !== REQUIRED_HUMAN_EVIDENCE_FILES.length) throw new Error("physical-device recording inventory contains an unbound or duplicate file");
   ledger.verified = true;
   return { status: ledger.status, verified: true };
+}
+
+function validateR1DeploymentNodeManifestBinding(metadata, entries) {
+  if (authorityProfileForBranch(metadata.repository.branch).id !== "phase6-r1") return;
+  const deploymentEntry = entries.find(({ role }) => role === "deployment-verifier");
+  const node22Entry = entries.find(({ role }) => role === "r1-node22-validation-summary");
+  if (!deploymentEntry || !node22Entry) throw new Error("R1 deployment/Node 22 cross-authority artifacts are missing");
+  const deployment = JSON.parse(deploymentEntry.data.toString("utf8"));
+  const node22Wrapper = JSON.parse(node22Entry.data.toString("utf8"));
+  const node22 = node22Wrapper.payload;
+  const manifest = validateEmbeddedDistManifest(
+    node22?.distributionComparison?.node22?.manifestText,
+    node22?.distributionComparison?.node22?.manifestSha256,
+    "Node 22 deployment cross-binding",
+  );
+  const deploymentLedger = deployment.dist?.files?.map(({ relativePath, bytes, sha256: fileSha256 }) => ({ relativePath, bytes, sha256: fileSha256 }));
+  if (stableJson(deploymentLedger) !== stableJson(manifest.records)) {
+    throw new Error("R1 deployment dist ledger does not exactly match the hash-bound Node 22 distribution manifest");
+  }
 }
 
 function posterLabel(width, text) {
@@ -2278,12 +3434,44 @@ function generatedAuthorityEntries(metadata) {
     jsonEntry("00-provenance/change-ledger.json", { schema: `${SCHEMA}.change-ledger`, status: "PASS", ...changes }),
     jsonEntry("00-provenance/deployment-authority-summary.json", { schema: `${SCHEMA}.deployment-authority-summary`, status: "PASS", branch: repository.branch, finalHead: repository.finalHead, deployment, evidenceContext: metadata.evidenceContext }),
     jsonEntry("00-provenance/dist-deployment-parity.json", { schema: `${SCHEMA}.dist-deployment-parity`, status: deployment.parity, finalHead: repository.finalHead, deployedSha: deployment.deployedSha, parity: deployment.parity, ...(deployment.dist ?? {}) }),
-    jsonEntry("00-provenance/final-build-test.json", { schema: `${SCHEMA}.final-build-test`, status: "PASS", build: verification.build, tests: verification.tests, publication: verification.publication, routeBudgets: verification.routeBudgets }),
     textEntry("00-provenance/final-limitations.md", limitations),
     jsonEntry("00-provenance/final-handoff-seed.json", finalHandoffSeed(metadata)),
     jsonEntry("01-baseline/accepted-phase5b-reference-hashes.json", { schema: `${SCHEMA}.accepted-phase5b-reference-hashes`, status: "PASS", hashes: metadata.baseline.acceptedPhase5bReferenceHashes }),
     jsonEntry("01-baseline/initial-browser-runtime-inventory.json", { schema: `${SCHEMA}.initial-browser-runtime-inventory`, status: "PASS", inventory: metadata.baseline.initialBrowserRuntimeInventory }),
   ].map((entry) => ({ ...entry, role: "generated-authority" }));
+}
+
+function finalBuildTestEntry(metadata, node22Entry = null) {
+  const verification = metadata.verification;
+  const authority = authorityProfileForBranch(metadata.repository.branch);
+  let node22Validation;
+  if (authority.id === "phase6-r1") {
+    if (!node22Entry) throw new Error("R1 final-build-test requires the Node 22 integrated validation artifact");
+    const wrapper = JSON.parse(node22Entry.data.toString("utf8"));
+    const document = wrapper.payload;
+    node22Validation = {
+      artifact: { path: node22Entry.path, source: wrapper.source.relativePath, sha256: wrapper.source.sha256 },
+      schema: document.schema,
+      status: document.status,
+      sealedAtUtc: document.sealedAtUtc,
+      repository: document.repository,
+      runtime: document.runtime,
+      outcomes: document.outcomes,
+      distributionComparison: document.distributionComparison,
+    };
+  }
+  return {
+    ...jsonEntry("00-provenance/final-build-test.json", {
+      schema: `${SCHEMA}.final-build-test`,
+      status: "PASS",
+      build: verification.build,
+      tests: verification.tests,
+      publication: verification.publication,
+      routeBudgets: verification.routeBudgets,
+      ...(node22Validation ? { node22Validation } : {}),
+    }),
+    role: "generated-authority",
+  };
 }
 
 export function guardedRequirementAssessment(section, requirement, entries) {
@@ -2296,12 +3484,16 @@ export function guardedRequirementAssessment(section, requirement, entries) {
       ? "FAIL"
       : r1Statuses.length
         ? aggregateCoverageStatuses(r1Statuses, "NOT OBSERVED")
-        : aggregateEvidenceStatuses(statuses, "NOT OBSERVED");
+        : aggregateCoverageStatuses(statuses, "NOT OBSERVED");
     return {
       status,
       statement: status === "PASS"
         ? "A source report observed persisted BFCache restoration."
-        : "No source report observed persisted BFCache restoration; ordinary Back/Forward evidence does not promote BFCache to PASS.",
+        : status === "FAIL"
+          ? "Observed raw lifecycle evidence recorded a BFCache restoration failure; ordinary Back/Forward evidence cannot suppress it."
+          : status === "LIMITATION"
+            ? "The browser host limited BFCache observation; ordinary Back/Forward evidence does not promote BFCache to PASS."
+            : "No source report observed persisted BFCache restoration; ordinary Back/Forward evidence does not promote BFCache to PASS.",
     };
   }
   if (section === "03-homepage-motion" && requirement === "hidden/visible behavior") {
@@ -2313,18 +3505,18 @@ export function guardedRequirementAssessment(section, requirement, entries) {
       .filter((entry) => entry.taxonomy?.humanEvidence?.verified && entry.taxonomy.humanEvidence.hiddenVisible)
       .map((entry) => entry.taxonomy.humanEvidence.hiddenVisible);
     const statuses = [...machineStatuses, ...humanStatuses];
-    const status = statuses.some((candidate) => normalizeEvidenceStatus(candidate) === "FAIL")
-      ? "FAIL"
-      : humanStatuses.length
-        ? aggregateEvidenceStatuses(humanStatuses, "PENDING HUMAN REVIEW")
-        : r1Statuses.length
-          ? aggregateCoverageStatuses(r1Statuses, "NOT OBSERVED")
-          : aggregateEvidenceStatuses(machineStatuses, "NOT OBSERVED");
+    const status = aggregateCoverageStatuses(statuses, "NOT OBSERVED");
     return {
       status,
       statement: status === "PASS"
         ? "A real hidden/visible transition was observed with coherent return state."
-        : "A real hidden/visible transition was not observed successfully; synthetic lifecycle coverage cannot promote this requirement to PASS.",
+        : status === "FAIL"
+          ? "An observed hidden/visible transition recorded a lifecycle failure; synthetic or successful evidence cannot suppress it."
+          : status === "LIMITATION"
+            ? "The browser host limited real hidden/visible observation; synthetic lifecycle coverage cannot promote this requirement to PASS."
+            : status === "PENDING HUMAN REVIEW"
+              ? "Physical Safari hidden/visible review remains pending; synthetic lifecycle coverage cannot promote this requirement to PASS."
+              : "A real hidden/visible transition was not observed; synthetic lifecycle coverage cannot promote this requirement to PASS.",
     };
   }
   if (section === "09-accessibility" && ["keyboard", "focus", "mobile menu"].includes(requirement)) {
@@ -2349,6 +3541,8 @@ export function guardedRequirementAssessment(section, requirement, entries) {
       status,
       statement: status === "PASS"
         ? "A hash-bound human recording verified genuine 200% browser zoom across all ten route outcomes."
+        : status === "FAIL"
+          ? "The hash-bound genuine 200% browser-zoom review recorded one or more failed route outcomes; see the addressed recording observations and failure references."
         : proxyOnly
           ? "Only the 720×450 reflow proxy is present; it is supplemental and cannot satisfy genuine 200% browser zoom."
           : "Genuine 200% browser-zoom evidence remains pending verified human review.",
@@ -2363,7 +3557,9 @@ export function guardedRequirementAssessment(section, requirement, entries) {
       status,
       statement: status === "PASS"
         ? "All required physical-device recordings were ingested, hash/size bound and reviewed as PASS."
-        : "Physical-device requirements remain pending until all required human recordings are ingested, hash/size bound and actually reviewed.",
+        : status === "FAIL"
+          ? "One or more hash/size-bound physical-device reviews recorded a visible failure; see the addressed recording observations and failure references."
+          : "Physical-device requirements remain pending until all required human recordings are ingested, hash/size bound and actually reviewed.",
     };
   }
   return null;
@@ -2424,6 +3620,7 @@ function evidenceRolesForRequirement(section, requirement, { posterIncluded }) {
 }
 
 function sectionSummary(section, metadata, existingEntries, { posterIncluded }) {
+  const authority = authorityProfileForBranch(metadata.repository.branch);
   const allEvidence = existingEntries
     .filter((entry) => !entry.path.endsWith("/section-summary.json"))
     .map((entry) => ({ path: entry.path, role: entry.role, byteSize: entry.data.length, sha256: sha256(entry.data) }))
@@ -2434,6 +3631,9 @@ function sectionSummary(section, metadata, existingEntries, { posterIncluded }) 
   if (section === "01-baseline") evidence.push(
     { path: "01-baseline/PHASE_6_BASELINE.md", role: "packager-injected-report", generatedByPackager: true },
     { path: "01-baseline/PHASE_6_DEFECT_LEDGER.md", role: "packager-injected-report", generatedByPackager: true },
+  );
+  if (section === "01-baseline" && authority.id === "phase6-r1") evidence.push(
+    { path: "01-baseline/PHASE_6_R1_VALIDATION_CLOSURE.md", role: "packager-injected-report", generatedByPackager: true },
   );
   if (section === "10-poster-study") evidence.push({ path: "10-poster-study/PHASE_6_POSTER_STUDY.md", role: "packager-injected-report", generatedByPackager: true });
   if (section === "11-physical-device") evidence.push({ path: "11-physical-device/PHASE_6_PHYSICAL_DEVICE_HANDOFF.md", role: "packager-injected-report", generatedByPackager: true });
@@ -2515,8 +3715,11 @@ export async function buildEvidenceEntries({ sourceEvidenceRoot, finalMetadata, 
   if (!posterStudyDirectory) throw new Error("--poster-study-directory is mandatory for a final evidence assembly");
   const posterRoot = await checkedDirectory(posterStudyDirectory, "poster-study directory");
   const metadata = validateFinalMetadata(finalMetadata, { posterStudyDirectory: posterRoot });
+  const authority = authorityProfileForBranch(metadata.repository.branch);
   const entries = generatedAuthorityEntries(metadata);
   for (const record of metadata.artifacts) entries.push(await curateArtifact(sourceRoot, record, metadata));
+  validateR1DeploymentNodeManifestBinding(metadata, entries);
+  entries.push(finalBuildTestEntry(metadata, entries.find(({ role }) => role === "r1-node22-validation-summary") ?? null));
   validateHumanEvidenceBindings(metadata, entries);
   let posterIncluded = false;
   if (posterRoot) {
@@ -2535,7 +3738,7 @@ export async function buildEvidenceEntries({ sourceEvidenceRoot, finalMetadata, 
     inventoryExcludingSelf: preliminary.entries.map((entry) => ({ path: entry.path, byteSize: entry.data.length, sha256: sha256(entry.data), role: entry.role })),
     inventoryExcludingSelfBytes: preliminary.totalBytes,
     reservedPathsAbsent: [...RESERVED_PATHS].sort(lexicalCompare),
-    downstream: { packagerAddsTrackedReports: 4, packagerAddsGitProvenance: true, packagerAddsManifestAndPackageMetadata: true, independentAuditIsSibling: true },
+    downstream: { packagerAddsTrackedReports: authority.id === "phase6-r1" ? 5 : 4, packagerAddsGitProvenance: true, packagerAddsManifestAndPackageMetadata: true, independentAuditIsSibling: true },
     humanReviewGates: HUMAN_REVIEW_GATES,
     authorization: AUTHORIZATION,
   };
@@ -2632,7 +3835,7 @@ export function parseArguments(argv) {
 
 export function selfTest() {
   if (TOPOLOGY_SECTIONS.length !== 14 || Object.keys(BRIEF_REQUIREMENTS).length !== 14 || FINAL_HANDOFF_FIELDS.length !== 66 || Object.keys(HUMAN_REVIEW_GATES).length !== 6 || Object.values(AUTHORIZATION).some(Boolean)
-    || R1_MOTION_RECORDING_SPECS.length !== 5 || Object.keys(R1_REQUIRED_ARTIFACT_ROLES).length !== 5) throw new Error("Phase 6 evidence assembler contract differs");
+    || R1_MOTION_RECORDING_SPECS.length !== 5 || Object.keys(R1_REQUIRED_ARTIFACT_ROLES).length !== 6) throw new Error("Phase 6 evidence assembler contract differs");
   return {
     schema: `${SCHEMA}.self-test`,
     status: "PASS",

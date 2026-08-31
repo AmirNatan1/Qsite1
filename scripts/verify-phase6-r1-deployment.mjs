@@ -44,26 +44,27 @@ export const PRODUCTION_DIFF_PATHS = Object.freeze([
   ".nvmrc",
   "tsconfig.json",
 ]);
-export const ALLOWED_R1_CHANGED_PATHS = Object.freeze([
-  "PHASE_6_R1_VALIDATION_CLOSURE.md",
-  "package.json",
-  "scripts/assemble-phase6-final-evidence.mjs",
-  "scripts/audit-phase6-human-review-package.mjs",
-  "scripts/capture-phase6-r1-motion-evidence.mjs",
-  "scripts/ingest-phase6-r1-human-evidence.mjs",
-  "scripts/package-phase6-human-review.mjs",
-  "scripts/qa-phase6-accessibility-interactions.mjs",
-  "scripts/qa-phase6-r1-persistent-lifecycle.mjs",
-  "scripts/verify-phase6-deployment.mjs",
-  "scripts/verify-phase6-r1-deployment.mjs",
-  "tests/phase6-accessibility-interactions.test.mjs",
-  "tests/phase6-evidence-assembler.test.mjs",
-  "tests/phase6-package-tooling.test.mjs",
-  "tests/phase6-r1-deployment-verifier.test.mjs",
-  "tests/phase6-r1-human-evidence.test.mjs",
-  "tests/phase6-r1-motion-capture.test.mjs",
-  "tests/phase6-r1-persistent-lifecycle.test.mjs",
+export const EXPECTED_R1_CHANGED_PATH_RECORDS = Object.freeze([
+  "A\tPHASE_6_R1_VALIDATION_CLOSURE.md",
+  "M\tpackage.json",
+  "M\tscripts/assemble-phase6-final-evidence.mjs",
+  "M\tscripts/audit-phase6-human-review-package.mjs",
+  "A\tscripts/capture-phase6-r1-motion-evidence.mjs",
+  "A\tscripts/ingest-phase6-r1-human-evidence.mjs",
+  "M\tscripts/package-phase6-human-review.mjs",
+  "M\tscripts/qa-phase6-accessibility-interactions.mjs",
+  "A\tscripts/qa-phase6-r1-persistent-lifecycle.mjs",
+  "M\tscripts/verify-phase6-deployment.mjs",
+  "A\tscripts/verify-phase6-r1-deployment.mjs",
+  "M\ttests/phase6-accessibility-interactions.test.mjs",
+  "M\ttests/phase6-evidence-assembler.test.mjs",
+  "M\ttests/phase6-package-tooling.test.mjs",
+  "A\ttests/phase6-r1-deployment-verifier.test.mjs",
+  "A\ttests/phase6-r1-human-evidence.test.mjs",
+  "A\ttests/phase6-r1-motion-capture.test.mjs",
+  "A\ttests/phase6-r1-persistent-lifecycle.test.mjs",
 ]);
+export const ALLOWED_R1_CHANGED_PATHS = Object.freeze(EXPECTED_R1_CHANGED_PATH_RECORDS.map((record) => record.slice(2)));
 export const REQUIRED_R1_TEST_FILES = Object.freeze([
   "tests/phase6-r1-human-evidence.test.mjs",
   "tests/phase6-r1-motion-capture.test.mjs",
@@ -195,6 +196,7 @@ export function validateChangedPathAuthority(diffText) {
     records.push(`${status}\t${file}`);
   }
   assert.deepEqual([...seen].sort(), [...allowed].sort(), "R1 changed-path set must contain every exact approved tooling/report file");
+  assert.deepEqual(records, EXPECTED_R1_CHANGED_PATH_RECORDS, "R1 changed-path statuses/order differ from the exact base-to-R1 authority");
   return records;
 }
 
