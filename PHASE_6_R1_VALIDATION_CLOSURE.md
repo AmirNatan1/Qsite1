@@ -67,6 +67,8 @@ Accessibility PASS now requires the current producer’s complete raw evidence:
 
 URL waits are report-completing and fail-closed. A control that does not receive focus or navigate produces a structured failure/limitation record instead of aborting the engine or disappearing from coverage.
 
+A fresh isolated Chromium run reproduced a second tooling-only sequencing defect: the desktop Home-row check reopened a fresh Home document and immediately attempted to focus the deliberately inert header, before the accepted physical cinematic had released `#entry`. The repair prepares that one row with recorded native wheel input, requires media readiness, a resolved manifesto, and a non-inert entry before testing the header control, and makes the validator reject missing or contradictory preparation evidence. The repaired Chromium matrix completed 20/20 axe cases with zero violations, zero engine errors, and zero interaction failures. No production source was changed.
+
 The last isolated WebKit behavior was a Windows-host native focus-policy limitation rather than a reproduced production defect. It is not promoted to PASS. Retained Chromium, Firefox, and WebKit accessibility payloads created before the raw keyboard contract was expanded are intentionally rejected and must be regenerated after the final commit. Their final statuses and SHA-256 values will be returned in the final handoff.
 
 ## Human evidence stop

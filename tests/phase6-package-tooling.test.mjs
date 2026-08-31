@@ -623,7 +623,7 @@ function accessibilityFixture(engine, { axeOnly = false, failed = false } = {}) 
     const forwardSecond = route.id === "home" ? visibleFocus("/for-startups/", ["audience-trajectory"], "a|/for-startups/|Startups") : visibleFocus("/fixture-two/", ["fixture-link"], "a|/fixture-two/|Two");
     return {
       afterActivation: { activeId: expectedHash.slice(1), hash: expectedHash, targetVisible: true }, backward: { ...forwardFirst },
-      desktopHome: { activationError: null, arrival: { entryInert: false, hash: "#entry", manifestoReveal: "resolved", path: "/", route: "/#entry" }, back: { hash: "", path: route.path, route: route.path }, backError: null, focus: visibleFocus("/#entry"), forward: { hash: "#entry", path: "/", route: "/#entry" }, forwardError: null },
+      desktopHome: { activationError: null, arrival: { entryInert: false, hash: "#entry", manifestoReveal: "resolved", path: "/", route: "/#entry" }, back: { hash: "", path: route.path, route: route.path }, backError: null, focus: visibleFocus("/#entry"), forward: { hash: "#entry", path: "/", route: "/#entry" }, forwardError: null, preparation: route.id === "home" ? { input: "NATIVE WHEEL", ready: true, resolved: true, state: { entryInert: false, hash: "", manifestoReveal: "resolved", path: "/", route: "/" }, wheelSteps: 12 } : null },
       engine, expectedHash, failures: [], first, forwardFirst, forwardSecond, route: route.id, routePath: route.path, status: "PASS",
     };
   });

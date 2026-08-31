@@ -140,6 +140,13 @@ function accessibilityDesktopHome(routePath) {
     focus: { ...accessibilityFocus("a|/#entry|Home"), href: "/#entry" },
     forward: { entryInert: false, hash: "#entry", manifestoReveal: "resolved", path: "/", route: "/#entry" },
     forwardError: null,
+    preparation: routePath === "/" ? {
+      input: "NATIVE WHEEL",
+      ready: true,
+      resolved: true,
+      state: { entryInert: false, hash: "", manifestoReveal: "resolved", path: "/", route: "/" },
+      wheelSteps: 12,
+    } : null,
   };
 }
 

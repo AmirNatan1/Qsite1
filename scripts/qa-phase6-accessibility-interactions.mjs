@@ -297,6 +297,15 @@ export function keyboardFailures(record) {
     }
   }
   const desktopHome = record.desktopHome;
+  if (record.route === "home") {
+    const preparation = desktopHome?.preparation;
+    if (!preparation || preparation.input !== "NATIVE WHEEL" || preparation.ready !== true
+      || preparation.resolved !== true || !Number.isInteger(preparation.wheelSteps) || preparation.wheelSteps < 1
+      || preparation.state?.path !== "/" || preparation.state?.entryInert !== false
+      || preparation.state?.manifestoReveal !== "resolved") {
+      failures.push({ code: "desktop-home-preparation", actual: preparation ?? null });
+    }
+  }
   if (desktopHome?.activationError) failures.push({ code: "desktop-home-navigation-wait", actual: desktopHome.activationError });
   if (desktopHome?.backError) failures.push({ code: "desktop-home-back-wait", actual: desktopHome.backError });
   if (desktopHome?.forwardError) failures.push({ code: "desktop-home-forward-wait", actual: desktopHome.forwardError });
@@ -330,8 +339,30 @@ async function observeDesktopHomeState(page) {
   });
 }
 
+async function prepareHomeHeaderNavigation(page, options) {
+  const ready = await page.waitForFunction(() => (
+    document.documentElement.dataset.cinematicMode === "enhanced"
+    && document.querySelector("[data-cinematic-shell]")?.getAttribute("data-media-state") === "ready"
+  ), undefined, { timeout: options.timeoutMs }).then(() => true, () => false);
+  let wheelSteps = 0;
+  while (wheelSteps < 24) {
+    const resolved = await page.locator("[data-cinematic-shell]").getAttribute("data-manifesto-reveal").catch(() => null);
+    if (resolved === "resolved") break;
+    await page.mouse.wheel(0, 1_200);
+    wheelSteps += 1;
+    await page.waitForTimeout(80);
+  }
+  const resolved = await page.waitForFunction(() => (
+    document.querySelector("[data-cinematic-shell]")?.getAttribute("data-manifesto-reveal") === "resolved"
+    && !document.querySelector("#entry")?.hasAttribute("inert")
+  ), undefined, { timeout: Math.min(options.timeoutMs, 6_000) }).then(() => true, () => false);
+  const state = await observeDesktopHomeState(page);
+  return { input: "NATIVE WHEEL", ready, resolved, wheelSteps, state };
+}
+
 async function observeDesktopHomeNavigation(page, options, route) {
   await openRoute(page, options, route);
+  const preparation = route.id === "home" ? await prepareHomeHeaderNavigation(page, options) : null;
   const focus = await focusByTab(page, ".site-header .brand-link[href='/#entry']", 40);
   let arrival = await observeDesktopHomeState(page);
   let back = null;
@@ -370,7 +401,7 @@ async function observeDesktopHomeNavigation(page, options, route) {
       }
     }
   }
-  return { activationError, arrival, back, backError, focus, forward, forwardError };
+  return { activationError, arrival, back, backError, focus, forward, forwardError, preparation };
 }
 
 async function observeSkipActivation(page, expectedHash) {

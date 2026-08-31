@@ -46,6 +46,13 @@ function desktopHome(routePath) {
     focus: { ...focused("a|/#entry|Home"), href: "/#entry" },
     forward: { entryInert: false, hash: "#entry", manifestoReveal: "resolved", path: "/", route: "/#entry" },
     forwardError: null,
+    preparation: routePath === "/" ? {
+      input: "NATIVE WHEEL",
+      ready: true,
+      resolved: true,
+      state: { entryInert: false, hash: "", manifestoReveal: "resolved", path: "/", route: "/" },
+      wheelSteps: 12,
+    } : null,
   };
 }
 
@@ -240,6 +247,13 @@ test("keyboard validator covers visible skip activation and reverse focus order"
   assert.ok(codes.includes("shift-tab-order"));
 });
 
+test("Home desktop navigation requires native cinematic preparation evidence", () => {
+  const record = keyboardRow("chromium", PHASE6_ROUTES.find(({ id }) => id === "home"));
+  assert.deepEqual(record.failures, []);
+  delete record.desktopHome.preparation;
+  assert.ok(keyboardFailures(record).some(({ code }) => code === "desktop-home-preparation"));
+});
+
 test("mobile-menu validator requires close, Escape focus return and every repeat cycle", () => {
   const closed = { activeIsTrigger: true, ariaExpanded: "false", hash: "", open: false, path: "/about/" };
   const open = { activeIsTrigger: true, ariaExpanded: "true", hash: "", open: true, path: "/about/" };
@@ -351,6 +365,8 @@ test("runner uses real axe and native keyboard without broad suppression", async
   assert.doesNotMatch(source, /disableRules|rules:\s*\{|exclude:\s*\[/);
   assert.match(source, /page\.keyboard\.press\("Tab"\)/);
   assert.match(source, /page\.keyboard\.press\("Shift\+Tab"\)/);
+  assert.match(source, /prepareHomeHeaderNavigation/);
+  assert.match(source, /page\.mouse\.wheel\(0, 1_200\)/);
   assert.match(source, /waitForURL\([\s\S]{0,200}waitUntil:\s*"commit"/);
   assert.match(source, /navigationFocus\.href === "\/#entry"/);
   assert.match(source, /page\.keyboard\.press\("Escape"\)/);
