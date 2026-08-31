@@ -383,11 +383,28 @@ function optionalPerformanceFacet(browser, name) {
 function buildDeltaSummary(buildDelta) {
   const complete = buildDelta?.comparisons?.complete?.totals ?? {};
   const isolated = buildDelta?.comparisons?.signalFieldIsolated?.totals ?? {};
-  const summarize = (totals) => ({
-    acceptedBytes: Number.isFinite(totals?.accepted) ? totals.accepted : null,
-    phase7aBytes: Number.isFinite(totals?.phase7a) ? totals.phase7a : null,
-    deltaBytes: Number.isFinite(totals?.delta) ? totals.delta : null,
-  });
+  const metric = (value) => {
+    if (Number.isFinite(value)) return { files: null, rawBytes: value, gzipBytes: null, brotliBytes: null };
+    return {
+      files: Number.isFinite(value?.files) ? value.files : null,
+      rawBytes: Number.isFinite(value?.rawBytes) ? value.rawBytes : null,
+      gzipBytes: Number.isFinite(value?.gzipBytes) ? value.gzipBytes : null,
+      brotliBytes: Number.isFinite(value?.brotliBytes) ? value.brotliBytes : null,
+    };
+  };
+  const summarize = (totals) => {
+    const accepted = metric(totals?.accepted);
+    const phase7a = metric(totals?.phase7a);
+    const delta = metric(totals?.delta);
+    return {
+      acceptedBytes: accepted.rawBytes,
+      phase7aBytes: phase7a.rawBytes,
+      deltaBytes: delta.rawBytes,
+      accepted,
+      phase7a,
+      delta,
+    };
+  };
   return {
     compression: buildDelta?.compression ?? null,
     complete: summarize(complete),

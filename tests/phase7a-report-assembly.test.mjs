@@ -78,11 +78,19 @@ function buildDelta() {
     },
     comparisons: {
       complete: {
-        totals: { accepted: 100000, phase7a: 103500, delta: 3500 },
+        totals: {
+          accepted: { files: 100, rawBytes: 100000, gzipBytes: 50000, brotliBytes: 45000 },
+          phase7a: { files: 105, rawBytes: 103500, gzipBytes: 52000, brotliBytes: 47000 },
+          delta: { files: 5, rawBytes: 3500, gzipBytes: 2000, brotliBytes: 2000 },
+        },
         changes: { added: ["one.css"], removed: [], changed: ["two.js"], unchanged: [] },
       },
       signalFieldIsolated: {
-        totals: { accepted: 80000, phase7a: 82500, delta: 2500 },
+        totals: {
+          accepted: { files: 80, rawBytes: 80000, gzipBytes: 40000, brotliBytes: 36000 },
+          phase7a: { files: 82, rawBytes: 82500, gzipBytes: 41500, brotliBytes: 37500 },
+          delta: { files: 2, rawBytes: 2500, gzipBytes: 1500, brotliBytes: 1500 },
+        },
         changes: { added: ["one.css"], removed: [], changed: ["two.js"], unchanged: [] },
       },
     },
@@ -202,7 +210,16 @@ test("writes a deterministic 29-file external report set with six pending human 
 
   assert.equal(JSON.parse(first.get("01-accessibility.json")).status, "PASS");
   assert.equal(JSON.parse(first.get("02-responsive.json")).status, "PASS");
-  assert.equal(JSON.parse(first.get("06-performance-lifecycle.json")).status, "LIMITATION");
+  const performance = JSON.parse(first.get("06-performance-lifecycle.json"));
+  assert.equal(performance.status, "LIMITATION");
+  assert.deepEqual(performance.summary.buildDelta.complete, {
+    acceptedBytes: 100000,
+    phase7aBytes: 103500,
+    deltaBytes: 3500,
+    accepted: { files: 100, rawBytes: 100000, gzipBytes: 50000, brotliBytes: 45000 },
+    phase7a: { files: 105, rawBytes: 103500, gzipBytes: 52000, brotliBytes: 47000 },
+    delta: { files: 5, rawBytes: 3500, gzipBytes: 2000, brotliBytes: 2000 },
+  });
   assert.equal(JSON.parse(first.get("08-publication.json")).status, "PASS");
   assert.equal(JSON.parse(first.get("09-physical-hashes.json")).status, "PASS");
   assert.equal(JSON.parse(first.get("12-deployment-provenance.json")).status, "NOT AVAILABLE TO EXECUTION ENVIRONMENT");
