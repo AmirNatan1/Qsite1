@@ -1,4 +1,15 @@
 @font-face {
+  font-family: "Anybody";
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 50% 150%;
+  font-display: swap;
+  src: url("/fonts/anybody-latin-variable.woff2") format("woff2-variations");
+}
+
+/* Maradin is explicitly frozen during Phase 7A. Syne remains a route-local
+   compatibility face there only; it is not part of the new Signal Field. */
+@font-face {
   font-family: "Syne";
   font-style: normal;
   font-weight: 800;
@@ -43,13 +54,18 @@ h4 {
   margin: 0;
   color: var(--text-heading);
   font-family: var(--font-display);
-  font-weight: 800;
+  font-stretch: 106%;
+  font-weight: 650;
   hyphens: none;
   letter-spacing: -0.04em;
   line-height: 0.98;
   overflow-wrap: normal;
   text-wrap: wrap;
   word-break: normal;
+}
+
+.maradin-page {
+  --font-display: "Syne", "Arial Black", Arial, sans-serif;
 }
 
 h1 {

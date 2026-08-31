@@ -13,6 +13,10 @@
   --q-magenta: #d82b72;
   --q-magenta-soft: #f06ba0;
   --q-magenta-dark: #b81f5e;
+  --field-black: #080b0c;
+  --field-graphite: #151a1b;
+  --field-steel: #7f8b8b;
+  --field-burgundy: #2a111b;
   --text-heading: var(--q-white);
   --text-body: var(--q-neutral-300);
   --text-muted: var(--q-neutral-400);
@@ -24,7 +28,7 @@
   --border-default: rgba(255, 255, 255, 0.09);
   --border-strong: rgba(255, 255, 255, 0.17);
   --border-accent: rgba(240, 107, 160, 0.58);
-  --font-display: "Syne", "Arial Black", Arial, sans-serif;
+  --font-display: "Anybody", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
   --font-body: "Newsreader", Georgia, "Times New Roman", serif;
   --font-ui: "Inter", Arial, Helvetica, sans-serif;
   --text-xs: 0.75rem;
@@ -54,7 +58,8 @@
   --container-max: 90rem;
   --container-copy: 75rem;
   --gutter: clamp(16px, 4vw, 48px);
-  --header-height: 88px;
+  --field-gutter: clamp(1rem, 4vw, 4rem);
+  --header-height: 76px;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --duration-fast: 140ms;
   --duration-base: 220ms;

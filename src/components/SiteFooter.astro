@@ -1,36 +1,15 @@
----
-const footerLinks = [
-  { href: "/for-partners/", label: "For industry" },
-  { href: "/for-startups/", label: "For startups" },
-  { href: "/industries/", label: "Industries" },
-  { href: "/pocs/", label: "Proof" },
-  { href: "/spark/", label: "SPARK" },
-  { href: "/about/", label: "About" },
-  { href: "/contact/", label: "Contact" },
-] as const;
----
-
 <footer class="site-footer">
-  <div class="site-footer__inner container">
-    <div class="site-footer__identity">
-      <a class="brand-link" href="/#entry" aria-label="Quantum home">
-        <img
-          src="/brand/quantum-full-logo-white.svg"
-          width="242"
-          height="182"
-          alt="Quantum"
-          loading="lazy"
-        />
-      </a>
-      <p>Industrial innovation, grounded in evidence.</p>
-    </div>
-    <nav aria-label="Footer navigation">
-      <ul>
-        {footerLinks.map((item) => (
-          <li><a href={item.href}>{item.label}</a></li>
-        ))}
-      </ul>
+  <div class="site-footer__inner">
+    <a class="site-footer__return" href="/#entry" aria-label="Quantum home — return to the manifesto">
+      <img src="/brand/quantum-icon-white.svg" width="48" height="48" alt="" loading="lazy" />
+      <span>Return to signal origin</span>
+    </a>
+    <p>Industrial innovation, grounded in evidence.</p>
+    <nav aria-label="Footer routes">
+      <a href="/for-partners/">For industry</a>
+      <a href="/for-startups/">For startups</a>
+      <a href="/contact/">Contact</a>
     </nav>
-    <p class="site-footer__location">Herzliya</p>
+    <p class="site-footer__location">Herzliya / IL</p>
   </div>
 </footer>

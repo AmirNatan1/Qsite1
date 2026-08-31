@@ -10,6 +10,7 @@
 
 html {
   min-width: 0;
+  overflow-x: clip;
   background: var(--surface-page);
   scroll-behavior: auto;
 }
@@ -18,17 +19,18 @@ body {
   min-width: 0;
   min-height: 100vh;
   margin: 0;
+  overflow-x: clip;
   background:
-    radial-gradient(circle at 82% 18%, rgba(216, 43, 114, 0.09), transparent 27rem),
-    radial-gradient(circle at 8% 78%, rgba(216, 43, 114, 0.055), transparent 30rem),
-    linear-gradient(180deg, #0e1112 0%, #1a2020 58%, #14090f 120%);
+    linear-gradient(118deg, rgba(255, 255, 255, 0.018), transparent 32%),
+    linear-gradient(180deg, #0e1112 0%, #101415 56%, #0a0d0e 100%);
 }
 
 body::before {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background-image: repeating-linear-gradient(112deg, transparent 0 5rem, rgba(255, 255, 255, 0.012) 5rem calc(5rem + 1px));
+  background-image: repeating-linear-gradient(103deg, transparent 0 7px, rgba(255, 255, 255, 0.01) 8px, transparent 9px 17px);
+  opacity: 0.55;
   content: "";
   pointer-events: none;
 }

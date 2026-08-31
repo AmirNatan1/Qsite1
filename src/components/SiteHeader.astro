@@ -8,14 +8,14 @@ const { currentPath } = Astro.props;
 const HOME_HREF = "/#entry";
 
 const navigation = [
-  { href: HOME_HREF, label: "Home" },
-  { href: "/for-partners/", label: "For industry" },
-  { href: "/for-startups/", label: "For startups" },
-  { href: "/industries/", label: "Industries" },
-  { href: "/pocs/", label: "Proof" },
-  { href: "/spark/", label: "SPARK" },
-  { href: "/about/", label: "About" },
-  { href: "/contact/", label: "Contact" },
+  { href: HOME_HREF, label: "Home", coordinate: "00 / origin" },
+  { href: "/for-partners/", label: "For industry", coordinate: "01 / need" },
+  { href: "/for-startups/", label: "For startups", coordinate: "02 / capability" },
+  { href: "/industries/", label: "Industries", coordinate: "03 / context" },
+  { href: "/pocs/", label: "Proof", coordinate: "04 / evidence" },
+  { href: "/spark/", label: "SPARK", coordinate: "05 / programme" },
+  { href: "/about/", label: "About", coordinate: "06 / position" },
+  { href: "/contact/", label: "Contact", coordinate: "07 / signal" },
 ] as const;
 
 const normalizePath = (value: string) => {
@@ -34,71 +34,113 @@ const isCurrent = (href: string) => {
 
 <header class="site-header">
   <div class="site-header__inner">
-    <a class="brand-link" href={HOME_HREF} aria-label="Quantum home">
+    <a class="brand-link" href={HOME_HREF} aria-label="Quantum home — enter at the manifesto">
       <img
-        src="/brand/quantum-full-logo-white.svg"
-        width="242"
-        height="182"
-        alt="Quantum"
+        src="/brand/quantum-icon-white.svg"
+        width="56"
+        height="56"
+        alt=""
       />
+      <span>QUANTUM</span>
     </a>
 
-    <nav class="desktop-nav" aria-label="Primary navigation">
-      <ul>
-        {navigation.map((item) => (
-          <li>
-            <a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined}>
-              {item.label}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
-
-    <details class="mobile-nav" data-mobile-nav>
-      <summary>
-        <span>Menu</span>
+    <details class="field-map" data-field-map>
+      <summary aria-controls="field-map-navigation" aria-haspopup="true">
+        <span class="field-map__trigger-label">Field map</span>
+        <span class="field-map__trigger-state" aria-hidden="true">Open</span>
       </summary>
-      <nav aria-label="Mobile navigation">
-        <ul>
-          {navigation.map((item) => (
-            <li>
-              <a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined}>
-                {item.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
+
+      <div class="field-map__plane">
+        <div class="field-map__material" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="field-map__content">
+          <header class="field-map__heading">
+            <p>QUANTUM / OPERATING FIELD</p>
+            <p>Current signal: {navigation.find(({ href }) => isCurrent(href))?.label ?? "Unmapped"}</p>
+          </header>
+
+          <nav id="field-map-navigation" aria-label="Primary navigation">
+            <ol>
+              {navigation.map((item, index) => (
+                <li style={`--field-map-index: ${index}`}>
+                  <a
+                    class="field-map-destination"
+                    href={item.href}
+                    aria-current={isCurrent(item.href) ? "page" : undefined}
+                  >
+                    <span>{String(index).padStart(2, "0")}</span>
+                    <strong>{item.label}</strong>
+                    <span>{item.coordinate}</span>
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+
+          <p class="field-map__legend">Need → context → test → evidence → decision</p>
+        </div>
+      </div>
     </details>
   </div>
 </header>
 
 <script is:inline>
   (() => {
-    const menus = document.querySelectorAll("[data-mobile-nav]");
-    menus.forEach((menu) => {
-      const trigger = menu.querySelector("summary");
+    const root = document.documentElement;
+    const maps = document.querySelectorAll("[data-field-map]");
+
+    maps.forEach((map) => {
+      if (!(map instanceof HTMLDetailsElement) || map.dataset.controller === "ready") return;
+      map.dataset.controller = "ready";
+      const trigger = map.querySelector("summary");
+      const destinations = Array.from(map.querySelectorAll("a[href]"));
+
       const syncState = () => {
-        const isOpen = menu.hasAttribute("open");
+        const isOpen = map.open;
         trigger?.setAttribute("aria-expanded", String(isOpen));
+        root.toggleAttribute("data-field-map-open", isOpen);
+        const state = trigger?.querySelector(".field-map__trigger-state");
+        if (state) state.textContent = isOpen ? "Close" : "Open";
       };
 
-      menu.addEventListener("toggle", syncState);
-      menu.addEventListener("click", (event) => {
-        if (event.target instanceof HTMLAnchorElement) menu.removeAttribute("open");
+      map.addEventListener("toggle", () => {
+        syncState();
+        if (!map.open) return;
+        requestAnimationFrame(() => {
+          const current = destinations.find((link) => link.getAttribute("aria-current") === "page");
+          (current ?? destinations[0])?.focus({ preventScroll: true });
+        });
       });
+
       document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape" && menu.hasAttribute("open")) {
-          menu.removeAttribute("open");
-          trigger?.focus();
+        if (!map.open) return;
+        if (event.key === "Escape") {
+          event.preventDefault();
+          map.open = false;
+          trigger?.focus({ preventScroll: true });
+          return;
+        }
+        if (event.key !== "Tab" || !trigger) return;
+        const focusable = [trigger, ...destinations].filter((item) => !item.hasAttribute("inert"));
+        const first = focusable[0];
+        const last = focusable.at(-1);
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last?.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first?.focus();
         }
       });
-      document.addEventListener("pointerdown", (event) => {
-        if (menu.hasAttribute("open") && !menu.contains(event.target)) {
-          menu.removeAttribute("open");
-        }
+
+      map.addEventListener("click", (event) => {
+        const target = event.target;
+        if (target instanceof Element && target.closest("a")) map.open = false;
       });
+
+      addEventListener("pagehide", () => {
+        root.removeAttribute("data-field-map-open");
+      }, { once: true });
+
       syncState();
     });
   })();
