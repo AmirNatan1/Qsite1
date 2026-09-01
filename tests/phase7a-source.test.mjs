@@ -14,6 +14,8 @@ import {
   PHASE7A_R1_PARENT,
   PHASE7A_R2_BRANCH,
   PHASE7A_R2_PARENT,
+  PHASE7B_BRANCH,
+  PHASE7B_PARENT,
   PUBLIC_ROUTES,
   RECORDING_SCENARIOS,
   REQUIRED_NODE,
@@ -24,9 +26,11 @@ import { pagesHydrationArgs, resolveGitAuthority, verifySource } from "../script
 const root = process.cwd();
 const read = (relative) => readFile(path.join(root, relative), "utf8");
 const activeBranch = spawnSync("git", ["branch", "--show-current"], { cwd: root, encoding: "utf8" }).stdout.trim();
-const activeRepair = activeBranch === PHASE7A_R2_BRANCH
-  ? { profile: "phase7a-r2", branch: PHASE7A_R2_BRANCH, parent: PHASE7A_R2_PARENT }
-  : { profile: "phase7a-r1", branch: PHASE7A_R1_BRANCH, parent: PHASE7A_R1_PARENT };
+const activeRepair = activeBranch === PHASE7B_BRANCH
+  ? { profile: "phase7b-inherited", branch: PHASE7B_BRANCH, parent: PHASE7B_PARENT }
+  : activeBranch === PHASE7A_R2_BRANCH
+    ? { profile: "phase7a-r2", branch: PHASE7A_R2_BRANCH, parent: PHASE7A_R2_PARENT }
+    : { profile: "phase7a-r1", branch: PHASE7A_R1_BRANCH, parent: PHASE7A_R1_PARENT };
 
 test("Phase 7A contract freezes branch, ancestry, main, Node, routes, gates and recordings", () => {
   assert.equal(PHASE7A_BRANCH, "redirect/phase-7a-signal-field-threshold");

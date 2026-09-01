@@ -14,6 +14,7 @@ import {
   PHASE7A_PARENT,
   PHASE7A_R1_BRANCH,
   PHASE7A_R2_BRANCH,
+  PHASE7B_BRANCH,
   PHYSICAL_ASSETS,
   TYPOGRAPHY_ASSETS,
 } from "./phase7a-contract.mjs";
@@ -208,6 +209,8 @@ export async function verifySource(root = process.cwd(), environment = process.e
   if (profile.id === "phase7a-r2") {
     const productionChanges = git(root, ["diff", "--name-only", profile.parent, head, "--", "src", "public"]);
     assert.equal(productionChanges, "src/components/SiteHeader.astro", "Phase 7A-R2 production change must remain confined to the Field Map header");
+  }
+  if (profile.id === "phase7a-r2" || profile.id === "phase7b-inherited") {
     assert.match(header, /<summary aria-controls="field-map-navigation">/);
     assert.equal((header.match(/id="field-map-navigation"/g) ?? []).length, 1, "Field Map aria-controls target must be unique");
     assert.doesNotMatch(header, /aria-haspopup|aria-expanded|role="(?:menu|menuitem|menubar|listbox|tree|grid|dialog|application)"/);
@@ -237,8 +240,16 @@ export async function verifySource(root = process.cwd(), environment = process.e
   const packageJson = JSON.parse(packageText);
   assert.deepEqual(Object.keys(packageJson.dependencies ?? {}), ["astro"], "no production runtime dependency may be added");
   assert.equal(packageJson.engines.node, "22.16.0");
-  assert.equal(packageJson.scripts.build, "node scripts/run-phase7a-build.mjs");
-  assert.match(packageJson.scripts.check, /verify-phase7a-environment\.mjs/);
+  assert.equal(
+    packageJson.scripts.build,
+    profile.id === "phase7b-inherited" ? "node scripts/run-phase7b-build.mjs" : "node scripts/run-phase7a-build.mjs",
+  );
+  if (profile.id === "phase7b-inherited") {
+    assert.equal(packageJson.scripts.check, "npm run check:phase7b");
+    assert.match(packageJson.scripts["check:phase7b"], /verify-phase7a-environment\.mjs/);
+  } else {
+    assert.match(packageJson.scripts.check, /verify-phase7a-environment\.mjs/);
+  }
   assert.match(packageJson.scripts.test, /phase7a-source\.test\.mjs/);
 
   return {
@@ -266,7 +277,13 @@ if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(SCRIPT_PAT
   const activeBranch = process.env.CF_PAGES_BRANCH || git(process.cwd(), ["branch", "--show-current"]);
   const authorityProfile = profileFlag >= 0
     ? process.argv[profileFlag + 1]
-    : activeBranch === PHASE7A_R2_BRANCH ? "phase7a-r2" : activeBranch === PHASE7A_R1_BRANCH ? "phase7a-r1" : "phase7a";
-  assert.ok(authorityProfile && !authorityProfile.startsWith("--"), "--authority-profile requires phase7a, phase7a-r1 or phase7a-r2");
+    : activeBranch === PHASE7B_BRANCH
+      ? "phase7b-inherited"
+      : activeBranch === PHASE7A_R2_BRANCH
+        ? "phase7a-r2"
+        : activeBranch === PHASE7A_R1_BRANCH
+          ? "phase7a-r1"
+          : "phase7a";
+  assert.ok(authorityProfile && !authorityProfile.startsWith("--"), "--authority-profile requires phase7a, phase7a-r1, phase7a-r2 or phase7b-inherited");
   console.log(JSON.stringify(await verifySource(process.cwd(), process.env, authorityProfile), null, 2));
 }
