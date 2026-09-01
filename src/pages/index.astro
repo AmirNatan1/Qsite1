@@ -1,8 +1,10 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SignalThreshold from "../components/home/SignalThreshold.astro";
+import OperatingField from "../components/home/OperatingField.astro";
 import "../styles/routes/home-cinematic.css";
 import "../styles/routes/phase-7a-signal-field.css";
+import "../styles/routes/phase-7b-operating-field.css";
 
 const title = "Industrial innovation tested in the real world";
 const description =
@@ -178,6 +180,8 @@ try {
     </div>
 
     <SignalThreshold />
+
+    <OperatingField />
 
     <script is:inline>
       (() => {

@@ -1,0 +1,230 @@
+<section
+  id="operating-field"
+  class="operating-field"
+  aria-labelledby="operating-field-title"
+  data-operating-field
+  data-field-section
+  data-method-state="open-field"
+  data-method-mode="static"
+>
+  <header class="operating-field__opening">
+    <div class="operating-field__context" data-method-context aria-hidden="true">
+      <span class="operating-field__context-label">METHOD</span>
+      <span class="operating-field__context-index" data-method-index>00 / 05</span>
+      <span class="operating-field__context-state" data-method-readout>OPEN FIELD</span>
+    </div>
+    <h2 id="operating-field-title">One workpiece changes state.</h2>
+  </header>
+
+  <div class="operating-field__visual" data-operating-field-probe aria-hidden="true">
+    <div class="operating-field__material"></div>
+    <div class="operating-field__workpiece" data-workpiece aria-hidden="true">
+      <svg
+        class="workpiece-field"
+        viewBox="0 0 1600 1000"
+        preserveAspectRatio="xMidYMid slice"
+        focusable="false"
+      >
+        <g class="workpiece__far">
+          <path d="M-120 176 C232 92 468 208 674 128 S1110 46 1330 154 S1592 226 1750 146" />
+          <path d="M-140 842 C236 738 430 842 666 768 S1060 664 1308 758 S1578 836 1740 744" />
+          <path d="M188 -80 C286 190 248 354 390 510 S556 790 520 1080" />
+          <path d="M1412 -70 C1308 192 1352 358 1218 510 S1048 790 1086 1080" />
+        </g>
+
+        <g class="workpiece__rejoin">
+          <path d="M-120 286 C226 262 402 324 590 462 C660 514 708 530 800 500" />
+          <path d="M-120 724 C232 726 410 652 590 538 C662 492 714 476 800 500" />
+          <path d="M800 500 C988 500 1202 508 1740 488" />
+          <circle cx="800" cy="500" r="11" />
+        </g>
+
+        <g class="workpiece__pressure workpiece__pressure--left">
+          <path d="M-40 270 L560 314 L696 500 L560 686 L-40 734Z" />
+          <path d="M58 358 L518 378 L610 500 L518 622 L58 646" />
+        </g>
+        <g class="workpiece__pressure workpiece__pressure--right">
+          <path d="M1640 270 L1040 314 L904 500 L1040 686 L1640 734Z" />
+          <path d="M1542 358 L1082 378 L990 500 L1082 622 L1542 646" />
+        </g>
+
+        <g class="workpiece__frame">
+          <path d="M620 304 H980 L1088 500 L980 696 H620 L512 500Z" />
+          <path d="M686 374 H914 L982 500 L914 626 H686 L618 500Z" />
+          <path d="M646 352 L686 374 M954 352 L914 374 M646 648 L686 626 M954 648 L914 626" />
+        </g>
+
+        <g class="workpiece__history">
+          <path d="M-80 390 C300 358 456 432 650 488 S1002 582 1680 668" />
+          <path d="M-80 606 C278 644 456 574 650 520 S1018 404 1680 326" />
+          <path d="M214 1020 C388 770 530 648 704 550 S1020 354 1378 -30" />
+        </g>
+
+        <g class="workpiece__candidates">
+          <path
+            class="workpiece__candidate workpiece__candidate--viable"
+            pathLength="1"
+            d="M-90 436 C286 416 482 452 646 490 C722 508 756 500 800 500 C914 500 1040 516 1190 500 S1490 454 1690 468"
+          />
+          <path
+            class="workpiece__candidate workpiece__candidate--viable"
+            pathLength="1"
+            d="M-80 570 C254 610 440 566 638 518 C706 502 758 496 800 500 C940 516 1062 580 1236 554 S1482 504 1690 532"
+          />
+          <path
+            class="workpiece__candidate workpiece__candidate--rejected"
+            pathLength="1"
+            d="M-70 236 C288 264 438 360 612 454 C680 490 730 494 772 496 C926 508 1038 424 1208 330 S1486 244 1680 276"
+          />
+          <path
+            class="workpiece__candidate workpiece__candidate--rejected"
+            pathLength="1"
+            d="M188 -70 C264 240 398 332 570 450 C648 504 710 520 770 510 C942 482 1036 652 1210 726 S1480 742 1668 700"
+          />
+          <path
+            class="workpiece__candidate workpiece__candidate--rejected"
+            pathLength="1"
+            d="M1432 -40 C1326 242 1188 344 1020 438 C928 490 874 502 820 494 C666 472 554 674 392 750 S112 772 -74 728"
+          />
+        </g>
+
+        <g class="workpiece__support">
+          <path d="M512 500 L392 500 L302 420" />
+          <path d="M1088 500 L1208 500 L1298 420" />
+          <path d="M618 500 H512 M982 500 H1088" />
+          <path d="M800 374 V286 M800 626 V714" />
+        </g>
+
+        <g class="workpiece__test">
+          <path d="M424 656 L1164 408 L1230 472 L490 720Z" />
+          <path d="M490 720 L1230 472" />
+          <path d="M694 615 L760 681 M918 540 L984 606" />
+        </g>
+
+        <g class="workpiece__decision">
+          <path d="M648 352 H952 L1048 500 L952 648 H648 L552 500Z" />
+          <path d="M708 412 H892 L948 500 L892 588 H708 L652 500Z" />
+        </g>
+
+        <path
+          class="workpiece__live workpiece__decision-signal"
+          pathLength="1"
+          d="M-100 500 C254 500 440 500 618 500 H982 C1188 500 1376 500 1700 500"
+        />
+        <circle class="workpiece__contact" cx="800" cy="500" r="9" />
+      </svg>
+
+      <div class="workpiece-test-surface">
+        <span class="workpiece-test-surface__plane"></span>
+        <span class="workpiece-test-surface__resistance"></span>
+      </div>
+      <div class="workpiece-registration">
+        <span class="workpiece-registration__horizontal"></span>
+        <span class="workpiece-registration__vertical"></span>
+        <span class="workpiece-registration__point"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="operating-field__passages">
+    <section
+      class="operating-stage operating-stage--frame"
+      aria-labelledby="method-frame-title"
+      data-method-stage="frame"
+    >
+      <div class="operating-stage__content">
+        <h3 id="method-frame-title">FRAME</h3>
+        <p>Pressure becomes a testable question.</p>
+      </div>
+      <div class="method-static method-static--frame" data-method-static="frame" aria-hidden="true">
+        <span class="method-static__boundary"></span>
+        <span class="method-static__aperture"></span>
+        <span class="method-static__routes"></span>
+        <span class="method-static__contact"></span>
+        <span class="method-static__signal"></span>
+      </div>
+    </section>
+
+    <section
+      class="operating-stage operating-stage--source"
+      aria-labelledby="method-source-title"
+      data-method-stage="source"
+    >
+      <div class="operating-stage__content">
+        <h3 id="method-source-title">SOURCE</h3>
+        <p>Possible technologies enter the framed challenge.</p>
+      </div>
+      <div class="method-static method-static--source" data-method-static="source" aria-hidden="true">
+        <span class="method-static__boundary"></span>
+        <span class="method-static__aperture"></span>
+        <span class="method-static__routes"></span>
+        <span class="method-static__contact"></span>
+        <span class="method-static__signal"></span>
+      </div>
+    </section>
+
+    <section
+      class="operating-stage operating-stage--assess"
+      aria-labelledby="method-assess-title"
+      data-method-stage="assess"
+    >
+      <div class="operating-stage__content">
+        <h3 id="method-assess-title">ASSESS</h3>
+        <p>Relevant paths hold. Misaligned paths lose support.</p>
+      </div>
+      <div class="method-static method-static--assess" data-method-static="assess" aria-hidden="true">
+        <span class="method-static__boundary"></span>
+        <span class="method-static__aperture"></span>
+        <span class="method-static__routes"></span>
+        <span class="method-static__contact"></span>
+        <span class="method-static__signal"></span>
+      </div>
+    </section>
+
+    <section
+      class="operating-stage operating-stage--test"
+      aria-labelledby="method-test-title"
+      data-method-stage="test"
+    >
+      <div class="operating-stage__content">
+        <h3 id="method-test-title">TEST</h3>
+        <p>A viable configuration meets a neutral test condition.</p>
+      </div>
+      <div class="method-static method-static--test" data-method-static="test" aria-hidden="true">
+        <span class="method-static__boundary"></span>
+        <span class="method-static__aperture"></span>
+        <span class="method-static__routes"></span>
+        <span class="method-static__contact"></span>
+        <span class="method-static__signal"></span>
+      </div>
+    </section>
+
+    <section
+      class="operating-stage operating-stage--decide"
+      aria-labelledby="method-decide-title"
+      data-method-stage="decide"
+    >
+      <div class="operating-stage__content">
+        <h3 id="method-decide-title">DECIDE</h3>
+        <p>Evidence resolves into a decision-ready path.</p>
+      </div>
+      <div class="method-static method-static--decide" data-method-static="decide" aria-hidden="true">
+        <span class="method-static__boundary"></span>
+        <span class="method-static__aperture"></span>
+        <span class="method-static__routes"></span>
+        <span class="method-static__contact"></span>
+        <span class="method-static__signal"></span>
+      </div>
+    </section>
+  </div>
+
+  <div class="operating-field__release" aria-hidden="true">
+    <span></span>
+  </div>
+</section>
+
+<script>
+  import { initOperatingField } from "../../scripts/operating-field";
+
+  initOperatingField();
+</script>
