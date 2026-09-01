@@ -20,6 +20,11 @@ import {
   validateR2TargetAuthority,
   validatePhase7aR2FieldMapAuthority,
 } from "./phase7a-r2-field-map-authority.mjs";
+import {
+  PHASE7A_R2_VISUAL_REGRESSION_PATHS,
+  PHASE7A_R2_VISUAL_REGRESSION_REPORT_PATH,
+  validatePhase7aR2VisualRegressionAuthority,
+} from "./phase7a-r2-visual-regression-authority.mjs";
 
 export { PHASE7A_R2_REVIEW_ZIP_NAME };
 
@@ -74,6 +79,12 @@ export const REQUIRED_R2_EVIDENCE = Object.freeze([
   required("06-accessibility/firefox-field-map-open-background-mask.png", "raster-evidence"),
   required("07-regression/focused-regression.json", "regression-authority"),
   required("07-regression/retained-suite.json", "retained-suite-authority"),
+  required("07-regression/visual-stability.json", "visual-regression-authority"),
+  required("07-regression/visual-parent-closed-summary-focus.png", "raster-evidence"),
+  required("07-regression/visual-current-closed-summary-focus.png", "raster-evidence"),
+  required("07-regression/visual-parent-open-summary-focus.png", "raster-evidence"),
+  required("07-regression/visual-current-open-summary-focus.png", "raster-evidence"),
+  required("07-regression/visual-current-open-link-focus.png", "raster-evidence"),
   required("08-governance/phase4-hashes.json", "phase4-hash-authority"),
   required("08-governance/environmental-limitations.json", "environmental-limitations"),
   required("09-audit/prepackage-evidence-audit.json", "prepackage-audit"),
@@ -258,6 +269,21 @@ function validateSupportingAuthorities(entries) {
     invariant(Array.isArray(receipt.reportHashes) && receipt.reportHashes.length >= 3 && receipt.reportHashes.every((row) => typeof row.name === "string" && /^[0-9a-f]{64}$/.test(row.sha256 ?? "")), `R2 test report hashes differ: ${relativePath}`);
   }
 
+  const visual = document(PHASE7A_R2_VISUAL_REGRESSION_REPORT_PATH);
+  validatePhase7aR2VisualRegressionAuthority(visual, { currentRevision: source.head });
+  invariant(visual.bindings.current.deploymentId === deployment.deploymentId && visual.bindings.current.immutableUrl === deployment.immutableUrl, "R2 visual-regression current deployment identity differs from package provenance");
+  const visualRecords = [
+    ...visual.comparisons.flatMap(({ baseline, current }) => [baseline, current]),
+    visual.currentLinkFocused.image,
+  ];
+  invariant(visualRecords.length === 5 && new Set(visualRecords.map(({ path: relativePath }) => relativePath)).size === 5
+    && Object.values(PHASE7A_R2_VISUAL_REGRESSION_PATHS).every((relativePath) => visualRecords.some((record) => record.path === relativePath)), "R2 visual-regression image topology differs");
+  for (const record of visualRecords) {
+    const entry = entries.find(({ relativePath }) => relativePath === record.path);
+    invariant(entry && entry.data.length >= 24 && entry.data.length === record.bytes && sha256(entry.data) === record.sha256
+      && entry.data.readUInt32BE(16) === record.width && entry.data.readUInt32BE(20) === record.height, `R2 visual-regression image binding differs: ${record.path}`);
+  }
+
   const phase4 = document("08-governance/phase4-hashes.json");
   exactKeys(phase4, ["schema", "status", "assets"], "R2 Phase 4 hashes");
   invariant(phase4.schema === R2_PHASE4_HASH_SCHEMA && phase4.status === "PASS" && Array.isArray(phase4.assets), "R2 Phase 4 hash authority differs");
@@ -267,12 +293,10 @@ function validateSupportingAuthorities(entries) {
   const limitations = document("08-governance/environmental-limitations.json");
   exactKeys(limitations, ["schema", "status", "limitations", "creativeStability"], "R2 environmental limitations");
   invariant(limitations.schema === R2_LIMITATIONS_SCHEMA && limitations.status === "DECLARED" && Array.isArray(limitations.limitations) && limitations.limitations.length > 0 && limitations.limitations.every((item) => typeof item === "string" && item.length > 0), "R2 environmental limitations differ");
-  exactKeys(limitations.creativeStability, ["baselineRevision", "currentRevision", "comparisons"], "R2 creative stability");
-  invariant(limitations.creativeStability.baselineRevision === PHASE7A_R2_PARENT && limitations.creativeStability.currentRevision === source.head && Array.isArray(limitations.creativeStability.comparisons) && limitations.creativeStability.comparisons.length === 2, "R2 creative stability authority differs");
-  for (const [index, comparison] of limitations.creativeStability.comparisons.entries()) {
-    exactKeys(comparison, ["state", "baselinePath", "baselineSha256", "currentPath", "currentSha256", "comparison", "status"], `R2 creative stability comparison ${index + 1}`);
-    invariant(comparison.state === ["closed", "open"][index] && /^[0-9a-f]{64}$/.test(comparison.baselineSha256 ?? "") && /^[0-9a-f]{64}$/.test(comparison.currentSha256 ?? "") && ["EXACT_BYTES", "EXACT_DECODED_PIXELS"].includes(comparison.comparison) && comparison.status === "PASS", `R2 creative stability comparison ${index + 1} differs`);
-  }
+  exactKeys(limitations.creativeStability, ["status", "authorityPath", "authoritySha256"], "R2 creative stability");
+  const visualEntry = entries.find(({ relativePath }) => relativePath === PHASE7A_R2_VISUAL_REGRESSION_REPORT_PATH);
+  invariant(limitations.creativeStability.status === "PASS" && limitations.creativeStability.authorityPath === PHASE7A_R2_VISUAL_REGRESSION_REPORT_PATH
+    && visualEntry && limitations.creativeStability.authoritySha256 === sha256(visualEntry.data), "R2 creative stability authority pointer differs");
 
   const audit = document("09-audit/prepackage-evidence-audit.json");
   exactKeys(audit, ["schema", "status", "auditedPayloadCount", "finalPayloadCount", "auditedPayloadBytes", "selfExclusion", "payloads", "checks", "mediaDecode"], "R2 prepackage audit");
@@ -282,7 +306,7 @@ function validateSupportingAuthorities(entries) {
   const expectedRows = auditedEntries.map((entry) => ({ path: entry.relativePath, bytes: entry.data.length, sha256: sha256(entry.data), status: "PASS" }));
   invariant(stableJson(audit.payloads) === stableJson(expectedRows), "R2 prepackage payload ledger differs");
   invariant(stableJson(audit.checks) === stableJson({ topology: "PASS", pathSafety: "PASS", privacyAndSecrets: "PASS", forbiddenPayloadClasses: "PASS", semanticAuthority: "PASS" }), "R2 prepackage checks differ");
-  invariant(stableJson(audit.mediaDecode) === stableJson({ png: "PASS", pngCount: 15, mp4: "PASS", mp4Count: 3 }), "R2 prepackage media decode differs");
+  invariant(stableJson(audit.mediaDecode) === stableJson({ png: "PASS", pngCount: 20, mp4: "PASS", mp4Count: 3 }), "R2 prepackage media decode differs");
 }
 
 function validateProductionDiff(bytes) {
@@ -504,7 +528,7 @@ export function parseArguments(argv) {
 
 export function runSelfTest() {
   invariant(PHASE7A_R2_REVIEW_ZIP_NAME === "phase-7a-r2-field-map-focus-human-review.zip", "R2 ZIP name drifted");
-  invariant(REQUIRED_R2_EVIDENCE.length === 34, "R2 compact topology drifted");
+  invariant(REQUIRED_R2_EVIDENCE.length === 40, "R2 compact topology drifted");
   return Object.freeze({
     schema: R2_PACKAGE_SCHEMA,
     status: "PASS",

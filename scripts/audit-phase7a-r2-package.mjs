@@ -17,6 +17,11 @@ import {
   validatePhase7aR2FieldMapAuthority,
 } from "./phase7a-r2-field-map-authority.mjs";
 import { validateR2ContrastMaskPixels } from "./phase7a-r2-contrast-pixels.mjs";
+import {
+  PHASE7A_R2_VISUAL_REGRESSION_PATHS,
+  PHASE7A_R2_VISUAL_REGRESSION_REPORT_PATH,
+  validatePhase7aR2VisualRegressionAuthority,
+} from "./phase7a-r2-visual-regression-authority.mjs";
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const R2_PACKAGE_SCHEMA = "quantum-hub.phase-7a-r2.field-map-focus-human-review.v1";
@@ -70,6 +75,12 @@ export const REQUIRED_R2_EVIDENCE = Object.freeze([
   required("06-accessibility/firefox-field-map-open-background-mask.png", "raster-evidence"),
   required("07-regression/focused-regression.json", "regression-authority"),
   required("07-regression/retained-suite.json", "retained-suite-authority"),
+  required("07-regression/visual-stability.json", "visual-regression-authority"),
+  required("07-regression/visual-parent-closed-summary-focus.png", "raster-evidence"),
+  required("07-regression/visual-current-closed-summary-focus.png", "raster-evidence"),
+  required("07-regression/visual-parent-open-summary-focus.png", "raster-evidence"),
+  required("07-regression/visual-current-open-summary-focus.png", "raster-evidence"),
+  required("07-regression/visual-current-open-link-focus.png", "raster-evidence"),
   required("08-governance/phase4-hashes.json", "phase4-hash-authority"),
   required("08-governance/environmental-limitations.json", "environmental-limitations"),
   required("09-audit/prepackage-evidence-audit.json", "prepackage-audit"),
@@ -289,6 +300,17 @@ function validateSupportingAuthorities(entries) {
     invariant(Array.isArray(receipt.engineSummaries) && receipt.engineSummaries.length === 3 && receipt.engineSummaries.every((row, index) => row.engine === ["chromium", "firefox", "webkit"][index] && row.status === "PASS" && Number.isSafeInteger(row.passCount) && row.passCount > 0 && row.failures === 0), `R2 test engine summaries differ: ${relativePath}`);
     invariant(Array.isArray(receipt.reportHashes) && receipt.reportHashes.length >= 3 && receipt.reportHashes.every((row) => typeof row.name === "string" && /^[0-9a-f]{64}$/.test(row.sha256 ?? "")), `R2 test report hashes differ: ${relativePath}`);
   }
+  const visual = document(PHASE7A_R2_VISUAL_REGRESSION_REPORT_PATH);
+  validatePhase7aR2VisualRegressionAuthority(visual, { currentRevision: source.head });
+  invariant(visual.bindings.current.deploymentId === deployment.deploymentId && visual.bindings.current.immutableUrl === deployment.immutableUrl, "R2 visual-regression current deployment identity differs from package provenance");
+  const visualRecords = [...visual.comparisons.flatMap(({ baseline, current }) => [baseline, current]), visual.currentLinkFocused.image];
+  invariant(visualRecords.length === 5 && new Set(visualRecords.map(({ path: relativePath }) => relativePath)).size === 5
+    && Object.values(PHASE7A_R2_VISUAL_REGRESSION_PATHS).every((relativePath) => visualRecords.some((record) => record.path === relativePath)), "R2 visual-regression image topology differs");
+  for (const record of visualRecords) {
+    const entry = entries.get(record.path);
+    invariant(entry && entry.data.length >= 24 && entry.data.length === record.bytes && sha256(entry.data) === record.sha256
+      && entry.data.readUInt32BE(16) === record.width && entry.data.readUInt32BE(20) === record.height, `R2 visual-regression image binding differs: ${record.path}`);
+  }
   const phase4 = document("08-governance/phase4-hashes.json");
   exactKeys(phase4, ["schema", "status", "assets"], "R2 Phase 4 hashes");
   const expectedAssets = PHYSICAL_ASSETS.map(([assetPath, assetSha256]) => ({ path: assetPath, sha256: assetSha256 }));
@@ -296,12 +318,10 @@ function validateSupportingAuthorities(entries) {
   const limitations = document("08-governance/environmental-limitations.json");
   exactKeys(limitations, ["schema", "status", "limitations", "creativeStability"], "R2 environmental limitations");
   invariant(limitations.schema === R2_LIMITATIONS_SCHEMA && limitations.status === "DECLARED" && Array.isArray(limitations.limitations) && limitations.limitations.length > 0 && limitations.limitations.every((item) => typeof item === "string" && item.length > 0), "R2 environmental limitations differ");
-  exactKeys(limitations.creativeStability, ["baselineRevision", "currentRevision", "comparisons"], "R2 creative stability");
-  invariant(limitations.creativeStability.baselineRevision === PHASE7A_R2_PARENT && limitations.creativeStability.currentRevision === source.head && Array.isArray(limitations.creativeStability.comparisons) && limitations.creativeStability.comparisons.length === 2, "R2 creative stability authority differs");
-  for (const [index, comparison] of limitations.creativeStability.comparisons.entries()) {
-    exactKeys(comparison, ["state", "baselinePath", "baselineSha256", "currentPath", "currentSha256", "comparison", "status"], `R2 creative stability comparison ${index + 1}`);
-    invariant(comparison.state === ["closed", "open"][index] && /^[0-9a-f]{64}$/.test(comparison.baselineSha256 ?? "") && /^[0-9a-f]{64}$/.test(comparison.currentSha256 ?? "") && ["EXACT_BYTES", "EXACT_DECODED_PIXELS"].includes(comparison.comparison) && comparison.status === "PASS", `R2 creative stability comparison ${index + 1} differs`);
-  }
+  exactKeys(limitations.creativeStability, ["status", "authorityPath", "authoritySha256"], "R2 creative stability");
+  const visualEntry = entries.get(PHASE7A_R2_VISUAL_REGRESSION_REPORT_PATH);
+  invariant(limitations.creativeStability.status === "PASS" && limitations.creativeStability.authorityPath === PHASE7A_R2_VISUAL_REGRESSION_REPORT_PATH
+    && visualEntry && limitations.creativeStability.authoritySha256 === sha256(visualEntry.data), "R2 creative stability authority pointer differs");
   const audit = document("09-audit/prepackage-evidence-audit.json");
   exactKeys(audit, ["schema", "status", "auditedPayloadCount", "finalPayloadCount", "auditedPayloadBytes", "selfExclusion", "payloads", "checks", "mediaDecode"], "R2 prepackage audit");
   const auditedEntries = [...entries].filter(([relativePath]) => relativePath !== "09-audit/prepackage-evidence-audit.json");
@@ -309,7 +329,7 @@ function validateSupportingAuthorities(entries) {
   invariant(audit.selfExclusion === "prepackage audit excludes its own bytes to avoid self-reference", "R2 prepackage audit self-exclusion differs");
   const expectedRows = auditedEntries.map(([relativePath, entry]) => ({ path: relativePath, bytes: entry.data.length, sha256: sha256(entry.data), status: "PASS" }));
   invariant(sameJson(audit.payloads, expectedRows), "R2 prepackage payload ledger differs");
-  invariant(sameJson(audit.checks, { topology: "PASS", pathSafety: "PASS", privacyAndSecrets: "PASS", forbiddenPayloadClasses: "PASS", semanticAuthority: "PASS" }) && sameJson(audit.mediaDecode, { png: "PASS", pngCount: 15, mp4: "PASS", mp4Count: 3 }), "R2 prepackage audit checks/decode differ");
+  invariant(sameJson(audit.checks, { topology: "PASS", pathSafety: "PASS", privacyAndSecrets: "PASS", forbiddenPayloadClasses: "PASS", semanticAuthority: "PASS" }) && sameJson(audit.mediaDecode, { png: "PASS", pngCount: 20, mp4: "PASS", mp4Count: 3 }), "R2 prepackage audit checks/decode differ");
 }
 
 function validateProductionDiff(bytes) {
@@ -428,7 +448,7 @@ export function auditR2PackageBytes({ archiveBytes }) {
 
 async function decodePngs(entries, sharpOverride = null) {
   const images = [...entries].filter(([relativePath]) => relativePath.endsWith(".png"));
-  invariant(images.length === 15, "R2 full decode requires exactly fifteen PNGs");
+  invariant(images.length === 20, "R2 full decode requires exactly twenty PNGs");
   let sharp = sharpOverride;
   if (!sharp) {
     try { ({ default: sharp } = await import("sharp")); }
@@ -442,14 +462,29 @@ async function decodePngs(entries, sharpOverride = null) {
   const measurements = new Map(axeAuthority.manualContrast.selectorMeasurements.map((measurement) => [`06-accessibility/${path.posix.basename(measurement.screenshot.path)}`, measurement]));
   invariant(measurements.size === CONTRAST_MASK_PATHS.length && CONTRAST_MASK_PATHS.every((relativePath) => measurements.has(relativePath)), "R2 selector-local contrast pixel measurement inventory differs");
   const files = [];
+  const visualPaths = new Set(Object.values(PHASE7A_R2_VISUAL_REGRESSION_PATHS));
+  const visualDecoded = new Map();
   for (const [relativePath, entry] of images) {
     const pipeline = sharp(entry.data, { failOn: "error", limitInputPixels: 100_000_000, sequentialRead: true });
-    const decoded = await (measurements.has(relativePath) ? pipeline.removeAlpha() : pipeline).raw().toBuffer({ resolveWithObject: true });
+    const decoded = await (measurements.has(relativePath) ? pipeline.removeAlpha() : visualPaths.has(relativePath) ? pipeline.ensureAlpha() : pipeline).raw().toBuffer({ resolveWithObject: true });
     invariant(decoded.data.length > 0 && decoded.info.width > 0 && decoded.info.height > 0, `R2 PNG full decode produced no pixels: ${relativePath}`);
+    if (visualPaths.has(relativePath)) visualDecoded.set(relativePath, decoded);
     const contrastPixels = measurements.has(relativePath) ? validateR2ContrastMaskPixels({ data: decoded.data, info: decoded.info, measurement: measurements.get(relativePath) }) : null;
     files.push({ path: relativePath, status: "PASS", width: decoded.info.width, height: decoded.info.height, channels: decoded.info.channels, decodedBytes: decoded.data.length, ...(contrastPixels ? { contrastPixels } : {}) });
   }
-  return { status: "PASS", count: files.length, decoder: `sharp ${sharp.versions?.sharp ?? "supplied"}`, files };
+  const visualEntry = entries.get(PHASE7A_R2_VISUAL_REGRESSION_REPORT_PATH);
+  invariant(visualEntry, "R2 visual-regression authority payload is missing");
+  const visual = JSON.parse(visualEntry.data.toString("utf8"));
+  validatePhase7aR2VisualRegressionAuthority(visual);
+  const comparisons = [];
+  for (const comparison of visual.comparisons) {
+    const baseline = visualDecoded.get(comparison.baseline.path);
+    const current = visualDecoded.get(comparison.current.path);
+    invariant(baseline && current && baseline.info.width === current.info.width && baseline.info.height === current.info.height
+      && baseline.info.channels === current.info.channels && baseline.data.equals(current.data), `independent decoded-pixel comparison differs: ${comparison.state}`);
+    comparisons.push({ state: comparison.state, classification: "EXACT_DECODED_PIXELS", differentPixels: 0, maxChannelDelta: 0, status: "PASS" });
+  }
+  return { status: "PASS", count: files.length, decoder: `sharp ${sharp.versions?.sharp ?? "supplied"}`, visualRegression: { status: "PASS", comparisons }, files };
 }
 
 async function resolveFfmpeg(supplied = null) {
@@ -503,7 +538,7 @@ export async function auditR2ReviewBytes({ archiveBytes, sharp = null, ffmpeg = 
     mediaDecode: { images, recordings },
     imageDecodeStatus: images.status,
     recordingDecodeStatus: recordings.status,
-    checks: { ...inspected.report.checks, pngFullDecode: "PASS", mp4FullDecode: "PASS" },
+    checks: { ...inspected.report.checks, pngFullDecode: "PASS", visualRegressionExactPixels: "PASS", mp4FullDecode: "PASS" },
   });
 }
 
@@ -572,8 +607,8 @@ export function parseArguments(argv, { boundaryOptions = {} } = {}) {
 }
 
 export function runSelfTest() {
-  invariant(REQUIRED_R2_EVIDENCE.length === 34, "R2 independent audit topology drifted");
-  return Object.freeze({ schema: R2_AUDIT_SCHEMA, status: "PASS", reviewZipName: PHASE7A_R2_REVIEW_ZIP_NAME, requiredPayloads: 34, realFileAuditEnabled: true });
+  invariant(REQUIRED_R2_EVIDENCE.length === 40, "R2 independent audit topology drifted");
+  return Object.freeze({ schema: R2_AUDIT_SCHEMA, status: "PASS", reviewZipName: PHASE7A_R2_REVIEW_ZIP_NAME, requiredPayloads: 40, realFileAuditEnabled: true });
 }
 
 async function main() {

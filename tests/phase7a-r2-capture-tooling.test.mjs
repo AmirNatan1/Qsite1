@@ -7,6 +7,8 @@ import test from "node:test";
 import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
 
+import sharp from "sharp";
+
 import {
   PHASE7A_R2_BRANCH,
   PHASE7A_R2_COMPUTER_USE_UI_PROOF_SCHEMA,
@@ -20,11 +22,19 @@ import {
   parseArguments as parseGenericCaptureArguments,
   selfTest as genericCaptureSelfTest,
 } from "../scripts/capture-phase7a-r2-field-map.mjs";
+import {
+  exactDecodedPixels,
+  parseArguments as parseVisualRegressionArguments,
+  selfTest as visualRegressionSelfTest,
+  validateLoadedAssetsAgainstReceipt,
+} from "../scripts/capture-phase7a-r2-visual-regression.mjs";
+import { PHASE7A_R2_VISUAL_REGRESSION_SCHEMA } from "../scripts/phase7a-r2-visual-regression-authority.mjs";
 
 const execFileAsync = promisify(execFile);
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const INSTALLED_CHROME_SCRIPT = path.join(ROOT, "scripts", "capture-phase7a-r2-installed-chrome.mjs");
 const GENERIC_CAPTURE_SCRIPT = path.join(ROOT, "scripts", "capture-phase7a-r2-field-map.mjs");
+const VISUAL_REGRESSION_SCRIPT = path.join(ROOT, "scripts", "capture-phase7a-r2-visual-regression.mjs");
 const EXTERNAL_ROOT = path.resolve(ROOT, "..", "phase7a-r2-capture-tooling-test");
 const REVISION = "b".repeat(40);
 
@@ -283,4 +293,54 @@ test("generic R2 matrix capture has case, phase, progress, and cleanup deadlines
   assert.match(matrixPhaseSource, /\[phase7a-r2:matrix-phase\] \$\{status\} cases=\$\{matrices\.length\}/);
   assert.match(source, /const matrices = await captureMatrixPhase\(browsers, options\.baseUrl, options\.timeoutMs\)/);
   assert.match(source, /BROWSER_CLOSE_TIMEOUT_MS/);
+});
+
+test("same-session visual-regression capture is exact-pixel, About-route, and signed-ledger bound", async () => {
+  const authority = visualRegressionSelfTest();
+  assert.equal(authority.schema, PHASE7A_R2_VISUAL_REGRESSION_SCHEMA);
+  assert.equal(authority.status, "PASS");
+  assert.equal(authority.exactDecodedPixels, true);
+  const baselineUrl = "https://139320ab.qsite1.pages.dev/";
+  const currentUrl = "https://12345678.qsite1.pages.dev/";
+  const parsed = parseVisualRegressionArguments([
+    "--baseline-url", baselineUrl, "--current-url", currentUrl,
+    "--baseline-deployment", path.join(EXTERNAL_ROOT, "r1.json"),
+    "--current-deployment", path.join(EXTERNAL_ROOT, "r2.json"),
+    "--current-revision", REVISION, "--output", path.join(EXTERNAL_ROOT, "visual"),
+  ]);
+  assert.equal(parsed.baselineUrl, baselineUrl);
+  assert.equal(parsed.currentUrl, currentUrl);
+  assert.equal(parsed.currentRevision, REVISION);
+  assert.throws(() => parseVisualRegressionArguments([
+    "--baseline-url", baselineUrl, "--current-url", baselineUrl,
+    "--baseline-deployment", path.join(EXTERNAL_ROOT, "r1.json"),
+    "--current-deployment", path.join(EXTERNAL_ROOT, "r2.json"),
+    "--current-revision", REVISION, "--output", path.join(EXTERNAL_ROOT, "visual"),
+  ]), /must differ/);
+
+  const source = await sharp({ create: { width: 4, height: 3, channels: 3, background: { r: 9, g: 12, b: 13 } } }).png().toBuffer();
+  const decoded = await sharp(source).raw().toBuffer({ resolveWithObject: true });
+  const reencoded = await sharp(decoded.data, { raw: decoded.info }).png({ compressionLevel: 0 }).toBuffer();
+  assert.equal((await exactDecodedPixels(source, reencoded)).differentPixels, 0);
+  const changed = await sharp(source).composite([{ input: { create: { width: 1, height: 1, channels: 3, background: { r: 255, g: 0, b: 255 } } }, left: 0, top: 0 }]).png().toBuffer();
+  await assert.rejects(() => exactDecodedPixels(source, changed), /pixels differ/);
+
+  const asset = { kind: "stylesheet", url: `${baselineUrl}_astro/navigation.css`, status: 200, contentType: "text/css", bytes: 123, sha256: "f".repeat(64) };
+  const r1Row = { publicPath: "/_astro/navigation.css", bytes: 123, sha256: asset.sha256, status: "PASS", immutable: { status: "PASS", actualHttpStatus: 200, bytes: 123, sha256: asset.sha256 } };
+  assert.equal(validateLoadedAssetsAgainstReceipt([asset], { payloadLedger: [r1Row] }, "baseline"), true);
+  assert.throws(() => validateLoadedAssetsAgainstReceipt([asset], { payloadLedger: [{ ...r1Row, sha256: "e".repeat(64) }] }, "baseline"), /signed deployment receipt/);
+});
+
+test("same-session visual-regression network and provenance authority is bounded and fail closed", async () => {
+  const source = await readFile(VISUAL_REGRESSION_SCRIPT, "utf8");
+  assert.match(source, /pendingByRevision:\s*new Map\(\[\[PHASE7A_R2_PARENT, new Set\(\)\]/);
+  assert.match(source, /async function drainRevisionNetwork\(/);
+  assert.match(source, /page\.waitForLoadState\("networkidle"/);
+  assert.match(source, /withDeadline\(response\.body\(\)/);
+  assert.match(source, /withDeadline\(\(async \(\) => \{/);
+  assert.match(source, /R1 deployment receipt bytes differ from the accepted authority/);
+  assert.match(source, /validateLoadedAssetsAgainstReceipt\(loaded\(PHASE7A_R2_PARENT\), baselineReceipt/);
+  assert.match(source, /browser\.contexts\(\)\.length === 1 && context\.pages\(\)\.length === 1/);
+  assert.doesNotMatch(source, /phase\.pending\s*=\s*\[\]|Promise\.all\(phase\.pending\)/);
+  assert.doesNotMatch(source, /requestAnimationFrame|\bSSIM\b|neutralMask(?:s)?\s*:\s*\[[^\]]+\]/i);
 });

@@ -41,6 +41,14 @@ import {
 import { stableJson, validateIsoBmffRecording } from "./package-phase7a-human-review.mjs";
 import { PHASE7A_R2_RETAINED_QA_SCHEMA, normalizePhase7aR2RetainedQaReport } from "./qa-phase7a-browser.mjs";
 import { validateR2ContrastMaskPixels } from "./phase7a-r2-contrast-pixels.mjs";
+import {
+  PHASE7A_R2_VISUAL_REGRESSION_CAPTURE_PATHS,
+  PHASE7A_R2_VISUAL_REGRESSION_MANIFEST_SCHEMA,
+  PHASE7A_R2_VISUAL_REGRESSION_PATHS,
+  PHASE7A_R2_VISUAL_REGRESSION_REPORT_PATH,
+  PHASE7A_R2_VISUAL_BASELINE_RECEIPT_SHA256,
+  validatePhase7aR2VisualRegressionAuthority,
+} from "./phase7a-r2-visual-regression-authority.mjs";
 
 const execFileAsync = promisify(execFile);
 const SCRIPT = fileURLToPath(import.meta.url);
@@ -60,7 +68,7 @@ const CLOUDFLARE_DEPLOYMENT_ID = /^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/
 const POSITIVE_DECIMAL_ID = /^[1-9]\d*$/;
 const PHASE7A_R2_BRANCH_URL = "https://repair-phase-7a-r2-field-map.qsite1.pages.dev/";
 const ENGINES = Object.freeze(["chromium", "firefox", "webkit"]);
-const INPUT_KEYS = Object.freeze(["fieldMapDir", "installedChromeDir", "chromiumQa", "firefoxQa", "webkitQa", "deployment", "r1EvidenceDir", "outputDir", "revision"]);
+const INPUT_KEYS = Object.freeze(["fieldMapDir", "installedChromeDir", "visualRegressionDir", "chromiumQa", "firefoxQa", "webkitQa", "deployment", "r1EvidenceDir", "outputDir", "revision"]);
 const GENERIC_COPY = Object.freeze({
   "03-focus/chromium-focus-cycle.mp4": "recordings/chromium-field-map-forward-reverse.mp4",
   "03-focus/firefox-focus-cycle.mp4": "recordings/firefox-field-map-forward-reverse.mp4",
@@ -91,6 +99,10 @@ const CONTRAST_MASK_PATHS = Object.freeze([
 ]);
 
 function invariant(value, message) { if (!value) throw new Error(message); }
+function exactKeys(value, expected, label) {
+  invariant(value && typeof value === "object" && !Array.isArray(value), `${label} must be an object`);
+  invariant(JSON.stringify(Object.keys(value).sort()) === JSON.stringify([...expected].sort()), `${label} field inventory differs`);
+}
 function digest(bytes) { return createHash("sha256").update(bytes).digest("hex"); }
 function canonical(value) { return Buffer.from(stableJson(value)); }
 function portable(relativePath) {
@@ -303,14 +315,95 @@ function deploymentBinding(report, revision) {
   };
 }
 
-async function compareRaster(baselineBytes, currentBytes) {
-  if (baselineBytes.equals(currentBytes)) return "EXACT_BYTES";
+async function assertExactDecodedVisualPair(baselineBytes, currentBytes, label) {
   const [baseline, current] = await Promise.all([
-    sharp(baselineBytes, { failOn: "error" }).raw().toBuffer({ resolveWithObject: true }),
-    sharp(currentBytes, { failOn: "error" }).raw().toBuffer({ resolveWithObject: true }),
+    sharp(baselineBytes, { failOn: "error" }).ensureAlpha().raw().toBuffer({ resolveWithObject: true }),
+    sharp(currentBytes, { failOn: "error" }).ensureAlpha().raw().toBuffer({ resolveWithObject: true }),
   ]);
-  invariant(baseline.info.width === current.info.width && baseline.info.height === current.info.height && baseline.info.channels === current.info.channels && baseline.data.equals(current.data), "R1/R2 Field Map baseline pixels differ");
-  return "EXACT_DECODED_PIXELS";
+  invariant(baseline.info.width === current.info.width && baseline.info.height === current.info.height && baseline.info.channels === current.info.channels, `${label} decoded dimensions differ`);
+  let differentPixels = 0;
+  let maxChannelDelta = 0;
+  for (let offset = 0; offset < baseline.data.length; offset += baseline.info.channels) {
+    let differs = false;
+    for (let channel = 0; channel < baseline.info.channels; channel += 1) {
+      const delta = Math.abs(baseline.data[offset + channel] - current.data[offset + channel]);
+      if (delta) differs = true;
+      if (delta > maxChannelDelta) maxChannelDelta = delta;
+    }
+    if (differs) differentPixels += 1;
+  }
+  invariant(differentPixels === 0 && maxChannelDelta === 0, `${label} pixels differ (${differentPixels} pixels; maximum channel delta ${maxChannelDelta})`);
+  return { differentPixels, maxChannelDelta };
+}
+
+async function assertVisualImageBinding(record, bytes, label) {
+  invariant(Buffer.isBuffer(bytes) && bytes.length === record.bytes && digest(bytes) === record.sha256, `${label} byte/hash binding differs`);
+  const decoded = await sharp(bytes, { failOn: "error" }).metadata();
+  invariant(decoded.width === record.width && decoded.height === record.height && decoded.channels === record.channels, `${label} decoded metadata differs`);
+}
+
+function normalizedLoadedAssets(binding) {
+  return binding.loadedAssets.map(({ kind, url, bytes, sha256 }) => ({ kind, pathname: new URL(url).pathname, bytes, sha256 }));
+}
+
+function validateLoadedAssetReceiptBindings(binding, deploymentReport, profile) {
+  for (const asset of binding.loadedAssets) {
+    const pathname = new URL(asset.url).pathname;
+    if (profile === "baseline") {
+      const row = deploymentReport.payloadLedger?.find((entry) => entry.publicPath === pathname);
+      invariant(row?.status === "PASS" && row.localDist === "PASS" && row.immutable?.status === "PASS" && row.immutable.actualHttpStatus === 200
+        && row.bytes === asset.bytes && row.sha256 === asset.sha256 && row.immutable.bytes === asset.bytes && row.immutable.sha256 === asset.sha256,
+      `R2 baseline loaded asset differs from the signed R1 payload ledger: ${pathname}`);
+    } else {
+      const row = deploymentReport.dist?.files?.find((entry) => entry.requestPath === pathname);
+      const immutable = deploymentReport.origins?.immutable?.data?.responses?.find((entry) => entry.publicPath === pathname);
+      invariant(row && immutable?.status === "PASS" && immutable.actualHttpStatus === 200
+        && row.bytes === asset.bytes && row.sha256 === asset.sha256 && immutable.bytes === asset.bytes && immutable.sha256 === asset.sha256,
+      `R2 current loaded asset differs from the signed R2 dist/immutable ledgers: ${pathname}`);
+    }
+  }
+}
+
+async function validateVisualRegressionEvidence(visual, revision, deploymentReport, r1DeploymentReport, deploymentReceiptSha256, r1DeploymentReceiptSha256) {
+  const report = visual.report;
+  validatePhase7aR2VisualRegressionAuthority(report, { currentRevision: revision });
+  invariant(digest(await readFile(path.join(ROOT, ...report.captureTool.path.split("/")))) === report.captureTool.sha256, "R2 visual-regression capture-tool hash differs from repository source");
+  invariant(r1DeploymentReceiptSha256 === PHASE7A_R2_VISUAL_BASELINE_RECEIPT_SHA256
+    && report.bindings.baseline.receiptSha256 === r1DeploymentReceiptSha256, "R2 visual baseline receipt bytes differ from the accepted R1 authority");
+  invariant(HASH_64.test(deploymentReceiptSha256 ?? "") && report.bindings.current.receiptSha256 === deploymentReceiptSha256,
+    "R2 visual current receipt hash differs from the supplied deployment authority");
+
+  const r1About = r1DeploymentReport?.payloadLedger?.find((row) => row.relativePath === "about/index.html");
+  invariant(r1DeploymentReport?.schema === "quantum-hub.phase-7a-r1.evidence-assembler.v1.deployment" && r1DeploymentReport.status === "PASS"
+    && r1DeploymentReport.authorityProfile === "phase7a-r1" && r1DeploymentReport.commitHash === PHASE7A_R2_PARENT
+    && r1DeploymentReport.signedDeploymentBinding === true && r1DeploymentReport.signedCloudflareCheckBinding === true
+    && r1About?.status === "PASS" && r1About.localDist === "PASS" && r1About.immutable?.status === "PASS" && r1About.immutable.actualHttpStatus === 200
+    && r1About.immutable.bytes === r1About.bytes && r1About.immutable.sha256 === r1About.sha256
+    && r1About.bytes === report.bindings.baseline.document.bytes && r1About.sha256 === report.bindings.baseline.document.sha256
+    && r1DeploymentReport.deploymentId === report.bindings.baseline.deploymentId, "R2 visual baseline differs from the signed R1 deployment receipt");
+
+  const r2About = deploymentReport?.dist?.files?.find((row) => row.relativePath === "about/index.html");
+  const r2ImmutableAbout = deploymentReport?.origins?.immutable?.data?.responses?.find((row) => row.relativePath === "about/index.html");
+  invariant(r2About && r2ImmutableAbout?.status === "PASS" && r2ImmutableAbout.actualHttpStatus === 200 && r2ImmutableAbout.bytes === r2About.bytes && r2ImmutableAbout.sha256 === r2About.sha256
+    && r2About.bytes === report.bindings.current.document.bytes && r2About.sha256 === report.bindings.current.document.sha256
+    && deploymentReport.deployedSha === revision && deploymentReport.deploymentId === report.bindings.current.deploymentId && deploymentReport.immutableUrl === report.bindings.current.immutableUrl,
+  "R2 visual current differs from the signed R2 deployment receipt");
+
+  invariant(JSON.stringify(normalizedLoadedAssets(report.bindings.baseline)) === JSON.stringify(normalizedLoadedAssets(report.bindings.current)), "R2 parent/current loaded CSS/JS/font/image inventories differ by pathname, kind, bytes, or SHA-256");
+  validateLoadedAssetReceiptBindings(report.bindings.baseline, r1DeploymentReport, "baseline");
+  validateLoadedAssetReceiptBindings(report.bindings.current, deploymentReport, "current");
+  for (const comparison of report.comparisons) {
+    const baselineBytes = visual.outputFiles.get(comparison.baseline.path);
+    const currentBytes = visual.outputFiles.get(comparison.current.path);
+    await assertVisualImageBinding(comparison.baseline, baselineBytes, `${comparison.state} baseline`);
+    await assertVisualImageBinding(comparison.current, currentBytes, `${comparison.state} current`);
+    const measured = await assertExactDecodedVisualPair(baselineBytes, currentBytes, comparison.state);
+    invariant(comparison.result.classification === "EXACT_DECODED_PIXELS" && comparison.result.differentPixels === measured.differentPixels
+      && comparison.result.maxChannelDelta === measured.maxChannelDelta, `${comparison.state} reported comparison differs from assembler recomputation`);
+  }
+  await assertVisualImageBinding(report.currentLinkFocused.image, visual.outputFiles.get(report.currentLinkFocused.image.path), "current About link-focused evidence");
+  invariant(visual.reportBytes.length > 0 && digest(visual.reportBytes) === visual.reportSha256 && visual.outputFiles.get(PHASE7A_R2_VISUAL_REGRESSION_REPORT_PATH).equals(visual.reportBytes), "R2 visual-regression raw report binding differs");
+  return true;
 }
 
 function sourceAuthority(gitAuthority, build) {
@@ -336,7 +429,7 @@ function assertContrastScreenshotBindings(axe, outputFiles) {
   invariant(boundPaths.size === CONTRAST_MASK_PATHS.length && CONTRAST_MASK_PATHS.every((relativePath) => boundPaths.has(relativePath)), "R2 selector-local contrast screenshot inventory differs");
 }
 
-export async function constructR2Payloads({ authorityDocumentBytes, generic, installed, qa, deploymentReport, gitAuthority, buildReceipt, focusedReceipt, r1Baselines, normalizeQaReport = normalizePhase7aR2RetainedQaReport, mediaAudit = { png: "PASS", pngCount: 15, mp4: "PASS", mp4Count: 3 } }) {
+export async function constructR2Payloads({ authorityDocumentBytes, generic, installed, visualRegression, qa, deploymentReport, deploymentReceiptSha256, r1DeploymentReport, r1DeploymentReceiptSha256, gitAuthority, buildReceipt, focusedReceipt, normalizeQaReport = normalizePhase7aR2RetainedQaReport, mediaAudit = { png: "PASS", pngCount: 20, mp4: "PASS", mp4Count: 3 } }) {
   validateGitAuthority(gitAuthority, gitAuthority.head);
   invariant(generic.report?.schema === GENERIC_CAPTURE_SCHEMA && generic.report.status === "PASS" && generic.report.authority?.head === gitAuthority.head, "generic R2 capture authority differs");
   validateR2FieldMapFocusAuthority(generic.focus);
@@ -355,16 +448,9 @@ export async function constructR2Payloads({ authorityDocumentBytes, generic, ins
   const bundle = { schema: PHASE7A_R2_BUNDLE_SCHEMA, status: "PASS", parent: PHASE7A_R2_PARENT, reviewZipName: PHASE7A_R2_REVIEW_ZIP_NAME, focus: generic.focus, axe: generic.axe, targets };
   validatePhase7aR2FieldMapAuthority(bundle);
   const deployment = deploymentBinding(deploymentReport, gitAuthority.head);
-  const comparisons = [];
-  for (const state of ["closed", "open"]) {
-    const baseline = r1Baselines[state];
-    const currentPath = `04-field-map/${state}.png`;
-    const current = generic.outputFiles.get(currentPath);
-    const comparison = await compareRaster(baseline.bytes, current);
-    comparisons.push({ state, baselinePath: baseline.relativePath, baselineSha256: digest(baseline.bytes), currentPath, currentSha256: digest(current), comparison, status: "PASS" });
-  }
+  await validateVisualRegressionEvidence(visualRegression, gitAuthority.head, deploymentReport, r1DeploymentReport, deploymentReceiptSha256, r1DeploymentReceiptSha256);
   const reportHashes = ENGINES.map((engine) => ({ name: `${engine}-retained-qa`, sha256: qa[engine].sha256 }));
-  const focusedChecks = { fieldMapFocus: true, aria: true, axe: true, targetSize: true, installedChrome200: true };
+  const focusedChecks = { fieldMapFocus: true, aria: true, axe: true, targetSize: true, installedChrome200: true, sameSessionVisualStability: true };
   const retainedChecks = Object.fromEntries(Object.keys(normalizedQa[0].checks).map((key) => [key, normalizedQa.every((receipt) => receipt.checks[key] === true)]));
   const payloads = new Map();
   const addJson = (relativePath, value) => payloads.set(relativePath, canonical(value));
@@ -383,8 +469,9 @@ export async function constructR2Payloads({ authorityDocumentBytes, generic, ins
   addJson("06-accessibility/target-inventory.json", targets);
   addJson("07-regression/focused-regression.json", { schema: R2_TEST_RECEIPT_SCHEMA, status: "PASS", command: focusedReceipt.command, testCount: focusedReceipt.testCount, failures: focusedReceipt.failures, checks: focusedChecks, engineSummaries: summaries, reportHashes });
   addJson("07-regression/retained-suite.json", { schema: R2_TEST_RECEIPT_SCHEMA, status: "PASS", command: buildReceipt.command, testCount: buildReceipt.testCount, failures: buildReceipt.failures, checks: retainedChecks, engineSummaries: summaries, reportHashes });
+  for (const [relativePath, bytes] of visualRegression.outputFiles) payloads.set(relativePath, bytes);
   addJson("08-governance/phase4-hashes.json", { schema: R2_PHASE4_HASH_SCHEMA, status: "PASS", assets: PHYSICAL_ASSETS.map(([assetPath, assetSha256]) => ({ path: assetPath, sha256: assetSha256 })) });
-  addJson("08-governance/environmental-limitations.json", { schema: R2_LIMITATIONS_SCHEMA, status: "DECLARED", limitations: [...new Set([...(generic.report.limitations ?? []), ...(installed.report.limitations ?? []), "Human acceptance remains external; the sole accessibility gate is not self-accepted."])], creativeStability: { baselineRevision: PHASE7A_R2_PARENT, currentRevision: gitAuthority.head, comparisons } });
+  addJson("08-governance/environmental-limitations.json", { schema: R2_LIMITATIONS_SCHEMA, status: "DECLARED", limitations: [...new Set([...(generic.report.limitations ?? []), ...(installed.report.limitations ?? []), "Human acceptance remains external; the sole accessibility gate is not self-accepted."])], creativeStability: { status: "PASS", authorityPath: PHASE7A_R2_VISUAL_REGRESSION_REPORT_PATH, authoritySha256: visualRegression.reportSha256 } });
   invariant(payloads.size === REQUIRED_R2_EVIDENCE.length - 1, "R2 constructed pre-audit topology differs");
   const rows = [...payloads].sort(([left], [right]) => Buffer.compare(Buffer.from(left), Buffer.from(right))).map(([relativePath, bytes]) => ({ path: relativePath, bytes: bytes.length, sha256: digest(bytes), status: "PASS" }));
   addJson("09-audit/prepackage-evidence-audit.json", { schema: R2_PREPACKAGE_AUDIT_SCHEMA, status: "PASS", auditedPayloadCount: rows.length, finalPayloadCount: REQUIRED_R2_EVIDENCE.length, auditedPayloadBytes: rows.reduce((sum, row) => sum + row.bytes, 0), selfExclusion: "prepackage audit excludes its own bytes to avoid self-reference", payloads: rows, checks: { topology: "PASS", pathSafety: "PASS", privacyAndSecrets: "PASS", forbiddenPayloadClasses: "PASS", semanticAuthority: "PASS" }, mediaDecode: mediaAudit });
@@ -407,10 +494,39 @@ async function loadCaptureRoot(root, revision, installed = false) {
   return { report: reportRecord.value, manifest: manifestRecord.value, focus, axe, targetFragment, reducedMotion, outputFiles };
 }
 
+async function loadVisualRegressionRoot(root, revision) {
+  const [reportRecord, manifestRecord] = await Promise.all([
+    readJson(path.join(root, ...PHASE7A_R2_VISUAL_REGRESSION_REPORT_PATH.split("/")), "same-session visual-regression report"),
+    readJson(path.join(root, "manifest.json"), "same-session visual-regression manifest"),
+  ]);
+  const manifest = manifestRecord.value;
+  exactKeys(manifest, ["schema", "status", "baselineRevision", "currentRevision", "report", "entries"], "same-session visual-regression manifest");
+  invariant(manifest.schema === PHASE7A_R2_VISUAL_REGRESSION_MANIFEST_SCHEMA && manifest.status === "PASS"
+    && manifest.baselineRevision === PHASE7A_R2_PARENT && manifest.currentRevision === revision, "same-session visual-regression manifest authority differs");
+  exactKeys(manifest.report, ["path", "bytes", "sha256"], "same-session visual-regression report ledger");
+  invariant(manifest.report.path === PHASE7A_R2_VISUAL_REGRESSION_REPORT_PATH && manifest.report.bytes === reportRecord.bytes.length
+    && manifest.report.sha256 === reportRecord.sha256, "same-session visual-regression report manifest binding differs");
+  invariant(Array.isArray(manifest.entries) && manifest.entries.length === 5, "same-session visual-regression PNG inventory differs");
+  const expectedPngPaths = Object.values(PHASE7A_R2_VISUAL_REGRESSION_PATHS);
+  const ledger = new Map();
+  for (const [index, row] of manifest.entries.entries()) {
+    exactKeys(row, ["path", "bytes", "sha256"], `same-session visual-regression PNG ledger ${index + 1}`);
+    portable(row.path);
+    invariant(expectedPngPaths.includes(row.path) && !ledger.has(row.path) && Number.isSafeInteger(row.bytes) && row.bytes > 0 && HASH_64.test(row.sha256 ?? ""), `same-session visual-regression PNG ledger differs: ${row.path}`);
+    ledger.set(row.path, row);
+  }
+  invariant(expectedPngPaths.every((relativePath) => ledger.has(relativePath)), "same-session visual-regression PNG topology differs");
+  validatePhase7aR2VisualRegressionAuthority(reportRecord.value, { currentRevision: revision });
+  const outputFiles = new Map([[PHASE7A_R2_VISUAL_REGRESSION_REPORT_PATH, reportRecord.bytes]]);
+  for (const relativePath of expectedPngPaths) outputFiles.set(relativePath, await boundFile(root, relativePath, ledger, relativePath));
+  invariant(outputFiles.size === PHASE7A_R2_VISUAL_REGRESSION_CAPTURE_PATHS.length, "same-session visual-regression loaded topology differs");
+  return { report: reportRecord.value, reportBytes: reportRecord.bytes, reportSha256: reportRecord.sha256, manifest, outputFiles };
+}
+
 async function defaultMediaAudit(payloads, stagingRoot, axeAuthority, recordingDecoder = null) {
   const pngRows = [...payloads].filter(([relativePath]) => relativePath.endsWith(".png"));
   const mp4Rows = [...payloads].filter(([relativePath]) => relativePath.endsWith(".mp4"));
-  invariant(pngRows.length === 15 && mp4Rows.length === 3, "prepackage media topology differs");
+  invariant(pngRows.length === 20 && mp4Rows.length === 3, "prepackage media topology differs");
   const measurements = new Map(axeAuthority.manualContrast.selectorMeasurements.map((measurement) => [`06-accessibility/${path.posix.basename(measurement.screenshot.path)}`, measurement]));
   invariant(measurements.size === CONTRAST_MASK_PATHS.length && CONTRAST_MASK_PATHS.every((relativePath) => measurements.has(relativePath)), "prepackage contrast mask measurement inventory differs");
   for (const [relativePath, bytes] of pngRows) {
@@ -424,7 +540,7 @@ async function defaultMediaAudit(payloads, stagingRoot, axeAuthority, recordingD
     if (recordingDecoder) invariant(await recordingDecoder({ relativePath, bytes }) === true, `prepackage MP4 full decode failed: ${relativePath}`);
     else await execFileAsync("ffmpeg", ["-hide_banner", "-loglevel", "error", "-xerror", "-nostdin", "-i", path.join(stagingRoot, ...relativePath.split("/")), "-map", "0:v:0", "-f", "null", "-"], { windowsHide: true, maxBuffer: 8 * 1024 * 1024 });
   }
-  return { png: "PASS", pngCount: 15, mp4: "PASS", mp4Count: 3 };
+  return { png: "PASS", pngCount: 20, mp4: "PASS", mp4Count: 3 };
 }
 
 async function validateExternalInput(candidate, label, boundaryOptions) {
@@ -438,7 +554,7 @@ async function validateExternalInput(candidate, label, boundaryOptions) {
 export async function assembleR2ReviewEvidence(options, dependencies = {}) {
   const boundaryOptions = dependencies.boundaryOptions ?? {};
   const inputs = {};
-  for (const key of ["fieldMapDir", "installedChromeDir", "chromiumQa", "firefoxQa", "webkitQa", "deployment", "r1EvidenceDir"]) inputs[key] = await validateExternalInput(options[key], `--${key}`, boundaryOptions);
+  for (const key of ["fieldMapDir", "installedChromeDir", "visualRegressionDir", "chromiumQa", "firefoxQa", "webkitQa", "deployment", "r1EvidenceDir"]) inputs[key] = await validateExternalInput(options[key], `--${key}`, boundaryOptions);
   const outputDir = assertExternalR2Path(path.resolve(options.outputDir), "--output-dir", boundaryOptions);
   invariant(HASH_40.test(options.revision ?? "") && options.revision !== PHASE7A_R2_PARENT, "--revision must be the exact new R2 SHA");
   invariant(!await exists(outputDir), "refusing to overwrite existing R2 assembled evidence");
@@ -447,21 +563,26 @@ export async function assembleR2ReviewEvidence(options, dependencies = {}) {
   invariant(path.resolve(await realpath(parent)) === path.resolve(parent), "R2 output parent may not traverse a symlink");
   const gitAuthority = dependencies.gitAuthority ?? await deriveR2GitAuthority({ revision: options.revision });
   validateGitAuthority(gitAuthority, options.revision);
-  const [generic, installed, deploymentRecord, authorityDocumentBytes, ...qaRecords] = await Promise.all([
+  let r1DeploymentInput;
+  if (dependencies.testOnlyPrevalidatedR1DeploymentRecord) {
+    invariant(process.env.NODE_TEST_CONTEXT, "the prevalidated R1 deployment-record seam is test-only");
+    exactKeys(dependencies.testOnlyPrevalidatedR1DeploymentRecord, ["value", "sha256"], "test-only R1 deployment record");
+    r1DeploymentInput = Promise.resolve(dependencies.testOnlyPrevalidatedR1DeploymentRecord);
+  } else {
+    r1DeploymentInput = readJson(path.join(inputs.r1EvidenceDir, "17-deployment", "deployment-verification.json"), "R1 deployment verifier");
+  }
+  const [generic, installed, visualRegression, deploymentRecord, r1DeploymentRecord, authorityDocumentBytes, ...qaRecords] = await Promise.all([
     loadCaptureRoot(inputs.fieldMapDir, options.revision, false), loadCaptureRoot(inputs.installedChromeDir, options.revision, true),
-    readJson(inputs.deployment, "deployment verifier"), readFile(path.join(ROOT, "docs/phase-7a-r2-review-authority.md")),
+    loadVisualRegressionRoot(inputs.visualRegressionDir, options.revision), readJson(inputs.deployment, "deployment verifier"),
+    r1DeploymentInput,
+    readFile(path.join(ROOT, "docs/phase-7a-r2-review-authority.md")),
     ...ENGINES.map((engine) => readJson(inputs[`${engine}Qa`], `${engine} retained QA`)),
   ]);
   const qa = Object.fromEntries(ENGINES.map((engine, index) => [engine, qaRecords[index]]));
   const buildReceipt = dependencies.buildReceipt ?? await runR2BuildReceipt({ revision: options.revision });
   const focusedReceipt = dependencies.focusedReceipt ?? await runR2FocusedTestReceipt({ revision: options.revision });
   const normalizeQaReport = dependencies.normalizeQaReport ?? normalizePhase7aR2RetainedQaReport;
-  const r1Baselines = {};
-  for (const state of ["closed", "open"]) {
-    const relativePath = `07-field-map/visuals/${state}-desktop-1440x900.png`;
-    r1Baselines[state] = { relativePath, bytes: await readFile(path.join(inputs.r1EvidenceDir, ...relativePath.split("/"))) };
-  }
-  let payloads = await constructR2Payloads({ authorityDocumentBytes, generic, installed, qa, deploymentReport: deploymentRecord.value, gitAuthority, buildReceipt, focusedReceipt, r1Baselines, normalizeQaReport });
+  let payloads = await constructR2Payloads({ authorityDocumentBytes, generic, installed, visualRegression, qa, deploymentReport: deploymentRecord.value, deploymentReceiptSha256: deploymentRecord.sha256, r1DeploymentReport: r1DeploymentRecord.value, r1DeploymentReceiptSha256: r1DeploymentRecord.sha256, gitAuthority, buildReceipt, focusedReceipt, normalizeQaReport });
   const staging = path.join(parent, `.${path.basename(outputDir)}.staging-${randomUUID()}`);
   await mkdir(staging, { recursive: false });
   try {
@@ -480,7 +601,7 @@ export async function assembleR2ReviewEvidence(options, dependencies = {}) {
     }
     for (const [relativePath, bytes] of reread) invariant(bytes.equals(payloads.get(relativePath)), `prepackage reread differs: ${relativePath}`);
     const mediaAudit = await defaultMediaAudit(reread, staging, generic.axe, dependencies.recordingDecoder);
-    payloads = await constructR2Payloads({ authorityDocumentBytes, generic, installed, qa, deploymentReport: deploymentRecord.value, gitAuthority, buildReceipt, focusedReceipt, r1Baselines, normalizeQaReport, mediaAudit });
+    payloads = await constructR2Payloads({ authorityDocumentBytes, generic, installed, visualRegression, qa, deploymentReport: deploymentRecord.value, deploymentReceiptSha256: deploymentRecord.sha256, r1DeploymentReport: r1DeploymentRecord.value, r1DeploymentReceiptSha256: r1DeploymentRecord.sha256, gitAuthority, buildReceipt, focusedReceipt, normalizeQaReport, mediaAudit });
     const auditPath = "09-audit/prepackage-evidence-audit.json";
     await mkdir(path.join(staging, "09-audit"), { recursive: true });
     await writeFile(path.join(staging, ...auditPath.split("/")), payloads.get(auditPath), { flag: "wx" });
@@ -498,7 +619,7 @@ export async function assembleR2ReviewEvidence(options, dependencies = {}) {
 export function parseArguments(argv) {
   const options = Object.fromEntries(INPUT_KEYS.map((key) => [key, ""]));
   let selfTest = false; let help = false;
-  const names = new Map([["--field-map-dir", "fieldMapDir"], ["--installed-chrome-dir", "installedChromeDir"], ["--chromium-qa", "chromiumQa"], ["--firefox-qa", "firefoxQa"], ["--webkit-qa", "webkitQa"], ["--deployment", "deployment"], ["--r1-evidence-dir", "r1EvidenceDir"], ["--output-dir", "outputDir"], ["--revision", "revision"]]);
+  const names = new Map([["--field-map-dir", "fieldMapDir"], ["--installed-chrome-dir", "installedChromeDir"], ["--visual-regression-dir", "visualRegressionDir"], ["--chromium-qa", "chromiumQa"], ["--firefox-qa", "firefoxQa"], ["--webkit-qa", "webkitQa"], ["--deployment", "deployment"], ["--r1-evidence-dir", "r1EvidenceDir"], ["--output-dir", "outputDir"], ["--revision", "revision"]]);
   for (let index = 0; index < argv.length; index += 1) {
     const flag = argv[index];
     if (flag === "--self-test") selfTest = true;
@@ -513,14 +634,14 @@ export function parseArguments(argv) {
 }
 
 export function selfTest() {
-  invariant(REQUIRED_R2_EVIDENCE.length === 34 && Object.keys(GENERIC_COPY).length === 13 && Object.keys(INSTALLED_COPY).length === 5, "R2 assembler topology drifted");
+  invariant(REQUIRED_R2_EVIDENCE.length === 40 && Object.keys(GENERIC_COPY).length === 13 && Object.keys(INSTALLED_COPY).length === 5 && PHASE7A_R2_VISUAL_REGRESSION_CAPTURE_PATHS.length === 6, "R2 assembler topology drifted");
   invariant(R2_HUMAN_GATES.filter(({ decision }) => decision === "ACCEPT").length === 5 && R2_HUMAN_GATES.filter(({ decision }) => decision === "PENDING HUMAN REVIEW").length === 1, "R2 human gate authority drifted");
-  return { schema: ASSEMBLER_SCHEMA, status: "PASS", payloadCount: 34, acceptedGates: 5, pendingGates: 1, createsPackage: false };
+  return { schema: ASSEMBLER_SCHEMA, status: "PASS", payloadCount: 40, acceptedGates: 5, pendingGates: 1, createsPackage: false };
 }
 
 async function main() {
   const options = parseArguments(process.argv.slice(2));
-  if (options.help) { process.stdout.write("Usage: node scripts/assemble-phase7a-r2-review-evidence.mjs --field-map-dir <external> --installed-chrome-dir <external> --chromium-qa <external-json> --firefox-qa <external-json> --webkit-qa <external-json> --deployment <external-json> --r1-evidence-dir <external> --output-dir <fresh-external> --revision <sha40>\n"); return; }
+  if (options.help) { process.stdout.write("Usage: node scripts/assemble-phase7a-r2-review-evidence.mjs --field-map-dir <external> --installed-chrome-dir <external> --visual-regression-dir <external> --chromium-qa <external-json> --firefox-qa <external-json> --webkit-qa <external-json> --deployment <external-json> --r1-evidence-dir <external-r1-package-root-for-signed-deployment-receipt> --output-dir <fresh-external> --revision <sha40>\n"); return; }
   if (options.selfTest) { process.stdout.write(`${JSON.stringify(selfTest(), null, 2)}\n`); return; }
   process.stdout.write(`${JSON.stringify(await assembleR2ReviewEvidence(options), null, 2)}\n`);
 }

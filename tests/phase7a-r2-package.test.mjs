@@ -63,11 +63,21 @@ import {
   PHASE7A_R2_TARGET_STATES,
 } from "../scripts/phase7a-r2-field-map-authority.mjs";
 import { r2AxeAuthorityFixture } from "./phase7a-r2-axe-fixture.mjs";
+import {
+  PHASE7A_R2_VISUAL_REGRESSION_METHOD,
+  PHASE7A_R2_VISUAL_REGRESSION_PATHS,
+  PHASE7A_R2_VISUAL_REGRESSION_REPORT_PATH,
+  PHASE7A_R2_VISUAL_REGRESSION_SCHEMA,
+} from "../scripts/phase7a-r2-visual-regression-authority.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const EXTERNAL_EVIDENCE_ROOT = path.resolve(ROOT, "..", "phase7a-r2-compact-source-evidence");
 const EXTERNAL_OUTPUT_ROOT = path.resolve(ROOT, "..", "phase7a-r2-compact-package-output");
 const FINAL_HEAD = "a".repeat(40);
+const CURRENT_DEPLOYMENT_ID = "7ebd4769-55dd-4f04-99cc-0ba6936b9605";
+const CURRENT_IMMUTABLE_URL = "https://7ebd4769.qsite1.pages.dev/";
+const BASELINE_DEPLOYMENT_ID = "139320ab-e562-4590-85ad-fa9920e6aad7";
+const BASELINE_IMMUTABLE_URL = "https://139320ab.qsite1.pages.dev/";
 
 const json = (value) => Buffer.from(`${JSON.stringify(value, null, 2)}\n`);
 const cloneEntries = (entries) => entries.map(({ relativePath, data }) => ({ relativePath, data: Buffer.from(data) }));
@@ -168,6 +178,29 @@ function sourceAuthority() {
 const engineSummaries = () => ["chromium", "firefox", "webkit"].map((engine) => ({ engine, status: "PASS", passCount: 10, failures: 0 }));
 const reportHashes = () => ["chromium", "firefox", "webkit"].map((name, index) => ({ name, sha256: String(index + 1).repeat(64) }));
 
+function visualAuthority(imageBytes) {
+  const metrics = { innerWidth: 1440, innerHeight: 900, clientWidth: 1425, clientHeight: 900, outerWidth: 1440, outerHeight: 900, visualViewportWidth: 1425, visualViewportHeight: 900, visualViewportScale: 1, scrollbarWidth: 15, devicePixelRatio: 1, scrollX: 0, scrollY: 0, fontsReady: true };
+  const image = (relativePath, focus, fieldMapOpen) => ({ path: relativePath, bytes: imageBytes.length, sha256: sha256(imageBytes), width: 1440, height: 900, channels: 3, focus, fieldMapOpen, metrics: { ...metrics } });
+  const pair = (state, baselinePath, currentPath, fieldMapOpen) => ({ state, baseline: image(baselinePath, "field-map-summary", fieldMapOpen), current: image(currentPath, "field-map-summary", fieldMapOpen), result: { classification: "EXACT_DECODED_PIXELS", encodedBytesEqual: true, differentPixels: 0, maxChannelDelta: 0, status: "PASS" } });
+  const asset = (origin) => ({ kind: "stylesheet", url: `${origin}_astro/navigation.css`, status: 200, contentType: "text/css", bytes: 123, sha256: "f".repeat(64) });
+  return {
+    schema: PHASE7A_R2_VISUAL_REGRESSION_SCHEMA, status: "PASS", method: PHASE7A_R2_VISUAL_REGRESSION_METHOD,
+    baselineRevision: PHASE7A_R2_PARENT, currentRevision: FINAL_HEAD,
+    captureTool: { path: "scripts/capture-phase7a-r2-visual-regression.mjs", sha256: "e".repeat(64) },
+    browser: { name: "Google Chrome", product: "Chrome/150.0.7339.12", version: "150.0.7339.12", userAgent: "Mozilla/5.0 Chrome/150.0.7339.12 Safari/537.36", installed: true, headed: true, browserCount: 1, contextCount: 1, pageCount: 1 },
+    viewport: { width: 1440, height: 900, deviceScaleFactor: 1, colorScheme: "dark", reducedMotion: "no-preference" },
+    bindings: {
+      baseline: { revision: PHASE7A_R2_PARENT, deploymentId: BASELINE_DEPLOYMENT_ID, immutableUrl: BASELINE_IMMUTABLE_URL, receiptSha256: "45f8352507129ac0c9bac567b91f27df3af22ee16fab09c42384db59c7a8126d", document: { status: 200, bytes: 900, sha256: "b".repeat(64), finalUrl: `${BASELINE_IMMUTABLE_URL}about/` }, loadedAssets: [asset(BASELINE_IMMUTABLE_URL)] },
+      current: { revision: FINAL_HEAD, deploymentId: CURRENT_DEPLOYMENT_ID, immutableUrl: CURRENT_IMMUTABLE_URL, receiptSha256: "9".repeat(64), document: { status: 200, bytes: 901, sha256: "c".repeat(64), finalUrl: `${CURRENT_IMMUTABLE_URL}about/` }, loadedAssets: [asset(CURRENT_IMMUTABLE_URL)] },
+    },
+    captureOrder: ["baseline:closed-summary-focused", "baseline:open-summary-focused", "current:closed-summary-focused", "current:open-summary-focused", "current:open-link-focused"],
+    comparisons: [pair("closed-summary-focused", PHASE7A_R2_VISUAL_REGRESSION_PATHS.parentClosed, PHASE7A_R2_VISUAL_REGRESSION_PATHS.currentClosed, false), pair("open-summary-focused", PHASE7A_R2_VISUAL_REGRESSION_PATHS.parentOpen, PHASE7A_R2_VISUAL_REGRESSION_PATHS.currentOpen, true)],
+    currentLinkFocused: { image: image(PHASE7A_R2_VISUAL_REGRESSION_PATHS.currentLinkFocused, "field-map-link", true), accessibleName: "06 About 06 / position", focusedElementGeometry: { selector: "[data-field-map] a[aria-current=\"page\"]", x: 300, y: 400, width: 500, height: 60 }, excludedFromCreativeComparison: true },
+    runtime: { consoleErrors: [], pageErrors: [], failedRequests: [], redirects: [] }, neutralMasks: [],
+    checks: { sameInstalledHeadedBrowserSession: true, sameContextAndPage: true, sameViewportDprAndScrollbar: true, summaryFocusedPairs: true, stableDuplicateFrames: true, exactDecodedPixels: true, linkFocusedEvidenceSeparate: true, deploymentDocumentsRecorded: true },
+  };
+}
+
 function box(type, payload = Buffer.alloc(0)) {
   const result = Buffer.alloc(8 + payload.length);
   result.writeUInt32BE(result.length, 0);
@@ -199,7 +232,7 @@ test.before(async () => {
   byPath.set("00-authority/r2-field-map-authority.json", json(semanticBundle()));
   byPath.set("01-provenance/source-authority.json", json(sourceAuthority()));
   const dist = { path: "dist/index.html", bytes: 1234, sha256: "d".repeat(64) };
-  byPath.set("01-provenance/deployment-binding.json", json({ schema: R2_DEPLOYMENT_BINDING_SCHEMA, status: "PASS", parent: PHASE7A_R2_PARENT, head: FINAL_HEAD, deploymentId: "deployment-r2-final", immutableUrl: "https://deployment-r2-final.example.invalid/", branchUrl: "https://repair-phase-7a-r2.example.invalid/", deployedSha: FINAL_HEAD, signedCheck: { name: "pages-deployment", workflow: "Cloudflare Pages", commitSha: FINAL_HEAD, status: "PASS" }, localDist: dist, deployedParity: { immutable: { status: "PASS", httpStatus: 200, bytes: dist.bytes, sha256: dist.sha256 }, branch: { status: "PASS", httpStatus: 200, bytes: dist.bytes, sha256: dist.sha256 } } }));
+  byPath.set("01-provenance/deployment-binding.json", json({ schema: R2_DEPLOYMENT_BINDING_SCHEMA, status: "PASS", parent: PHASE7A_R2_PARENT, head: FINAL_HEAD, deploymentId: CURRENT_DEPLOYMENT_ID, immutableUrl: CURRENT_IMMUTABLE_URL, branchUrl: "https://repair-phase-7a-r2.example.invalid/", deployedSha: FINAL_HEAD, signedCheck: { name: "pages-deployment", workflow: "Cloudflare Pages", commitSha: FINAL_HEAD, status: "PASS" }, localDist: dist, deployedParity: { immutable: { status: "PASS", httpStatus: 200, bytes: dist.bytes, sha256: dist.sha256 }, branch: { status: "PASS", httpStatus: 200, bytes: dist.bytes, sha256: dist.sha256 } } }));
   byPath.set("02-diff/production.diff", Buffer.from("diff --git a/src/components/SiteHeader.astro b/src/components/SiteHeader.astro\nindex 1111111..2222222 100644\n--- a/src/components/SiteHeader.astro\n+++ b/src/components/SiteHeader.astro\n@@ -1 +1 @@\n-old focus semantics\n+new focus semantics\n"));
   byPath.set("02-diff/aria-before-after.json", json({ schema: R2_ARIA_DIFF_SCHEMA, status: "PASS", before: ["aria-controls"], after: [] }));
   const bundle = semanticBundle();
@@ -210,13 +243,16 @@ test.before(async () => {
   byPath.set("07-regression/focused-regression.json", json({ schema: R2_TEST_RECEIPT_SCHEMA, status: "PASS", command: "node --test tests/phase7a-r2-field-map-authority.test.mjs tests/phase7a-r2-evidence-assembler.test.mjs", testCount: 6, failures: 0, checks: { fieldMapFocus: true, aria: true, axe: true, targetSize: true, installedChrome200: true }, engineSummaries: engineSummaries(), reportHashes: reportHashes() }));
   byPath.set("07-regression/retained-suite.json", json({ schema: R2_TEST_RECEIPT_SCHEMA, status: "PASS", command: "npm run check:phase7a-r2", testCount: 134, failures: 0, checks: { signalField: true, audienceBifurcation: true, shortLandscape800x360: true, noJavaScript: true, reducedMotion: true, lifecycleCleanup: true, publicationBoundaries: true }, engineSummaries: engineSummaries(), reportHashes: reportHashes() }));
   byPath.set("08-governance/phase4-hashes.json", json({ schema: R2_PHASE4_HASH_SCHEMA, status: "PASS", assets: PHYSICAL_ASSETS.map(([assetPath, assetSha256]) => ({ path: assetPath, sha256: assetSha256 })) }));
-  byPath.set("08-governance/environmental-limitations.json", json({ schema: R2_LIMITATIONS_SCHEMA, status: "DECLARED", limitations: ["Human acceptance remains external to this evidence package."], creativeStability: { baselineRevision: PHASE7A_R2_PARENT, currentRevision: FINAL_HEAD, comparisons: ["closed", "open"].map((state) => ({ state, baselinePath: `07-field-map/visuals/${state}-desktop-1440x900.png`, baselineSha256: sha256(png), currentPath: `04-field-map/${state}.png`, currentSha256: sha256(png), comparison: "EXACT_BYTES", status: "PASS" })) } }));
+  const visual = visualAuthority(contrastPng);
+  const visualBytes = json(visual);
+  byPath.set(PHASE7A_R2_VISUAL_REGRESSION_REPORT_PATH, visualBytes);
+  byPath.set("08-governance/environmental-limitations.json", json({ schema: R2_LIMITATIONS_SCHEMA, status: "DECLARED", limitations: ["Human acceptance remains external to this evidence package."], creativeStability: { status: "PASS", authorityPath: PHASE7A_R2_VISUAL_REGRESSION_REPORT_PATH, authoritySha256: sha256(visualBytes) } }));
   for (const { relativePath } of REQUIRED_R2_EVIDENCE) {
-    if (relativePath.endsWith(".png")) byPath.set(relativePath, relativePath.includes("background-mask") ? contrastPng : png);
+    if (relativePath.endsWith(".png")) byPath.set(relativePath, relativePath.includes("background-mask") || relativePath.startsWith("07-regression/visual-") ? contrastPng : png);
     if (relativePath.endsWith(".mp4")) byPath.set(relativePath, fixtureMp4());
   }
   const auditedRows = [...byPath].sort(([left], [right]) => Buffer.compare(Buffer.from(left), Buffer.from(right))).map(([relativePath, data]) => ({ path: relativePath, bytes: data.length, sha256: sha256(data), status: "PASS" }));
-  byPath.set("09-audit/prepackage-evidence-audit.json", json({ schema: R2_PREPACKAGE_AUDIT_SCHEMA, status: "PASS", auditedPayloadCount: auditedRows.length, finalPayloadCount: REQUIRED_R2_EVIDENCE.length, auditedPayloadBytes: auditedRows.reduce((sum, row) => sum + row.bytes, 0), selfExclusion: "prepackage audit excludes its own bytes to avoid self-reference", payloads: auditedRows, checks: { topology: "PASS", pathSafety: "PASS", privacyAndSecrets: "PASS", forbiddenPayloadClasses: "PASS", semanticAuthority: "PASS" }, mediaDecode: { png: "PASS", pngCount: 15, mp4: "PASS", mp4Count: 3 } }));
+  byPath.set("09-audit/prepackage-evidence-audit.json", json({ schema: R2_PREPACKAGE_AUDIT_SCHEMA, status: "PASS", auditedPayloadCount: auditedRows.length, finalPayloadCount: REQUIRED_R2_EVIDENCE.length, auditedPayloadBytes: auditedRows.reduce((sum, row) => sum + row.bytes, 0), selfExclusion: "prepackage audit excludes its own bytes to avoid self-reference", payloads: auditedRows, checks: { topology: "PASS", pathSafety: "PASS", privacyAndSecrets: "PASS", forbiddenPayloadClasses: "PASS", semanticAuthority: "PASS" }, mediaDecode: { png: "PASS", pngCount: 20, mp4: "PASS", mp4Count: 3 } }));
   fixtureEntries = [...byPath].map(([relativePath, data]) => ({ relativePath, data }));
   artifacts = buildR2ReviewArtifacts(cloneEntries(fixtureEntries), { sourceEvidenceRoot: EXTERNAL_EVIDENCE_ROOT });
   filesystemRoot = await mkdtemp(path.join(os.tmpdir(), "qh-r2-package-api-"));
@@ -249,8 +285,8 @@ function rebuildWith(changes) {
 }
 
 test("R2 package and audit CLIs require explicit external roots", () => {
-  assert.deepEqual(packageSelfTest(), { schema: R2_PACKAGE_SCHEMA, status: "PASS", reviewZipName: PHASE7A_R2_REVIEW_ZIP_NAME, requiredPayloads: 34, realPackageCreationEnabled: true });
-  assert.deepEqual(auditSelfTest(), { schema: R2_AUDIT_SCHEMA, status: "PASS", reviewZipName: PHASE7A_R2_REVIEW_ZIP_NAME, requiredPayloads: 34, realFileAuditEnabled: true });
+  assert.deepEqual(packageSelfTest(), { schema: R2_PACKAGE_SCHEMA, status: "PASS", reviewZipName: PHASE7A_R2_REVIEW_ZIP_NAME, requiredPayloads: 40, realPackageCreationEnabled: true });
+  assert.deepEqual(auditSelfTest(), { schema: R2_AUDIT_SCHEMA, status: "PASS", reviewZipName: PHASE7A_R2_REVIEW_ZIP_NAME, requiredPayloads: 40, realFileAuditEnabled: true });
   assert.throws(() => parsePackageArguments([]), /--evidence-dir/);
   assert.throws(() => parsePackageArguments(["--evidence-dir", EXTERNAL_EVIDENCE_ROOT]), /--output-dir/);
   assert.throws(() => parsePackageArguments(["--evidence-dir", ROOT, "--output-dir", EXTERNAL_OUTPUT_ROOT]), /outside the Git repository/);
@@ -265,7 +301,7 @@ test("R2 package and audit CLIs require explicit external roots", () => {
 
 test("compact R2 package is exact, deterministic and manifests every payload byte/hash/CRC", () => {
   assert.equal(PHASE7A_R2_REVIEW_ZIP_NAME, "phase-7a-r2-field-map-focus-human-review.zip");
-  assert.equal(REQUIRED_R2_EVIDENCE.length, 34);
+  assert.equal(REQUIRED_R2_EVIDENCE.length, 40);
   assert.deepEqual(REQUIRED_R2_EVIDENCE, AUDIT_REQUIRED);
   assert.deepEqual(REQUIRED_R2_EVIDENCE.map(({ relativePath }) => relativePath).filter((relativePath) => relativePath.endsWith("-background-mask.png")).sort(), [
     "06-accessibility/chromium-bifurcation-background-mask.png",
@@ -287,7 +323,7 @@ test("compact R2 package is exact, deterministic and manifests every payload byt
   assert.deepEqual(repeated.archiveBytes, artifacts.archiveBytes);
   assert.deepEqual(repeated.manifestBytes, artifacts.manifestBytes);
   const parsed = parseStoredZip(artifacts.archiveBytes);
-  assert.equal(parsed.entries.size, 35);
+  assert.equal(parsed.entries.size, 41);
   assert.ok(parsed.entries.has(IN_ARCHIVE_MANIFEST));
 });
 
@@ -344,10 +380,10 @@ test("independent R2 audit validates ZIP CRC, manifest bindings, semantics and f
   assert.equal(structural.schema, R2_AUDIT_SCHEMA);
   assert.equal(structural.status, "PASS");
   assert.equal(structural.archive.filename, PHASE7A_R2_REVIEW_ZIP_NAME);
-  assert.equal(structural.archive.entryCount, 35);
-  assert.equal(structural.payloads.length, 34);
+  assert.equal(structural.archive.entryCount, 41);
+  assert.equal(structural.payloads.length, 40);
   assert.equal(structural.crc32.status, "PASS");
-  assert.equal(structural.crc32.entryCount, 35);
+  assert.equal(structural.crc32.entryCount, 41);
   assert.ok(structural.payloads.every(({ byteStatus, sha256Status, crc32Status }) => byteStatus === "PASS" && sha256Status === "PASS" && crc32Status === "PASS"));
   assert.deepEqual(Object.values(structural.security), Array(Object.keys(structural.security).length).fill("PASS"));
   assert.deepEqual(Object.values(structural.checks), Array(Object.keys(structural.checks).length).fill("PASS"));
@@ -357,9 +393,9 @@ test("independent R2 audit validates ZIP CRC, manifest bindings, semantics and f
   });
   assert.equal(complete.imageDecodeStatus, "PASS");
   assert.equal(complete.recordingDecodeStatus, "PASS");
-  assert.equal(complete.mediaDecode.images.count, 15);
+  assert.equal(complete.mediaDecode.images.count, 20);
   assert.equal(complete.mediaDecode.recordings.count, 3);
-  assert.ok(complete.mediaDecode.images.files.every(({ path: relativePath, status, width, height }) => status === "PASS" && (relativePath.includes("background-mask") ? width === 1440 && height === 900 : width === 4 && height === 3)));
+  assert.ok(complete.mediaDecode.images.files.every(({ path: relativePath, status, width, height }) => status === "PASS" && (relativePath.includes("background-mask") || relativePath.startsWith("07-regression/visual-") ? width === 1440 && height === 900 : width === 4 && height === 3)));
   const contrastMasks = complete.mediaDecode.images.files.filter(({ path: relativePath }) => relativePath.endsWith("-background-mask.png"));
   assert.equal(contrastMasks.length, 4);
   assert.ok(contrastMasks.every(({ contrastPixels }) => contrastPixels?.status === "PASS" && contrastPixels.sampleCount > 0));
@@ -394,12 +430,43 @@ test("independent audit rejects CRC, embedded-manifest and cryptographically reb
   assert.throws(() => auditR2PackageBytes({ archiveBytes: semanticTampered }), /remains active after close|manifest differs/);
 });
 
+test("independent full audit rejects a cryptographically rebound one-pixel visual mutation", async () => {
+  const decoded = await sharp(contrastPng).raw().toBuffer({ resolveWithObject: true });
+  decoded.data[0] ^= 0x01;
+  const mutatedPng = await sharp(decoded.data, { raw: decoded.info }).png().toBuffer();
+  const replacements = new Map(cloneEntries(fixtureEntries).map(({ relativePath, data }) => [relativePath, data]));
+  replacements.set(PHASE7A_R2_VISUAL_REGRESSION_PATHS.currentOpen, mutatedPng);
+
+  const visual = JSON.parse(replacements.get(PHASE7A_R2_VISUAL_REGRESSION_REPORT_PATH).toString("utf8"));
+  const current = visual.comparisons.find(({ state }) => state === "open-summary-focused").current;
+  current.bytes = mutatedPng.length;
+  current.sha256 = sha256(mutatedPng);
+  visual.comparisons.find(({ state }) => state === "open-summary-focused").result.encodedBytesEqual = false;
+  const visualBytes = json(visual);
+  replacements.set(PHASE7A_R2_VISUAL_REGRESSION_REPORT_PATH, visualBytes);
+  const limitations = JSON.parse(replacements.get("08-governance/environmental-limitations.json").toString("utf8"));
+  limitations.creativeStability.authoritySha256 = sha256(visualBytes);
+  replacements.set("08-governance/environmental-limitations.json", json(limitations));
+
+  const auditRows = [...replacements].filter(([relativePath]) => relativePath !== "09-audit/prepackage-evidence-audit.json")
+    .sort(([left], [right]) => Buffer.compare(Buffer.from(left), Buffer.from(right)))
+    .map(([relativePath, data]) => ({ path: relativePath, bytes: data.length, sha256: sha256(data), status: "PASS" }));
+  const prepackage = JSON.parse(replacements.get("09-audit/prepackage-evidence-audit.json").toString("utf8"));
+  prepackage.auditedPayloadCount = auditRows.length;
+  prepackage.auditedPayloadBytes = auditRows.reduce((sum, row) => sum + row.bytes, 0);
+  prepackage.payloads = auditRows;
+  replacements.set("09-audit/prepackage-evidence-audit.json", json(prepackage));
+
+  const rebound = buildR2ReviewArtifacts([...replacements].map(([relativePath, data]) => ({ relativePath, data })), { sourceEvidenceRoot: EXTERNAL_EVIDENCE_ROOT });
+  await assert.rejects(() => auditR2ReviewBytes({ archiveBytes: rebound.archiveBytes, recordingDecoder: async () => true }), /independent decoded-pixel comparison differs/);
+});
+
 test("filesystem APIs create and audit one external package atomically and refuse overwrite", async () => {
   const packaged = await packageR2ReviewDirectory({ evidenceDir, outputDir, boundaryOptions });
   assert.equal(packaged.status, "PASS");
   assert.equal(packaged.zipPath, path.join(outputDir, PHASE7A_R2_REVIEW_ZIP_NAME));
-  assert.equal(packaged.entryCount, 35);
-  assert.equal(packaged.payloadCount, 34);
+  assert.equal(packaged.entryCount, 41);
+  assert.equal(packaged.payloadCount, 40);
   assert.equal(packaged.bytes, artifacts.archiveBytes.length);
   assert.equal(packaged.sha256, sha256(artifacts.archiveBytes));
   assert.equal(packaged.manifestSha256, sha256(artifacts.manifestBytes));
@@ -418,9 +485,9 @@ test("filesystem APIs create and audit one external package atomically and refus
   assert.equal(audited.zipPath, packaged.zipPath);
   assert.equal(audited.reportPath, reportPath);
   assert.equal(audited.crc32.status, "PASS");
-  assert.equal(audited.crc32.entryCount, 35);
-  assert.equal(audited.payloads.length, 34);
-  assert.equal(audited.mediaDecode.images.count, 15);
+  assert.equal(audited.crc32.entryCount, 41);
+  assert.equal(audited.payloads.length, 40);
+  assert.equal(audited.mediaDecode.images.count, 20);
   assert.equal(audited.mediaDecode.recordings.count, 3);
   assert.deepEqual(JSON.parse(await readFile(reportPath, "utf8")), audited);
   await assert.rejects(() => auditR2ReviewFile({ zipPath: packaged.zipPath, reportPath, boundaryOptions, recordingDecoder: async () => true }), /refusing to overwrite/);

@@ -20,13 +20,25 @@ import {
 } from "../scripts/phase7a-r2-field-map-authority.mjs";
 import { PHASE7A_R2_RETAINED_QA_SCHEMA } from "../scripts/qa-phase7a-browser.mjs";
 import { r2AxeAuthorityFixture } from "./phase7a-r2-axe-fixture.mjs";
+import {
+  PHASE7A_R2_VISUAL_REGRESSION_MANIFEST_SCHEMA,
+  PHASE7A_R2_VISUAL_REGRESSION_METHOD,
+  PHASE7A_R2_VISUAL_REGRESSION_PATHS,
+  PHASE7A_R2_VISUAL_REGRESSION_REPORT_PATH,
+  PHASE7A_R2_VISUAL_REGRESSION_SCHEMA,
+} from "../scripts/phase7a-r2-visual-regression-authority.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const REVISION = "a".repeat(40);
 const DEPLOYMENT_ID = "7ebd4769-55dd-4f04-99cc-0ba6936b9605";
 const IMMUTABLE_URL = "https://7ebd4769.qsite1.pages.dev/";
 const BRANCH_URL = "https://repair-phase-7a-r2-field-map.qsite1.pages.dev/";
+const BASELINE_DEPLOYMENT_ID = "139320ab-e562-4590-85ad-fa9920e6aad7";
+const BASELINE_URL = "https://139320ab.qsite1.pages.dev/";
 const DEPLOYMENT_CHECK_RUN_ID = "99855957370";
+const ABOUT_BYTES = 900;
+const BASELINE_ABOUT_SHA = "b".repeat(64);
+const CURRENT_ABOUT_SHA = "c".repeat(64);
 const json = (value) => Buffer.from(`${JSON.stringify(value, null, 2)}\n`);
 const focus = (activeElement, activeDestinationName) => ({ activeElement, activeDestinationName });
 const box = (type) => { const value = Buffer.alloc(8); value.writeUInt32BE(8, 0); value.write(type, 4, 4, "ascii"); return value; };
@@ -59,8 +71,10 @@ const buildReceipt = { command: "npm run check:phase7a-r2", status: "PASS", head
 const focusedReceipt = { command: "node --test tests/phase7a-r2-field-map-authority.test.mjs tests/phase7a-r2-evidence-assembler.test.mjs", status: "PASS", head: REVISION, worktreeClean: true, testCount: 10, passed: 10, failures: 0 };
 function deployment() {
   const row = { relativePath: "index.html", bytes: 1000, sha256: "d".repeat(64) };
-  const response = () => ({ ...row, status: "PASS", expectedHttpStatus: 200, actualHttpStatus: 200 });
-  const origin = (originUrl) => ({ status: "PASS", data: { status: "PASS", origin: originUrl, responses: [response()] } });
+  const about = { relativePath: "about/index.html", bytes: ABOUT_BYTES, sha256: CURRENT_ABOUT_SHA };
+  const asset = { relativePath: "_astro/navigation.css", requestPath: "/_astro/navigation.css", bytes: 123, sha256: "f".repeat(64) };
+  const response = (source, publicPath) => ({ ...source, publicPath, status: "PASS", expectedHttpStatus: 200, actualHttpStatus: 200 });
+  const origin = (originUrl) => ({ status: "PASS", data: { status: "PASS", origin: originUrl, responses: [response(row, "/"), response(about, "/about/"), response(asset, asset.requestPath)] } });
   return {
     schema: DEPLOYMENT_SCHEMA,
     authorityProfile: "phase7a-r2",
@@ -91,9 +105,48 @@ function deployment() {
         deployedSha: REVISION,
       },
     },
-    dist: { files: [row] },
+    dist: { files: [row, about, asset] },
     origins: { immutable: origin(IMMUTABLE_URL), branch: origin(BRANCH_URL) },
   };
+}
+
+function r1Deployment() {
+  const row = (relativePath, publicPath, bytes, fileSha256) => ({ relativePath, publicPath, bytes, sha256: fileSha256, status: "PASS", localDist: "PASS", immutable: { status: "PASS", actualHttpStatus: 200, bytes, sha256: fileSha256 } });
+  const about = row("about/index.html", "/about/", ABOUT_BYTES, BASELINE_ABOUT_SHA);
+  const asset = row("_astro/navigation.css", "/_astro/navigation.css", 123, "f".repeat(64));
+  return { schema: "quantum-hub.phase-7a-r1.evidence-assembler.v1.deployment", status: "PASS", authorityProfile: "phase7a-r1", commitHash: PHASE7A_R2_PARENT, signedDeploymentBinding: true, signedCloudflareCheckBinding: true, deploymentId: BASELINE_DEPLOYMENT_ID, payloadLedger: [about, asset] };
+}
+
+function visualAuthority(imageBytes, captureToolSha256, currentReceiptSha256) {
+  const metrics = { innerWidth: 1440, innerHeight: 900, clientWidth: 1425, clientHeight: 900, outerWidth: 1440, outerHeight: 900, visualViewportWidth: 1425, visualViewportHeight: 900, visualViewportScale: 1, scrollbarWidth: 15, devicePixelRatio: 1, scrollX: 0, scrollY: 0, fontsReady: true };
+  const image = (relativePath, focus, fieldMapOpen) => ({ path: relativePath, bytes: imageBytes.length, sha256: sha256(imageBytes), width: 1440, height: 900, channels: 3, focus, fieldMapOpen, metrics: { ...metrics } });
+  const pair = (state, baselinePath, currentPath, fieldMapOpen) => ({ state, baseline: image(baselinePath, "field-map-summary", fieldMapOpen), current: image(currentPath, "field-map-summary", fieldMapOpen), result: { classification: "EXACT_DECODED_PIXELS", encodedBytesEqual: true, differentPixels: 0, maxChannelDelta: 0, status: "PASS" } });
+  const asset = (origin) => ({ kind: "stylesheet", url: `${origin}_astro/navigation.css`, status: 200, contentType: "text/css", bytes: 123, sha256: "f".repeat(64) });
+  return {
+    schema: PHASE7A_R2_VISUAL_REGRESSION_SCHEMA, status: "PASS", method: PHASE7A_R2_VISUAL_REGRESSION_METHOD,
+    baselineRevision: PHASE7A_R2_PARENT, currentRevision: REVISION,
+    captureTool: { path: "scripts/capture-phase7a-r2-visual-regression.mjs", sha256: captureToolSha256 },
+    browser: { name: "Google Chrome", product: "Chrome/150.0.7339.12", version: "150.0.7339.12", userAgent: "Mozilla/5.0 Chrome/150.0.7339.12 Safari/537.36", installed: true, headed: true, browserCount: 1, contextCount: 1, pageCount: 1 },
+    viewport: { width: 1440, height: 900, deviceScaleFactor: 1, colorScheme: "dark", reducedMotion: "no-preference" },
+    bindings: {
+      baseline: { revision: PHASE7A_R2_PARENT, deploymentId: BASELINE_DEPLOYMENT_ID, immutableUrl: BASELINE_URL, receiptSha256: "45f8352507129ac0c9bac567b91f27df3af22ee16fab09c42384db59c7a8126d", document: { status: 200, bytes: ABOUT_BYTES, sha256: BASELINE_ABOUT_SHA, finalUrl: `${BASELINE_URL}about/` }, loadedAssets: [asset(BASELINE_URL)] },
+      current: { revision: REVISION, deploymentId: DEPLOYMENT_ID, immutableUrl: IMMUTABLE_URL, receiptSha256: currentReceiptSha256, document: { status: 200, bytes: ABOUT_BYTES, sha256: CURRENT_ABOUT_SHA, finalUrl: `${IMMUTABLE_URL}about/` }, loadedAssets: [asset(IMMUTABLE_URL)] },
+    },
+    captureOrder: ["baseline:closed-summary-focused", "baseline:open-summary-focused", "current:closed-summary-focused", "current:open-summary-focused", "current:open-link-focused"],
+    comparisons: [
+      pair("closed-summary-focused", PHASE7A_R2_VISUAL_REGRESSION_PATHS.parentClosed, PHASE7A_R2_VISUAL_REGRESSION_PATHS.currentClosed, false),
+      pair("open-summary-focused", PHASE7A_R2_VISUAL_REGRESSION_PATHS.parentOpen, PHASE7A_R2_VISUAL_REGRESSION_PATHS.currentOpen, true),
+    ],
+    currentLinkFocused: { image: image(PHASE7A_R2_VISUAL_REGRESSION_PATHS.currentLinkFocused, "field-map-link", true), accessibleName: "06 About 06 / position", focusedElementGeometry: { selector: "[data-field-map] a[aria-current=\"page\"]", x: 300, y: 400, width: 500, height: 60 }, excludedFromCreativeComparison: true },
+    runtime: { consoleErrors: [], pageErrors: [], failedRequests: [], redirects: [] }, neutralMasks: [],
+    checks: { sameInstalledHeadedBrowserSession: true, sameContextAndPage: true, sameViewportDprAndScrollbar: true, summaryFocusedPairs: true, stableDuplicateFrames: true, exactDecodedPixels: true, linkFocusedEvidenceSeparate: true, deploymentDocumentsRecorded: true },
+  };
+}
+
+function visualFixture(imageBytes, captureToolSha256, currentReceiptSha256) {
+  const report = visualAuthority(imageBytes, captureToolSha256, currentReceiptSha256);
+  const reportBytes = json(report);
+  return { report, reportBytes, reportSha256: sha256(reportBytes), outputFiles: new Map([[PHASE7A_R2_VISUAL_REGRESSION_REPORT_PATH, reportBytes], ...Object.values(PHASE7A_R2_VISUAL_REGRESSION_PATHS).map((relativePath) => [relativePath, imageBytes])]) };
 }
 
 let png;
@@ -102,10 +155,19 @@ let pure;
 const clonePure = () => {
   const generic = structuredClone(pure.generic);
   const installed = structuredClone(pure.installed);
+  const visualRegression = structuredClone(pure.visualRegression);
   generic.outputFiles = new Map([...pure.generic.outputFiles].map(([relativePath, bytes]) => [relativePath, Buffer.from(bytes)]));
   installed.outputFiles = new Map([...pure.installed.outputFiles].map(([relativePath, bytes]) => [relativePath, Buffer.from(bytes)]));
-  return { ...pure, generic, installed, qa: structuredClone(pure.qa), deploymentReport: structuredClone(pure.deploymentReport), gitAuthority: structuredClone(pure.gitAuthority), buildReceipt: structuredClone(pure.buildReceipt), focusedReceipt: structuredClone(pure.focusedReceipt), r1Baselines: structuredClone(pure.r1Baselines), normalizeQaReport: pure.normalizeQaReport };
+  visualRegression.outputFiles = new Map([...pure.visualRegression.outputFiles].map(([relativePath, bytes]) => [relativePath, Buffer.from(bytes)]));
+  visualRegression.reportBytes = Buffer.from(pure.visualRegression.reportBytes);
+  return { ...pure, generic, installed, visualRegression, qa: structuredClone(pure.qa), deploymentReport: structuredClone(pure.deploymentReport), r1DeploymentReport: structuredClone(pure.r1DeploymentReport), gitAuthority: structuredClone(pure.gitAuthority), buildReceipt: structuredClone(pure.buildReceipt), focusedReceipt: structuredClone(pure.focusedReceipt), normalizeQaReport: pure.normalizeQaReport };
 };
+
+function rebindVisualReport(fixture) {
+  fixture.visualRegression.reportBytes = json(fixture.visualRegression.report);
+  fixture.visualRegression.reportSha256 = sha256(fixture.visualRegression.reportBytes);
+  fixture.visualRegression.outputFiles.set(PHASE7A_R2_VISUAL_REGRESSION_REPORT_PATH, fixture.visualRegression.reportBytes);
+}
 
 test.before(async () => {
   png = await sharp({ create: { width: 8, height: 6, channels: 3, background: { r: 18, g: 30, b: 41 } } }).png().toBuffer();
@@ -120,11 +182,13 @@ test.before(async () => {
   const installed = { report: { schema: INSTALLED_CAPTURE_SCHEMA, status: "PASS", branch: PHASE7A_R2_BRANCH, parent: PHASE7A_R2_PARENT, revision: REVISION, browser: { product: "Google Chrome" }, zoomProof: { status: "PASS", uiZoomLabelInput: "Zoom: 200%", observed: { innerWidth: 519, innerHeight: 399 } }, accessibility: { method: "CDP Accessibility.getPartialAXTree" }, states: { open: { open: true } }, targetInventory: { minimumCssPixels: 44, candidateCount: 9, controls: installedControls }, focus: { status: "PASS" }, repeatedCycles: Array.from({ length: 10 }, (_, cycle) => ({ cycle: cycle + 1, status: "PASS" })), visuals: [], limitations: ["This is genuine installed Google Chrome evidence, not physical Safari evidence."] }, outputFiles: installedFiles };
   const generic = { report: { schema: GENERIC_CAPTURE_SCHEMA, status: "PASS", authority: { head: REVISION }, limitations: ["Playwright WebKit is proxy evidence and is not physical Safari."] }, focus: authorityParts.fieldMap, axe: authorityParts.axe, targetFragment: authorityParts.targetFragment, reducedMotion: { status: "PASS", screenshot: "screenshots/chromium-reduced-motion.png" }, outputFiles: genericFiles };
   const qaRows = Object.fromEntries(["chromium", "firefox", "webkit"].map((engine, index) => [engine, { value: qa(engine), sha256: String(index + 1).repeat(64) }]));
-  pure = { authorityDocumentBytes: Buffer.from("# authority\n"), generic, installed, qa: qaRows, deploymentReport: deployment(), gitAuthority: gitAuthority(), buildReceipt, focusedReceipt, normalizeQaReport: normalizeQaFixture, r1Baselines: { closed: { relativePath: "07-field-map/visuals/closed-desktop-1440x900.png", bytes: png }, open: { relativePath: "07-field-map/visuals/open-desktop-1440x900.png", bytes: png } } };
+  const captureToolSha256 = sha256(await readFile(path.join(ROOT, "scripts/capture-phase7a-r2-visual-regression.mjs")));
+  const deploymentReport = deployment();
+  pure = { authorityDocumentBytes: Buffer.from("# authority\n"), generic, installed, visualRegression: visualFixture(contrastPng, captureToolSha256, sha256(json(deploymentReport))), qa: qaRows, deploymentReport, r1DeploymentReport: r1Deployment(), r1DeploymentReceiptSha256: "45f8352507129ac0c9bac567b91f27df3af22ee16fab09c42384db59c7a8126d", deploymentReceiptSha256: sha256(json(deploymentReport)), gitAuthority: gitAuthority(), buildReceipt, focusedReceipt, normalizeQaReport: normalizeQaFixture };
 });
 
 test("assembler self-test and CLI require every explicit authority input", () => {
-  assert.deepEqual(selfTest(), { schema: ASSEMBLER_SCHEMA, status: "PASS", payloadCount: 34, acceptedGates: 5, pendingGates: 1, createsPackage: false });
+  assert.deepEqual(selfTest(), { schema: ASSEMBLER_SCHEMA, status: "PASS", payloadCount: 40, acceptedGates: 5, pendingGates: 1, createsPackage: false });
   assert.throws(() => parseArguments([]), /fieldMapDir/);
   assert.equal(parseArguments(["--self-test"]).selfTest, true);
 });
@@ -141,7 +205,7 @@ test("governed receipts use the current exact Node runtime and keep TAP counts d
 
 test("pure construction emits the exact closed topology and passes package authority", async () => {
   const payloads = await constructR2Payloads(pure);
-  assert.equal(payloads.size, 34);
+  assert.equal(payloads.size, 40);
   assert.deepEqual([...payloads.keys()].sort(), REQUIRED_R2_EVIDENCE.map(({ relativePath }) => relativePath).sort());
   assert.deepEqual([...payloads.keys()].filter((relativePath) => relativePath.endsWith("-background-mask.png")).sort(), [
     "06-accessibility/chromium-bifurcation-background-mask.png",
@@ -150,7 +214,7 @@ test("pure construction emits the exact closed topology and passes package autho
     "06-accessibility/firefox-field-map-open-background-mask.png",
   ]);
   const root = path.resolve(ROOT, "..", "synthetic-r2-evidence");
-  assert.equal(normalizeR2EvidenceEntries([...payloads].map(([relativePath, data]) => ({ relativePath, data })), { sourceEvidenceRoot: root }).length, 34);
+  assert.equal(normalizeR2EvidenceEntries([...payloads].map(([relativePath, data]) => ({ relativePath, data })), { sourceEvidenceRoot: root }).length, 40);
   const bundle = JSON.parse(payloads.get("00-authority/r2-field-map-authority.json"));
   assert.equal(bundle.focus.engineEvidence.length, 3);
   assert.equal(bundle.targets.states.length, 3);
@@ -164,6 +228,55 @@ test("pure construction emits the exact closed topology and passes package autho
   const gates = JSON.parse(payloads.get("00-authority/human-gates-status.json"));
   assert.equal(gates.gates.filter(({ decision }) => decision === "ACCEPT").length, 5);
   assert.equal(gates.gates.filter(({ decision }) => decision === "PENDING HUMAN REVIEW").length, 1);
+});
+
+test("same-session visual authority accepts encoding-only differences and rejects one rebound changed pixel", async () => {
+  const encodingOnly = clonePure();
+  const original = encodingOnly.visualRegression.outputFiles.get(PHASE7A_R2_VISUAL_REGRESSION_PATHS.currentClosed);
+  const decoded = await sharp(original).raw().toBuffer({ resolveWithObject: true });
+  const reencoded = await sharp(decoded.data, { raw: decoded.info }).png({ compressionLevel: 0 }).toBuffer();
+  assert.equal(original.equals(reencoded), false);
+  const encodingRecord = encodingOnly.visualRegression.report.comparisons[0].current;
+  encodingRecord.bytes = reencoded.length; encodingRecord.sha256 = sha256(reencoded);
+  encodingOnly.visualRegression.report.comparisons[0].result.encodedBytesEqual = false;
+  encodingOnly.visualRegression.outputFiles.set(PHASE7A_R2_VISUAL_REGRESSION_PATHS.currentClosed, reencoded);
+  rebindVisualReport(encodingOnly);
+  await constructR2Payloads(encodingOnly);
+
+  const changedPixel = clonePure();
+  const mutated = await sharp(changedPixel.visualRegression.outputFiles.get(PHASE7A_R2_VISUAL_REGRESSION_PATHS.currentOpen))
+    .composite([{ input: { create: { width: 1, height: 1, channels: 3, background: { r: 255, g: 0, b: 255 } } }, left: 10, top: 10 }]).png().toBuffer();
+  const changedRecord = changedPixel.visualRegression.report.comparisons[1].current;
+  changedRecord.bytes = mutated.length; changedRecord.sha256 = sha256(mutated); changedRecord.channels = (await sharp(mutated).metadata()).channels; changedPixel.visualRegression.report.comparisons[1].result.encodedBytesEqual = false;
+  changedPixel.visualRegression.outputFiles.set(PHASE7A_R2_VISUAL_REGRESSION_PATHS.currentOpen, mutated);
+  rebindVisualReport(changedPixel);
+  await assert.rejects(() => constructR2Payloads(changedPixel), /pixels differ/);
+});
+
+test("same-session visual authority rejects false session, geometry, focus, asset and tool claims", async () => {
+  for (const [label, mutate, pattern] of [
+    ["headless browser", (fixture) => { fixture.visualRegression.report.browser.headed = false; }, /installed\/headed Chrome identity/],
+    ["client width", (fixture) => { fixture.visualRegression.report.comparisons[1].current.metrics.clientWidth = 1424; fixture.visualRegression.report.comparisons[1].current.metrics.visualViewportWidth = 1424; fixture.visualRegression.report.comparisons[1].current.metrics.scrollbarWidth = 16; }, /capture conditions differ/],
+    ["link in neutral pair", (fixture) => { fixture.visualRegression.report.comparisons[0].current.focus = "field-map-link"; }, /raster\/state authority/],
+    ["asset mutation", (fixture) => { fixture.visualRegression.report.bindings.current.loadedAssets[0].sha256 = "e".repeat(64); }, /loaded CSS\/JS\/font\/image inventories differ/],
+    ["tool mutation", (fixture) => { fixture.visualRegression.report.captureTool.sha256 = "e".repeat(64); }, /capture-tool hash/],
+  ]) {
+    const fixture = clonePure(); mutate(fixture); rebindVisualReport(fixture);
+    await assert.rejects(() => constructR2Payloads(fixture), pattern, label);
+  }
+});
+
+test("same-session visual authority independently binds exact receipt bytes and every loaded asset ledger row", async () => {
+  for (const [label, mutate, pattern] of [
+    ["R1 receipt bytes", (fixture) => { fixture.r1DeploymentReceiptSha256 = "e".repeat(64); }, /accepted R1 authority/],
+    ["R2 receipt bytes", (fixture) => { fixture.deploymentReceiptSha256 = "e".repeat(64); }, /current receipt hash/],
+    ["R1 asset ledger", (fixture) => { fixture.r1DeploymentReport.payloadLedger.find((row) => row.publicPath === "/_astro/navigation.css").immutable.sha256 = "e".repeat(64); }, /signed R1 payload ledger/],
+    ["R2 dist asset ledger", (fixture) => { fixture.deploymentReport.dist.files.find((row) => row.requestPath === "/_astro/navigation.css").bytes += 1; }, /signed R2 dist\/immutable ledgers/],
+    ["R2 immutable asset ledger", (fixture) => { fixture.deploymentReport.origins.immutable.data.responses.find((row) => row.publicPath === "/_astro/navigation.css").sha256 = "e".repeat(64); }, /signed R2 dist\/immutable ledgers/],
+  ]) {
+    const fixture = clonePure(); mutate(fixture);
+    await assert.rejects(() => constructR2Payloads(fixture), pattern, label);
+  }
 });
 
 test("Git, QA, deployment and semantic mutations fail closed", async () => {
@@ -241,20 +354,39 @@ async function writeCaptureRoot(root, pureFixture, installedMode) {
   }
 }
 
-test("filesystem assembler atomically writes exactly 34 payloads and refuses overwrite", async () => {
+async function writeVisualRoot(root, pureFixture) {
+  await mkdir(root, { recursive: true });
+  for (const [relativePath, bytes] of pureFixture.visualRegression.outputFiles) {
+    const filename = path.join(root, ...relativePath.split("/"));
+    await mkdir(path.dirname(filename), { recursive: true });
+    await writeFile(filename, bytes);
+  }
+  const report = { path: PHASE7A_R2_VISUAL_REGRESSION_REPORT_PATH, bytes: pureFixture.visualRegression.reportBytes.length, sha256: pureFixture.visualRegression.reportSha256 };
+  const entries = Object.values(PHASE7A_R2_VISUAL_REGRESSION_PATHS).map((relativePath) => {
+    const bytes = pureFixture.visualRegression.outputFiles.get(relativePath);
+    return { path: relativePath, bytes: bytes.length, sha256: sha256(bytes) };
+  });
+  await writeFile(path.join(root, "manifest.json"), json({ schema: PHASE7A_R2_VISUAL_REGRESSION_MANIFEST_SCHEMA, status: "PASS", baselineRevision: PHASE7A_R2_PARENT, currentRevision: REVISION, report, entries }));
+}
+
+test("filesystem assembler atomically writes exactly 40 payloads and refuses overwrite", async () => {
   const temp = await mkdtemp(path.join(os.tmpdir(), "qh-r2-assembler-"));
   const boundaryOptions = { repositoryRoot: ROOT, temporaryRoot: path.join(temp, "production-temp-sentinel") };
   try {
-    const fieldMapDir = path.join(temp, "field-map"); const installedChromeDir = path.join(temp, "chrome"); const r1EvidenceDir = path.join(temp, "r1"); const outputDir = path.join(temp, "assembled");
-    await writeCaptureRoot(fieldMapDir, pure, false); await writeCaptureRoot(installedChromeDir, pure, true);
-    for (const state of ["closed", "open"]) { const filename = path.join(r1EvidenceDir, "07-field-map/visuals", `${state}-desktop-1440x900.png`); await mkdir(path.dirname(filename), { recursive: true }); await writeFile(filename, png); }
+    const fieldMapDir = path.join(temp, "field-map"); const installedChromeDir = path.join(temp, "chrome"); const visualRegressionDir = path.join(temp, "visual"); const r1EvidenceDir = path.join(temp, "r1"); const outputDir = path.join(temp, "assembled");
+    await writeCaptureRoot(fieldMapDir, pure, false); await writeCaptureRoot(installedChromeDir, pure, true); await writeVisualRoot(visualRegressionDir, pure);
+    const r1DeploymentPath = path.join(r1EvidenceDir, "17-deployment", "deployment-verification.json"); await mkdir(path.dirname(r1DeploymentPath), { recursive: true }); await writeFile(r1DeploymentPath, json(r1Deployment()));
     const files = {};
     for (const engine of ["chromium", "firefox", "webkit"]) { files[`${engine}Qa`] = path.join(temp, `${engine}.json`); await writeFile(files[`${engine}Qa`], json(qa(engine))); }
     const deploymentPath = path.join(temp, "deployment.json"); await writeFile(deploymentPath, json(deployment()));
-    const options = { fieldMapDir, installedChromeDir, ...files, deployment: deploymentPath, r1EvidenceDir, outputDir, revision: REVISION };
-    const dependencies = { boundaryOptions, gitAuthority: gitAuthority(), buildReceipt, focusedReceipt, normalizeQaReport: normalizeQaFixture, recordingDecoder: async ({ bytes }) => bytes.equals(mp4()) };
+    const options = { fieldMapDir, installedChromeDir, visualRegressionDir, ...files, deployment: deploymentPath, r1EvidenceDir, outputDir, revision: REVISION };
+    const dependencies = {
+      boundaryOptions, gitAuthority: gitAuthority(), buildReceipt, focusedReceipt, normalizeQaReport: normalizeQaFixture,
+      testOnlyPrevalidatedR1DeploymentRecord: { value: r1Deployment(), sha256: "45f8352507129ac0c9bac567b91f27df3af22ee16fab09c42384db59c7a8126d" },
+      recordingDecoder: async ({ bytes }) => bytes.equals(mp4()),
+    };
     const result = await assembleR2ReviewEvidence(options, dependencies);
-    assert.equal(result.status, "PASS"); assert.equal(result.payloadCount, 34);
+    assert.equal(result.status, "PASS"); assert.equal(result.payloadCount, 40);
     const actual = [];
     const visit = async (directory, prefix = "") => { for (const entry of await readdir(directory, { withFileTypes: true })) { if (entry.isDirectory()) await visit(path.join(directory, entry.name), `${prefix}${entry.name}/`); else actual.push(`${prefix}${entry.name}`); } };
     await visit(outputDir);
