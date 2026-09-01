@@ -100,10 +100,10 @@ export function validatePhase7aR2VisualRegressionAuthority(report, { currentRevi
   invariant(report.browser.name === "Google Chrome" && /^Chrome\/\d/.test(report.browser.product ?? "") && /^\d+(?:\.\d+){3}$/.test(report.browser.version ?? "")
     && /\bChrome\/\d/.test(report.browser.userAgent ?? "") && !/\b(?:HeadlessChrome|Edg|OPR)\//.test(report.browser.userAgent ?? "")
     && report.browser.installed === true && report.browser.headed === true && report.browser.browserCount === 1 && report.browser.contextCount === 1 && report.browser.pageCount === 1, "R2 same-session installed/headed Chrome identity differs");
-  invariant(JSON.stringify(report.browser.launchArguments) === JSON.stringify(["--disable-gpu-rasterization", "--run-all-compositor-stages-before-draw"]), "R2 same-session deterministic Chrome launch authority differs");
+  invariant(JSON.stringify(report.browser.launchArguments) === JSON.stringify(["--disable-gpu", "--run-all-compositor-stages-before-draw"]), "R2 same-session deterministic Chrome launch authority differs");
   exactKeys(report.browser.rendering, ["gpuCompositing", "rasterization", "purpose"], "R2 same-session renderer");
-  invariant(report.browser.rendering.gpuCompositing === "enabled" && report.browser.rendering.rasterization === "disabled_software"
-    && report.browser.rendering.purpose === "DETERMINISTIC_EXACT_PIXEL_RASTERIZATION", "R2 same-session renderer authority differs");
+  invariant(report.browser.rendering.gpuCompositing === "disabled_software" && report.browser.rendering.rasterization === "disabled_software"
+    && report.browser.rendering.purpose === "DETERMINISTIC_EXACT_PIXEL_SOFTWARE_RENDERING", "R2 same-session renderer authority differs");
   exactKeys(report.viewport, ["width", "height", "deviceScaleFactor", "colorScheme", "reducedMotion"], "R2 same-session viewport");
   invariant(report.viewport.width === 1440 && report.viewport.height === 900 && report.viewport.deviceScaleFactor === 1 && report.viewport.colorScheme === "dark" && report.viewport.reducedMotion === "no-preference", "R2 same-session viewport authority differs");
   exactKeys(report.bindings, ["baseline", "current"], "R2 same-session deployment bindings");

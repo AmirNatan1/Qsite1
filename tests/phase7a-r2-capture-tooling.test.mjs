@@ -341,7 +341,7 @@ test("same-session visual-regression network and provenance authority is bounded
   assert.match(source, /R1 deployment receipt bytes differ from the accepted authority/);
   assert.match(source, /validateLoadedAssetsAgainstReceipt\(loaded\(PHASE7A_R2_PARENT\), baselineReceipt/);
   assert.match(source, /browser\.contexts\(\)\.length === 1 && context\.pages\(\)\.length === 1/);
-  assert.match(source, /"--disable-gpu-rasterization"/);
+  assert.match(source, /"--disable-gpu"/);
   assert.match(source, /"--run-all-compositor-stages-before-draw"/);
   assert.match(source, /animations:\s*"disabled"/);
   assert.match(source, /caret:\s*"hide"/);

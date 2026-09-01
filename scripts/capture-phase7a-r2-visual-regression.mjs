@@ -33,7 +33,7 @@ const VIEWPORT = Object.freeze({ width: 1440, height: 900 });
 const ROUTE = "/about/";
 const CAPTURE_SETTLE_MS = 500;
 const DETERMINISTIC_CHROME_ARGS = Object.freeze([
-  "--disable-gpu-rasterization",
+  "--disable-gpu",
   "--run-all-compositor-stages-before-draw",
 ]);
 const DEFAULT_TIMEOUT_MS = 45_000;
@@ -197,11 +197,11 @@ async function browserIdentity(browser) {
     invariant(/^Chrome\/\d/.test(identity.product ?? "") && /\bChrome\/\d/.test(identity.userAgent ?? "") && !/\b(?:HeadlessChrome|Edg|OPR)\//.test(identity.userAgent ?? ""), "visual-regression browser is not installed/headed Google Chrome");
     const gpuCompositing = systemInfo.gpu?.featureStatus?.gpu_compositing ?? "unknown";
     const rasterization = systemInfo.gpu?.featureStatus?.rasterization ?? "unknown";
-    invariant(gpuCompositing === "enabled" && rasterization === "disabled_software", "visual-regression renderer does not retain GPU compositing with deterministic CPU rasterization");
+    invariant(gpuCompositing === "disabled_software" && rasterization === "disabled_software", "visual-regression renderer is not the deterministic software-composited authority");
     return {
       name: "Google Chrome", product: identity.product, version: browser.version(), userAgent: identity.userAgent, installed: true, headed: true,
       launchArguments: [...DETERMINISTIC_CHROME_ARGS],
-      rendering: { gpuCompositing, rasterization, purpose: "DETERMINISTIC_EXACT_PIXEL_RASTERIZATION" },
+      rendering: { gpuCompositing, rasterization, purpose: "DETERMINISTIC_EXACT_PIXEL_SOFTWARE_RENDERING" },
     };
   } finally { await session.detach(); }
 }
