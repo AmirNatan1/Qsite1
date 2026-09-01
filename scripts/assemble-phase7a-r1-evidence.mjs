@@ -561,25 +561,39 @@ function validateRuntimeAsset(record, label, { served = false } = {}) {
   }
 }
 
+function runtimeAssetMap(records, label, { served = false } = {}) {
+  invariant(Array.isArray(records), `${label} runtime asset inventory is missing`);
+  const byKey = new Map();
+  records.forEach((record, index) => {
+    validateRuntimeAsset(record, `${label} runtime asset ${index + 1}`, { served });
+    const key = `${record.kind}\t${record.route}`;
+    invariant(!byKey.has(key), `${label} runtime asset is duplicated: ${record.kind} ${record.route}`);
+    byKey.set(key, record);
+  });
+  return byKey;
+}
+
+function assertRuntimeAssetSet(actualRecords, expectedRecords, label, { actualServed = false } = {}) {
+  const actual = runtimeAssetMap(actualRecords, label, { served: actualServed });
+  const expected = runtimeAssetMap(expectedRecords, `${label} expected`);
+  invariant(actual.size === expected.size, `${label} runtime asset count differs`);
+  for (const [key, expectedRecord] of expected) {
+    const actualRecord = actual.get(key);
+    invariant(actualRecord && actualRecord.bytes === expectedRecord.bytes && actualRecord.sha256 === expectedRecord.sha256, `${label} runtime asset differs: ${expectedRecord.route}`);
+  }
+  return actual;
+}
+
 function validateRuntimeAssets(report) {
   invariant(report?.derivation === "linked CSS/JS paths parsed from each verified root HTML response", "served-build runtime asset derivation differs");
   const before = report.before;
   invariant(before?.revision === PHASE7A_R1_PARENT && Array.isArray(before.served) && before.served.length === EXACT_PARENT_RUNTIME_ASSET_AUTHORITY.records.length, "served exact-parent runtime asset inventory differs");
-  before.served.forEach((record, index) => validateRuntimeAsset(record, `served exact-parent runtime asset ${index + 1}`, { served: true }));
+  assertRuntimeAssetSet(before.served, EXACT_PARENT_RUNTIME_ASSET_AUTHORITY.records, "served exact-parent", { actualServed: true });
   invariant(before.fingerprint === runtimeAssetFingerprint(before.served) && before.fingerprint === EXACT_PARENT_RUNTIME_ASSET_AUTHORITY.fingerprint, "served exact-parent runtime asset fingerprint differs");
   invariant(before.authority?.revision === PHASE7A_R1_PARENT && before.authority.derivation === EXACT_PARENT_RUNTIME_ASSET_AUTHORITY.derivation && before.authority.fingerprint === EXACT_PARENT_RUNTIME_ASSET_AUTHORITY.fingerprint, "served exact-parent immutable runtime receipt differs");
-  for (const [index, expected] of EXACT_PARENT_RUNTIME_ASSET_AUTHORITY.records.entries()) {
-    const actual = before.served[index];
-    invariant(actual.kind === expected.kind && actual.route === expected.route && actual.bytes === expected.bytes && actual.sha256 === expected.sha256, `served exact-parent runtime asset differs: ${expected.route}`);
-  }
   const after = report.after;
-  invariant(after?.revision && HASH_40.test(after.revision) && Array.isArray(after.localDist) && Array.isArray(after.served) && after.localDist.length >= 2 && after.localDist.length === after.served.length, "served R1 runtime asset inventory differs");
-  after.localDist.forEach((record, index) => validateRuntimeAsset(record, `local R1 runtime asset ${index + 1}`));
-  after.served.forEach((record, index) => validateRuntimeAsset(record, `served R1 runtime asset ${index + 1}`, { served: true }));
-  for (const [index, local] of after.localDist.entries()) {
-    const served = after.served[index];
-    invariant(served.kind === local.kind && served.route === local.route && served.bytes === local.bytes && served.sha256 === local.sha256, `served R1 runtime asset differs from local dist: ${local.route}`);
-  }
+  invariant(after && Array.isArray(after.localDist) && Array.isArray(after.served) && after.localDist.length >= 2 && after.localDist.length === after.served.length, "served R1 runtime asset inventory differs");
+  assertRuntimeAssetSet(after.served, after.localDist, "served/local R1", { actualServed: true });
   invariant(after.localFingerprint === runtimeAssetFingerprint(after.localDist) && after.servedFingerprint === runtimeAssetFingerprint(after.served) && after.localFingerprint === after.servedFingerprint, "served/local R1 runtime asset fingerprint differs");
   return { before, after };
 }
@@ -612,8 +626,9 @@ export function validatePortableServedBuildReceipt(receipt, expectedRevision = r
   const routes = new Set();
   for (const [index, asset] of receipt.runtimeAssets.entries()) {
     validateRuntimeAsset(asset, `portable runtime asset ${index + 1}`);
-    invariant(!routes.has(asset.route), `portable runtime asset route is duplicated: ${asset.route}`);
-    routes.add(asset.route);
+    const key = `${asset.kind}\t${asset.route}`;
+    invariant(!routes.has(key), `portable runtime asset is duplicated: ${asset.kind} ${asset.route}`);
+    routes.add(key);
   }
   invariant(receipt.runtimeAssets.some(({ kind }) => kind === "css") && receipt.runtimeAssets.some(({ kind }) => kind === "javascript"), "portable served-build receipt lacks CSS or JavaScript");
   invariant(receipt.runtimeFingerprint === runtimeAssetFingerprint(receipt.runtimeAssets), "portable served-build runtime fingerprint differs");
@@ -623,10 +638,7 @@ export function validatePortableServedBuildReceipt(receipt, expectedRevision = r
     const closure = validateServedBuildAuthority(servedBuildAuthority, expectedRevision);
     invariant(receipt.document.bytes === closure.afterDocument.bytes && receipt.document.sha256 === closure.afterDocument.sha256, "portable served-build document differs from closure authority");
     invariant(receipt.runtimeFingerprint === closure.runtimeAssets.after.localFingerprint && receipt.runtimeAssets.length === closure.runtimeAssets.after.localDist.length, "portable served-build runtime fingerprint differs from closure authority");
-    for (const [index, expected] of closure.runtimeAssets.after.localDist.entries()) {
-      const actual = receipt.runtimeAssets[index];
-      invariant(actual.kind === expected.kind && actual.route === expected.route && actual.bytes === expected.bytes && actual.sha256 === expected.sha256, `portable runtime asset differs from closure authority: ${expected.route}`);
-    }
+    assertRuntimeAssetSet(receipt.runtimeAssets, closure.runtimeAssets.after.localDist, "portable/closure R1");
   }
   return portableSourceAuthority(receipt);
 }
@@ -638,9 +650,11 @@ export function validateServedBuildAuthority(report, afterRevision) {
   invariant(HASH_40.test(afterRevision ?? "") && afterRevision !== PHASE7A_R1_PARENT, "served-build R1 revision is invalid");
   const repository = report.repository;
   invariant(repository?.schema === SERVED_BUILD_AUTHORITY_SCHEMA && repository.branch === PHASE7A_R1_BRANCH && repository.head === afterRevision, "served-build repository branch/HEAD authority differs");
-  invariant(repository.exactParent === PHASE7A_R1_PARENT && repository.parentIsAncestor === true && repository.mergeCommitsSinceParent === 0 && repository.trackedWorktreeClean === true, "served-build repository ancestry/cleanliness authority differs");
+  invariant(repository.exactParent === PHASE7A_R1_PARENT && repository.parentIsAncestor === true && repository.mergeCommitsSinceParent === 0, "served-build repository ancestry authority differs");
+  invariant(repository.worktreeClean === true && Array.isArray(repository.worktreeStatus) && repository.worktreeStatus.length === 0, "served-build repository cleanliness authority differs");
   const build = repository.buildReceipt;
-  invariant(build?.command === "npm run build:phase7a-r1" && build.authorityProfile === "phase7a-r1" && build.completed === true && build.headBefore === afterRevision && build.headAfter === afterRevision && build.branchAfter === PHASE7A_R1_BRANCH && build.trackedWorktreeCleanAfter === true, "served-build governed build receipt differs");
+  invariant(build?.command === "npm run build:phase7a-r1" && build.authorityProfile === "phase7a-r1" && build.completed === true && build.headBefore === afterRevision && build.headAfter === afterRevision && build.branchAfter === PHASE7A_R1_BRANCH, "served-build governed build receipt differs");
+  invariant(build.worktreeCleanAfter === true && Array.isArray(build.worktreeStatusAfter) && build.worktreeStatusAfter.length === 0, "served-build governed build cleanliness differs");
   invariant(repository.localDist?.relativePath === "dist/index.html" && Number.isSafeInteger(repository.localDist.bytes) && repository.localDist.bytes > 0 && HASH_64.test(repository.localDist.sha256 ?? ""), "served-build local dist/index.html authority differs");
   invariant(report.originSeparation?.before === "BEFORE_CAPTURE_ORIGIN" && report.originSeparation?.after === "AFTER_CAPTURE_ORIGIN" && report.originSeparation?.distinctNormalizedOrigins === true, "served-build origin separation authority differs");
 
@@ -652,7 +666,6 @@ export function validateServedBuildAuthority(report, afterRevision) {
   invariant(afterDocument.bytes === repository.localDist.bytes && afterDocument.sha256 === repository.localDist.sha256, "served R1 document differs from fresh local dist/index.html");
   invariant(report.documentFingerprintsDistinct === true && beforeDocument.sha256 !== afterDocument.sha256, "served before/after document fingerprints are not distinct");
   const runtimeAssets = validateRuntimeAssets(report.runtimeAssets);
-  invariant(runtimeAssets.after.revision === afterRevision, "served R1 runtime asset revision differs");
 
   const beforeDom = report.dom?.before;
   const afterDom = report.dom?.after;

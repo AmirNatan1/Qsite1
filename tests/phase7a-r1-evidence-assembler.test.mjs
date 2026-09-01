@@ -100,8 +100,9 @@ function servedBuildFixture(afterRevision = "b".repeat(40)) {
       exactParent: PHASE7A_R1_PARENT,
       parentIsAncestor: true,
       mergeCommitsSinceParent: 0,
-      trackedWorktreeClean: true,
-      buildReceipt: { command: "npm run build:phase7a-r1", authorityProfile: "phase7a-r1", completed: true, headBefore: afterRevision, headAfter: afterRevision, branchAfter: PHASE7A_R1_BRANCH, trackedWorktreeCleanAfter: true },
+      worktreeClean: true,
+      worktreeStatus: [],
+      buildReceipt: { command: "npm run build:phase7a-r1", authorityProfile: "phase7a-r1", completed: true, headBefore: afterRevision, headAfter: afterRevision, branchAfter: PHASE7A_R1_BRANCH, worktreeCleanAfter: true, worktreeStatusAfter: [] },
       localDist: { relativePath: "dist/index.html", ...afterDocumentAuthority },
     },
     originSeparation: { before: "BEFORE_CAPTURE_ORIGIN", after: "AFTER_CAPTURE_ORIGIN", distinctNormalizedOrigins: true },
@@ -109,8 +110,8 @@ function servedBuildFixture(afterRevision = "b".repeat(40)) {
     documentFingerprintsDistinct: true,
     runtimeAssets: {
       derivation: "linked CSS/JS paths parsed from each verified root HTML response",
-      before: { revision: PHASE7A_R1_PARENT, served: exactParentRuntime.map((record) => ({ ...record })), fingerprint: exactParentRuntimeFingerprint, authority: { revision: PHASE7A_R1_PARENT, derivation: "immutable linked CSS/JavaScript bytes from the exact-parent governed build", fingerprint: exactParentRuntimeFingerprint } },
-      after: { revision: afterRevision, localDist: r1RuntimeLocal.map((record) => ({ ...record })), served: r1RuntimeServed.map((record) => ({ ...record })), localFingerprint: r1RuntimeFingerprint, servedFingerprint: r1RuntimeFingerprint },
+      before: { revision: PHASE7A_R1_PARENT, served: [...exactParentRuntime].reverse().map((record) => ({ ...record })), fingerprint: exactParentRuntimeFingerprint, authority: { revision: PHASE7A_R1_PARENT, derivation: "immutable linked CSS/JavaScript bytes from the exact-parent governed build", fingerprint: exactParentRuntimeFingerprint } },
+      after: { localDist: r1RuntimeLocal.map((record) => ({ ...record })), served: [...r1RuntimeServed].reverse().map((record) => ({ ...record })), localFingerprint: r1RuntimeFingerprint, servedFingerprint: r1RuntimeFingerprint },
     },
     dom: { before: dom(false), after: dom(true) },
     network: { before: emptyNetwork(), after: emptyNetwork() },
@@ -702,6 +703,13 @@ test("served-build authority binds immutable parent bytes, fresh R1 dist bytes, 
   const validated = validateServedBuildAuthority(authority, afterRevision);
   assert.equal(validated.afterDocument.sha256, afterDocumentAuthority.sha256);
   assert.equal(validated.beforeDocument.sha256, EXACT_PARENT_HOME_DOCUMENT_AUTHORITY.sha256);
+  assert.equal(Object.hasOwn(authority.runtimeAssets.after, "revision"), false);
+
+  const reordered = structuredClone(authority);
+  reordered.runtimeAssets.before.served.reverse();
+  reordered.runtimeAssets.after.localDist.reverse();
+  reordered.runtimeAssets.after.served.reverse();
+  assert.equal(validateServedBuildAuthority(reordered, afterRevision).runtimeAssets.after.localFingerprint, r1RuntimeFingerprint);
 
   const wrongParent = structuredClone(authority);
   wrongParent.documents.before.sha256 = "f".repeat(64);
@@ -710,6 +718,41 @@ test("served-build authority binds immutable parent bytes, fresh R1 dist bytes, 
   const oldBuild = structuredClone(authority);
   oldBuild.repository.buildReceipt.headAfter = "a".repeat(40);
   assert.throws(() => validateServedBuildAuthority(oldBuild, afterRevision), /governed build receipt differs/);
+
+  const dirtyRepositoryBoolean = structuredClone(authority);
+  dirtyRepositoryBoolean.repository.worktreeClean = false;
+  assert.throws(() => validateServedBuildAuthority(dirtyRepositoryBoolean, afterRevision), /repository cleanliness authority differs/);
+
+  const dirtyRepositoryStatus = structuredClone(authority);
+  dirtyRepositoryStatus.repository.worktreeStatus.push(" M src/example");
+  assert.throws(() => validateServedBuildAuthority(dirtyRepositoryStatus, afterRevision), /repository cleanliness authority differs/);
+
+  const dirtyBuildBoolean = structuredClone(authority);
+  dirtyBuildBoolean.repository.buildReceipt.worktreeCleanAfter = false;
+  assert.throws(() => validateServedBuildAuthority(dirtyBuildBoolean, afterRevision), /governed build cleanliness differs/);
+
+  const dirtyBuildStatus = structuredClone(authority);
+  dirtyBuildStatus.repository.buildReceipt.worktreeStatusAfter.push(" M src/example");
+  assert.throws(() => validateServedBuildAuthority(dirtyBuildStatus, afterRevision), /governed build cleanliness differs/);
+
+  const missingRuntime = structuredClone(authority);
+  missingRuntime.runtimeAssets.after.served.pop();
+  assert.throws(() => validateServedBuildAuthority(missingRuntime, afterRevision), /runtime asset inventory differs/);
+
+  const duplicateRuntime = structuredClone(authority);
+  duplicateRuntime.runtimeAssets.after.localDist[1] = { ...duplicateRuntime.runtimeAssets.after.localDist[0] };
+  duplicateRuntime.runtimeAssets.after.localFingerprint = runtimeFingerprint(duplicateRuntime.runtimeAssets.after.localDist);
+  assert.throws(() => validateServedBuildAuthority(duplicateRuntime, afterRevision), /runtime asset is duplicated/);
+
+  const tamperedRuntime = structuredClone(authority);
+  tamperedRuntime.runtimeAssets.after.served[0].bytes += 1;
+  tamperedRuntime.runtimeAssets.after.servedFingerprint = runtimeFingerprint(tamperedRuntime.runtimeAssets.after.served);
+  assert.throws(() => validateServedBuildAuthority(tamperedRuntime, afterRevision), /runtime asset differs/);
+
+  const duplicateExactParentRuntime = structuredClone(authority);
+  duplicateExactParentRuntime.runtimeAssets.before.served[1] = { ...duplicateExactParentRuntime.runtimeAssets.before.served[0] };
+  duplicateExactParentRuntime.runtimeAssets.before.fingerprint = runtimeFingerprint(duplicateExactParentRuntime.runtimeAssets.before.served);
+  assert.throws(() => validateServedBuildAuthority(duplicateExactParentRuntime, afterRevision), /runtime asset is duplicated/);
 
   const missingStructure = structuredClone(authority);
   missingStructure.dom.after.signalFarCount = 0;

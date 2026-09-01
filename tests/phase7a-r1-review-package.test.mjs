@@ -55,8 +55,8 @@ const BEFORE_DOCUMENT = Object.freeze({ bytes: 17917, sha256: "2c153d9094fe0ca88
 const json = (value) => Buffer.from(stableJson(value));
 const BEFORE_RUNTIME = Object.freeze([
   Object.freeze({ kind: "css", route: "/_astro/BaseLayout.ByjrAQMG.css", httpStatus: 200, contentType: "text/css", bytes: 12_579, sha256: "0967a69765cc49c6291e125d44958bb19694d1c74fe028e17f6f095bd1109f68" }),
-  Object.freeze({ kind: "css", route: "/_astro/index.CMvgVrhb.css", httpStatus: 200, contentType: "text/css", bytes: 17_131, sha256: "a9932a0eed64df5c5a5ebc35067b003558644bbddb8c179227364c1b340c0691" }),
   Object.freeze({ kind: "javascript", route: "/_astro/index.astro_astro_type_script_index_0_lang.DuXUZIF3.js", httpStatus: 200, contentType: "application/javascript", bytes: 2_604, sha256: "05006aae308ac99e9f16bb4c7d93b75f41e8766ea06aaf9d8c3d19fb1a7bb52a" }),
+  Object.freeze({ kind: "css", route: "/_astro/index.CMvgVrhb.css", httpStatus: 200, contentType: "text/css", bytes: 17_131, sha256: "a9932a0eed64df5c5a5ebc35067b003558644bbddb8c179227364c1b340c0691" }),
 ]);
 const AFTER_RUNTIME_LOCAL = Object.freeze([
   Object.freeze({ kind: "css", route: "/_astro/app.css", bytes: 901, sha256: "1".repeat(64) }),
@@ -289,7 +289,8 @@ function servedBuildAuthority() {
       exactParent: PHASE7A_R1_PARENT,
       parentIsAncestor: true,
       mergeCommitsSinceParent: 0,
-      trackedWorktreeClean: true,
+      worktreeClean: true,
+      worktreeStatus: [],
       buildReceipt: {
         command: "npm run build:phase7a-r1",
         authorityProfile: "phase7a-r1",
@@ -297,7 +298,8 @@ function servedBuildAuthority() {
         headBefore: SOURCE_HEAD,
         headAfter: SOURCE_HEAD,
         branchAfter: PHASE7A_R1_BRANCH,
-        trackedWorktreeCleanAfter: true,
+        worktreeCleanAfter: true,
+        worktreeStatusAfter: [],
       },
       localDist: { relativePath: "dist/index.html", ...AFTER_DOCUMENT },
     },
@@ -310,7 +312,7 @@ function servedBuildAuthority() {
     runtimeAssets: {
       derivation: "linked CSS/JS paths parsed from each verified root HTML response",
       before: { revision: PHASE7A_R1_PARENT, served: BEFORE_RUNTIME.map((record) => ({ ...record })), fingerprint: BEFORE_RUNTIME_FINGERPRINT, authority: { revision: PHASE7A_R1_PARENT, derivation: "immutable linked CSS/JavaScript bytes from the exact-parent governed build", fingerprint: BEFORE_RUNTIME_FINGERPRINT } },
-      after: { revision: SOURCE_HEAD, localDist: AFTER_RUNTIME_LOCAL.map((record) => ({ ...record })), served: AFTER_RUNTIME_SERVED.map((record) => ({ ...record })), localFingerprint: AFTER_RUNTIME_FINGERPRINT, servedFingerprint: AFTER_RUNTIME_FINGERPRINT },
+      after: { localDist: AFTER_RUNTIME_LOCAL.map((record) => ({ ...record })), served: AFTER_RUNTIME_SERVED.map((record) => ({ ...record })), localFingerprint: AFTER_RUNTIME_FINGERPRINT, servedFingerprint: AFTER_RUNTIME_FINGERPRINT },
     },
     deploymentBinding: servedBuildBinding(),
   };
@@ -922,6 +924,48 @@ test("served-build provenance is a required, HEAD-bound, deployment-cross-bound 
   );
   const reboundRuntime = cryptographicallyRebindJson("17-deployment/deployment-verification.json", mutateRuntimeLedger);
   assert.throws(() => auditPackageBytes(reboundRuntime), /served-build runtime asset differs from deployment ledger: \/_astro\/app\.css/i);
+});
+
+test("served-build cleanliness and runtime inventories fail closed in the packager and rebound audit", () => {
+  const authorityMutations = [
+    [(document) => { document.repository.worktreeClean = false; }, /repository ancestry\/cleanliness authority differs/i],
+    [(document) => { document.repository.worktreeStatus = [" M src/pages/index.astro"]; }, /repository ancestry\/cleanliness authority differs/i],
+    [(document) => { document.repository.buildReceipt.worktreeCleanAfter = false; }, /governed build receipt differs/i],
+    [(document) => { document.repository.buildReceipt.worktreeStatusAfter = [" M dist/index.html"]; }, /governed build receipt differs/i],
+    [(document) => { document.runtimeAssets.after.localDist.pop(); }, /served R1 runtime asset inventory differs/i],
+    [(document) => { document.runtimeAssets.after.localDist[1] = { ...document.runtimeAssets.after.localDist[0] }; }, /duplicate runtime asset/i],
+    [(document) => { document.runtimeAssets.after.served[0].bytes += 1; }, /served R1 runtime asset differs/i],
+  ];
+  for (const [mutate, expected] of authorityMutations) {
+    assert.throws(() => buildReviewArtifacts(mutateJson(fixtureEntries, SERVED_BUILD_AUTHORITY_PATH, mutate)), expected);
+    assert.throws(() => auditPackageBytes(cryptographicallyRebindJson(SERVED_BUILD_AUTHORITY_PATH, mutate)), expected);
+  }
+
+  const installedChromePath = "09-chrome-200/installed-chrome-200-percent-report.json";
+  const portableMutations = [
+    [(document) => { document.servedBuild.runtimeAssets.pop(); }, /portable runtime asset.*inventory differs/i],
+    [(document) => { document.servedBuild.runtimeAssets[1] = { ...document.servedBuild.runtimeAssets[0] }; }, /portable runtime asset.*duplicate runtime asset/i],
+    [(document) => { document.servedBuild.runtimeAssets[0].sha256 = "f".repeat(64); }, /portable runtime asset differs/i],
+  ];
+  for (const [mutate, expected] of portableMutations) {
+    assert.throws(() => buildReviewArtifacts(mutateJson(fixtureEntries, installedChromePath, mutate)), expected);
+    assert.throws(() => auditPackageBytes(cryptographicallyRebindJson(installedChromePath, mutate)), expected);
+  }
+});
+
+test("served-build runtime inventories compare as duplicate-free keyed sets", () => {
+  let reordered = mutateJson(fixtureEntries, SERVED_BUILD_AUTHORITY_PATH, (document) => {
+    document.runtimeAssets.before.served.reverse();
+    document.runtimeAssets.after.localDist.reverse();
+    document.runtimeAssets.after.served.reverse();
+  });
+  reordered = mutateJson(reordered, "09-chrome-200/installed-chrome-200-percent-report.json", (document) => { document.servedBuild.runtimeAssets.reverse(); });
+  reordered = mutateJson(reordered, "13-performance/performance-and-lifecycle-report.json", (document) => { document.servedBuildAuthority.runtimeAssets.reverse(); });
+  reordered = mutateJson(reordered, "11-accessibility/accessibility-report.json", (document) => {
+    document.qaServedBuildAuthorities.forEach(({ servedBuild }) => servedBuild.runtimeAssets.reverse());
+  });
+  const reorderedArtifacts = buildReviewArtifacts(reordered);
+  assert.equal(auditPackageBytes({ archiveBytes: reorderedArtifacts.archiveBytes, detachedBytes: reorderedArtifacts.detachedBytes }).status, "PASS");
 });
 
 test("Firefox first-paint accepts only exact evidenced PASS or bounded LIMITATION in package and independent audit", () => {

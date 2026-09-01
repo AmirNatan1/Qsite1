@@ -57,8 +57,8 @@ const EXACT_PARENT_RUNTIME_ASSETS = Object.freeze({
   fingerprint: "223c3e7a5fce599b7818e3f19d3c786e4f67fca85b5fcc60f9f1e3d58304b3d7",
   records: Object.freeze([
     Object.freeze({ kind: "css", route: "/_astro/BaseLayout.ByjrAQMG.css", bytes: 12_579, sha256: "0967a69765cc49c6291e125d44958bb19694d1c74fe028e17f6f095bd1109f68" }),
-    Object.freeze({ kind: "css", route: "/_astro/index.CMvgVrhb.css", bytes: 17_131, sha256: "a9932a0eed64df5c5a5ebc35067b003558644bbddb8c179227364c1b340c0691" }),
     Object.freeze({ kind: "javascript", route: "/_astro/index.astro_astro_type_script_index_0_lang.DuXUZIF3.js", bytes: 2_604, sha256: "05006aae308ac99e9f16bb4c7d93b75f41e8766ea06aaf9d8c3d19fb1a7bb52a" }),
+    Object.freeze({ kind: "css", route: "/_astro/index.CMvgVrhb.css", bytes: 17_131, sha256: "a9932a0eed64df5c5a5ebc35067b003558644bbddb8c179227364c1b340c0691" }),
   ]),
 });
 export const IN_ARCHIVE_MANIFEST = "MANIFEST.json";
@@ -346,19 +346,40 @@ function validateRuntimeAsset(record, label, served = false) {
   if (served) invariant(record.httpStatus === 200 && (record.kind === "css" ? /text\/css/i.test(record.contentType ?? "") : /javascript|ecmascript/i.test(record.contentType ?? "")), `${label} runtime asset HTTP/content-type differs`);
 }
 
+function indexRuntimeAssets(records, label, served = false) {
+  invariant(Array.isArray(records) && records.length > 0, `${label} runtime asset inventory differs`);
+  const indexed = new Map();
+  records.forEach((record, index) => {
+    validateRuntimeAsset(record, `${label} ${index + 1}`, served);
+    const key = `${record.kind}\t${record.route}`;
+    invariant(!indexed.has(key), `${label} contains duplicate runtime asset: ${record.route}`);
+    indexed.set(key, record);
+  });
+  return indexed;
+}
+
+function compareRuntimeAssetSets(actualRecords, expectedRecords, label, actualServed = false) {
+  const actual = indexRuntimeAssets(actualRecords, label, actualServed);
+  const expected = indexRuntimeAssets(expectedRecords, `${label} authority`);
+  invariant(actual.size === expected.size, `${label} runtime asset inventory differs`);
+  for (const [key, authority] of expected) {
+    const record = actual.get(key);
+    invariant(record, `${label} is missing runtime asset: ${authority.route}`);
+    invariant(record.kind === authority.kind && record.route === authority.route && record.bytes === authority.bytes && record.sha256 === authority.sha256, `${label} differs: ${authority.route}`);
+  }
+  return actual;
+}
+
 function validateRuntimeAssets(report, sourceHead) {
   invariant(report?.derivation === "linked CSS/JS paths parsed from each verified root HTML response", "served-build runtime asset derivation differs");
   const before = report.before;
   invariant(before?.revision === PHASE7A_R1_PARENT && Array.isArray(before.served) && before.served.length === EXACT_PARENT_RUNTIME_ASSETS.records.length, "served exact-parent runtime asset inventory differs");
-  before.served.forEach((record, index) => validateRuntimeAsset(record, `served exact-parent runtime asset ${index + 1}`, true));
+  compareRuntimeAssetSets(before.served, EXACT_PARENT_RUNTIME_ASSETS.records, "served exact-parent runtime asset", true);
   invariant(before.fingerprint === runtimeAssetFingerprint(before.served) && before.fingerprint === EXACT_PARENT_RUNTIME_ASSETS.fingerprint, "served exact-parent runtime asset fingerprint differs");
   invariant(before.authority?.revision === PHASE7A_R1_PARENT && before.authority.derivation === EXACT_PARENT_RUNTIME_ASSETS.derivation && before.authority.fingerprint === EXACT_PARENT_RUNTIME_ASSETS.fingerprint, "served exact-parent immutable runtime receipt differs");
-  for (const [index, expected] of EXACT_PARENT_RUNTIME_ASSETS.records.entries()) { const actual = before.served[index]; invariant(actual.kind === expected.kind && actual.route === expected.route && actual.bytes === expected.bytes && actual.sha256 === expected.sha256, `served exact-parent runtime asset differs: ${expected.route}`); }
   const after = report.after;
-  invariant(after?.revision === sourceHead && Array.isArray(after.localDist) && Array.isArray(after.served) && after.localDist.length >= 2 && after.localDist.length === after.served.length, "served R1 runtime asset inventory differs");
-  after.localDist.forEach((record, index) => validateRuntimeAsset(record, `local R1 runtime asset ${index + 1}`));
-  after.served.forEach((record, index) => validateRuntimeAsset(record, `served R1 runtime asset ${index + 1}`, true));
-  for (const [index, local] of after.localDist.entries()) { const served = after.served[index]; invariant(served.kind === local.kind && served.route === local.route && served.bytes === local.bytes && served.sha256 === local.sha256, `served R1 runtime asset differs from local dist: ${local.route}`); }
+  invariant(after && Array.isArray(after.localDist) && after.localDist.length >= 2 && Array.isArray(after.served), "served R1 runtime asset inventory differs");
+  compareRuntimeAssetSets(after.served, after.localDist, "served R1 runtime asset", true);
   invariant(after.localFingerprint === runtimeAssetFingerprint(after.localDist) && after.servedFingerprint === runtimeAssetFingerprint(after.served) && after.localFingerprint === after.servedFingerprint, "served/local R1 runtime asset fingerprint differs");
   return { before, after };
 }
@@ -366,12 +387,7 @@ function validateRuntimeAssets(report, sourceHead) {
 function validatePortableServedBuild(receipt, sourceHead, served, label) {
   invariant(receipt?.schema === PORTABLE_SERVED_BUILD_SCHEMA && receipt.status === "PASS" && receipt.branch === PHASE7A_R1_BRANCH && receipt.revision === sourceHead, `${label} portable served-build branch/HEAD differs`);
   invariant(receipt.document?.relativePath === "dist/index.html" && receipt.document.bytes === served.documents.after.bytes && receipt.document.sha256 === served.documents.after.sha256, `${label} portable served-build document differs`);
-  invariant(Array.isArray(receipt.runtimeAssets) && receipt.runtimeAssets.length === served.runtimeAssets.after.localDist.length, `${label} portable runtime asset inventory differs`);
-  receipt.runtimeAssets.forEach((asset, index) => {
-    validateRuntimeAsset(asset, `${label} portable runtime asset ${index + 1}`);
-    const expected = served.runtimeAssets.after.localDist[index];
-    invariant(asset.kind === expected.kind && asset.route === expected.route && asset.bytes === expected.bytes && asset.sha256 === expected.sha256, `${label} portable runtime asset differs: ${expected.route}`);
-  });
+  compareRuntimeAssetSets(receipt.runtimeAssets, served.runtimeAssets.after.localDist, `${label} portable runtime asset`);
   invariant(receipt.runtimeFingerprint === runtimeAssetFingerprint(receipt.runtimeAssets) && receipt.runtimeFingerprint === served.runtimeAssets.after.localFingerprint, `${label} portable runtime fingerprint differs`);
   invariant(receipt.servedParity?.document === true && receipt.servedParity?.runtimeAssets === true, `${label} portable served parity differs`);
   invariant(receipt.freshBuild?.command === "npm run build:phase7a-r1" && receipt.freshBuild.headBefore === sourceHead && receipt.freshBuild.headAfter === sourceHead && receipt.freshBuild.worktreeCleanBefore === true && receipt.freshBuild.worktreeCleanAfter === true, `${label} portable fresh-build receipt differs`);
@@ -388,9 +404,9 @@ function validateServedBuildAuthority(entries, sourceHead, deployment) {
   invariant(report.schema === SERVED_BUILD_AUTHORITY_SCHEMA && report.status === "PASS", "served-build authority schema/status differs");
   const repository = report.repository;
   invariant(repository?.schema === SERVED_BUILD_AUTHORITY_SCHEMA && repository.branch === PHASE7A_R1_BRANCH && repository.head === sourceHead && repository.exactParent === PHASE7A_R1_PARENT, "served-build repository branch/HEAD/parent authority differs");
-  invariant(repository.parentIsAncestor === true && repository.mergeCommitsSinceParent === 0 && repository.trackedWorktreeClean === true, "served-build repository ancestry/cleanliness authority differs");
+  invariant(repository.parentIsAncestor === true && repository.mergeCommitsSinceParent === 0 && repository.worktreeClean === true && Array.isArray(repository.worktreeStatus) && repository.worktreeStatus.length === 0, "served-build repository ancestry/cleanliness authority differs");
   const build = repository.buildReceipt;
-  invariant(build?.command === "npm run build:phase7a-r1" && build.authorityProfile === "phase7a-r1" && build.completed === true && build.headBefore === sourceHead && build.headAfter === sourceHead && build.branchAfter === PHASE7A_R1_BRANCH && build.trackedWorktreeCleanAfter === true, "served-build governed build receipt differs");
+  invariant(build?.command === "npm run build:phase7a-r1" && build.authorityProfile === "phase7a-r1" && build.completed === true && build.headBefore === sourceHead && build.headAfter === sourceHead && build.branchAfter === PHASE7A_R1_BRANCH && build.worktreeCleanAfter === true && Array.isArray(build.worktreeStatusAfter) && build.worktreeStatusAfter.length === 0, "served-build governed build receipt differs");
   invariant(repository.localDist?.relativePath === "dist/index.html" && Number.isSafeInteger(repository.localDist.bytes) && repository.localDist.bytes > 0 && /^[0-9a-f]{64}$/.test(repository.localDist.sha256 ?? ""), "served-build local dist/index.html authority differs");
   invariant(report.originSeparation?.before === "BEFORE_CAPTURE_ORIGIN" && report.originSeparation?.after === "AFTER_CAPTURE_ORIGIN" && report.originSeparation?.distinctNormalizedOrigins === true, "served-build origin separation authority differs");
   const before = report.documents?.before;
