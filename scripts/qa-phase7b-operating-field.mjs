@@ -1061,7 +1061,13 @@ async function phase7aRegression(browser, options) {
     await page.evaluate(() => globalThis.__phase7bQa.scrollTo(0));
     await page.waitForTimeout(100);
     const firstFrame = await page.evaluate(() => document.querySelector("[data-cinematic-shell]")?.getAttribute("data-target-frame"));
-    await page.evaluate(() => document.querySelector("#entry")?.scrollIntoView({ block: "start", behavior: "instant" }));
+    await page.evaluate(() => {
+      const threshold = document.querySelector("[data-field-map-threshold]");
+      if (!threshold) return;
+      const bounds = threshold.getBoundingClientRect();
+      globalThis.__phase7bQa.scrollTo(scrollY + bounds.top + bounds.height / 2 - innerHeight / 2);
+    });
+    await page.waitForFunction(() => document.querySelector("[data-cinematic-shell]")?.dataset.routeNavigation === "released");
     await page.waitForTimeout(120);
     const finalFrame = await page.evaluate(() => document.querySelector("[data-cinematic-shell]")?.getAttribute("data-target-frame"));
     const summary = page.locator("[data-field-map] > summary");

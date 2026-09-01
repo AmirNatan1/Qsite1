@@ -295,6 +295,7 @@ test("source uses installed Chromium and existing media helpers without zoom emu
   assert.match(source, /UNEXPLAINED_DIFFERENCE/);
   assert.match(source, /!response && page\.url\(\) === target/);
   assert.match(source, /page\.reload\(\{ waitUntil: "load"/);
+  assert.match(source, /routeNavigation === "released"/);
   assert.match(source, /--retain-visual-regression-pngs/);
   assert.doesNotMatch(source, /deviceScaleFactor|force-device-scale-factor|\.style\.zoom\s*=|transform\s*:\s*scale/i);
   assert.doesNotMatch(source, /from ["'](?:gsap|three|react|playwright)["']/i);
