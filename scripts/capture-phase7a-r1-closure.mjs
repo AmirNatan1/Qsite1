@@ -1451,13 +1451,14 @@ async function readPointerEvidence(page, step) {
     const y = percent(probeY);
     const nx = pixels(nearX);
     const ny = pixels(nearY);
+    const canonical = (value, unit) => Number.isFinite(value) ? `${Object.is(value, -0) ? 0 : value}${unit}` : "";
     return {
       step: sequenceStep,
       probe: field.dataset.probe ?? null,
-      probeX,
-      probeY,
-      nearX,
-      nearY,
+      probeX: canonical(x, "%"),
+      probeY: canonical(y, "%"),
+      nearX: canonical(nx, "px"),
+      nearY: canonical(ny, "px"),
       bounded: Number.isFinite(x) && x >= 0 && x <= 100
         && Number.isFinite(y) && y >= 0 && y <= 100
         && Number.isFinite(nx) && Math.abs(nx) <= 8.01
@@ -1579,7 +1580,15 @@ async function captureRawComparisonRecording(browser, spec, baseUrl, afterRevisi
         pointerStates.push(evidence);
       }
       await page.locator("[data-manifesto-threshold]").dispatchEvent("pointerleave");
-      await page.waitForFunction(() => document.querySelector("[data-signal-field]")?.getAttribute("data-probe") === "settled", undefined, { timeout: timeoutMs });
+      await page.waitForFunction(() => {
+        const field = document.querySelector("[data-signal-field]");
+        if (!(field instanceof HTMLElement) || field.dataset.probe !== "settled") return false;
+        const number = (name) => Number.parseFloat(field.style.getPropertyValue(name));
+        return Math.abs(number("--probe-x") - 50) <= 0.001
+          && Math.abs(number("--probe-y") - 50) <= 0.001
+          && Math.abs(number("--probe-near-x")) <= 0.001
+          && Math.abs(number("--probe-near-y")) <= 0.001;
+      }, undefined, { timeout: timeoutMs });
       const settledEvidence = await readPointerEvidence(page, points.length + 1);
       if (settledEvidence) {
         pointerSettled = {

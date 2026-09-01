@@ -756,6 +756,14 @@ test("comparison report binds revisions, visible labels, bounded after response 
   }, afterRevision), /file integrity/);
 });
 
+test("comparison pointer return waits for numeric rest and publishes canonical CSS quantities", async () => {
+  const source = await readFile(scriptPath, "utf8");
+  assert.match(source, /field\.dataset\.probe !== "settled"/);
+  assert.match(source, /Math\.abs\(number\("--probe-x"\) - 50\) <= 0\.001/);
+  assert.match(source, /Math\.abs\(number\("--probe-near-x"\)\) <= 0\.001/);
+  assert.match(source, /Object\.is\(value, -0\) \? 0 : value/);
+});
+
 test("payload policy permits raster specimens and rejects HTML, font, archive, raw and embedded payloads", () => {
   assert.equal(forbiddenPayloadReason("typography/anybody-specimen.png"), null);
   assert.equal(forbiddenPayloadReason("recordings/signal-field-comparison/chromium-after-r1.mp4"), null);
