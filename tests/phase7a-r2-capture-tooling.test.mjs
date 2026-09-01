@@ -213,5 +213,7 @@ test("generic R2 capture retains its inert self-test and named export surface", 
   assert.equal(result.contrast.pairs[2].id, "manifesto-white-over-live-magenta");
   assert.equal(result.contrast.pairs[2].ratio, 4.658);
   const source = await readFile(path.join(ROOT, "scripts", "capture-phase7a-r2-field-map.mjs"), "utf8");
-  assert.match(source, /deviceScaleFactor:\s*devicePixelRatio/);
+  assert.match(source, /observedDevicePixelRatio:\s*devicePixelRatio/);
+  assert.match(source, /Math\.abs\(observedViewport\.observedDevicePixelRatio - 1\) <= CONTRAST_DPR_EPSILON/);
+  assert.match(source, /deviceScaleFactor:\s*Number\(observedViewport\.observedDevicePixelRatio\.toFixed\(6\)\)/);
 });

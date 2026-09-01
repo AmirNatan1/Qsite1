@@ -35,6 +35,7 @@ const ENGINES = Object.freeze({ chromium, firefox, webkit });
 const DEFAULT_CHROME = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
 const RECORDING_DWELL_MS = 160;
 const TARGET_VIEWPORT_EPSILON = 1;
+const CONTRAST_DPR_EPSILON = 1e-6;
 const MINIMUM_RECORDING_SECONDS = 2;
 const MINIMUM_RECORDING_FRAMES = 24;
 const REDUCED_MOTION_SCREENSHOT = "screenshots/chromium-reduced-motion.png";
@@ -885,8 +886,14 @@ async function selectorLocalContrastMeasurement(page, engine, contrastCase, scre
     await page.evaluate(() => document.querySelector("[data-field-map-threshold]")?.scrollIntoView({ block: "start" }));
   }
   await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
-  const viewport = await page.evaluate(() => ({ width: innerWidth, height: innerHeight, deviceScaleFactor: devicePixelRatio }));
-  invariant(viewport.width === 1440 && viewport.height === 900 && viewport.deviceScaleFactor === 1, `R2 ${engine} selector-local contrast viewport differs`);
+  const observedViewport = await page.evaluate(() => ({ width: innerWidth, height: innerHeight, observedDevicePixelRatio: devicePixelRatio }));
+  invariant(observedViewport.width === 1440 && observedViewport.height === 900
+    && Math.abs(observedViewport.observedDevicePixelRatio - 1) <= CONTRAST_DPR_EPSILON, `R2 ${engine} selector-local contrast viewport differs: ${JSON.stringify(observedViewport)}`);
+  const viewport = {
+    width: observedViewport.width,
+    height: observedViewport.height,
+    deviceScaleFactor: Number(observedViewport.observedDevicePixelRatio.toFixed(6)),
+  };
   const selectors = contrastCase.selectors.map(({ selector }) => selector);
   const geometry = await page.evaluate((records) => records.map(({ id, selector, foreground, threshold }) => {
     const element = document.querySelector(selector);
