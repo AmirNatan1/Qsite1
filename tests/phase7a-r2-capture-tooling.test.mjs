@@ -197,6 +197,8 @@ test("installed-Chrome source cannot launch browsers/pages, resize or emulate vi
   assert.match(source, /copyFile\(pngPath, destination\)/);
   assert.match(source, /screenshots\/chrome-visible-200-percent\.png/);
   assert.match(source, /privacyCheckedReportJson/);
+  assert.match(source, /const postCloseOutside = await postCloseOutsideFocus\(page\)/);
+  assert.doesNotMatch(source, /const postCloseOutsideFocus = await postCloseOutsideFocus\(page\)/);
 });
 
 test("generic R2 capture retains its inert self-test and named export surface", async () => {

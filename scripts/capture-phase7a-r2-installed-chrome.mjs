@@ -1104,7 +1104,7 @@ async function capture(options) {
     const escapeSummary = await captureSummaryAuthority(page, session);
     validateSummaryAuthority(escapeSummary, false, "live installed-Chrome Escape summary");
     const escapeVisual = await capturePageState(page, staging, PAGE_VISUALS[3], browserInfo.targetTitle);
-    const postCloseOutsideFocus = await postCloseOutsideFocus(page);
+    const postCloseOutside = await postCloseOutsideFocus(page);
 
     const cycles = await repeatedCycles(page);
     const visuals = [closedVisual, openVisual, focusVisual, escapeVisual];
@@ -1126,7 +1126,7 @@ async function capture(options) {
         bodyRecapture: body,
         forward,
         outsideRecapture: outside,
-        postCloseOutsideFocus,
+        postCloseOutsideFocus: postCloseOutside,
         reverse,
       },
       limitations: [
