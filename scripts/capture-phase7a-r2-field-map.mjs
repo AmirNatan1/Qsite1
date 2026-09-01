@@ -21,6 +21,7 @@ import {
   PHASE7A_R2_LOCAL_CONTRAST_CASES,
   PHASE7A_R2_MINIMUM_TARGET_CSS_PIXELS,
   PHASE7A_R2_PARENT,
+  PHASE7A_R2_SUMMARY_AX_NAME,
   PHASE7A_R2_SUMMARY_AX_ROLE,
   validateR2AxeAuthority,
   validateR2FieldMapFocusAuthority,
@@ -362,13 +363,25 @@ function axProperty(node, name) {
 async function accessibilityTree(page) {
   const session = await page.context().newCDPSession(page);
   let nodes;
+  let summaryNodes;
+  let summaryBackendNodeId;
   try {
     await session.send("Accessibility.enable");
+    await session.send("DOM.enable");
+    const { root } = await session.send("DOM.getDocument", { depth: 0, pierce: true });
+    const { nodeId } = await session.send("DOM.querySelector", { nodeId: root.nodeId, selector: "[data-field-map] > summary" });
+    invariant(nodeId > 0, "R2 Field Map summary DOM node is missing from CDP");
+    const { node } = await session.send("DOM.describeNode", { nodeId });
+    summaryBackendNodeId = node.backendNodeId;
+    ({ nodes: summaryNodes } = await session.send("Accessibility.getPartialAXTree", { backendNodeId: summaryBackendNodeId, fetchRelatives: false }));
     ({ nodes } = await session.send("Accessibility.getFullAXTree"));
   } finally {
     await session.detach();
   }
-  const summary = nodes.find((node) => node.role?.value === PHASE7A_R2_SUMMARY_AX_ROLE && node.name?.value === "Field map");
+  const summaryMatches = summaryNodes.filter((node) => node.backendDOMNodeId === summaryBackendNodeId);
+  invariant(summaryMatches.length === 1, "R2 Field Map summary accessibility-tree identity differs");
+  const summary = summaryMatches[0];
+  invariant(summary.role?.value === PHASE7A_R2_SUMMARY_AX_ROLE && summary.name?.value === PHASE7A_R2_SUMMARY_AX_NAME, "R2 Field Map summary accessibility-tree role/name differs");
   const links = nodes.filter((node) => node.role?.value === "link" && PHASE7A_R2_FIELD_MAP_DESTINATIONS.some(({ name }) => name === node.name?.value));
   return {
     trigger: {

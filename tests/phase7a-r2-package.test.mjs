@@ -57,6 +57,7 @@ import {
   PHASE7A_R2_FIELD_MAP_DESTINATIONS,
   PHASE7A_R2_FIELD_MAP_SCHEMA,
   PHASE7A_R2_PARENT,
+  PHASE7A_R2_SUMMARY_AX_NAME,
   PHASE7A_R2_SUMMARY_AX_ROLE,
   PHASE7A_R2_TARGET_SCHEMA,
   PHASE7A_R2_TARGET_STATES,
@@ -72,7 +73,7 @@ const json = (value) => Buffer.from(`${JSON.stringify(value, null, 2)}\n`);
 const cloneEntries = (entries) => entries.map(({ relativePath, data }) => ({ relativePath, data: Buffer.from(data) }));
 
 function trigger(expanded) {
-  return { tag: "summary", ariaControls: "field-map-navigation", ariaHasPopup: null, authoredAriaExpanded: null, axRole: PHASE7A_R2_SUMMARY_AX_ROLE, axName: "Field map", axExpanded: expanded };
+  return { tag: "summary", ariaControls: "field-map-navigation", ariaHasPopup: null, authoredAriaExpanded: null, axRole: PHASE7A_R2_SUMMARY_AX_ROLE, axName: PHASE7A_R2_SUMMARY_AX_NAME, axExpanded: expanded };
 }
 
 function destinations() {

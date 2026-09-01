@@ -30,6 +30,7 @@ export const PHASE7A_R2_INSTALLED_CHROME_MANIFEST_SCHEMA = "quantum-hub.phase-7a
 export const PHASE7A_R2_COMPUTER_USE_UI_PROOF_SCHEMA = "quantum-hub.phase-7a-r2.computer-use-chrome-ui-proof.v1";
 export const PHASE7A_R2_BRANCH = "repair/phase-7a-r2-field-map-focus-semantics";
 export const PHASE7A_R2_PARENT = "016fef45323432f25b3eea849512a707174fe6c5";
+export const FIELD_MAP_SUMMARY_AX_NAME = "FIELD MAP";
 
 export const FIELD_MAP_DESTINATIONS = Object.freeze([
   Object.freeze({ href: "/#entry", accessibleName: "00 Home 00 / origin", focusName: "Home" }),
@@ -266,7 +267,7 @@ export function validateSummaryAuthority(summary, expanded, label) {
   invariant(summary.authoredAriaHasPopup === null, label + " falsely authors popup semantics");
   invariant(summary.authoredAriaExpanded === null, label + " falsely authors expanded semantics over native details");
   invariant(summary.axRole === "DisclosureTriangle", label + " CDP accessibility role differs");
-  invariant(summary.axName === "Field map", label + " CDP accessibility name differs");
+  invariant(summary.axName === FIELD_MAP_SUMMARY_AX_NAME, label + " CDP accessibility name differs");
   invariant(summary.axExpanded === expanded, label + " CDP native expanded state differs");
   invariant(noPopup(summary.axHasPopup) && summary.noPopup === true, label + " CDP accessibility authority exposes popup semantics");
   invariant(summary.axFocusable === true && summary.axIgnored === false, label + " CDP accessibility focusability differs");
@@ -1198,7 +1199,7 @@ function fixtureSummary(expanded) {
     axFocusable: true,
     axHasPopup: null,
     axIgnored: false,
-    axName: "Field map",
+    axName: FIELD_MAP_SUMMARY_AX_NAME,
     axRole: "DisclosureTriangle",
     noPopup: true,
     tag: "summary",

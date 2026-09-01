@@ -216,4 +216,7 @@ test("generic R2 capture retains its inert self-test and named export surface", 
   assert.match(source, /observedDevicePixelRatio:\s*devicePixelRatio/);
   assert.match(source, /Math\.abs\(observedViewport\.observedDevicePixelRatio - 1\) <= CONTRAST_DPR_EPSILON/);
   assert.match(source, /deviceScaleFactor:\s*Number\(observedViewport\.observedDevicePixelRatio\.toFixed\(6\)\)/);
+  assert.match(source, /DOM\.querySelector/);
+  assert.match(source, /Accessibility\.getPartialAXTree/);
+  assert.match(source, /PHASE7A_R2_SUMMARY_AX_NAME/);
 });

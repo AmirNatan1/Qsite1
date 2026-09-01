@@ -16,7 +16,7 @@ import { REQUIRED_R2_EVIDENCE, normalizeR2EvidenceEntries } from "../scripts/pac
 import { sha256 } from "../scripts/package-phase7a-human-review.mjs";
 import {
   PHASE7A_R2_AXE_CASES, PHASE7A_R2_AXE_SCHEMA, PHASE7A_R2_AXE_VERSION, PHASE7A_R2_FIELD_MAP_DESTINATIONS,
-  PHASE7A_R2_FIELD_MAP_SCHEMA, PHASE7A_R2_SUMMARY_AX_ROLE, PHASE7A_R2_TARGET_STATES,
+  PHASE7A_R2_FIELD_MAP_SCHEMA, PHASE7A_R2_SUMMARY_AX_NAME, PHASE7A_R2_SUMMARY_AX_ROLE, PHASE7A_R2_TARGET_STATES,
 } from "../scripts/phase7a-r2-field-map-authority.mjs";
 import { PHASE7A_R2_RETAINED_QA_SCHEMA } from "../scripts/qa-phase7a-browser.mjs";
 import { r2AxeAuthorityFixture } from "./phase7a-r2-axe-fixture.mjs";
@@ -28,7 +28,7 @@ const focus = (activeElement, activeDestinationName) => ({ activeElement, active
 const box = (type) => { const value = Buffer.alloc(8); value.writeUInt32BE(8, 0); value.write(type, 4, 4, "ascii"); return value; };
 const mp4 = () => Buffer.concat([box("ftyp"), box("moov"), box("mdat")]);
 
-function trigger(expanded) { return { tag: "summary", ariaControls: "field-map-navigation", ariaHasPopup: null, authoredAriaExpanded: null, axRole: PHASE7A_R2_SUMMARY_AX_ROLE, axName: "Field map", axExpanded: expanded }; }
+function trigger(expanded) { return { tag: "summary", ariaControls: "field-map-navigation", ariaHasPopup: null, authoredAriaExpanded: null, axRole: PHASE7A_R2_SUMMARY_AX_ROLE, axName: PHASE7A_R2_SUMMARY_AX_NAME, axExpanded: expanded }; }
 function destinations() { return PHASE7A_R2_FIELD_MAP_DESTINATIONS.map(({ href, name, focusName }) => ({ href, accessibleName: name, focusName, visible: true, focusable: true, axRole: "link" })); }
 function openState() { return { open: true, rootOpen: true, backgroundRegionCount: 3, inertRegionCount: 3, ownedInertCount: 3, activeElement: "a", activeDestinationName: "About", trigger: trigger(true), destinations: destinations(), focusableInventory: [{ element: "summary", name: "Field map", insideFieldMap: true }, ...PHASE7A_R2_FIELD_MAP_DESTINATIONS.map(({ focusName }) => ({ element: "a", name: focusName, insideFieldMap: true }))] }; }
 function closedState(activeElement = "body") { return { open: false, rootOpen: false, backgroundRegionCount: 3, inertRegionCount: 0, ownedInertCount: 0, activeElement, trigger: trigger(false) }; }

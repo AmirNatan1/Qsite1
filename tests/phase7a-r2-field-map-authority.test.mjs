@@ -11,6 +11,7 @@ import {
   PHASE7A_R2_MINIMUM_TARGET_CSS_PIXELS,
   PHASE7A_R2_PARENT,
   PHASE7A_R2_REVIEW_ZIP_NAME,
+  PHASE7A_R2_SUMMARY_AX_NAME,
   PHASE7A_R2_SUMMARY_AX_ROLE,
   PHASE7A_R2_TARGET_SCHEMA,
   PHASE7A_R2_TARGET_STATES,
@@ -28,7 +29,7 @@ const trigger = (expanded) => ({
   ariaHasPopup: null,
   authoredAriaExpanded: null,
   axRole: PHASE7A_R2_SUMMARY_AX_ROLE,
-  axName: "Field map",
+  axName: PHASE7A_R2_SUMMARY_AX_NAME,
   axExpanded: expanded,
 });
 

@@ -6,6 +6,7 @@ export const PHASE7A_R2_TARGET_SCHEMA = "quantum-hub.phase-7a-r2.field-map-targe
 export const PHASE7A_R2_BUNDLE_SCHEMA = "quantum-hub.phase-7a-r2.field-map-authority-bundle.v1";
 export const PHASE7A_R2_AXE_VERSION = "4.10.3";
 export const PHASE7A_R2_SUMMARY_AX_ROLE = "DisclosureTriangle";
+export const PHASE7A_R2_SUMMARY_AX_NAME = "FIELD MAP";
 export const PHASE7A_R2_MINIMUM_TARGET_CSS_PIXELS = 44;
 
 export const PHASE7A_R2_FIELD_MAP_DESTINATIONS = Object.freeze([
@@ -138,7 +139,7 @@ function assertTrigger(trigger, { expanded }, label) {
   invariant(trigger.ariaHasPopup === null, `${label} must not assert popup semantics`);
   invariant(trigger.authoredAriaExpanded === null, `${label} must not author aria-expanded over native details semantics`);
   invariant(trigger.axRole === PHASE7A_R2_SUMMARY_AX_ROLE, `${label} accessibility-tree role differs`);
-  invariant(trigger.axName === "Field map", `${label} accessibility-tree name differs`);
+  invariant(trigger.axName === PHASE7A_R2_SUMMARY_AX_NAME, `${label} accessibility-tree name differs`);
   invariant(trigger.axExpanded === expanded, `${label} native accessibility-tree expanded state differs`);
 }
 
