@@ -213,6 +213,49 @@ test("installed Chrome Home authority rejects H1 or glyphs hidden below the stic
   );
 });
 
+test("installed Chrome Home authority preserves fractional client geometry without relaxing containment", () => {
+  const viewportBounds = bounds(0, 0, 519, 399);
+  const sectionBounds = bounds(0, 0, 511.4, 399.6);
+  const sectionClipBounds = bounds(0, 0, 511.4, 399.6);
+  const usableClipBounds = bounds(0, 0, 511.4, 399);
+  const authority = {
+    applicable: true,
+    status: "PASS",
+    viewportBounds,
+    sectionBounds,
+    sectionClipBounds,
+    clippingAncestors: [],
+    usableClipBounds,
+    header: {
+      bounds: bounds(0, 0, 519, 50),
+      position: "sticky",
+      visible: false,
+      anchoredToViewportTop: true,
+      horizontallyOverlapsManifesto: true,
+      occluding: false,
+    },
+    effectiveVisibleBounds: usableClipBounds,
+    h1Bounds: bounds(20, 60, 491, 300),
+    glyphBounds: bounds(22, 64, 489, 296),
+    safeAllowances: {
+      h1Top: 60,
+      h1Bottom: 99,
+      h1Left: 20,
+      h1Right: 20.4,
+      glyphTop: 64,
+      glyphBottom: 103,
+      glyphLeft: 22,
+      glyphRight: 22.4,
+    },
+  };
+
+  assert.equal(validateManifestoVisibility(authority), true);
+  assert.throws(
+    () => validateManifestoVisibility({ ...authority, sectionClipBounds: bounds(0, 0, 511, 400) }),
+    /client bounds escape/,
+  );
+});
+
 test("installed Chrome open Field Map requires eight uniquely named links fully visible in the viewport", () => {
   const links = Array.from({ length: 8 }, (_, index) => ({
     accessibleName: `Destination ${index + 1}`,
