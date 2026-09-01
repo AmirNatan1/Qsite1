@@ -917,6 +917,15 @@ async function homeIntent(page, options) {
   states.entryIntent = await observeState(page);
   await page.waitForTimeout(2_000);
   await nativeWheelTo(page, 0, options.timeoutMs, { pause: 100, step: 360 });
+  await page.waitForFunction(() => {
+    const shell = document.querySelector("[data-cinematic-shell]");
+    return Math.round(scrollY) === 0
+      && shell?.getAttribute("data-cinematic-phase") === "physical"
+      && shell.getAttribute("data-cinematic-segment") === "top-dormancy"
+      && Number(shell.getAttribute("data-conceptual-coordinate")) === 0
+      && Number(shell.getAttribute("data-target-frame")) === 1
+      && shell.getAttribute("data-manifesto-reveal") === "hidden";
+  }, undefined, { timeout: Math.min(options.timeoutMs, 8_000) });
   states.reverseAccess = await observeState(page);
   return states;
 }
