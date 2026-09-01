@@ -239,6 +239,16 @@ async function inspect(page, context = {}) {
     const root = document.documentElement;
     const h1 = document.querySelector("h1");
     const numericRect = (rect) => ({ left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom, width: rect.width, height: rect.height });
+    const clientBounds = (element) => {
+      const rect = element.getBoundingClientRect();
+      const scaleX = element.offsetWidth > 0 ? rect.width / element.offsetWidth : 1;
+      const scaleY = element.offsetHeight > 0 ? rect.height / element.offsetHeight : 1;
+      const left = Math.max(rect.left, Math.min(rect.right, rect.left + element.clientLeft * scaleX));
+      const top = Math.max(rect.top, Math.min(rect.bottom, rect.top + element.clientTop * scaleY));
+      const right = Math.max(left, Math.min(rect.right, left + element.clientWidth * scaleX));
+      const bottom = Math.max(top, Math.min(rect.bottom, top + element.clientHeight * scaleY));
+      return { left, top, right, bottom, width: right - left, height: bottom - top };
+    };
     const h1Bounds = h1 ? numericRect(h1.getBoundingClientRect()) : null;
     const manifestoVisibility = (() => {
       if (!(h1 instanceof HTMLElement) || h1.id !== "home-title") return { applicable: false, status: "NOT_APPLICABLE" };
@@ -247,14 +257,7 @@ async function inspect(page, context = {}) {
       if (!(section instanceof HTMLElement) || !(header instanceof HTMLElement) || !h1Bounds) return { applicable: true, status: "FAIL", reason: "required bounds are missing" };
       const viewportBounds = { left: 0, top: 0, right: innerWidth, bottom: innerHeight, width: innerWidth, height: innerHeight };
       const sectionRect = section.getBoundingClientRect();
-      const sectionClipBounds = {
-        left: sectionRect.left + section.clientLeft,
-        top: sectionRect.top + section.clientTop,
-        right: sectionRect.left + section.clientLeft + section.clientWidth,
-        bottom: sectionRect.top + section.clientTop + section.clientHeight,
-        width: section.clientWidth,
-        height: section.clientHeight,
-      };
+      const sectionClipBounds = clientBounds(section);
       let visibleLeft = Math.max(viewportBounds.left, sectionClipBounds.left);
       let visibleTop = Math.max(viewportBounds.top, sectionClipBounds.top);
       let visibleRight = Math.min(viewportBounds.right, sectionClipBounds.right);
@@ -271,15 +274,7 @@ async function inspect(page, context = {}) {
         const clipsX = clippingOverflow.has(style.overflowX) || paintContainment || pathClipping;
         const clipsY = clippingOverflow.has(style.overflowY) || paintContainment || pathClipping;
         if (clipsX || clipsY) {
-          const rect = ancestor.getBoundingClientRect();
-          const bounds = {
-            left: rect.left + ancestor.clientLeft,
-            top: rect.top + ancestor.clientTop,
-            right: rect.left + ancestor.clientLeft + ancestor.clientWidth,
-            bottom: rect.top + ancestor.clientTop + ancestor.clientHeight,
-            width: ancestor.clientWidth,
-            height: ancestor.clientHeight,
-          };
+          const bounds = clientBounds(ancestor);
           clippingAncestors.push({
             tag: ancestor.tagName.toLowerCase(),
             id: ancestor.id || null,

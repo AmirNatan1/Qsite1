@@ -68,11 +68,13 @@ export function measureManifestoGeometry({
 
   const elementClientBounds = (element) => {
     const rect = element.getBoundingClientRect();
-    const left = rect.left + (element.clientLeft || 0);
-    const top = rect.top + (element.clientTop || 0);
-    const width = element.clientWidth;
-    const height = element.clientHeight;
-    return numericRect({ left, top, right: left + width, bottom: top + height });
+    const scaleX = element.offsetWidth > 0 ? rect.width / element.offsetWidth : 1;
+    const scaleY = element.offsetHeight > 0 ? rect.height / element.offsetHeight : 1;
+    const left = Math.max(rect.left, Math.min(rect.right, rect.left + (element.clientLeft || 0) * scaleX));
+    const top = Math.max(rect.top, Math.min(rect.bottom, rect.top + (element.clientTop || 0) * scaleY));
+    const right = Math.max(left, Math.min(rect.right, left + element.clientWidth * scaleX));
+    const bottom = Math.max(top, Math.min(rect.bottom, top + element.clientHeight * scaleY));
+    return numericRect({ left, top, right, bottom });
   };
 
   const union = (rectangles) => {

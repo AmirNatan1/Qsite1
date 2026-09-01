@@ -209,6 +209,8 @@ test("browser measurement source is closure-free and measures text-node Range gl
   assert.match(MANIFESTO_GEOMETRY_MEASUREMENT_SOURCE, /usableClipBounds/);
   assert.match(MANIFESTO_GEOMETRY_MEASUREMENT_SOURCE, /occludingHeaderSelector = "\.site-header"/);
   assert.match(MANIFESTO_GEOMETRY_MEASUREMENT_SOURCE, /effectiveVisibleBounds/);
+  assert.match(MANIFESTO_GEOMETRY_MEASUREMENT_SOURCE, /rect\.width \/ element\.offsetWidth/);
+  assert.match(MANIFESTO_GEOMETRY_MEASUREMENT_SOURCE, /Math\.min\(rect\.bottom, top \+ element\.clientHeight \* scaleY\)/);
 });
 
 test("validator accepts a resolved measurement with three authored rendered lines and two-pixel safety", () => {

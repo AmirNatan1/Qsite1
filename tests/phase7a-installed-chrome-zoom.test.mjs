@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
@@ -16,6 +17,13 @@ import { runtimeAssetSetFingerprint } from "../scripts/capture-phase7a-r1-closur
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const REVISION = "a".repeat(40);
+
+test("installed Chrome client clipping bounds preserve fractional native-zoom geometry", () => {
+  const source = readFileSync(path.join(ROOT, "scripts", "audit-phase7a-installed-chrome-zoom.mjs"), "utf8");
+  assert.match(source, /rect\.width \/ element\.offsetWidth/);
+  assert.match(source, /Math\.min\(rect\.right, left \+ element\.clientWidth \* scaleX\)/);
+  assert.match(source, /Math\.min\(rect\.bottom, top \+ element\.clientHeight \* scaleY\)/);
+});
 
 function bounds(left, top, right, bottom) {
   return { left, top, right, bottom, width: right - left, height: bottom - top };
