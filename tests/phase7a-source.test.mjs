@@ -122,6 +122,10 @@ test("Signal Field keeps semantic text and links outside decorative SVG", async 
   assert.match(styles, /font-stretch:\s*58%/);
   assert.match(styles, /font-stretch:\s*112%/);
   assert.match(styles, /transition:[\s\S]*?font-stretch 920ms/);
+  assert.match(
+    styles,
+    /html\[data-cinematic-cohort="short-desktop"\] \.manifesto-line--three\s*\{\s*padding-inline-end:\s*0;/,
+  );
   assert.doesNotMatch(styles, /manifesto-field__content[\s\S]{0,180}?transform:\s*scaleX/);
 });
 

@@ -274,6 +274,10 @@
   padding-inline-end: clamp(0rem, 5vw, 4.5rem);
 }
 
+html[data-cinematic-cohort="short-desktop"] .manifesto-line--three {
+  padding-inline-end: 0;
+}
+
 .manifesto-word {
   display: inline-block;
   max-width: 100%;
