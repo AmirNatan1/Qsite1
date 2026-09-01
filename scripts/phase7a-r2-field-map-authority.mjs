@@ -51,11 +51,67 @@ export const PHASE7A_R2_TARGET_STATES = Object.freeze([
   }),
 ]);
 
+const contrastSelector = (id, selector, foreground, threshold = 4.5) => Object.freeze({ id, selector, foreground, threshold });
+
 const MANUAL_CONTRAST_PAIRS = Object.freeze([
-  Object.freeze({ id: "field-map-white-over-max-layered-plane", foreground: "#ffffff", background: "#24141c", threshold: 4.5 }),
-  Object.freeze({ id: "field-map-muted-over-max-layered-plane", foreground: "#8a9797", background: "#24141c", threshold: 4.5 }),
+  Object.freeze({ id: "closed-header-white-over-authored-upper-bound", foreground: "#ffffff", background: "#242424", threshold: 4.5 }),
+  Object.freeze({ id: "closed-header-muted-over-authored-upper-bound", foreground: "#8a9797", background: "#242424", threshold: 4.5 }),
   Object.freeze({ id: "manifesto-white-over-live-magenta", foreground: "#ffffff", background: "#d82b72", threshold: 3 }),
 ]);
+
+const HOME_CONTRAST_SELECTORS = Object.freeze([
+  contrastSelector("bifurcation-coordinate", ".field-map-threshold__coordinate", "rgb(138,151,151)"),
+  contrastSelector("bifurcation-heading-one", "#field-map-threshold-title > span:nth-child(1)", "rgba(244,247,246,0.94)"),
+  contrastSelector("bifurcation-heading-two", "#field-map-threshold-title > span:nth-child(2)", "rgba(244,247,246,0.94)"),
+  contrastSelector("bifurcation-industry-label", ".bifurcation-destination--industry > .bifurcation-destination__label", "rgb(255,255,255)"),
+  contrastSelector("bifurcation-industry-copy", ".bifurcation-destination--industry > .bifurcation-destination__copy", "rgb(138,151,151)"),
+  contrastSelector("bifurcation-startup-label", ".bifurcation-destination--startup > .bifurcation-destination__label", "rgb(255,255,255)"),
+  contrastSelector("bifurcation-startup-copy", ".bifurcation-destination--startup > .bifurcation-destination__copy", "rgb(138,151,151)"),
+  contrastSelector("bifurcation-instruction", ".field-map-threshold__instruction", "rgb(138,151,151)"),
+]);
+
+const OPEN_FIELD_MAP_CONTRAST_SELECTORS = Object.freeze([
+  contrastSelector("open-field-map-trigger-label", ".field-map__trigger-label", "rgb(255,255,255)"),
+  contrastSelector("open-field-map-trigger-state", ".field-map__trigger-state", "rgb(138,151,151)"),
+  contrastSelector("open-field-map-heading-one", ".field-map__heading > p:nth-child(1)", "rgb(138,151,151)"),
+  contrastSelector("open-field-map-heading-two", ".field-map__heading > p:nth-child(2)", "rgb(138,151,151)"),
+  contrastSelector("open-home-index", "a[aria-label=\"00 Home 00 / origin\"] > span:nth-child(1)", "rgb(138,151,151)"),
+  contrastSelector("open-home-label", "a[aria-label=\"00 Home 00 / origin\"] > strong", "rgb(255,255,255)"),
+  contrastSelector("open-home-coordinate", "a[aria-label=\"00 Home 00 / origin\"] > span:nth-child(3)", "rgb(138,151,151)"),
+  contrastSelector("open-industry-index", "a[aria-label=\"01 For industry 01 / need\"] > span:nth-child(1)", "rgb(138,151,151)"),
+  contrastSelector("open-industry-label", "a[aria-label=\"01 For industry 01 / need\"] > strong", "rgb(255,255,255)"),
+  contrastSelector("open-industry-coordinate", "a[aria-label=\"01 For industry 01 / need\"] > span:nth-child(3)", "rgb(138,151,151)"),
+  contrastSelector("open-startups-index", ".field-map-destination[href$=\"for-startups/\"] > span:nth-child(1)", "rgb(138,151,151)"),
+  contrastSelector("open-startups-label", ".field-map-destination[href$=\"for-startups/\"] > strong", "rgb(255,255,255)"),
+  contrastSelector("open-startups-coordinate", ".field-map-destination[href$=\"for-startups/\"] > span:nth-child(3)", "rgb(138,151,151)"),
+  contrastSelector("open-industries-index", "a[href$=\"industries/\"] > span:nth-child(1)", "rgb(138,151,151)"),
+  contrastSelector("open-industries-label", "a[href$=\"industries/\"] > strong", "rgb(255,255,255)"),
+  contrastSelector("open-industries-coordinate", "a[href$=\"industries/\"] > span:nth-child(3)", "rgb(138,151,151)"),
+  contrastSelector("open-proof-index", "a[href$=\"pocs/\"] > span:nth-child(1)", "rgb(138,151,151)"),
+  contrastSelector("open-proof-label", "a[href$=\"pocs/\"] > strong", "rgb(255,255,255)"),
+  contrastSelector("open-proof-coordinate", "a[href$=\"pocs/\"] > span:nth-child(3)", "rgb(138,151,151)"),
+  contrastSelector("open-spark-index", "a[href$=\"spark/\"] > span:nth-child(1)", "rgb(138,151,151)"),
+  contrastSelector("open-spark-label", "a[href$=\"spark/\"] > strong", "rgb(255,255,255)"),
+  contrastSelector("open-spark-coordinate", "a[href$=\"spark/\"] > span:nth-child(3)", "rgb(138,151,151)"),
+  contrastSelector("open-about-index", "a[href$=\"about/\"] > span:nth-child(1)", "rgb(138,151,151)"),
+  contrastSelector("open-about-label", "a[href$=\"about/\"] > strong", "rgb(255,255,255)"),
+  contrastSelector("open-about-coordinate", "a[href$=\"about/\"] > span:nth-child(3)", "rgb(138,151,151)"),
+  contrastSelector("open-contact-index", "a[aria-label=\"07 Contact 07 / signal\"] > span:nth-child(1)", "rgb(138,151,151)"),
+  contrastSelector("open-contact-label", "a[aria-label=\"07 Contact 07 / signal\"] > strong", "rgb(255,255,255)"),
+  contrastSelector("open-contact-coordinate", "a[aria-label=\"07 Contact 07 / signal\"] > span:nth-child(3)", "rgb(138,151,151)"),
+  contrastSelector("open-field-map-legend", ".field-map__legend", "rgb(138,151,151)"),
+]);
+
+export const PHASE7A_R2_LOCAL_CONTRAST_CASES = Object.freeze([
+  Object.freeze({ id: "bifurcation", route: "/", state: "reduced-motion-home", selectors: HOME_CONTRAST_SELECTORS }),
+  Object.freeze({ id: "field-map-open", route: "/about/", state: "field-map-open", selectors: OPEN_FIELD_MAP_CONTRAST_SELECTORS }),
+]);
+
+export const PHASE7A_R2_LOCAL_CONTRAST_SELECTORS = Object.freeze(PHASE7A_R2_LOCAL_CONTRAST_CASES.flatMap(({ selectors }) => selectors));
+
+const LOCAL_CONTRAST_BY_STATE_AND_SELECTOR = new Map(PHASE7A_R2_LOCAL_CONTRAST_CASES.flatMap(({ state, selectors }) => selectors.map((record) => [`${state}\u0000${record.selector}`, record])));
+const FIXED_CONTRAST_IDS = new Set(MANUAL_CONTRAST_PAIRS.map(({ id }) => id));
+const HASH64 = /^[a-f0-9]{64}$/;
 
 function invariant(condition, message) {
   if (!condition) throw new Error(message);
@@ -224,11 +280,62 @@ export function validateR2FieldMapFocusAuthority(report) {
   return true;
 }
 
+function expectedContrastBinding(state, target) {
+  const local = LOCAL_CONTRAST_BY_STATE_AND_SELECTOR.get(`${state}\u0000${target}`);
+  if (local) return { authorityKind: "selector-local", authorityId: local.id };
+  if (state !== "reduced-motion-home") return null;
+  if (target === ".brand-link > span" || target === ".field-map__trigger-label") {
+    return { authorityKind: "fixed-pair", authorityId: "closed-header-white-over-authored-upper-bound" };
+  }
+  if (target === ".field-map__trigger-state") {
+    return { authorityKind: "fixed-pair", authorityId: "closed-header-muted-over-authored-upper-bound" };
+  }
+  const manifestoTarget = /^(?:\.manifesto-line--(?:one|two|three)\s*>\s*\.manifesto-word(?::nth-child\([123]\))?|\.manifesto-word(?:--contact|:nth-child\(3\)))$/;
+  return manifestoTarget.test(target) ? { authorityKind: "fixed-pair", authorityId: "manifesto-white-over-live-magenta" } : null;
+}
+
+function parseCssColor(value, label) {
+  const match = /^(?:rgb|rgba)\((\d+),(\d+),(\d+)(?:,([\d.]+))?\)$/.exec(value ?? "");
+  invariant(match, `${label} CSS color differs`);
+  const channels = match.slice(1, 4).map(Number);
+  const alpha = match[4] === undefined ? 1 : Number(match[4]);
+  invariant(channels.every((channel) => Number.isInteger(channel) && channel >= 0 && channel <= 255) && Number.isFinite(alpha) && alpha >= 0 && alpha <= 1, `${label} CSS color channels differ`);
+  return { channels, alpha };
+}
+
+function parseHexColor(value, label) {
+  invariant(/^#[a-f0-9]{6}$/.test(value ?? ""), `${label} hex color differs`);
+  return value.slice(1).match(/.{2}/g).map((channel) => Number.parseInt(channel, 16));
+}
+
+function hexColor(channels) {
+  return `#${channels.map((channel) => Math.round(channel).toString(16).padStart(2, "0")).join("")}`;
+}
+
+function channelLuminance(value) {
+  const normalized = value / 255;
+  return normalized <= 0.04045 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
+}
+
+function rgbLuminance(channels) {
+  return 0.2126 * channelLuminance(channels[0]) + 0.7152 * channelLuminance(channels[1]) + 0.0722 * channelLuminance(channels[2]);
+}
+
+function contrastRatio(first, second) {
+  const luminances = [rgbLuminance(first), rgbLuminance(second)].sort((a, b) => b - a);
+  return (luminances[0] + 0.05) / (luminances[1] + 0.05);
+}
+
+function compositedForeground(foreground, background) {
+  return foreground.channels.map((channel, index) => Math.round(channel * foreground.alpha + background[index] * (1 - foreground.alpha)));
+}
+
 export function validateR2AxeAuthority(report) {
   assertRootAuthority(report, PHASE7A_R2_AXE_SCHEMA, "R2 axe authority");
   exactKeys(report, ["schema", "status", "parent", "axeVersion", "engines", "manualContrast"], "R2 axe authority");
   invariant(report.axeVersion === PHASE7A_R2_AXE_VERSION, "R2 axe version differs");
   invariant(Array.isArray(report.engines) && report.engines.length === 2, "R2 axe engine inventory differs");
+  const incompleteNodes = [];
   for (const [engineIndex, expectedEngine] of ["chromium", "firefox"].entries()) {
     const engine = report.engines[engineIndex];
     exactKeys(engine, ["engine", "status", "violationCount", "incompleteCount", "cases"], `R2 axe ${expectedEngine}`);
@@ -247,6 +354,10 @@ export function validateR2AxeAuthority(report) {
       invariant(record.violations.length === 0, `R2 axe ${expectedEngine} case ${caseIndex + 1} contains violations`);
       for (const incompleteResult of record.incomplete) {
         invariant(incompleteResult?.id === "color-contrast" && incompleteResult.impact !== "critical" && Array.isArray(incompleteResult.nodes) && incompleteResult.nodes.length > 0, `R2 axe ${expectedEngine} case ${caseIndex + 1} contains an unsupported incomplete result`);
+        for (const node of incompleteResult.nodes) {
+          invariant(Array.isArray(node?.target) && node.target.length === 1 && typeof node.target[0] === "string" && node.target[0].length > 0, `R2 axe ${expectedEngine} case ${caseIndex + 1} incomplete target differs`);
+          incompleteNodes.push({ engine: expectedEngine, route: record.route, state: record.state, target: node.target });
+        }
       }
       violations += record.violations.length;
       incomplete += record.incomplete.length;
@@ -255,22 +366,78 @@ export function validateR2AxeAuthority(report) {
     invariant(engine.incompleteCount === incomplete, `R2 axe ${expectedEngine} incomplete summary differs`);
   }
   const manual = report.manualContrast;
-  exactKeys(manual, ["method", "pairs", "status"], "R2 manual contrast authority");
-  invariant(typeof manual.method === "string" && manual.method.includes("relative luminance") && manual.method.includes("#24141c"), "R2 manual contrast method differs");
+  exactKeys(manual, ["method", "pairs", "selectorMeasurements", "bindings", "status"], "R2 manual contrast authority");
+  invariant(manual.method === "WCAG 2.x relative luminance; the closed header uses a channel-wise #242424 upper bound derived from rgba(8,11,12,0.9) over any clipped backdrop; the manifesto uses its authored live-magenta pair; every incomplete over complex home or open-Field-Map material is bound one-to-one to an engine-local masked screenshot using temporary color:transparent and -webkit-text-fill-color:transparent while preserving layout, element backgrounds and pseudo-elements", "R2 manual contrast method differs");
   invariant(manual.status === "PASS", "R2 manual contrast authority must record PASS");
   invariant(Array.isArray(manual.pairs) && manual.pairs.length === MANUAL_CONTRAST_PAIRS.length, "R2 manual contrast pair inventory differs");
-  const channel = (pair) => pair.match(/.{2}/g).map((value) => Number.parseInt(value, 16) / 255).map((value) => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4);
-  const relativeLuminance = (hex) => {
-    const values = channel(hex.slice(1));
-    return 0.2126 * values[0] + 0.7152 * values[1] + 0.0722 * values[2];
-  };
   for (const [index, expected] of MANUAL_CONTRAST_PAIRS.entries()) {
     const pair = manual.pairs[index];
     exactKeys(pair, ["id", "foreground", "background", "threshold", "ratio"], `R2 manual contrast pair ${index + 1}`);
     invariant(pair.id === expected.id && pair.foreground === expected.foreground && pair.background === expected.background && pair.threshold === expected.threshold, `R2 manual contrast pair ${index + 1} identity differs`);
-    const luminances = [relativeLuminance(pair.foreground), relativeLuminance(pair.background)].sort((a, b) => b - a);
-    const recomputed = (luminances[0] + 0.05) / (luminances[1] + 0.05);
+    const recomputed = contrastRatio(parseHexColor(pair.foreground, `R2 manual contrast pair ${index + 1} foreground`), parseHexColor(pair.background, `R2 manual contrast pair ${index + 1} background`));
     invariant(Math.abs(pair.ratio - recomputed) <= 0.001 && pair.ratio >= pair.threshold, `R2 manual contrast pair ${index + 1} ratio differs`);
+  }
+
+  const expectedMeasurements = ["chromium", "firefox"].flatMap((engine) => PHASE7A_R2_LOCAL_CONTRAST_CASES.map((contrastCase) => ({ engine, contrastCase })));
+  invariant(Array.isArray(manual.selectorMeasurements) && manual.selectorMeasurements.length === expectedMeasurements.length, "R2 selector-local contrast measurement inventory differs");
+  const measurementByEngineState = new Map();
+  for (const [measurementIndex, expectedMeasurement] of expectedMeasurements.entries()) {
+    const { engine: expectedEngine, contrastCase } = expectedMeasurement;
+    const measurement = manual.selectorMeasurements[measurementIndex];
+    const label = `R2 ${expectedEngine} ${contrastCase.state} selector-local contrast measurement`;
+    exactKeys(measurement, ["engine", "route", "state", "viewport", "maskingMethod", "screenshot", "samples", "status"], label);
+    invariant(measurement.engine === expectedEngine && measurement.route === contrastCase.route && measurement.state === contrastCase.state && measurement.status === "PASS", `${label} identity or status differs`);
+    invariant(measurement.maskingMethod === "temporary color:transparent and -webkit-text-fill-color:transparent on every exact selector-local axe-incomplete text selector; layout, element backgrounds and pseudo-elements preserved; screenshot pixels sampled beneath original element bounding boxes", `${label} masking method differs`);
+    exactKeys(measurement.viewport, ["width", "height", "deviceScaleFactor"], `${label} viewport`);
+    invariant(measurement.viewport.width === 1440 && measurement.viewport.height === 900 && measurement.viewport.deviceScaleFactor === 1, `${label} viewport differs`);
+    exactKeys(measurement.screenshot, ["path", "bytes", "sha256", "width", "height"], `${label} screenshot`);
+    invariant(measurement.screenshot.path === `screenshots/${expectedEngine}-${contrastCase.id}-background-mask.png`
+      && Number.isSafeInteger(measurement.screenshot.bytes) && measurement.screenshot.bytes > 0
+      && HASH64.test(measurement.screenshot.sha256 ?? "")
+      && measurement.screenshot.width === 1440 && measurement.screenshot.height === 900, `${label} screenshot authority differs`);
+    invariant(Array.isArray(measurement.samples) && measurement.samples.length === contrastCase.selectors.length, `${label} sample inventory differs`);
+    const samples = new Map();
+    for (const [sampleIndex, expected] of contrastCase.selectors.entries()) {
+      const sample = measurement.samples[sampleIndex];
+      const sampleLabel = `${label} sample ${sampleIndex + 1}`;
+      exactKeys(sample, ["id", "selector", "foreground", "threshold", "rect", "pixelBounds", "sampledPixelCount", "worstBackground", "compositedForeground", "minimumRatio", "status"], sampleLabel);
+      invariant(sample.id === expected.id && sample.selector === expected.selector && sample.foreground === expected.foreground && sample.threshold === expected.threshold && sample.status === "PASS", `${sampleLabel} identity or status differs`);
+      exactKeys(sample.rect, ["x", "y", "width", "height"], `${sampleLabel} rectangle`);
+      invariant(Object.values(sample.rect).every(Number.isFinite) && sample.rect.width > 0 && sample.rect.height > 0
+        && sample.rect.x >= 0 && sample.rect.y >= 0
+        && sample.rect.x + sample.rect.width <= measurement.viewport.width + 0.01
+        && sample.rect.y + sample.rect.height <= measurement.viewport.height + 0.01, `${sampleLabel} rectangle differs`);
+      exactKeys(sample.pixelBounds, ["x0", "y0", "x1", "y1"], `${sampleLabel} pixel bounds`);
+      const expectedBounds = {
+        x0: Math.floor(sample.rect.x),
+        y0: Math.floor(sample.rect.y),
+        x1: Math.ceil(sample.rect.x + sample.rect.width),
+        y1: Math.ceil(sample.rect.y + sample.rect.height),
+      };
+      invariant(Object.entries(expectedBounds).every(([key, value]) => sample.pixelBounds[key] === value), `${sampleLabel} pixel bounds differ`);
+      invariant(sample.sampledPixelCount === (expectedBounds.x1 - expectedBounds.x0) * (expectedBounds.y1 - expectedBounds.y0) && sample.sampledPixelCount > 0, `${sampleLabel} sampled pixel count differs`);
+      const foreground = parseCssColor(sample.foreground, `${sampleLabel} foreground`);
+      const background = parseHexColor(sample.worstBackground, `${sampleLabel} worst background`);
+      const composite = compositedForeground(foreground, background);
+      invariant(sample.compositedForeground === hexColor(composite), `${sampleLabel} foreground composite differs`);
+      const recomputed = contrastRatio(composite, background);
+      invariant(Number.isFinite(sample.minimumRatio) && Math.abs(sample.minimumRatio - recomputed) <= 0.001 && sample.minimumRatio >= sample.threshold, `${sampleLabel} minimum ratio differs`);
+      invariant(!samples.has(sample.id), `${sampleLabel} is duplicated`);
+      samples.set(sample.id, sample);
+    }
+    measurementByEngineState.set(`${expectedEngine}\u0000${contrastCase.state}`, samples);
+  }
+
+  invariant(Array.isArray(manual.bindings) && manual.bindings.length === incompleteNodes.length && manual.bindings.length > 0, "R2 contrast binding inventory differs");
+  for (const [index, expectedNode] of incompleteNodes.entries()) {
+    const binding = manual.bindings[index];
+    const label = `R2 contrast binding ${index + 1}`;
+    exactKeys(binding, ["engine", "route", "state", "target", "authorityKind", "authorityId"], label);
+    invariant(binding.engine === expectedNode.engine && binding.route === expectedNode.route && binding.state === expectedNode.state && JSON.stringify(binding.target) === JSON.stringify(expectedNode.target), `${label} does not bind the corresponding axe node`);
+    const expected = expectedContrastBinding(binding.state, binding.target[0]);
+    invariant(expected && binding.authorityKind === expected.authorityKind && binding.authorityId === expected.authorityId, `${label} authority differs or target is not governed`);
+    if (binding.authorityKind === "fixed-pair") invariant(FIXED_CONTRAST_IDS.has(binding.authorityId), `${label} fixed pair is missing`);
+    else invariant(measurementByEngineState.get(`${binding.engine}\u0000${binding.state}`)?.has(binding.authorityId), `${label} selector-local measurement is missing`);
   }
   return true;
 }

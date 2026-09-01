@@ -19,6 +19,7 @@ import {
   PHASE7A_R2_FIELD_MAP_SCHEMA, PHASE7A_R2_SUMMARY_AX_ROLE, PHASE7A_R2_TARGET_STATES,
 } from "../scripts/phase7a-r2-field-map-authority.mjs";
 import { PHASE7A_R2_RETAINED_QA_SCHEMA } from "../scripts/qa-phase7a-browser.mjs";
+import { r2AxeAuthorityFixture } from "./phase7a-r2-axe-fixture.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const REVISION = "a".repeat(40);
@@ -38,7 +39,7 @@ function authority() {
   const reverseCycle = [...[...PHASE7A_R2_FIELD_MAP_DESTINATIONS].reverse().map(({ focusName }) => focus("a", focusName)), focus("field-map-summary", null)].map((row, index) => ({ step: index + 1, ...row }));
   const engineEvidence = [["chromium", "installed/headed Google Chrome; Chromium CDP AX-property authority"], ["firefox", "headed Firefox automation"], ["webkit", "Playwright WebKit proxy; not physical Safari"]].map(([engine, classification]) => ({ engine, classification, forwardCycle: structuredClone(forwardCycle), reverseCycle: structuredClone(reverseCycle), bodyStops: { forward: 0, reverse: 0 }, escape: { activeElement: "field-map-summary", open: false, rootOpen: false, backgroundRegionCount: 3, inertRegionCount: 0, ownedInertCount: 0 }, repeatedCycleCount: 10, repeatedCycleStatus: "PASS", duplicateBinding: { cycles: 10, status: "PASS" }, status: "PASS" }));
   const fieldMap = { schema: PHASE7A_R2_FIELD_MAP_SCHEMA, status: "PASS", parent: PHASE7A_R2_PARENT, route: "/about/", states: { closed: closedState(), open: openState(), escape: closedState("field-map-summary") }, focus: { initial: focus("a", "About"), forwardCycle, reverseFromSummary: focus("a", "Contact"), outsideRecapture: focus("a", "About"), postCloseOutsideFocus: "outside-test-control" }, repeatedCycles: Array.from({ length: 3 }, (_, index) => ({ cycle: index + 1, opened: openState(), closed: closedState("field-map-summary") })), engineEvidence, noJavaScript: { controller: null, nativeDetailsOpen: true, horizontalOverflow: false, trigger: trigger(true), destinations: PHASE7A_R2_FIELD_MAP_DESTINATIONS.map(({ href, name }) => ({ href, accessibleName: name, visible: true, fullyInViewport: true, unoccluded: true })) } };
-  const axe = { schema: PHASE7A_R2_AXE_SCHEMA, status: "PASS", parent: PHASE7A_R2_PARENT, axeVersion: PHASE7A_R2_AXE_VERSION, engines: ["chromium", "firefox"].map((engine) => ({ engine, status: "PASS", violationCount: 0, incompleteCount: 0, cases: PHASE7A_R2_AXE_CASES.map(({ route, state }) => ({ route, state, status: "PASS", passes: 30, violations: [], incomplete: [] })) })), manualContrast: { method: "WCAG 2.x relative luminance; worst authored solid/composited CSS colors, with radial and active-link overlays conservatively combined to #24141c", pairs: [{ id: "field-map-white-over-max-layered-plane", foreground: "#ffffff", background: "#24141c", threshold: 4.5, ratio: 17.62 }, { id: "field-map-muted-over-max-layered-plane", foreground: "#8a9797", background: "#24141c", threshold: 4.5, ratio: 5.835 }, { id: "manifesto-white-over-live-magenta", foreground: "#ffffff", background: "#d82b72", threshold: 3, ratio: 4.658 }], status: "PASS" } };
+  const axe = r2AxeAuthorityFixture({ screenshotBytes: contrastPng });
   const states = PHASE7A_R2_TARGET_STATES.slice(0, 2).map((state) => ({ id: state.id, route: state.route, state: state.state, viewport: { ...state.viewport }, genuineInstalledChrome: false, nativeZoomPercent: null, candidateCount: 9, controls: controls(), status: "PASS" }));
   return { fieldMap, axe, targetFragment: { schema: "quantum-hub.phase-7a-r2.field-map-target-fragment.v1", status: "PASS", parent: PHASE7A_R2_PARENT, minimumCssPixels: 44, states, requiredInstalledChromeStateId: "field-map-open-installed-chrome-200-percent" } };
 }
@@ -55,15 +56,24 @@ const focusedReceipt = { command: "node --test tests/phase7a-r2-field-map-author
 function deployment() { const row = { relativePath: "index.html", bytes: 1000, sha256: "d".repeat(64) }; const response = () => ({ ...row, actualHttpStatus: 200 }); return { schema: DEPLOYMENT_SCHEMA, authorityProfile: "phase7a-r2", status: "PASS", deployedSha: REVISION, parity: "PASS", deploymentId: "deploy-r2", immutableUrl: "https://deploy-r2.example.invalid/", branchUrl: "https://repair-r2.example.invalid/", deployment: { status: "PASS", authoritySource: "CLOUDFLARE_PAGES_SIGNED_GITHUB_CHECK", checkRunId: "123", deploymentId: "deploy-r2", deployedSha: REVISION }, dist: { files: [row] }, origins: { immutable: { status: "PASS", responses: [response()] }, branch: { status: "PASS", responses: [response()] } } }; }
 
 let png;
+let contrastPng;
 let pure;
-const clonePure = () => ({ ...pure, generic: structuredClone(pure.generic), installed: structuredClone(pure.installed), qa: structuredClone(pure.qa), deploymentReport: structuredClone(pure.deploymentReport), gitAuthority: structuredClone(pure.gitAuthority), buildReceipt: structuredClone(pure.buildReceipt), focusedReceipt: structuredClone(pure.focusedReceipt), r1Baselines: structuredClone(pure.r1Baselines), normalizeQaReport: pure.normalizeQaReport });
+const clonePure = () => {
+  const generic = structuredClone(pure.generic);
+  const installed = structuredClone(pure.installed);
+  generic.outputFiles = new Map([...pure.generic.outputFiles].map(([relativePath, bytes]) => [relativePath, Buffer.from(bytes)]));
+  installed.outputFiles = new Map([...pure.installed.outputFiles].map(([relativePath, bytes]) => [relativePath, Buffer.from(bytes)]));
+  return { ...pure, generic, installed, qa: structuredClone(pure.qa), deploymentReport: structuredClone(pure.deploymentReport), gitAuthority: structuredClone(pure.gitAuthority), buildReceipt: structuredClone(pure.buildReceipt), focusedReceipt: structuredClone(pure.focusedReceipt), r1Baselines: structuredClone(pure.r1Baselines), normalizeQaReport: pure.normalizeQaReport };
+};
 
 test.before(async () => {
   png = await sharp({ create: { width: 8, height: 6, channels: 3, background: { r: 18, g: 30, b: 41 } } }).png().toBuffer();
+  contrastPng = await sharp({ create: { width: 1440, height: 900, channels: 3, background: { r: 9, g: 12, b: 13 } } }).png().toBuffer();
   const authorityParts = authority();
   const genericFiles = new Map();
   for (const relativePath of REQUIRED_R2_EVIDENCE.map(({ relativePath }) => relativePath).filter((name) => name.startsWith("03-focus/") && name.endsWith(".mp4"))) genericFiles.set(relativePath, mp4());
   for (const relativePath of REQUIRED_R2_EVIDENCE.map(({ relativePath }) => relativePath).filter((name) => name.startsWith("04-field-map/") && name.endsWith(".png"))) genericFiles.set(relativePath, png);
+  for (const relativePath of REQUIRED_R2_EVIDENCE.map(({ relativePath }) => relativePath).filter((name) => name.startsWith("06-accessibility/") && name.endsWith("-background-mask.png"))) genericFiles.set(relativePath, contrastPng);
   const installedFiles = new Map(REQUIRED_R2_EVIDENCE.map(({ relativePath }) => relativePath).filter((name) => name.startsWith("05-chrome-200/") && name.endsWith(".png")).map((name) => [name, png]));
   const installedControls = controls().map((row) => ({ ...row, focusable: true, fullyInViewport: true, unoccluded: true }));
   const installed = { report: { schema: INSTALLED_CAPTURE_SCHEMA, status: "PASS", branch: PHASE7A_R2_BRANCH, parent: PHASE7A_R2_PARENT, revision: REVISION, browser: { product: "Google Chrome" }, zoomProof: { status: "PASS", uiZoomLabelInput: "Zoom: 200%", observed: { innerWidth: 519, innerHeight: 399 } }, accessibility: { method: "CDP Accessibility.getPartialAXTree" }, states: { open: { open: true } }, targetInventory: { minimumCssPixels: 44, candidateCount: 9, controls: installedControls }, focus: { status: "PASS" }, repeatedCycles: Array.from({ length: 10 }, (_, cycle) => ({ cycle: cycle + 1, status: "PASS" })), visuals: [], limitations: ["This is genuine installed Google Chrome evidence, not physical Safari evidence."] }, outputFiles: installedFiles };
@@ -73,7 +83,7 @@ test.before(async () => {
 });
 
 test("assembler self-test and CLI require every explicit authority input", () => {
-  assert.deepEqual(selfTest(), { schema: ASSEMBLER_SCHEMA, status: "PASS", payloadCount: 30, acceptedGates: 5, pendingGates: 1, createsPackage: false });
+  assert.deepEqual(selfTest(), { schema: ASSEMBLER_SCHEMA, status: "PASS", payloadCount: 34, acceptedGates: 5, pendingGates: 1, createsPackage: false });
   assert.throws(() => parseArguments([]), /fieldMapDir/);
   assert.equal(parseArguments(["--self-test"]).selfTest, true);
 });
@@ -90,10 +100,16 @@ test("governed receipts use the current exact Node runtime and keep TAP counts d
 
 test("pure construction emits the exact closed topology and passes package authority", async () => {
   const payloads = await constructR2Payloads(pure);
-  assert.equal(payloads.size, 30);
+  assert.equal(payloads.size, 34);
   assert.deepEqual([...payloads.keys()].sort(), REQUIRED_R2_EVIDENCE.map(({ relativePath }) => relativePath).sort());
+  assert.deepEqual([...payloads.keys()].filter((relativePath) => relativePath.endsWith("-background-mask.png")).sort(), [
+    "06-accessibility/chromium-bifurcation-background-mask.png",
+    "06-accessibility/chromium-field-map-open-background-mask.png",
+    "06-accessibility/firefox-bifurcation-background-mask.png",
+    "06-accessibility/firefox-field-map-open-background-mask.png",
+  ]);
   const root = path.resolve(ROOT, "..", "synthetic-r2-evidence");
-  assert.equal(normalizeR2EvidenceEntries([...payloads].map(([relativePath, data]) => ({ relativePath, data })), { sourceEvidenceRoot: root }).length, 30);
+  assert.equal(normalizeR2EvidenceEntries([...payloads].map(([relativePath, data]) => ({ relativePath, data })), { sourceEvidenceRoot: root }).length, 34);
   const bundle = JSON.parse(payloads.get("00-authority/r2-field-map-authority.json"));
   assert.equal(bundle.focus.engineEvidence.length, 3);
   assert.equal(bundle.targets.states.length, 3);
@@ -118,11 +134,13 @@ test("Git, QA, deployment and semantic mutations fail closed", async () => {
   await assert.rejects(() => constructR2Payloads(badDeployment), /branch index parity/);
   const badFocus = clonePure(); badFocus.generic.focus.engineEvidence[2].repeatedCycleCount = 9;
   await assert.rejects(() => constructR2Payloads(badFocus), /10-cycle status/);
+  const badContrastScreenshot = clonePure(); badContrastScreenshot.generic.outputFiles.set("06-accessibility/chromium-bifurcation-background-mask.png", Buffer.from("substituted"));
+  await assert.rejects(() => constructR2Payloads(badContrastScreenshot), /contrast screenshot binding differs/);
 });
 
 async function writeCaptureRoot(root, pureFixture, installedMode) {
   await mkdir(root, { recursive: true });
-  const sourceMap = installedMode ? new Map([...pureFixture.installed.outputFiles].map(([target, bytes]) => [({ "05-chrome-200/closed.png": "screenshots/closed.png", "05-chrome-200/open.png": "screenshots/open.png", "05-chrome-200/keyboard-focus.png": "screenshots/focus.png", "05-chrome-200/escape-focus-return.png": "screenshots/escape.png", "05-chrome-200/chrome-visible-200-percent.png": "screenshots/chrome-visible-200-percent.png" })[target], bytes])) : new Map([...pureFixture.generic.outputFiles].map(([target, bytes]) => [({ "03-focus/chromium-focus-cycle.mp4": "recordings/chromium-field-map-forward-reverse.mp4", "03-focus/firefox-focus-cycle.mp4": "recordings/firefox-field-map-forward-reverse.mp4", "03-focus/webkit-focus-cycle.mp4": "recordings/webkit-field-map-forward-reverse.mp4", "04-field-map/closed.png": "screenshots/chromium-closed.png", "04-field-map/open.png": "screenshots/chromium-open.png", "04-field-map/keyboard-focus.png": "screenshots/chromium-focus.png", "04-field-map/escape-focus-return.png": "screenshots/chromium-escape.png", "04-field-map/no-javascript-native-open.png": "screenshots/chromium-no-javascript-native-open.png", "04-field-map/reduced-motion.png": "screenshots/chromium-reduced-motion.png" })[target], bytes]));
+  const sourceMap = installedMode ? new Map([...pureFixture.installed.outputFiles].map(([target, bytes]) => [({ "05-chrome-200/closed.png": "screenshots/closed.png", "05-chrome-200/open.png": "screenshots/open.png", "05-chrome-200/keyboard-focus.png": "screenshots/focus.png", "05-chrome-200/escape-focus-return.png": "screenshots/escape.png", "05-chrome-200/chrome-visible-200-percent.png": "screenshots/chrome-visible-200-percent.png" })[target], bytes])) : new Map([...pureFixture.generic.outputFiles].map(([target, bytes]) => [({ "03-focus/chromium-focus-cycle.mp4": "recordings/chromium-field-map-forward-reverse.mp4", "03-focus/firefox-focus-cycle.mp4": "recordings/firefox-field-map-forward-reverse.mp4", "03-focus/webkit-focus-cycle.mp4": "recordings/webkit-field-map-forward-reverse.mp4", "04-field-map/closed.png": "screenshots/chromium-closed.png", "04-field-map/open.png": "screenshots/chromium-open.png", "04-field-map/keyboard-focus.png": "screenshots/chromium-focus.png", "04-field-map/escape-focus-return.png": "screenshots/chromium-escape.png", "04-field-map/no-javascript-native-open.png": "screenshots/chromium-no-javascript-native-open.png", "04-field-map/reduced-motion.png": "screenshots/chromium-reduced-motion.png", "06-accessibility/chromium-bifurcation-background-mask.png": "screenshots/chromium-bifurcation-background-mask.png", "06-accessibility/firefox-bifurcation-background-mask.png": "screenshots/firefox-bifurcation-background-mask.png", "06-accessibility/chromium-field-map-open-background-mask.png": "screenshots/chromium-field-map-open-background-mask.png", "06-accessibility/firefox-field-map-open-background-mask.png": "screenshots/firefox-field-map-open-background-mask.png" })[target], bytes]));
   for (const [relativePath, bytes] of sourceMap) { const filename = path.join(root, ...relativePath.split("/")); await mkdir(path.dirname(filename), { recursive: true }); await writeFile(filename, bytes); }
   const entries = [...sourceMap].map(([entryPath, bytes]) => ({ path: entryPath, bytes: bytes.length, sha256: sha256(bytes) }));
   if (installedMode) {
@@ -138,7 +156,7 @@ async function writeCaptureRoot(root, pureFixture, installedMode) {
   }
 }
 
-test("filesystem assembler atomically writes exactly 30 payloads and refuses overwrite", async () => {
+test("filesystem assembler atomically writes exactly 34 payloads and refuses overwrite", async () => {
   const temp = await mkdtemp(path.join(os.tmpdir(), "qh-r2-assembler-"));
   const boundaryOptions = { repositoryRoot: ROOT, temporaryRoot: path.join(temp, "production-temp-sentinel") };
   try {
@@ -151,7 +169,7 @@ test("filesystem assembler atomically writes exactly 30 payloads and refuses ove
     const options = { fieldMapDir, installedChromeDir, ...files, deployment: deploymentPath, r1EvidenceDir, outputDir, revision: REVISION };
     const dependencies = { boundaryOptions, gitAuthority: gitAuthority(), buildReceipt, focusedReceipt, normalizeQaReport: normalizeQaFixture, recordingDecoder: async ({ bytes }) => bytes.equals(mp4()) };
     const result = await assembleR2ReviewEvidence(options, dependencies);
-    assert.equal(result.status, "PASS"); assert.equal(result.payloadCount, 30);
+    assert.equal(result.status, "PASS"); assert.equal(result.payloadCount, 34);
     const actual = [];
     const visit = async (directory, prefix = "") => { for (const entry of await readdir(directory, { withFileTypes: true })) { if (entry.isDirectory()) await visit(path.join(directory, entry.name), `${prefix}${entry.name}/`); else actual.push(`${prefix}${entry.name}`); } };
     await visit(outputDir);

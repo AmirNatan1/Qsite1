@@ -68,6 +68,10 @@ export const REQUIRED_R2_EVIDENCE = Object.freeze([
   required("05-chrome-200/chrome-visible-200-percent.png", "raster-evidence"),
   required("06-accessibility/axe-and-manual-contrast.json", "axe-authority"),
   required("06-accessibility/target-inventory.json", "target-authority"),
+  required("06-accessibility/chromium-bifurcation-background-mask.png", "raster-evidence"),
+  required("06-accessibility/firefox-bifurcation-background-mask.png", "raster-evidence"),
+  required("06-accessibility/chromium-field-map-open-background-mask.png", "raster-evidence"),
+  required("06-accessibility/firefox-field-map-open-background-mask.png", "raster-evidence"),
   required("07-regression/focused-regression.json", "regression-authority"),
   required("07-regression/retained-suite.json", "retained-suite-authority"),
   required("08-governance/phase4-hashes.json", "phase4-hash-authority"),
@@ -105,6 +109,12 @@ const POSIX_ABSOLUTE = /(?:^|[\s"'(=\[])\/(?:Users|home|tmp|private|root|workspa
 const PRIVATE_MARKER = /(?:^|[\\/])\.codex(?:[\\/]|$)|\b(?:OneDrive|AppData|LocalCache)\b|file:\/\/|\\\\[^\\\s]+\\[^\\\s]+/i;
 const SECRET_MARKER = /(?:github_pat_[a-z0-9_]+|gh[pousr]_[a-z0-9]{20,}|sk-[a-z0-9_-]{20,}|-----BEGIN [A-Z ]*PRIVATE KEY-----|(?:password|api[_-]?key|client[_-]?secret|access[_-]?token|refresh[_-]?token|authorization|bearer)\s*[:=]\s*["']?(?:bearer\s+)?[a-z0-9_./+:-]{12,})/i;
 const RAW_PHASE4_HASHES = new Set(PHYSICAL_ASSETS.map(([, hash]) => hash));
+const CONTRAST_MASK_PATHS = Object.freeze([
+  "06-accessibility/chromium-bifurcation-background-mask.png",
+  "06-accessibility/firefox-bifurcation-background-mask.png",
+  "06-accessibility/chromium-field-map-open-background-mask.png",
+  "06-accessibility/firefox-field-map-open-background-mask.png",
+]);
 
 function invariant(condition, message) {
   if (!condition) throw new Error(message);
@@ -224,7 +234,18 @@ function validateSupportingAuthorities(entries) {
   const installed = document("05-chrome-200/installed-chrome-200.json");
   exactKeys(installed, ["schema", "status", "genuineInstalledChrome", "nativeZoomPercent", "report"], "R2 installed Chrome 200 authority");
   invariant(installed.schema === R2_INSTALLED_CHROME_SCHEMA && installed.status === "PASS" && installed.genuineInstalledChrome === true && installed.nativeZoomPercent === 200 && installed.report && typeof installed.report === "object", "R2 installed Chrome 200 authority differs");
-  validateR2AxeAuthority(document("06-accessibility/axe-and-manual-contrast.json"));
+  const axe = document("06-accessibility/axe-and-manual-contrast.json");
+  validateR2AxeAuthority(axe);
+  const boundContrastPaths = new Set();
+  for (const measurement of axe.manualContrast.selectorMeasurements) {
+    const relativePath = `06-accessibility/${path.posix.basename(measurement.screenshot.path)}`;
+    invariant(CONTRAST_MASK_PATHS.includes(relativePath) && !boundContrastPaths.has(relativePath), `R2 selector-local contrast screenshot path differs: ${relativePath}`);
+    boundContrastPaths.add(relativePath);
+    const entry = entries.find((candidate) => candidate.relativePath === relativePath);
+    invariant(entry && entry.data.length >= 24 && entry.data.length === measurement.screenshot.bytes && sha256(entry.data) === measurement.screenshot.sha256
+      && entry.data.readUInt32BE(16) === measurement.screenshot.width && entry.data.readUInt32BE(20) === measurement.screenshot.height, `R2 selector-local contrast screenshot binding differs: ${relativePath}`);
+  }
+  invariant(boundContrastPaths.size === CONTRAST_MASK_PATHS.length && CONTRAST_MASK_PATHS.every((relativePath) => boundContrastPaths.has(relativePath)), "R2 selector-local contrast screenshot inventory differs");
   validateR2TargetAuthority(document("06-accessibility/target-inventory.json"));
 
   for (const relativePath of ["07-regression/focused-regression.json", "07-regression/retained-suite.json"]) {
@@ -261,7 +282,7 @@ function validateSupportingAuthorities(entries) {
   const expectedRows = auditedEntries.map((entry) => ({ path: entry.relativePath, bytes: entry.data.length, sha256: sha256(entry.data), status: "PASS" }));
   invariant(stableJson(audit.payloads) === stableJson(expectedRows), "R2 prepackage payload ledger differs");
   invariant(stableJson(audit.checks) === stableJson({ topology: "PASS", pathSafety: "PASS", privacyAndSecrets: "PASS", forbiddenPayloadClasses: "PASS", semanticAuthority: "PASS" }), "R2 prepackage checks differ");
-  invariant(stableJson(audit.mediaDecode) === stableJson({ png: "PASS", pngCount: 11, mp4: "PASS", mp4Count: 3 }), "R2 prepackage media decode differs");
+  invariant(stableJson(audit.mediaDecode) === stableJson({ png: "PASS", pngCount: 15, mp4: "PASS", mp4Count: 3 }), "R2 prepackage media decode differs");
 }
 
 function validateProductionDiff(bytes) {
@@ -483,7 +504,7 @@ export function parseArguments(argv) {
 
 export function runSelfTest() {
   invariant(PHASE7A_R2_REVIEW_ZIP_NAME === "phase-7a-r2-field-map-focus-human-review.zip", "R2 ZIP name drifted");
-  invariant(REQUIRED_R2_EVIDENCE.length === 30, "R2 compact topology drifted");
+  invariant(REQUIRED_R2_EVIDENCE.length === 34, "R2 compact topology drifted");
   return Object.freeze({
     schema: R2_PACKAGE_SCHEMA,
     status: "PASS",

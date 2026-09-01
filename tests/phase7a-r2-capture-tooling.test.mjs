@@ -199,7 +199,7 @@ test("installed-Chrome source cannot launch browsers/pages, resize or emulate vi
   assert.match(source, /privacyCheckedReportJson/);
 });
 
-test("generic R2 capture retains its inert self-test and named export surface", () => {
+test("generic R2 capture retains its inert self-test and named export surface", async () => {
   assert.equal(typeof parseGenericCaptureArguments, "function");
   assert.equal(typeof genericCaptureSelfTest, "function");
   const parsed = parseGenericCaptureArguments(["--self-test"]);
@@ -210,4 +210,8 @@ test("generic R2 capture retains its inert self-test and named export surface", 
   assert.equal(result.controls, 9);
   assert.equal(result.contrast.status, "PASS");
   assert.equal(result.contrast.pairs.length, 3);
+  assert.equal(result.contrast.pairs[2].id, "manifesto-white-over-live-magenta");
+  assert.equal(result.contrast.pairs[2].ratio, 4.658);
+  const source = await readFile(path.join(ROOT, "scripts", "capture-phase7a-r2-field-map.mjs"), "utf8");
+  assert.match(source, /deviceScaleFactor:\s*devicePixelRatio/);
 });

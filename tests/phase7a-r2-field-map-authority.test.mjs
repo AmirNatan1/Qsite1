@@ -19,6 +19,8 @@ import {
   validateR2FieldMapFocusAuthority,
   validateR2TargetAuthority,
 } from "../scripts/phase7a-r2-field-map-authority.mjs";
+import { validateR2ContrastMaskPixels } from "../scripts/phase7a-r2-contrast-pixels.mjs";
+import { r2AxeAuthorityFixture } from "./phase7a-r2-axe-fixture.mjs";
 
 const trigger = (expanded) => ({
   tag: "summary",
@@ -137,28 +139,7 @@ function focusReport() {
 }
 
 function axeReport() {
-  return {
-    schema: PHASE7A_R2_AXE_SCHEMA,
-    status: "PASS",
-    parent: PHASE7A_R2_PARENT,
-    axeVersion: PHASE7A_R2_AXE_VERSION,
-    engines: ["chromium", "firefox"].map((engine) => ({
-      engine,
-      status: "PASS",
-      violationCount: 0,
-      incompleteCount: 0,
-      cases: PHASE7A_R2_AXE_CASES.map(({ route, state }, index) => ({ route, state, status: "PASS", passes: 30 + index, violations: [], incomplete: [] })),
-    })),
-    manualContrast: {
-      method: "WCAG 2.x relative luminance; worst authored solid/composited CSS colors, with radial and active-link overlays conservatively combined to #24141c",
-      pairs: [
-        { id: "field-map-white-over-max-layered-plane", foreground: "#ffffff", background: "#24141c", threshold: 4.5, ratio: 17.62 },
-        { id: "field-map-muted-over-max-layered-plane", foreground: "#8a9797", background: "#24141c", threshold: 4.5, ratio: 5.835 },
-        { id: "manifesto-white-over-live-magenta", foreground: "#ffffff", background: "#d82b72", threshold: 3, ratio: 4.658 },
-      ],
-      status: "PASS",
-    },
-  };
+  return r2AxeAuthorityFixture();
 }
 
 function controls() {
@@ -278,8 +259,36 @@ test("R2 axe authority rejects missing cases, reordered engines and false clean 
     [(report) => { report.engines[1].incompleteCount = 1; }, /incomplete summary differs/],
     [(report) => { report.manualContrast.pairs[1].ratio = 4.4; }, /ratio differs/],
     [(report) => { report.manualContrast.method = "automated"; }, /method differs/],
+    [(report) => { report.manualContrast.bindings.pop(); }, /binding inventory differs/],
+    [(report) => { report.manualContrast.bindings[0].target = ["footer p"]; }, /corresponding axe node/],
+    [(report) => { report.manualContrast.bindings[10].authorityId = "field-map-white-over-max-layered-plane"; }, /authority differs/],
+    [(report) => { report.manualContrast.selectorMeasurements[0].samples.pop(); }, /sample inventory differs/],
+    [(report) => { report.manualContrast.selectorMeasurements[0].samples[0].minimumRatio = 4.4; }, /minimum ratio differs/],
+    [(report) => { report.manualContrast.selectorMeasurements[1].screenshot.sha256 = "not-a-hash"; }, /screenshot authority differs/],
   ];
   for (const [change, expected] of mutations) assert.throws(() => validateR2AxeAuthority(mutated(axeReport(), change)), expected);
+});
+
+test("R2 contrast-mask verifier recomputes recorded minima from the actual pixels", () => {
+  const measurement = axeReport().manualContrast.selectorMeasurements[0];
+  const info = { width: 1440, height: 900, channels: 3 };
+  const data = Buffer.alloc(info.width * info.height * info.channels);
+  for (let offset = 0; offset < data.length; offset += 3) {
+    data[offset] = 9;
+    data[offset + 1] = 12;
+    data[offset + 2] = 13;
+  }
+  const verified = validateR2ContrastMaskPixels({ data, info, measurement });
+  assert.equal(verified.status, "PASS");
+  assert.equal(verified.sampleCount, measurement.samples.length);
+
+  const tampered = Buffer.from(data);
+  const { x0, y0 } = measurement.samples[0].pixelBounds;
+  const offset = (y0 * info.width + x0) * info.channels;
+  tampered[offset] = 216;
+  tampered[offset + 1] = 43;
+  tampered[offset + 2] = 114;
+  assert.throws(() => validateR2ContrastMaskPixels({ data: tampered, info, measurement }), /recorded minimum differs from packaged pixels/);
 });
 
 test("R2 target authority rejects vacuous, sub-44, substituted and reordered inventories", () => {

@@ -40,6 +40,7 @@ import {
 } from "./package-phase7a-r2-human-review.mjs";
 import { stableJson, validateIsoBmffRecording } from "./package-phase7a-human-review.mjs";
 import { PHASE7A_R2_RETAINED_QA_SCHEMA, normalizePhase7aR2RetainedQaReport } from "./qa-phase7a-browser.mjs";
+import { validateR2ContrastMaskPixels } from "./phase7a-r2-contrast-pixels.mjs";
 
 const execFileAsync = promisify(execFile);
 const SCRIPT = fileURLToPath(import.meta.url);
@@ -67,6 +68,10 @@ const GENERIC_COPY = Object.freeze({
   "04-field-map/escape-focus-return.png": "screenshots/chromium-escape.png",
   "04-field-map/no-javascript-native-open.png": "screenshots/chromium-no-javascript-native-open.png",
   "04-field-map/reduced-motion.png": "screenshots/chromium-reduced-motion.png",
+  "06-accessibility/chromium-bifurcation-background-mask.png": "screenshots/chromium-bifurcation-background-mask.png",
+  "06-accessibility/firefox-bifurcation-background-mask.png": "screenshots/firefox-bifurcation-background-mask.png",
+  "06-accessibility/chromium-field-map-open-background-mask.png": "screenshots/chromium-field-map-open-background-mask.png",
+  "06-accessibility/firefox-field-map-open-background-mask.png": "screenshots/firefox-field-map-open-background-mask.png",
 });
 const INSTALLED_COPY = Object.freeze({
   "05-chrome-200/closed.png": "screenshots/closed.png",
@@ -75,6 +80,12 @@ const INSTALLED_COPY = Object.freeze({
   "05-chrome-200/escape-focus-return.png": "screenshots/escape.png",
   "05-chrome-200/chrome-visible-200-percent.png": "screenshots/chrome-visible-200-percent.png",
 });
+const CONTRAST_MASK_PATHS = Object.freeze([
+  "06-accessibility/chromium-bifurcation-background-mask.png",
+  "06-accessibility/firefox-bifurcation-background-mask.png",
+  "06-accessibility/chromium-field-map-open-background-mask.png",
+  "06-accessibility/firefox-field-map-open-background-mask.png",
+]);
 
 function invariant(value, message) { if (!value) throw new Error(message); }
 function digest(bytes) { return createHash("sha256").update(bytes).digest("hex"); }
@@ -293,11 +304,25 @@ function sourceAuthority(gitAuthority, build) {
   };
 }
 
-export async function constructR2Payloads({ authorityDocumentBytes, generic, installed, qa, deploymentReport, gitAuthority, buildReceipt, focusedReceipt, r1Baselines, normalizeQaReport = normalizePhase7aR2RetainedQaReport, mediaAudit = { png: "PASS", pngCount: 11, mp4: "PASS", mp4Count: 3 } }) {
+function assertContrastScreenshotBindings(axe, outputFiles) {
+  const boundPaths = new Set();
+  for (const measurement of axe.manualContrast.selectorMeasurements) {
+    const relativePath = `06-accessibility/${path.posix.basename(measurement.screenshot.path)}`;
+    invariant(CONTRAST_MASK_PATHS.includes(relativePath) && !boundPaths.has(relativePath), `R2 selector-local contrast screenshot path differs: ${relativePath}`);
+    boundPaths.add(relativePath);
+    const bytes = outputFiles.get(relativePath);
+    invariant(Buffer.isBuffer(bytes) && bytes.length >= 24 && bytes.length === measurement.screenshot.bytes && digest(bytes) === measurement.screenshot.sha256
+      && bytes.readUInt32BE(16) === measurement.screenshot.width && bytes.readUInt32BE(20) === measurement.screenshot.height, `R2 selector-local contrast screenshot binding differs: ${relativePath}`);
+  }
+  invariant(boundPaths.size === CONTRAST_MASK_PATHS.length && CONTRAST_MASK_PATHS.every((relativePath) => boundPaths.has(relativePath)), "R2 selector-local contrast screenshot inventory differs");
+}
+
+export async function constructR2Payloads({ authorityDocumentBytes, generic, installed, qa, deploymentReport, gitAuthority, buildReceipt, focusedReceipt, r1Baselines, normalizeQaReport = normalizePhase7aR2RetainedQaReport, mediaAudit = { png: "PASS", pngCount: 15, mp4: "PASS", mp4Count: 3 } }) {
   validateGitAuthority(gitAuthority, gitAuthority.head);
   invariant(generic.report?.schema === GENERIC_CAPTURE_SCHEMA && generic.report.status === "PASS" && generic.report.authority?.head === gitAuthority.head, "generic R2 capture authority differs");
   validateR2FieldMapFocusAuthority(generic.focus);
   validateR2AxeAuthority(generic.axe);
+  assertContrastScreenshotBindings(generic.axe, generic.outputFiles);
   invariant(generic.targetFragment?.status === "PASS" && generic.targetFragment.parent === PHASE7A_R2_PARENT && Array.isArray(generic.targetFragment.states) && generic.targetFragment.states.length === 2, "generic R2 target fragment differs");
   invariant(generic.reducedMotion?.status === "PASS" && generic.reducedMotion.screenshot === "screenshots/chromium-reduced-motion.png", "generic reduced-motion evidence differs");
   invariant(installed.report?.schema === INSTALLED_CAPTURE_SCHEMA && installed.report.status === "PASS" && installed.report.branch === PHASE7A_R2_BRANCH && installed.report.parent === PHASE7A_R2_PARENT && installed.report.revision === gitAuthority.head, "installed Chrome capture authority differs");
@@ -363,20 +388,24 @@ async function loadCaptureRoot(root, revision, installed = false) {
   return { report: reportRecord.value, manifest: manifestRecord.value, focus, axe, targetFragment, reducedMotion, outputFiles };
 }
 
-async function defaultMediaAudit(payloads, stagingRoot, recordingDecoder = null) {
+async function defaultMediaAudit(payloads, stagingRoot, axeAuthority, recordingDecoder = null) {
   const pngRows = [...payloads].filter(([relativePath]) => relativePath.endsWith(".png"));
   const mp4Rows = [...payloads].filter(([relativePath]) => relativePath.endsWith(".mp4"));
-  invariant(pngRows.length === 11 && mp4Rows.length === 3, "prepackage media topology differs");
+  invariant(pngRows.length === 15 && mp4Rows.length === 3, "prepackage media topology differs");
+  const measurements = new Map(axeAuthority.manualContrast.selectorMeasurements.map((measurement) => [`06-accessibility/${path.posix.basename(measurement.screenshot.path)}`, measurement]));
+  invariant(measurements.size === CONTRAST_MASK_PATHS.length && CONTRAST_MASK_PATHS.every((relativePath) => measurements.has(relativePath)), "prepackage contrast mask measurement inventory differs");
   for (const [relativePath, bytes] of pngRows) {
-    const decoded = await sharp(bytes, { failOn: "error" }).raw().toBuffer({ resolveWithObject: true });
+    const pipeline = sharp(bytes, { failOn: "error" });
+    const decoded = await (measurements.has(relativePath) ? pipeline.removeAlpha() : pipeline).raw().toBuffer({ resolveWithObject: true });
     invariant(decoded.data.length > 0 && decoded.info.width > 0 && decoded.info.height > 0, `prepackage PNG decode failed: ${relativePath}`);
+    if (measurements.has(relativePath)) validateR2ContrastMaskPixels({ data: decoded.data, info: decoded.info, measurement: measurements.get(relativePath) });
   }
   for (const [relativePath, bytes] of mp4Rows) {
     validateIsoBmffRecording(bytes, relativePath);
     if (recordingDecoder) invariant(await recordingDecoder({ relativePath, bytes }) === true, `prepackage MP4 full decode failed: ${relativePath}`);
     else await execFileAsync("ffmpeg", ["-hide_banner", "-loglevel", "error", "-xerror", "-nostdin", "-i", path.join(stagingRoot, ...relativePath.split("/")), "-map", "0:v:0", "-f", "null", "-"], { windowsHide: true, maxBuffer: 8 * 1024 * 1024 });
   }
-  return { png: "PASS", pngCount: 11, mp4: "PASS", mp4Count: 3 };
+  return { png: "PASS", pngCount: 15, mp4: "PASS", mp4Count: 3 };
 }
 
 async function validateExternalInput(candidate, label, boundaryOptions) {
@@ -431,7 +460,7 @@ export async function assembleR2ReviewEvidence(options, dependencies = {}) {
       reread.set(relativePath, await readFile(path.join(staging, ...relativePath.split("/"))));
     }
     for (const [relativePath, bytes] of reread) invariant(bytes.equals(payloads.get(relativePath)), `prepackage reread differs: ${relativePath}`);
-    const mediaAudit = await defaultMediaAudit(reread, staging, dependencies.recordingDecoder);
+    const mediaAudit = await defaultMediaAudit(reread, staging, generic.axe, dependencies.recordingDecoder);
     payloads = await constructR2Payloads({ authorityDocumentBytes, generic, installed, qa, deploymentReport: deploymentRecord.value, gitAuthority, buildReceipt, focusedReceipt, r1Baselines, normalizeQaReport, mediaAudit });
     const auditPath = "09-audit/prepackage-evidence-audit.json";
     await mkdir(path.join(staging, "09-audit"), { recursive: true });
@@ -465,9 +494,9 @@ export function parseArguments(argv) {
 }
 
 export function selfTest() {
-  invariant(REQUIRED_R2_EVIDENCE.length === 30 && Object.keys(GENERIC_COPY).length === 9 && Object.keys(INSTALLED_COPY).length === 5, "R2 assembler topology drifted");
+  invariant(REQUIRED_R2_EVIDENCE.length === 34 && Object.keys(GENERIC_COPY).length === 13 && Object.keys(INSTALLED_COPY).length === 5, "R2 assembler topology drifted");
   invariant(R2_HUMAN_GATES.filter(({ decision }) => decision === "ACCEPT").length === 5 && R2_HUMAN_GATES.filter(({ decision }) => decision === "PENDING HUMAN REVIEW").length === 1, "R2 human gate authority drifted");
-  return { schema: ASSEMBLER_SCHEMA, status: "PASS", payloadCount: 30, acceptedGates: 5, pendingGates: 1, createsPackage: false };
+  return { schema: ASSEMBLER_SCHEMA, status: "PASS", payloadCount: 34, acceptedGates: 5, pendingGates: 1, createsPackage: false };
 }
 
 async function main() {

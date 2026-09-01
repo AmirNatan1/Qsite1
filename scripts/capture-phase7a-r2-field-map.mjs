@@ -11,12 +11,14 @@ import { fileURLToPath } from "node:url";
 
 import axeCore from "axe-core";
 import { chromium, firefox, webkit } from "playwright-core";
+import sharp from "sharp";
 
 import {
   PHASE7A_R2_AXE_SCHEMA,
   PHASE7A_R2_AXE_VERSION,
   PHASE7A_R2_FIELD_MAP_DESTINATIONS,
   PHASE7A_R2_FIELD_MAP_SCHEMA,
+  PHASE7A_R2_LOCAL_CONTRAST_CASES,
   PHASE7A_R2_MINIMUM_TARGET_CSS_PIXELS,
   PHASE7A_R2_PARENT,
   PHASE7A_R2_SUMMARY_AX_ROLE,
@@ -24,6 +26,7 @@ import {
   validateR2FieldMapFocusAuthority,
 } from "./phase7a-r2-field-map-authority.mjs";
 import { PHASE7A_R2_BRANCH, PHYSICAL_ASSETS } from "./phase7a-contract.mjs";
+import { validateR2ContrastMaskPixels } from "./phase7a-r2-contrast-pixels.mjs";
 
 const execFileAsync = promisify(execFile);
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -680,15 +683,23 @@ async function linkNavigationCase(browser, baseUrl, timeoutMs) {
       inertRegionCount: document.querySelectorAll("[data-field-map-background][inert]").length,
       ownedInertCount: document.querySelectorAll("[data-field-map-background][data-field-map-inert-owned]").length,
     });
-    document.addEventListener("click", (event) => {
-      const link = event.target instanceof Element ? event.target.closest('[data-field-map] a[href="/contact/"]') : null;
-      if (link) sessionStorage.setItem("phase7a-r2-pre-navigation-cleanup", JSON.stringify(current()));
-    }, { once: true });
     addEventListener("pagehide", () => {
       sessionStorage.setItem("phase7a-r2-pagehide-cleanup", JSON.stringify(current()));
     }, { once: true });
   });
   await openMap(page);
+  await page.evaluate(() => {
+    const current = () => ({
+      open: Boolean(document.querySelector("[data-field-map]")?.open),
+      rootOpen: document.documentElement.hasAttribute("data-field-map-open"),
+      inertRegionCount: document.querySelectorAll("[data-field-map-background][inert]").length,
+      ownedInertCount: document.querySelectorAll("[data-field-map-background][data-field-map-inert-owned]").length,
+    });
+    document.addEventListener("click", (event) => {
+      const link = event.target instanceof Element ? event.target.closest('[data-field-map] a[href="/contact/"]') : null;
+      if (link) sessionStorage.setItem("phase7a-r2-pre-navigation-cleanup", JSON.stringify(current()));
+    }, { once: true });
+  });
   const before = cleanupState(await snapshot(page));
   const navigationPromise = page.waitForNavigation({ waitUntil: "load" });
   await page.locator('[data-field-map] a[href="/contact/"]').click();
@@ -776,53 +787,197 @@ function contrast(foreground, background) {
   return (values[0] + 0.05) / (values[1] + 0.05);
 }
 
-function manualContrastAuthority() {
-  const pairs = [
-    { id: "field-map-white-over-max-layered-plane", foreground: "#ffffff", background: "#24141c", threshold: 4.5 },
-    { id: "field-map-muted-over-max-layered-plane", foreground: "#8a9797", background: "#24141c", threshold: 4.5 },
+function manualContrastPairs() {
+  return [
+    { id: "closed-header-white-over-authored-upper-bound", foreground: "#ffffff", background: "#242424", threshold: 4.5 },
+    { id: "closed-header-muted-over-authored-upper-bound", foreground: "#8a9797", background: "#242424", threshold: 4.5 },
     { id: "manifesto-white-over-live-magenta", foreground: "#ffffff", background: "#d82b72", threshold: 3 },
   ].map((pair) => ({ ...pair, ratio: Number(contrast(pair.foreground, pair.background).toFixed(3)) }));
+}
+
+function manualContrastAuthority(selectorMeasurements, bindings) {
+  const pairs = manualContrastPairs();
   return {
-    method: "WCAG 2.x relative luminance; worst authored solid/composited CSS colors, with radial and active-link overlays conservatively combined to #24141c",
+    method: "WCAG 2.x relative luminance; the closed header uses a channel-wise #242424 upper bound derived from rgba(8,11,12,0.9) over any clipped backdrop; the manifesto uses its authored live-magenta pair; every incomplete over complex home or open-Field-Map material is bound one-to-one to an engine-local masked screenshot using temporary color:transparent and -webkit-text-fill-color:transparent while preserving layout, element backgrounds and pseudo-elements",
     pairs,
-    status: pairs.every(({ ratio, threshold }) => ratio >= threshold) ? "PASS" : "FAIL",
+    selectorMeasurements,
+    bindings,
+    status: pairs.every(({ ratio, threshold }) => ratio >= threshold)
+      && selectorMeasurements.length === 4
+      && selectorMeasurements.every(({ status }) => status === "PASS")
+      && bindings.length > 0 ? "PASS" : "FAIL",
   };
 }
 
-function contrastPairForIncompleteNode(state, node) {
-  const target = (node?.target ?? []).flat(Infinity).join(" ");
-  const source = `${target} ${node?.html ?? ""}`;
-  if (state === "field-map-open") {
-    if (/field-map__(?:trigger-state|heading|legend)|field-map-destination[^<]*(?:>|\s)span|aria-label[^<]*(?:>|\s)span/i.test(source)) {
-      return "field-map-muted-over-max-layered-plane";
-    }
-    if (/field-map__trigger-label|field-map-destination|data-field-map|<summary\b|<strong\b/i.test(source)) {
-      return "field-map-white-over-max-layered-plane";
-    }
-    return null;
-  }
-  if (state === "reduced-motion-home" && /home-title|manifesto-(?:field|line|word)|signal-threshold|<h1\b/i.test(source)) {
-    return "manifesto-white-over-live-magenta";
+function contrastAuthorityForIncompleteNode(state, node) {
+  invariant(Array.isArray(node?.target) && node.target.length === 1 && typeof node.target[0] === "string", `R2 axe ${state} target shape differs`);
+  const target = node.target[0];
+  const local = PHASE7A_R2_LOCAL_CONTRAST_CASES.find((record) => record.state === state)?.selectors.find(({ selector }) => selector === target);
+  if (local) return { authorityKind: "selector-local", authorityId: local.id };
+  if (state === "reduced-motion-home") {
+    if (target === ".field-map__trigger-label" || target === ".brand-link > span") return { authorityKind: "fixed-pair", authorityId: "closed-header-white-over-authored-upper-bound" };
+    if (target === ".field-map__trigger-state") return { authorityKind: "fixed-pair", authorityId: "closed-header-muted-over-authored-upper-bound" };
+    const manifestoTarget = /^(?:\.manifesto-line--(?:one|two|three)\s*>\s*\.manifesto-word(?::nth-child\([123]\))?|\.manifesto-word(?:--contact|:nth-child\(3\)))$/;
+    if (manifestoTarget.test(target)) return { authorityKind: "fixed-pair", authorityId: "manifesto-white-over-live-magenta" };
   }
   return null;
 }
 
-function bindIncompleteContrast(result, state) {
+function bindIncompleteContrast(result, engine, route, state) {
   const bindings = [];
   for (const incomplete of result.incomplete) {
     invariant(incomplete.id === "color-contrast" && incomplete.impact !== "critical", `R2 axe ${state} contains unsupported incomplete ${incomplete.id}`);
     invariant(Array.isArray(incomplete.nodes) && incomplete.nodes.length > 0, `R2 axe ${state} incomplete has no nodes`);
     for (const node of incomplete.nodes) {
-      const pairId = contrastPairForIncompleteNode(state, node);
-      invariant(pairId, `R2 axe ${state} color-contrast target is not bound to a governed production selector: ${(node.target ?? []).flat(Infinity).join(" ")}`);
-      bindings.push({ target: node.target, pairId });
+      const authority = contrastAuthorityForIncompleteNode(state, node);
+      invariant(authority, `R2 axe ${state} color-contrast target is not bound to a governed production selector: ${(node.target ?? []).flat(Infinity).join(" ")}`);
+      bindings.push({ engine, route, state, target: node.target, ...authority });
     }
   }
   return bindings;
 }
 
+function compactCssColor(value) {
+  return value.replace(/\s+/g, "").toLowerCase();
+}
+
+function parseCssColor(value) {
+  const match = /^(?:rgb|rgba)\((\d+),(\d+),(\d+)(?:,([\d.]+))?\)$/.exec(value);
+  invariant(match, `R2 selector-local foreground color is unsupported: ${value}`);
+  return { channels: match.slice(1, 4).map(Number), alpha: match[4] === undefined ? 1 : Number(match[4]) };
+}
+
+function rgbHex(channels) {
+  return `#${channels.map((channel) => Math.round(channel).toString(16).padStart(2, "0")).join("")}`;
+}
+
+function rgbLuminance(channels) {
+  const values = channels.map((value) => value / 255).map((value) => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4);
+  return 0.2126 * values[0] + 0.7152 * values[1] + 0.0722 * values[2];
+}
+
+function rgbContrast(first, second) {
+  const values = [rgbLuminance(first), rgbLuminance(second)].sort((a, b) => b - a);
+  return (values[0] + 0.05) / (values[1] + 0.05);
+}
+
+async function assertContrastBindingOwnership(page, bindings) {
+  const rows = await page.evaluate((records) => records.map((record) => {
+    const selector = record.target[0];
+    let nodes;
+    try { nodes = document.querySelectorAll(selector); } catch { return { selector, count: -1, governed: false }; }
+    const node = nodes[0] ?? null;
+    const governed = nodes.length === 1 && (record.authorityKind === "selector-local"
+      ? record.state === "field-map-open"
+        ? node?.closest?.("[data-field-map]") instanceof Element
+        : node?.closest?.("[data-field-map-threshold]") instanceof Element
+      : record.state === "reduced-motion-home"
+        && (selector === ".brand-link > span" || selector.startsWith(".field-map__trigger-") || node?.closest?.("#home-title") instanceof Element));
+    return { selector, count: nodes.length, governed };
+  }), bindings);
+  for (const row of rows) invariant(row.count === 1 && row.governed === true, `R2 axe contrast target is not uniquely owned by its governed region: ${row.selector}`);
+}
+
+async function selectorLocalContrastMeasurement(page, engine, contrastCase, screenshotPath) {
+  const screenshotRelativePath = `screenshots/${engine}-${contrastCase.id}-background-mask.png`;
+  const originalScrollY = await page.evaluate(() => scrollY);
+  if (contrastCase.state === "reduced-motion-home") {
+    await page.evaluate(() => document.querySelector("[data-field-map-threshold]")?.scrollIntoView({ block: "start" }));
+  }
+  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  const viewport = await page.evaluate(() => ({ width: innerWidth, height: innerHeight, deviceScaleFactor: devicePixelRatio }));
+  invariant(viewport.width === 1440 && viewport.height === 900 && viewport.deviceScaleFactor === 1, `R2 ${engine} selector-local contrast viewport differs`);
+  const selectors = contrastCase.selectors.map(({ selector }) => selector);
+  const geometry = await page.evaluate((records) => records.map(({ id, selector, foreground, threshold }) => {
+    const element = document.querySelector(selector);
+    if (!(element instanceof Element)) return { id, selector, missing: true };
+    const rect = element.getBoundingClientRect();
+    const rounded = Object.fromEntries(["x", "y", "width", "height"].map((key) => [key, Number(rect[key].toFixed(3))]));
+    return { id, selector, foreground: getComputedStyle(element).color.replace(/\s+/g, "").toLowerCase(), expectedForeground: foreground, threshold, rect: rounded, missing: false };
+  }), contrastCase.selectors);
+  for (const record of geometry) {
+    invariant(record.missing === false && record.foreground === record.expectedForeground, `R2 ${engine} selector-local foreground differs: ${record.selector}`);
+    invariant(record.rect.x >= 0 && record.rect.y >= 0 && record.rect.width > 0 && record.rect.height > 0
+      && record.rect.x + record.rect.width <= viewport.width + 0.01
+      && record.rect.y + record.rect.height <= viewport.height + 0.01, `R2 ${engine} selector-local rectangle escapes the viewport: ${record.selector}`);
+  }
+
+  await mkdir(path.dirname(screenshotPath), { recursive: true });
+  const mask = await page.addStyleTag({ content: `${selectors.join(",")} { color: transparent !important; -webkit-text-fill-color: transparent !important; text-shadow: none !important; }` });
+  let png;
+  try {
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    png = await page.screenshot({ path: screenshotPath, type: "png" });
+  } finally {
+    await mask.evaluate((node) => node.remove()).catch(() => undefined);
+    await page.evaluate((y) => scrollTo(0, y), originalScrollY).catch(() => undefined);
+  }
+  const decoded = await sharp(png).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+  invariant(decoded.info.width === viewport.width && decoded.info.height === viewport.height && decoded.info.channels === 3, `R2 ${engine} selector-local screenshot decode differs`);
+
+  const samples = geometry.map((record) => {
+    const pixelBounds = {
+      x0: Math.floor(record.rect.x),
+      y0: Math.floor(record.rect.y),
+      x1: Math.ceil(record.rect.x + record.rect.width),
+      y1: Math.ceil(record.rect.y + record.rect.height),
+    };
+    const foreground = parseCssColor(record.foreground);
+    let minimumRatio = Number.POSITIVE_INFINITY;
+    let worstBackground = null;
+    let worstComposite = null;
+    for (let y = pixelBounds.y0; y < pixelBounds.y1; y += 1) {
+      for (let x = pixelBounds.x0; x < pixelBounds.x1; x += 1) {
+        const offset = (y * decoded.info.width + x) * decoded.info.channels;
+        const background = [decoded.data[offset], decoded.data[offset + 1], decoded.data[offset + 2]];
+        const composite = foreground.channels.map((channel, index) => Math.round(channel * foreground.alpha + background[index] * (1 - foreground.alpha)));
+        const ratio = rgbContrast(composite, background);
+        if (ratio < minimumRatio) {
+          minimumRatio = ratio;
+          worstBackground = background;
+          worstComposite = composite;
+        }
+      }
+    }
+    const sampledPixelCount = (pixelBounds.x1 - pixelBounds.x0) * (pixelBounds.y1 - pixelBounds.y0);
+    invariant(sampledPixelCount > 0 && worstBackground && worstComposite && minimumRatio >= record.threshold, `R2 ${engine} selector-local contrast fails: ${record.selector}`);
+    return {
+      id: record.id,
+      selector: record.selector,
+      foreground: record.foreground,
+      threshold: record.threshold,
+      rect: record.rect,
+      pixelBounds,
+      sampledPixelCount,
+      worstBackground: rgbHex(worstBackground),
+      compositedForeground: rgbHex(worstComposite),
+      minimumRatio: Number(minimumRatio.toFixed(3)),
+      status: "PASS",
+    };
+  });
+  const measurement = {
+    engine,
+    route: contrastCase.route,
+    state: contrastCase.state,
+    viewport,
+    maskingMethod: "temporary color:transparent and -webkit-text-fill-color:transparent on every exact selector-local axe-incomplete text selector; layout, element backgrounds and pseudo-elements preserved; screenshot pixels sampled beneath original element bounding boxes",
+    screenshot: {
+      path: screenshotRelativePath,
+      bytes: png.length,
+      sha256: createHash("sha256").update(png).digest("hex"),
+      width: decoded.info.width,
+      height: decoded.info.height,
+    },
+    samples,
+    status: samples.every(({ status }) => status === "PASS") ? "PASS" : "FAIL",
+  };
+  validateR2ContrastMaskPixels({ data: decoded.data, info: decoded.info, measurement });
+  return measurement;
+}
+
 async function productionContrastSelectorBinding(page, state) {
-  const binding = await page.evaluate((caseState) => {
+  const localRecords = PHASE7A_R2_LOCAL_CONTRAST_CASES.find((record) => record.state === state)?.selectors ?? [];
+  const binding = await page.evaluate(({ caseState, localRecords: browserLocalRecords }) => {
     const compactColor = (value) => value.replace(/\s+/g, "").toLowerCase();
     const canonicalHex = (value) => {
       const compact = value.trim().toLowerCase();
@@ -837,55 +992,67 @@ async function productionContrastSelectorBinding(page, state) {
     };
     if (caseState === "field-map-open") {
       const plane = document.querySelector(".field-map__plane");
-      const muted = document.querySelector(".field-map__legend");
-      const white = document.querySelector(".field-map-destination strong");
       const active = document.querySelector('.field-map-destination[aria-current="page"]');
-      if (![plane, muted, white, active].every((node) => node instanceof Element)) return { state: caseState, missing: true, tokens };
+      const white = [...document.querySelectorAll("[data-field-map] .field-map__trigger-label, [data-field-map] a > strong")];
+      const muted = [...document.querySelectorAll("[data-field-map] .field-map__trigger-state, [data-field-map] .field-map__heading > p, [data-field-map] a > span, [data-field-map] .field-map__legend")];
+      if (![plane, active].every((node) => node instanceof Element) || white.length !== 9 || muted.length !== 20) return { state: caseState, missing: true, tokens };
       const planeStyle = getComputedStyle(plane);
       return {
         state: caseState,
         missing: false,
         tokens,
-        selectors: [".field-map__plane", ".field-map__legend", ".field-map-destination strong", '.field-map-destination[aria-current="page"]'],
+        selectors: [".field-map__plane", "[data-field-map] .field-map__trigger-label", "[data-field-map] a > strong", "[data-field-map] .field-map__trigger-state", "[data-field-map] .field-map__heading > p", "[data-field-map] a > span", "[data-field-map] .field-map__legend", '.field-map-destination[aria-current="page"]'],
         observed: {
           planeBackgroundColor: compactColor(planeStyle.backgroundColor),
           planeBackgroundImage: compactColor(planeStyle.backgroundImage),
-          mutedColor: compactColor(getComputedStyle(muted).color),
-          whiteColor: compactColor(getComputedStyle(white).color),
+          mutedColors: [...new Set(muted.map((node) => compactColor(getComputedStyle(node).color)))],
+          whiteColors: [...new Set(white.map((node) => compactColor(getComputedStyle(node).color)))],
           activeBackgroundImage: compactColor(getComputedStyle(active).backgroundImage),
         },
-        conservativeComposite: { authoredBase: "#090c0d", maximumGovernedPlane: "#24141c" },
+        conservativeComposite: null,
       };
     }
+    const header = document.querySelector(".site-header");
     const heading = document.querySelector("#home-title");
     const contact = document.querySelector(".manifesto-word--contact");
-    if (!(heading instanceof Element) || !(contact instanceof Element)) return { state: caseState, missing: true, tokens };
+    const threshold = document.querySelector(".field-map-threshold");
+    const local = browserLocalRecords.map(({ id, selector, foreground }) => {
+      const node = document.querySelector(selector);
+      return { id, selector, foreground, color: node instanceof Element ? compactColor(getComputedStyle(node).color) : null };
+    });
+    if (![header, heading, contact, threshold].every((node) => node instanceof Element) || local.some(({ color }) => color === null)) return { state: caseState, missing: true, tokens };
     return {
       state: caseState,
       missing: false,
       tokens,
-      selectors: ["#home-title", ".manifesto-word--contact::after"],
+      selectors: [".site-header", "#home-title", ".manifesto-word--contact::after", ".field-map-threshold", ...local.map(({ selector }) => selector)],
       observed: {
+        headerBackgroundColor: compactColor(getComputedStyle(header).backgroundColor),
         headingColor: compactColor(getComputedStyle(heading).color),
         liveSignalColor: compactColor(getComputedStyle(contact, "::after").backgroundColor),
+        thresholdBackgroundColor: compactColor(getComputedStyle(threshold).backgroundColor),
+        local,
       },
       conservativeComposite: null,
     };
-  }, state);
+  }, { caseState: state, localRecords });
   invariant(binding.missing === false, `R2 ${state} manual-contrast selectors are missing`);
   invariant(binding.tokens.white === "#ffffff" && binding.tokens.muted === "#8a9797" && binding.tokens.magenta === "#d82b72", `R2 ${state} production contrast tokens differ`);
   if (state === "field-map-open") {
     invariant(binding.observed.planeBackgroundColor === "rgb(9,12,13)", "R2 Field Map plane background differs");
     invariant(binding.observed.planeBackgroundImage.includes("rgba(86,52,63,0.15)"), "R2 Field Map layered plane differs");
-    invariant(binding.observed.mutedColor === "rgb(138,151,151)" && binding.observed.whiteColor === "rgb(255,255,255)", "R2 Field Map bound text colors differ");
+    invariant(JSON.stringify(binding.observed.mutedColors) === JSON.stringify(["rgb(138,151,151)"]) && JSON.stringify(binding.observed.whiteColors) === JSON.stringify(["rgb(255,255,255)"]), "R2 Field Map bound text colors differ");
     invariant(binding.observed.activeBackgroundImage.includes("rgba(216,43,114,0.08)"), "R2 Field Map active signal overlay differs");
   } else {
+    invariant(binding.observed.headerBackgroundColor === "rgba(8,11,12,0.9)", "R2 closed-header authored upper-bound source differs");
     invariant(binding.observed.headingColor === "rgb(255,255,255)" && binding.observed.liveSignalColor === "rgb(216,43,114)", "R2 manifesto bound colors differ");
+    invariant(binding.observed.thresholdBackgroundColor === "rgb(9,12,13)", "R2 bifurcation field background differs");
+    invariant(binding.observed.local.every(({ foreground, color }) => foreground === color), "R2 bifurcation selector-local text colors differ");
   }
   return binding;
 }
 
-async function axeCase(browser, baseUrl, engine, route, state, timeoutMs) {
+async function axeCase(browser, baseUrl, engine, route, state, timeoutMs, staging) {
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: state === "reduced-motion-home" ? "reduce" : "no-preference" });
   const page = await context.newPage();
   page.setDefaultTimeout(timeoutMs);
@@ -899,21 +1066,30 @@ async function axeCase(browser, baseUrl, engine, route, state, timeoutMs) {
   });
   invariant(result.version === PHASE7A_R2_AXE_VERSION, `R2 ${engine} runtime axe version differs`);
   const selectorBinding = await productionContrastSelectorBinding(page, state);
-  const incompleteBindings = bindIncompleteContrast(result, state);
+  const incompleteBindings = bindIncompleteContrast(result, engine, route, state);
+  await assertContrastBindingOwnership(page, incompleteBindings);
+  const contrastCase = PHASE7A_R2_LOCAL_CONTRAST_CASES.find((record) => record.route === route && record.state === state);
+  invariant(contrastCase, `R2 ${engine} ${state} selector-local contrast case differs`);
+  const selectorMeasurement = await selectorLocalContrastMeasurement(
+    page,
+    engine,
+    contrastCase,
+    path.join(staging, "screenshots", `${engine}-${contrastCase.id}-background-mask.png`),
+  );
   await context.close();
   const invalidAriaIncomplete = result.incomplete.some(({ id, impact }) => id === "aria-valid-attr-value" || impact === "critical");
   const unsupportedIncomplete = result.incomplete.some(({ id }) => id !== "color-contrast");
   const authority = { route, state, passes: result.passes, violations: result.violations, incomplete: result.incomplete, status: result.violations.length === 0 && !invalidAriaIncomplete && !unsupportedIncomplete ? "PASS" : "FAIL" };
-  return { authority, selectorBinding: { engine, route, state, axeVersion: result.version, selectors: selectorBinding, incompleteBindings, status: authority.status } };
+  return { authority, selectorBinding: { engine, route, state, axeVersion: result.version, selectors: selectorBinding, incompleteBindings, selectorMeasurement, status: authority.status } };
 }
 
-async function axeAuthority(browsers, baseUrl, timeoutMs) {
+async function axeAuthority(browsers, baseUrl, timeoutMs, staging) {
   const engines = [];
   const selectorBindings = [];
   for (const engine of ["chromium", "firefox"]) {
     const cases = [];
     for (const item of [{ route: "/", state: "reduced-motion-home" }, { route: "/about/", state: "field-map-open" }]) {
-      const captured = await axeCase(browsers[engine], baseUrl, engine, item.route, item.state, timeoutMs);
+      const captured = await axeCase(browsers[engine], baseUrl, engine, item.route, item.state, timeoutMs, staging);
       cases.push(captured.authority);
       selectorBindings.push(captured.selectorBinding);
     }
@@ -921,7 +1097,10 @@ async function axeAuthority(browsers, baseUrl, timeoutMs) {
     const incompleteCount = cases.reduce((sum, item) => sum + item.incomplete.length, 0);
     engines.push({ engine, status: cases.every(({ status }) => status === "PASS") ? "PASS" : "FAIL", violationCount, incompleteCount, cases });
   }
-  const manualContrast = manualContrastAuthority();
+  const manualContrast = manualContrastAuthority(
+    selectorBindings.filter(({ selectorMeasurement }) => selectorMeasurement).map(({ selectorMeasurement }) => selectorMeasurement),
+    selectorBindings.flatMap(({ incompleteBindings }) => incompleteBindings),
+  );
   const authority = {
     schema: PHASE7A_R2_AXE_SCHEMA,
     status: engines.every(({ status }) => status === "PASS") && manualContrast.status === "PASS" ? "PASS" : "FAIL",
@@ -936,7 +1115,7 @@ async function axeAuthority(browsers, baseUrl, timeoutMs) {
       schema: "quantum-hub.phase-7a-r2.contrast-selector-bindings.v1",
       status: selectorBindings.every(({ status }) => status === "PASS") ? "PASS" : "FAIL",
       parent: PHASE7A_R2_PARENT,
-      cases: selectorBindings,
+      cases: selectorBindings.map(({ selectorMeasurement, ...record }) => record),
     },
   };
 }
@@ -1313,13 +1492,19 @@ export function selfTest() {
   invariant(PHASE7A_R2_FIELD_MAP_DESTINATIONS.length === 8, "R2 destination inventory must contain eight links");
   invariant(PHASE7A_R2_MINIMUM_TARGET_CSS_PIXELS === 44, "R2 target minimum differs");
   invariant(REDUCED_MOTION_SCREENSHOT === "screenshots/chromium-reduced-motion.png", "R2 reduced-motion screenshot path differs");
-  invariant(contrastPairForIncompleteNode("field-map-open", { target: [".field-map__trigger-state"], html: "<span>Close</span>" }) === "field-map-muted-over-max-layered-plane", "R2 muted contrast binding differs");
-  invariant(contrastPairForIncompleteNode("field-map-open", { target: [".field-map__trigger-label"], html: "<span>Field map</span>" }) === "field-map-white-over-max-layered-plane", "R2 white contrast binding differs");
-  invariant(contrastPairForIncompleteNode("reduced-motion-home", { target: ["#home-title"], html: "<h1></h1>" }) === "manifesto-white-over-live-magenta", "R2 manifesto contrast binding differs");
-  invariant(contrastPairForIncompleteNode("reduced-motion-home", { target: ["footer p"], html: "<p></p>" }) === null, "R2 contrast binding expanded outside its governed selectors");
-  const manual = manualContrastAuthority();
-  invariant(manual.status === "PASS" && manual.pairs.every(({ ratio }) => ratio > 0), "manual contrast authority must pass");
-  return { status: "PASS", viewports: VIEWPORTS.length, controls: FOCUS_ORDER.length, contrast: manual };
+  invariant(PHASE7A_R2_LOCAL_CONTRAST_CASES.length === 2 && PHASE7A_R2_LOCAL_CONTRAST_CASES[0].selectors.length === 8 && PHASE7A_R2_LOCAL_CONTRAST_CASES[1].selectors.length === 29, "R2 selector-local contrast case inventory differs");
+  invariant(contrastAuthorityForIncompleteNode("field-map-open", { target: [".field-map__trigger-state"] })?.authorityId === "open-field-map-trigger-state", "R2 muted contrast binding differs");
+  invariant(contrastAuthorityForIncompleteNode("field-map-open", { target: [".field-map__trigger-label"] })?.authorityId === "open-field-map-trigger-label", "R2 white contrast binding differs");
+  invariant(contrastAuthorityForIncompleteNode("field-map-open", { target: ['a[href$="industries/"] > span:nth-child(3)'] })?.authorityId === "open-industries-coordinate", "R2 destination-span contrast binding differs");
+  invariant(contrastAuthorityForIncompleteNode("reduced-motion-home", { target: [".field-map-threshold__coordinate"] })?.authorityId === "bifurcation-coordinate", "R2 bifurcation coordinate binding differs");
+  invariant(contrastAuthorityForIncompleteNode("reduced-motion-home", { target: ["#field-map-threshold-title > span:nth-child(1)"] })?.authorityId === "bifurcation-heading-one", "R2 bifurcation heading binding differs");
+  invariant(contrastAuthorityForIncompleteNode("reduced-motion-home", { target: [".bifurcation-destination--industry > .bifurcation-destination__label"] })?.authorityId === "bifurcation-industry-label", "R2 bifurcation label binding differs");
+  invariant(contrastAuthorityForIncompleteNode("reduced-motion-home", { target: [".manifesto-line--one > .manifesto-word:nth-child(1)"] })?.authorityId === "manifesto-white-over-live-magenta", "R2 manifesto contrast binding differs");
+  invariant(contrastAuthorityForIncompleteNode("reduced-motion-home", { target: [".field-map__trigger-state"] })?.authorityId === "closed-header-muted-over-authored-upper-bound", "R2 closed-header upper-bound contrast binding differs");
+  invariant(contrastAuthorityForIncompleteNode("reduced-motion-home", { target: ["footer p"] }) === null, "R2 contrast binding expanded outside its governed selectors");
+  const pairs = manualContrastPairs();
+  invariant(pairs.length === 3 && pairs.every(({ ratio, threshold }) => ratio >= threshold), "manual contrast pairs must pass");
+  return { status: "PASS", viewports: VIEWPORTS.length, controls: FOCUS_ORDER.length, contrast: { status: "PASS", pairs } };
 }
 
 async function capture(options) {
@@ -1346,7 +1531,7 @@ async function capture(options) {
     const noJavaScriptCapture = await noJavaScriptCase(browsers.chromium, options.baseUrl, options.timeoutMs, staging);
     const noJavaScript = noJavaScriptCapture.authority;
     const reducedMotionScreenshot = await reducedMotionScreenshotCase(browsers.chromium, options.baseUrl, options.timeoutMs, staging);
-    const axeCapture = await axeAuthority(browsers, options.baseUrl, options.timeoutMs);
+    const axeCapture = await axeAuthority(browsers, options.baseUrl, options.timeoutMs, staging);
     const axe = axeCapture.authority;
     const canonicalFocus = await buildCanonicalFocus(primary, noJavaScript);
     validateR2FieldMapFocusAuthority(canonicalFocus);
@@ -1384,7 +1569,7 @@ async function capture(options) {
       limitations: [
         "Playwright WebKit is proxy evidence and is not physical Safari.",
         "Automated keyboard delivery supplements but does not replace physical human-input review.",
-        "Contrast cases unresolved by axe over composited material are resolved only by the included conservative manual color calculation.",
+        "Contrast cases unresolved by axe use reproducible authored fixed bounds or engine-local masked-pixel minima bound to the included screenshots.",
         "The pagehide/pageshow lifecycle listener exercise is a scripted PageTransitionEvent check and is not promoted as BFCache authority.",
         "The sole Phase 7A accessibility gate remains PENDING HUMAN REVIEW.",
       ],
@@ -1404,10 +1589,18 @@ async function capture(options) {
     await closeBrowsers(browsers);
     browsers = null;
     await rm(path.join(staging, "raw"), { recursive: true, force: true });
-    const manifest = { schema: "quantum-hub.phase-7a-r2.capture-manifest.v1", sourceHead: options.revision, entries: await manifestFor(staging) };
+    const manifestEntries = await manifestFor(staging);
+    const manifest = { schema: "quantum-hub.phase-7a-r2.capture-manifest.v1", sourceHead: options.revision, entries: manifestEntries };
     await writeJson(staging, "manifest.json", manifest);
     await rename(staging, options.output);
-    return { status: report.status, output: options.output, engines: identities, matrixCases: matrices.length, recordings: 3, screenshots: 14 };
+    return {
+      status: report.status,
+      output: options.output,
+      engines: identities,
+      matrixCases: matrices.length,
+      recordings: manifestEntries.filter(({ path: relativePath }) => relativePath.endsWith(".mp4")).length,
+      screenshots: manifestEntries.filter(({ path: relativePath }) => relativePath.endsWith(".png")).length,
+    };
   } catch (error) {
     if (browsers) await closeBrowsers(browsers);
     await rm(staging, { recursive: true, force: true });

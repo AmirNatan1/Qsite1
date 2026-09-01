@@ -16,6 +16,7 @@ import {
   validateR2TargetAuthority,
   validatePhase7aR2FieldMapAuthority,
 } from "./phase7a-r2-field-map-authority.mjs";
+import { validateR2ContrastMaskPixels } from "./phase7a-r2-contrast-pixels.mjs";
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const R2_PACKAGE_SCHEMA = "quantum-hub.phase-7a-r2.field-map-focus-human-review.v1";
@@ -63,6 +64,10 @@ export const REQUIRED_R2_EVIDENCE = Object.freeze([
   required("05-chrome-200/chrome-visible-200-percent.png", "raster-evidence"),
   required("06-accessibility/axe-and-manual-contrast.json", "axe-authority"),
   required("06-accessibility/target-inventory.json", "target-authority"),
+  required("06-accessibility/chromium-bifurcation-background-mask.png", "raster-evidence"),
+  required("06-accessibility/firefox-bifurcation-background-mask.png", "raster-evidence"),
+  required("06-accessibility/chromium-field-map-open-background-mask.png", "raster-evidence"),
+  required("06-accessibility/firefox-field-map-open-background-mask.png", "raster-evidence"),
   required("07-regression/focused-regression.json", "regression-authority"),
   required("07-regression/retained-suite.json", "retained-suite-authority"),
   required("08-governance/phase4-hashes.json", "phase4-hash-authority"),
@@ -92,6 +97,12 @@ const POSIX_ABSOLUTE = /(?:^|[\s"'(=\[])\/(?:Users|home|tmp|private|root|workspa
 const PRIVATE_MARKER = /(?:^|[\\/])\.codex(?:[\\/]|$)|\b(?:OneDrive|AppData|LocalCache)\b|file:\/\/|\\\\[^\\\s]+\\[^\\\s]+/i;
 const SECRET_MARKER = /(?:github_pat_[a-z0-9_]+|gh[pousr]_[a-z0-9]{20,}|sk-[a-z0-9_-]{20,}|-----BEGIN [A-Z ]*PRIVATE KEY-----|(?:password|api[_-]?key|client[_-]?secret|access[_-]?token|refresh[_-]?token|authorization|bearer)\s*[:=]\s*["']?(?:bearer\s+)?[a-z0-9_./+:-]{12,})/i;
 const RAW_PHASE4_HASHES = new Set(PHYSICAL_ASSETS.map(([, hash]) => hash));
+const CONTRAST_MASK_PATHS = Object.freeze([
+  "06-accessibility/chromium-bifurcation-background-mask.png",
+  "06-accessibility/firefox-bifurcation-background-mask.png",
+  "06-accessibility/chromium-field-map-open-background-mask.png",
+  "06-accessibility/firefox-field-map-open-background-mask.png",
+]);
 
 function invariant(condition, message) {
   if (!condition) throw new Error(message);
@@ -256,7 +267,18 @@ function validateSupportingAuthorities(entries) {
   const installed = document("05-chrome-200/installed-chrome-200.json");
   exactKeys(installed, ["schema", "status", "genuineInstalledChrome", "nativeZoomPercent", "report"], "R2 installed Chrome 200 authority");
   invariant(installed.schema === R2_INSTALLED_CHROME_SCHEMA && installed.status === "PASS" && installed.genuineInstalledChrome === true && installed.nativeZoomPercent === 200 && installed.report && typeof installed.report === "object", "R2 installed Chrome 200 authority differs");
-  validateR2AxeAuthority(document("06-accessibility/axe-and-manual-contrast.json"));
+  const axe = document("06-accessibility/axe-and-manual-contrast.json");
+  validateR2AxeAuthority(axe);
+  const boundContrastPaths = new Set();
+  for (const measurement of axe.manualContrast.selectorMeasurements) {
+    const relativePath = `06-accessibility/${path.posix.basename(measurement.screenshot.path)}`;
+    invariant(CONTRAST_MASK_PATHS.includes(relativePath) && !boundContrastPaths.has(relativePath), `R2 selector-local contrast screenshot path differs: ${relativePath}`);
+    boundContrastPaths.add(relativePath);
+    const entry = entries.get(relativePath);
+    invariant(entry && entry.data.length >= 24 && entry.data.length === measurement.screenshot.bytes && sha256(entry.data) === measurement.screenshot.sha256
+      && entry.data.readUInt32BE(16) === measurement.screenshot.width && entry.data.readUInt32BE(20) === measurement.screenshot.height, `R2 selector-local contrast screenshot binding differs: ${relativePath}`);
+  }
+  invariant(boundContrastPaths.size === CONTRAST_MASK_PATHS.length && CONTRAST_MASK_PATHS.every((relativePath) => boundContrastPaths.has(relativePath)), "R2 selector-local contrast screenshot inventory differs");
   validateR2TargetAuthority(document("06-accessibility/target-inventory.json"));
   for (const relativePath of ["07-regression/focused-regression.json", "07-regression/retained-suite.json"]) {
     const receipt = document(relativePath);
@@ -287,7 +309,7 @@ function validateSupportingAuthorities(entries) {
   invariant(audit.selfExclusion === "prepackage audit excludes its own bytes to avoid self-reference", "R2 prepackage audit self-exclusion differs");
   const expectedRows = auditedEntries.map(([relativePath, entry]) => ({ path: relativePath, bytes: entry.data.length, sha256: sha256(entry.data), status: "PASS" }));
   invariant(sameJson(audit.payloads, expectedRows), "R2 prepackage payload ledger differs");
-  invariant(sameJson(audit.checks, { topology: "PASS", pathSafety: "PASS", privacyAndSecrets: "PASS", forbiddenPayloadClasses: "PASS", semanticAuthority: "PASS" }) && sameJson(audit.mediaDecode, { png: "PASS", pngCount: 11, mp4: "PASS", mp4Count: 3 }), "R2 prepackage audit checks/decode differ");
+  invariant(sameJson(audit.checks, { topology: "PASS", pathSafety: "PASS", privacyAndSecrets: "PASS", forbiddenPayloadClasses: "PASS", semanticAuthority: "PASS" }) && sameJson(audit.mediaDecode, { png: "PASS", pngCount: 15, mp4: "PASS", mp4Count: 3 }), "R2 prepackage audit checks/decode differ");
 }
 
 function validateProductionDiff(bytes) {
@@ -406,17 +428,26 @@ export function auditR2PackageBytes({ archiveBytes }) {
 
 async function decodePngs(entries, sharpOverride = null) {
   const images = [...entries].filter(([relativePath]) => relativePath.endsWith(".png"));
-  invariant(images.length === 11, "R2 full decode requires exactly eleven PNGs");
+  invariant(images.length === 15, "R2 full decode requires exactly fifteen PNGs");
   let sharp = sharpOverride;
   if (!sharp) {
     try { ({ default: sharp } = await import("sharp")); }
     catch (error) { throw new Error(`sharp is required for R2 PNG full decode: ${error.message}`); }
   }
+  const axeEntry = entries.get("06-accessibility/axe-and-manual-contrast.json");
+  invariant(axeEntry, "R2 selector-local contrast authority payload is missing");
+  let axeAuthority;
+  try { axeAuthority = JSON.parse(axeEntry.data.toString("utf8")); }
+  catch { throw new Error("R2 selector-local contrast authority payload is invalid JSON"); }
+  const measurements = new Map(axeAuthority.manualContrast.selectorMeasurements.map((measurement) => [`06-accessibility/${path.posix.basename(measurement.screenshot.path)}`, measurement]));
+  invariant(measurements.size === CONTRAST_MASK_PATHS.length && CONTRAST_MASK_PATHS.every((relativePath) => measurements.has(relativePath)), "R2 selector-local contrast pixel measurement inventory differs");
   const files = [];
   for (const [relativePath, entry] of images) {
-    const decoded = await sharp(entry.data, { failOn: "error", limitInputPixels: 100_000_000, sequentialRead: true }).raw().toBuffer({ resolveWithObject: true });
+    const pipeline = sharp(entry.data, { failOn: "error", limitInputPixels: 100_000_000, sequentialRead: true });
+    const decoded = await (measurements.has(relativePath) ? pipeline.removeAlpha() : pipeline).raw().toBuffer({ resolveWithObject: true });
     invariant(decoded.data.length > 0 && decoded.info.width > 0 && decoded.info.height > 0, `R2 PNG full decode produced no pixels: ${relativePath}`);
-    files.push({ path: relativePath, status: "PASS", width: decoded.info.width, height: decoded.info.height, channels: decoded.info.channels, decodedBytes: decoded.data.length });
+    const contrastPixels = measurements.has(relativePath) ? validateR2ContrastMaskPixels({ data: decoded.data, info: decoded.info, measurement: measurements.get(relativePath) }) : null;
+    files.push({ path: relativePath, status: "PASS", width: decoded.info.width, height: decoded.info.height, channels: decoded.info.channels, decodedBytes: decoded.data.length, ...(contrastPixels ? { contrastPixels } : {}) });
   }
   return { status: "PASS", count: files.length, decoder: `sharp ${sharp.versions?.sharp ?? "supplied"}`, files };
 }
@@ -541,8 +572,8 @@ export function parseArguments(argv, { boundaryOptions = {} } = {}) {
 }
 
 export function runSelfTest() {
-  invariant(REQUIRED_R2_EVIDENCE.length === 30, "R2 independent audit topology drifted");
-  return Object.freeze({ schema: R2_AUDIT_SCHEMA, status: "PASS", reviewZipName: PHASE7A_R2_REVIEW_ZIP_NAME, requiredPayloads: 30, realFileAuditEnabled: true });
+  invariant(REQUIRED_R2_EVIDENCE.length === 34, "R2 independent audit topology drifted");
+  return Object.freeze({ schema: R2_AUDIT_SCHEMA, status: "PASS", reviewZipName: PHASE7A_R2_REVIEW_ZIP_NAME, requiredPayloads: 34, realFileAuditEnabled: true });
 }
 
 async function main() {
