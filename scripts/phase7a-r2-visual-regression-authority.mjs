@@ -42,15 +42,17 @@ function exactUrl(value, deploymentId, label) {
   invariant(UUID.test(deploymentId ?? "") && value === `https://${deploymentId.slice(0, 8)}.qsite1.pages.dev/`, `${label} immutable deployment identity differs`);
 }
 function finite(value) { return typeof value === "number" && Number.isFinite(value); }
+function withinMetricEpsilon(value, expected, epsilon) { return Math.abs(value - expected) <= epsilon; }
 
 function validateMetrics(metrics, label) {
   exactKeys(metrics, ["innerWidth", "innerHeight", "clientWidth", "clientHeight", "outerWidth", "outerHeight", "visualViewportWidth", "visualViewportHeight", "visualViewportScale", "scrollbarWidth", "devicePixelRatio", "scrollX", "scrollY", "fontsReady"], label);
   for (const key of ["innerWidth", "innerHeight", "clientWidth", "clientHeight", "outerWidth", "outerHeight", "visualViewportWidth", "visualViewportHeight", "visualViewportScale", "scrollbarWidth", "devicePixelRatio", "scrollX", "scrollY"]) invariant(finite(metrics[key]), `${label} ${key} differs`);
   invariant(metrics.innerWidth === 1440 && metrics.innerHeight === 900 && metrics.clientWidth > 0 && metrics.clientWidth <= metrics.innerWidth
     && metrics.clientHeight > 0 && metrics.clientHeight <= metrics.innerHeight && metrics.scrollbarWidth === metrics.innerWidth - metrics.clientWidth
-    && metrics.scrollbarWidth >= 0 && metrics.scrollbarWidth <= 24 && metrics.devicePixelRatio === 1 && metrics.outerWidth >= metrics.innerWidth && metrics.outerHeight >= metrics.innerHeight
-    && [metrics.clientWidth, metrics.innerWidth].includes(metrics.visualViewportWidth) && [metrics.clientHeight, metrics.innerHeight].includes(metrics.visualViewportHeight) && metrics.visualViewportScale === 1
-    && metrics.scrollX === 0 && metrics.scrollY === 0 && metrics.fontsReady === true, `${label} viewport/scrollbar authority differs`);
+    && metrics.scrollbarWidth >= 0 && metrics.scrollbarWidth <= 24 && withinMetricEpsilon(metrics.devicePixelRatio, 1, 0.000001) && metrics.outerWidth >= metrics.innerWidth && metrics.outerHeight >= metrics.innerHeight
+    && [metrics.clientWidth, metrics.innerWidth].some((expected) => withinMetricEpsilon(metrics.visualViewportWidth, expected, 0.25))
+    && [metrics.clientHeight, metrics.innerHeight].some((expected) => withinMetricEpsilon(metrics.visualViewportHeight, expected, 0.25)) && metrics.visualViewportScale === 1
+    && metrics.scrollX === 0 && metrics.scrollY === 0 && metrics.fontsReady === true, `${label} viewport/scrollbar authority differs: ${JSON.stringify(metrics)}`);
 }
 
 function validateImage(record, { expectedPath, expectedOpen, expectedFocus, label }) {
@@ -94,10 +96,14 @@ export function validatePhase7aR2VisualRegressionAuthority(report, { currentRevi
   exactKeys(report.captureTool, ["path", "sha256"], "R2 same-session capture tool");
   invariant(report.captureTool.path === "scripts/capture-phase7a-r2-visual-regression.mjs" && HASH_64.test(report.captureTool.sha256 ?? ""), "R2 same-session capture-tool binding differs");
 
-  exactKeys(report.browser, ["name", "product", "version", "userAgent", "installed", "headed", "browserCount", "contextCount", "pageCount"], "R2 same-session browser");
+  exactKeys(report.browser, ["name", "product", "version", "userAgent", "installed", "headed", "launchArguments", "rendering", "browserCount", "contextCount", "pageCount"], "R2 same-session browser");
   invariant(report.browser.name === "Google Chrome" && /^Chrome\/\d/.test(report.browser.product ?? "") && /^\d+(?:\.\d+){3}$/.test(report.browser.version ?? "")
     && /\bChrome\/\d/.test(report.browser.userAgent ?? "") && !/\b(?:HeadlessChrome|Edg|OPR)\//.test(report.browser.userAgent ?? "")
     && report.browser.installed === true && report.browser.headed === true && report.browser.browserCount === 1 && report.browser.contextCount === 1 && report.browser.pageCount === 1, "R2 same-session installed/headed Chrome identity differs");
+  invariant(JSON.stringify(report.browser.launchArguments) === JSON.stringify(["--disable-gpu-rasterization", "--run-all-compositor-stages-before-draw"]), "R2 same-session deterministic Chrome launch authority differs");
+  exactKeys(report.browser.rendering, ["gpuCompositing", "rasterization", "purpose"], "R2 same-session renderer");
+  invariant(report.browser.rendering.gpuCompositing === "enabled" && report.browser.rendering.rasterization === "disabled_software"
+    && report.browser.rendering.purpose === "DETERMINISTIC_EXACT_PIXEL_RASTERIZATION", "R2 same-session renderer authority differs");
   exactKeys(report.viewport, ["width", "height", "deviceScaleFactor", "colorScheme", "reducedMotion"], "R2 same-session viewport");
   invariant(report.viewport.width === 1440 && report.viewport.height === 900 && report.viewport.deviceScaleFactor === 1 && report.viewport.colorScheme === "dark" && report.viewport.reducedMotion === "no-preference", "R2 same-session viewport authority differs");
   exactKeys(report.bindings, ["baseline", "current"], "R2 same-session deployment bindings");

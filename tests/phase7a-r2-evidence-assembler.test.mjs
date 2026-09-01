@@ -126,7 +126,7 @@ function visualAuthority(imageBytes, captureToolSha256, currentReceiptSha256) {
     schema: PHASE7A_R2_VISUAL_REGRESSION_SCHEMA, status: "PASS", method: PHASE7A_R2_VISUAL_REGRESSION_METHOD,
     baselineRevision: PHASE7A_R2_PARENT, currentRevision: REVISION,
     captureTool: { path: "scripts/capture-phase7a-r2-visual-regression.mjs", sha256: captureToolSha256 },
-    browser: { name: "Google Chrome", product: "Chrome/150.0.7339.12", version: "150.0.7339.12", userAgent: "Mozilla/5.0 Chrome/150.0.7339.12 Safari/537.36", installed: true, headed: true, browserCount: 1, contextCount: 1, pageCount: 1 },
+    browser: { name: "Google Chrome", product: "Chrome/150.0.7339.12", version: "150.0.7339.12", userAgent: "Mozilla/5.0 Chrome/150.0.7339.12 Safari/537.36", installed: true, headed: true, launchArguments: ["--disable-gpu-rasterization", "--run-all-compositor-stages-before-draw"], rendering: { gpuCompositing: "enabled", rasterization: "disabled_software", purpose: "DETERMINISTIC_EXACT_PIXEL_RASTERIZATION" }, browserCount: 1, contextCount: 1, pageCount: 1 },
     viewport: { width: 1440, height: 900, deviceScaleFactor: 1, colorScheme: "dark", reducedMotion: "no-preference" },
     bindings: {
       baseline: { revision: PHASE7A_R2_PARENT, deploymentId: BASELINE_DEPLOYMENT_ID, immutableUrl: BASELINE_URL, receiptSha256: "45f8352507129ac0c9bac567b91f27df3af22ee16fab09c42384db59c7a8126d", document: { status: 200, bytes: ABOUT_BYTES, sha256: BASELINE_ABOUT_SHA, finalUrl: `${BASELINE_URL}about/` }, loadedAssets: [asset(BASELINE_URL)] },
@@ -256,6 +256,8 @@ test("same-session visual authority accepts encoding-only differences and reject
 test("same-session visual authority rejects false session, geometry, focus, asset and tool claims", async () => {
   for (const [label, mutate, pattern] of [
     ["headless browser", (fixture) => { fixture.visualRegression.report.browser.headed = false; }, /installed\/headed Chrome identity/],
+    ["unbound renderer", (fixture) => { fixture.visualRegression.report.browser.rendering.rasterization = "enabled"; }, /renderer authority/],
+    ["launch arguments", (fixture) => { fixture.visualRegression.report.browser.launchArguments = ["--run-all-compositor-stages-before-draw"]; }, /launch authority/],
     ["client width", (fixture) => { fixture.visualRegression.report.comparisons[1].current.metrics.clientWidth = 1424; fixture.visualRegression.report.comparisons[1].current.metrics.visualViewportWidth = 1424; fixture.visualRegression.report.comparisons[1].current.metrics.scrollbarWidth = 16; }, /capture conditions differ/],
     ["link in neutral pair", (fixture) => { fixture.visualRegression.report.comparisons[0].current.focus = "field-map-link"; }, /raster\/state authority/],
     ["asset mutation", (fixture) => { fixture.visualRegression.report.bindings.current.loadedAssets[0].sha256 = "e".repeat(64); }, /loaded CSS\/JS\/font\/image inventories differ/],

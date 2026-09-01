@@ -31,7 +31,11 @@ const HASH_64 = /^[0-9a-f]{64}$/;
 const UUID = /^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/;
 const VIEWPORT = Object.freeze({ width: 1440, height: 900 });
 const ROUTE = "/about/";
-const CAPTURE_SETTLE_MS = 150;
+const CAPTURE_SETTLE_MS = 500;
+const DETERMINISTIC_CHROME_ARGS = Object.freeze([
+  "--disable-gpu-rasterization",
+  "--run-all-compositor-stages-before-draw",
+]);
 const DEFAULT_TIMEOUT_MS = 45_000;
 const NETWORK_DRAIN_TIMEOUT_MS = 15_000;
 const RESPONSE_BODY_TIMEOUT_MS = 10_000;
@@ -186,9 +190,19 @@ export async function exactDecodedPixels(leftBytes, rightBytes, label = "visual 
 async function browserIdentity(browser) {
   const session = await browser.newBrowserCDPSession();
   try {
-    const identity = await session.send("Browser.getVersion");
+    const [identity, systemInfo] = await Promise.all([
+      session.send("Browser.getVersion"),
+      session.send("SystemInfo.getInfo"),
+    ]);
     invariant(/^Chrome\/\d/.test(identity.product ?? "") && /\bChrome\/\d/.test(identity.userAgent ?? "") && !/\b(?:HeadlessChrome|Edg|OPR)\//.test(identity.userAgent ?? ""), "visual-regression browser is not installed/headed Google Chrome");
-    return { name: "Google Chrome", product: identity.product, version: browser.version(), userAgent: identity.userAgent, installed: true, headed: true };
+    const gpuCompositing = systemInfo.gpu?.featureStatus?.gpu_compositing ?? "unknown";
+    const rasterization = systemInfo.gpu?.featureStatus?.rasterization ?? "unknown";
+    invariant(gpuCompositing === "enabled" && rasterization === "disabled_software", "visual-regression renderer does not retain GPU compositing with deterministic CPU rasterization");
+    return {
+      name: "Google Chrome", product: identity.product, version: browser.version(), userAgent: identity.userAgent, installed: true, headed: true,
+      launchArguments: [...DETERMINISTIC_CHROME_ARGS],
+      rendering: { gpuCompositing, rasterization, purpose: "DETERMINISTIC_EXACT_PIXEL_RASTERIZATION" },
+    };
   } finally { await session.detach(); }
 }
 
@@ -241,9 +255,11 @@ async function keyboardReturnToSummary(page) {
 }
 
 async function stableScreenshot(page, label) {
-  const first = await page.screenshot({ type: "png", fullPage: false });
+  const screenshotOptions = { type: "png", fullPage: false, animations: "disabled", caret: "hide" };
   await page.waitForTimeout(CAPTURE_SETTLE_MS);
-  const second = await page.screenshot({ type: "png", fullPage: false });
+  const first = await page.screenshot(screenshotOptions);
+  await page.waitForTimeout(CAPTURE_SETTLE_MS);
+  const second = await page.screenshot(screenshotOptions);
   await exactDecodedPixels(first, second, `${label} duplicate neutral capture`);
   return first;
 }
@@ -319,7 +335,7 @@ export async function capturePhase7aR2VisualRegression(options) {
   let browser;
   try {
     await mkdir(staging, { recursive: false });
-    browser = await chromium.launch({ executablePath: options.chromeExecutable, headless: false });
+    browser = await chromium.launch({ executablePath: options.chromeExecutable, headless: false, args: DETERMINISTIC_CHROME_ARGS });
     const identity = await browserIdentity(browser);
     const context = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 1, colorScheme: "dark", reducedMotion: "no-preference" });
     const page = await context.newPage();
