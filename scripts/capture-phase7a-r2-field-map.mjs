@@ -290,7 +290,7 @@ async function fullControlInventory(page, identity) {
       const href = control.tagName === "A" ? control.getAttribute("href") : null;
       const selector = index === 0 ? "[data-field-map] > summary" : `[data-field-map] a[href="${href}"]`;
       const accessibleName = index === 0
-        ? control.textContent?.replace(/\b(?:Open|Close)\b/g, "").replace(/\s+/g, " ").trim() ?? ""
+        ? control.querySelector(".field-map__trigger-label")?.textContent?.replace(/\s+/g, " ").trim() ?? ""
         : control.getAttribute("aria-label") ?? control.textContent?.replace(/\s+/g, " ").trim() ?? "";
       const visible = style.display !== "none"
         && style.visibility !== "hidden"

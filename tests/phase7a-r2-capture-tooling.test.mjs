@@ -220,4 +220,5 @@ test("generic R2 capture retains its inert self-test and named export surface", 
   assert.match(source, /Accessibility\.getPartialAXTree/);
   assert.match(source, /PHASE7A_R2_SUMMARY_AX_NAME/);
   assert.match(source, /initial:\s*\{\s*activeElement:\s*chromium\.focus\.initial\.activeElement,\s*activeDestinationName:\s*chromium\.focus\.initial\.activeDestinationName,/s);
+  assert.match(source, /control\.querySelector\("\.field-map__trigger-label"\)\?\.textContent/);
 });
