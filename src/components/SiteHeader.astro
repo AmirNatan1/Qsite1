@@ -53,10 +53,10 @@ const isCurrent = (href: string) => {
       <div class="field-map__plane">
         <div class="field-map__material" aria-hidden="true"><span></span><span></span><span></span></div>
         <div class="field-map__content">
-          <header class="field-map__heading">
+          <div class="field-map__heading">
             <p>QUANTUM / OPERATING FIELD</p>
             <p>Current signal: {navigation.find(({ href }) => isCurrent(href))?.label ?? "Unmapped"}</p>
-          </header>
+          </div>
 
           <nav id="field-map-navigation" aria-label="Primary navigation">
             <ol>

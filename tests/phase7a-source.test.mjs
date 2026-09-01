@@ -135,6 +135,8 @@ test("Field Map exposes exactly eight ordinary destinations and native disclosur
   assert.match(source, /<details class="field-map"/);
   assert.match(source, /<summary/);
   assert.match(source, /<nav id="field-map-navigation"/);
+  assert.match(source, /<div class="field-map__heading">/);
+  assert.doesNotMatch(source, /<header class="field-map__heading">/);
   assert.match(
     styles,
     /html\[data-field-map-open\] \.site-header,\s*\.site-header:has\(\.field-map\[open\]\)\s*\{[\s\S]*?backdrop-filter:\s*none/,
