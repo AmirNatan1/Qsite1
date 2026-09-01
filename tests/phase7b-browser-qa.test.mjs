@@ -23,6 +23,7 @@ import {
   selfTest,
   validatePortableReport,
   validateStageSnapshot,
+  waitForFontsLoaded,
 } from "../scripts/qa-phase7b-operating-field.mjs";
 import {
   PHASE7B_BRANCH,
@@ -185,6 +186,24 @@ test("visual-regression normalization crops viewport scrollbars and post-bifurca
   assert.match(normalized.normalizedSha256, /^[0-9a-f]{64}$/);
 });
 
+test("font settling uses a bounded loaded-status observation instead of adopting FontFaceSet.ready", async () => {
+  let observation = null;
+  const page = {
+    async waitForFunction(predicate, argument, options) {
+      observation = { predicate: predicate.toString(), argument, options };
+    },
+  };
+  await waitForFontsLoaded(page, 12_345);
+  assert.equal(observation.argument, null);
+  assert.equal(observation.options.timeout, 12_345);
+  assert.match(observation.predicate, /document\.fonts\.status === "loaded"/);
+  assert.doesNotMatch(observation.predicate, /fonts\.ready/);
+  await assert.rejects(
+    () => waitForFontsLoaded({ waitForFunction: async () => { throw new Error("font status timeout"); } }, 10),
+    /font status timeout/,
+  );
+});
+
 test("portable paths reject traversal, machine paths, source payloads and nested archives", () => {
   assert.equal(safeRelativePath("screenshots/chromium/1440x900-operating-field.png"), "screenshots/chromium/1440x900-operating-field.png");
   for (const candidate of ["../escape.png", "C:\\Users\\private\\capture.png", "/absolute.png", "raw/capture.webm", "source/index.html", "payload.zip", "node_modules/cache.bin"]) {
@@ -297,6 +316,10 @@ test("source uses installed Chromium and existing media helpers without zoom emu
   assert.match(source, /page\.reload\(\{ waitUntil: "load"/);
   assert.match(source, /routeNavigation === "released"/);
   assert.match(source, /output: path\.basename\(options\.output\)/);
+  assert.match(source, /reportPhaseProgress\(engine, phase, "START"\)/);
+  assert.match(source, /runReportedPhase\(engine, "visual-regression"/);
+  assert.match(source, /recording-\$\{specification\.scenario\}/);
+  assert.doesNotMatch(source, /document\.fonts\??\.ready/);
   assert.match(source, /--retain-visual-regression-pngs/);
   assert.doesNotMatch(source, /deviceScaleFactor|force-device-scale-factor|\.style\.zoom\s*=|transform\s*:\s*scale/i);
   assert.doesNotMatch(source, /from ["'](?:gsap|three|react|playwright)["']/i);

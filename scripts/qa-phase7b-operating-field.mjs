@@ -471,9 +471,17 @@ function route(baseUrl, pathname) {
   return new URL(pathname, baseUrl).toString();
 }
 
+export async function waitForFontsLoaded(page, timeoutMs) {
+  await page.waitForFunction(
+    () => !document.fonts || document.fonts.status === "loaded",
+    null,
+    { timeout: timeoutMs },
+  );
+}
+
 async function settle(page, timeoutMs) {
   await page.waitForFunction(() => document.readyState === "complete", null, { timeout: timeoutMs });
-  await page.evaluate(() => document.fonts?.ready ?? Promise.resolve());
+  await waitForFontsLoaded(page, timeoutMs);
   await page.waitForTimeout(100);
 }
 
@@ -615,7 +623,7 @@ async function prepareFrozenVisualState(page, origin, specification, timeoutMs, 
   let response = await page.goto(target, { waitUntil: "load", timeout: timeoutMs });
   if (!response && page.url() === target) response = await page.reload({ waitUntil: "load", timeout: timeoutMs });
   invariant(response && response.status() === 200, `${specification.id} returned ${response?.status() ?? "no response"}`);
-  await page.evaluate(() => document.fonts?.ready ?? Promise.resolve());
+  await waitForFontsLoaded(page, timeoutMs);
   if (specification.anchor === "entry") {
     await page.waitForSelector("#entry h1", { timeout: timeoutMs });
     await page.waitForFunction(() => {
@@ -1405,6 +1413,7 @@ async function captureRecordings(browser, engine, options, output, tools) {
   await mkdir(rawRoot, { recursive: true });
   try {
     for (const specification of recordingSpecifications(engine)) {
+      reportPhaseProgress(engine, `recording-${specification.scenario}`, "START");
       if (engine === "webkit") {
         records.push({
           ...specification,
@@ -1413,6 +1422,7 @@ async function captureRecordings(browser, engine, options, output, tools) {
           failures: [],
           limitations: ["WebKit is proxy validation authority only; Phase 7B human-review recordings are required from Chromium and Firefox."],
         });
+        reportPhaseProgress(engine, `recording-${specification.scenario}`, "LIMITATION");
         continue;
       }
       if (specification.nativeZoomAuthority) {
@@ -1425,6 +1435,7 @@ async function captureRecordings(browser, engine, options, output, tools) {
             ? "This harness does not emulate native browser 200% zoom; bind separately captured visible installed-Chrome 200% evidence."
             : "Installed-Chrome 200% is not applicable to this engine."],
         });
+        reportPhaseProgress(engine, `recording-${specification.scenario}`, "LIMITATION");
         continue;
       }
       const rawDirectory = path.join(rawRoot, `${engine}-${specification.scenario}`);
@@ -1453,6 +1464,7 @@ async function captureRecordings(browser, engine, options, output, tools) {
       const destination = path.join(output, ...specification.relativePath.split("/"));
       const media = await normalizeVideo(tools, raw, destination, { trimStartSeconds: action?.trimStartSeconds ?? 0 });
       records.push({ ...specification, inputModel: action?.inputModel ?? "native document scroll", media, status: "PASS", failures: [], limitations: [] });
+      reportPhaseProgress(engine, `recording-${specification.scenario}`, "PASS");
     }
   } finally {
     await rm(rawRoot, { recursive: true, force: true });
@@ -1463,6 +1475,24 @@ async function captureRecordings(browser, engine, options, output, tools) {
     decodedMedia: engine === "webkit" || records.filter(({ nativeZoomAuthority }) => !nativeZoomAuthority).every(({ media }) => media?.decodeStatus === "PASS"),
   };
   return { recordings: records, ...honestStatus(checks, records.flatMap(({ limitations }) => limitations)), checks };
+}
+
+function reportPhaseProgress(engine, phase, status, elapsedMs = null) {
+  const elapsed = Number.isFinite(elapsedMs) ? `:${Math.max(0, Math.round(elapsedMs))}ms` : "";
+  process.stderr.write(`[phase7b-qa] ${engine}:${phase}:${status}${elapsed}\n`);
+}
+
+async function runReportedPhase(engine, phase, operation) {
+  const started = Date.now();
+  reportPhaseProgress(engine, phase, "START");
+  try {
+    const result = await operation();
+    reportPhaseProgress(engine, phase, "PASS", Date.now() - started);
+    return result;
+  } catch (error) {
+    reportPhaseProgress(engine, phase, "FAIL", Date.now() - started);
+    throw error;
+  }
 }
 
 async function runEngine(engine, options, output, tools) {
@@ -1476,16 +1506,16 @@ async function runEngine(engine, options, output, tools) {
       evidenceClass: authority.evidenceClass,
       statement: authority.statement,
     };
-    const responsive = await responsiveMatrix(browser, engine, options, output);
-    const visualRegression = await phase7aVisualRegression(browser, engine, options, output);
-    const projection = await projectionIntegrity(browser, options);
-    const fallback = await fallbackMatrix(browser, engine, options, output);
-    const accessibility = await axeMatrix(browser, options);
-    const regression = await phase7aRegression(browser, options);
-    const history = await historyCase(browser, options);
-    const lifecycle = await lifecycleCase(browser, options);
-    const network = await networkCase(browser, options);
-    const recordings = await captureRecordings(browser, engine, options, output, tools);
+    const responsive = await runReportedPhase(engine, "responsive", () => responsiveMatrix(browser, engine, options, output));
+    const visualRegression = await runReportedPhase(engine, "visual-regression", () => phase7aVisualRegression(browser, engine, options, output));
+    const projection = await runReportedPhase(engine, "projection", () => projectionIntegrity(browser, options));
+    const fallback = await runReportedPhase(engine, "fallback", () => fallbackMatrix(browser, engine, options, output));
+    const accessibility = await runReportedPhase(engine, "accessibility", () => axeMatrix(browser, options));
+    const regression = await runReportedPhase(engine, "phase7a-regression", () => phase7aRegression(browser, options));
+    const history = await runReportedPhase(engine, "history", () => historyCase(browser, options));
+    const lifecycle = await runReportedPhase(engine, "lifecycle", () => lifecycleCase(browser, options));
+    const network = await runReportedPhase(engine, "network", () => networkCase(browser, options));
+    const recordings = await runReportedPhase(engine, "recordings", () => captureRecordings(browser, engine, options, output, tools));
     const sections = { responsive, visualRegression, projection, fallback, accessibility, regression, history, lifecycle, network, recordings };
     const checks = Object.fromEntries(Object.entries(sections).map(([name, section]) => [name, section.status !== "FAIL"]));
     const limitations = Object.values(sections).flatMap((section) => section.limitations ?? []);
