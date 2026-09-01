@@ -235,16 +235,44 @@ const DESTINATIONS = [["/#entry", "Home"], ["/for-partners/", "For industry"], [
 const NO_JS_FIELD_MAP_DESTINATIONS = [["/#entry", "00 Home 00 / origin"], ["/for-partners/", "01 For industry 01 / need"], ["/for-startups/", "02 For startups 02 / capability"], ["/industries/", "03 Industries 03 / context"], ["/pocs/", "04 Proof 04 / evidence"], ["/spark/", "05 SPARK 05 / programme"], ["/about/", "06 About 06 / position"], ["/contact/", "07 Contact 07 / signal"]];
 const NO_JS_BIFURCATION_DESTINATIONS = [["/for-partners/", "For industryPressure becomes proof."], ["/for-startups/", "For startupsA viable edge enters the field."]];
 
-function fallbackGeometry() {
-  return passingMeasurement(800, 360);
+function fallbackGeometry(width, height) {
+  return passingMeasurement(width, height);
+}
+
+function fallbackVisibility(measurement) {
+  const effective = measurement.effectiveVisibleBounds;
+  const h1 = measurement.h1.rect;
+  const glyphs = measurement.glyphBounds;
+  return {
+    status: "PASS",
+    authority: "shared phase7a-manifesto-geometry measurement",
+    effectiveVisibleBounds: structuredClone(effective),
+    h1Bounds: structuredClone(h1),
+    glyphBounds: structuredClone(glyphs),
+    h1Allowances: { left: h1.left - effective.left, top: h1.top - effective.top, right: effective.right - h1.right, bottom: effective.bottom - h1.bottom },
+    glyphAllowances: { left: glyphs.left - effective.left, top: glyphs.top - effective.top, right: effective.right - glyphs.right, bottom: effective.bottom - glyphs.bottom },
+    glyphBoxCount: measurement.authoredLines.flatMap(({ glyphBoxes }) => glyphBoxes).length,
+    visibleStickyHeaderBottom: measurement.occludingHeader.occluding ? measurement.occludingHeader.effectiveBottom : null,
+    horizontalOverflow: false,
+  };
 }
 
 function fallbackReports() {
-  const measurement = () => fallbackGeometry();
+  const receipt = (width, height) => {
+    const manifestoGeometry = fallbackGeometry(width, height);
+    return { manifestoGeometry, manifestoVisibility: fallbackVisibility(manifestoGeometry) };
+  };
+  const font = receipt(320, 800);
+  font.manifestoGeometry.occludingHeader.presentation.visibility = "hidden";
+  font.manifestoGeometry.occludingHeader.presentation.opacity = 0;
+  font.manifestoGeometry.occludingHeader.presentation.visible = false;
+  font.manifestoGeometry.occludingHeader.occluding = false;
+  font.manifestoGeometry.occludingHeader.effectiveBottom = 0;
+  font.manifestoVisibility = fallbackVisibility(font.manifestoGeometry);
   return {
-    reduced: { status: "PASS", closure: { cinematicMode: "static", signalField: true, bifurcationLinks: 2, horizontalOverflow: false, manifestoGeometry: measurement(), manifestoVisibility: { status: "PASS" } } },
-    noJs: { status: "PASS", closure: { enhancedController: null, nativeDetailsOpen: true, horizontalOverflow: false, manifestoGeometry: measurement(), manifestoVisibility: { status: "PASS" }, fieldMapLinkInventory: NO_JS_FIELD_MAP_DESTINATIONS.map(visibleNoJavaScriptLink), bifurcationLinkInventory: NO_JS_BIFURCATION_DESTINATIONS.map(visibleNoJavaScriptLink) } },
-    font: { status: "PASS", closure: { anybodyLoaded: false, abortedFontRequests: 1, manifestoWords: 7, horizontalOverflow: false, manifestoGeometry: measurement(), manifestoVisibility: { status: "PASS" } } },
+    reduced: { status: "PASS", closure: { cinematicMode: "static", signalField: true, bifurcationLinks: 2, horizontalOverflow: false, ...receipt(1440, 900) } },
+    noJs: { status: "PASS", closure: { enhancedController: null, nativeDetailsOpen: true, horizontalOverflow: false, ...receipt(390, 844), fieldMapLinkInventory: NO_JS_FIELD_MAP_DESTINATIONS.map(visibleNoJavaScriptLink), bifurcationLinkInventory: NO_JS_BIFURCATION_DESTINATIONS.map(visibleNoJavaScriptLink) } },
+    font: { status: "PASS", closure: { anybodyLoaded: false, abortedFontRequests: 1, manifestoWords: 7, horizontalOverflow: false, ...font } },
   };
 }
 
@@ -681,6 +709,54 @@ test("installed Chrome concealed-header geometry packages and audits only with h
   for (const [mutate, expected] of clippingMutations) {
     assert.throws(() => buildReviewArtifacts(mutateJson(fixtureEntries, clippingPath, mutate)), expected);
     assert.throws(() => auditPackageBytes(cryptographicallyRebindJson(clippingPath, mutate)), expected);
+  }
+});
+
+test("fallback-font hidden sticky-header truth packages and audits without inventing occlusion", () => {
+  const fallbackPath = "12-fallback/fallback-font-report.json";
+  const concealHeader = (document) => {
+    const header = document.closure.manifestoGeometry.occludingHeader;
+    header.presentation.visible = false;
+    header.presentation.visibility = "hidden";
+    header.presentation.opacity = 0;
+    header.occluding = false;
+    header.effectiveBottom = 0;
+    document.closure.manifestoVisibility.visibleStickyHeaderBottom = null;
+  };
+  const concealed = mutateJson(fixtureEntries, fallbackPath, concealHeader);
+  assert.doesNotThrow(() => buildReviewArtifacts(concealed));
+  assert.equal(auditPackageBytes(cryptographicallyRebindJson(fallbackPath, concealHeader)).status, "PASS");
+
+  const mutations = [
+    [(document) => { concealHeader(document); document.closure.manifestoGeometry.occludingHeader.presentation.visible = true; }, /header visibility authority differs/i],
+    [(document) => { concealHeader(document); document.closure.manifestoGeometry.occludingHeader.occluding = true; }, /header occlusion authority differs/i],
+    [(document) => { concealHeader(document); document.closure.manifestoGeometry.occludingHeader.effectiveBottom = 50; }, /header effective bottom differs/i],
+    [(document) => { concealHeader(document); document.closure.manifestoGeometry.occludingHeader.anchoredToViewportTop = false; }, /header anchor authority differs/i],
+    [(document) => { concealHeader(document); document.closure.manifestoGeometry.occludingHeader.horizontallyOverlapsManifesto = false; }, /header overlap authority differs/i],
+    [(document) => { concealHeader(document); document.closure.manifestoGeometry.clippingAncestors[0].clipsY = false; }, /axis authority differs/i],
+    [(document) => { concealHeader(document); document.closure.manifestoGeometry.clippingAncestors[0].bounds.top += 1; document.closure.manifestoGeometry.clippingAncestors[0].bounds.height -= 1; }, /Signal Field #entry ancestor bounds\.top differs/i],
+    [(document) => { concealHeader(document); document.closure.manifestoGeometry.usableClipBounds.top += 1; document.closure.manifestoGeometry.usableClipBounds.height -= 1; document.closure.manifestoGeometry.effectiveVisibleBounds.top += 1; document.closure.manifestoGeometry.effectiveVisibleBounds.height -= 1; }, /usable clip bounds\.top differs/i],
+    [(document) => { concealHeader(document); document.closure.manifestoVisibility.visibleStickyHeaderBottom = 50; }, /visible sticky-header summary differs/i],
+    [(document) => { concealHeader(document); document.closure.manifestoVisibility.effectiveVisibleBounds.top += 1; document.closure.manifestoVisibility.effectiveVisibleBounds.height -= 1; }, /visibility summary differs/i],
+    [(document) => { concealHeader(document); document.closure.manifestoVisibility.h1Allowances.top += 1; }, /visibility allowance summary differs/i],
+    [(document) => { concealHeader(document); document.closure.manifestoVisibility.glyphBoxCount -= 1; }, /visibility inventory differs/i],
+    [(document) => { concealHeader(document); document.closure.manifestoGeometry.viewport.id = "short-landscape-321x800"; }, /viewport identifier differs/i],
+  ];
+  for (const [mutate, expected] of mutations) {
+    assert.throws(
+      () => buildReviewArtifacts(mutateJson(fixtureEntries, fallbackPath, mutate)),
+      expected,
+    );
+    assert.throws(
+      () => auditPackageBytes(cryptographicallyRebindJson(fallbackPath, mutate)),
+      expected,
+    );
+  }
+
+  for (const path of ["12-fallback/reduced-motion-report.json", "12-fallback/no-js-report.json"]) {
+    const removeVisibleHeaderReceipt = (document) => { document.closure.manifestoVisibility.visibleStickyHeaderBottom = null; };
+    assert.throws(() => buildReviewArtifacts(mutateJson(fixtureEntries, path, removeVisibleHeaderReceipt)), /visible sticky-header summary differs/i);
+    assert.throws(() => auditPackageBytes(cryptographicallyRebindJson(path, removeVisibleHeaderReceipt)), /visible sticky-header summary differs/i);
   }
 });
 

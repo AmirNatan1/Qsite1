@@ -233,6 +233,24 @@ test("validator accepts a resolved measurement with three authored rendered line
   assert.equal(validateManifestoGeometry(concealedHeader), true);
 });
 
+test("caller-fixed viewport authority is exact while the default short-landscape family remains unchanged", () => {
+  const custom = passingMeasurement();
+  custom.viewport.id = "fallback-800x360";
+  assert.throws(() => validateManifestoGeometry(custom), /viewport identifier differs/);
+  assert.equal(validateManifestoGeometry(custom, [{ id: "fallback-800x360", width: 800, height: 360 }]), true);
+  assert.throws(
+    () => validateManifestoGeometry(custom, [{ id: "fallback-800x360", width: 801, height: 360 }]),
+    /outside or ambiguous in the required viewport authority/,
+  );
+  assert.throws(
+    () => validateManifestoGeometry(custom, [
+      { id: "fallback-800x360", width: 800, height: 360 },
+      { id: "duplicate-800x360", width: 800, height: 360 },
+    ]),
+    /outside or ambiguous in the required viewport authority/,
+  );
+});
+
 test("clipping authority and the full validator reject raw-derived summary lies", () => {
   const assertBothReject = (mutate, expected) => {
     const helperCase = passingMeasurement();

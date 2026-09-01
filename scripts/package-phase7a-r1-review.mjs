@@ -663,12 +663,43 @@ function rect(record, label) {
   return record;
 }
 
-function validateMeasuredVisibility(geometry, visibility, label) {
-  invariant(visibility?.status === "PASS" && geometry?.measurementError === null && geometry.h1?.presentation?.visible === true, `${label} measured visibility authority is missing`);
+function validateMeasuredVisibility(geometry, visibility, label, expectedViewport, requireFullGeometry = false) {
+  invariant(visibility?.status === "PASS" && visibility.authority === "shared phase7a-manifesto-geometry measurement", `${label} measured visibility authority is missing`);
+  validateManifestoClippingAuthority(geometry, [expectedViewport]);
+  if (requireFullGeometry) validateManifestoGeometry(geometry, [expectedViewport]);
+  const h1Presentation = geometry.h1?.presentation;
+  const h1Visible = h1Presentation?.display !== "none" && !["collapse", "hidden"].includes(h1Presentation?.visibility) && Number.isFinite(h1Presentation?.opacity) && h1Presentation.opacity > 0;
+  invariant(h1Visible && h1Presentation.visible === h1Visible, `${label} H1 presentation authority differs`);
+  const viewport = rect(geometry.viewport, `${label} viewport`);
+  const usable = rect(geometry.usableClipBounds, `${label} usable clip`);
   const effective = rect(geometry.effectiveVisibleBounds, `${label} effective visible`);
   const h1 = rect(geometry.h1?.rect, `${label} H1`);
   const glyphs = rect(geometry.glyphBounds, `${label} glyphs`);
-  invariant(geometry.occludingHeader?.presentation?.visible === true && geometry.occludingHeader.anchoredToViewportTop === true && geometry.occludingHeader.occluding === true && effective.top >= geometry.occludingHeader.effectiveBottom - 0.05, `${label} sticky-header effective boundary differs`);
+  const header = geometry.occludingHeader;
+  const headerRect = rect(header?.rect, `${label} sticky header`);
+  const presentation = header?.presentation;
+  invariant(typeof header?.position === "string" && typeof presentation?.display === "string" && typeof presentation.visibility === "string" && Number.isFinite(presentation.opacity), `${label} sticky-header measurement is missing`);
+  const headerVisible = presentation.display !== "none" && !["collapse", "hidden"].includes(presentation.visibility) && presentation.opacity > 0;
+  invariant(presentation.visible === headerVisible, `${label} sticky-header visibility authority differs`);
+  const headerAnchored = ["fixed", "sticky"].includes(header.position) && headerRect.top <= viewport.top + 0.5 && headerRect.bottom > viewport.top;
+  invariant(header.anchoredToViewportTop === headerAnchored && headerAnchored === true, `${label} sticky-header anchor authority differs`);
+  const headerOverlap = headerRect.right > h1.left && headerRect.left < h1.right;
+  invariant(header.horizontallyOverlapsManifesto === headerOverlap && headerOverlap === true, `${label} sticky-header overlap authority differs`);
+  const headerOccluding = headerVisible && headerAnchored && headerOverlap;
+  invariant(header.occluding === headerOccluding, `${label} sticky-header occlusion authority differs`);
+  const headerBottom = headerOccluding ? Math.min(viewport.bottom, headerRect.bottom) : viewport.top;
+  invariant(Number.isFinite(header.effectiveBottom) && Math.abs(header.effectiveBottom - headerBottom) <= 0.05, `${label} sticky-header effective bottom differs`);
+  const expectedEffective = { left: usable.left, top: Math.max(usable.top, headerBottom), right: usable.right, bottom: usable.bottom };
+  invariant(["left", "top", "right", "bottom"].every((side) => Math.abs(effective[side] - expectedEffective[side]) <= 0.05), `${label} effective visible boundary differs`);
+  const visibilityEffective = rect(visibility.effectiveVisibleBounds, `${label} visibility-summary effective visible`);
+  const visibilityH1 = rect(visibility.h1Bounds, `${label} visibility-summary H1`);
+  const visibilityGlyphs = rect(visibility.glyphBounds, `${label} visibility-summary glyphs`);
+  invariant(["left", "top", "right", "bottom"].every((side) => Math.abs(visibilityEffective[side] - effective[side]) <= 0.05 && Math.abs(visibilityH1[side] - h1[side]) <= 0.05 && Math.abs(visibilityGlyphs[side] - glyphs[side]) <= 0.05), `${label} visibility summary differs`);
+  const expectedH1Allowances = { left: h1.left - effective.left, top: h1.top - effective.top, right: effective.right - h1.right, bottom: effective.bottom - h1.bottom };
+  const expectedGlyphAllowances = { left: glyphs.left - effective.left, top: glyphs.top - effective.top, right: effective.right - glyphs.right, bottom: effective.bottom - glyphs.bottom };
+  invariant(["left", "top", "right", "bottom"].every((side) => Math.abs(visibility.h1Allowances?.[side] - expectedH1Allowances[side]) <= 0.05 && Math.abs(visibility.glyphAllowances?.[side] - expectedGlyphAllowances[side]) <= 0.05), `${label} visibility allowance summary differs`);
+  invariant(visibility.glyphBoxCount === geometry.authoredLines.flatMap(({ glyphBoxes }) => glyphBoxes ?? []).length && visibility.horizontalOverflow === false, `${label} visibility inventory differs`);
+  invariant(headerOccluding ? Math.abs(visibility.visibleStickyHeaderBottom - headerBottom) <= 0.05 : visibility.visibleStickyHeaderBottom === null, `${label} visible sticky-header summary differs`);
   invariant(Array.isArray(geometry.authoredLines) && geometry.authoredLines.length === 3 && geometry.authoredLines.flatMap(({ glyphBoxes }) => glyphBoxes ?? []).length > 0, `${label} glyph-bearing line inventory differs`);
   const allowances = { h1Top: h1.top - effective.top, h1Bottom: effective.bottom - h1.bottom, h1Left: h1.left - effective.left, h1Right: effective.right - h1.right, glyphTop: glyphs.top - effective.top, glyphBottom: effective.bottom - glyphs.bottom, glyphLeft: glyphs.left - effective.left, glyphRight: effective.right - glyphs.right };
   invariant(Object.values(allowances).every((value) => value >= 2), `${label} intersects an effective clipping boundary`);
@@ -688,15 +719,15 @@ function validateNoJavaScriptLinkInventory(inventory, expected, label) {
 function validateFallbackReports(entriesByPath) {
   const reduced = parseJsonEntry(entriesByPath, "12-fallback/reduced-motion-report.json").closure;
   invariant(reduced?.cinematicMode === "static" && reduced.signalField === true && reduced.bifurcationLinks === 2 && reduced.horizontalOverflow === false, "reduced-motion static authority differs");
-  validateMeasuredVisibility(reduced.manifestoGeometry, reduced.manifestoVisibility, "reduced-motion manifesto");
+  validateMeasuredVisibility(reduced.manifestoGeometry, reduced.manifestoVisibility, "reduced-motion manifesto", { id: "short-landscape-1440x900", width: 1440, height: 900 });
   const noJs = parseJsonEntry(entriesByPath, "12-fallback/no-js-report.json").closure;
   invariant(noJs?.enhancedController === null && noJs.nativeDetailsOpen === true && noJs.horizontalOverflow === false, "no-JavaScript native Field Map authority differs");
-  validateMeasuredVisibility(noJs.manifestoGeometry, noJs.manifestoVisibility, "no-JavaScript manifesto");
+  validateMeasuredVisibility(noJs.manifestoGeometry, noJs.manifestoVisibility, "no-JavaScript manifesto", { id: "short-landscape-390x844", width: 390, height: 844 });
   validateNoJavaScriptLinkInventory(noJs.fieldMapLinkInventory, NO_JS_FIELD_MAP_DESTINATIONS, "no-JavaScript Field Map");
   validateNoJavaScriptLinkInventory(noJs.bifurcationLinkInventory, NO_JS_BIFURCATION_DESTINATIONS, "no-JavaScript bifurcation");
   const fallback = parseJsonEntry(entriesByPath, "12-fallback/fallback-font-report.json").closure;
   invariant(fallback?.anybodyLoaded === false && fallback.abortedFontRequests >= 1 && fallback.manifestoWords === 7 && fallback.horizontalOverflow === false, "fallback-font narrow authority differs");
-  validateMeasuredVisibility(fallback.manifestoGeometry, fallback.manifestoVisibility, "fallback-font manifesto");
+  validateMeasuredVisibility(fallback.manifestoGeometry, fallback.manifestoVisibility, "fallback-font manifesto", { id: "short-landscape-320x800", width: 320, height: 800 }, true);
 }
 
 function validateQaCaptureAuthorities(entriesByPath) {

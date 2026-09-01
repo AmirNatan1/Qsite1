@@ -484,16 +484,18 @@ function canonicalLine(value) {
  * defect evidence, where clipping is expected but the geometry provenance must
  * still be complete and internally consistent.
  */
-export function validateManifestoClippingAuthority(measurement) {
+export function validateManifestoClippingAuthority(measurement, expectedViewports = SHORT_LANDSCAPE_VIEWPORTS) {
   invariant(measurement && typeof measurement === "object" && !Array.isArray(measurement), "measurement is missing");
   invariant(measurement.schema === MANIFESTO_GEOMETRY_SCHEMA, "schema differs");
   invariant(measurement.measurementError === null, measurement.measurementError || "measurement did not complete");
 
   const viewportBounds = assertRect(measurement.viewport, "viewport");
-  const expectedViewport = SHORT_LANDSCAPE_VIEWPORTS.find(({ width, height }) => (
+  invariant(Array.isArray(expectedViewports) && expectedViewports.length > 0, "expected viewport authority is missing");
+  const matchingViewports = expectedViewports.filter(({ width, height }) => (
     width === viewportBounds.width && height === viewportBounds.height
   ));
-  invariant(expectedViewport, `viewport ${viewportBounds.width}x${viewportBounds.height} is outside the required short-landscape family`);
+  invariant(matchingViewports.length === 1, `viewport ${viewportBounds.width}x${viewportBounds.height} is outside or ambiguous in the required viewport authority`);
+  const [expectedViewport] = matchingViewports;
   invariant(measurement.viewport.id === expectedViewport.id, "viewport identifier differs");
   invariant(viewportBounds.left === 0 && viewportBounds.top === 0, "viewport origin differs");
 
@@ -592,8 +594,8 @@ export function validateManifestoClippingAuthority(measurement) {
  * Missing, malformed, unresolved, wrapped, clipped, or overflowing evidence
  * throws and therefore cannot be promoted by a caller.
  */
-export function validateManifestoGeometry(measurement) {
-  const clippingAuthority = validateManifestoClippingAuthority(measurement);
+export function validateManifestoGeometry(measurement, expectedViewports = SHORT_LANDSCAPE_VIEWPORTS) {
+  const clippingAuthority = validateManifestoClippingAuthority(measurement, expectedViewports);
   const { h1Rect, effectiveVisibleBounds } = clippingAuthority;
 
   const resolvedOrStatic = measurement.state?.manifestoReveal === "resolved"
