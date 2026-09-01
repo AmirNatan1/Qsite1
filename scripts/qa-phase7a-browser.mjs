@@ -570,6 +570,15 @@ function documentChecks(state, expectedH1) {
   };
 }
 
+export function fixedPlaneOccupiesLayoutViewport(plane, layoutViewport, tolerance = 1) {
+  invariant(Number.isFinite(tolerance) && tolerance >= 0 && tolerance <= 4, "fixed-plane tolerance must be 0..4 CSS pixels");
+  if (!plane || !layoutViewport || !Number.isFinite(layoutViewport.width) || !Number.isFinite(layoutViewport.height)) return false;
+  return plane.left <= tolerance
+    && plane.top <= tolerance
+    && plane.right >= layoutViewport.width - tolerance
+    && plane.bottom >= layoutViewport.height - tolerance;
+}
+
 async function axe(page) {
   await page.addScriptTag({ content: axeCore.source });
   const result = await page.evaluate(async () => {
@@ -719,7 +728,14 @@ async function fieldMapCase(browser, baseUrl, timeoutMs) {
       inert: node.hasAttribute("inert"),
       owned: node.hasAttribute("data-field-map-inert-owned"),
     }));
-    return { active: document.activeElement?.getAttribute("href"), links, background, plane: plane ? { left: plane.left, right: plane.right, top: plane.top, bottom: plane.bottom } : null };
+    return {
+      active: document.activeElement?.getAttribute("href"),
+      links,
+      background,
+      nominalViewport: { width: innerWidth, height: innerHeight },
+      layoutViewport: { width: document.documentElement.clientWidth, height: document.documentElement.clientHeight },
+      plane: plane ? { left: plane.left, right: plane.right, top: plane.top, bottom: plane.bottom } : null,
+    };
   });
   const openTargets = await observeTargetSizes(page, { route: "/#entry", state: "field-map-mobile-open", viewport: { id: "field-map-mobile", width: 320, height: 800 } });
   await page.keyboard.press("Tab");
@@ -756,7 +772,7 @@ async function fieldMapCase(browser, baseUrl, timeoutMs) {
     targetSizes: openTargets.status === "PASS",
     backgroundInert: opened.background.length >= 3 && opened.background.every(({ inert, owned }) => inert && owned),
     keyboardContained: tabFocus.inMap,
-    fullViewport: Boolean(opened.plane && opened.plane.left <= 1 && opened.plane.right >= 319 && opened.plane.top <= 1 && opened.plane.bottom >= 799),
+    fullViewport: fixedPlaneOccupiesLayoutViewport(opened.plane, opened.layoutViewport),
     escapeCloses: closed.open === false && closed.rootOpen === false,
     focusReturn: closed.active === "summary",
     inertReleased: closed.inertCount === 0 && closed.ownedCount === 0,
@@ -816,7 +832,8 @@ async function fallbackCases(browser, baseUrl, timeoutMs) {
       return {
         enhancedController: map?.getAttribute("data-controller") ?? null,
         nativeDetailsOpen: map instanceof HTMLDetailsElement ? map.open : false,
-        viewport: { width: innerWidth, height: innerHeight },
+        nominalViewport: { width: innerWidth, height: innerHeight },
+        viewport: { width: document.documentElement.clientWidth, height: document.documentElement.clientHeight },
         plane: bounds && style ? {
           position: style.position,
           visible: style.display !== "none" && !["collapse", "hidden"].includes(style.visibility) && Number.parseFloat(style.opacity) > 0,

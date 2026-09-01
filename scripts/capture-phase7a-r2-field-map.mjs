@@ -35,6 +35,11 @@ const HASH40 = /^[a-f0-9]{40}$/;
 const ENGINES = Object.freeze({ chromium, firefox, webkit });
 const DEFAULT_CHROME = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
 const RECORDING_DWELL_MS = 160;
+const HOST_SETTLE_MS = 50;
+const CONTEXT_CLOSE_TIMEOUT_MS = 5_000;
+const BROWSER_CLOSE_TIMEOUT_MS = 5_000;
+const MATRIX_PHASE_MINIMUM_TIMEOUT_MS = 60_000;
+const MATRIX_PHASE_MAXIMUM_TIMEOUT_MS = 180_000;
 const TARGET_VIEWPORT_EPSILON = 1;
 const CONTRAST_DPR_EPSILON = 1e-6;
 const MINIMUM_RECORDING_SECONDS = 2;
@@ -53,6 +58,38 @@ const FOCUS_ORDER = Object.freeze([
 
 function invariant(condition, message) {
   if (!condition) throw new Error(message);
+}
+
+function hostSettle() {
+  return new Promise((resolve) => setTimeout(resolve, HOST_SETTLE_MS));
+}
+
+async function withDeadline(label, timeoutMs, task) {
+  let timeout;
+  const deadline = new Promise((_, reject) => {
+    timeout = setTimeout(() => {
+      const error = new Error(`${label} exceeded its ${timeoutMs}ms deadline`);
+      error.name = "Phase7aR2DeadlineError";
+      reject(error);
+    }, timeoutMs);
+  });
+  try {
+    return await Promise.race([Promise.resolve().then(task), deadline]);
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function matrixPhaseDeadlineMs(timeoutMs) {
+  return Math.min(MATRIX_PHASE_MAXIMUM_TIMEOUT_MS, Math.max(MATRIX_PHASE_MINIMUM_TIMEOUT_MS, timeoutMs * 2));
+}
+
+function writeMatrixProgress(status, { engine, viewport, reducedMotion, elapsedMs, deadlineMs }) {
+  process.stderr.write(`[phase7a-r2:matrix] ${status} engine=${engine} viewport=${viewport.id} reducedMotion=${reducedMotion} elapsedMs=${elapsedMs} deadlineMs=${deadlineMs}\n`);
+}
+
+async function closeContextBounded(context, label) {
+  await withDeadline(`${label} context cleanup`, CONTEXT_CLOSE_TIMEOUT_MS, () => context.close({ reason: `${label} complete` }));
 }
 
 function within(parent, candidate) {
@@ -273,7 +310,7 @@ async function fullControlInventory(page, identity) {
       elementType: "a",
     })),
   ];
-  return page.evaluate(async ({ stateIdentity, expected, minimum, epsilon }) => {
+  return page.evaluate(({ stateIdentity, expected, minimum, epsilon }) => {
     const controls = [document.querySelector("[data-field-map] > summary"), ...document.querySelectorAll("[data-field-map] a[href]")];
     const records = [];
     for (const [index, control] of controls.entries()) {
@@ -283,7 +320,6 @@ async function fullControlInventory(page, identity) {
       }
       if (index > 0) {
         control.scrollIntoView({ block: "center", inline: "nearest", behavior: "auto" });
-        await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       }
       const rect = control.getBoundingClientRect();
       const style = getComputedStyle(control);
@@ -558,15 +594,69 @@ async function exerciseFocus(page, { cycles = 10, dwellMs = 0 } = {}) {
 }
 
 async function matrixCase(browser, baseUrl, viewport, engine, timeoutMs, reducedMotion = false) {
-  const context = await browser.newContext({ viewport, reducedMotion: reducedMotion ? "reduce" : "no-preference" });
-  const page = await context.newPage();
-  page.setDefaultTimeout(timeoutMs);
-  await gotoRoute(page, baseUrl, "/about/");
-  const focus = await exerciseFocus(page, { cycles: 1 });
-  const target = await openMapAndTargets(page, viewport, reducedMotion);
-  await closeWithEscape(page);
-  await context.close();
-  return { engine, viewport, reducedMotion, focus, target, status: focus.status === "PASS" && target.status === "PASS" ? "PASS" : "FAIL" };
+  const label = `R2 matrix ${engine}/${viewport.id}/${reducedMotion ? "reduced-motion" : "default-motion"}`;
+  const started = Date.now();
+  let context;
+  let primaryError = null;
+  let authorityStatus = null;
+  writeMatrixProgress("START", { engine, viewport, reducedMotion, elapsedMs: 0, deadlineMs: timeoutMs });
+  try {
+    const result = await withDeadline(label, timeoutMs, async () => {
+      context = await browser.newContext({ viewport, reducedMotion: reducedMotion ? "reduce" : "no-preference" });
+      const page = await context.newPage();
+      page.setDefaultTimeout(timeoutMs);
+      await gotoRoute(page, baseUrl, "/about/");
+      const focus = await exerciseFocus(page, { cycles: 1 });
+      const target = await openMapAndTargets(page, viewport, reducedMotion);
+      await closeWithEscape(page);
+      return { engine, viewport, reducedMotion, focus, target, status: focus.status === "PASS" && target.status === "PASS" ? "PASS" : "FAIL" };
+    });
+    authorityStatus = result.status;
+    return result;
+  } catch (error) {
+    primaryError = error;
+    throw error;
+  } finally {
+    let cleanupError = null;
+    if (context) {
+      try {
+        await closeContextBounded(context, label);
+      } catch (error) {
+        cleanupError = error;
+      }
+    }
+    writeMatrixProgress(primaryError || cleanupError || authorityStatus !== "PASS" ? "FAIL" : "PASS", {
+      engine,
+      viewport,
+      reducedMotion,
+      elapsedMs: Date.now() - started,
+      deadlineMs: timeoutMs,
+    });
+    if (cleanupError && !primaryError) throw cleanupError;
+  }
+}
+
+async function captureMatrixPhase(browsers, baseUrl, timeoutMs) {
+  const deadlineMs = matrixPhaseDeadlineMs(timeoutMs);
+  const started = Date.now();
+  const expectedCases = Object.keys(ENGINES).length * (VIEWPORTS.length + 1);
+  process.stderr.write(`[phase7a-r2:matrix-phase] START cases=${expectedCases} elapsedMs=0 deadlineMs=${deadlineMs}\n`);
+  try {
+    const matrices = await withDeadline("R2 Field Map matrix phase", deadlineMs, async () => {
+      const records = [];
+      for (const engine of Object.keys(ENGINES)) {
+        for (const viewport of VIEWPORTS) records.push(await matrixCase(browsers[engine], baseUrl, viewport, engine, timeoutMs));
+        records.push(await matrixCase(browsers[engine], baseUrl, VIEWPORTS[1], engine, timeoutMs, true));
+      }
+      return records;
+    });
+    const status = matrices.every(({ status: caseStatus }) => caseStatus === "PASS") ? "PASS" : "FAIL";
+    process.stderr.write(`[phase7a-r2:matrix-phase] ${status} cases=${matrices.length} elapsedMs=${Date.now() - started} deadlineMs=${deadlineMs}\n`);
+    return matrices;
+  } catch (error) {
+    process.stderr.write(`[phase7a-r2:matrix-phase] FAIL cases=${expectedCases} elapsedMs=${Date.now() - started} deadlineMs=${deadlineMs}\n`);
+    throw error;
+  }
 }
 
 async function openMapAndTargets(page, viewport, reducedMotion) {
@@ -898,7 +988,7 @@ async function selectorLocalContrastMeasurement(page, engine, contrastCase, scre
   if (contrastCase.state === "reduced-motion-home") {
     await page.evaluate(() => document.querySelector("[data-field-map-threshold]")?.scrollIntoView({ block: "start" }));
   }
-  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  await hostSettle();
   const observedViewport = await page.evaluate(() => ({ width: innerWidth, height: innerHeight, observedDevicePixelRatio: devicePixelRatio }));
   invariant(observedViewport.width === 1440 && observedViewport.height === 900
     && Math.abs(observedViewport.observedDevicePixelRatio - 1) <= CONTRAST_DPR_EPSILON, `R2 ${engine} selector-local contrast viewport differs: ${JSON.stringify(observedViewport)}`);
@@ -926,7 +1016,7 @@ async function selectorLocalContrastMeasurement(page, engine, contrastCase, scre
   const mask = await page.addStyleTag({ content: `${selectors.join(",")} { color: transparent !important; -webkit-text-fill-color: transparent !important; text-shadow: none !important; }` });
   let png;
   try {
-    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    await hostSettle();
     png = await page.screenshot({ path: screenshotPath, type: "png" });
   } finally {
     await mask.evaluate((node) => node.remove()).catch(() => undefined);
@@ -1304,7 +1394,11 @@ async function browserIdentity(browser, engine, options) {
 }
 
 async function closeBrowsers(browsers) {
-  await Promise.allSettled(Object.values(browsers).map((browser) => browser.close()));
+  await Promise.allSettled(Object.entries(browsers).map(([engine, browser]) => withDeadline(
+    `R2 ${engine} browser cleanup`,
+    BROWSER_CLOSE_TIMEOUT_MS,
+    () => browser.close({ reason: "R2 Field Map capture complete" }),
+  )));
 }
 
 function triggerWithAx(trigger, tree) {
@@ -1546,11 +1640,7 @@ async function capture(options) {
     const identities = Object.fromEntries(await Promise.all(Object.entries(browsers).map(async ([engine, browser]) => [engine, await browserIdentity(browser, engine, options)])));
     const primary = {};
     for (const engine of Object.keys(ENGINES)) primary[engine] = await primaryEngineCapture(browsers[engine], engine, options.baseUrl, staging, options.timeoutMs, options.ffmpeg, options.ffprobe);
-    const matrices = [];
-    for (const engine of Object.keys(ENGINES)) {
-      for (const viewport of VIEWPORTS) matrices.push(await matrixCase(browsers[engine], options.baseUrl, viewport, engine, options.timeoutMs));
-      matrices.push(await matrixCase(browsers[engine], options.baseUrl, VIEWPORTS[1], engine, options.timeoutMs, true));
-    }
+    const matrices = await captureMatrixPhase(browsers, options.baseUrl, options.timeoutMs);
     const noJavaScriptCapture = await noJavaScriptCase(browsers.chromium, options.baseUrl, options.timeoutMs, staging);
     const noJavaScript = noJavaScriptCapture.authority;
     const reducedMotionScreenshot = await reducedMotionScreenshotCase(browsers.chromium, options.baseUrl, options.timeoutMs, staging);

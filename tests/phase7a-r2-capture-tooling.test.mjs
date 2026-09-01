@@ -24,6 +24,7 @@ import {
 const execFileAsync = promisify(execFile);
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const INSTALLED_CHROME_SCRIPT = path.join(ROOT, "scripts", "capture-phase7a-r2-installed-chrome.mjs");
+const GENERIC_CAPTURE_SCRIPT = path.join(ROOT, "scripts", "capture-phase7a-r2-field-map.mjs");
 const EXTERNAL_ROOT = path.resolve(ROOT, "..", "phase7a-r2-capture-tooling-test");
 const REVISION = "b".repeat(40);
 
@@ -219,7 +220,7 @@ test("generic R2 capture retains its inert self-test and named export surface", 
   assert.equal(result.contrast.pairs.length, 3);
   assert.equal(result.contrast.pairs[2].id, "manifesto-white-over-live-magenta");
   assert.equal(result.contrast.pairs[2].ratio, 4.658);
-  const source = await readFile(path.join(ROOT, "scripts", "capture-phase7a-r2-field-map.mjs"), "utf8");
+  const source = await readFile(GENERIC_CAPTURE_SCRIPT, "utf8");
   assert.match(source, /observedDevicePixelRatio:\s*devicePixelRatio/);
   assert.match(source, /Math\.abs\(observedViewport\.observedDevicePixelRatio - 1\) <= CONTRAST_DPR_EPSILON/);
   assert.match(source, /deviceScaleFactor:\s*Number\(observedViewport\.observedDevicePixelRatio\.toFixed\(6\)\)/);
@@ -229,4 +230,57 @@ test("generic R2 capture retains its inert self-test and named export surface", 
   assert.match(source, /initial:\s*\{\s*activeElement:\s*chromium\.focus\.initial\.activeElement,\s*activeDestinationName:\s*chromium\.focus\.initial\.activeDestinationName,/s);
   assert.match(source, /control\.querySelector\("\.field-map__trigger-label"\)\?\.textContent/);
   assert.match(source, /failed authority:\s*\$\{JSON\.stringify\(aggregateAuthority\)\}/);
+});
+
+test("generic R2 target and contrast authority settling cannot pause on page animation frames", async () => {
+  const source = await readFile(GENERIC_CAPTURE_SCRIPT, "utf8");
+  const inventory = source.slice(
+    source.indexOf("async function fullControlInventory"),
+    source.indexOf("function axProperty"),
+  );
+  const contrast = source.slice(
+    source.indexOf("async function selectorLocalContrastMeasurement"),
+    source.indexOf("async function productionContrastSelectorBinding"),
+  );
+  assert.match(inventory, /control\.scrollIntoView\(\{ block: "center", inline: "nearest", behavior: "auto" \}\)/);
+  assert.doesNotMatch(inventory, /page\.evaluate\(async/);
+  assert.doesNotMatch(inventory, /requestAnimationFrame/);
+  assert.equal(contrast.match(/await hostSettle\(\);/g)?.length, 2);
+  assert.doesNotMatch(contrast, /requestAnimationFrame/);
+  assert.doesNotMatch(source, /new Promise\(\(resolve\) => requestAnimationFrame/);
+  assert.match(source, /function hostSettle\(\) \{\s*return new Promise\(\(resolve\) => setTimeout\(resolve, HOST_SETTLE_MS\)\);\s*\}/s);
+});
+
+test("generic R2 matrix capture has case, phase, progress, and cleanup deadlines", async () => {
+  const source = await readFile(GENERIC_CAPTURE_SCRIPT, "utf8");
+  const matrixCaseSource = source.slice(
+    source.indexOf("async function matrixCase"),
+    source.indexOf("async function captureMatrixPhase"),
+  );
+  const matrixPhaseSource = source.slice(
+    source.indexOf("async function captureMatrixPhase"),
+    source.indexOf("async function openMapAndTargets"),
+  );
+  const cleanupSource = source.slice(
+    source.indexOf("async function closeContextBounded"),
+    source.indexOf("function within"),
+  );
+  const progressSource = source.slice(
+    source.indexOf("function writeMatrixProgress"),
+    source.indexOf("async function closeContextBounded"),
+  );
+  assert.match(source, /async function withDeadline\(label, timeoutMs, task\)/);
+  assert.match(source, /function matrixPhaseDeadlineMs\(timeoutMs\)/);
+  assert.match(matrixCaseSource, /withDeadline\(label, timeoutMs, async \(\) =>/);
+  assert.match(matrixCaseSource, /try \{[\s\S]*\} finally \{/);
+  assert.match(matrixCaseSource, /await closeContextBounded\(context, label\)/);
+  assert.doesNotMatch(matrixCaseSource, /await context\.close\(/);
+  assert.match(matrixCaseSource, /writeMatrixProgress\("START"/);
+  assert.match(progressSource, /engine=\$\{engine\} viewport=\$\{viewport\.id\} reducedMotion=\$\{reducedMotion\} elapsedMs=\$\{elapsedMs\}/);
+  assert.match(cleanupSource, /withDeadline\(`\$\{label\} context cleanup`, CONTEXT_CLOSE_TIMEOUT_MS/);
+  assert.match(matrixPhaseSource, /withDeadline\("R2 Field Map matrix phase", deadlineMs/);
+  assert.match(matrixPhaseSource, /\[phase7a-r2:matrix-phase\] START cases=\$\{expectedCases\}/);
+  assert.match(matrixPhaseSource, /\[phase7a-r2:matrix-phase\] \$\{status\} cases=\$\{matrices\.length\}/);
+  assert.match(source, /const matrices = await captureMatrixPhase\(browsers, options\.baseUrl, options\.timeoutMs\)/);
+  assert.match(source, /BROWSER_CLOSE_TIMEOUT_MS/);
 });

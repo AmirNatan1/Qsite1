@@ -7,6 +7,7 @@ import {
   PHASE7A_R2_RETAINED_QA_SCHEMA,
   SCHEMA,
   distLedgerFingerprint,
+  fixedPlaneOccupiesLayoutViewport,
   normalizePhase7aR2RetainedQaReport,
   parseArguments,
   qaReportSha256,
@@ -125,4 +126,23 @@ test("self-test publishes the enhanced R1/R2 responsive and normalized evidence 
   assert.deepEqual(report.enhancedResponsiveProfiles, ["phase7a-r1", "phase7a-r2"]);
   assert.equal(report.r2SourceSchema, PHASE7A_R2_QA_SOURCE_SCHEMA);
   assert.equal(report.r2NormalizedSchema, PHASE7A_R2_RETAINED_QA_SCHEMA);
+});
+
+test("fixed-plane authority uses the scrollbar-adjusted layout viewport and still rejects genuine clipping", () => {
+  const nativeScrollbar = {
+    nominalViewport: { width: 320, height: 800 },
+    layoutViewport: { width: 304.8, height: 800 },
+    plane: { left: 0, top: 0, right: 304.8, bottom: 800 },
+  };
+  assert.equal(fixedPlaneOccupiesLayoutViewport(nativeScrollbar.plane, nativeScrollbar.layoutViewport), true);
+  assert.equal(fixedPlaneOccupiesLayoutViewport(nativeScrollbar.plane, nativeScrollbar.nominalViewport), false);
+  assert.equal(fixedPlaneOccupiesLayoutViewport({ ...nativeScrollbar.plane, right: 300 }, nativeScrollbar.layoutViewport), false);
+
+  const horizontalScrollbar = {
+    nominalViewport: { width: 390, height: 844 },
+    layoutViewport: { width: 390, height: 828.8 },
+    plane: { left: 0, top: 0, right: 390, bottom: 828.8 },
+  };
+  assert.equal(fixedPlaneOccupiesLayoutViewport(horizontalScrollbar.plane, horizontalScrollbar.layoutViewport), true);
+  assert.equal(fixedPlaneOccupiesLayoutViewport({ ...horizontalScrollbar.plane, bottom: 824 }, horizontalScrollbar.layoutViewport), false);
 });
