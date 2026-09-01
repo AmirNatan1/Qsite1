@@ -2029,7 +2029,7 @@ export async function captureVisibleLinkInventory(page, selector) {
   const inventory = [];
   for (let index = 0; index < count; index += 1) {
     const link = links.nth(index);
-    inventory.push(await link.evaluate((element) => {
+    inventory.push(await link.evaluate((element, linkIndex) => {
       const bounds = element.getBoundingClientRect();
       const style = getComputedStyle(element);
       const opacity = Number.parseFloat(style.opacity);
@@ -2066,7 +2066,7 @@ export async function captureVisibleLinkInventory(page, selector) {
         && bounds.right <= clip.right
         && bounds.bottom <= clip.bottom;
       return {
-        index,
+        index: linkIndex,
         href: element.getAttribute("href") ?? "",
         accessibleName: element.getAttribute("aria-label")?.trim() || element.textContent?.replace(/\s+/g, " ").trim() || "",
         elementType: element.tagName.toLowerCase(),
@@ -2080,7 +2080,7 @@ export async function captureVisibleLinkInventory(page, selector) {
         bounds: { left: bounds.left, top: bounds.top, right: bounds.right, bottom: bounds.bottom },
         effectiveClipBounds: clip,
       };
-    }));
+    }, index));
   }
   return inventory;
 }

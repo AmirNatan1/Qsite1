@@ -31,6 +31,7 @@ import {
   assertTargetLedgerPass,
   assertVisibleLinkInventory,
   buildClosureManifest,
+  captureVisibleLinkInventory,
   comparisonEncoderArguments,
   comparisonFullDecodeArguments,
   extractLinkedRuntimeAssets,
@@ -623,6 +624,27 @@ test("no-JavaScript link evidence requires the exact eight visible, unoccluded, 
     ...plane,
     plane: { ...plane.plane, bounds: { left: 0, top: 101.25, right: 390, bottom: 201.5, width: 390, height: 100.25 } },
   }), /does not occupy the complete viewport/);
+});
+
+test("browser link inventory serializes each stable index into page context", async () => {
+  const observedArguments = [];
+  const page = {
+    locator: () => ({
+      count: async () => 3,
+      nth: (expectedIndex) => ({
+        evaluate: async (_callback, serializedIndex) => {
+          observedArguments.push({ expectedIndex, serializedIndex });
+          return { index: serializedIndex };
+        },
+      }),
+    }),
+  };
+  assert.deepEqual(await captureVisibleLinkInventory(page, "a[href]"), [{ index: 0 }, { index: 1 }, { index: 2 }]);
+  assert.deepEqual(observedArguments, [
+    { expectedIndex: 0, serializedIndex: 0 },
+    { expectedIndex: 1, serializedIndex: 1 },
+    { expectedIndex: 2, serializedIndex: 2 },
+  ]);
 });
 
 test("enhanced Field Map keyboard evidence must traverse all eight destinations and wrap in both directions", () => {
