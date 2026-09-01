@@ -346,20 +346,57 @@ test("each QA engine must prove complete passing route, accessibility, responsiv
   );
 });
 
-test("exact-parent responsive evidence must retain the measured sticky-header 800x360 top-clipping defect", () => {
+test("exact-parent responsive evidence must retain the measured 800x360 top-clipping defect even when wrapping is reported first", () => {
+  const rect = (left, top, right, bottom) => ({ left, top, right, bottom, width: right - left, height: bottom - top });
   const ids = ["740x320", "740x360", "768x320", "768x360", "800x320", "800x360", "800x390", "820x360", "844x360", "844x390", "896x414", "900x480"].map((size) => `short-landscape-${size}`);
   const cases = ids.map((id) => ({
     id,
     status: id === "short-landscape-800x360" ? "FAIL" : "PASS",
-    failure: id === "short-landscape-800x360" ? "manifesto top safety clipping beneath sticky header" : null,
+    failure: id === "short-landscape-800x360" ? "manifesto geometry: authored line 3 must resolve to exactly 1 rendered line" : null,
     measurement: id === "short-landscape-800x360" ? {
-      occludingHeader: { position: "sticky", presentation: { visible: true }, anchoredToViewportTop: true, occluding: true, effectiveBottom: 100.25 },
-      effectiveVisibleBounds: { top: 100.25 },
+      schema: "quantum-hub.phase-7a-r1.manifesto-geometry.v1",
+      measurementError: null,
+      viewport: { id, ...rect(0, 0, 800, 360) },
+      h1: { rect: rect(20, 88.8, 780, 350) },
+      glyphBounds: { top: 80.8 },
+      section: { rect: rect(0, 100.25, 800, 460) },
+      sectionClipBounds: rect(0, 100.25, 800, 460),
+      clippingAncestors: [{ id: "entry", selector: "#entry", isSignalFieldSection: true, overflowX: "clip", overflowY: "clip", contain: "none", clipPath: "none", clipsX: true, clipsY: true, bounds: rect(0, 100.25, 800, 460) }],
+      usableClipBounds: rect(0, 100.25, 800, 360),
+      occludingHeader: { selector: ".site-header", rect: rect(0, 0, 800, 100.25), position: "sticky", presentation: { display: "block", visibility: "hidden", opacity: 0, visible: false }, anchoredToViewportTop: true, horizontallyOverlapsManifesto: true, occluding: false, effectiveBottom: 0 },
+      effectiveVisibleBounds: rect(0, 100.25, 800, 360),
       safeAllowances: { h1: { top: -10 }, glyphs: { top: 3 }, renderedLines: [{ top: -2 }, { top: 40 }] },
-      boundaryAnalysis: { occludingHeaderIntersections: [{ authoredLineIndex: 1 }], safetyViolations: [{ authoredLineIndex: 1, sides: ["top"] }] },
+      boundaryAnalysis: { glyphEscapes: [{ glyph: "W", sides: ["top"] }], boundaryIntersections: [{ authoredLineIndex: 1, sides: ["top"] }], occludingHeaderIntersections: [], safetyViolations: [{ authoredLineIndex: 1, sides: ["top"] }] },
     } : null,
   }));
   assert.equal(validateBefore800x360Defect(cases), true);
+  const dishonestVisibility = structuredClone(cases);
+  dishonestVisibility.find(({ id }) => id === "short-landscape-800x360").measurement.occludingHeader.presentation.visible = true;
+  assert.throws(() => validateBefore800x360Defect(dishonestVisibility), /header visibility authority differs/);
+  const dishonestEffectiveBottom = structuredClone(cases);
+  dishonestEffectiveBottom.find(({ id }) => id === "short-landscape-800x360").measurement.occludingHeader.effectiveBottom = 100.25;
+  assert.throws(() => validateBefore800x360Defect(dishonestEffectiveBottom), /header effective bottom differs/);
+  const forgedClipTop = structuredClone(cases);
+  const forgedMeasurement = forgedClipTop.find(({ id }) => id === "short-landscape-800x360").measurement;
+  forgedMeasurement.usableClipBounds.top = 120;
+  forgedMeasurement.usableClipBounds.height = 240;
+  forgedMeasurement.effectiveVisibleBounds.top = 120;
+  forgedMeasurement.effectiveVisibleBounds.height = 240;
+  assert.throws(() => validateBefore800x360Defect(forgedClipTop), /usable clip bounds\.top differs/);
+  const axisSummaryLie = structuredClone(cases);
+  axisSummaryLie.find(({ id }) => id === "short-landscape-800x360").measurement.clippingAncestors[0].clipsY = false;
+  assert.throws(() => validateBefore800x360Defect(axisSummaryLie), /axis authority differs/);
+  const anchorLie = structuredClone(cases);
+  anchorLie.find(({ id }) => id === "short-landscape-800x360").measurement.occludingHeader.anchoredToViewportTop = false;
+  assert.throws(() => validateBefore800x360Defect(anchorLie), /anchor authority differs/);
+  const overlapLie = structuredClone(cases);
+  overlapLie.find(({ id }) => id === "short-landscape-800x360").measurement.occludingHeader.horizontallyOverlapsManifesto = false;
+  assert.throws(() => validateBefore800x360Defect(overlapLie), /overlap authority differs/);
+  const sectionAncestorMismatch = structuredClone(cases);
+  const mismatchedAncestor = sectionAncestorMismatch.find(({ id }) => id === "short-landscape-800x360").measurement.clippingAncestors[0];
+  mismatchedAncestor.bounds.top += 1;
+  mismatchedAncestor.bounds.height -= 1;
+  assert.throws(() => validateBefore800x360Defect(sectionAncestorMismatch), /Signal Field #entry ancestor bounds\.top differs/);
   const erased = structuredClone(cases);
   Object.assign(erased.find(({ id }) => id === "short-landscape-800x360"), { status: "PASS", failure: null });
   assert.throws(() => validateBefore800x360Defect(erased), /was not reproduced/);
@@ -369,9 +406,14 @@ test("exact-parent responsive evidence must retain the measured sticky-header 80
   defect.measurement.safeAllowances.h1.top = 4;
   defect.measurement.safeAllowances.glyphs.top = 4;
   defect.measurement.safeAllowances.renderedLines.forEach((line) => { line.top = 4; });
+  defect.measurement.h1.rect.top = 110;
+  defect.measurement.h1.rect.height = defect.measurement.h1.rect.bottom - 110;
+  defect.measurement.glyphBounds.top = 106;
+  defect.measurement.boundaryAnalysis.glyphEscapes = [];
+  defect.measurement.boundaryAnalysis.boundaryIntersections = [];
   defect.measurement.boundaryAnalysis.occludingHeaderIntersections = [];
   defect.measurement.boundaryAnalysis.safetyViolations = [];
-  assert.throws(() => validateBefore800x360Defect(horizontalOnly), /not classified as sticky\/top clipping|lacks measured/);
+  assert.throws(() => validateBefore800x360Defect(horizontalOnly), /lacks measured|do not cross/);
 });
 
 test("installed Chrome evidence requires genuine native 200 percent zoom and visible UI confirmation", () => {

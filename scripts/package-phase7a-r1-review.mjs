@@ -33,7 +33,7 @@ import {
   stableJson,
   validateIsoBmffRecording,
 } from "./package-phase7a-human-review.mjs";
-import { PHASE7A_R1_SHORT_LANDSCAPE_VIEWPORTS, validateManifestoGeometry } from "./phase7a-manifesto-geometry.mjs";
+import { PHASE7A_R1_SHORT_LANDSCAPE_VIEWPORTS, validateManifestoClippingAuthority, validateManifestoGeometry } from "./phase7a-manifesto-geometry.mjs";
 import { assertTargetSizePass } from "./phase7a-target-size.mjs";
 import { validateScenarioStates } from "./capture-phase7a-review-evidence.mjs";
 
@@ -574,11 +574,19 @@ function validateClippingReport(entriesByPath) {
     invariant(rows.every(({ measurement }) => measurement && typeof measurement === "object"), `responsive ${label} measurements are incomplete`);
   }
   const defect = report.before.find(({ id }) => id === "short-landscape-800x360");
-  invariant(defect?.status === "FAIL" && /(?:top|sticky|header|occlud|clip|safety)/i.test(defect.failure ?? ""), "exact-parent 800x360 sticky/top clipping defect is missing");
+  invariant(defect?.status === "FAIL" && typeof defect.failure === "string" && defect.failure.trim().length > 0, "exact-parent 800x360 clipping defect is missing");
   const defectMeasurement = defect.measurement;
-  invariant(defectMeasurement.occludingHeader?.presentation?.visible === true && defectMeasurement.occludingHeader.anchoredToViewportTop === true && defectMeasurement.occludingHeader.occluding === true && ["fixed", "sticky"].includes(defectMeasurement.occludingHeader.position), "exact-parent 800x360 sticky-header measurement differs");
+  let clippingAuthority;
+  try { clippingAuthority = validateManifestoClippingAuthority(defectMeasurement); }
+  catch (error) { throw new Error(`exact-parent 800x360 clipping authority differs: ${error.message}`); }
+  invariant(defectMeasurement.viewport.id === defect.id, "exact-parent 800x360 measurement viewport differs");
+  const effectiveTop = clippingAuthority.effectiveVisibleBounds.top;
+  const h1Top = defectMeasurement.h1?.rect?.top;
+  const glyphTop = defectMeasurement.glyphBounds?.top;
+  invariant([h1Top, glyphTop].every(Number.isFinite), "exact-parent 800x360 top-boundary geometry is incomplete");
   const defectAllowances = [defectMeasurement.safeAllowances?.h1?.top, defectMeasurement.safeAllowances?.glyphs?.top, ...(defectMeasurement.safeAllowances?.renderedLines ?? []).map(({ top }) => top)].filter(Number.isFinite);
-  invariant(defectAllowances.some((value) => value < 2) || (defectMeasurement.boundaryAnalysis?.occludingHeaderIntersections?.length ?? 0) > 0 || (defectMeasurement.boundaryAnalysis?.safetyViolations ?? []).some(({ sides }) => sides?.includes("top")), "exact-parent 800x360 defect lacks measured clipping evidence");
+  invariant(defectAllowances.some((value) => value < 2) || (defectMeasurement.boundaryAnalysis?.occludingHeaderIntersections?.length ?? 0) > 0 || (defectMeasurement.boundaryAnalysis?.glyphEscapes ?? []).some(({ sides }) => sides?.includes("top")) || (defectMeasurement.boundaryAnalysis?.boundaryIntersections ?? []).some(({ sides }) => sides?.includes("top")) || (defectMeasurement.boundaryAnalysis?.safetyViolations ?? []).some(({ sides }) => sides?.includes("top")), "exact-parent 800x360 defect lacks measured top-clipping evidence");
+  invariant(h1Top < effectiveTop || glyphTop < effectiveTop, "exact-parent 800x360 glyph-bearing bounds do not cross the effective top boundary");
   for (const row of report.after) {
     invariant(row.status === "PASS" && !row.failure, `repaired clipping case failed: ${row.id}`);
     try { validateManifestoGeometry(row.measurement); }

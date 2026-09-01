@@ -524,23 +524,33 @@ test("after geometry is fail-closed for missing, duplicate and reported-failure 
 });
 
 test("the exact-parent 800x360 comparison must reproduce measured sticky/top clipping", () => {
+  const rect = (left, top, right, bottom) => ({ left, top, right, bottom, width: right - left, height: bottom - top });
   const cases = REQUIRED_SHORT_LANDSCAPE_VIEWPORTS.map((viewport) => ({
     id: viewport.id,
     viewport,
     status: viewport.id === "short-landscape-800x360" ? "FAIL" : "PASS",
     failure: viewport.id === "short-landscape-800x360" ? "manifesto geometry: H1 top safety is -10.45px; at least 2px is required" : null,
     measurement: viewport.id === "short-landscape-800x360" ? {
-      h1: { rect: { top: 89.8 } },
+      schema: "quantum-hub.phase-7a-r1.manifesto-geometry.v1",
+      measurementError: null,
+      viewport: { id: viewport.id, ...rect(0, 0, 800, 360) },
+      h1: { rect: rect(20, 89.8, 780, 350) },
       glyphBounds: { top: 81.8 },
+      section: { rect: rect(0, 100.25, 800, 460) },
+      sectionClipBounds: rect(0, 100.25, 800, 460),
+      clippingAncestors: [{ id: "entry", selector: "#entry", isSignalFieldSection: true, overflowX: "clip", overflowY: "clip", contain: "none", clipPath: "none", clipsX: true, clipsY: true, bounds: rect(0, 100.25, 800, 460) }],
+      usableClipBounds: rect(0, 100.25, 800, 360),
       occludingHeader: {
+        selector: ".site-header",
+        rect: rect(0, 0, 800, 100.25),
         position: "sticky",
-        presentation: { visible: true },
+        presentation: { display: "block", visibility: "visible", opacity: 1, visible: true },
         anchoredToViewportTop: true,
-        horizontalOverlap: true,
+        horizontallyOverlapsManifesto: true,
         occluding: true,
         effectiveBottom: 100.25,
       },
-      effectiveVisibleBounds: { top: 100.25 },
+      effectiveVisibleBounds: rect(0, 100.25, 800, 360),
       safeAllowances: {
         h1: { top: -10.45 },
         glyphs: { top: 3.5 },
@@ -558,6 +568,41 @@ test("the exact-parent 800x360 comparison must reproduce measured sticky/top cli
   const alternateFirstDiagnostic = structuredClone(cases);
   alternateFirstDiagnostic.find(({ id }) => id === "short-landscape-800x360").failure = "manifesto geometry: rendered line count differs";
   assert.equal(assertBefore800x360Defect(alternateFirstDiagnostic), true);
+  const concealedHeader = structuredClone(alternateFirstDiagnostic);
+  const concealedDefect = concealedHeader.find(({ id }) => id === "short-landscape-800x360");
+  concealedDefect.measurement.occludingHeader.presentation.visibility = "hidden";
+  concealedDefect.measurement.occludingHeader.presentation.opacity = 0;
+  concealedDefect.measurement.occludingHeader.presentation.visible = false;
+  concealedDefect.measurement.occludingHeader.occluding = false;
+  concealedDefect.measurement.occludingHeader.effectiveBottom = 0;
+  concealedDefect.measurement.boundaryAnalysis.occludingHeaderIntersections = [];
+  assert.equal(assertBefore800x360Defect(concealedHeader), true);
+  const dishonestVisibility = structuredClone(concealedHeader);
+  dishonestVisibility.find(({ id }) => id === "short-landscape-800x360").measurement.occludingHeader.presentation.visible = true;
+  assert.throws(() => assertBefore800x360Defect(dishonestVisibility), /header visibility authority differs/);
+  const dishonestEffectiveBottom = structuredClone(concealedHeader);
+  dishonestEffectiveBottom.find(({ id }) => id === "short-landscape-800x360").measurement.occludingHeader.effectiveBottom = 100.25;
+  assert.throws(() => assertBefore800x360Defect(dishonestEffectiveBottom), /header effective bottom differs/);
+  const forgedClipTop = structuredClone(concealedHeader);
+  const forgedMeasurement = forgedClipTop.find(({ id }) => id === "short-landscape-800x360").measurement;
+  forgedMeasurement.usableClipBounds.top = 120;
+  forgedMeasurement.usableClipBounds.height = 240;
+  forgedMeasurement.effectiveVisibleBounds.top = 120;
+  forgedMeasurement.effectiveVisibleBounds.height = 240;
+  assert.throws(() => assertBefore800x360Defect(forgedClipTop), /usable clip bounds\.top differs/);
+  const axisSummaryLie = structuredClone(concealedHeader);
+  axisSummaryLie.find(({ id }) => id === "short-landscape-800x360").measurement.clippingAncestors[0].clipsY = false;
+  assert.throws(() => assertBefore800x360Defect(axisSummaryLie), /axis authority differs/);
+  const anchorLie = structuredClone(concealedHeader);
+  anchorLie.find(({ id }) => id === "short-landscape-800x360").measurement.occludingHeader.anchoredToViewportTop = false;
+  assert.throws(() => assertBefore800x360Defect(anchorLie), /anchor authority differs/);
+  const overlapLie = structuredClone(concealedHeader);
+  overlapLie.find(({ id }) => id === "short-landscape-800x360").measurement.occludingHeader.horizontallyOverlapsManifesto = false;
+  assert.throws(() => assertBefore800x360Defect(overlapLie), /overlap authority differs/);
+  const sectionAncestorMismatch = structuredClone(concealedHeader);
+  sectionAncestorMismatch.find(({ id }) => id === "short-landscape-800x360").measurement.clippingAncestors[0].bounds.top += 1;
+  sectionAncestorMismatch.find(({ id }) => id === "short-landscape-800x360").measurement.clippingAncestors[0].bounds.height -= 1;
+  assert.throws(() => assertBefore800x360Defect(sectionAncestorMismatch), /Signal Field #entry ancestor bounds\.top differs/);
   assert.throws(() => assertBefore800x360Defect(cases.map((item) => ({ ...item, status: "PASS", failure: null }))), /was not reproduced/);
   const horizontalOnly = structuredClone(cases);
   const defect = horizontalOnly.find(({ id }) => id === "short-landscape-800x360");
@@ -566,6 +611,7 @@ test("the exact-parent 800x360 comparison must reproduce measured sticky/top cli
   defect.measurement.safeAllowances.glyphs.top = 4;
   defect.measurement.safeAllowances.renderedLines.forEach((line) => { line.top = 4; });
   defect.measurement.h1.rect.top = 110;
+  defect.measurement.h1.rect.height = defect.measurement.h1.rect.bottom - 110;
   defect.measurement.glyphBounds.top = 106;
   defect.measurement.boundaryAnalysis.glyphEscapes = [];
   defect.measurement.boundaryAnalysis.boundaryIntersections = [];

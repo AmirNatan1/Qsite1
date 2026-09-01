@@ -10,6 +10,7 @@ import {
   SHORT_LANDSCAPE_VIEWPORTS,
   manifestoGeometryMeasurementSource,
   measureManifestoGeometry,
+  validateManifestoClippingAuthority,
   validateManifestoGeometry,
   validateManifestoGeometryMeasurement,
 } from "../scripts/phase7a-manifesto-geometry.mjs";
@@ -230,6 +231,25 @@ test("validator accepts a resolved measurement with three authored rendered line
   concealedHeader.occludingHeader.occluding = false;
   concealedHeader.occludingHeader.effectiveBottom = 0;
   assert.equal(validateManifestoGeometry(concealedHeader), true);
+});
+
+test("clipping authority and the full validator reject raw-derived summary lies", () => {
+  const assertBothReject = (mutate, expected) => {
+    const helperCase = passingMeasurement();
+    mutate(helperCase);
+    assert.throws(() => validateManifestoClippingAuthority(helperCase), expected);
+    const fullCase = passingMeasurement();
+    mutate(fullCase);
+    assert.throws(() => validateManifestoGeometry(fullCase), expected);
+  };
+  assert.equal(validateManifestoClippingAuthority(passingMeasurement()).expectedHeaderOcclusion, true);
+  assertBothReject((measurement) => { measurement.clippingAncestors[0].clipsY = false; }, /axis authority differs/);
+  assertBothReject((measurement) => { measurement.occludingHeader.anchoredToViewportTop = false; }, /anchor authority differs/);
+  assertBothReject((measurement) => { measurement.occludingHeader.horizontallyOverlapsManifesto = false; }, /overlap authority differs/);
+  assertBothReject((measurement) => {
+    measurement.clippingAncestors[0].bounds.top += 1;
+    measurement.clippingAncestors[0].bounds.height -= 1;
+  }, /Signal Field #entry ancestor bounds\.top differs/);
 });
 
 test("regression: old 800x360 H1 top 89.796875 is rejected against clip top 100.25", () => {

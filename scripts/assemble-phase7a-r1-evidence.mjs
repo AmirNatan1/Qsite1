@@ -51,6 +51,7 @@ import { validateScenarioStates } from "./capture-phase7a-review-evidence.mjs";
 import {
   MINIMUM_MANIFESTO_SAFETY_PX,
   PHASE7A_R1_SHORT_LANDSCAPE_VIEWPORTS,
+  validateManifestoClippingAuthority,
   validateManifestoGeometry,
 } from "./phase7a-manifesto-geometry.mjs";
 import { assertTargetSizePass } from "./phase7a-target-size.mjs";
@@ -797,21 +798,35 @@ export function validateBefore800x360Defect(cases) {
   const observed = cases.map(({ id }) => id);
   invariant(new Set(observed).size === observed.length && expected.every((id, index) => observed[index] === id), "before geometry viewport order or membership differs");
   const defect = cases.find(({ id }) => id === "short-landscape-800x360");
-  invariant(defect?.status === "FAIL" && typeof defect.failure === "string", "exact-parent 800x360 geometry defect was not reproduced");
-  invariant(/(?:top|sticky|header|occlud|clip|safety)/i.test(defect.failure), "exact-parent 800x360 failure is not classified as sticky/top clipping");
+  invariant(defect?.status === "FAIL" && typeof defect.failure === "string" && defect.failure.trim().length > 0, "exact-parent 800x360 geometry defect was not reproduced");
   const measurement = defect.measurement;
   invariant(measurement && typeof measurement === "object" && !Array.isArray(measurement), "exact-parent 800x360 defect has no geometry measurement");
-  const header = measurement.occludingHeader;
-  invariant(header?.presentation?.visible === true && header.anchoredToViewportTop === true && header.occluding === true && ["fixed", "sticky"].includes(header.position), "exact-parent 800x360 defect lacks visible sticky-header occlusion authority");
-  invariant(Number.isFinite(measurement.effectiveVisibleBounds?.top) && Number.isFinite(header.effectiveBottom) && measurement.effectiveVisibleBounds.top >= header.effectiveBottom - 0.05, "exact-parent 800x360 effective visible top omits the sticky header");
+  let clippingAuthority;
+  try { clippingAuthority = validateManifestoClippingAuthority(measurement); }
+  catch (error) { throw new Error(`exact-parent 800x360 clipping authority differs: ${error.message}`); }
+  invariant(measurement.viewport.id === defect.id, "exact-parent 800x360 measurement viewport differs");
+  const effectiveTop = clippingAuthority.effectiveVisibleBounds.top;
+  const h1Top = measurement.h1?.rect?.top;
+  const glyphTop = measurement.glyphBounds?.top;
+  invariant([h1Top, glyphTop].every(Number.isFinite), "exact-parent 800x360 top-boundary geometry is incomplete");
   const allowances = [
     measurement.safeAllowances?.h1?.top,
     measurement.safeAllowances?.glyphs?.top,
     ...(measurement.safeAllowances?.renderedLines ?? []).map(({ top }) => top),
   ].filter(Number.isFinite);
   const headerIntersections = measurement.boundaryAnalysis?.occludingHeaderIntersections ?? [];
+  const glyphEscapes = measurement.boundaryAnalysis?.glyphEscapes ?? [];
+  const boundaryIntersections = measurement.boundaryAnalysis?.boundaryIntersections ?? [];
   const topSafetyViolation = (measurement.boundaryAnalysis?.safetyViolations ?? []).some(({ sides }) => Array.isArray(sides) && sides.includes("top"));
-  invariant(allowances.some((allowance) => allowance < MINIMUM_MANIFESTO_SAFETY_PX) || headerIntersections.length > 0 || topSafetyViolation, "exact-parent 800x360 failure lacks measured sticky/top clipping evidence");
+  invariant(
+    allowances.some((allowance) => allowance < MINIMUM_MANIFESTO_SAFETY_PX)
+      || headerIntersections.length > 0
+      || glyphEscapes.some(({ sides }) => Array.isArray(sides) && sides.includes("top"))
+      || boundaryIntersections.some(({ sides }) => Array.isArray(sides) && sides.includes("top"))
+      || topSafetyViolation,
+    "exact-parent 800x360 failure lacks measured top-clipping evidence",
+  );
+  invariant(h1Top < effectiveTop || glyphTop < effectiveTop, "exact-parent 800x360 glyph-bearing bounds do not cross the effective top boundary");
   return true;
 }
 

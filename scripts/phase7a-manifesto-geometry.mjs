@@ -479,46 +479,46 @@ function canonicalLine(value) {
 }
 
 /**
- * Validates measurement evidence without trusting its PASS-like summaries.
- * Missing, malformed, unresolved, wrapped, clipped, or overflowing evidence
- * throws and therefore cannot be promoted by a caller.
+ * Recomputes the clipping boundary authority without requiring the measurement
+ * itself to pass the manifesto geometry contract. This is used for exact-parent
+ * defect evidence, where clipping is expected but the geometry provenance must
+ * still be complete and internally consistent.
  */
-export function validateManifestoGeometry(measurement) {
-  invariant(measurement && typeof measurement === "object", "measurement is missing");
+export function validateManifestoClippingAuthority(measurement) {
+  invariant(measurement && typeof measurement === "object" && !Array.isArray(measurement), "measurement is missing");
   invariant(measurement.schema === MANIFESTO_GEOMETRY_SCHEMA, "schema differs");
   invariant(measurement.measurementError === null, measurement.measurementError || "measurement did not complete");
 
   const viewportBounds = assertRect(measurement.viewport, "viewport");
   const expectedViewport = SHORT_LANDSCAPE_VIEWPORTS.find(({ width, height }) => (
-    width === measurement.viewport.width && height === measurement.viewport.height
+    width === viewportBounds.width && height === viewportBounds.height
   ));
-  invariant(expectedViewport, `viewport ${measurement.viewport.width}x${measurement.viewport.height} is outside the required short-landscape family`);
+  invariant(expectedViewport, `viewport ${viewportBounds.width}x${viewportBounds.height} is outside the required short-landscape family`);
   invariant(measurement.viewport.id === expectedViewport.id, "viewport identifier differs");
   invariant(viewportBounds.left === 0 && viewportBounds.top === 0, "viewport origin differs");
-
-  const resolvedOrStatic = measurement.state?.manifestoReveal === "resolved"
-    || measurement.state?.cinematicMode === "static";
-  invariant(resolvedOrStatic, "state must be resolved or static");
-  invariant(measurement.state?.resolvedOrStatic === resolvedOrStatic, "resolved/static state summary differs");
-  const presentation = measurement.h1?.presentation;
-  const visiblyRendered = presentation?.display !== "none"
-    && !["collapse", "hidden"].includes(presentation?.visibility)
-    && finite(presentation?.opacity)
-    && presentation.opacity > 0;
-  invariant(visiblyRendered && presentation.visible === visiblyRendered, "manifesto H1 is not visibly rendered");
 
   const h1Rect = assertRect(measurement.h1?.rect, "H1 rectangle");
   assertRect(measurement.section?.rect, "Signal Field section rectangle");
   const sectionClipBounds = assertRect(measurement.sectionClipBounds, "Signal Field section clip bounds");
-  invariant(Array.isArray(measurement.clippingAncestors), "clipping ancestor inventory is missing");
-  invariant(measurement.clippingAncestors.length > 0, "clipping ancestor inventory is empty");
+  invariant(Array.isArray(measurement.clippingAncestors) && measurement.clippingAncestors.length > 0, "clipping ancestor inventory is missing or empty");
+  const clippingOverflow = new Set(["auto", "clip", "hidden", "scroll"]);
   for (const [index, ancestor] of measurement.clippingAncestors.entries()) {
-    invariant(ancestor?.clipsX === true || ancestor?.clipsY === true, `clipping ancestor ${index + 1} has no clipping axis`);
+    invariant(typeof ancestor?.overflowX === "string" && typeof ancestor.overflowY === "string" && typeof ancestor.contain === "string" && typeof ancestor.clipPath === "string", `clipping ancestor ${index + 1} raw clipping authority is incomplete`);
+    const containTokens = ancestor.contain.split(/\s+/).filter(Boolean);
+    const paintContainment = containTokens.some((token) => ["content", "paint", "strict"].includes(token));
+    const pathClipping = ancestor.clipPath !== "none";
+    const expectedClipsX = clippingOverflow.has(ancestor.overflowX) || paintContainment || pathClipping;
+    const expectedClipsY = clippingOverflow.has(ancestor.overflowY) || paintContainment || pathClipping;
+    invariant(ancestor.clipsX === expectedClipsX && ancestor.clipsY === expectedClipsY, `clipping ancestor ${index + 1} axis authority differs`);
+    invariant(expectedClipsX || expectedClipsY, `clipping ancestor ${index + 1} has no clipping axis`);
     assertRect(ancestor.bounds, `clipping ancestor ${index + 1} bounds`);
   }
-  invariant(measurement.clippingAncestors.some(({ isSignalFieldSection, clipsY }) => isSignalFieldSection === true && clipsY === true), "Signal Field section is absent from the vertical clipping inventory");
+  const signalFieldAncestors = measurement.clippingAncestors.filter(({ isSignalFieldSection }) => isSignalFieldSection === true);
+  invariant(signalFieldAncestors.length === 1, "Signal Field section clipping ancestor authority differs");
+  const signalFieldAncestor = signalFieldAncestors[0];
+  invariant(signalFieldAncestor.id === "entry" && signalFieldAncestor.selector === "#entry" && signalFieldAncestor.clipsY === true, "Signal Field #entry ancestor authority differs");
+  assertSameBounds(signalFieldAncestor.bounds, sectionClipBounds, "Signal Field #entry ancestor bounds");
 
-  const usableClipBounds = assertRect(measurement.usableClipBounds, "usable clip bounds");
   let expectedUsable = {
     left: Math.max(viewportBounds.left, sectionClipBounds.left),
     top: Math.max(viewportBounds.top, sectionClipBounds.top),
@@ -535,27 +535,35 @@ export function validateManifestoGeometry(measurement) {
       expectedUsable.bottom = Math.min(expectedUsable.bottom, ancestor.bounds.bottom);
     }
   }
+  const usableClipBounds = assertRect(measurement.usableClipBounds, "usable clip bounds");
   assertSameBounds(usableClipBounds, expectedUsable, "usable clip bounds");
 
-  const occludingHeader = measurement.occludingHeader;
-  invariant(occludingHeader?.selector === ".site-header", "stable occluding header selector differs");
-  const occludingHeaderRect = assertRect(occludingHeader.rect, "occluding header rectangle");
-  invariant(["fixed", "sticky"].includes(occludingHeader.position), "header is not fixed or sticky");
-  const headerVisiblyRendered = occludingHeader.presentation?.display !== "none"
-    && !["collapse", "hidden"].includes(occludingHeader.presentation?.visibility)
-    && finite(occludingHeader.presentation?.opacity)
-    && occludingHeader.presentation.opacity > 0;
-  invariant(occludingHeader.presentation?.visible === headerVisiblyRendered, "header visibility authority differs");
-  invariant(occludingHeader.anchoredToViewportTop === true, "header is not anchored to the viewport top");
-  invariant(occludingHeader.horizontallyOverlapsManifesto === true, "header does not overlap the manifesto horizontal region");
+  const header = measurement.occludingHeader;
+  invariant(header?.selector === ".site-header", "stable occluding header selector differs");
+  const headerRect = assertRect(header.rect, "occluding header rectangle");
+  invariant(typeof header.position === "string", "header position authority is incomplete");
+  const presentation = header.presentation;
+  invariant(typeof presentation?.display === "string" && typeof presentation.visibility === "string" && finite(presentation.opacity), "header presentation authority is incomplete");
+  const headerVisiblyRendered = presentation.display !== "none"
+    && !["collapse", "hidden"].includes(presentation.visibility)
+    && presentation.opacity > 0;
+  invariant(presentation.visible === headerVisiblyRendered, "header visibility authority differs");
+  const expectedHeaderAnchor = ["fixed", "sticky"].includes(header.position)
+    && headerRect.top <= viewportBounds.top + 0.5
+    && headerRect.bottom > viewportBounds.top;
+  invariant(header.anchoredToViewportTop === expectedHeaderAnchor, "header anchor authority differs");
+  invariant(expectedHeaderAnchor, "header is not anchored to the viewport top");
+  const expectedHeaderOverlap = headerRect.right > h1Rect.left && headerRect.left < h1Rect.right;
+  invariant(header.horizontallyOverlapsManifesto === expectedHeaderOverlap, "header overlap authority differs");
+  invariant(expectedHeaderOverlap, "header does not overlap the manifesto horizontal region");
   const expectedHeaderOcclusion = headerVisiblyRendered
-    && occludingHeader.anchoredToViewportTop
-    && occludingHeader.horizontallyOverlapsManifesto;
-  invariant(occludingHeader.occluding === expectedHeaderOcclusion, "header occlusion authority differs");
+    && expectedHeaderAnchor
+    && expectedHeaderOverlap;
+  invariant(header.occluding === expectedHeaderOcclusion, "header occlusion authority differs");
   const expectedHeaderBottom = expectedHeaderOcclusion
-    ? Math.min(viewportBounds.bottom, occludingHeaderRect.bottom)
+    ? Math.min(viewportBounds.bottom, headerRect.bottom)
     : viewportBounds.top;
-  invariant(Math.abs(occludingHeader.effectiveBottom - expectedHeaderBottom) <= 0.05, "header effective bottom differs");
+  invariant(finite(header.effectiveBottom) && Math.abs(header.effectiveBottom - expectedHeaderBottom) <= 0.05, "header effective bottom differs");
 
   const effectiveVisibleBounds = assertRect(measurement.effectiveVisibleBounds, "effective visible bounds");
   const expectedEffectiveVisible = {
@@ -565,6 +573,39 @@ export function validateManifestoGeometry(measurement) {
     bottom: expectedUsable.bottom,
   };
   assertSameBounds(effectiveVisibleBounds, expectedEffectiveVisible, "effective visible bounds");
+  return {
+    viewportBounds,
+    h1Rect,
+    usableClipBounds,
+    effectiveVisibleBounds,
+    header,
+    headerVisiblyRendered,
+    expectedHeaderAnchor,
+    expectedHeaderOverlap,
+    expectedHeaderOcclusion,
+    expectedHeaderBottom,
+  };
+}
+
+/**
+ * Validates measurement evidence without trusting its PASS-like summaries.
+ * Missing, malformed, unresolved, wrapped, clipped, or overflowing evidence
+ * throws and therefore cannot be promoted by a caller.
+ */
+export function validateManifestoGeometry(measurement) {
+  const clippingAuthority = validateManifestoClippingAuthority(measurement);
+  const { h1Rect, effectiveVisibleBounds } = clippingAuthority;
+
+  const resolvedOrStatic = measurement.state?.manifestoReveal === "resolved"
+    || measurement.state?.cinematicMode === "static";
+  invariant(resolvedOrStatic, "state must be resolved or static");
+  invariant(measurement.state?.resolvedOrStatic === resolvedOrStatic, "resolved/static state summary differs");
+  const presentation = measurement.h1?.presentation;
+  const visiblyRendered = presentation?.display !== "none"
+    && !["collapse", "hidden"].includes(presentation?.visibility)
+    && finite(presentation?.opacity)
+    && presentation.opacity > 0;
+  invariant(visiblyRendered && presentation.visible === visiblyRendered, "manifesto H1 is not visibly rendered");
 
   invariant(Array.isArray(measurement.authoredLines) && measurement.authoredLines.length === 3, "exactly 3 authored lines are required");
   const derivedRenderedLines = [];

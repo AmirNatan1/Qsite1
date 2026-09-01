@@ -206,11 +206,18 @@ function clippingReport() {
   const before = structuredClone(after);
   const defect = before.find(({ id }) => id === "short-landscape-800x360");
   defect.status = "FAIL";
-  defect.failure = "manifesto top safety clipping beneath sticky header";
+  defect.failure = "manifesto geometry: authored line 3 must resolve to exactly 1 rendered line";
   defect.measurement.h1.rect.top = 40;
   defect.measurement.h1.rect.height = defect.measurement.h1.rect.bottom - 40;
   defect.measurement.safeAllowances.h1.top = -10;
-  defect.measurement.boundaryAnalysis.occludingHeaderIntersections = [{ authoredLineIndex: 1 }];
+  defect.measurement.occludingHeader.presentation.visible = false;
+  defect.measurement.occludingHeader.presentation.visibility = "hidden";
+  defect.measurement.occludingHeader.presentation.opacity = 0;
+  defect.measurement.occludingHeader.occluding = false;
+  defect.measurement.occludingHeader.effectiveBottom = 0;
+  defect.measurement.boundaryAnalysis.glyphEscapes = [{ glyph: "W", sides: ["top"] }];
+  defect.measurement.boundaryAnalysis.boundaryIntersections = [{ authoredLineIndex: 1, renderedLineIndex: 1, sides: ["top"] }];
+  defect.measurement.boundaryAnalysis.safetyViolations = [{ authoredLineIndex: 1, renderedLineIndex: 1, sides: ["top"] }];
   return { status: "PASS", requiredViewportCount: 12, before, after };
 }
 
@@ -647,6 +654,28 @@ test("installed Chrome concealed-header geometry packages and audits only with h
   for (const [mutate, expected] of mutations) {
     assert.throws(() => buildReviewArtifacts(mutateJson(fixtureEntries, installedChromePath, mutate)), expected);
     assert.throws(() => auditPackageBytes(cryptographicallyRebindJson(installedChromePath, mutate)), expected);
+  }
+  const clippingPath = "03-responsive/clipping-report.json";
+  const clippingMutations = [
+    [(document) => { document.before[5].measurement.occludingHeader.presentation.visible = true; }, /header visibility authority differs/],
+    [(document) => { document.before[5].measurement.occludingHeader.effectiveBottom = 100; }, /header effective bottom differs/],
+    [(document) => { document.before[5].measurement.clippingAncestors[0].clipsY = false; }, /axis authority differs/],
+    [(document) => { document.before[5].measurement.occludingHeader.anchoredToViewportTop = false; }, /anchor authority differs/],
+    [(document) => { document.before[5].measurement.occludingHeader.horizontallyOverlapsManifesto = false; }, /overlap authority differs/],
+    [(document) => {
+      document.before[5].measurement.clippingAncestors[0].bounds.top += 1;
+      document.before[5].measurement.clippingAncestors[0].bounds.height -= 1;
+    }, /Signal Field #entry ancestor bounds\.top differs/],
+    [(document) => {
+      document.before[5].measurement.usableClipBounds.top += 10;
+      document.before[5].measurement.usableClipBounds.height -= 10;
+      document.before[5].measurement.effectiveVisibleBounds.top += 10;
+      document.before[5].measurement.effectiveVisibleBounds.height -= 10;
+    }, /usable clip bounds\.top differs/],
+  ];
+  for (const [mutate, expected] of clippingMutations) {
+    assert.throws(() => buildReviewArtifacts(mutateJson(fixtureEntries, clippingPath, mutate)), expected);
+    assert.throws(() => auditPackageBytes(cryptographicallyRebindJson(clippingPath, mutate)), expected);
   }
 });
 

@@ -33,6 +33,7 @@ import {
   MINIMUM_MANIFESTO_SAFETY_PX,
   PHASE7A_R1_SHORT_LANDSCAPE_VIEWPORTS,
   measureManifestoGeometry,
+  validateManifestoClippingAuthority,
   validateManifestoGeometry,
 } from "./phase7a-manifesto-geometry.mjs";
 import {
@@ -752,7 +753,11 @@ export function assertBefore800x360Defect(cases) {
   invariant(defect?.status === "FAIL" && typeof defect.failure === "string", "exact-parent 800x360 geometry defect was not reproduced");
   const measurement = defect.measurement;
   invariant(measurement && typeof measurement === "object", "exact-parent 800x360 defect has no geometry measurement");
-  const effectiveTop = measurement.effectiveVisibleBounds?.top;
+  let clippingAuthority;
+  try { clippingAuthority = validateManifestoClippingAuthority(measurement); }
+  catch (error) { throw new Error(`exact-parent 800x360 clipping authority differs: ${error.message}`); }
+  invariant(measurement.viewport.id === defect.id, "exact-parent 800x360 measurement viewport differs");
+  const effectiveTop = clippingAuthority.effectiveVisibleBounds.top;
   const h1Top = measurement.h1?.rect?.top;
   const glyphTop = measurement.glyphBounds?.top;
   invariant(Number.isFinite(effectiveTop) && Number.isFinite(h1Top) && Number.isFinite(glyphTop), "exact-parent 800x360 top-boundary rectangles are incomplete");
