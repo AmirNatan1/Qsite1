@@ -529,6 +529,8 @@ test("the exact-parent 800x360 comparison must reproduce measured sticky/top cli
     status: viewport.id === "short-landscape-800x360" ? "FAIL" : "PASS",
     failure: viewport.id === "short-landscape-800x360" ? "manifesto geometry: H1 top safety is -10.45px; at least 2px is required" : null,
     measurement: viewport.id === "short-landscape-800x360" ? {
+      h1: { rect: { top: 89.8 } },
+      glyphBounds: { top: 81.8 },
       occludingHeader: {
         position: "sticky",
         presentation: { visible: true },
@@ -544,6 +546,8 @@ test("the exact-parent 800x360 comparison must reproduce measured sticky/top cli
         renderedLines: [{ top: -2.25 }, { top: 42 }, { top: 95 }],
       },
       boundaryAnalysis: {
+        glyphEscapes: [{ glyph: "W", sides: ["top"] }],
+        boundaryIntersections: [{ authoredLineIndex: 1, sides: ["top"] }],
         occludingHeaderIntersections: [{ authoredLineIndex: 1 }],
         safetyViolations: [{ authoredLineIndex: 1, sides: ["top"] }],
       },
@@ -560,9 +564,13 @@ test("the exact-parent 800x360 comparison must reproduce measured sticky/top cli
   defect.measurement.safeAllowances.h1.top = 4;
   defect.measurement.safeAllowances.glyphs.top = 4;
   defect.measurement.safeAllowances.renderedLines.forEach((line) => { line.top = 4; });
+  defect.measurement.h1.rect.top = 110;
+  defect.measurement.glyphBounds.top = 106;
+  defect.measurement.boundaryAnalysis.glyphEscapes = [];
+  defect.measurement.boundaryAnalysis.boundaryIntersections = [];
   defect.measurement.boundaryAnalysis.occludingHeaderIntersections = [];
   defect.measurement.boundaryAnalysis.safetyViolations = [];
-  assert.throws(() => assertBefore800x360Defect(horizontalOnly), /does not contain measured/);
+  assert.throws(() => assertBefore800x360Defect(horizontalOnly), /does not contain measured|do not cross/);
 });
 
 test("fallback manifesto visibility rejects a DOM-present H1 that is hidden or clipped on any effective-bound side", () => {

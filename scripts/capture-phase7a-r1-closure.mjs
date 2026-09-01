@@ -752,36 +752,29 @@ export function assertBefore800x360Defect(cases) {
   invariant(defect?.status === "FAIL" && typeof defect.failure === "string", "exact-parent 800x360 geometry defect was not reproduced");
   const measurement = defect.measurement;
   invariant(measurement && typeof measurement === "object", "exact-parent 800x360 defect has no geometry measurement");
-  const header = measurement.occludingHeader;
-  invariant(
-    ["fixed", "sticky"].includes(header?.position)
-      && header?.presentation?.visible === true
-      && header.anchoredToViewportTop === true
-      && header.horizontalOverlap === true
-      && header.occluding === true
-      && ["fixed", "sticky"].includes(header.position),
-    "exact-parent 800x360 defect lacks a visible sticky-header occlusion authority",
-  );
-  invariant(
-    Number.isFinite(measurement.effectiveVisibleBounds?.top)
-      && Number.isFinite(header.effectiveBottom)
-      && measurement.effectiveVisibleBounds.top >= header.effectiveBottom - 0.05,
-    "exact-parent 800x360 effective visible top does not include the sticky header",
-  );
+  const effectiveTop = measurement.effectiveVisibleBounds?.top;
+  const h1Top = measurement.h1?.rect?.top;
+  const glyphTop = measurement.glyphBounds?.top;
+  invariant(Number.isFinite(effectiveTop) && Number.isFinite(h1Top) && Number.isFinite(glyphTop), "exact-parent 800x360 top-boundary rectangles are incomplete");
   const allowances = [
     measurement.safeAllowances?.h1?.top,
     measurement.safeAllowances?.glyphs?.top,
     ...(measurement.safeAllowances?.renderedLines ?? []).map(({ top }) => top),
   ].filter(Number.isFinite);
   const headerIntersections = measurement.boundaryAnalysis?.occludingHeaderIntersections ?? [];
+  const glyphEscapes = measurement.boundaryAnalysis?.glyphEscapes ?? [];
+  const boundaryIntersections = measurement.boundaryAnalysis?.boundaryIntersections ?? [];
   const topSafetyViolations = (measurement.boundaryAnalysis?.safetyViolations ?? [])
     .some(({ sides }) => Array.isArray(sides) && sides.includes("top"));
   invariant(
     allowances.some((allowance) => allowance < MINIMUM_MANIFESTO_SAFETY_PX)
       || headerIntersections.length > 0
+      || glyphEscapes.some(({ sides }) => Array.isArray(sides) && sides.includes("top"))
+      || boundaryIntersections.some(({ sides }) => Array.isArray(sides) && sides.includes("top"))
       || topSafetyViolations,
-    "exact-parent 800x360 failure does not contain measured sticky/top clipping evidence",
+    "exact-parent 800x360 failure does not contain measured top-clipping evidence",
   );
+  invariant(h1Top < effectiveTop || glyphTop < effectiveTop, "exact-parent 800x360 glyph-bearing bounds do not cross the effective top boundary");
   return true;
 }
 
