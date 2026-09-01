@@ -8,11 +8,13 @@ import {
   EXPECTED_QA_RESPONSIVE_MINIMUMS,
   EXPECTED_QA_ROUTE_COUNTS,
   PHASE7A_R1_BRANCH_URL,
+  PRODUCTION_DIFF_PATHS,
   SIGNAL_COMPARISON_RECORDING_CONTRACT,
   SIGNAL_COMPARISON_RECORDING_SCHEMA,
   SIGNAL_COMPARISON_RECORDING_SPECS,
   SERVED_BUILD_AUTHORITY_SCHEMA,
   normalizeDeployment,
+  containsPrivatePath,
   runSelfTest,
   sanitizeForPackage,
   validateComparisonRevision,
@@ -48,6 +50,14 @@ const r1RuntimeLocal = Object.freeze([{ kind: "css", route: "/_astro/app.css", b
 const r1RuntimeServed = Object.freeze(r1RuntimeLocal.map((record) => ({ ...record, httpStatus: 200, contentType: record.kind === "css" ? "text/css" : "application/javascript" })));
 const runtimeFingerprint = (records) => createHash("sha256").update(records.map(({ kind, route, bytes, sha256 }) => `${kind}\t${route}\t${bytes}\t${sha256}`).sort().join("\n")).digest("hex");
 const exactParentRuntimeFingerprint = runtimeFingerprint(exactParentRuntime);
+
+test("production diff scope excludes review fixtures and privacy matching requires absolute paths", () => {
+  assert.deepEqual(PRODUCTION_DIFF_PATHS, [".nvmrc", "astro.config.mjs", "package-lock.json", "package.json", "public", "src", "tsconfig.json"]);
+  assert.equal(containsPrivatePath("diff --git a/src/components/home/SignalThreshold.astro b/src/components/home/SignalThreshold.astro"), false);
+  assert.equal(containsPrivatePath("stored in /home/reviewer/capture.png"), true);
+  assert.equal(containsPrivatePath("C:\\Users\\reviewer\\capture.png"), true);
+  assert.equal(containsPrivatePath("file:///private/review.png"), true);
+});
 const r1RuntimeFingerprint = runtimeFingerprint(r1RuntimeLocal);
 
 function servedBuildFixture(afterRevision = "b".repeat(40)) {

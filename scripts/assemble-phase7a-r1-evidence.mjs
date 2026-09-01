@@ -67,6 +67,15 @@ export const SIGNAL_COMPARISON_RECORDING_SCHEMA = "quantum-hub.phase-7a-r1.signa
 export const SERVED_BUILD_AUTHORITY_SCHEMA = "quantum-hub.phase-7a-r1.served-build-authority.v1";
 export const PORTABLE_SERVED_BUILD_SCHEMA = "quantum-hub.phase-7a-r1.portable-served-build-receipt.v1";
 export const INSTALLED_CHROME_UI_SCHEMA = "quantum-hub.phase-7a-r1.installed-chrome-ui-evidence.v1";
+export const PRODUCTION_DIFF_PATHS = Object.freeze([
+  ".nvmrc",
+  "astro.config.mjs",
+  "package-lock.json",
+  "package.json",
+  "public",
+  "src",
+  "tsconfig.json",
+]);
 export const EXACT_PARENT_HOME_DOCUMENT_AUTHORITY = Object.freeze({
   bytes: 17_917,
   revision: PHASE7A_R1_PARENT,
@@ -120,7 +129,7 @@ export const REQUIRED_CLOSURE_JSON = Object.freeze([
   "route-shells/report.json",
 ]);
 
-const PRIVATE_PATH = /(?:\b[a-z]:[\\/](?:users|documents|program files|windows|temp)[\\/]|\/(?:users|home|private|tmp|root|workspace|workspaces|mnt\/[a-z])\/|\b(?:onedrive|appdata)\b|(?:^|[\\/])\.codex(?:[\\/]|$)|file:\/\/)/i;
+const PRIVATE_PATH = /(?:\b[a-z]:[\\/](?:users|documents|program files|windows|temp)[\\/]|(?:^|[\s"'(=:\[{])\/(?:users|home|private|tmp|root|workspace|workspaces|mnt\/[a-z])\/|\b(?:onedrive|appdata)\b|(?:^|[\\/])\.codex(?:[\\/]|$)|file:\/\/)/i;
 const LOCAL_ORIGIN = /https?:\/\/(?:127\.0\.0\.1|localhost|\[::1\])(?::\d+)?/i;
 const LOCAL_ORIGIN_GLOBAL = /https?:\/\/(?:127\.0\.0\.1|localhost|\[::1\])(?::\d+)?/gi;
 const URL_KEY = /^(?:baseUrl|beforeBaseUrl|afterBaseUrl|cdpUrl|immutableUrl|branchUrl|url)$/i;
@@ -218,6 +227,10 @@ export function sanitizeForPackage(value) {
     return output;
   }
   return value;
+}
+
+export function containsPrivatePath(value) {
+  return PRIVATE_PATH.test(String(value));
 }
 
 function assertPass(record, label) {
@@ -1083,9 +1096,9 @@ export async function deriveGitProvenance(repoRoot = ROOT) {
 }
 
 async function generateProductionDiff(repoRoot, expectedPath = null) {
-  const output = await git(repoRoot, "diff", "--no-ext-diff", "--no-color", "--full-index", `${PHASE7A_R1_PARENT}..HEAD`, "--", ".");
+  const output = await git(repoRoot, "diff", "--no-ext-diff", "--no-color", "--full-index", `${PHASE7A_R1_PARENT}..HEAD`, "--", ...PRODUCTION_DIFF_PATHS);
   invariant(output.length > 0, "production diff is empty");
-  invariant(!/GIT binary patch/.test(output) && !PRIVATE_PATH.test(output), "production diff contains a binary payload or private path");
+  invariant(!/GIT binary patch/.test(output) && !containsPrivatePath(output), "production diff contains a binary payload or private path");
   const bytes = Buffer.from(`${output}\n`);
   if (expectedPath) {
     const expected = await readFile(expectedPath);
