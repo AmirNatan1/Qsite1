@@ -1338,17 +1338,21 @@ function servedBuildMarkdown(report) {
 
 async function captureShortLandscape(browser, baseUrl, label, output, timeoutMs) {
   const { context, ledger } = await isolatedContext(browser, baseUrl);
-  const page = await context.newPage();
   const cases = [];
   try {
     for (const viewport of REQUIRED_SHORT_LANDSCAPE_VIEWPORTS) {
-      await page.setViewportSize({ width: viewport.width, height: viewport.height });
-      await settleHome(page, baseUrl, timeoutMs);
-      const measurement = await page.evaluate(measureManifestoGeometry);
-      const result = geometryResult(viewport, measurement);
-      cases.push(result);
-      await screenshot(page, output, `responsive/${label}/${viewport.id}-viewport.png`, { fullPage: false });
-      await screenshot(page, output, `responsive/${label}/${viewport.id}-full-page.png`, { fullPage: true });
+      const page = await context.newPage();
+      try {
+        await page.setViewportSize({ width: viewport.width, height: viewport.height });
+        await settleHome(page, baseUrl, timeoutMs);
+        const measurement = await page.evaluate(measureManifestoGeometry);
+        const result = geometryResult(viewport, measurement);
+        cases.push(result);
+        await screenshot(page, output, `responsive/${label}/${viewport.id}-viewport.png`, { fullPage: false });
+        await screenshot(page, output, `responsive/${label}/${viewport.id}-full-page.png`, { fullPage: true });
+      } finally {
+        await page.close();
+      }
     }
   } finally {
     await context.close();

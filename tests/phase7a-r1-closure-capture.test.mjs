@@ -801,6 +801,8 @@ test("native /#entry capture never writes document position and revalidates all 
   assert.match(source, /validateManifestoGeometry\(item\.measurement\);/);
   assert.match(source, /fullPage:\s*false/);
   assert.match(source, /fullPage:\s*true/);
+  assert.match(source, /for \(const viewport of REQUIRED_SHORT_LANDSCAPE_VIEWPORTS\) \{\s*const page = await context\.newPage\(\);/);
+  assert.match(source, /finally \{\s*await page\.close\(\);\s*\}/);
 });
 
 test("self-test exercises viewport, privacy and fail-closed authorities", () => {
