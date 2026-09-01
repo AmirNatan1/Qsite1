@@ -1336,14 +1336,22 @@ async function prepareScreenshotState(page, options, spec) {
   }
   await settle(page, options.timeoutMs);
   const state = await screenshotState(page);
-  if (["core-resolved", "reduced-motion", "no-javascript", "no-javascript-entry", "fallback-fonts"].includes(spec.mode)) {
+  if (["core-resolved", "reduced-motion", "no-javascript-entry", "fallback-fonts"].includes(spec.mode)) {
     state.manifestoGeometry = await page.evaluate(measureManifestoGeometry);
     state.manifestoVisibility = validateFallbackManifestoMeasurement(state.manifestoGeometry, `${spec.id} screenshot manifesto`);
+  } else if (spec.mode === "no-javascript") {
+    state.manifestoGeometry = null;
+    state.manifestoVisibility = {
+      applicable: false,
+      reason: "top-of-document no-JavaScript fallback; glyph visibility is measured by the dedicated no-javascript-entry state",
+      status: "NOT_APPLICABLE",
+    };
   }
   const ordinary = state.h1Count === 1 && !state.horizontalOverflow;
   if (spec.mode === "core-resolved") invariant(ordinary && state.manifestoVisibility.status === "PASS" && state.signalField && state.manifestoWords === 7 && (state.manifestoReveal === "resolved" || state.cinematicMode === "static"), `${spec.id} core Signal Field state differs`);
   else if (spec.mode === "reduced-motion") invariant(ordinary && state.manifestoVisibility.status === "PASS" && state.cinematicMode === "static" && state.fieldMapLinks === 8, `${spec.id} reduced-motion state differs`);
-  else if (spec.mode.startsWith("no-javascript")) invariant(ordinary && state.manifestoVisibility.status === "PASS" && state.signalField && state.manifestoWords === 7 && state.fieldMapLinks === 8, `${spec.id} no-JavaScript state differs`);
+  else if (spec.mode === "no-javascript") invariant(ordinary && state.path === "/" && state.hash === "" && state.scrollY === 0 && state.manifestoVisibility.status === "NOT_APPLICABLE" && state.signalField && state.manifestoWords === 7 && state.fieldMapLinks === 8, `${spec.id} no-JavaScript top fallback state differs`);
+  else if (spec.mode === "no-javascript-entry") invariant(ordinary && state.path === "/" && state.hash === "#entry" && state.manifestoVisibility.status === "PASS" && state.signalField && state.manifestoWords === 7 && state.fieldMapLinks === 8, `${spec.id} no-JavaScript entry state differs`);
   else if (spec.mode === "fallback-fonts") invariant(ordinary && state.manifestoVisibility.status === "PASS" && state.manifestoWords === 7, `${spec.id} fallback-font state differs`);
   else if (spec.mode === "field-map-open") invariant(ordinary && state.fieldMapOpen && state.fieldMapRootOpen && state.fieldMapLinks === 8, `${spec.id} open Field Map state differs`);
   else if (spec.mode === "field-map-focus-return") invariant(ordinary && !state.fieldMapOpen && !state.fieldMapRootOpen && state.activeElement === "field-map-summary", `${spec.id} Field Map focus return differs`);

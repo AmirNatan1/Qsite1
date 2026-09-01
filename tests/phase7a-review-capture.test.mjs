@@ -219,6 +219,18 @@ test("reduced-motion evidence uses native semantic-entry placement before glyph 
   assert.match(screenshot, /spec\.mode === "reduced-motion"\) \{\s*await goto\(page, options, "\/#entry"\)/);
 });
 
+test("no-JavaScript screenshots distinguish the document top from measured semantic entry", async () => {
+  const source = await readFile(path.join(ROOT, "scripts", "capture-phase7a-review-evidence.mjs"), "utf8");
+  const screenshot = source.slice(
+    source.indexOf("async function prepareScreenshotState"),
+    source.indexOf("async function captureScreenshots"),
+  );
+  assert.match(screenshot, /spec\.mode === "no-javascript"\) \{\s*await goto\(page, options, "\/"\)/);
+  assert.match(screenshot, /spec\.mode === "no-javascript-entry"\) \{\s*await goto\(page, options, "\/#entry"\)/);
+  assert.match(screenshot, /spec\.mode === "no-javascript"[\s\S]*?status:\s*"NOT_APPLICABLE"/);
+  assert.match(screenshot, /spec\.mode === "no-javascript-entry"[\s\S]*?manifestoVisibility\.status === "PASS"/);
+});
+
 test("capture records only bounded media and responsive-poster aborts as expected lifecycle cancellations", () => {
   assert.equal(requestFailureDisposition({
     failure: "net::ERR_ABORTED",
