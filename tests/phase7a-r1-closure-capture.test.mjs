@@ -550,6 +550,9 @@ test("the exact-parent 800x360 comparison must reproduce measured sticky/top cli
     } : null,
   }));
   assert.equal(assertBefore800x360Defect(cases), true);
+  const alternateFirstDiagnostic = structuredClone(cases);
+  alternateFirstDiagnostic.find(({ id }) => id === "short-landscape-800x360").failure = "manifesto geometry: rendered line count differs";
+  assert.equal(assertBefore800x360Defect(alternateFirstDiagnostic), true);
   assert.throws(() => assertBefore800x360Defect(cases.map((item) => ({ ...item, status: "PASS", failure: null }))), /was not reproduced/);
   const horizontalOnly = structuredClone(cases);
   const defect = horizontalOnly.find(({ id }) => id === "short-landscape-800x360");
@@ -559,7 +562,7 @@ test("the exact-parent 800x360 comparison must reproduce measured sticky/top cli
   defect.measurement.safeAllowances.renderedLines.forEach((line) => { line.top = 4; });
   defect.measurement.boundaryAnalysis.occludingHeaderIntersections = [];
   defect.measurement.boundaryAnalysis.safetyViolations = [];
-  assert.throws(() => assertBefore800x360Defect(horizontalOnly), /not classified as sticky\/top clipping|does not contain measured/);
+  assert.throws(() => assertBefore800x360Defect(horizontalOnly), /does not contain measured/);
 });
 
 test("fallback manifesto visibility rejects a DOM-present H1 that is hidden or clipped on any effective-bound side", () => {

@@ -750,7 +750,6 @@ export function assertBefore800x360Defect(cases) {
   invariant(new Set(observed).size === observed.length && expected.every((id, index) => observed[index] === id), "before geometry viewport order or membership differs");
   const defect = cases.find(({ id }) => id === "short-landscape-800x360");
   invariant(defect?.status === "FAIL" && typeof defect.failure === "string", "exact-parent 800x360 geometry defect was not reproduced");
-  invariant(/(?:top|sticky|header|occlud|clip|safety)/i.test(defect.failure), "exact-parent 800x360 failure is not classified as sticky/top clipping");
   const measurement = defect.measurement;
   invariant(measurement && typeof measurement === "object", "exact-parent 800x360 defect has no geometry measurement");
   const header = measurement.occludingHeader;
