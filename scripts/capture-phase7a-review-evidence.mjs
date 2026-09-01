@@ -962,7 +962,7 @@ async function responsiveAuthority(page, options) {
 }
 
 async function reducedMotionSegment(page, options) {
-  await goto(page, options, "/");
+  await goto(page, options, "/#entry");
   const states = { staticHome: await observeState(page) };
   states.staticHome.manifestoGeometry = await page.evaluate(measureManifestoGeometry);
   states.staticHome.manifestoVisibility = validateFallbackManifestoMeasurement(states.staticHome.manifestoGeometry, "reduced-motion recording manifesto");
@@ -1319,7 +1319,7 @@ async function prepareScreenshotState(page, options, spec) {
     await waitForHome(page, options);
     await page.waitForFunction(() => document.querySelector("[data-cinematic-shell]")?.getAttribute("data-manifesto-reveal") === "resolved" || document.documentElement.dataset.cinematicMode === "static", undefined, { timeout: Math.min(options.timeoutMs, 15_000) }).catch(() => undefined);
   } else if (spec.mode === "reduced-motion") {
-    await goto(page, options, "/");
+    await goto(page, options, "/#entry");
   } else if (spec.mode === "no-javascript") {
     await goto(page, options, "/");
   } else if (spec.mode === "no-javascript-entry") {

@@ -205,6 +205,20 @@ test("capture settling is bounded when Firefox suppresses animation frames", () 
   assert.ok(Object.isFrozen(CAPTURE_SETTLE_TIMEOUTS));
 });
 
+test("reduced-motion evidence uses native semantic-entry placement before glyph measurement", async () => {
+  const source = await readFile(path.join(ROOT, "scripts", "capture-phase7a-review-evidence.mjs"), "utf8");
+  const segment = source.slice(
+    source.indexOf("async function reducedMotionSegment"),
+    source.indexOf("async function noJavaScriptSegment"),
+  );
+  const screenshot = source.slice(
+    source.indexOf("async function prepareScreenshotState"),
+    source.indexOf("async function captureScreenshots"),
+  );
+  assert.match(segment, /await goto\(page, options, "\/#entry"\)/);
+  assert.match(screenshot, /spec\.mode === "reduced-motion"\) \{\s*await goto\(page, options, "\/#entry"\)/);
+});
+
 test("capture records only bounded media and responsive-poster aborts as expected lifecycle cancellations", () => {
   assert.equal(requestFailureDisposition({
     failure: "net::ERR_ABORTED",
