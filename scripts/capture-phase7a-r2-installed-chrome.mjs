@@ -1088,11 +1088,10 @@ async function capture(options) {
     const reverse = await focusSequence(page, true);
     await summary.focus();
     await page.keyboard.press("Tab");
-    await page.keyboard.press("Tab");
     await page.waitForTimeout(25);
     const focusState = await inspectFieldMapState(page, "focus");
     validateOpenState(focusState, "live installed-Chrome focus state");
-    invariant((await readFocus(page)).activeDestinationName === "For industry", "installed-Chrome focus screenshot target differs");
+    invariant((await readFocus(page)).activeDestinationName === "Home", "installed-Chrome focus screenshot target differs");
     const focusVisual = await capturePageState(page, staging, PAGE_VISUALS[2], browserInfo.targetTitle);
 
     const body = await bodyRecapture(page);
@@ -1103,6 +1102,10 @@ async function capture(options) {
     validateClosedState(escapeState, "live installed-Chrome Escape state", true);
     const escapeSummary = await captureSummaryAuthority(page, session);
     validateSummaryAuthority(escapeSummary, false, "live installed-Chrome Escape summary");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Shift+Tab");
+    await page.waitForTimeout(25);
+    invariant((await readFocus(page)).activeElement === "field-map-summary", "installed-Chrome Escape focus-paint round-trip did not return to the summary");
     const escapeVisual = await capturePageState(page, staging, PAGE_VISUALS[3], browserInfo.targetTitle);
     const postCloseOutside = await postCloseOutsideFocus(page);
 
@@ -1132,6 +1135,7 @@ async function capture(options) {
       limitations: [
         "This is genuine installed Google Chrome evidence, not physical Safari evidence.",
         "The visible Chrome-window and Zoom: 200% proof is supplied by Codex Computer Use and cryptographically rebound to the copied PNG; the four page-state PNGs are captured through the attached page.",
+        "The structured Escape state is captured immediately after Escape; its screenshot follows one Tab/Shift+Tab paint round-trip that ends on the restored summary so Chromium visibly rasterizes the focus indicator.",
       ],
       parent: PHASE7A_R2_PARENT,
       repeatedCycles: cycles,
