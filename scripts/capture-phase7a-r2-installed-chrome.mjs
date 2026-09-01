@@ -1102,10 +1102,11 @@ async function capture(options) {
     validateClosedState(escapeState, "live installed-Chrome Escape state", true);
     const escapeSummary = await captureSummaryAuthority(page, session);
     validateSummaryAuthority(escapeSummary, false, "live installed-Chrome Escape summary");
-    await page.keyboard.press("Tab");
     await page.keyboard.press("Shift+Tab");
+    await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: "instant" }));
+    await page.keyboard.press("Tab");
     await page.waitForTimeout(25);
-    invariant((await readFocus(page)).activeElement === "field-map-summary", "installed-Chrome Escape focus-paint round-trip did not return to the summary");
+    invariant((await readFocus(page)).activeElement === "field-map-summary" && await page.evaluate(() => scrollY === 0), "installed-Chrome Escape focus-paint round-trip did not return to the visible summary");
     const escapeVisual = await capturePageState(page, staging, PAGE_VISUALS[3], browserInfo.targetTitle);
     const postCloseOutside = await postCloseOutsideFocus(page);
 
@@ -1135,7 +1136,7 @@ async function capture(options) {
       limitations: [
         "This is genuine installed Google Chrome evidence, not physical Safari evidence.",
         "The visible Chrome-window and Zoom: 200% proof is supplied by Codex Computer Use and cryptographically rebound to the copied PNG; the four page-state PNGs are captured through the attached page.",
-        "The structured Escape state is captured immediately after Escape; its screenshot follows one Tab/Shift+Tab paint round-trip that ends on the restored summary so Chromium visibly rasterizes the focus indicator.",
+        "The structured Escape state is captured immediately after Escape; its screenshot then normalizes the review viewport to the route top and uses one Shift+Tab/Tab paint round-trip that ends on the restored summary so Chromium visibly rasterizes the focus indicator.",
       ],
       parent: PHASE7A_R2_PARENT,
       repeatedCycles: cycles,
