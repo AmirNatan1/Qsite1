@@ -52,6 +52,10 @@ async function exists(filename) {
   }
 }
 
+export function canonicalSourceBytes(source) {
+  return Buffer.byteLength(source.replace(/\r\n?/g, "\n"));
+}
+
 export async function verifyPhase7BSource(root = process.cwd(), environment = process.env) {
   const inherited = await verifyInheritedPhase7A(root, environment, "phase7b-inherited");
   const read = (relative) => readFile(path.join(root, relative), "utf8");
@@ -133,11 +137,11 @@ export async function verifyPhase7BSource(root = process.cwd(), environment = pr
   assert.doesNotMatch(css, /scroll-snap|overflow-y:\s*(?:auto|scroll)|@keyframes|animation\s*:/);
   assert.doesNotMatch(css, /\.signal-threshold|\.field-map-threshold|\.site-header/);
   assert.ok(
-    Buffer.byteLength(css) <= PHASE7B_PERFORMANCE_BUDGET.rawCssDeltaMaximum,
+    canonicalSourceBytes(css) <= PHASE7B_PERFORMANCE_BUDGET.rawCssDeltaMaximum,
     `raw Phase 7B CSS exceeds ${PHASE7B_PERFORMANCE_BUDGET.rawCssDeltaMaximum} bytes`,
   );
   assert.ok(
-    Buffer.byteLength(controller) + Buffer.byteLength(stateModel) <= PHASE7B_PERFORMANCE_BUDGET.rawJavaScriptDeltaMaximum,
+    canonicalSourceBytes(controller) + canonicalSourceBytes(stateModel) <= PHASE7B_PERFORMANCE_BUDGET.rawJavaScriptDeltaMaximum,
     `raw Phase 7B JS exceeds ${PHASE7B_PERFORMANCE_BUDGET.rawJavaScriptDeltaMaximum} bytes`,
   );
 
