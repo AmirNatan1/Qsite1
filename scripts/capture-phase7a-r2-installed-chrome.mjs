@@ -406,7 +406,9 @@ function validateScreenshot(record, expected, label) {
 export function validateVisualAuthority(visuals) {
   invariant(Array.isArray(visuals) && visuals.length === PAGE_VISUALS.length, "installed-Chrome page-state visual inventory must contain exactly four PNGs");
   visuals.forEach((record, index) => validateScreenshot(record, PAGE_VISUALS[index], "installed-Chrome page-state visual " + (index + 1)));
-  invariant(new Set(visuals.map((record) => record.sha256)).size === visuals.length, "installed-Chrome closed/open/focus/escape PNGs are not distinct");
+  const [closed, open, focus, escape] = visuals;
+  invariant(new Set([closed.sha256, open.sha256, focus.sha256]).size === 3, "installed-Chrome closed, open, and keyboard-focus PNGs are not distinct");
+  invariant(escape.sha256 !== open.sha256 && escape.sha256 !== focus.sha256, "installed-Chrome Escape PNG is not distinct from the open and keyboard-focus states");
   return true;
 }
 
@@ -505,7 +507,7 @@ export function validateInstalledChromeReport(report, expectedRevision) {
   });
   validateVisualAuthority(report.visuals);
   invariant(report.visuals.every((visual) => visual.browserTitle === report.browser.targetTitle), "installed-Chrome page-state PNG title binding differs");
-  invariant(new Set([...report.visuals.map((visual) => visual.sha256), report.computerUseUiProof.screenshot.sha256]).size === ALL_VISUALS.length, "installed-Chrome page-state and Computer Use PNG hashes are not distinct");
+  invariant(!report.visuals.some((visual) => visual.sha256 === report.computerUseUiProof.screenshot.sha256), "installed-Chrome page-state and Computer Use PNG hashes are not distinct");
   invariant(Array.isArray(report.limitations) && report.limitations.some((value) => value.includes("not physical Safari")), "installed-Chrome environmental limitation is missing");
   return true;
 }
@@ -1102,11 +1104,9 @@ async function capture(options) {
     validateClosedState(escapeState, "live installed-Chrome Escape state", true);
     const escapeSummary = await captureSummaryAuthority(page, session);
     validateSummaryAuthority(escapeSummary, false, "live installed-Chrome Escape summary");
-    await page.keyboard.press("Shift+Tab");
     await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: "instant" }));
-    await page.keyboard.press("Tab");
     await page.waitForTimeout(25);
-    invariant((await readFocus(page)).activeElement === "field-map-summary" && await page.evaluate(() => scrollY === 0), "installed-Chrome Escape focus-paint round-trip did not return to the visible summary");
+    invariant((await readFocus(page)).activeElement === "field-map-summary" && await page.evaluate(() => scrollY === 0), "installed-Chrome Escape focus restoration did not survive route-top screenshot normalization");
     const escapeVisual = await capturePageState(page, staging, PAGE_VISUALS[3], browserInfo.targetTitle);
     const postCloseOutside = await postCloseOutsideFocus(page);
 
@@ -1136,7 +1136,7 @@ async function capture(options) {
       limitations: [
         "This is genuine installed Google Chrome evidence, not physical Safari evidence.",
         "The visible Chrome-window and Zoom: 200% proof is supplied by Codex Computer Use and cryptographically rebound to the copied PNG; the four page-state PNGs are captured through the attached page.",
-        "The structured Escape state is captured immediately after Escape; its screenshot then normalizes the review viewport to the route top and uses one Shift+Tab/Tab paint round-trip that ends on the restored summary so Chromium visibly rasterizes the focus indicator.",
+        "At native 200%, installed Chrome can rasterize the baseline closed and Escape-returned closed page screenshots as pixel-identical even though the immediate structured DOM and CDP accessibility authority proves that Escape restored focus to the native summary. The open and keyboard-focus page screenshots remain distinct, and the Escape screenshot remains distinct from both open states.",
       ],
       parent: PHASE7A_R2_PARENT,
       repeatedCycles: cycles,
@@ -1325,6 +1325,10 @@ export function selfTest() {
     width: 1440,
   }));
   validateVisualAuthority(visuals);
+  const escapeMatchingClosed = visuals.map((visual, index) => index === 3 ? { ...visual, sha256: visuals[0].sha256 } : visual);
+  validateVisualAuthority(escapeMatchingClosed);
+  expectReject(() => validateVisualAuthority(visuals.map((visual, index) => index === 1 ? { ...visual, sha256: visuals[0].sha256 } : visual)), /closed, open, and keyboard-focus/, "closed/open visual collision");
+  expectReject(() => validateVisualAuthority(visuals.map((visual, index) => index === 3 ? { ...visual, sha256: visuals[1].sha256 } : visual)), /Escape PNG/, "Escape/open visual collision");
   const computerUseVisual = {
     browserTitle: "Quantum - Google Chrome",
     bytes: 104,

@@ -201,7 +201,9 @@ test("installed-Chrome source cannot launch browsers/pages, resize or emulate vi
   assert.doesNotMatch(source, /const postCloseOutsideFocus = await postCloseOutsideFocus\(page\)/);
   assert.match(source, /activeDestinationName === "Home"/);
   assert.match(source, /window\.scrollTo\(\{ top: 0, left: 0, behavior: "instant" \}\)/);
-  assert.match(source, /Escape focus-paint round-trip did not return to the visible summary/);
+  assert.match(source, /Escape focus restoration did not survive route-top screenshot normalization/);
+  assert.match(source, /baseline closed and Escape-returned closed page screenshots as pixel-identical/);
+  assert.doesNotMatch(source, /focus-paint round-trip/);
 });
 
 test("generic R2 capture retains its inert self-test and named export surface", async () => {
