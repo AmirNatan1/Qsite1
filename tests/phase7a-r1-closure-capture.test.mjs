@@ -467,6 +467,12 @@ test("runtime asset derivation inventories only linked root-local CSS and JavaSc
   ]);
   assert.throws(() => extractLinkedRuntimeAssets('<link rel="stylesheet" href="https://example.test/app.css"><script src="/app.js"></script>'), /root-local immutable path/);
   assert.throws(() => extractLinkedRuntimeAssets('<link rel="stylesheet" href="/app.css">'), /must contain linked CSS and JavaScript/);
+  assert.deepEqual(
+    EXACT_PARENT_RUNTIME_ASSET_AUTHORITY.records.map(({ kind, route }) => ({ kind, route })),
+    [...EXACT_PARENT_RUNTIME_ASSET_AUTHORITY.records]
+      .sort((left, right) => left.route.localeCompare(right.route) || left.kind.localeCompare(right.kind))
+      .map(({ kind, route }) => ({ kind, route })),
+  );
 });
 
 test("Firefox navigation-start evidence is captured before body inspection and dark authority precedes rendering", () => {
