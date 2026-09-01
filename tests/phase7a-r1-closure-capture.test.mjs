@@ -580,6 +580,16 @@ test("fallback manifesto visibility rejects a DOM-present H1 that is hidden or c
   assert.equal(receipt.status, "PASS");
   assert.deepEqual(receipt.h1Allowances, { left: 20, top: 26, right: 20, bottom: 144 });
 
+  const hiddenHeader = structuredClone(passing);
+  hiddenHeader.occludingHeader.presentation.visible = false;
+  hiddenHeader.occludingHeader.occluding = false;
+  hiddenHeader.occludingHeader.effectiveBottom = 0;
+  assert.equal(validateFallbackManifestoMeasurement(hiddenHeader, "hidden-header").visibleStickyHeaderBottom, null);
+
+  const inconsistentHiddenHeader = structuredClone(hiddenHeader);
+  inconsistentHiddenHeader.occludingHeader.occluding = true;
+  assert.throws(() => validateFallbackManifestoMeasurement(inconsistentHiddenHeader, "hidden-header"), /incorrectly classified/);
+
   const hidden = structuredClone(passing);
   hidden.h1.presentation.visible = false;
   assert.throws(() => validateFallbackManifestoMeasurement(hidden, "hidden"), /present but not visibly rendered/);

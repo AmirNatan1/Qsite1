@@ -809,14 +809,18 @@ export function validateFallbackManifestoMeasurement(measurement, label = "fallb
   const glyphs = measuredRect(measurement.glyphBounds, `${label} glyph bounds`);
   invariant(measurement.h1?.presentation?.visible === true, `${label}: H1 is present but not visibly rendered`);
   const header = measurement.occludingHeader;
-  invariant(
-    header?.presentation?.visible === true
-      && header.anchoredToViewportTop === true
-      && header.occluding === true
-      && Number.isFinite(header.effectiveBottom)
-      && effective.top >= header.effectiveBottom - 0.05,
-    `${label}: effective visible bounds do not include the visible sticky header`,
-  );
+  invariant(header && typeof header === "object" && typeof header.presentation?.visible === "boolean", `${label}: sticky-header measurement is missing`);
+  if (header.presentation.visible) {
+    invariant(
+      header.anchoredToViewportTop === true
+        && header.occluding === true
+        && Number.isFinite(header.effectiveBottom)
+        && effective.top >= header.effectiveBottom - 0.05,
+      `${label}: effective visible bounds do not include the visible sticky header`,
+    );
+  } else {
+    invariant(header.occluding === false, `${label}: hidden sticky header is incorrectly classified as occluding`);
+  }
   invariant(Array.isArray(measurement.authoredLines) && measurement.authoredLines.length === 3, `${label}: authored manifesto line inventory differs`);
   const glyphBoxes = measurement.authoredLines.flatMap((line) => Array.isArray(line.glyphBoxes) ? line.glyphBoxes : []);
   invariant(glyphBoxes.length > 0, `${label}: glyph-bearing Range inventory is empty`);
@@ -845,7 +849,7 @@ export function validateFallbackManifestoMeasurement(measurement, label = "fallb
     h1Allowances,
     glyphAllowances,
     glyphBoxCount: glyphBoxes.length,
-    visibleStickyHeaderBottom: header.effectiveBottom,
+    visibleStickyHeaderBottom: header.presentation.visible ? header.effectiveBottom : null,
     horizontalOverflow: false,
   };
 }
