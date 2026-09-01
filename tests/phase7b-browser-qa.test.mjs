@@ -13,6 +13,7 @@ import {
   MACRO_SAMPLES,
   PHASE7A_ACCEPTED_IMMUTABLE_PREVIEW,
   SCHEMA,
+  VISUAL_REGRESSION_INSERTION_ALLOWANCE_PX,
   VISUAL_REGRESSION_STATES,
   assertExternalOutput,
   compareNormalizedVisuals,
@@ -184,6 +185,7 @@ test("visual-regression normalization crops viewport scrollbars and post-bifurca
   assert.equal(normalized.normalized.length, 7 * 4 * 4);
   assert.match(normalized.sourceSha256, /^[0-9a-f]{64}$/);
   assert.match(normalized.normalizedSha256, /^[0-9a-f]{64}$/);
+  assert.equal(VISUAL_REGRESSION_INSERTION_ALLOWANCE_PX, 16);
 });
 
 test("font settling uses a bounded loaded-status observation instead of adopting FontFaceSet.ready", async () => {
@@ -319,6 +321,9 @@ test("source uses installed Chromium and existing media helpers without zoom emu
   assert.match(source, /reportPhaseProgress\(engine, phase, "START"\)/);
   assert.match(source, /runReportedPhase\(engine, "visual-regression"/);
   assert.match(source, /recording-\$\{specification\.scenario\}/);
+  assert.match(source, /EVIDENCE_STATUSES\.includes\(result\?\.status\)/);
+  assert.match(source, /observerDelta <= PHASE7B_PERFORMANCE_BUDGET\.activeObserverMaximum/);
+  assert.match(source, /retained\.h1\.replace\(\/\\s\+\/g, ""\)/);
   assert.doesNotMatch(source, /document\.fonts\??\.ready/);
   assert.match(source, /--retain-visual-regression-pngs/);
   assert.doesNotMatch(source, /deviceScaleFactor|force-device-scale-factor|\.style\.zoom\s*=|transform\s*:\s*scale/i);

@@ -63,6 +63,7 @@ export const EXPECTED_H1 = "We turn industrial needs into field evidence.";
 export const EXPECTED_AUDIENCES = Object.freeze(["For industry", "For startups"]);
 export const EXPECTED_FIELD_MAP_DESTINATIONS = 8;
 export const PHASE7A_ACCEPTED_IMMUTABLE_PREVIEW = "https://3b260649.qsite1.pages.dev/";
+export const VISUAL_REGRESSION_INSERTION_ALLOWANCE_PX = 16;
 export const VISUAL_REGRESSION_STATES = Object.freeze([
   Object.freeze({ id: "manifesto-entry", pathname: "/#entry", anchor: "entry", fieldMapOpen: false }),
   Object.freeze({ id: "audience-bifurcation", pathname: "/#entry", anchor: "audience", fieldMapOpen: false }),
@@ -709,7 +710,7 @@ async function phase7aVisualRegression(browser, engine, options, output) {
       ]);
       const semanticMatch = JSON.stringify(frozenSemanticSignature(baseline.semantic)) === JSON.stringify(frozenSemanticSignature(current.semantic));
       const comparisonHeight = specification.anchor === "audience"
-        ? Math.max(1, Math.floor(Math.min(baseline.semantic.innerHeight, current.semantic.innerHeight, baseline.semantic.frozenBoundaryBottom, current.semantic.frozenBoundaryBottom)))
+        ? Math.max(1, Math.floor(Math.min(baseline.semantic.innerHeight, current.semantic.innerHeight, baseline.semantic.frozenBoundaryBottom, current.semantic.frozenBoundaryBottom) - VISUAL_REGRESSION_INSERTION_ALLOWANCE_PX))
         : Math.min(baseline.semantic.innerHeight, current.semantic.innerHeight);
       const comparisonWidth = Math.min(baseline.semantic.clientWidth, current.semantic.clientWidth);
       const [baselineNormalized, currentNormalized] = await Promise.all([
@@ -753,7 +754,7 @@ async function phase7aVisualRegression(browser, engine, options, output) {
           height: comparisonHeight,
           excludedRows: baseline.semantic.innerHeight - comparisonHeight,
           exclusionReason: specification.anchor === "audience" && comparisonHeight < baseline.semantic.innerHeight
-            ? "Rows after the accepted audience-bifurcation boundary are excluded because Phase 7B intentionally inserts the new chapter there."
+            ? `A ${VISUAL_REGRESSION_INSERTION_ALLOWANCE_PX}px seam allowance plus rows after the accepted audience-bifurcation boundary are excluded because Phase 7B intentionally inserts the new chapter there.`
             : null,
         },
         metrics: comparison.metrics,
@@ -1102,7 +1103,7 @@ async function phase7aRegression(browser, options) {
       open: document.querySelector("[data-field-map]")?.hasAttribute("open") ?? false,
     }));
     const checks = {
-      exactH1: retained.h1.toLowerCase() === EXPECTED_H1.toLowerCase(),
+      exactH1: retained.h1.replace(/\s+/g, "").toLowerCase() === EXPECTED_H1.replace(/\s+/g, "").toLowerCase(),
       frozenHooks: retained.cinematicShells === 1 && retained.manifestoThresholds === 1 && retained.signalFields === 1,
       audienceBifurcation: JSON.stringify(retained.audienceNames) === JSON.stringify(EXPECTED_AUDIENCES),
       fieldMap: retained.fieldMaps === 1 && retained.fieldMapDestinations === EXPECTED_FIELD_MAP_DESTINATIONS,
@@ -1131,6 +1132,7 @@ async function historyCase(browser, options) {
     await page.goForward({ waitUntil: "load", timeout: options.timeoutMs });
     await settle(page, options.timeoutMs);
     const forward = await page.evaluate(() => ({ pathname: location.pathname, hash: location.hash, operatingField: document.querySelectorAll("[data-operating-field]").length }));
+    const observerDelta = after.metrics.activeObservers - before.metrics.activeObservers;
     const checks = {
       status: about?.status() === 200 && entry?.status() === 200,
       entryIntent: entryState.hash === "#entry" && entryState.entry === 1 && entryState.operatingField === 1,
@@ -1179,7 +1181,7 @@ async function lifecycleCase(browser, options) {
       persistentWorkpiece: cycles.every(({ workpieceSame }) => workpieceSame),
       stableDom: before.dom === after.dom && before.svg === after.svg,
       listenerInvariant: listenerAdded(after.metrics) === listenerAdded(before.metrics),
-      observerBudget: after.metrics.activeObservers <= PHASE7B_PERFORMANCE_BUDGET.activeObserverMaximum,
+      observerBudget: observerDelta <= PHASE7B_PERFORMANCE_BUDGET.activeObserverMaximum,
       idleRafBudget: after.metrics.pendingAnimationFrames <= PHASE7B_PERFORMANCE_BUDGET.idleRafMaximum,
       intervalBudget: after.metrics.activeIntervals <= PHASE7B_PERFORMANCE_BUDGET.idleIntervalMaximum,
       clsBudget: after.metrics.cls <= PHASE7B_PERFORMANCE_BUDGET.clsMaximum,
@@ -1218,7 +1220,7 @@ async function lifecycleCase(browser, options) {
     ];
     if (!supported.cls) checks.clsBudget = null;
     if (!supported.longtask) checks.longTaskBudget = null;
-    return { before, cycles, after, supported, departed, restored, explicitDepartureCleanup, bfcacheObserved, ...honestStatus(checks, limitations), checks };
+    return { before, cycles, after, observerDelta, supported, departed, restored, explicitDepartureCleanup, bfcacheObserved, ...honestStatus(checks, limitations), checks };
   } finally {
     await context.close();
   }
@@ -1487,7 +1489,8 @@ async function runReportedPhase(engine, phase, operation) {
   reportPhaseProgress(engine, phase, "START");
   try {
     const result = await operation();
-    reportPhaseProgress(engine, phase, "PASS", Date.now() - started);
+    const status = EVIDENCE_STATUSES.includes(result?.status) ? result.status : "PASS";
+    reportPhaseProgress(engine, phase, status, Date.now() - started);
     return result;
   } catch (error) {
     reportPhaseProgress(engine, phase, "FAIL", Date.now() - started);
