@@ -207,13 +207,12 @@ test("capture settling is bounded when Firefox suppresses animation frames", () 
   assert.ok(Object.isFrozen(CAPTURE_SETTLE_TIMEOUTS));
 });
 
-test("Home intent reverse waits for published F1 authority before sampling", async () => {
+test("both reverse recordings wait for published F1 authority before sampling", async () => {
   const source = await readFile(path.join(ROOT, "scripts", "capture-phase7a-review-evidence.mjs"), "utf8");
-  const segment = source.slice(
-    source.indexOf("async function homeIntent"),
-    source.indexOf("async function responsiveAuthority"),
+  const helper = source.slice(
+    source.indexOf("async function waitForF1Authority"),
+    source.indexOf("async function openFieldMap"),
   );
-  assert.match(segment, /await nativeWheelTo\(page, 0,[\s\S]*?await page\.waitForFunction/);
   for (const authority of [
     /Math\.round\(scrollY\) === 0/,
     /data-cinematic-phase"\) === "physical"/,
@@ -221,8 +220,17 @@ test("Home intent reverse waits for published F1 authority before sampling", asy
     /data-conceptual-coordinate"\)\) === 0/,
     /data-target-frame"\)\) === 1/,
     /data-manifesto-reveal"\) === "hidden"/,
-  ]) assert.match(segment, authority);
-  assert.match(segment, /states\.reverseAccess = await observeState\(page\)/);
+  ]) assert.match(helper, authority);
+  const homeIntent = source.slice(
+    source.indexOf("async function homeIntent"),
+    source.indexOf("async function responsiveAuthority"),
+  );
+  assert.match(homeIntent, /await nativeWheelTo\(page, 0,[\s\S]*?await waitForF1Authority\(page, options\.timeoutMs\)[\s\S]*?states\.reverseAccess = await observeState\(page\)/);
+  const completeReverse = source.slice(
+    source.indexOf("async function completeReverse"),
+    source.indexOf("function stableStopSignature"),
+  );
+  assert.match(completeReverse, /if \(name === "top"\) await waitForF1Authority\(page, options\.timeoutMs\)/);
 });
 
 test("reduced-motion evidence uses native semantic-entry placement before glyph measurement", async () => {
