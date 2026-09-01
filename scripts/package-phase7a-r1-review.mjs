@@ -33,7 +33,7 @@ import {
   stableJson,
   validateIsoBmffRecording,
 } from "./package-phase7a-human-review.mjs";
-import { PHASE7A_R1_SHORT_LANDSCAPE_VIEWPORTS, validateManifestoClippingAuthority, validateManifestoGeometry } from "./phase7a-manifesto-geometry.mjs";
+import { MINIMUM_MANIFESTO_SAFETY_PX, PHASE7A_R1_SHORT_LANDSCAPE_VIEWPORTS, validateManifestoClippingAuthority, validateManifestoGeometry } from "./phase7a-manifesto-geometry.mjs";
 import { assertTargetSizePass } from "./phase7a-target-size.mjs";
 import { validateScenarioStates } from "./capture-phase7a-review-evidence.mjs";
 
@@ -698,12 +698,24 @@ function validateMeasuredVisibility(geometry, visibility, label, expectedViewpor
   const expectedH1Allowances = { left: h1.left - effective.left, top: h1.top - effective.top, right: effective.right - h1.right, bottom: effective.bottom - h1.bottom };
   const expectedGlyphAllowances = { left: glyphs.left - effective.left, top: glyphs.top - effective.top, right: effective.right - glyphs.right, bottom: effective.bottom - glyphs.bottom };
   invariant(["left", "top", "right", "bottom"].every((side) => Math.abs(visibility.h1Allowances?.[side] - expectedH1Allowances[side]) <= 0.05 && Math.abs(visibility.glyphAllowances?.[side] - expectedGlyphAllowances[side]) <= 0.05), `${label} visibility allowance summary differs`);
-  invariant(visibility.glyphBoxCount === geometry.authoredLines.flatMap(({ glyphBoxes }) => glyphBoxes ?? []).length && visibility.horizontalOverflow === false, `${label} visibility inventory differs`);
   invariant(headerOccluding ? Math.abs(visibility.visibleStickyHeaderBottom - headerBottom) <= 0.05 : visibility.visibleStickyHeaderBottom === null, `${label} visible sticky-header summary differs`);
-  invariant(Array.isArray(geometry.authoredLines) && geometry.authoredLines.length === 3 && geometry.authoredLines.flatMap(({ glyphBoxes }) => glyphBoxes ?? []).length > 0, `${label} glyph-bearing line inventory differs`);
+  invariant(Array.isArray(geometry.authoredLines) && geometry.authoredLines.length === 3, `${label} authored line inventory differs`);
+  const glyphBoxes = geometry.authoredLines.flatMap(({ glyphBoxes: lineGlyphs }) => lineGlyphs ?? []);
+  invariant(glyphBoxes.length > 0, `${label} glyph-bearing line inventory differs`);
+  for (const [index, glyphBox] of glyphBoxes.entries()) {
+    const measuredGlyph = rect(glyphBox, `${label} raw glyph ${index + 1}`);
+    invariant(typeof measuredGlyph.glyph === "string" && /\S/u.test(measuredGlyph.glyph), `${label} raw glyph ${index + 1} is not glyph-bearing`);
+    invariant(measuredGlyph.left > effective.left && measuredGlyph.right < effective.right && measuredGlyph.top - effective.top >= MINIMUM_MANIFESTO_SAFETY_PX && effective.bottom - measuredGlyph.bottom >= MINIMUM_MANIFESTO_SAFETY_PX, `${label} raw glyph ${index + 1} intersects an effective clipping boundary`);
+  }
+  invariant(visibility.glyphBoxCount === glyphBoxes.length && visibility.horizontalOverflow === false, `${label} visibility inventory differs`);
+  const rawGlyphUnion = { left: Math.min(...glyphBoxes.map(({ left }) => left)), top: Math.min(...glyphBoxes.map(({ top }) => top)), right: Math.max(...glyphBoxes.map(({ right }) => right)), bottom: Math.max(...glyphBoxes.map(({ bottom }) => bottom)) };
+  invariant(["left", "top", "right", "bottom"].every((side) => Math.abs(glyphs[side] - rawGlyphUnion[side]) <= 0.05), `${label} glyph bounds differ from the raw glyph union`);
   const allowances = { h1Top: h1.top - effective.top, h1Bottom: effective.bottom - h1.bottom, h1Left: h1.left - effective.left, h1Right: effective.right - h1.right, glyphTop: glyphs.top - effective.top, glyphBottom: effective.bottom - glyphs.bottom, glyphLeft: glyphs.left - effective.left, glyphRight: effective.right - glyphs.right };
-  invariant(Object.values(allowances).every((value) => value >= 2), `${label} intersects an effective clipping boundary`);
-  invariant(geometry.horizontalOverflow === false && geometry.horizontalMetrics?.overflowPixels === 0 && (geometry.boundaryAnalysis?.glyphEscapes?.length ?? -1) === 0 && (geometry.boundaryAnalysis?.boundaryIntersections?.length ?? -1) === 0 && (geometry.boundaryAnalysis?.occludingHeaderIntersections?.length ?? -1) === 0, `${label} clipping/overflow inventory differs`);
+  invariant(Object.values(allowances).every((value) => value >= MINIMUM_MANIFESTO_SAFETY_PX), `${label} intersects an effective clipping boundary`);
+  const horizontal = geometry.horizontalMetrics;
+  invariant(["documentScrollWidth", "bodyScrollWidth", "maximumScrollWidth", "clientWidth", "viewportWidth", "overflowPixels"].every((name) => Number.isFinite(horizontal?.[name]) && horizontal[name] >= 0), `${label} horizontal metrics are incomplete`);
+  invariant(horizontal.maximumScrollWidth === Math.max(horizontal.documentScrollWidth, horizontal.bodyScrollWidth) && horizontal.viewportWidth === geometry.viewport.width && horizontal.overflowPixels === Math.max(0, horizontal.maximumScrollWidth - horizontal.clientWidth), `${label} horizontal metrics differ`);
+  invariant(geometry.horizontalOverflow === false && horizontal.overflowPixels === 0 && (geometry.boundaryAnalysis?.glyphEscapes?.length ?? -1) === 0 && (geometry.boundaryAnalysis?.boundaryIntersections?.length ?? -1) === 0 && (geometry.boundaryAnalysis?.safetyViolations?.length ?? -1) === 0 && (geometry.boundaryAnalysis?.occludingHeaderIntersections?.length ?? -1) === 0, `${label} clipping/overflow inventory differs`);
 }
 
 function validateNoJavaScriptLinkInventory(inventory, expected, label) {
@@ -726,7 +738,7 @@ function validateFallbackReports(entriesByPath) {
   validateNoJavaScriptLinkInventory(noJs.fieldMapLinkInventory, NO_JS_FIELD_MAP_DESTINATIONS, "no-JavaScript Field Map");
   validateNoJavaScriptLinkInventory(noJs.bifurcationLinkInventory, NO_JS_BIFURCATION_DESTINATIONS, "no-JavaScript bifurcation");
   const fallback = parseJsonEntry(entriesByPath, "12-fallback/fallback-font-report.json").closure;
-  invariant(fallback?.anybodyLoaded === false && fallback.abortedFontRequests >= 1 && fallback.manifestoWords === 7 && fallback.horizontalOverflow === false, "fallback-font narrow authority differs");
+  invariant(fallback?.anybodyLoaded === false && Number.isSafeInteger(fallback.abortedFontRequests) && fallback.abortedFontRequests >= 1 && fallback.manifestoWords === 7 && fallback.horizontalOverflow === false, "fallback-font narrow authority differs");
   validateMeasuredVisibility(fallback.manifestoGeometry, fallback.manifestoVisibility, "fallback-font manifesto", { id: "short-landscape-320x800", width: 320, height: 800 }, true);
 }
 

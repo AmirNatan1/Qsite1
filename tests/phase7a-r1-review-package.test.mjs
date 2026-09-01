@@ -257,21 +257,68 @@ function fallbackVisibility(measurement) {
   };
 }
 
+function fixtureUnion(items) {
+  return bounds(
+    Math.min(...items.map(({ left }) => left)),
+    Math.min(...items.map(({ top }) => top)),
+    Math.max(...items.map(({ right }) => right)),
+    Math.max(...items.map(({ bottom }) => bottom)),
+  );
+}
+
+function splitFixtureLine(measurement, lineIndex, splitAt) {
+  const line = measurement.authoredLines[lineIndex];
+  const first = line.glyphBoxes.slice(0, splitAt);
+  const sourceSecond = line.glyphBoxes.slice(splitAt);
+  const shiftX = sourceSecond[0].left - first[0].left;
+  const shiftY = first[0].height + 4;
+  const second = sourceSecond.map((glyph) => ({ ...glyph, left: glyph.left - shiftX, right: glyph.right - shiftX, top: glyph.top + shiftY, bottom: glyph.bottom + shiftY }));
+  line.glyphBoxes = [...first, ...second];
+  line.glyphBounds = fixtureUnion(line.glyphBoxes);
+  line.elementRect = bounds(line.glyphBounds.left - 2, line.glyphBounds.top - 2, line.glyphBounds.right + 2, line.glyphBounds.bottom + 2);
+  line.renderedLineUnions = [first, second].map((row, index) => ({ authoredLineIndex: lineIndex + 1, renderedLineIndex: index + 1, ...fixtureUnion(row), glyphCount: row.length, text: row.map(({ glyph }) => glyph).join("") }));
+}
+
+function refreshFixtureGeometry(measurement) {
+  measurement.renderedLineUnions = measurement.authoredLines.flatMap(({ renderedLineUnions }) => renderedLineUnions);
+  measurement.glyphBounds = fixtureUnion(measurement.authoredLines.flatMap(({ glyphBoxes: lineGlyphs }) => lineGlyphs));
+  const effective = measurement.effectiveVisibleBounds;
+  const h1 = measurement.h1.rect;
+  measurement.safeAllowances = {
+    minimumRequiredPx: 2,
+    h1: { top: h1.top - effective.top, bottom: effective.bottom - h1.bottom },
+    glyphs: { top: measurement.glyphBounds.top - effective.top, bottom: effective.bottom - measurement.glyphBounds.bottom },
+    renderedLines: measurement.renderedLineUnions.map((line) => ({ authoredLineIndex: line.authoredLineIndex, renderedLineIndex: line.renderedLineIndex, top: line.top - effective.top, bottom: effective.bottom - line.bottom })),
+  };
+}
+
 function fallbackReports() {
   const receipt = (width, height) => {
     const manifestoGeometry = fallbackGeometry(width, height);
     return { manifestoGeometry, manifestoVisibility: fallbackVisibility(manifestoGeometry) };
   };
   const font = receipt(320, 800);
+  const reduced = receipt(1440, 900);
+  reduced.manifestoGeometry.state = { cinematicMode: "static", cinematicPhase: "fallback", manifestoReveal: null, resolvedOrStatic: true };
+  splitFixtureLine(reduced.manifestoGeometry, 2, 9);
+  refreshFixtureGeometry(reduced.manifestoGeometry);
+  reduced.manifestoVisibility = fallbackVisibility(reduced.manifestoGeometry);
+  const noJs = receipt(390, 844);
+  noJs.manifestoGeometry.state = { cinematicMode: null, cinematicPhase: null, manifestoReveal: null, resolvedOrStatic: false };
+  splitFixtureLine(noJs.manifestoGeometry, 1, 10);
+  splitFixtureLine(noJs.manifestoGeometry, 2, 9);
+  refreshFixtureGeometry(noJs.manifestoGeometry);
+  noJs.manifestoVisibility = fallbackVisibility(noJs.manifestoGeometry);
   font.manifestoGeometry.occludingHeader.presentation.visibility = "hidden";
   font.manifestoGeometry.occludingHeader.presentation.opacity = 0;
   font.manifestoGeometry.occludingHeader.presentation.visible = false;
   font.manifestoGeometry.occludingHeader.occluding = false;
   font.manifestoGeometry.occludingHeader.effectiveBottom = 0;
+  font.manifestoGeometry.occludingHeader.rect = bounds(0, 0, 320, 51);
   font.manifestoVisibility = fallbackVisibility(font.manifestoGeometry);
   return {
-    reduced: { status: "PASS", closure: { cinematicMode: "static", signalField: true, bifurcationLinks: 2, horizontalOverflow: false, ...receipt(1440, 900) } },
-    noJs: { status: "PASS", closure: { enhancedController: null, nativeDetailsOpen: true, horizontalOverflow: false, ...receipt(390, 844), fieldMapLinkInventory: NO_JS_FIELD_MAP_DESTINATIONS.map(visibleNoJavaScriptLink), bifurcationLinkInventory: NO_JS_BIFURCATION_DESTINATIONS.map(visibleNoJavaScriptLink) } },
+    reduced: { status: "PASS", closure: { cinematicMode: "static", signalField: true, bifurcationLinks: 2, horizontalOverflow: false, ...reduced } },
+    noJs: { status: "PASS", closure: { enhancedController: null, nativeDetailsOpen: true, horizontalOverflow: false, ...noJs, fieldMapLinkInventory: NO_JS_FIELD_MAP_DESTINATIONS.map(visibleNoJavaScriptLink), bifurcationLinkInventory: NO_JS_BIFURCATION_DESTINATIONS.map(visibleNoJavaScriptLink) } },
     font: { status: "PASS", closure: { anybodyLoaded: false, abortedFontRequests: 1, manifestoWords: 7, horizontalOverflow: false, ...font } },
   };
 }
@@ -738,8 +785,11 @@ test("fallback-font hidden sticky-header truth packages and audits without inven
     [(document) => { concealHeader(document); document.closure.manifestoGeometry.usableClipBounds.top += 1; document.closure.manifestoGeometry.usableClipBounds.height -= 1; document.closure.manifestoGeometry.effectiveVisibleBounds.top += 1; document.closure.manifestoGeometry.effectiveVisibleBounds.height -= 1; }, /usable clip bounds\.top differs/i],
     [(document) => { concealHeader(document); document.closure.manifestoVisibility.visibleStickyHeaderBottom = 50; }, /visible sticky-header summary differs/i],
     [(document) => { concealHeader(document); document.closure.manifestoVisibility.effectiveVisibleBounds.top += 1; document.closure.manifestoVisibility.effectiveVisibleBounds.height -= 1; }, /visibility summary differs/i],
+    [(document) => { concealHeader(document); document.closure.manifestoVisibility.authority = "untrusted summary"; }, /measured visibility authority is missing/i],
     [(document) => { concealHeader(document); document.closure.manifestoVisibility.h1Allowances.top += 1; }, /visibility allowance summary differs/i],
+    [(document) => { concealHeader(document); document.closure.manifestoVisibility.glyphAllowances.left += 1; }, /visibility allowance summary differs/i],
     [(document) => { concealHeader(document); document.closure.manifestoVisibility.glyphBoxCount -= 1; }, /visibility inventory differs/i],
+    [(document) => { concealHeader(document); document.closure.manifestoVisibility.horizontalOverflow = true; }, /visibility inventory differs/i],
     [(document) => { concealHeader(document); document.closure.manifestoGeometry.viewport.id = "short-landscape-321x800"; }, /viewport identifier differs/i],
   ];
   for (const [mutate, expected] of mutations) {
@@ -757,6 +807,30 @@ test("fallback-font hidden sticky-header truth packages and audits without inven
     const removeVisibleHeaderReceipt = (document) => { document.closure.manifestoVisibility.visibleStickyHeaderBottom = null; };
     assert.throws(() => buildReviewArtifacts(mutateJson(fixtureEntries, path, removeVisibleHeaderReceipt)), /visible sticky-header summary differs/i);
     assert.throws(() => auditPackageBytes(cryptographicallyRebindJson(path, removeVisibleHeaderReceipt)), /visible sticky-header summary differs/i);
+    const wrongViewport = (document) => { document.closure.manifestoGeometry.viewport.id = "wrong-fallback-viewport"; };
+    assert.throws(() => buildReviewArtifacts(mutateJson(fixtureEntries, path, wrongViewport)), /viewport identifier differs/i);
+    assert.throws(() => auditPackageBytes(cryptographicallyRebindJson(path, wrongViewport)), /viewport identifier differs/i);
+  }
+
+  const noJavaScriptPath = "12-fallback/no-js-report.json";
+  const clippingOnlyGlyphMutations = [
+    [(document) => { const glyph = document.closure.manifestoGeometry.authoredLines[0].glyphBoxes[0]; glyph.top = document.closure.manifestoGeometry.effectiveVisibleBounds.top + 1; glyph.height = glyph.bottom - glyph.top; }, /raw glyph 1 intersects an effective clipping boundary/i],
+    [(document) => { const glyph = document.closure.manifestoGeometry.authoredLines[0].glyphBoxes[0]; glyph.left = -1; glyph.width = glyph.right - glyph.left; }, /raw glyph 1 intersects an effective clipping boundary/i],
+    [(document) => { document.closure.manifestoGeometry.authoredLines[0].glyphBoxes[0].glyph = " "; }, /raw glyph 1 is not glyph-bearing/i],
+    [(document) => { document.closure.manifestoGeometry.glyphBounds.left += 1; document.closure.manifestoGeometry.glyphBounds.width -= 1; document.closure.manifestoVisibility.glyphBounds = structuredClone(document.closure.manifestoGeometry.glyphBounds); document.closure.manifestoVisibility.glyphAllowances.left += 1; }, /glyph bounds differ from the raw glyph union/i],
+  ];
+  for (const [mutate, expected] of clippingOnlyGlyphMutations) {
+    assert.throws(() => buildReviewArtifacts(mutateJson(fixtureEntries, noJavaScriptPath, mutate)), expected);
+    assert.throws(() => auditPackageBytes(cryptographicallyRebindJson(noJavaScriptPath, mutate)), expected);
+  }
+  const wrongNoJavaScriptDimensions = (document) => { document.closure.manifestoGeometry.viewport.right = 391; document.closure.manifestoGeometry.viewport.width = 391; };
+  assert.throws(() => buildReviewArtifacts(mutateJson(fixtureEntries, noJavaScriptPath, wrongNoJavaScriptDimensions)), /outside or ambiguous in the required viewport authority/i);
+  assert.throws(() => auditPackageBytes(cryptographicallyRebindJson(noJavaScriptPath, wrongNoJavaScriptDimensions)), /outside or ambiguous in the required viewport authority/i);
+
+  for (const invalidCount of [1.5, "1"]) {
+    const invalidAbortedFontCount = (document) => { document.closure.abortedFontRequests = invalidCount; };
+    assert.throws(() => buildReviewArtifacts(mutateJson(fixtureEntries, fallbackPath, invalidAbortedFontCount)), /fallback-font narrow authority differs/i);
+    assert.throws(() => auditPackageBytes(cryptographicallyRebindJson(fallbackPath, invalidAbortedFontCount)), /fallback-font narrow authority differs/i);
   }
 });
 
