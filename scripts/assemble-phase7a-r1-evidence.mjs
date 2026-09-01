@@ -830,6 +830,34 @@ export function validateBefore800x360Defect(cases) {
   return true;
 }
 
+/** Validate the real no-JavaScript fallback schema without trusting a count summary. */
+export function validateNoJavaScriptFallback(noJavaScript) {
+  invariant(noJavaScript && typeof noJavaScript === "object" && !Array.isArray(noJavaScript), "no-JavaScript fallback evidence is missing");
+  invariant(noJavaScript.nativeDetailsOpen === true && noJavaScript.enhancedController === null, "no-JavaScript native Field Map state differs");
+  invariant(noJavaScript.horizontalOverflow === false, "no-JavaScript native Field Map has horizontal overflow");
+  const inventory = noJavaScript.fieldMapLinkInventory;
+  invariant(Array.isArray(inventory) && inventory.length === FIELD_MAP_HREFS.length, "no-JavaScript Field Map destination count differs");
+  inventory.forEach((entry, index) => {
+    invariant(entry?.index === index && entry.href === FIELD_MAP_HREFS[index] && entry.accessibleName === FIELD_MAP_NAMES[index], `no-JavaScript Field Map destination ${index + 1} identity differs`);
+    invariant(entry.elementType === "a" && entry.intendedInteractive === true, `no-JavaScript Field Map destination ${index + 1} is not an intended link`);
+    invariant(entry.visible === true && entry.fullyInViewport === true && entry.unoccluded === true, `no-JavaScript Field Map destination ${index + 1} is not fully visible and unoccluded`);
+    invariant(Number.isFinite(entry.width) && entry.width > 0 && Number.isFinite(entry.height) && entry.height > 0, `no-JavaScript Field Map destination ${index + 1} has no visible area`);
+  });
+  invariant(new Set(inventory.map(({ href }) => href)).size === FIELD_MAP_HREFS.length && new Set(inventory.map(({ accessibleName }) => accessibleName)).size === FIELD_MAP_NAMES.length, "no-JavaScript Field Map destination inventory is duplicated");
+  return true;
+}
+
+/** Validate the real blocked-production-font fallback schema. */
+export function validateFallbackFontEvidence(fallbackFonts) {
+  invariant(fallbackFonts && typeof fallbackFonts === "object" && !Array.isArray(fallbackFonts), "fallback-font evidence is missing");
+  invariant(fallbackFonts.anybodyLoaded === false, "fallback-font Anybody load authority differs");
+  invariant(Number.isSafeInteger(fallbackFonts.abortedFontRequests) && fallbackFonts.abortedFontRequests >= 1, "fallback-font aborted request authority differs");
+  invariant(fallbackFonts.manifestoWords === 7, "fallback-font manifesto word authority differs");
+  invariant(fallbackFonts.horizontalOverflow === false, "fallback-font horizontal overflow authority differs");
+  invariant(fallbackFonts.manifestoVisibility?.status === "PASS", "fallback-font manifesto visibility authority differs");
+  return true;
+}
+
 function validateClosureReports(reports) {
   assertPass(reports.summary, "closure summary");
   invariant(reports.summary.humanGates === "PENDING HUMAN REVIEW", "closure summary changed the human gate authority");
@@ -872,8 +900,8 @@ function validateClosureReports(reports) {
   validateTargetLedger(reports.targets);
   assertPass(reports.fallback, "closure fallback evidence");
   invariant(reports.fallback.reducedMotion?.cinematicMode === "static", "reduced-motion fallback did not resolve statically");
-  invariant(reports.fallback.noJavaScript?.nativeDetailsOpen === true && reports.fallback.noJavaScript?.mapLinks === 8, "no-JavaScript native Field Map differs");
-  invariant(reports.fallback.fallbackFonts?.h1Visible === true && reports.fallback.fallbackFonts?.horizontalOverflow === false, "fallback-font manifesto differs");
+  validateNoJavaScriptFallback(reports.fallback.noJavaScript);
+  validateFallbackFontEvidence(reports.fallback.fallbackFonts);
   validateFirefoxFirstPaintReport(reports.firstPaint);
   assertPass(reports.axeChromium, "closure Chromium accessibility");
   assertPass(reports.axeFirefox, "closure Firefox accessibility");
@@ -1672,6 +1700,36 @@ function fixtureChecks(keys) {
   return Object.fromEntries(keys.map((key) => [key, true]));
 }
 
+function fixtureNoJavaScriptFallback() {
+  return {
+    nativeDetailsOpen: true,
+    enhancedController: null,
+    horizontalOverflow: false,
+    fieldMapLinkInventory: FIELD_MAP_HREFS.map((href, index) => ({
+      index,
+      href,
+      accessibleName: FIELD_MAP_NAMES[index],
+      elementType: "a",
+      width: 120,
+      height: 44,
+      visible: true,
+      fullyInViewport: true,
+      unoccluded: true,
+      intendedInteractive: true,
+    })),
+  };
+}
+
+function fixtureFallbackFonts() {
+  return {
+    anybodyLoaded: false,
+    abortedFontRequests: 1,
+    manifestoWords: 7,
+    horizontalOverflow: false,
+    manifestoVisibility: { status: "PASS" },
+  };
+}
+
 function fixtureQa(engine) {
   const revision = "b".repeat(40);
   const runtimeAssets = [{ kind: "css", route: "/_astro/app.css", bytes: 111, sha256: "1".repeat(64) }, { kind: "javascript", route: "/_astro/app.js", bytes: 222, sha256: "2".repeat(64) }];
@@ -1717,7 +1775,35 @@ export function runSelfTest() {
   let falsePassRejected = false;
   try { validateQaReport(failed, "chromium"); } catch { falsePassRejected = true; }
   invariant(falsePassRejected, "QA false target PASS was accepted");
-  return { schema: ASSEMBLER_SCHEMA, status: "PASS", requiredReports: REQUIRED_EVIDENCE.length, qaEngines: 3, falsePassRejected, privateAndOriginSanitization: "PASS" };
+  validateNoJavaScriptFallback(fixtureNoJavaScriptFallback());
+  const noJavaScriptMutations = [
+    (fixture) => { fixture.fieldMapLinkInventory.pop(); },
+    (fixture) => { fixture.fieldMapLinkInventory[0].href = "/wrong/"; },
+    (fixture) => { fixture.fieldMapLinkInventory[0].accessibleName = "Wrong"; },
+    (fixture) => { fixture.fieldMapLinkInventory[0].visible = false; },
+  ];
+  const noJavaScriptInventoryRejected = noJavaScriptMutations.every((mutate) => {
+    const fixture = structuredClone(fixtureNoJavaScriptFallback());
+    mutate(fixture);
+    try { validateNoJavaScriptFallback(fixture); return false; } catch { return true; }
+  });
+  invariant(noJavaScriptInventoryRejected, "no-JavaScript Field Map false inventory was accepted");
+  validateFallbackFontEvidence(fixtureFallbackFonts());
+  const fallbackFontMutations = [
+    (fixture) => { fixture.anybodyLoaded = true; },
+    (fixture) => { fixture.abortedFontRequests = 0; },
+    (fixture) => { fixture.abortedFontRequests = 1.5; },
+    (fixture) => { fixture.manifestoWords = 6; },
+    (fixture) => { fixture.horizontalOverflow = true; },
+    (fixture) => { fixture.manifestoVisibility.status = "FAIL"; },
+  ];
+  const fallbackFontAuthorityRejected = fallbackFontMutations.every((mutate) => {
+    const fixture = structuredClone(fixtureFallbackFonts());
+    mutate(fixture);
+    try { validateFallbackFontEvidence(fixture); return false; } catch { return true; }
+  });
+  invariant(fallbackFontAuthorityRejected, "fallback-font false authority was accepted");
+  return { schema: ASSEMBLER_SCHEMA, status: "PASS", requiredReports: REQUIRED_EVIDENCE.length, qaEngines: 3, falsePassRejected, noJavaScriptInventoryRejected, fallbackFontAuthorityRejected, privateAndOriginSanitization: "PASS" };
 }
 
 function usage() {

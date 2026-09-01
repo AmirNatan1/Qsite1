@@ -19,10 +19,12 @@ import {
   sanitizeForPackage,
   validateComparisonRevision,
   validateBefore800x360Defect,
+  validateFallbackFontEvidence,
   validateFinalCaptureBinding,
   validateFirefoxFirstPaintReport,
   validateInstalledChromeReport,
   validateInstalledChromeUiReport,
+  validateNoJavaScriptFallback,
   validateQaReport,
   validateServedBuildAuthority,
   validateServedBuildDeploymentBinding,
@@ -305,8 +307,61 @@ test("assembler self-test fixes the 25-report topology and rejects false PASS ev
     requiredReports: 25,
     qaEngines: 3,
     falsePassRejected: true,
+    noJavaScriptInventoryRejected: true,
+    fallbackFontAuthorityRejected: true,
     privateAndOriginSanitization: "PASS",
   });
+});
+
+test("no-JavaScript fallback requires the exact eight visible native Field Map destinations", () => {
+  const hrefs = ["/#entry", "/for-partners/", "/for-startups/", "/industries/", "/pocs/", "/spark/", "/about/", "/contact/"];
+  const names = ["00 Home 00 / origin", "01 For industry 01 / need", "02 For startups 02 / capability", "03 Industries 03 / context", "04 Proof 04 / evidence", "05 SPARK 05 / programme", "06 About 06 / position", "07 Contact 07 / signal"];
+  const fixture = {
+    nativeDetailsOpen: true,
+    enhancedController: null,
+    horizontalOverflow: false,
+    fieldMapLinkInventory: hrefs.map((href, index) => ({ index, href, accessibleName: names[index], elementType: "a", width: 120, height: 44, visible: true, fullyInViewport: true, unoccluded: true, intendedInteractive: true })),
+  };
+  assert.equal(validateNoJavaScriptFallback(fixture), true);
+  assert.equal(Object.hasOwn(fixture, "mapLinks"), false);
+  const mutations = [
+    [(value) => { value.fieldMapLinkInventory.pop(); }, /destination count differs/],
+    [(value) => { value.fieldMapLinkInventory[0].href = "/wrong/"; }, /destination 1 identity differs/],
+    [(value) => { value.fieldMapLinkInventory[0].accessibleName = "Wrong"; }, /destination 1 identity differs/],
+    [(value) => { value.fieldMapLinkInventory[0].visible = false; }, /destination 1 is not fully visible/],
+    [(value) => { value.fieldMapLinkInventory[0].fullyInViewport = false; }, /destination 1 is not fully visible/],
+    [(value) => { value.fieldMapLinkInventory[0].unoccluded = false; }, /destination 1 is not fully visible/],
+  ];
+  for (const [mutate, expected] of mutations) {
+    const changed = structuredClone(fixture);
+    mutate(changed);
+    assert.throws(() => validateNoJavaScriptFallback(changed), expected);
+  }
+});
+
+test("fallback-font evidence requires a blocked Anybody request and visible seven-word manifesto", () => {
+  const fixture = {
+    anybodyLoaded: false,
+    abortedFontRequests: 1,
+    manifestoWords: 7,
+    horizontalOverflow: false,
+    manifestoVisibility: { status: "PASS" },
+  };
+  assert.equal(validateFallbackFontEvidence(fixture), true);
+  assert.equal(Object.hasOwn(fixture, "h1Visible"), false);
+  const mutations = [
+    [(value) => { value.anybodyLoaded = true; }, /Anybody load authority differs/],
+    [(value) => { value.abortedFontRequests = 0; }, /aborted request authority differs/],
+    [(value) => { value.abortedFontRequests = 1.5; }, /aborted request authority differs/],
+    [(value) => { value.manifestoWords = 6; }, /manifesto word authority differs/],
+    [(value) => { value.horizontalOverflow = true; }, /horizontal overflow authority differs/],
+    [(value) => { value.manifestoVisibility.status = "FAIL"; }, /manifesto visibility authority differs/],
+  ];
+  for (const [mutate, expected] of mutations) {
+    const changed = structuredClone(fixture);
+    mutate(changed);
+    assert.throws(() => validateFallbackFontEvidence(changed), expected);
+  }
 });
 
 test("each QA engine must prove complete passing route, accessibility, responsive, target and lifecycle evidence", () => {

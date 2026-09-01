@@ -592,6 +592,8 @@ function validateClippingReport(entries) {
 }
 
 const FIELD_MAP_DESTINATIONS = Object.freeze([["/#entry", "Home"], ["/for-partners/", "For industry"], ["/for-startups/", "For startups"], ["/industries/", "Industries"], ["/pocs/", "Proof"], ["/spark/", "SPARK"], ["/about/", "About"], ["/contact/", "Contact"]]);
+const NO_JS_FIELD_MAP_DESTINATIONS = Object.freeze([["/#entry", "00 Home 00 / origin"], ["/for-partners/", "01 For industry 01 / need"], ["/for-startups/", "02 For startups 02 / capability"], ["/industries/", "03 Industries 03 / context"], ["/pocs/", "04 Proof 04 / evidence"], ["/spark/", "05 SPARK 05 / programme"], ["/about/", "06 About 06 / position"], ["/contact/", "07 Contact 07 / signal"]]);
+const NO_JS_BIFURCATION_DESTINATIONS = Object.freeze([["/for-partners/", "For industryPressure becomes proof."], ["/for-startups/", "For startupsA viable edge enters the field."]]);
 
 function validateMapOpen(state, label) {
   invariant(state?.open === true && state.rootOpen === true && state.destinationCount === 8, `${label} open/destination authority differs`);
@@ -636,6 +638,16 @@ function validateMeasuredVisibility(geometry, visibility, label) {
   invariant(geometry.horizontalOverflow === false && geometry.horizontalMetrics?.overflowPixels === 0 && (geometry.boundaryAnalysis?.glyphEscapes?.length ?? -1) === 0 && (geometry.boundaryAnalysis?.boundaryIntersections?.length ?? -1) === 0 && (geometry.boundaryAnalysis?.occludingHeaderIntersections?.length ?? -1) === 0, `${label} clipping/overflow inventory differs`);
 }
 
+function validateNoJavaScriptLinkInventory(inventory, expected, label) {
+  invariant(Array.isArray(inventory) && inventory.length === expected.length, `${label} link inventory differs`);
+  inventory.forEach((link, index) => {
+    invariant(link?.index === index && link.href === expected[index][0] && link.accessibleName === expected[index][1], `${label} link ${index + 1} identity differs`);
+    invariant(link.elementType === "a" && link.intendedInteractive === true, `${label} link ${index + 1} is not an intended link`);
+    invariant(link.visible === true && link.fullyInViewport === true && link.unoccluded === true, `${label} link ${index + 1} is not fully visible and unoccluded`);
+    invariant(Number.isFinite(link.width) && link.width > 0 && Number.isFinite(link.height) && link.height > 0, `${label} link ${index + 1} has no visible area`);
+  });
+}
+
 function validateFallbackReports(entries) {
   const reduced = parseJsonEntry(entries, "12-fallback/reduced-motion-report.json").closure;
   invariant(reduced?.cinematicMode === "static" && reduced.signalField === true && reduced.bifurcationLinks === 2 && reduced.horizontalOverflow === false, "reduced-motion static authority differs");
@@ -643,7 +655,8 @@ function validateFallbackReports(entries) {
   const noJs = parseJsonEntry(entries, "12-fallback/no-js-report.json").closure;
   invariant(noJs?.enhancedController === null && noJs.nativeDetailsOpen === true && noJs.horizontalOverflow === false, "no-JavaScript native Field Map authority differs");
   validateMeasuredVisibility(noJs.manifestoGeometry, noJs.manifestoVisibility, "no-JavaScript manifesto");
-  for (const [inventory, expected, label] of [[noJs.fieldMapLinkInventory, FIELD_MAP_DESTINATIONS, "no-JavaScript Field Map"], [noJs.bifurcationLinkInventory, FIELD_MAP_DESTINATIONS.slice(1, 3), "no-JavaScript bifurcation"]]) { invariant(Array.isArray(inventory) && inventory.length === expected.length, `${label} link inventory differs`); inventory.forEach((link, index) => invariant(link.href === expected[index][0] && link.accessibleName.includes(expected[index][1]) && link.visible === true && link.fullyInViewport === true && link.unoccluded === true && link.intendedInteractive === true && link.width > 0 && link.height > 0, `${label} link ${index + 1} differs`)); }
+  validateNoJavaScriptLinkInventory(noJs.fieldMapLinkInventory, NO_JS_FIELD_MAP_DESTINATIONS, "no-JavaScript Field Map");
+  validateNoJavaScriptLinkInventory(noJs.bifurcationLinkInventory, NO_JS_BIFURCATION_DESTINATIONS, "no-JavaScript bifurcation");
   const fallback = parseJsonEntry(entries, "12-fallback/fallback-font-report.json").closure;
   invariant(fallback?.anybodyLoaded === false && fallback.abortedFontRequests >= 1 && fallback.manifestoWords === 7 && fallback.horizontalOverflow === false, "fallback-font narrow authority differs");
   validateMeasuredVisibility(fallback.manifestoGeometry, fallback.manifestoVisibility, "fallback-font manifesto");

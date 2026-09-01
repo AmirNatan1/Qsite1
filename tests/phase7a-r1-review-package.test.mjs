@@ -230,7 +230,10 @@ function fieldMapReport() {
 }
 
 const visibleLink = ([href, name], index = 0) => ({ href, accessibleName: name, visible: true, fullyInViewport: true, unoccluded: true, intendedInteractive: true, width: 160, height: 44, bounds: bounds(20, 10 + index * 48, 620, 54 + index * 48) });
+const visibleNoJavaScriptLink = ([href, accessibleName], index = 0) => ({ index, href, accessibleName, elementType: "a", visible: true, fullyInViewport: true, unoccluded: true, intendedInteractive: true, width: 160, height: 44, bounds: bounds(20, 10 + index * 48, 620, 54 + index * 48) });
 const DESTINATIONS = [["/#entry", "Home"], ["/for-partners/", "For industry"], ["/for-startups/", "For startups"], ["/industries/", "Industries"], ["/pocs/", "Proof"], ["/spark/", "SPARK"], ["/about/", "About"], ["/contact/", "Contact"]];
+const NO_JS_FIELD_MAP_DESTINATIONS = [["/#entry", "00 Home 00 / origin"], ["/for-partners/", "01 For industry 01 / need"], ["/for-startups/", "02 For startups 02 / capability"], ["/industries/", "03 Industries 03 / context"], ["/pocs/", "04 Proof 04 / evidence"], ["/spark/", "05 SPARK 05 / programme"], ["/about/", "06 About 06 / position"], ["/contact/", "07 Contact 07 / signal"]];
+const NO_JS_BIFURCATION_DESTINATIONS = [["/for-partners/", "For industryPressure becomes proof."], ["/for-startups/", "For startupsA viable edge enters the field."]];
 
 function fallbackGeometry() {
   return passingMeasurement(800, 360);
@@ -240,7 +243,7 @@ function fallbackReports() {
   const measurement = () => fallbackGeometry();
   return {
     reduced: { status: "PASS", closure: { cinematicMode: "static", signalField: true, bifurcationLinks: 2, horizontalOverflow: false, manifestoGeometry: measurement(), manifestoVisibility: { status: "PASS" } } },
-    noJs: { status: "PASS", closure: { enhancedController: null, nativeDetailsOpen: true, horizontalOverflow: false, manifestoGeometry: measurement(), manifestoVisibility: { status: "PASS" }, fieldMapLinkInventory: DESTINATIONS.map(visibleLink), bifurcationLinkInventory: DESTINATIONS.slice(1, 3).map(visibleLink) } },
+    noJs: { status: "PASS", closure: { enhancedController: null, nativeDetailsOpen: true, horizontalOverflow: false, manifestoGeometry: measurement(), manifestoVisibility: { status: "PASS" }, fieldMapLinkInventory: NO_JS_FIELD_MAP_DESTINATIONS.map(visibleNoJavaScriptLink), bifurcationLinkInventory: NO_JS_BIFURCATION_DESTINATIONS.map(visibleNoJavaScriptLink) } },
     font: { status: "PASS", closure: { anybodyLoaded: false, abortedFontRequests: 1, manifestoWords: 7, horizontalOverflow: false, manifestoGeometry: measurement(), manifestoVisibility: { status: "PASS" } } },
   };
 }
@@ -676,6 +679,27 @@ test("installed Chrome concealed-header geometry packages and audits only with h
   for (const [mutate, expected] of clippingMutations) {
     assert.throws(() => buildReviewArtifacts(mutateJson(fixtureEntries, clippingPath, mutate)), expected);
     assert.throws(() => auditPackageBytes(cryptographicallyRebindJson(clippingPath, mutate)), expected);
+  }
+});
+
+test("no-JavaScript link inventories package and audit only with exact visible identities", () => {
+  const noJavaScriptPath = "12-fallback/no-js-report.json";
+  const mutations = [
+    [(document) => { document.closure.fieldMapLinkInventory.pop(); }, /Field Map link inventory differs/],
+    [(document) => { document.closure.fieldMapLinkInventory[0].index = 1; }, /Field Map link 1 identity differs/],
+    [(document) => { document.closure.fieldMapLinkInventory[0].href = "/wrong/"; }, /Field Map link 1 identity differs/],
+    [(document) => { document.closure.fieldMapLinkInventory[0].accessibleName = "Home"; }, /Field Map link 1 identity differs/],
+    [(document) => { document.closure.fieldMapLinkInventory[0].elementType = "button"; }, /Field Map link 1 is not an intended link/],
+    [(document) => { document.closure.fieldMapLinkInventory[0].intendedInteractive = false; }, /Field Map link 1 is not an intended link/],
+    [(document) => { document.closure.fieldMapLinkInventory[0].visible = false; }, /Field Map link 1 is not fully visible/],
+    [(document) => { document.closure.fieldMapLinkInventory[0].fullyInViewport = false; }, /Field Map link 1 is not fully visible/],
+    [(document) => { document.closure.fieldMapLinkInventory[0].unoccluded = false; }, /Field Map link 1 is not fully visible/],
+    [(document) => { document.closure.fieldMapLinkInventory[0].width = 0; }, /Field Map link 1 has no visible area/],
+    [(document) => { document.closure.bifurcationLinkInventory[0].accessibleName = "For industry"; }, /bifurcation link 1 identity differs/],
+  ];
+  for (const [mutate, expected] of mutations) {
+    assert.throws(() => buildReviewArtifacts(mutateJson(fixtureEntries, noJavaScriptPath, mutate)), expected);
+    assert.throws(() => auditPackageBytes(cryptographicallyRebindJson(noJavaScriptPath, mutate)), expected);
   }
 });
 
