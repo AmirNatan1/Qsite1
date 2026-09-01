@@ -56,7 +56,8 @@ export async function verifyPhase7BSource(root = process.cwd(), environment = pr
   const inherited = await verifyInheritedPhase7A(root, environment, "phase7b-inherited");
   const read = (relative) => readFile(path.join(root, relative), "utf8");
   const head = git(root, ["rev-parse", "HEAD"]);
-  const branch = git(root, ["branch", "--show-current"]);
+  const localBranch = git(root, ["branch", "--show-current"]);
+  const branch = localBranch || (environment.CF_PAGES === "1" ? environment.CF_PAGES_BRANCH ?? "" : "");
   const firstCommit = git(root, ["rev-list", "--reverse", `${PHASE7B_PARENT}..${head}`]).split(/\r?\n/)[0];
   const firstParent = firstCommit ? git(root, ["rev-parse", `${firstCommit}^`]) : "";
   const merges = git(root, ["rev-list", "--merges", `${PHASE7B_PARENT}..${head}`]);
@@ -64,7 +65,8 @@ export async function verifyPhase7BSource(root = process.cwd(), environment = pr
   assert.equal(branch, PHASE7B_BRANCH, "wrong Phase 7B branch");
   assert.equal(firstParent, PHASE7B_PARENT, "first Phase 7B commit must descend directly from accepted Phase 7A");
   assert.equal(merges, "", "Phase 7B history must remain linear");
-  assert.equal(inherited.main, PHASE7B_FROZEN_MAIN, "local main moved");
+  assert.equal(inherited.frozenMain, PHASE7B_FROZEN_MAIN, "frozen main authority changed");
+  if (inherited.main !== null) assert.equal(inherited.main, PHASE7B_FROZEN_MAIN, "local main moved");
   assert.equal(inherited.originMain, PHASE7B_FROZEN_MAIN, "origin/main moved");
   assert.equal(process.versions.node, PHASE7B_REQUIRED_NODE, "Phase 7B source verification requires exact Node 22.16.0");
 
@@ -146,6 +148,15 @@ export async function verifyPhase7BSource(root = process.cwd(), environment = pr
   assert.match(packageJson.scripts?.check ?? "", /check:phase7b/);
   assert.match(packageJson.scripts?.test ?? "", /phase7b-contract\.test\.mjs/);
   assert.match(packageJson.scripts?.test ?? "", /phase7b-source\.test\.mjs/);
+  for (const testFile of ["phase7b-browser-qa.test.mjs", "phase7b-deployment-verifier.test.mjs", "phase7b-package.test.mjs", "phase7b-installed-chrome-200.test.mjs", "phase7b-evidence-assembler.test.mjs"]) {
+    assert.match(packageJson.scripts?.test ?? "", new RegExp(testFile.replaceAll(".", "\\.")), `npm test omits ${testFile}`);
+  }
+  assert.equal(packageJson.scripts?.["qa:phase7b-operating-field"], "node scripts/qa-phase7b-operating-field.mjs");
+  assert.equal(packageJson.scripts?.["capture:phase7b-chrome-200"], "node scripts/capture-phase7b-installed-chrome-200.mjs");
+  assert.equal(packageJson.scripts?.["assemble:phase7b-review"], "node scripts/assemble-phase7b-review-evidence.mjs");
+  assert.equal(packageJson.scripts?.["verify:phase7b-deployment"], "node scripts/verify-phase7b-deployment.mjs");
+  assert.equal(packageJson.scripts?.["package:phase7b-review"], "node scripts/package-phase7b-human-review.mjs");
+  assert.equal(packageJson.scripts?.["audit:phase7b-review"], "node scripts/audit-phase7b-human-review-package.mjs");
 
   assert.match(architecture, /ONE WORKPIECE CHANGES STATE/i);
   assert.match(architecture, /PENDING HUMAN REVIEW/g);
