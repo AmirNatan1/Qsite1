@@ -375,7 +375,11 @@ test("installed Chrome evidence requires genuine native 200 percent zoom and vis
     applicable: true,
     status: "PASS",
     viewportBounds: viewport,
-    header: { bounds: { left: 0, top: 0, right: 640, bottom: 50, width: 640, height: 50 }, position: "sticky", visible: true, anchoredToViewportTop: true, occluding: true },
+    sectionBounds: viewport,
+    sectionClipBounds: viewport,
+    clippingAncestors: [],
+    usableClipBounds: viewport,
+    header: { bounds: { left: 0, top: 0, right: 640, bottom: 50, width: 640, height: 50 }, position: "sticky", visible: true, anchoredToViewportTop: true, horizontallyOverlapsManifesto: true, occluding: true },
     h1Bounds,
     glyphBounds,
     effectiveVisibleBounds,
@@ -415,6 +419,17 @@ test("installed Chrome evidence requires genuine native 200 percent zoom and vis
     state: { targetSize: target(), geometry: { innerWidth: 640, innerHeight: 360 }, h1Bounds: index === 0 ? h1Bounds : null, manifestoVisibility: index === 0 ? manifestoVisibility : { applicable: false, status: "NOT_APPLICABLE" } },
   }));
   assert.equal(validateInstalledChromeReport(report), true);
+  const concealedHeader = structuredClone(report);
+  concealedHeader.routes[0].state.manifestoVisibility.header.visible = false;
+  concealedHeader.routes[0].state.manifestoVisibility.header.occluding = false;
+  concealedHeader.routes[0].state.manifestoVisibility.effectiveVisibleBounds.top = 0;
+  concealedHeader.routes[0].state.manifestoVisibility.effectiveVisibleBounds.height = 360;
+  concealedHeader.routes[0].state.manifestoVisibility.safeAllowances.h1Top = 60;
+  concealedHeader.routes[0].state.manifestoVisibility.safeAllowances.glyphTop = 65;
+  assert.equal(validateInstalledChromeReport(concealedHeader), true);
+  const dishonestConcealedHeader = structuredClone(concealedHeader);
+  dishonestConcealedHeader.routes[0].state.manifestoVisibility.header.occluding = true;
+  assert.throws(() => validateInstalledChromeReport(dishonestConcealedHeader), /occlusion authority differs/);
   const observedUi = [{ relativePath: "chrome-visible-200-percent.png", format: "png", width: 1280, height: 720, bytes: 4096, sha256: "f".repeat(64), entropy: 4, maximumChannelRange: 255 }];
   const ui = { schema: "quantum-hub.phase-7a-r1.installed-chrome-ui-evidence.v1", status: "PASS", browserWindow: { product: "Google Chrome", processName: "chrome.exe", visible: true, remoteDebuggingProcessMatched: true, title: "Qsite1 - Google Chrome" }, visibleZoomConfirmation: true, visibleZoomObservation: { method: "windows-ui-automation-accessibility-tree", chromeMenuVisible: true, observedLabel: "200%", screenshot: "chrome-visible-200-percent.png" }, screenshots: observedUi.map((entry) => ({ ...entry })) };
   assert.equal(validateInstalledChromeUiReport(ui, observedUi), true);
@@ -432,7 +447,7 @@ test("installed Chrome evidence requires genuine native 200 percent zoom and vis
   const missingStickyBoundary = structuredClone(report);
   missingStickyBoundary.routes[0].state.manifestoVisibility.effectiveVisibleBounds.top = 0;
   missingStickyBoundary.routes[0].state.manifestoVisibility.effectiveVisibleBounds.height = 360;
-  assert.throws(() => validateInstalledChromeReport(missingStickyBoundary), /sticky-header bottom/);
+  assert.throws(() => validateInstalledChromeReport(missingStickyBoundary), /visible sticky-header bottom/);
 
   const hiddenLink = structuredClone(report);
   hiddenLink.fieldMap.visibleLinks[3].fullyInViewport = false;

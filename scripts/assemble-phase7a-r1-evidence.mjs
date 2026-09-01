@@ -369,13 +369,50 @@ export function validateInstalledChromeReport(report) {
     return value;
   };
   const viewport = rect(visibility.viewportBounds, "installed Chrome Home viewport bounds");
+  const sectionBounds = rect(visibility.sectionBounds, "installed Chrome Home section bounds");
+  const sectionClipBounds = rect(visibility.sectionClipBounds, "installed Chrome Home section client bounds");
+  const usableClipBounds = rect(visibility.usableClipBounds, "installed Chrome Home usable clip bounds");
   const effective = rect(visibility.effectiveVisibleBounds, "installed Chrome Home effective visible bounds");
   const h1Bounds = rect(visibility.h1Bounds, "installed Chrome Home H1 bounds");
   const glyphBounds = rect(visibility.glyphBounds, "installed Chrome Home glyph bounds");
   const headerBounds = rect(visibility.header?.bounds, "installed Chrome sticky-header bounds");
-  invariant(visibility.header.occluding === true && visibility.header.visible === true && visibility.header.anchoredToViewportTop === true && ["fixed", "sticky"].includes(visibility.header.position), "installed Chrome sticky-header occlusion authority differs");
+  invariant(typeof visibility.header.visible === "boolean", "installed Chrome sticky-header visibility authority differs");
+  const expectedHeaderAnchor = ["fixed", "sticky"].includes(visibility.header.position) && headerBounds.top <= viewport.top + 0.5 && headerBounds.bottom > viewport.top;
+  const expectedHeaderOverlap = headerBounds.right > h1Bounds.left && headerBounds.left < h1Bounds.right;
+  invariant(expectedHeaderAnchor === true && visibility.header.anchoredToViewportTop === expectedHeaderAnchor, "installed Chrome sticky-header anchor authority differs");
+  invariant(expectedHeaderOverlap === true && visibility.header.horizontallyOverlapsManifesto === expectedHeaderOverlap, "installed Chrome sticky-header overlap authority differs");
+  const expectedHeaderOcclusion = visibility.header.visible && expectedHeaderAnchor && expectedHeaderOverlap;
+  invariant(visibility.header.occluding === expectedHeaderOcclusion, "installed Chrome sticky-header occlusion authority differs");
+  invariant(sectionClipBounds.left >= sectionBounds.left - 0.05 && sectionClipBounds.top >= sectionBounds.top - 0.05 && sectionClipBounds.right <= sectionBounds.right + 0.05 && sectionClipBounds.bottom <= sectionBounds.bottom + 0.05, "installed Chrome section client bounds escape the section rectangle");
+  invariant(Array.isArray(visibility.clippingAncestors), "installed Chrome clipping-ancestor authority is missing");
+  const expectedUsableClipBounds = {
+    left: Math.max(viewport.left, sectionClipBounds.left),
+    top: Math.max(viewport.top, sectionClipBounds.top),
+    right: Math.min(viewport.right, sectionClipBounds.right),
+    bottom: Math.min(viewport.bottom, sectionClipBounds.bottom),
+  };
+  const clippingOverflow = new Set(["auto", "clip", "hidden", "scroll"]);
+  for (const [index, ancestor] of visibility.clippingAncestors.entries()) {
+    const bounds = rect(ancestor?.bounds, `installed Chrome clipping ancestor ${index + 1} bounds`);
+    const contain = String(ancestor.contain || "").split(/\s+/);
+    const paintContainment = contain.some((token) => ["content", "paint", "strict"].includes(token));
+    const pathClipping = String(ancestor.clipPath || "none") !== "none";
+    const clipsX = clippingOverflow.has(ancestor.overflowX) || paintContainment || pathClipping;
+    const clipsY = clippingOverflow.has(ancestor.overflowY) || paintContainment || pathClipping;
+    invariant(ancestor.clipsX === clipsX && ancestor.clipsY === clipsY && (clipsX || clipsY), `installed Chrome clipping ancestor ${index + 1} authority differs`);
+    if (clipsX) { expectedUsableClipBounds.left = Math.max(expectedUsableClipBounds.left, bounds.left); expectedUsableClipBounds.right = Math.min(expectedUsableClipBounds.right, bounds.right); }
+    if (clipsY) { expectedUsableClipBounds.top = Math.max(expectedUsableClipBounds.top, bounds.top); expectedUsableClipBounds.bottom = Math.min(expectedUsableClipBounds.bottom, bounds.bottom); }
+  }
+  for (const edge of ["left", "top", "right", "bottom"]) invariant(Math.abs(usableClipBounds[edge] - expectedUsableClipBounds[edge]) < 0.05, `installed Chrome usable clip ${edge} differs from section/ancestor authority`);
   invariant(effective.left >= viewport.left && effective.top >= viewport.top && effective.right <= viewport.right && effective.bottom <= viewport.bottom, "installed Chrome effective visible bounds escape the viewport");
-  invariant(headerBounds.bottom > viewport.top && effective.top >= headerBounds.bottom - 0.05, "installed Chrome effective visible bounds omit the sticky-header bottom");
+  if (expectedHeaderOcclusion) invariant(headerBounds.bottom > viewport.top && effective.top >= Math.min(viewport.bottom, headerBounds.bottom) - 0.05, "installed Chrome effective visible bounds omit the visible sticky-header bottom");
+  const expectedEffectiveBounds = {
+    left: usableClipBounds.left,
+    top: Math.max(usableClipBounds.top, expectedHeaderOcclusion ? Math.min(viewport.bottom, headerBounds.bottom) : viewport.top),
+    right: usableClipBounds.right,
+    bottom: usableClipBounds.bottom,
+  };
+  for (const edge of ["left", "top", "right", "bottom"]) invariant(Math.abs(effective[edge] - expectedEffectiveBounds[edge]) < 0.05, `installed Chrome effective visible ${edge} differs from usable-clip/header authority`);
   invariant(home.state?.h1Bounds && Math.abs(home.state.h1Bounds.top - h1Bounds.top) < 0.05 && Math.abs(home.state.h1Bounds.bottom - h1Bounds.bottom) < 0.05, "installed Chrome Home H1 bounds disagree across the report");
   const derivedAllowances = {
     h1Top: h1Bounds.top - effective.top,

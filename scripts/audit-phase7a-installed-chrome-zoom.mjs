@@ -90,18 +90,70 @@ export function validateInstalledChromeCaptureAuthority(report, expectedRevision
 export function validateManifestoVisibility(authority) {
   invariant(authority?.applicable === true, "Home manifesto visibility authority is missing");
   invariant(authority.status === "PASS", "Home manifesto is not fully visible");
-  invariant(["fixed", "sticky"].includes(authority.header?.position), "sticky header positioning authority is missing");
-  invariant(authority.header?.anchoredToViewportTop === true, "sticky header anchor authority is missing");
-  invariant(authority.header?.horizontallyOverlapsManifesto === true, "sticky header overlap authority is missing");
-  const expectedOcclusion = authority.header.visible
-    && authority.header.anchoredToViewportTop
-    && authority.header.horizontallyOverlapsManifesto;
+  const rect = (value, label) => {
+    invariant(value && typeof value === "object" && !Array.isArray(value), `${label} is missing`);
+    for (const key of ["left", "top", "right", "bottom", "width", "height"]) invariant(Number.isFinite(value[key]), `${label} has a nonnumeric ${key}`);
+    invariant(value.width > 0 && value.height > 0 && Math.abs(value.width - (value.right - value.left)) < 0.05 && Math.abs(value.height - (value.bottom - value.top)) < 0.05, `${label} geometry differs`);
+    return value;
+  };
+  const viewport = rect(authority.viewportBounds, "Home viewport bounds");
+  const section = rect(authority.sectionBounds, "Home manifesto section bounds");
+  const sectionClip = rect(authority.sectionClipBounds, "Home manifesto section client bounds");
+  const usable = rect(authority.usableClipBounds, "Home usable clip bounds");
+  const effective = rect(authority.effectiveVisibleBounds, "Home effective visible bounds");
+  const h1 = rect(authority.h1Bounds, "Home H1 bounds");
+  const glyphs = rect(authority.glyphBounds, "Home glyph bounds");
+  const header = rect(authority.header?.bounds, "Home sticky-header bounds");
+  invariant(typeof authority.header.visible === "boolean", "sticky header visibility authority is missing");
+  const expectedAnchor = ["fixed", "sticky"].includes(authority.header.position) && header.top <= viewport.top + 0.5 && header.bottom > viewport.top;
+  const expectedOverlap = header.right > h1.left && header.left < h1.right;
+  invariant(expectedAnchor === true && authority.header.anchoredToViewportTop === expectedAnchor, "sticky header anchor authority differs");
+  invariant(expectedOverlap === true && authority.header.horizontallyOverlapsManifesto === expectedOverlap, "sticky header overlap authority differs");
+  const expectedOcclusion = authority.header.visible && expectedAnchor && expectedOverlap;
   invariant(authority.header.occluding === expectedOcclusion, "sticky header occlusion authority differs");
-  invariant(authority.effectiveVisibleBounds && authority.h1Bounds && authority.glyphBounds, "Home manifesto visible bounds are incomplete");
-  invariant(authority.safeAllowances?.h1Top >= 2 && authority.safeAllowances?.h1Bottom >= 2, "Home H1 intersects an effective visible boundary");
-  invariant(authority.safeAllowances?.glyphTop >= 2 && authority.safeAllowances?.glyphBottom >= 2, "Home glyphs intersect an effective visible boundary");
-  invariant(authority.safeAllowances?.h1Left >= 2 && authority.safeAllowances?.h1Right >= 2, "Home H1 intersects a horizontal visible boundary");
-  invariant(authority.safeAllowances?.glyphLeft >= 2 && authority.safeAllowances?.glyphRight >= 2, "Home glyphs intersect a horizontal visible boundary");
+  invariant(sectionClip.left >= section.left - 0.05 && sectionClip.top >= section.top - 0.05 && sectionClip.right <= section.right + 0.05 && sectionClip.bottom <= section.bottom + 0.05, "Home section client bounds escape the section rectangle");
+  invariant(Array.isArray(authority.clippingAncestors), "Home clipping-ancestor authority is missing");
+  const expectedUsable = {
+    left: Math.max(viewport.left, sectionClip.left),
+    top: Math.max(viewport.top, sectionClip.top),
+    right: Math.min(viewport.right, sectionClip.right),
+    bottom: Math.min(viewport.bottom, sectionClip.bottom),
+  };
+  const clippingOverflow = new Set(["auto", "clip", "hidden", "scroll"]);
+  for (const [index, ancestor] of authority.clippingAncestors.entries()) {
+    const bounds = rect(ancestor?.bounds, `Home clipping ancestor ${index + 1} bounds`);
+    const contain = String(ancestor.contain || "").split(/\s+/);
+    const paintContainment = contain.some((token) => ["content", "paint", "strict"].includes(token));
+    const pathClipping = String(ancestor.clipPath || "none") !== "none";
+    const clipsX = clippingOverflow.has(ancestor.overflowX) || paintContainment || pathClipping;
+    const clipsY = clippingOverflow.has(ancestor.overflowY) || paintContainment || pathClipping;
+    invariant(ancestor.clipsX === clipsX && ancestor.clipsY === clipsY && (clipsX || clipsY), `Home clipping ancestor ${index + 1} authority differs`);
+    if (clipsX) { expectedUsable.left = Math.max(expectedUsable.left, bounds.left); expectedUsable.right = Math.min(expectedUsable.right, bounds.right); }
+    if (clipsY) { expectedUsable.top = Math.max(expectedUsable.top, bounds.top); expectedUsable.bottom = Math.min(expectedUsable.bottom, bounds.bottom); }
+  }
+  for (const edge of ["left", "top", "right", "bottom"]) invariant(Math.abs(usable[edge] - expectedUsable[edge]) < 0.05, `Home usable clip ${edge} differs from section/ancestor authority`);
+  const expectedEffective = {
+    left: usable.left,
+    top: Math.max(usable.top, expectedOcclusion ? Math.min(viewport.bottom, header.bottom) : viewport.top),
+    right: usable.right,
+    bottom: usable.bottom,
+  };
+  invariant(expectedEffective.right > expectedEffective.left && expectedEffective.bottom > expectedEffective.top, "Home effective visible intersection is empty");
+  for (const edge of ["left", "top", "right", "bottom"]) invariant(Math.abs(effective[edge] - expectedEffective[edge]) < 0.05, `Home effective visible ${edge} differs from usable-clip/header authority`);
+  const expectedAllowances = {
+    h1Top: h1.top - effective.top,
+    h1Bottom: effective.bottom - h1.bottom,
+    h1Left: h1.left - effective.left,
+    h1Right: effective.right - h1.right,
+    glyphTop: glyphs.top - effective.top,
+    glyphBottom: effective.bottom - glyphs.bottom,
+    glyphLeft: glyphs.left - effective.left,
+    glyphRight: effective.right - glyphs.right,
+  };
+  for (const [name, value] of Object.entries(expectedAllowances)) {
+    invariant(Number.isFinite(authority.safeAllowances?.[name]) && Math.abs(authority.safeAllowances[name] - value) < 0.05, `Home safe allowance authority differs: ${name}`);
+    invariant(value >= 2, `Home ${name.startsWith("glyph") ? "glyphs" : "H1"} intersect an effective visible boundary: ${name}`);
+  }
   return true;
 }
 
@@ -195,26 +247,63 @@ async function inspect(page, context = {}) {
       if (!(section instanceof HTMLElement) || !(header instanceof HTMLElement) || !h1Bounds) return { applicable: true, status: "FAIL", reason: "required bounds are missing" };
       const viewportBounds = { left: 0, top: 0, right: innerWidth, bottom: innerHeight, width: innerWidth, height: innerHeight };
       const sectionRect = section.getBoundingClientRect();
-      let visibleLeft = Math.max(viewportBounds.left, sectionRect.left + section.clientLeft);
-      let visibleTop = Math.max(viewportBounds.top, sectionRect.top + section.clientTop);
-      let visibleRight = Math.min(viewportBounds.right, sectionRect.left + section.clientLeft + section.clientWidth);
-      let visibleBottom = Math.min(viewportBounds.bottom, sectionRect.top + section.clientTop + section.clientHeight);
+      const sectionClipBounds = {
+        left: sectionRect.left + section.clientLeft,
+        top: sectionRect.top + section.clientTop,
+        right: sectionRect.left + section.clientLeft + section.clientWidth,
+        bottom: sectionRect.top + section.clientTop + section.clientHeight,
+        width: section.clientWidth,
+        height: section.clientHeight,
+      };
+      let visibleLeft = Math.max(viewportBounds.left, sectionClipBounds.left);
+      let visibleTop = Math.max(viewportBounds.top, sectionClipBounds.top);
+      let visibleRight = Math.min(viewportBounds.right, sectionClipBounds.right);
+      let visibleBottom = Math.min(viewportBounds.bottom, sectionClipBounds.bottom);
       const clippingOverflow = new Set(["auto", "clip", "hidden", "scroll"]);
+      const clippingAncestors = [];
       let ancestor = h1.parentElement;
       while (ancestor) {
         const style = getComputedStyle(ancestor);
-        if (clippingOverflow.has(style.overflowX)) {
+        const contain = String(style.contain || "").split(/\s+/);
+        const paintContainment = contain.some((token) => ["content", "paint", "strict"].includes(token));
+        const clipPath = style.clipPath || style.webkitClipPath || "none";
+        const pathClipping = clipPath !== "none";
+        const clipsX = clippingOverflow.has(style.overflowX) || paintContainment || pathClipping;
+        const clipsY = clippingOverflow.has(style.overflowY) || paintContainment || pathClipping;
+        if (clipsX || clipsY) {
           const rect = ancestor.getBoundingClientRect();
-          visibleLeft = Math.max(visibleLeft, rect.left + ancestor.clientLeft);
-          visibleRight = Math.min(visibleRight, rect.left + ancestor.clientLeft + ancestor.clientWidth);
-        }
-        if (clippingOverflow.has(style.overflowY)) {
-          const rect = ancestor.getBoundingClientRect();
-          visibleTop = Math.max(visibleTop, rect.top + ancestor.clientTop);
-          visibleBottom = Math.min(visibleBottom, rect.top + ancestor.clientTop + ancestor.clientHeight);
+          const bounds = {
+            left: rect.left + ancestor.clientLeft,
+            top: rect.top + ancestor.clientTop,
+            right: rect.left + ancestor.clientLeft + ancestor.clientWidth,
+            bottom: rect.top + ancestor.clientTop + ancestor.clientHeight,
+            width: ancestor.clientWidth,
+            height: ancestor.clientHeight,
+          };
+          clippingAncestors.push({
+            tag: ancestor.tagName.toLowerCase(),
+            id: ancestor.id || null,
+            classes: [...ancestor.classList],
+            overflowX: style.overflowX,
+            overflowY: style.overflowY,
+            clipPath,
+            contain: style.contain || "none",
+            clipsX,
+            clipsY,
+            bounds,
+          });
+          if (clipsX) {
+            visibleLeft = Math.max(visibleLeft, bounds.left);
+            visibleRight = Math.min(visibleRight, bounds.right);
+          }
+          if (clipsY) {
+            visibleTop = Math.max(visibleTop, bounds.top);
+            visibleBottom = Math.min(visibleBottom, bounds.bottom);
+          }
         }
         ancestor = ancestor.parentElement;
       }
+      const usableClipBounds = { left: visibleLeft, top: visibleTop, right: visibleRight, bottom: visibleBottom, width: visibleRight - visibleLeft, height: visibleBottom - visibleTop };
       const headerRect = numericRect(header.getBoundingClientRect());
       const headerStyle = getComputedStyle(header);
       const headerOpacity = Number.parseFloat(headerStyle.opacity);
@@ -261,6 +350,9 @@ async function inspect(page, context = {}) {
         status: pass ? "PASS" : "FAIL",
         viewportBounds,
         sectionBounds: numericRect(sectionRect),
+        sectionClipBounds,
+        clippingAncestors,
+        usableClipBounds,
         header: {
           bounds: headerRect,
           position: headerStyle.position,
@@ -377,6 +469,7 @@ async function main() {
     if (route.path === "/") await page.waitForFunction(() => document.querySelector("[data-cinematic-shell]")?.getAttribute("data-manifesto-reveal") === "resolved", null, { timeout: 8_000 }).catch(() => undefined);
     await page.waitForTimeout(180);
     const state = await inspect(page, { route: route.path, state: route.path === "/" ? "home-manifesto-resolved" : "route-shell" });
+    if (route.path === "/") validateManifestoVisibility(state.manifestoVisibility);
     visualEvidence.push(await captureVisual(page, path.join(screenshots, `${route.path === "/" ? "home" : route.path.replaceAll("/", "-").replace(/^-|-$/g, "")}-top.png`), `route:${route.path}`, options));
     const checks = {
       httpStatus: response?.status() === route.status,

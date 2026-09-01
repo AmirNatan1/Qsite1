@@ -371,18 +371,22 @@ function addFixtureRasters(byPath, rasterBytes, chromeRasters) {
 
 function installedChromeReport(rasterBytes, filenames, chromeRasters) {
   const viewport = bounds(0, 0, 640, 360);
-  const effectiveVisibleBounds = bounds(0, 50, 640, 360);
+  const effectiveVisibleBounds = bounds(0, 0, 640, 360);
   const h1Bounds = bounds(10, 60, 630, 300);
   const glyphBounds = bounds(15, 65, 625, 295);
   const manifestoVisibility = {
     applicable: true,
     status: "PASS",
     viewportBounds: viewport,
-    header: { bounds: bounds(0, 0, 640, 50), position: "sticky", visible: true, anchoredToViewportTop: true, occluding: true },
+    sectionBounds: viewport,
+    sectionClipBounds: viewport,
+    clippingAncestors: [],
+    usableClipBounds: viewport,
+    header: { bounds: bounds(0, 0, 640, 50), position: "sticky", visible: false, anchoredToViewportTop: true, horizontallyOverlapsManifesto: true, occluding: false },
     h1Bounds,
     glyphBounds,
     effectiveVisibleBounds,
-    safeAllowances: { h1Top: 10, h1Bottom: 60, h1Left: 10, h1Right: 10, glyphTop: 15, glyphBottom: 65, glyphLeft: 15, glyphRight: 15 },
+    safeAllowances: { h1Top: 60, h1Bottom: 60, h1Left: 10, h1Right: 10, glyphTop: 65, glyphBottom: 65, glyphLeft: 15, glyphRight: 15 },
   };
   const servedBuild = portableServedBuild();
   const sourceAuthority = portableSource(servedBuild);
@@ -625,6 +629,25 @@ test("R1 packaging is additive, exact-named, deterministic, and binds every payl
   const repeated = buildReviewArtifacts(clone(fixtureEntries));
   assert.deepEqual(repeated.archiveBytes, artifacts.archiveBytes);
   assert.deepEqual(repeated.detachedBytes, artifacts.detachedBytes);
+});
+
+test("installed Chrome concealed-header geometry packages and audits only with honest clipping authority", () => {
+  assert.doesNotThrow(() => buildReviewArtifacts(clone(fixtureEntries)));
+  assert.equal(auditPackageBytes({ archiveBytes: artifacts.archiveBytes, detachedBytes: artifacts.detachedBytes }).status, "PASS");
+  const installedChromePath = "09-chrome-200/installed-chrome-200-percent-report.json";
+  const mutations = [
+    [(document) => { document.routes[0].state.manifestoVisibility.header.occluding = true; }, /occlusion authority differs/],
+    [(document) => { document.routes[0].state.manifestoVisibility.header.visible = true; }, /occlusion authority differs/],
+    [(document) => { delete document.routes[0].state.manifestoVisibility.sectionClipBounds; }, /section client bounds.*missing/i],
+    [(document) => { document.routes[0].state.manifestoVisibility.sectionClipBounds.top = 10; document.routes[0].state.manifestoVisibility.sectionClipBounds.height = 350; }, /usable clip top differs/],
+    [(document) => { document.routes[0].state.manifestoVisibility.header.anchoredToViewportTop = false; }, /anchor authority differs/],
+    [(document) => { document.routes[0].state.manifestoVisibility.header.horizontallyOverlapsManifesto = false; }, /overlap authority differs/],
+    [(document) => { document.routes[0].state.manifestoVisibility.safeAllowances.h1Top = 59; }, /safe allowance differs/],
+  ];
+  for (const [mutate, expected] of mutations) {
+    assert.throws(() => buildReviewArtifacts(mutateJson(fixtureEntries, installedChromePath, mutate)), expected);
+    assert.throws(() => auditPackageBytes(cryptographicallyRebindJson(installedChromePath, mutate)), expected);
+  }
 });
 
 test("the independent audit reparses CRC/SHA/bytes/signatures and fully decodes raster evidence", async () => {

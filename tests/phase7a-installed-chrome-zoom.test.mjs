@@ -17,6 +17,10 @@ import { runtimeAssetSetFingerprint } from "../scripts/capture-phase7a-r1-closur
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const REVISION = "a".repeat(40);
 
+function bounds(left, top, right, bottom) {
+  return { left, top, right, bottom, width: right - left, height: bottom - top };
+}
+
 function portableReceipt() {
   const runtimeAssets = [
     { kind: "css", route: "/_astro/site.css", bytes: 1200, sha256: "b".repeat(64) },
@@ -145,34 +149,59 @@ test("installed Chrome capture rejects substituted labels, filenames, and duplic
 });
 
 test("installed Chrome Home authority rejects H1 or glyphs hidden below the sticky header", () => {
+  const viewportBounds = bounds(0, 0, 519, 399);
   const authority = {
     applicable: true,
     status: "PASS",
+    viewportBounds,
+    sectionBounds: viewportBounds,
+    sectionClipBounds: viewportBounds,
+    clippingAncestors: [],
+    usableClipBounds: viewportBounds,
     header: {
+      bounds: bounds(0, 0, 519, 50),
       position: "sticky",
       visible: true,
       anchoredToViewportTop: true,
       horizontallyOverlapsManifesto: true,
       occluding: true,
     },
-    effectiveVisibleBounds: { left: 0, top: 50, right: 519, bottom: 399 },
-    h1Bounds: { left: 20, top: 80, right: 499, bottom: 270 },
-    glyphBounds: { left: 22, top: 84, right: 497, bottom: 266 },
+    effectiveVisibleBounds: bounds(0, 50, 519, 399),
+    h1Bounds: bounds(20, 80, 499, 270),
+    glyphBounds: bounds(22, 84, 497, 266),
     safeAllowances: { h1Top: 30, h1Bottom: 129, h1Left: 20, h1Right: 20, glyphTop: 34, glyphBottom: 133, glyphLeft: 22, glyphRight: 22 },
   };
   assert.equal(validateManifestoVisibility(authority), true);
   assert.throws(() => validateManifestoVisibility({ ...authority, status: "FAIL", safeAllowances: { ...authority.safeAllowances, glyphTop: -12 } }), /not fully visible/);
-  assert.throws(() => validateManifestoVisibility({ ...authority, safeAllowances: { ...authority.safeAllowances, h1Top: 1.5 } }), /H1 intersects/);
-  assert.throws(() => validateManifestoVisibility({ ...authority, safeAllowances: { ...authority.safeAllowances, glyphRight: -4 } }), /horizontal visible boundary/);
+  assert.throws(() => validateManifestoVisibility({ ...authority, h1Bounds: bounds(20, 51.5, 499, 270), safeAllowances: { ...authority.safeAllowances, h1Top: 1.5 } }), /H1 intersect/);
+  assert.throws(() => validateManifestoVisibility({ ...authority, glyphBounds: bounds(22, 84, 523, 266), safeAllowances: { ...authority.safeAllowances, glyphRight: -4 } }), /glyphs intersect/);
 
   const concealedHeader = {
     ...authority,
     header: { ...authority.header, visible: false, occluding: false },
+    effectiveVisibleBounds: viewportBounds,
+    safeAllowances: { ...authority.safeAllowances, h1Top: 80, glyphTop: 84 },
   };
   assert.equal(validateManifestoVisibility(concealedHeader), true);
   assert.throws(
     () => validateManifestoVisibility({ ...concealedHeader, header: { ...concealedHeader.header, occluding: true } }),
     /occlusion authority differs/,
+  );
+  assert.throws(
+    () => validateManifestoVisibility({ ...authority, header: { ...authority.header, occluding: false } }),
+    /occlusion authority differs/,
+  );
+  assert.throws(
+    () => validateManifestoVisibility({ ...concealedHeader, sectionClipBounds: bounds(0, 10, 519, 399) }),
+    /usable clip top differs/,
+  );
+  assert.throws(
+    () => validateManifestoVisibility({ ...concealedHeader, header: { ...concealedHeader.header, anchoredToViewportTop: false } }),
+    /anchor authority differs/,
+  );
+  assert.throws(
+    () => validateManifestoVisibility({ ...concealedHeader, safeAllowances: { ...concealedHeader.safeAllowances, h1Top: 79 } }),
+    /safe allowance authority differs/,
   );
 });
 

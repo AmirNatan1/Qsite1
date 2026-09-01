@@ -670,8 +670,33 @@ function validateInstalledChrome(entries) {
   for (const [index, route] of report.routes.entries()) { invariant(route.path === expectedRoutePaths[index], `installed Chrome route ${index + 1} identity differs`); validatePortableSource(route.sourceAuthority, report.servedBuild, `installed Chrome route ${index + 1}`); validateExactTrueChecks(route.checks, ["httpStatus", "semanticH1", "landmarks", "noHorizontalOverflow", "wholeWords", "targetSizes", "manifestoUnclipped"], `installed Chrome route ${index + 1}`); validateTargetObservation(route.state?.targetSize, `installed Chrome route ${index + 1} targets`); }
   const home = report.routes.filter(({ path: routePath }) => routePath === "/");
   invariant(home.length === 1 && home[0].checks.manifestoUnclipped === true && home[0].state?.manifestoVisibility?.status === "PASS", "installed Chrome Home manifesto authority differs");
-  const visibility = home[0].state.manifestoVisibility; const effective = rect(visibility.effectiveVisibleBounds, "installed Chrome effective visible"); const h1 = rect(visibility.h1Bounds, "installed Chrome H1"); const glyphs = rect(visibility.glyphBounds, "installed Chrome glyphs"); const header = rect(visibility.header?.bounds, "installed Chrome sticky header");
-  invariant(visibility.header.occluding === true && effective.top >= header.bottom - 0.05, "installed Chrome effective visible bounds omit the sticky header");
+  const visibility = home[0].state.manifestoVisibility; const viewport = rect(visibility.viewportBounds, "installed Chrome viewport"); const section = rect(visibility.sectionBounds, "installed Chrome manifesto section"); const sectionClip = rect(visibility.sectionClipBounds, "installed Chrome manifesto section client bounds"); const usable = rect(visibility.usableClipBounds, "installed Chrome usable clip bounds"); const effective = rect(visibility.effectiveVisibleBounds, "installed Chrome effective visible"); const h1 = rect(visibility.h1Bounds, "installed Chrome H1"); const glyphs = rect(visibility.glyphBounds, "installed Chrome glyphs"); const header = rect(visibility.header?.bounds, "installed Chrome sticky header");
+  invariant(typeof visibility.header.visible === "boolean", "installed Chrome sticky-header visibility authority differs");
+  const expectedHeaderAnchor = ["fixed", "sticky"].includes(visibility.header.position) && header.top <= viewport.top + 0.5 && header.bottom > viewport.top;
+  const expectedHeaderOverlap = header.right > h1.left && header.left < h1.right;
+  invariant(expectedHeaderAnchor === true && visibility.header.anchoredToViewportTop === expectedHeaderAnchor, "installed Chrome sticky-header anchor authority differs");
+  invariant(expectedHeaderOverlap === true && visibility.header.horizontallyOverlapsManifesto === expectedHeaderOverlap, "installed Chrome sticky-header overlap authority differs");
+  const expectedHeaderOcclusion = visibility.header.visible && expectedHeaderAnchor && expectedHeaderOverlap;
+  invariant(visibility.header.occluding === expectedHeaderOcclusion, "installed Chrome sticky-header occlusion authority differs");
+  invariant(sectionClip.left >= section.left - 0.05 && sectionClip.top >= section.top - 0.05 && sectionClip.right <= section.right + 0.05 && sectionClip.bottom <= section.bottom + 0.05, "installed Chrome section client bounds escape the section rectangle");
+  invariant(Array.isArray(visibility.clippingAncestors), "installed Chrome clipping-ancestor authority is missing");
+  const expectedUsable = { left: Math.max(viewport.left, sectionClip.left), top: Math.max(viewport.top, sectionClip.top), right: Math.min(viewport.right, sectionClip.right), bottom: Math.min(viewport.bottom, sectionClip.bottom) };
+  const clippingOverflow = new Set(["auto", "clip", "hidden", "scroll"]);
+  for (const [index, ancestor] of visibility.clippingAncestors.entries()) {
+    const bounds = rect(ancestor?.bounds, `installed Chrome clipping ancestor ${index + 1}`);
+    const contain = String(ancestor.contain || "").split(/\s+/);
+    const paintContainment = contain.some((token) => ["content", "paint", "strict"].includes(token));
+    const pathClipping = String(ancestor.clipPath || "none") !== "none";
+    const clipsX = clippingOverflow.has(ancestor.overflowX) || paintContainment || pathClipping;
+    const clipsY = clippingOverflow.has(ancestor.overflowY) || paintContainment || pathClipping;
+    invariant(ancestor.clipsX === clipsX && ancestor.clipsY === clipsY && (clipsX || clipsY), `installed Chrome clipping ancestor ${index + 1} authority differs`);
+    if (clipsX) { expectedUsable.left = Math.max(expectedUsable.left, bounds.left); expectedUsable.right = Math.min(expectedUsable.right, bounds.right); }
+    if (clipsY) { expectedUsable.top = Math.max(expectedUsable.top, bounds.top); expectedUsable.bottom = Math.min(expectedUsable.bottom, bounds.bottom); }
+  }
+  for (const edge of ["left", "top", "right", "bottom"]) invariant(Math.abs(usable[edge] - expectedUsable[edge]) < 0.05, `installed Chrome usable clip ${edge} differs from section/ancestor authority`);
+  if (expectedHeaderOcclusion) invariant(header.bottom > viewport.top && effective.top >= Math.min(viewport.bottom, header.bottom) - 0.05, "installed Chrome effective visible bounds omit the visible sticky header");
+  const expectedEffective = { left: usable.left, top: Math.max(usable.top, expectedHeaderOcclusion ? Math.min(viewport.bottom, header.bottom) : viewport.top), right: usable.right, bottom: usable.bottom };
+  for (const edge of ["left", "top", "right", "bottom"]) invariant(Math.abs(effective[edge] - expectedEffective[edge]) < 0.05, `installed Chrome effective visible ${edge} differs from usable-clip/header authority`);
   const allowances = { h1Top: h1.top - effective.top, h1Bottom: effective.bottom - h1.bottom, h1Left: h1.left - effective.left, h1Right: effective.right - h1.right, glyphTop: glyphs.top - effective.top, glyphBottom: effective.bottom - glyphs.bottom, glyphLeft: glyphs.left - effective.left, glyphRight: effective.right - glyphs.right };
   for (const [name, value] of Object.entries(allowances)) invariant(value >= 2 && Math.abs(visibility.safeAllowances?.[name] - value) < 0.05, `installed Chrome safe allowance differs: ${name}`);
   invariant(Array.isArray(report.visualEvidence) && report.visualEvidence.length === 15 && report.visualEvidence.every((visual) => visual.format === "png" && visual.width > 0 && visual.height > 0 && visual.bytes > 0 && visual.entropy >= 1 && visual.maximumChannelRange >= 80 && /^[0-9a-f]{64}$/.test(visual.sha256 ?? "")), "installed Chrome decoded/nonblank visual inventory differs");
