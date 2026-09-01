@@ -322,7 +322,11 @@ test("source uses installed Chromium and existing media helpers without zoom emu
   assert.match(source, /runReportedPhase\(engine, "visual-regression"/);
   assert.match(source, /recording-\$\{specification\.scenario\}/);
   assert.match(source, /EVIDENCE_STATUSES\.includes\(result\?\.status\)/);
-  assert.match(source, /observerDelta <= PHASE7B_PERFORMANCE_BUDGET\.activeObserverMaximum/);
+  const lifecycleSource = source.slice(source.indexOf("async function lifecycleCase"), source.indexOf("async function networkCase"));
+  const historySource = source.slice(source.indexOf("async function historyCase"), source.indexOf("async function lifecycleCase"));
+  assert.match(lifecycleSource, /const observerDelta = after\.metrics\.activeObservers - before\.metrics\.activeObservers/);
+  assert.match(lifecycleSource, /observerDelta <= PHASE7B_PERFORMANCE_BUDGET\.activeObserverMaximum/);
+  assert.doesNotMatch(historySource, /observerDelta/);
   assert.match(source, /retained\.h1\.replace\(\/\\s\+\/g, ""\)/);
   assert.doesNotMatch(source, /document\.fonts\??\.ready/);
   assert.match(source, /--retain-visual-regression-pngs/);

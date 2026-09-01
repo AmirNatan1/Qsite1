@@ -1132,7 +1132,6 @@ async function historyCase(browser, options) {
     await page.goForward({ waitUntil: "load", timeout: options.timeoutMs });
     await settle(page, options.timeoutMs);
     const forward = await page.evaluate(() => ({ pathname: location.pathname, hash: location.hash, operatingField: document.querySelectorAll("[data-operating-field]").length }));
-    const observerDelta = after.metrics.activeObservers - before.metrics.activeObservers;
     const checks = {
       status: about?.status() === 200 && entry?.status() === 200,
       entryIntent: entryState.hash === "#entry" && entryState.entry === 1 && entryState.operatingField === 1,
@@ -1175,6 +1174,7 @@ async function lifecycleCase(browser, options) {
       svg: document.querySelector("[data-operating-field]")?.querySelectorAll("svg *").length,
     }));
     const listenerAdded = (metrics) => Object.values(metrics.listenerAdds).reduce((sum, count) => sum + count, 0);
+    const observerDelta = after.metrics.activeObservers - before.metrics.activeObservers;
     const checks = {
       tenCycles: cycles.length === PHASE7B_CYCLE_COUNT,
       exactStates: cycles.every(({ forward, reverse }) => forward.state === "decide" && reverse.state === "open-field"),
