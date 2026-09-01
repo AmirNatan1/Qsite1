@@ -1563,19 +1563,42 @@ async function capture(options) {
     const linkNavigation = await linkNavigationCase(browsers.chromium, options.baseUrl, options.timeoutMs);
     const lifecycleCleanup = await lifecycleCleanupCase(browsers.chromium, options.baseUrl, options.timeoutMs);
     const phase4 = await phase4Hashes();
+    const aggregateAuthority = {
+      primary: Object.fromEntries(Object.entries(primary).map(([engine, { focus, openSemanticInventory, recordingMetadata }]) => [engine, {
+        focus: focus.status,
+        openSemanticInventory: openSemanticInventory.status,
+        recordingDecode: recordingMetadata.decodeStatus,
+      }])),
+      matrices: matrices.map(({ engine, viewport, reducedMotion, focus, target, status }) => ({
+        engine,
+        viewport: viewport.id,
+        reducedMotion,
+        focus: focus.status,
+        target: target.status,
+        status,
+      })),
+      reducedMotionScreenshot: reducedMotionScreenshot.status,
+      targetFragment: targetFragment.status,
+      axe: axe.status,
+      contrastSelectorBindings: axeCapture.selectorBindings.status,
+      linkNavigation: linkNavigation.status,
+      lifecycleCleanup: lifecycleCleanup.status,
+      phase4: phase4.status,
+    };
+    const aggregatePass = Object.values(primary).every(({ focus, openSemanticInventory, recordingMetadata }) => focus.status === "PASS"
+      && openSemanticInventory.status !== "FAIL"
+      && recordingMetadata.decodeStatus === "PASS")
+      && matrices.every(({ status }) => status === "PASS")
+      && reducedMotionScreenshot.status === "PASS"
+      && targetFragment.status === "PASS"
+      && axe.status === "PASS"
+      && axeCapture.selectorBindings.status === "PASS"
+      && linkNavigation.status === "PASS"
+      && lifecycleCleanup.status === "PASS"
+      && phase4.status === "PASS";
     const report = {
       schema: "quantum-hub.phase-7a-r2.field-map-capture.v1",
-      status: Object.values(primary).every(({ focus, openSemanticInventory, recordingMetadata }) => focus.status === "PASS"
-        && openSemanticInventory.status !== "FAIL"
-        && recordingMetadata.decodeStatus === "PASS")
-        && matrices.every(({ status }) => status === "PASS")
-        && reducedMotionScreenshot.status === "PASS"
-        && targetFragment.status === "PASS"
-        && axe.status === "PASS"
-        && axeCapture.selectorBindings.status === "PASS"
-        && linkNavigation.status === "PASS"
-        && lifecycleCleanup.status === "PASS"
-        && phase4.status === "PASS" ? "PASS" : "FAIL",
+      status: aggregatePass ? "PASS" : "FAIL",
       authority,
       identities,
       primary,
@@ -1597,7 +1620,7 @@ async function capture(options) {
         "The sole Phase 7A accessibility gate remains PENDING HUMAN REVIEW.",
       ],
     };
-    invariant(report.status === "PASS", "R2 Field Map capture contains a failed authority");
+    invariant(report.status === "PASS", `R2 Field Map capture contains a failed authority: ${JSON.stringify(aggregateAuthority)}`);
     await writeJson(staging, "field-map-capture.json", report);
     await writeJson(staging, "focus-authority.json", canonicalFocus);
     await writeJson(staging, "axe-authority.json", axe);
