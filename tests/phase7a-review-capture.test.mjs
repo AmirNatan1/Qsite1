@@ -143,6 +143,8 @@ test("general recordings and screenshots bind one clean final-HEAD served-build 
 test("Windows governed build runs npm through the exact capture Node executable", async () => {
   const source = await readFile(path.join(ROOT, "scripts", "capture-phase7a-review-evidence.mjs"), "utf8");
   assert.match(source, /execFileAsync\(process\.execPath, \[npmCli, "run", "build:phase7a-r1"\]/);
+  assert.match(source, /path\.dirname\(process\.execPath\)/);
+  assert.match(source, /governedEnvironment\.npm_node_execpath = process\.execPath/);
   assert.doesNotMatch(source, /execFileAsync\(npm, \["run", "build:phase7a-r1"\]/);
 });
 

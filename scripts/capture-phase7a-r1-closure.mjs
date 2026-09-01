@@ -279,9 +279,13 @@ async function runGovernedR1Build() {
     }
   }
   invariant(npmCli, "npm CLI is unavailable for the governed R1 closure build");
+  const governedEnvironment = { ...process.env };
+  const pathKey = Object.keys(governedEnvironment).find((key) => key.toLowerCase() === "path") ?? "PATH";
+  governedEnvironment[pathKey] = [path.dirname(process.execPath), governedEnvironment[pathKey]].filter(Boolean).join(path.delimiter);
+  governedEnvironment.npm_node_execpath = process.execPath;
   await execFileAsync(process.execPath, [npmCli, "run", "build:phase7a-r1"], {
     cwd: ROOT,
-    env: { ...process.env },
+    env: governedEnvironment,
     windowsHide: true,
     timeout: 15 * 60_000,
     maxBuffer: 32 * 1024 * 1024,
