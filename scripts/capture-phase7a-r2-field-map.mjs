@@ -1404,7 +1404,10 @@ async function buildCanonicalFocus(primary, noJavaScript) {
     route: "/about/",
     states: { closed, open, escape },
     focus: {
-      initial: chromium.focus.initial,
+      initial: {
+        activeElement: chromium.focus.initial.activeElement,
+        activeDestinationName: chromium.focus.initial.activeDestinationName,
+      },
       forwardCycle: chromium.focus.forwardCycle,
       reverseFromSummary: chromium.focus.reverseFromSummary,
       outsideRecapture: chromium.focus.outsideRecapture,
