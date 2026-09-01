@@ -12,6 +12,8 @@ import {
   PHASE7A_PARENT,
   PHASE7A_R1_BRANCH,
   PHASE7A_R1_PARENT,
+  PHASE7A_R2_BRANCH,
+  PHASE7A_R2_PARENT,
   PUBLIC_ROUTES,
   RECORDING_SCENARIOS,
   REQUIRED_NODE,
@@ -21,6 +23,10 @@ import { pagesHydrationArgs, resolveGitAuthority, verifySource } from "../script
 
 const root = process.cwd();
 const read = (relative) => readFile(path.join(root, relative), "utf8");
+const activeBranch = spawnSync("git", ["branch", "--show-current"], { cwd: root, encoding: "utf8" }).stdout.trim();
+const activeRepair = activeBranch === PHASE7A_R2_BRANCH
+  ? { profile: "phase7a-r2", branch: PHASE7A_R2_BRANCH, parent: PHASE7A_R2_PARENT }
+  : { profile: "phase7a-r1", branch: PHASE7A_R1_BRANCH, parent: PHASE7A_R1_PARENT };
 
 test("Phase 7A contract freezes branch, ancestry, main, Node, routes, gates and recordings", () => {
   assert.equal(PHASE7A_BRANCH, "redirect/phase-7a-signal-field-threshold");
@@ -33,17 +39,17 @@ test("Phase 7A contract freezes branch, ancestry, main, Node, routes, gates and 
   assert.equal(REVIEW_ZIP_NAME, "phase-7a-signal-field-threshold-human-review.zip");
 });
 
-test("Phase 7A-R1 source authority passes as one fail-closed report", async () => {
-  const report = await verifySource(root, process.env, "phase7a-r1");
+test("the active Phase 7A repair source authority passes as one fail-closed report", async () => {
+  const report = await verifySource(root, process.env, activeRepair.profile);
   assert.equal(report.status, "PASS");
-  assert.equal(report.branch, PHASE7A_R1_BRANCH);
-  assert.equal(report.parent, PHASE7A_R1_PARENT);
+  assert.equal(report.branch, activeRepair.branch);
+  assert.equal(report.parent, activeRepair.parent);
   assert.equal(report.acceptedPhase6, PHASE7A_PARENT);
   assert.equal(report.runtimeDependenciesAdded, 0);
   assert.equal(report.maradinFrozen, true);
 });
 
-test("the default deployment build infers the exact R1 authority from the active branch", () => {
+test("the default deployment build infers the exact repair authority from the active branch", () => {
   const result = spawnSync(process.execPath, ["scripts/verify-phase7a-source.mjs"], {
     cwd: root,
     encoding: "utf8",
@@ -52,8 +58,8 @@ test("the default deployment build infers the exact R1 authority from the active
   assert.equal(result.status, 0, result.stderr);
   const report = JSON.parse(result.stdout);
   assert.equal(report.status, "PASS");
-  assert.equal(report.authorityProfile, "phase7a-r1");
-  assert.equal(report.branch, PHASE7A_R1_BRANCH);
+  assert.equal(report.authorityProfile, activeRepair.profile);
+  assert.equal(report.branch, activeRepair.branch);
 });
 
 test("Phase 7A source authority supports Cloudflare Pages detached checkouts without weakening commit identity", () => {

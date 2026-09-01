@@ -13,6 +13,7 @@ import {
   authorityProfileById,
   PHASE7A_PARENT,
   PHASE7A_R1_BRANCH,
+  PHASE7A_R2_BRANCH,
   PHYSICAL_ASSETS,
   TYPOGRAPHY_ASSETS,
 } from "./phase7a-contract.mjs";
@@ -109,13 +110,13 @@ export async function verifySource(root = process.cwd(), environment = process.e
 
   const directParentMessage = profile.id === "phase7a"
     ? "first Phase 7A commit must descend directly from accepted Phase 6"
-    : "first Phase 7A-R1 commit must descend directly from the accepted Phase 7A parent";
+    : `first ${profile.id} commit must descend directly from its accepted parent`;
   assert.equal(firstParent, profile.parent, directParentMessage);
   assert.equal(merges, "", `${profile.id} history must remain linear`);
   git(root, ["merge-base", "--is-ancestor", PHASE7A_PARENT, head]);
-  if (profile.id === "phase7a-r1") {
+  if (profile.id !== "phase7a") {
     const deleted = git(root, ["diff", "--name-only", "--diff-filter=D", profile.parent, head]);
-    assert.equal(deleted, "", "Phase 7A-R1 must not perform another demolition");
+    assert.equal(deleted, "", `${profile.id} must not perform another demolition`);
   }
   if (mainAuthorityMode === "cloudflare-pages-ancestry") {
     assert.equal(git(root, ["rev-parse", `${FROZEN_MAIN}^{commit}`]), FROZEN_MAIN, "frozen main commit is unavailable");
@@ -204,6 +205,20 @@ export async function verifySource(root = process.cwd(), environment = process.e
   assert.match(header, /pageshow/);
   assert.match(header, /popstate/);
   assert.doesNotMatch(header, /aria-modal/);
+  if (profile.id === "phase7a-r2") {
+    const productionChanges = git(root, ["diff", "--name-only", profile.parent, head, "--", "src", "public"]);
+    assert.equal(productionChanges, "src/components/SiteHeader.astro", "Phase 7A-R2 production change must remain confined to the Field Map header");
+    assert.match(header, /<summary aria-controls="field-map-navigation">/);
+    assert.equal((header.match(/id="field-map-navigation"/g) ?? []).length, 1, "Field Map aria-controls target must be unique");
+    assert.doesNotMatch(header, /aria-haspopup|aria-expanded|role="(?:menu|menuitem|menubar|listbox|tree|grid|dialog|application)"/);
+    assert.match(header, /const focusSequence = \(\) => \[trigger, \.\.\.destinations\]\.filter\(isAvailable\)/);
+    assert.match(header, /map\.addEventListener\("keydown"/);
+    assert.match(header, /event\.key !== "Tab"/);
+    assert.match(header, /event\.preventDefault\(\);\s*sequence\[nextIndex\]\?\.focus/);
+    assert.match(header, /document\.addEventListener\("focusin"[\s\S]*?\{ signal \}/);
+    assert.match(header, /containmentController\?\.abort\(\)/);
+    assert.doesNotMatch(header, /document\.addEventListener\("keydown"|requestAnimationFrame|setInterval/);
+  }
   assert.match(
     navigationCss,
     /html\[data-field-map-open\] \.site-header,\s*\.site-header:has\(\.field-map\[open\]\)\s*\{[\s\S]*?backdrop-filter:\s*none/,
@@ -251,7 +266,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(SCRIPT_PAT
   const activeBranch = process.env.CF_PAGES_BRANCH || git(process.cwd(), ["branch", "--show-current"]);
   const authorityProfile = profileFlag >= 0
     ? process.argv[profileFlag + 1]
-    : activeBranch === PHASE7A_R1_BRANCH ? "phase7a-r1" : "phase7a";
-  assert.ok(authorityProfile && !authorityProfile.startsWith("--"), "--authority-profile requires phase7a or phase7a-r1");
+    : activeBranch === PHASE7A_R2_BRANCH ? "phase7a-r2" : activeBranch === PHASE7A_R1_BRANCH ? "phase7a-r1" : "phase7a";
+  assert.ok(authorityProfile && !authorityProfile.startsWith("--"), "--authority-profile requires phase7a, phase7a-r1 or phase7a-r2");
   console.log(JSON.stringify(await verifySource(process.cwd(), process.env, authorityProfile), null, 2));
 }

@@ -36,6 +36,8 @@ import {
 import {
   PHASE7A_R1_BRANCH,
   PHASE7A_R1_PARENT,
+  PHASE7A_R2_BRANCH,
+  PHASE7A_R2_PARENT,
   authorityProfileById,
 } from "./phase7a-contract.mjs";
 
@@ -46,12 +48,45 @@ export const SCHEMA = "quantum-hub.phase-7a.deployment-verification.v1";
 export const REQUIRED_BRANCH = "redirect/phase-7a-signal-field-threshold";
 export const REQUIRED_BRANCH_URL = "https://redirect-phase-7a-signal-fie.qsite1.pages.dev/";
 export const REQUIRED_R1_BRANCH_URL = "https://repair-phase-7a-r1-signal-fi.qsite1.pages.dev/";
+// Cloudflare's documented preview alias shape replaces branch separators with
+// hyphens and bounds the generated label to 28 characters. Keep the derived R2
+// value pinned to the observed exact alias so a provider-pattern drift fails.
+const normalizedCloudflareBranchLabel = (branch) => branch
+  .toLowerCase()
+  .replace(/[^a-z0-9]+/g, "-")
+  .replace(/^-+|-+$/g, "")
+  .slice(0, 28);
+const REQUIRED_R2_BRANCH_LABEL = normalizedCloudflareBranchLabel(PHASE7A_R2_BRANCH);
+if (REQUIRED_R2_BRANCH_LABEL !== "repair-phase-7a-r2-field-map") {
+  throw new Error("Phase 7A-R2 Cloudflare branch alias normalization differs from the pinned authority");
+}
+export const REQUIRED_R2_BRANCH_URL = `https://${REQUIRED_R2_BRANCH_LABEL}.qsite1.pages.dev/`;
 export const REQUIRED_REPOSITORY = "AmirNatan1/Qsite1";
 export const REQUIRED_REMOTE_URL = "https://github.com/AmirNatan1/Qsite1.git";
 export const REQUIRED_CLOUDFLARE_APP_SLUG = "cloudflare-workers-and-pages";
 export const FROZEN_MAIN_SHA = "501040c42bba30b9d9517b88a8f9857992a2dba4";
 export const ACCEPTED_PARENT_SHA = "371e3e8a21a1d215ecaf2bf14b9f509432b230b0";
 export const DEFAULT_DIST = path.join(ROOT, "dist");
+const DEPLOYMENT_AUTHORITY_PROFILES = Object.freeze({
+  phase7a: Object.freeze({
+    branch: REQUIRED_BRANCH,
+    branchUrl: REQUIRED_BRANCH_URL,
+    label: "Phase 7A",
+    parent: ACCEPTED_PARENT_SHA,
+  }),
+  "phase7a-r1": Object.freeze({
+    branch: PHASE7A_R1_BRANCH,
+    branchUrl: REQUIRED_R1_BRANCH_URL,
+    label: "Phase 7A-R1",
+    parent: PHASE7A_R1_PARENT,
+  }),
+  "phase7a-r2": Object.freeze({
+    branch: PHASE7A_R2_BRANCH,
+    branchUrl: REQUIRED_R2_BRANCH_URL,
+    label: "Phase 7A-R2",
+    parent: PHASE7A_R2_PARENT,
+  }),
+});
 export const SECURITY_HEADER_CONTRACT = Object.freeze({
   transport: "HTTPS preview origins only; redirects are not followed",
   contentType: "exact deployment MIME authority",
@@ -132,21 +167,24 @@ export function validateExternalOutput(output, { required = true } = {}) {
 
 export function validateOptions(options, { requireOutput = true } = {}) {
   const profile = authorityProfileById(options.authorityProfile ?? "phase7a");
+  const deploymentProfile = DEPLOYMENT_AUTHORITY_PROFILES[profile.id];
+  if (!deploymentProfile
+    || profile.branch !== deploymentProfile.branch
+    || profile.parent !== deploymentProfile.parent) {
+    throw new Error(`deployment authority contract differs for ${profile.id}`);
+  }
   if (!HASH40.test(options.expectedHead)
-    || options.expectedHead === ACCEPTED_PARENT_SHA
+    || options.expectedHead === deploymentProfile.parent
     || options.expectedHead === FROZEN_MAIN_SHA) {
-    throw new Error("--expected-head must be the new lowercase 40-character Phase 7A HEAD");
+    throw new Error(`--expected-head must be the new lowercase 40-character ${deploymentProfile.label} HEAD`);
   }
   options.immutableUrl = normalizePreviewUrl(options.immutableUrl, "--immutable-url");
   options.branchUrl = normalizePreviewUrl(options.branchUrl, "--branch-url");
   if (options.immutableUrl === options.branchUrl) throw new Error("immutable and branch preview URLs must be distinct");
   const immutableLabel = new URL(options.immutableUrl).hostname.split(".")[0];
   if (!/^[0-9a-f]{8}$/.test(immutableLabel)) throw new Error("--immutable-url must begin with the lowercase eight-hex Cloudflare deployment prefix");
-  if (profile.id === "phase7a" && options.branchUrl !== REQUIRED_BRANCH_URL) {
-    throw new Error(`--branch-url must be the exact Cloudflare Pages alias ${REQUIRED_BRANCH_URL}`);
-  }
-  if (profile.id === "phase7a-r1" && options.branchUrl !== REQUIRED_R1_BRANCH_URL) {
-    throw new Error(`--branch-url must be the exact Phase 7A-R1 Cloudflare Pages alias ${REQUIRED_R1_BRANCH_URL}`);
+  if (options.branchUrl !== deploymentProfile.branchUrl) {
+    throw new Error(`--branch-url must be the exact ${deploymentProfile.label} Cloudflare Pages alias ${deploymentProfile.branchUrl}`);
   }
   if (path.resolve(options.dist) !== DEFAULT_DIST) throw new Error("--dist must be the exact repository dist directory");
   if (!/^[A-Z_][A-Z0-9_]*$/.test(options.githubTokenEnvironment)) {
@@ -158,8 +196,8 @@ export function validateOptions(options, { requireOutput = true } = {}) {
   validateExternalOutput(options.output, { required: requireOutput });
   options.deploymentAuthority = {
     id: profile.id,
-    branch: profile.id === "phase7a-r1" ? PHASE7A_R1_BRANCH : REQUIRED_BRANCH,
-    parent: profile.id === "phase7a-r1" ? PHASE7A_R1_PARENT : ACCEPTED_PARENT_SHA,
+    branch: deploymentProfile.branch,
+    parent: deploymentProfile.parent,
   };
   return options;
 }
@@ -180,7 +218,7 @@ function normalizedCheckRun(run) {
 }
 
 export function selectSignedDeploymentCheck(payload, options) {
-  const deploymentAuthority = options.deploymentAuthority ?? validateOptions(options, { requireOutput: false }).deploymentAuthority;
+  const deploymentAuthority = validateOptions(options, { requireOutput: false }).deploymentAuthority;
   const runs = Array.isArray(payload) ? payload : payload?.check_runs;
   if (!Array.isArray(runs)) throw new Error("GitHub check-run response is malformed");
   const immutablePrefix = new URL(options.immutableUrl).hostname.split(".")[0];
@@ -355,7 +393,7 @@ async function gitExit(...args) {
 }
 
 export async function verifyRepository(options) {
-  const deploymentAuthority = options.deploymentAuthority ?? validateOptions(options).deploymentAuthority;
+  const deploymentAuthority = validateOptions(options).deploymentAuthority;
   const [head, branch, main, originMain, originBranch, status, remote, parentAncestor, mergedMain] = await Promise.all([
     git("rev-parse", "HEAD"),
     git("branch", "--show-current"),
@@ -368,14 +406,14 @@ export async function verifyRepository(options) {
     gitExit("merge-base", "--is-ancestor", options.expectedHead, "main"),
   ]);
   assert.equal(head, options.expectedHead, "local HEAD differs from the deployed SHA");
-  assert.equal(branch, deploymentAuthority.branch, "local branch differs from the governed Phase 7A branch");
+  assert.equal(branch, deploymentAuthority.branch, "local branch differs from the governed authority branch");
   assert.equal(main, FROZEN_MAIN_SHA, "local main differs from frozen main");
   assert.equal(originMain, FROZEN_MAIN_SHA, "origin/main differs from frozen main");
-  assert.equal(originBranch, options.expectedHead, "origin Phase 7A branch differs from the deployed SHA");
+  assert.equal(originBranch, options.expectedHead, "origin governed branch differs from the deployed SHA");
   assert.equal(status, "", "deployment verification requires a clean working tree");
   assert.equal(remote.replace(/\/$/, ""), REQUIRED_REMOTE_URL, "origin URL differs from the repository authority");
-  assert.equal(parentAncestor, true, "accepted Phase 7A authority parent is not an ancestor of the deployed SHA");
-  assert.equal(mergedMain, false, "Phase 7A deployed SHA is already merged into main");
+  assert.equal(parentAncestor, true, "governed authority parent is not an ancestor of the deployed SHA");
+  assert.equal(mergedMain, false, "governed deployed SHA is already merged into main");
   return {
     status: "PASS",
     repository: REQUIRED_REPOSITORY,
@@ -537,7 +575,7 @@ export function runSelfTest() {
 function usage() {
   return [
     "Usage:",
-    "  node scripts/verify-phase7a-deployment.mjs [--authority-profile phase7a|phase7a-r1] --expected-head <sha40> --immutable-url <https-preview> --branch-url <https-preview> --output <fresh-external-json>",
+    "  node scripts/verify-phase7a-deployment.mjs [--authority-profile phase7a|phase7a-r1|phase7a-r2] --expected-head <sha40> --immutable-url <https-preview> --branch-url <exact-profile-preview> --output <fresh-external-json>",
     "  node scripts/verify-phase7a-deployment.mjs --self-test",
   ].join("\n");
 }

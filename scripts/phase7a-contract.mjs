@@ -6,6 +6,9 @@ export const PHASE7A_ACCEPTED_HEAD = "a87de3c08135e594199db1cebddc427dd8763fcb";
 export const PHASE7A_R1_BRANCH = "repair/phase-7a-r1-signal-field-authority";
 export const PHASE7A_R1_PARENT = PHASE7A_ACCEPTED_HEAD;
 export const PHASE7A_R1_REVIEW_ZIP_NAME = "phase-7a-r1-signal-field-authority-human-review.zip";
+export const PHASE7A_R2_BRANCH = "repair/phase-7a-r2-field-map-focus-semantics";
+export const PHASE7A_R2_PARENT = "016fef45323432f25b3eea849512a707174fe6c5";
+export const PHASE7A_R2_REVIEW_ZIP_NAME = "phase-7a-r2-field-map-focus-human-review.zip";
 export const FROZEN_MAIN = "501040c42bba30b9d9517b88a8f9857992a2dba4";
 export const REQUIRED_NODE = "22.16.0";
 
@@ -119,10 +122,17 @@ const AUTHORITY_PROFILES = Object.freeze({
     frozenMain: FROZEN_MAIN,
     reviewZipName: PHASE7A_R1_REVIEW_ZIP_NAME,
   }),
+  "phase7a-r2": Object.freeze({
+    id: "phase7a-r2",
+    branch: PHASE7A_R2_BRANCH,
+    parent: PHASE7A_R2_PARENT,
+    frozenMain: FROZEN_MAIN,
+    reviewZipName: PHASE7A_R2_REVIEW_ZIP_NAME,
+  }),
 });
 
 export function authorityProfileById(id) {
-  if (id !== "phase7a" && id !== "phase7a-r1") {
+  if (!Object.hasOwn(AUTHORITY_PROFILES, id)) {
     throw new TypeError(`Unknown Phase 7A authority profile: ${String(id)}`);
   }
 

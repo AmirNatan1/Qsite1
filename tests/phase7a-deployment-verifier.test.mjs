@@ -12,6 +12,7 @@ import {
   REQUIRED_BRANCH,
   REQUIRED_BRANCH_URL,
   REQUIRED_R1_BRANCH_URL,
+  REQUIRED_R2_BRANCH_URL,
   REQUIRED_CLOUDFLARE_PROJECT,
   REQUIRED_HEADER_POLICIES,
   ROOT,
@@ -26,7 +27,12 @@ import {
   verifyOrigin,
   verifyOriginsSerially,
 } from "../scripts/verify-phase7a-deployment.mjs";
-import { PHASE7A_R1_BRANCH, PHASE7A_R1_PARENT } from "../scripts/phase7a-contract.mjs";
+import {
+  PHASE7A_R1_BRANCH,
+  PHASE7A_R1_PARENT,
+  PHASE7A_R2_BRANCH,
+  PHASE7A_R2_PARENT,
+} from "../scripts/phase7a-contract.mjs";
 
 const HEAD = "b".repeat(40);
 const IMMUTABLE_URL = "https://12345678.qsite1.pages.dev/";
@@ -109,6 +115,8 @@ function mockOriginFetch(authority, { mutate = null } = {}) {
 test("Phase 7A deployment constants preserve exact branch, parent, frozen main, and ten-route authority", () => {
   assert.equal(SCHEMA, "quantum-hub.phase-7a.deployment-verification.v1");
   assert.equal(REQUIRED_BRANCH, "redirect/phase-7a-signal-field-threshold");
+  assert.equal(REQUIRED_R2_BRANCH_URL, "https://repair-phase-7a-r2-field-map.qsite1.pages.dev/");
+  assert.equal(new URL(REQUIRED_R2_BRANCH_URL).hostname.split(".")[0].length, 28);
   assert.equal(ACCEPTED_PARENT_SHA, "371e3e8a21a1d215ecaf2bf14b9f509432b230b0");
   assert.equal(FROZEN_MAIN_SHA, "501040c42bba30b9d9517b88a8f9857992a2dba4");
   assert.equal(REQUIRED_CLOUDFLARE_PROJECT, "qsite1");
@@ -127,7 +135,7 @@ test("CLI accepts only explicit, distinct Phase 7A HTTPS preview bindings and ex
   assert.throws(() => options(["--immutable-url", "https://qsite1.pages.dev/"]), /preview origin/);
   assert.throws(() => options(["--immutable-url", "https://nothex12.qsite1.pages.dev/"]), /eight-hex/);
   assert.throws(() => options(["--branch-url", IMMUTABLE_URL]), /distinct/);
-  assert.throws(() => options(["--branch-url", "https://some-other-branch.qsite1.pages.dev/"]), /exact Cloudflare Pages alias/);
+  assert.throws(() => options(["--branch-url", "https://some-other-branch.qsite1.pages.dev/"]), /exact Phase 7A Cloudflare Pages alias/);
   assert.throws(() => options(["--dist", path.join(ROOT, "another-dist")]), /exact repository dist/);
   assert.throws(() => options(["--expected-head", ACCEPTED_PARENT_SHA]), /new lowercase/);
 });
@@ -156,6 +164,64 @@ test("R1 deployment profile binds the repair branch and accepted Phase 7A parent
     "--immutable-url", IMMUTABLE_URL,
     "--branch-url", "https://repair-phase-7a-r1-other-branch.qsite1.pages.dev/",
   ]), { requireOutput: false }), /exact Phase 7A-R1 Cloudflare Pages alias/);
+  assert.throws(() => validateOptions(parseArguments([
+    "--authority-profile", "phase7a-r1",
+    "--expected-head", PHASE7A_R1_PARENT,
+    "--immutable-url", IMMUTABLE_URL,
+    "--branch-url", REQUIRED_R1_BRANCH_URL,
+  ]), { requireOutput: false }), /new lowercase 40-character Phase 7A-R1 HEAD/);
+});
+
+test("R2 deployment profile binds the exact repair branch, R1 parent, and normalized Cloudflare alias", () => {
+  const parsed = validateOptions(parseArguments([
+    "--authority-profile", "phase7a-r2",
+    "--expected-head", HEAD,
+    "--immutable-url", IMMUTABLE_URL,
+    "--branch-url", REQUIRED_R2_BRANCH_URL,
+  ]), { requireOutput: false });
+  assert.deepEqual(parsed.deploymentAuthority, {
+    id: "phase7a-r2",
+    branch: PHASE7A_R2_BRANCH,
+    parent: PHASE7A_R2_PARENT,
+  });
+  assert.throws(() => validateOptions(parseArguments([
+    "--authority-profile", "phase7a-r2",
+    "--expected-head", HEAD,
+    "--immutable-url", IMMUTABLE_URL,
+    "--branch-url", REQUIRED_R1_BRANCH_URL,
+  ]), { requireOutput: false }), /exact Phase 7A-R2 Cloudflare Pages alias/);
+  assert.throws(() => validateOptions(parseArguments([
+    "--authority-profile", "phase7a-r2",
+    "--expected-head", PHASE7A_R2_PARENT,
+    "--immutable-url", IMMUTABLE_URL,
+    "--branch-url", REQUIRED_R2_BRANCH_URL,
+  ]), { requireOutput: false }), /new lowercase 40-character Phase 7A-R2 HEAD/);
+
+  const signed = selectSignedDeploymentCheck({
+    total_count: 1,
+    check_runs: [checkRun({
+      output: {
+        title: "Deployed successfully",
+        summary: `Deploy successful! ${HEAD.slice(0, 7)} ${IMMUTABLE_URL.slice(0, -1)} ${REQUIRED_R2_BRANCH_URL.slice(0, -1)}`,
+      },
+    })],
+  }, parsed);
+  assert.equal(signed.branch, PHASE7A_R2_BRANCH);
+  assert.equal(signed.branchUrl, REQUIRED_R2_BRANCH_URL);
+
+  const rebound = selectSignedDeploymentCheck({
+    total_count: 1,
+    check_runs: [checkRun({
+      output: {
+        title: "Deployed successfully",
+        summary: `Deploy successful! ${HEAD.slice(0, 7)} ${IMMUTABLE_URL.slice(0, -1)} ${REQUIRED_R2_BRANCH_URL.slice(0, -1)}`,
+      },
+    })],
+  }, {
+    ...parsed,
+    deploymentAuthority: { id: "phase7a-r2", branch: PHASE7A_R1_BRANCH, parent: PHASE7A_R1_PARENT },
+  });
+  assert.equal(rebound.branch, PHASE7A_R2_BRANCH);
 });
 
 test("external report policy rejects repository, OS temp, missing, and non-JSON paths", () => {

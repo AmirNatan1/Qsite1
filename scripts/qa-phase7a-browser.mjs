@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 
+import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdir, stat, writeFile } from "node:fs/promises";
+import { lstat, mkdir, readFile, readdir, realpath, stat, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import process from "node:process";
+import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
 
 import axeCore from "axe-core";
@@ -40,7 +42,12 @@ import {
 } from "./capture-phase7a-r1-closure.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const execFileAsync = promisify(execFile);
 const BROWSERS = Object.freeze({ chromium, firefox, webkit });
+const HASH_40 = /^[0-9a-f]{40}$/;
+const HASH_64 = /^[0-9a-f]{64}$/;
+const R2_PROFILE = "phase7a-r2";
+const R2_ACCEPTED_GATES = new Set(PHASE7A_GATES.filter((gate) => gate !== "ACCESSIBILITY + FALLBACK + PERFORMANCE"));
 const MANIFESTO = "We turn industrial needs into field evidence.";
 const INTENTIONAL_404 = Object.freeze({
   route: REAL_404_PATH,
@@ -49,6 +56,8 @@ const INTENTIONAL_404 = Object.freeze({
 });
 
 export const SCHEMA = BROWSER_EVIDENCE_SCHEMA;
+export const PHASE7A_R2_QA_SOURCE_SCHEMA = "quantum-hub.phase-7a-r2.browser-qa-source.v1";
+export const PHASE7A_R2_RETAINED_QA_SCHEMA = "quantum-hub.phase-7a-r2.retained-qa.v1";
 export const RESPONSIVE_VIEWPORTS = CORE_VIEWPORTS;
 export const AXE_VIEWPORTS = Object.freeze(AXE_VIEWPORT_IDS.map((id) => CORE_VIEWPORTS.find((viewport) => viewport.id === id)));
 export const ROUTE_OUTCOMES = Object.freeze([
@@ -77,6 +86,178 @@ function nextValue(argv, index, flag) {
   const value = argv[index + 1];
   invariant(value && !value.startsWith("--"), `${flag} requires a value`);
   return value;
+}
+
+function portableDistPath(value) {
+  invariant(
+    typeof value === "string"
+      && value.length > 0
+      && !value.includes("\\")
+      && !path.posix.isAbsolute(value)
+      && path.posix.normalize(value) === value
+      && !value.split("/").some((part) => !part || part === "." || part === ".."),
+    `unsafe dist evidence path: ${String(value)}`,
+  );
+  return value;
+}
+
+function fingerprintRows(rows, fields) {
+  const serialized = rows.map((row) => fields.map((field) => String(row[field])).join("\0")).join("\n");
+  return sha256(Buffer.from(`${serialized}\n`, "utf8"));
+}
+
+export function distLedgerFingerprint(files) {
+  invariant(Array.isArray(files) && files.length > 0, "R2 QA dist inventory is empty");
+  return fingerprintRows(files, ["relativePath", "bytes", "sha256"]);
+}
+
+export function servedLedgerFingerprint(assets) {
+  invariant(Array.isArray(assets) && assets.length > 0, "R2 QA served inventory is empty");
+  return fingerprintRows(assets, ["route", "relativePath", "httpStatus", "bytes", "sha256"]);
+}
+
+async function gitText(args) {
+  const { stdout } = await execFileAsync("git", args, {
+    cwd: ROOT,
+    encoding: "utf8",
+    windowsHide: true,
+    timeout: 20_000,
+    maxBuffer: 4 * 1024 * 1024,
+  });
+  return String(stdout).trim();
+}
+
+async function captureR2RepositoryBoundary(revision) {
+  const profile = authorityProfileById(R2_PROFILE);
+  const [branch, head, statusText, upstream, upstreamRevision] = await Promise.all([
+    gitText(["branch", "--show-current"]),
+    gitText(["rev-parse", "HEAD"]),
+    gitText(["status", "--porcelain=v1", "--untracked-files=all"]),
+    gitText(["rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{upstream}"]),
+    gitText(["rev-parse", "@{upstream}"]),
+  ]);
+  const status = statusText.split(/\r?\n/).filter(Boolean);
+  invariant(branch === profile.branch && head === revision, "R2 QA repository branch or exact revision differs");
+  invariant(status.length === 0, "R2 QA requires a fully clean worktree, including untracked files");
+  invariant(upstream === `origin/${profile.branch}` && upstreamRevision === revision, "R2 QA requires exact local/upstream parity");
+  return { branch, head, upstream, upstreamRevision, worktreeClean: true, status };
+}
+
+async function walkDist(directory, prefix = "") {
+  const rows = [];
+  const entries = await readdir(directory, { withFileTypes: true });
+  entries.sort((left, right) => Buffer.compare(Buffer.from(left.name), Buffer.from(right.name)));
+  for (const entry of entries) {
+    const relativePath = portableDistPath(prefix ? `${prefix}/${entry.name}` : entry.name);
+    const absolute = path.join(directory, entry.name);
+    const info = await lstat(absolute);
+    invariant(!info.isSymbolicLink(), `R2 QA dist may not contain symlinks: ${relativePath}`);
+    if (info.isDirectory()) rows.push(...await walkDist(absolute, relativePath));
+    else if (info.isFile()) {
+      const bytes = await readFile(absolute);
+      rows.push({ relativePath, bytes: bytes.length, sha256: sha256(bytes) });
+    } else throw new Error(`R2 QA dist contains an unsupported entry: ${relativePath}`);
+  }
+  return rows;
+}
+
+async function captureR2DistInventory() {
+  const distRoot = path.join(ROOT, "dist");
+  const info = await lstat(distRoot);
+  invariant(info.isDirectory() && !info.isSymbolicLink(), "R2 QA requires a real current dist directory");
+  invariant(path.resolve(await realpath(distRoot)) === path.resolve(distRoot), "R2 QA dist root may not traverse a symlink");
+  const files = await walkDist(distRoot);
+  invariant(files.some(({ relativePath }) => relativePath === "index.html"), "R2 QA dist lacks index.html");
+  invariant(files.some(({ relativePath }) => relativePath.endsWith(".css")), "R2 QA dist lacks production CSS");
+  invariant(files.some(({ relativePath }) => /\.m?js$/i.test(relativePath)), "R2 QA dist lacks production JavaScript");
+  return {
+    root: "dist",
+    fileCount: files.length,
+    totalBytes: files.reduce((sum, file) => sum + file.bytes, 0),
+    fingerprint: distLedgerFingerprint(files),
+    files,
+  };
+}
+
+function linkedRuntimeRoutes(html) {
+  const routes = new Set();
+  for (const match of html.matchAll(/\b(?:href|src)=["']([^"']+\.(?:css|m?js)(?:[?#][^"']*)?)["']/gi)) {
+    const parsed = new URL(match[1], "https://phase7a.invalid/");
+    invariant(parsed.origin === "https://phase7a.invalid", `R2 QA runtime asset is not local: ${match[1]}`);
+    routes.add(parsed.pathname);
+  }
+  return [...routes].sort((left, right) => Buffer.compare(Buffer.from(left), Buffer.from(right)));
+}
+
+async function captureR2ServedParity(baseUrl, timeoutMs, dist) {
+  const byPath = new Map(dist.files.map((file) => [file.relativePath, file]));
+  const index = byPath.get("index.html");
+  const html = (await readFile(path.join(ROOT, "dist", "index.html"))).toString("utf8");
+  const specifications = [
+    { route: "/", relativePath: "index.html" },
+    ...linkedRuntimeRoutes(html).map((route) => ({ route, relativePath: route.replace(/^\/+/, "") })),
+  ];
+  invariant(specifications.length >= 3, "R2 QA served parity must bind the document, CSS and JavaScript");
+  const assets = [];
+  for (const specification of specifications) {
+    const expected = byPath.get(specification.relativePath);
+    invariant(expected, `R2 QA linked runtime asset is absent from dist: ${specification.relativePath}`);
+    const response = await fetch(new URL(specification.route, baseUrl), {
+      cache: "no-store",
+      headers: { accept: specification.relativePath === "index.html" ? "text/html" : "*/*" },
+      redirect: "error",
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+    const body = Buffer.from(await response.arrayBuffer());
+    invariant(response.status === 200, `R2 QA served asset returned ${response.status}: ${specification.route}`);
+    invariant(body.length === expected.bytes && sha256(body) === expected.sha256, `R2 QA served asset differs from current dist: ${specification.route}`);
+    assets.push({
+      ...specification,
+      httpStatus: response.status,
+      contentType: (response.headers.get("content-type") ?? "").split(";", 1)[0].trim().toLowerCase(),
+      bytes: body.length,
+      sha256: expected.sha256,
+    });
+  }
+  invariant(index && assets[0].sha256 === index.sha256, "R2 QA served document authority differs");
+  return { assetCount: assets.length, fingerprint: servedLedgerFingerprint(assets), parity: true, assets };
+}
+
+async function captureR2QaBoundary(revision) {
+  const [repository, dist] = await Promise.all([
+    captureR2RepositoryBoundary(revision),
+    captureR2DistInventory(),
+  ]);
+  return { repository, dist };
+}
+
+function sameR2Boundary(left, right) {
+  return JSON.stringify(left.repository) === JSON.stringify(right.repository)
+    && left.dist.fingerprint === right.dist.fingerprint
+    && left.dist.fileCount === right.dist.fileCount
+    && left.dist.totalBytes === right.dist.totalBytes;
+}
+
+async function finalizeR2QaSourceAuthority(options, start) {
+  const end = await captureR2QaBoundary(options.revision);
+  invariant(sameR2Boundary(start, end), "R2 QA repository or dist changed during the browser run");
+  const served = await captureR2ServedParity(options.baseUrl, options.timeoutMs, end.dist);
+  const receipt = {
+    schema: PHASE7A_R2_QA_SOURCE_SCHEMA,
+    status: "PASS",
+    authorityProfile: R2_PROFILE,
+    branch: end.repository.branch,
+    revision: options.revision,
+    runBoundary: {
+      start: { ...start.repository, distFingerprint: start.dist.fingerprint },
+      end: { ...end.repository, distFingerprint: end.dist.fingerprint },
+      stable: true,
+    },
+    dist: end.dist,
+    served,
+  };
+  validateR2QaSourceAuthority(receipt, options.revision);
+  return receipt;
 }
 
 export function parseArguments(argv) {
@@ -116,17 +297,107 @@ export function parseArguments(argv) {
   if (!options.help && !options.selfTest) {
     invariant(options.output, "--output is required");
     options.output = assertExternalOutput(options.output);
-    if (options.authorityProfile === "phase7a-r1") invariant(/^[a-f0-9]{40}$/.test(options.revision), "--revision must be the exact 40-character final R1 HEAD");
+    if (options.authorityProfile === "phase7a-r1") invariant(HASH_40.test(options.revision), "--revision must be the exact 40-character final R1 HEAD");
+    if (options.authorityProfile === R2_PROFILE) invariant(HASH_40.test(options.revision), "--revision must be the exact 40-character final R2 HEAD");
   }
   return options;
 }
 
+function validateDistLedger(dist) {
+  invariant(dist?.root === "dist" && Array.isArray(dist.files) && dist.files.length > 0, "R2 QA dist authority differs");
+  const paths = new Set();
+  let totalBytes = 0;
+  let previous = null;
+  for (const file of dist.files) {
+    portableDistPath(file?.relativePath);
+    invariant(!paths.has(file.relativePath), `R2 QA dist inventory repeats ${file.relativePath}`);
+    invariant(previous === null || Buffer.compare(Buffer.from(previous), Buffer.from(file.relativePath)) < 0, "R2 QA dist inventory is not bytewise sorted");
+    invariant(Number.isSafeInteger(file.bytes) && file.bytes > 0 && HASH_64.test(file.sha256 ?? ""), `R2 QA dist file authority differs: ${file.relativePath}`);
+    paths.add(file.relativePath);
+    totalBytes += file.bytes;
+    previous = file.relativePath;
+  }
+  invariant(paths.has("index.html") && [...paths].some((name) => name.endsWith(".css")) && [...paths].some((name) => /\.m?js$/i.test(name)), "R2 QA dist inventory lacks its document, CSS or JavaScript");
+  invariant(dist.fileCount === dist.files.length && dist.totalBytes === totalBytes && dist.fingerprint === distLedgerFingerprint(dist.files), "R2 QA dist fingerprint or counts differ");
+  return new Map(dist.files.map((file) => [file.relativePath, file]));
+}
+
+function validateRepositoryBoundary(boundary, revision, label) {
+  const profile = authorityProfileById(R2_PROFILE);
+  invariant(boundary?.branch === profile.branch && boundary.head === revision, `${label} branch or revision differs`);
+  invariant(boundary.upstream === `origin/${profile.branch}` && boundary.upstreamRevision === revision, `${label} upstream parity differs`);
+  invariant(boundary.worktreeClean === true && Array.isArray(boundary.status) && boundary.status.length === 0, `${label} worktree is not clean`);
+  return true;
+}
+
+export function validateR2QaSourceAuthority(receipt, expectedRevision) {
+  const profile = authorityProfileById(R2_PROFILE);
+  invariant(receipt?.schema === PHASE7A_R2_QA_SOURCE_SCHEMA && receipt.status === "PASS" && receipt.authorityProfile === R2_PROFILE, "R2 QA source receipt differs");
+  invariant(HASH_40.test(expectedRevision ?? "") && expectedRevision !== profile.parent, "R2 QA expected revision is not a new exact SHA");
+  invariant(receipt.branch === profile.branch && receipt.revision === expectedRevision, "R2 QA source branch or revision differs");
+  validateRepositoryBoundary(receipt.runBoundary?.start, expectedRevision, "R2 QA start boundary");
+  validateRepositoryBoundary(receipt.runBoundary?.end, expectedRevision, "R2 QA end boundary");
+  const byPath = validateDistLedger(receipt.dist);
+  invariant(receipt.runBoundary.stable === true
+    && receipt.runBoundary.start.distFingerprint === receipt.dist.fingerprint
+    && receipt.runBoundary.end.distFingerprint === receipt.dist.fingerprint,
+  "R2 QA run-boundary dist stability differs");
+  invariant(receipt.served?.parity === true && Array.isArray(receipt.served.assets) && receipt.served.assets.length >= 3, "R2 QA served parity differs");
+  const routes = new Set();
+  let hasDocument = false;
+  let hasCss = false;
+  let hasJavaScript = false;
+  for (const asset of receipt.served.assets) {
+    invariant(typeof asset.route === "string" && asset.route.startsWith("/") && !asset.route.includes("..") && !routes.has(asset.route), `R2 QA served route authority differs: ${String(asset.route)}`);
+    portableDistPath(asset.relativePath);
+    const local = byPath.get(asset.relativePath);
+    invariant(local && asset.httpStatus === 200 && asset.bytes === local.bytes && asset.sha256 === local.sha256, `R2 QA served/dist binding differs: ${asset.route}`);
+    invariant(typeof asset.contentType === "string" && asset.contentType.length > 0, `R2 QA served content type is missing: ${asset.route}`);
+    routes.add(asset.route);
+    hasDocument ||= asset.route === "/" && asset.relativePath === "index.html";
+    hasCss ||= asset.relativePath.endsWith(".css");
+    hasJavaScript ||= /\.m?js$/i.test(asset.relativePath);
+  }
+  invariant(hasDocument && hasCss && hasJavaScript, "R2 QA served receipt lacks its document, CSS or JavaScript");
+  invariant(receipt.served.assetCount === receipt.served.assets.length && receipt.served.fingerprint === servedLedgerFingerprint(receipt.served.assets), "R2 QA served fingerprint or count differs");
+  return true;
+}
+
+export function r2QaSourceAuthorityReference(receipt) {
+  validateR2QaSourceAuthority(receipt, receipt?.revision);
+  return {
+    schema: receipt.schema,
+    status: receipt.status,
+    branch: receipt.branch,
+    revision: receipt.revision,
+    upstream: receipt.runBoundary.end.upstream,
+    upstreamRevision: receipt.runBoundary.end.upstreamRevision,
+    worktreeClean: receipt.runBoundary.end.worktreeClean,
+    dist: {
+      fileCount: receipt.dist.fileCount,
+      totalBytes: receipt.dist.totalBytes,
+      fingerprint: receipt.dist.fingerprint,
+    },
+    served: {
+      assetCount: receipt.served.assetCount,
+      fingerprint: receipt.served.fingerprint,
+      parity: receipt.served.parity,
+    },
+  };
+}
+
 export function validateQaServedBuildBindings(report) {
-  if (report.authorityProfile !== "phase7a-r1") return true;
-  validatePortableServedBuildReceipt(report.servedBuild, report.servedBuild?.revision);
-  const expected = portableServedBuildReference(report.servedBuild);
-  invariant(Array.isArray(report.results) && report.results.length > 0, "R1 QA report lacks engine results");
-  invariant(report.results.every(({ sourceAuthority }) => JSON.stringify(sourceAuthority) === JSON.stringify(expected)), "R1 QA engine result served-build binding differs");
+  if (report.authorityProfile === "phase7a-r1") {
+    validatePortableServedBuildReceipt(report.servedBuild, report.servedBuild?.revision);
+    const expected = portableServedBuildReference(report.servedBuild);
+    invariant(Array.isArray(report.results) && report.results.length > 0, "R1 QA report lacks engine results");
+    invariant(report.results.every(({ sourceAuthority }) => JSON.stringify(sourceAuthority) === JSON.stringify(expected)), "R1 QA engine result served-build binding differs");
+  } else if (report.authorityProfile === R2_PROFILE) {
+    validateR2QaSourceAuthority(report.sourceAuthority, report.revision);
+    const expected = r2QaSourceAuthorityReference(report.sourceAuthority);
+    invariant(Array.isArray(report.results) && report.results.length > 0, "R2 QA report lacks engine results");
+    invariant(report.results.every(({ sourceAuthority }) => JSON.stringify(sourceAuthority) === JSON.stringify(expected)), "R2 QA engine result source binding differs");
+  }
   return true;
 }
 
@@ -140,6 +411,88 @@ function canonicalHeading(value) {
 
 function sha256(value) {
   return createHash("sha256").update(value).digest("hex");
+}
+
+export function qaReportSha256(report) {
+  invariant(report && typeof report === "object" && !Array.isArray(report), "QA report must be an object");
+  const payload = {};
+  for (const [key, value] of Object.entries(report)) if (key !== "reportSha256") payload[key] = value;
+  return sha256(Buffer.from(`${JSON.stringify(payload, null, 2)}\n`, "utf8"));
+}
+
+function passingRows(value, label) {
+  invariant(Array.isArray(value) && value.length > 0, `R2 retained QA lacks ${label} cases`);
+  invariant(value.every((row) => row?.status === "PASS"), `R2 retained QA ${label} contains a failure`);
+  return { caseCount: value.length, status: "PASS" };
+}
+
+export function normalizePhase7aR2RetainedQaReport(report, { expectedEngine, expectedRevision } = {}) {
+  const profile = authorityProfileById(R2_PROFILE);
+  invariant(Object.hasOwn(BROWSERS, expectedEngine), "R2 retained QA expected engine is invalid");
+  invariant(HASH_40.test(expectedRevision ?? "") && expectedRevision !== profile.parent, "R2 retained QA expected revision must be the exact new SHA");
+  invariant(report?.schema === SCHEMA && report.authorityProfile === R2_PROFILE && report.branch === profile.branch && report.revision === expectedRevision, "R2 retained QA root authority differs");
+  invariant(report.status === "PASS" && report.reportSha256 === qaReportSha256(report), "R2 retained QA report status or SHA-256 differs");
+  validateQaServedBuildBindings(report);
+  invariant(Array.isArray(report.results) && report.results.length === 1, "R2 retained QA assembler input must contain exactly one engine result");
+  const result = report.results[0];
+  invariant(result?.identity?.engine === expectedEngine && result.status === "PASS" && Array.isArray(result.failures) && result.failures.length === 0, `${expectedEngine} retained QA engine result differs`);
+  const routes = passingRows(result.routes, "route");
+  const accessibility = passingRows(result.accessibility, "axe");
+  const responsive = passingRows(result.responsive, "responsive");
+  const network = passingRows(result.network, "network");
+  invariant(result.fieldMap?.status === "PASS", "R2 retained QA Field Map case failed");
+  invariant(result.history?.status === "PASS", "R2 retained QA history case failed");
+  invariant(result.cycles?.status === "PASS", "R2 retained QA lifecycle case failed");
+  for (const key of ["reducedMotion", "noJavaScript", "fallbackFont"]) invariant(result.fallback?.[key]?.status === "PASS", `R2 retained QA ${key} case failed`);
+  const shortLandscape = result.responsive.find(({ viewport }) => viewport?.width === 800 && viewport?.height === 360);
+  if (expectedEngine === "chromium") invariant(shortLandscape?.status === "PASS" && shortLandscape.checks?.verticalClipping === true, "R2 retained QA lacks the passing 800x360 clipping invariant");
+  const checks = {
+    sourceBound: true,
+    routeMatrix: true,
+    axe: true,
+    responsive: true,
+    shortLandscape800x360: expectedEngine !== "chromium" || Boolean(shortLandscape),
+    fieldMap: true,
+    reducedMotion: true,
+    noJavaScript: true,
+    fallbackFont: true,
+    history: true,
+    reverseLifecycle: true,
+    network: true,
+  };
+  invariant(Object.values(checks).every(Boolean), `${expectedEngine} retained QA normalized checks differ`);
+  const coverage = {
+    routes,
+    accessibility,
+    responsive: {
+      ...responsive,
+      shortLandscape800x360: {
+        required: expectedEngine === "chromium",
+        observed: Boolean(shortLandscape),
+        status: shortLandscape?.status ?? "NOT_RUN_ON_CROSS_ENGINE_REDUCED_MATRIX",
+      },
+    },
+    fieldMap: { caseCount: 1, status: "PASS" },
+    fallback: { caseCount: 3, status: "PASS" },
+    history: { caseCount: 1, status: "PASS" },
+    reverseLifecycle: { caseCount: 1, cycles: result.cycles.samples?.length ?? null, status: "PASS" },
+    network,
+  };
+  const evidenceCaseCount = routes.caseCount + accessibility.caseCount + responsive.caseCount + network.caseCount + 6;
+  return {
+    schema: PHASE7A_R2_RETAINED_QA_SCHEMA,
+    status: "PASS",
+    authorityProfile: R2_PROFILE,
+    branch: profile.branch,
+    revision: expectedRevision,
+    engine: expectedEngine,
+    rawReportSha256: report.reportSha256,
+    evidenceCaseCount,
+    failures: 0,
+    checks,
+    coverage,
+    source: r2QaSourceAuthorityReference(report.sourceAuthority),
+  };
 }
 
 async function settle(page, delay = 80) {
@@ -298,7 +651,8 @@ async function axeMatrix(browser, baseUrl, timeoutMs) {
 
 async function responsiveMatrix(browser, baseUrl, timeoutMs, engine, authorityProfile) {
   const standardViews = engine === "chromium" ? RESPONSIVE_VIEWPORTS : ["desktop-1440x900", "tablet-portrait-768x1024", "narrow-320x800", "mobile-landscape-844x390"].map((id) => RESPONSIVE_VIEWPORTS.find((viewport) => viewport.id === id));
-  const views = authorityProfile === "phase7a-r1" && engine === "chromium"
+  const enhancedResponsiveProfile = authorityProfile === "phase7a-r1" || authorityProfile === R2_PROFILE;
+  const views = enhancedResponsiveProfile && engine === "chromium"
     ? [...new Map([...standardViews, ...PHASE7A_R1_SHORT_LANDSCAPE_VIEWPORTS].map((viewport) => [`${viewport.width}x${viewport.height}`, viewport])).values()]
     : standardViews;
   const cases = [];
@@ -320,7 +674,7 @@ async function responsiveMatrix(browser, baseUrl, timeoutMs, engine, authorityPr
     let manifestoGeometry = null;
     let manifestoGeometryError = null;
     const isShortLandscape = PHASE7A_R1_SHORT_LANDSCAPE_VIEWPORTS.some(({ width, height }) => width === viewport.width && height === viewport.height);
-    if (authorityProfile === "phase7a-r1" && isShortLandscape) {
+    if (enhancedResponsiveProfile && isShortLandscape) {
       manifestoGeometry = await page.evaluate(measureManifestoGeometry);
       try { validateManifestoGeometry(manifestoGeometry); } catch (error) { manifestoGeometryError = error.message; }
     }
@@ -645,44 +999,67 @@ export function selfTest() {
   invariant(AXE_VIEWPORTS.length * ROUTE_OUTCOMES.length * 3 === 60, "full accessibility matrix must contain 60 cases");
   invariant(PHASE7A_GATES.length === 6 && PHASE7A_GATES.every(Boolean), "six human gates required");
   invariant(ROUTE_MATRIX_COUNTS.all === 198, "route matrix contract must contain 198 cases");
-  return { schema: SCHEMA, status: "PASS", responsiveViewports: 13, routeOutcomes: 10, fullRouteCases: 198, fullAxeCases: 60, thresholdCyclesPerEngine: 10 };
+  invariant(authorityProfileById(R2_PROFILE).id === R2_PROFILE, "R2 QA authority profile is unavailable");
+  return {
+    schema: SCHEMA,
+    status: "PASS",
+    responsiveViewports: 13,
+    routeOutcomes: 10,
+    fullRouteCases: 198,
+    fullAxeCases: 60,
+    thresholdCyclesPerEngine: 10,
+    enhancedResponsiveProfiles: ["phase7a-r1", R2_PROFILE],
+    r2SourceSchema: PHASE7A_R2_QA_SOURCE_SCHEMA,
+    r2NormalizedSchema: PHASE7A_R2_RETAINED_QA_SCHEMA,
+  };
 }
 
 async function main() {
   const options = parseArguments(process.argv.slice(2));
   if (options.help) {
-    process.stdout.write("Usage: node scripts/qa-phase7a-browser.mjs --base-url <url> --output <external.json> [--authority-profile phase7a|phase7a-r1] [--revision <final-r1-head>] [--engine all|chromium|firefox|webkit]\n");
+    process.stdout.write("Usage: node scripts/qa-phase7a-browser.mjs --base-url <url> --output <external.json> [--authority-profile phase7a|phase7a-r1|phase7a-r2] [--revision <exact-final-head>] [--engine all|chromium|firefox|webkit] [--headed]\nR2 reads the existing governed dist, requires a clean exact branch/HEAD with upstream parity, and binds document/CSS/JavaScript served bytes without invoking the R1 portable-build helper.\n");
     return;
   }
   if (options.selfTest) { process.stdout.write(`${JSON.stringify(selfTest(), null, 2)}\n`); return; }
   try { await stat(options.output); throw new Error(`refusing to overwrite existing evidence: ${options.output}`); } catch (error) { if (error?.code !== "ENOENT") throw error; }
   const startedAt = new Date().toISOString();
   const servedBuild = options.authorityProfile === "phase7a-r1" ? await capturePortableServedBuildReceipt(options) : null;
-  const sourceAuthority = servedBuild ? portableServedBuildReference(servedBuild) : null;
+  const r2Start = options.authorityProfile === R2_PROFILE ? await captureR2QaBoundary(options.revision) : null;
   const engines = options.engine === "all" ? Object.keys(BROWSERS) : [options.engine];
   const results = [];
-  for (const engine of engines) results.push({ ...await runEngine(engine, options), ...(sourceAuthority ? { sourceAuthority } : {}) });
+  for (const engine of engines) results.push(await runEngine(engine, options));
+  const r2SourceAuthority = r2Start ? await finalizeR2QaSourceAuthority(options, r2Start) : null;
+  const sourceReference = servedBuild
+    ? portableServedBuildReference(servedBuild)
+    : r2SourceAuthority ? r2QaSourceAuthorityReference(r2SourceAuthority) : null;
+  if (sourceReference) for (const result of results) result.sourceAuthority = sourceReference;
+  const humanGates = options.authorityProfile === R2_PROFILE
+    ? Object.fromEntries(PHASE7A_GATES.map((gate) => [gate, R2_ACCEPTED_GATES.has(gate) ? "ACCEPT" : "PENDING HUMAN REVIEW"]))
+    : Object.fromEntries(PHASE7A_GATES.map((gate) => [gate, "PENDING HUMAN REVIEW"]));
   const report = {
     schema: SCHEMA,
     authorityProfile: options.authorityProfile,
     branch: authorityProfileById(options.authorityProfile).branch,
-    captureOrigin: "CAPTURE_ORIGIN",
+    ...(options.revision ? { revision: options.revision } : {}),
+    captureOrigin: options.authorityProfile === R2_PROFILE ? options.baseUrl : "CAPTURE_ORIGIN",
     startedAt,
     completedAt: new Date().toISOString(),
     results,
     ...(servedBuild ? { servedBuild } : {}),
+    ...(r2SourceAuthority ? { sourceAuthority: r2SourceAuthority } : {}),
     limitations: [
       "WebKit is the Playwright WebKit proxy and is not physical Safari.",
       "Programmatic scroll in the harness observes product response; it is not evidence of physical wheel or touch input.",
       "Automated focus, contrast and target checks supplement but do not replace human review.",
-      "All six creative and integration gates remain PENDING HUMAN REVIEW regardless of automated status.",
+      options.authorityProfile === R2_PROFILE
+        ? "Five prior human gate decisions remain ACCEPT; the accessibility, fallback and performance gate remains PENDING HUMAN REVIEW regardless of automated status."
+        : "All six creative and integration gates remain PENDING HUMAN REVIEW regardless of automated status.",
     ],
-    humanGates: Object.fromEntries(PHASE7A_GATES.map((gate) => [gate, "PENDING HUMAN REVIEW"])),
+    humanGates,
     status: results.every(({ status }) => status === "PASS") ? "PASS" : "FAIL",
   };
   validateQaServedBuildBindings(report);
-  const serialized = `${JSON.stringify(report, null, 2)}\n`;
-  report.reportSha256 = sha256(serialized);
+  report.reportSha256 = qaReportSha256(report);
   await mkdir(path.dirname(options.output), { recursive: true });
   await writeFile(options.output, `${JSON.stringify(report, null, 2)}\n`, { encoding: "utf8", flag: "wx" });
   process.stdout.write(`${JSON.stringify({ status: report.status, output: options.output, engines: results.map(({ identity, failures }) => ({ engine: identity.engine, version: identity.version, failures })) }, null, 2)}\n`);
