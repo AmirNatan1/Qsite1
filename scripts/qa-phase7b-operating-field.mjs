@@ -611,7 +611,9 @@ export function compareNormalizedVisuals(baseline, current) {
 }
 
 async function prepareFrozenVisualState(page, origin, specification, timeoutMs, expectedOperatingFields) {
-  const response = await page.goto(new URL(specification.pathname, origin).toString(), { waitUntil: "load", timeout: timeoutMs });
+  const target = new URL(specification.pathname, origin).toString();
+  let response = await page.goto(target, { waitUntil: "load", timeout: timeoutMs });
+  if (!response && page.url() === target) response = await page.reload({ waitUntil: "load", timeout: timeoutMs });
   invariant(response && response.status() === 200, `${specification.id} returned ${response?.status() ?? "no response"}`);
   await page.evaluate(() => document.fonts?.ready ?? Promise.resolve());
   if (specification.anchor === "entry") {
