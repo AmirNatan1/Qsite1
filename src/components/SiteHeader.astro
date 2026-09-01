@@ -45,7 +45,7 @@ const isCurrent = (href: string) => {
     </a>
 
     <details class="field-map" data-field-map>
-      <summary aria-controls="field-map-navigation" aria-haspopup="true">
+      <summary aria-controls="field-map-navigation">
         <span class="field-map__trigger-label">Field map</span>
         <span class="field-map__trigger-state" aria-hidden="true">Open</span>
       </summary>
@@ -95,7 +95,7 @@ const isCurrent = (href: string) => {
       const trigger = map.querySelector("summary");
       const destinations = Array.from(map.querySelectorAll("a[href]"));
       const ownedInert = new Set();
-      let focusFrame = 0;
+      let containmentController;
 
       const backgroundRegions = () => Array.from(document.querySelectorAll("[data-field-map-background]"))
         .filter((region) => region instanceof HTMLElement);
@@ -119,27 +119,8 @@ const isCurrent = (href: string) => {
       };
 
       const setTriggerState = (isOpen) => {
-        trigger?.setAttribute("aria-expanded", String(isOpen));
         const state = trigger?.querySelector(".field-map__trigger-state");
         if (state) state.textContent = isOpen ? "Close" : "Open";
-      };
-
-      const syncState = () => {
-        const isOpen = map.open;
-        root.toggleAttribute("data-field-map-open", isOpen);
-        setTriggerState(isOpen);
-        if (isOpen) isolateBackground();
-        else releaseBackground();
-      };
-
-      const closeMap = ({ returnFocus = false } = {}) => {
-        if (focusFrame) cancelAnimationFrame(focusFrame);
-        focusFrame = 0;
-        map.open = false;
-        root.removeAttribute("data-field-map-open");
-        setTriggerState(false);
-        releaseBackground();
-        if (returnFocus) trigger?.focus({ preventScroll: true });
       };
 
       const isAvailable = (item) => {
@@ -149,19 +130,58 @@ const isCurrent = (href: string) => {
         return style.display !== "none" && style.visibility !== "hidden" && bounds.width > 0 && bounds.height > 0;
       };
 
+      const focusSequence = () => [trigger, ...destinations].filter(isAvailable);
+      const preferredDestination = () => destinations.find((link) => link.getAttribute("aria-current") === "page")
+        ?? destinations[0]
+        ?? trigger;
+
+      const stopContainment = () => {
+        containmentController?.abort();
+        containmentController = undefined;
+      };
+
+      const startContainment = () => {
+        stopContainment();
+        containmentController = new AbortController();
+        const { signal } = containmentController;
+
+        document.addEventListener("focusin", (event) => {
+          if (!map.open) return;
+          const sequence = focusSequence();
+          if (sequence.includes(event.target)) return;
+          preferredDestination()?.focus({ preventScroll: true });
+        }, { signal });
+      };
+
+      const syncState = () => {
+        const isOpen = map.open;
+        root.toggleAttribute("data-field-map-open", isOpen);
+        setTriggerState(isOpen);
+        if (isOpen) {
+          isolateBackground();
+          startContainment();
+        } else {
+          stopContainment();
+          releaseBackground();
+        }
+      };
+
+      const closeMap = ({ returnFocus = false } = {}) => {
+        map.open = false;
+        root.removeAttribute("data-field-map-open");
+        setTriggerState(false);
+        stopContainment();
+        releaseBackground();
+        if (returnFocus) trigger?.focus({ preventScroll: true });
+      };
+
       map.addEventListener("toggle", () => {
         syncState();
         if (!map.open) return;
-        if (focusFrame) cancelAnimationFrame(focusFrame);
-        focusFrame = requestAnimationFrame(() => {
-          focusFrame = 0;
-          if (!map.open) return;
-          const current = destinations.find((link) => link.getAttribute("aria-current") === "page");
-          (current ?? destinations[0])?.focus({ preventScroll: true });
-        });
+        preferredDestination()?.focus({ preventScroll: true });
       });
 
-      document.addEventListener("keydown", (event) => {
+      map.addEventListener("keydown", (event) => {
         if (!map.open) return;
         if (event.key === "Escape") {
           event.preventDefault();
@@ -169,19 +189,15 @@ const isCurrent = (href: string) => {
           return;
         }
         if (event.key !== "Tab" || !trigger) return;
-        const focusable = [trigger, ...destinations].filter(isAvailable);
-        const first = focusable[0];
-        const last = focusable.at(-1);
-        if (!focusable.includes(document.activeElement)) {
-          event.preventDefault();
-          (event.shiftKey ? last : first)?.focus();
-        } else if (event.shiftKey && document.activeElement === first) {
-          event.preventDefault();
-          last?.focus();
-        } else if (!event.shiftKey && document.activeElement === last) {
-          event.preventDefault();
-          first?.focus();
-        }
+        const sequence = focusSequence();
+        if (!sequence.length) return;
+        const currentIndex = sequence.indexOf(document.activeElement);
+        const direction = event.shiftKey ? -1 : 1;
+        const nextIndex = currentIndex < 0
+          ? (event.shiftKey ? sequence.length - 1 : 0)
+          : (currentIndex + direction + sequence.length) % sequence.length;
+        event.preventDefault();
+        sequence[nextIndex]?.focus({ preventScroll: true });
       });
 
       map.addEventListener("click", (event) => {
