@@ -10,7 +10,13 @@ import { fileURLToPath } from "node:url";
 import axeCore from "axe-core";
 import { chromium, firefox, webkit } from "playwright-core";
 
-import { PHASE7A_BRANCH, PHASE7A_GATES, PUBLIC_ROUTES } from "./phase7a-contract.mjs";
+import { PHASE7A_GATES, PUBLIC_ROUTES, authorityProfileById } from "./phase7a-contract.mjs";
+import {
+  PHASE7A_R1_SHORT_LANDSCAPE_VIEWPORTS,
+  measureManifestoGeometry,
+  validateManifestoGeometry,
+} from "./phase7a-manifesto-geometry.mjs";
+import { observeTargetSizes } from "./phase7a-target-size.mjs";
 import {
   AXE_VIEWPORT_IDS,
   CORE_VIEWPORTS,
@@ -20,6 +26,18 @@ import {
   ROUTE_MATRIX_COUNTS,
   SCHEMA as BROWSER_EVIDENCE_SCHEMA,
 } from "./phase7a-browser-contract.mjs";
+import {
+  capturePortableServedBuildReceipt,
+  portableServedBuildReference,
+  validatePortableServedBuildReceipt,
+} from "./capture-phase7a-review-evidence.mjs";
+import {
+  NO_JS_FIELD_MAP_DESTINATIONS,
+  assertNativeFieldMapViewport,
+  assertVisibleLinkInventory,
+  captureVisibleLinkInventory,
+  validateFallbackManifestoMeasurement,
+} from "./capture-phase7a-r1-closure.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const BROWSERS = Object.freeze({ chromium, firefox, webkit });
@@ -63,19 +81,23 @@ function nextValue(argv, index, flag) {
 
 export function parseArguments(argv) {
   const options = {
+    authorityProfile: "phase7a",
     baseUrl: "http://127.0.0.1:4322/",
     engine: "all",
     headed: false,
     help: false,
     output: "",
+    revision: "",
     selfTest: false,
     timeoutMs: 30_000,
   };
   for (let index = 0; index < argv.length; index += 1) {
     const flag = argv[index];
-    if (flag === "--base-url") { options.baseUrl = nextValue(argv, index, flag); index += 1; }
+    if (flag === "--authority-profile") { options.authorityProfile = nextValue(argv, index, flag); index += 1; }
+    else if (flag === "--base-url") { options.baseUrl = nextValue(argv, index, flag); index += 1; }
     else if (flag === "--engine") { options.engine = nextValue(argv, index, flag).toLowerCase(); index += 1; }
     else if (flag === "--output") { options.output = nextValue(argv, index, flag); index += 1; }
+    else if (flag === "--revision") { options.revision = nextValue(argv, index, flag); index += 1; }
     else if (flag === "--timeout-ms") { options.timeoutMs = Number(nextValue(argv, index, flag)); index += 1; }
     else if (flag === "--headed") options.headed = true;
     else if (flag === "--self-test") options.selfTest = true;
@@ -83,6 +105,7 @@ export function parseArguments(argv) {
     else throw new Error(`unknown argument: ${flag}`);
   }
   invariant(["all", ...Object.keys(BROWSERS)].includes(options.engine), "--engine must be all, chromium, firefox or webkit");
+  authorityProfileById(options.authorityProfile);
   invariant(Number.isInteger(options.timeoutMs) && options.timeoutMs >= 5_000 && options.timeoutMs <= 120_000, "--timeout-ms must be 5000..120000");
   const base = new URL(options.baseUrl);
   invariant(["http:", "https:"].includes(base.protocol) && !base.username && !base.password, "--base-url must be credential-free HTTP(S)");
@@ -93,8 +116,18 @@ export function parseArguments(argv) {
   if (!options.help && !options.selfTest) {
     invariant(options.output, "--output is required");
     options.output = assertExternalOutput(options.output);
+    if (options.authorityProfile === "phase7a-r1") invariant(/^[a-f0-9]{40}$/.test(options.revision), "--revision must be the exact 40-character final R1 HEAD");
   }
   return options;
+}
+
+export function validateQaServedBuildBindings(report) {
+  if (report.authorityProfile !== "phase7a-r1") return true;
+  validatePortableServedBuildReceipt(report.servedBuild, report.servedBuild?.revision);
+  const expected = portableServedBuildReference(report.servedBuild);
+  invariant(Array.isArray(report.results) && report.results.length > 0, "R1 QA report lacks engine results");
+  invariant(report.results.every(({ sourceAuthority }) => JSON.stringify(sourceAuthority) === JSON.stringify(expected)), "R1 QA engine result served-build binding differs");
+  return true;
 }
 
 function canonicalText(value) {
@@ -123,8 +156,8 @@ async function diagnostics(page) {
   return output;
 }
 
-async function inspectDocument(page) {
-  return page.evaluate(() => {
+async function inspectDocument(page, context = {}) {
+  const state = await page.evaluate(() => {
     const h1 = document.querySelector("h1");
     const rect = h1?.getBoundingClientRect();
     const root = document.documentElement;
@@ -165,6 +198,13 @@ async function inspectDocument(page) {
       viewport: { width: innerWidth, height: innerHeight },
     };
   });
+  const pageUrl = new URL(page.url());
+  const targetSize = await observeTargetSizes(page, {
+    route: context.route ?? `${pageUrl.pathname}${pageUrl.hash}`,
+    state: context.state ?? "document",
+    viewport: context.viewport ?? state.viewport,
+  });
+  return { ...state, targetSize, targetFailures: targetSize.targetFailures };
 }
 
 function documentChecks(state, expectedH1) {
@@ -173,7 +213,7 @@ function documentChecks(state, expectedH1) {
     expectedH1: canonicalHeading(state.h1) === canonicalHeading(expectedH1),
     landmarks: state.landmarkCounts.header === 1 && state.landmarkCounts.main === 1 && state.landmarkCounts.footer >= 1 && state.landmarkCounts.navigation >= 1,
     noHorizontalOverflow: !state.horizontalOverflow,
-    targetSizes: state.targetFailures.length === 0,
+    targetSizes: state.targetSize?.status === "PASS",
   };
 }
 
@@ -256,8 +296,11 @@ async function axeMatrix(browser, baseUrl, timeoutMs) {
   return cases;
 }
 
-async function responsiveMatrix(browser, baseUrl, timeoutMs, engine) {
-  const views = engine === "chromium" ? RESPONSIVE_VIEWPORTS : ["desktop-1440x900", "tablet-portrait-768x1024", "narrow-320x800", "mobile-landscape-844x390"].map((id) => RESPONSIVE_VIEWPORTS.find((viewport) => viewport.id === id));
+async function responsiveMatrix(browser, baseUrl, timeoutMs, engine, authorityProfile) {
+  const standardViews = engine === "chromium" ? RESPONSIVE_VIEWPORTS : ["desktop-1440x900", "tablet-portrait-768x1024", "narrow-320x800", "mobile-landscape-844x390"].map((id) => RESPONSIVE_VIEWPORTS.find((viewport) => viewport.id === id));
+  const views = authorityProfile === "phase7a-r1" && engine === "chromium"
+    ? [...new Map([...standardViews, ...PHASE7A_R1_SHORT_LANDSCAPE_VIEWPORTS].map((viewport) => [`${viewport.width}x${viewport.height}`, viewport])).values()]
+    : standardViews;
   const cases = [];
   for (const viewport of views) {
     const context = await browser.newContext({ viewport });
@@ -267,15 +310,29 @@ async function responsiveMatrix(browser, baseUrl, timeoutMs, engine) {
     await page.goto(new URL("#entry", baseUrl).toString(), { waitUntil: "load" });
     await page.waitForFunction(() => document.querySelector("[data-cinematic-shell]")?.getAttribute("data-manifesto-reveal") === "resolved", null, { timeout: 5_000 }).catch(() => undefined);
     await settle(page, 100);
-    const state = await inspectDocument(page);
+    const state = await inspectDocument(page, { route: "/#entry", state: "resolved-manifesto", viewport });
     const words = await page.evaluate(() => [...document.querySelectorAll(".manifesto-word")].map((word) => {
       const box = word.getBoundingClientRect();
       return { text: word.textContent, left: box.left, right: box.right, top: box.top, bottom: box.bottom };
     }));
     const intact = words.length === 7 && words.every(({ left, right }) => left >= -1 && right <= viewport.width + 1);
     const h1Fits = state.h1Rect && state.h1Rect.left >= -1 && state.h1Rect.right <= viewport.width + 1 && state.h1Rect.bottom <= viewport.height + 1;
-    const checks = { ...documentChecks(state, MANIFESTO), manifestoResolved: state.manifestoReveal === "resolved", wholeWords: intact, h1Fits: Boolean(h1Fits), console: diag.consoleErrors.length === 0 && diag.pageErrors.length === 0 };
-    cases.push({ viewport, state, words, diagnostics: diag, checks, status: Object.values(checks).every(Boolean) ? "PASS" : "FAIL" });
+    let manifestoGeometry = null;
+    let manifestoGeometryError = null;
+    const isShortLandscape = PHASE7A_R1_SHORT_LANDSCAPE_VIEWPORTS.some(({ width, height }) => width === viewport.width && height === viewport.height);
+    if (authorityProfile === "phase7a-r1" && isShortLandscape) {
+      manifestoGeometry = await page.evaluate(measureManifestoGeometry);
+      try { validateManifestoGeometry(manifestoGeometry); } catch (error) { manifestoGeometryError = error.message; }
+    }
+    const checks = {
+      ...documentChecks(state, MANIFESTO),
+      manifestoResolved: state.manifestoReveal === "resolved",
+      wholeWords: intact,
+      h1Fits: Boolean(h1Fits),
+      ...(manifestoGeometry ? { verticalClipping: manifestoGeometryError === null } : {}),
+      console: diag.consoleErrors.length === 0 && diag.pageErrors.length === 0,
+    };
+    cases.push({ viewport, state, words, manifestoGeometry, manifestoGeometryError, diagnostics: diag, checks, status: Object.values(checks).every(Boolean) ? "PASS" : "FAIL" });
     await context.close();
   }
   return cases;
@@ -303,30 +360,69 @@ async function fieldMapCase(browser, baseUrl, timeoutMs) {
       const rect = link.getBoundingClientRect();
       return { href: link.getAttribute("href"), width: rect.width, height: rect.height };
     });
-    return { active: document.activeElement?.getAttribute("href"), links, plane: plane ? { left: plane.left, right: plane.right, top: plane.top, bottom: plane.bottom } : null };
+    const background = [...document.querySelectorAll("[data-field-map-background]")].map((node) => ({
+      tag: node.tagName.toLowerCase(),
+      inert: node.hasAttribute("inert"),
+      owned: node.hasAttribute("data-field-map-inert-owned"),
+    }));
+    return { active: document.activeElement?.getAttribute("href"), links, background, plane: plane ? { left: plane.left, right: plane.right, top: plane.top, bottom: plane.bottom } : null };
   });
+  const openTargets = await observeTargetSizes(page, { route: "/#entry", state: "field-map-mobile-open", viewport: { id: "field-map-mobile", width: 320, height: 800 } });
+  await page.keyboard.press("Tab");
+  const tabFocus = await page.evaluate(() => ({
+    inMap: Boolean(document.activeElement?.closest("[data-field-map]")),
+    text: document.activeElement?.textContent?.replace(/\s+/g, " ").trim() ?? null,
+  }));
   await page.keyboard.press("Escape");
   await page.waitForFunction(() => !document.documentElement.hasAttribute("data-field-map-open"));
   const closed = await page.evaluate(() => ({
     active: document.activeElement?.tagName.toLowerCase(),
     open: document.querySelector("[data-field-map]")?.hasAttribute("open"),
     rootOpen: document.documentElement.hasAttribute("data-field-map-open"),
+    inertCount: document.querySelectorAll("[data-field-map-background][inert]").length,
+    ownedCount: document.querySelectorAll("[data-field-map-background][data-field-map-inert-owned]").length,
   }));
+  const repeatedCycles = [];
+  for (let cycle = 1; cycle <= 3; cycle += 1) {
+    await summary.press("Enter");
+    await page.waitForFunction(() => document.documentElement.hasAttribute("data-field-map-open"));
+    await page.keyboard.press("Escape");
+    await page.waitForFunction(() => !document.documentElement.hasAttribute("data-field-map-open"));
+    repeatedCycles.push(await page.evaluate((cycleNumber) => ({
+      cycle: cycleNumber,
+      focusReturned: document.activeElement === document.querySelector("[data-field-map] > summary"),
+      inertCount: document.querySelectorAll("[data-field-map-background][inert]").length,
+      ownedCount: document.querySelectorAll("[data-field-map-background][data-field-map-inert-owned]").length,
+    }), cycle));
+  }
   const checks = {
     focusBefore: focusBefore === "SUMMARY",
     eightLinks: opened.links.length === 8,
     ordinaryLinks: opened.links.every(({ href }) => typeof href === "string" && href.startsWith("/")),
-    targetSizes: opened.links.every(({ width, height }) => width >= 44 && height >= 44),
+    targetSizes: openTargets.status === "PASS",
+    backgroundInert: opened.background.length >= 3 && opened.background.every(({ inert, owned }) => inert && owned),
+    keyboardContained: tabFocus.inMap,
     fullViewport: Boolean(opened.plane && opened.plane.left <= 1 && opened.plane.right >= 319 && opened.plane.top <= 1 && opened.plane.bottom >= 799),
     escapeCloses: closed.open === false && closed.rootOpen === false,
     focusReturn: closed.active === "summary",
+    inertReleased: closed.inertCount === 0 && closed.ownedCount === 0,
+    repeatedCyclesRestore: repeatedCycles.every(({ focusReturned, inertCount, ownedCount }) => focusReturned && inertCount === 0 && ownedCount === 0),
   };
   await context.close();
-  return { opened, closed, checks, status: Object.values(checks).every(Boolean) ? "PASS" : "FAIL" };
+  return { opened, openTargets, tabFocus, closed, repeatedCycles, checks, status: Object.values(checks).every(Boolean) ? "PASS" : "FAIL" };
 }
 
 async function fallbackCases(browser, baseUrl, timeoutMs) {
   const results = {};
+
+  const manifestoAuthority = async (page, label) => {
+    const measurement = await page.evaluate(measureManifestoGeometry);
+    try {
+      return { measurement, receipt: validateFallbackManifestoMeasurement(measurement, label), status: "PASS", failure: null };
+    } catch (error) {
+      return { measurement, receipt: null, status: "FAIL", failure: String(error?.message ?? error) };
+    }
+  };
 
   {
     const context = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: "reduce" });
@@ -337,13 +433,14 @@ async function fallbackCases(browser, baseUrl, timeoutMs) {
     await page.goto(baseUrl, { waitUntil: "load" });
     await settle(page);
     const state = await inspectDocument(page);
-    const checks = { staticMode: state.cinematicMode === "static", manifesto: canonicalText(state.h1) === canonicalText(MANIFESTO), noCinematicRequest: !requests.some((url) => /phase-4r2.*\.mp4/i.test(url)), noOverflow: !state.horizontalOverflow };
-    results.reducedMotion = { state, cinematicRequests: requests.filter((url) => /phase-4r2|\.mp4/i.test(url)), checks, status: Object.values(checks).every(Boolean) ? "PASS" : "FAIL" };
+    const manifestoGeometry = await manifestoAuthority(page, "QA reduced-motion manifesto");
+    const checks = { staticMode: state.cinematicMode === "static", manifesto: canonicalText(state.h1) === canonicalText(MANIFESTO), measuredManifestoVisible: manifestoGeometry.status === "PASS", noCinematicRequest: !requests.some((url) => /phase-4r2.*\.mp4/i.test(url)), noOverflow: !state.horizontalOverflow };
+    results.reducedMotion = { state, manifestoGeometry, cinematicRequests: requests.filter((url) => /phase-4r2|\.mp4/i.test(url)), checks, status: Object.values(checks).every(Boolean) ? "PASS" : "FAIL" };
     await context.close();
   }
 
   {
-    const context = await browser.newContext({ viewport: { width: 320, height: 800 }, javaScriptEnabled: false });
+    const context = await browser.newContext({ viewport: { width: 390, height: 844 }, javaScriptEnabled: false });
     const page = await context.newPage();
     page.setDefaultTimeout(timeoutMs);
     const requests = [];
@@ -351,14 +448,33 @@ async function fallbackCases(browser, baseUrl, timeoutMs) {
     await page.goto(baseUrl, { waitUntil: "load" });
     await settle(page);
     const state = await inspectDocument(page);
+    const manifestoGeometry = await manifestoAuthority(page, "QA no-JavaScript manifesto");
     await page.locator("[data-field-map] > summary").click();
-    const details = await page.evaluate(() => ({
-      links: document.querySelectorAll("[data-field-map] nav a").length,
-      open: document.querySelector("[data-field-map]")?.hasAttribute("open") ?? false,
-      visibleLinks: [...document.querySelectorAll("[data-field-map] nav a")].filter((node) => node.getBoundingClientRect().height > 0).length,
-    }));
-    const checks = { manifesto: canonicalText(state.h1) === canonicalText(MANIFESTO), compact: state.bodyHeight < 4_000, eightLinks: details.links === 8, nativeMapUsable: details.open && details.visibleLinks === 8, noCinematicRequest: !requests.some((url) => /phase-4r2.*\.mp4/i.test(url)), noOverflow: !state.horizontalOverflow };
-    results.noJavaScript = { state, details, cinematicRequests: requests.filter((url) => /phase-4r2|\.mp4/i.test(url)), checks, status: Object.values(checks).every(Boolean) ? "PASS" : "FAIL" };
+    const linkInventory = await captureVisibleLinkInventory(page, "[data-field-map] nav a[href]");
+    let linksStatus = "PASS";
+    let linksFailure = null;
+    try { assertVisibleLinkInventory(linkInventory, NO_JS_FIELD_MAP_DESTINATIONS, "QA no-JavaScript Field Map links"); } catch (error) { linksStatus = "FAIL"; linksFailure = String(error?.message ?? error); }
+    const details = await page.evaluate(() => {
+      const map = document.querySelector("[data-field-map]");
+      const plane = map?.querySelector(".field-map__plane");
+      const bounds = plane?.getBoundingClientRect();
+      const style = plane ? getComputedStyle(plane) : null;
+      return {
+        enhancedController: map?.getAttribute("data-controller") ?? null,
+        nativeDetailsOpen: map instanceof HTMLDetailsElement ? map.open : false,
+        viewport: { width: innerWidth, height: innerHeight },
+        plane: bounds && style ? {
+          position: style.position,
+          visible: style.display !== "none" && !["collapse", "hidden"].includes(style.visibility) && Number.parseFloat(style.opacity) > 0,
+          bounds: { left: bounds.left, top: bounds.top, right: bounds.right, bottom: bounds.bottom, width: bounds.width, height: bounds.height },
+        } : null,
+      };
+    });
+    let planeStatus = "PASS";
+    let planeFailure = null;
+    try { assertNativeFieldMapViewport(details); } catch (error) { planeStatus = "FAIL"; planeFailure = String(error?.message ?? error); }
+    const checks = { manifesto: canonicalText(state.h1) === canonicalText(MANIFESTO), measuredManifestoVisible: manifestoGeometry.status === "PASS", compact: state.bodyHeight < 4_000, exactVisibleLinks: linksStatus === "PASS", nativeMapViewport: planeStatus === "PASS", noCinematicRequest: !requests.some((url) => /phase-4r2.*\.mp4/i.test(url)), noOverflow: !state.horizontalOverflow };
+    results.noJavaScript = { state, manifestoGeometry, details, linkInventory, linksFailure, planeFailure, cinematicRequests: requests.filter((url) => /phase-4r2|\.mp4/i.test(url)), checks, status: Object.values(checks).every(Boolean) ? "PASS" : "FAIL" };
     await context.close();
   }
 
@@ -371,9 +487,10 @@ async function fallbackCases(browser, baseUrl, timeoutMs) {
     await page.waitForFunction(() => document.querySelector("[data-cinematic-shell]")?.getAttribute("data-manifesto-reveal") === "resolved", null, { timeout: 5_000 }).catch(() => undefined);
     await settle(page);
     const state = await inspectDocument(page);
+    const manifestoGeometry = await manifestoAuthority(page, "QA fallback-font narrow manifesto");
     const font = await page.locator("h1").evaluate((node) => ({ family: getComputedStyle(node).fontFamily, stretch: getComputedStyle(node).fontStretch }));
-    const checks = { manifesto: canonicalText(state.h1) === canonicalText(MANIFESTO), noOverflow: !state.horizontalOverflow, fits: Boolean(state.h1Rect && state.h1Rect.left >= -1 && state.h1Rect.right <= 321 && state.h1Rect.bottom <= 801) };
-    results.fallbackFont = { state, font, checks, status: Object.values(checks).every(Boolean) ? "PASS" : "FAIL" };
+    const checks = { manifesto: canonicalText(state.h1) === canonicalText(MANIFESTO), noOverflow: !state.horizontalOverflow, measuredManifestoVisible: manifestoGeometry.status === "PASS" };
+    results.fallbackFont = { state, manifestoGeometry, font, checks, status: Object.values(checks).every(Boolean) ? "PASS" : "FAIL" };
     await context.close();
   }
   return results;
@@ -500,7 +617,7 @@ async function runEngine(engine, options) {
     const identity = { engine, executable: path.basename(executablePath), version: browser.version(), authority: engine === "webkit" ? "Playwright WebKit proxy; not physical Safari" : `Playwright managed ${engine}` };
     const routes = await routeMatrix(browser, options.baseUrl, options.timeoutMs, engine);
     const accessibility = await axeMatrix(browser, options.baseUrl, options.timeoutMs);
-    const responsive = await responsiveMatrix(browser, options.baseUrl, options.timeoutMs, engine);
+    const responsive = await responsiveMatrix(browser, options.baseUrl, options.timeoutMs, engine, options.authorityProfile);
     const fieldMap = await fieldMapCase(browser, options.baseUrl, options.timeoutMs);
     const fallback = await fallbackCases(browser, options.baseUrl, options.timeoutMs);
     const history = await intentHistoryCase(browser, options.baseUrl, options.timeoutMs);
@@ -534,22 +651,26 @@ export function selfTest() {
 async function main() {
   const options = parseArguments(process.argv.slice(2));
   if (options.help) {
-    process.stdout.write("Usage: node scripts/qa-phase7a-browser.mjs --base-url <url> --output <external.json> [--engine all|chromium|firefox|webkit]\n");
+    process.stdout.write("Usage: node scripts/qa-phase7a-browser.mjs --base-url <url> --output <external.json> [--authority-profile phase7a|phase7a-r1] [--revision <final-r1-head>] [--engine all|chromium|firefox|webkit]\n");
     return;
   }
   if (options.selfTest) { process.stdout.write(`${JSON.stringify(selfTest(), null, 2)}\n`); return; }
   try { await stat(options.output); throw new Error(`refusing to overwrite existing evidence: ${options.output}`); } catch (error) { if (error?.code !== "ENOENT") throw error; }
   const startedAt = new Date().toISOString();
+  const servedBuild = options.authorityProfile === "phase7a-r1" ? await capturePortableServedBuildReceipt(options) : null;
+  const sourceAuthority = servedBuild ? portableServedBuildReference(servedBuild) : null;
   const engines = options.engine === "all" ? Object.keys(BROWSERS) : [options.engine];
   const results = [];
-  for (const engine of engines) results.push(await runEngine(engine, options));
+  for (const engine of engines) results.push({ ...await runEngine(engine, options), ...(sourceAuthority ? { sourceAuthority } : {}) });
   const report = {
     schema: SCHEMA,
-    branch: PHASE7A_BRANCH,
-    baseUrl: options.baseUrl,
+    authorityProfile: options.authorityProfile,
+    branch: authorityProfileById(options.authorityProfile).branch,
+    captureOrigin: "CAPTURE_ORIGIN",
     startedAt,
     completedAt: new Date().toISOString(),
     results,
+    ...(servedBuild ? { servedBuild } : {}),
     limitations: [
       "WebKit is the Playwright WebKit proxy and is not physical Safari.",
       "Programmatic scroll in the harness observes product response; it is not evidence of physical wheel or touch input.",
@@ -559,6 +680,7 @@ async function main() {
     humanGates: Object.fromEntries(PHASE7A_GATES.map((gate) => [gate, "PENDING HUMAN REVIEW"])),
     status: results.every(({ status }) => status === "PASS") ? "PASS" : "FAIL",
   };
+  validateQaServedBuildBindings(report);
   const serialized = `${JSON.stringify(report, null, 2)}\n`;
   report.reportSha256 = sha256(serialized);
   await mkdir(path.dirname(options.output), { recursive: true });

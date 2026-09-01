@@ -10,8 +10,9 @@ import {
   FIELD_MAP_DESTINATIONS,
   FROZEN_MAIN,
   MARADIN_FROZEN_PATHS,
-  PHASE7A_BRANCH,
+  authorityProfileById,
   PHASE7A_PARENT,
+  PHASE7A_R1_BRANCH,
   PHYSICAL_ASSETS,
   TYPOGRAPHY_ASSETS,
 } from "./phase7a-contract.mjs";
@@ -39,7 +40,8 @@ function gitOptionalRef(root, ref) {
   throw new Error(result.stderr || `git rev-parse --verify --quiet ${ref}^{commit} failed`);
 }
 
-export function pagesHydrationArgs(isShallowRepository) {
+export function pagesHydrationArgs(isShallowRepository, authorityProfile = "phase7a") {
+  const profile = authorityProfileById(authorityProfile);
   return [
     "fetch",
     "--no-tags",
@@ -47,24 +49,25 @@ export function pagesHydrationArgs(isShallowRepository) {
     ...(isShallowRepository ? ["--unshallow"] : []),
     "origin",
     "+refs/heads/main:refs/remotes/origin/main",
-    `+refs/heads/${PHASE7A_BRANCH}:refs/remotes/origin/${PHASE7A_BRANCH}`,
+    `+refs/heads/${profile.branch}:refs/remotes/origin/${profile.branch}`,
   ];
 }
 
-function hydratePagesGitAuthority(root, head) {
+function hydratePagesGitAuthority(root, head, profile) {
   const isShallowRepository = git(root, ["rev-parse", "--is-shallow-repository"]) === "true";
-  git(root, pagesHydrationArgs(isShallowRepository));
+  git(root, pagesHydrationArgs(isShallowRepository, profile.id));
   const originMain = gitOptionalRef(root, "refs/remotes/origin/main");
   assert.equal(originMain, FROZEN_MAIN, "hydrated origin/main moved");
-  git(root, ["merge-base", "--is-ancestor", head, `refs/remotes/origin/${PHASE7A_BRANCH}`]);
+  git(root, ["merge-base", "--is-ancestor", head, `refs/remotes/origin/${profile.branch}`]);
   return originMain;
 }
 
-export function resolveGitAuthority({ localBranch, head, localMain, originMain, environment = process.env }) {
+export function resolveGitAuthority({ localBranch, head, localMain, originMain, environment = process.env }, authorityProfile = "phase7a") {
+  const profile = authorityProfileById(authorityProfile);
   const onCloudflarePages = environment.CF_PAGES === "1";
   const branch = localBranch || (onCloudflarePages ? environment.CF_PAGES_BRANCH ?? "" : "");
 
-  assert.equal(branch, PHASE7A_BRANCH, "wrong Phase 7A branch");
+  assert.equal(branch, profile.branch, `wrong ${profile.id} branch`);
   if (onCloudflarePages) {
     assert.equal(environment.CF_PAGES_COMMIT_SHA, head, "Cloudflare Pages commit differs from checked-out HEAD");
   }
@@ -83,27 +86,37 @@ export function resolveGitAuthority({ localBranch, head, localMain, originMain, 
     localMain,
     originMain,
     mainAuthorityMode: localMain !== null && originMain !== null ? "refs" : "cloudflare-pages-ancestry",
+    authorityProfile: profile.id,
   };
 }
 
-export async function verifySource(root = process.cwd(), environment = process.env) {
+export async function verifySource(root = process.cwd(), environment = process.env, authorityProfile = "phase7a") {
+  const profile = authorityProfileById(authorityProfile);
   const read = (relative) => readFile(path.join(root, relative), "utf8");
   const localBranch = git(root, ["branch", "--show-current"]);
   const head = git(root, ["rev-parse", "HEAD"]);
   const localMain = gitOptionalRef(root, "refs/heads/main");
   let originMain = gitOptionalRef(root, "refs/remotes/origin/main");
   if (environment.CF_PAGES === "1") {
-    resolveGitAuthority({ localBranch, head, localMain, originMain, environment });
-    originMain = hydratePagesGitAuthority(root, head);
+    resolveGitAuthority({ localBranch, head, localMain, originMain, environment }, profile.id);
+    originMain = hydratePagesGitAuthority(root, head, profile);
   }
-  const authority = resolveGitAuthority({ localBranch, head, localMain, originMain, environment });
+  const authority = resolveGitAuthority({ localBranch, head, localMain, originMain, environment }, profile.id);
   const { branch, mainAuthorityMode } = authority;
-  const firstCommit = git(root, ["rev-list", "--reverse", `${PHASE7A_PARENT}..${head}`]).split(/\r?\n/)[0];
+  const firstCommit = git(root, ["rev-list", "--reverse", `${profile.parent}..${head}`]).split(/\r?\n/)[0];
   const firstParent = firstCommit ? git(root, ["rev-parse", `${firstCommit}^`]) : "";
-  const merges = git(root, ["rev-list", "--merges", `${PHASE7A_PARENT}..${head}`]);
+  const merges = git(root, ["rev-list", "--merges", `${profile.parent}..${head}`]);
 
-  assert.equal(firstParent, PHASE7A_PARENT, "first Phase 7A commit must descend directly from accepted Phase 6");
-  assert.equal(merges, "", "Phase 7A history must remain linear");
+  const directParentMessage = profile.id === "phase7a"
+    ? "first Phase 7A commit must descend directly from accepted Phase 6"
+    : "first Phase 7A-R1 commit must descend directly from the accepted Phase 7A parent";
+  assert.equal(firstParent, profile.parent, directParentMessage);
+  assert.equal(merges, "", `${profile.id} history must remain linear`);
+  git(root, ["merge-base", "--is-ancestor", PHASE7A_PARENT, head]);
+  if (profile.id === "phase7a-r1") {
+    const deleted = git(root, ["diff", "--name-only", "--diff-filter=D", profile.parent, head]);
+    assert.equal(deleted, "", "Phase 7A-R1 must not perform another demolition");
+  }
   if (mainAuthorityMode === "cloudflare-pages-ancestry") {
     assert.equal(git(root, ["rev-parse", `${FROZEN_MAIN}^{commit}`]), FROZEN_MAIN, "frozen main commit is unavailable");
     git(root, ["merge-base", "--is-ancestor", FROZEN_MAIN, head]);
@@ -122,11 +135,12 @@ export async function verifySource(root = process.cwd(), environment = process.e
     assert.equal(await sha256(filename), expected, `${relative} font/licence hash changed`);
   }
 
-  const maradinDiff = git(root, ["diff", "--name-only", PHASE7A_PARENT, "--", ...MARADIN_FROZEN_PATHS]);
+  const maradinDiff = git(root, ["diff", "--name-only", profile.parent, "--", ...MARADIN_FROZEN_PATHS]);
   assert.equal(maradinDiff, "", "Maradin route, content, lifecycle, or media authority changed");
 
-  const [index, signal, signalController, cinematic, signalCss, header, navigationCss, typography, packageText, attributes] = await Promise.all([
+  const [index, layout, signal, signalController, cinematic, signalCss, header, navigationCss, typography, packageText, attributes] = await Promise.all([
     read("src/pages/index.astro"),
+    read("src/layouts/BaseLayout.astro"),
     read("src/components/home/SignalThreshold.astro"),
     read("src/scripts/signal-field.ts"),
     read("src/scripts/home-cinematic-integration.ts"),
@@ -180,7 +194,20 @@ export async function verifySource(root = process.cwd(), environment = process.e
   assert.match(header, /<nav id="field-map-navigation"/);
   assert.match(header, /event\.key === "Escape"/);
   assert.match(header, /trigger\?\.focus\(\{ preventScroll: true \}\)/);
-  assert.match(navigationCss, /html\[data-field-map-open\] \.site-header\s*\{[\s\S]*?backdrop-filter:\s*none/);
+  assert.match(header, /data-field-map-background/);
+  assert.match(layout, /data-field-map-background/);
+  assert.match(layout, /name="color-scheme" content="dark"/);
+  assert.match(layout, /html,body\{background:#07090a\}/);
+  assert.match(header, /region\.inert = true/);
+  assert.match(header, /releaseBackground/);
+  assert.match(header, /pagehide/);
+  assert.match(header, /pageshow/);
+  assert.match(header, /popstate/);
+  assert.doesNotMatch(header, /aria-modal/);
+  assert.match(
+    navigationCss,
+    /html\[data-field-map-open\] \.site-header,\s*\.site-header:has\(\.field-map\[open\]\)\s*\{[\s\S]*?backdrop-filter:\s*none/,
+  );
 
   assert.match(typography, /font-family:\s*"Anybody"/);
   assert.match(typography, /\.maradin-page\s*\{[\s\S]*?--font-display:\s*"Syne"/);
@@ -202,9 +229,11 @@ export async function verifySource(root = process.cwd(), environment = process.e
   return {
     schema: "quantum-hub.phase-7a.source-verification.v1",
     status: "PASS",
+    authorityProfile: profile.id,
     branch,
     head,
-    parent: PHASE7A_PARENT,
+    parent: profile.parent,
+    acceptedPhase6: PHASE7A_PARENT,
     main: localMain,
     originMain,
     frozenMain: FROZEN_MAIN,
@@ -218,5 +247,11 @@ export async function verifySource(root = process.cwd(), environment = process.e
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(SCRIPT_PATH)) {
-  console.log(JSON.stringify(await verifySource(), null, 2));
+  const profileFlag = process.argv.indexOf("--authority-profile");
+  const activeBranch = process.env.CF_PAGES_BRANCH || git(process.cwd(), ["branch", "--show-current"]);
+  const authorityProfile = profileFlag >= 0
+    ? process.argv[profileFlag + 1]
+    : activeBranch === PHASE7A_R1_BRANCH ? "phase7a-r1" : "phase7a";
+  assert.ok(authorityProfile && !authorityProfile.startsWith("--"), "--authority-profile requires phase7a or phase7a-r1");
+  console.log(JSON.stringify(await verifySource(process.cwd(), process.env, authorityProfile), null, 2));
 }

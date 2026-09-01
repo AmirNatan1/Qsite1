@@ -97,7 +97,8 @@
 /* backdrop-filter establishes a fixed-position containing block in Chromium.
    Release it while the Field Map is open so the plane owns the viewport rather
    than collapsing to the sticky header's height. */
-html[data-field-map-open] .site-header {
+html[data-field-map-open] .site-header,
+.site-header:has(.field-map[open]) {
   border-color: transparent;
   background: transparent;
   backdrop-filter: none;
@@ -355,7 +356,7 @@ html[data-field-map-open] .site-footer {
   }
 
   .field-map-destination {
-    min-height: 4.7rem;
+    min-height: 4.6rem;
   }
 
   .site-footer__inner {
@@ -393,12 +394,17 @@ html[data-field-map-open] .site-footer {
 
 @media (max-height: 30rem) and (orientation: landscape) {
   .field-map__content {
-    padding-top: 4.6rem;
+    padding-top: 3.6rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .field-map__heading {
+    padding-bottom: 0.55rem;
   }
 
   .field-map ol {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    margin-top: 1rem;
+    margin-top: 0.25rem;
   }
 
   .field-map li:nth-child(even) {
@@ -406,11 +412,23 @@ html[data-field-map-open] .site-footer {
   }
 
   .field-map-destination {
-    min-height: 3.85rem;
+    grid-template-columns: 1.8rem minmax(0, 1fr);
+    gap: 0.55rem;
+    min-height: 3.5rem;
+    padding: 0.35rem 0.75rem;
+  }
+
+  .field-map-destination > span:last-child {
+    display: none;
+  }
+
+  .field-map-destination strong {
+    font-size: clamp(1rem, 3.4vw, 1.35rem);
+    line-height: 0.94;
   }
 
   .field-map__legend {
-    margin-top: 1rem;
+    margin-top: 0.35rem;
   }
 }
 

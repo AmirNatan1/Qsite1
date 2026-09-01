@@ -2,6 +2,10 @@ import path from "node:path";
 
 export const PHASE7A_BRANCH = "redirect/phase-7a-signal-field-threshold";
 export const PHASE7A_PARENT = "371e3e8a21a1d215ecaf2bf14b9f509432b230b0";
+export const PHASE7A_ACCEPTED_HEAD = "a87de3c08135e594199db1cebddc427dd8763fcb";
+export const PHASE7A_R1_BRANCH = "repair/phase-7a-r1-signal-field-authority";
+export const PHASE7A_R1_PARENT = PHASE7A_ACCEPTED_HEAD;
+export const PHASE7A_R1_REVIEW_ZIP_NAME = "phase-7a-r1-signal-field-authority-human-review.zip";
 export const FROZEN_MAIN = "501040c42bba30b9d9517b88a8f9857992a2dba4";
 export const REQUIRED_NODE = "22.16.0";
 
@@ -99,5 +103,30 @@ export const RECORDING_SCENARIOS = Object.freeze([
 ]);
 
 export const REVIEW_ZIP_NAME = "phase-7a-signal-field-threshold-human-review.zip";
-export const resolveRepo = (...parts) => path.join(process.cwd(), ...parts);
 
+const AUTHORITY_PROFILES = Object.freeze({
+  phase7a: Object.freeze({
+    id: "phase7a",
+    branch: PHASE7A_BRANCH,
+    parent: PHASE7A_PARENT,
+    frozenMain: FROZEN_MAIN,
+    reviewZipName: REVIEW_ZIP_NAME,
+  }),
+  "phase7a-r1": Object.freeze({
+    id: "phase7a-r1",
+    branch: PHASE7A_R1_BRANCH,
+    parent: PHASE7A_R1_PARENT,
+    frozenMain: FROZEN_MAIN,
+    reviewZipName: PHASE7A_R1_REVIEW_ZIP_NAME,
+  }),
+});
+
+export function authorityProfileById(id) {
+  if (id !== "phase7a" && id !== "phase7a-r1") {
+    throw new TypeError(`Unknown Phase 7A authority profile: ${String(id)}`);
+  }
+
+  return AUTHORITY_PROFILES[id];
+}
+
+export const resolveRepo = (...parts) => path.join(process.cwd(), ...parts);

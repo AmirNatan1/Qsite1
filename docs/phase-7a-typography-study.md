@@ -119,6 +119,19 @@ recordings, line/wrap observations, overflow/clipping results, fallback and
 blocked-font results, transfer bytes and genuine/proxy zoom status. Until that
 capture is complete, browser rendering and wrapping remain **NOT OBSERVED**.
 
+### Phase 7A-R1 observation
+
+The R1 evidence package renders the four candidates to PNG specimens without
+shipping their candidate font payloads. Anybody remains the unchanged
+69,612-byte production file. The repaired manifesto is measured with text-node
+Range boxes at all twelve required 740×320 through 900×480 short-landscape
+viewports; each authored line resolves to one glyph-bearing rendered line with
+at least 2 CSS pixels of top and bottom clipping safety and no horizontal
+overflow. Genuine installed Chrome 200% evidence uses browser-native zoom,
+records the visible `Zoom: 200%` state, and does not use CSS zoom, transforms,
+device emulation or viewport resizing as a substitute. These results close the
+machine-observation gap but do not decide the human typography gate.
+
 ## Licence retention
 
 All candidates use SIL OFL 1.1. Exact licence texts accompany each retained
@@ -128,13 +141,13 @@ depends on GitHub or Google Fonts at runtime.
 
 ## Unresolved risks and gate
 
-Axis interpolation may change line measure and produce wrap or CLS. Browser
-hinting, 200% reflow, fallback metrics, slow-network behavior, reduced motion
-and short-landscape fit require fresh evidence. Human review must issue ACCEPT,
-REPAIR or REDIRECT.
+Axis interpolation may change line measure and produce wrap or CLS. This exact
+R1 build has fresh evidence for browser hinting, genuine 200% reflow, fallback
+metrics, slow-network behavior, reduced motion and short-landscape fit. Those
+results remain change-sensitive and still require human review before the gate
+can advance. Human review must issue ACCEPT, REPAIR or REDIRECT.
 
 **TYPOGRAPHY + MATERIAL AUTHORITY: PENDING HUMAN REVIEW**  
 **Final display-font decision: PENDING HUMAN REVIEW**  
 **Phase 7B NOT AUTHORIZED**  
 **main NOT MERGED**
-

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { access } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -8,7 +8,9 @@ import {
   CAPTURE_RECORDING_SPECS,
   CAPTURE_SETTLE_TIMEOUTS,
   MANIFEST_PATH,
+  PORTABLE_SERVED_BUILD_SCHEMA,
   RECORDING_VIEW,
+  RESPONSIVE_GEOMETRY_VIEWPORTS,
   ROOT,
   SCHEMA,
   SCREENSHOT_SPECS,
@@ -21,6 +23,7 @@ import {
   fullDecodeArguments,
   normalizeBaseUrl,
   parseArguments,
+  portableServedBuildReference,
   recordingBrowserLaunchPlan,
   recordingContractResult,
   requestFailureDisposition,
@@ -28,6 +31,9 @@ import {
   runSelfTest,
   validateManifestLedger,
   validateOptions,
+  validatePortableCaptureBindings,
+  validatePortableServedBuildReceipt,
+  validateResponsiveGeometryState,
   validateScenarioStates,
 } from "../scripts/capture-phase7a-review-evidence.mjs";
 import {
@@ -36,6 +42,11 @@ import {
   RECORDING_MEDIA_CONTRACT,
   RECORDING_SPECS,
 } from "../scripts/phase7a-browser-contract.mjs";
+import { NO_JS_FIELD_MAP_DESTINATIONS, PHASE7A_R1_REQUIRED_BRANCH, runtimeAssetSetFingerprint } from "../scripts/capture-phase7a-r1-closure.mjs";
+import {
+  parseArguments as parseQaArguments,
+  validateQaServedBuildBindings,
+} from "../scripts/qa-phase7a-browser.mjs";
 
 const freshExternal = (name = "capture") => path.resolve(ROOT, "..", `phase-7a-${name}-${process.pid}`);
 
@@ -60,6 +71,30 @@ const fakeLedger = () => expectedArtifactPaths()
   .filter((relativePath) => relativePath !== MANIFEST_PATH)
   .map((relativePath) => ({ bytes: 1, relativePath, sha256: "a".repeat(64) }));
 
+const portableReceipt = (revision = "b".repeat(40)) => {
+  const runtimeAssets = [
+    { kind: "css", route: "/_astro/final.css", bytes: 100, sha256: "1".repeat(64) },
+    { kind: "javascript", route: "/_astro/final.js", bytes: 200, sha256: "2".repeat(64) },
+  ];
+  return {
+    schema: PORTABLE_SERVED_BUILD_SCHEMA,
+    status: "PASS",
+    branch: PHASE7A_R1_REQUIRED_BRANCH,
+    revision,
+    document: { relativePath: "dist/index.html", bytes: 1_000, sha256: "3".repeat(64) },
+    runtimeFingerprint: runtimeAssetSetFingerprint(runtimeAssets),
+    runtimeAssets,
+    servedParity: { document: true, runtimeAssets: true },
+    freshBuild: {
+      command: "npm run build:phase7a-r1",
+      headBefore: revision,
+      headAfter: revision,
+      worktreeCleanBefore: true,
+      worktreeCleanAfter: true,
+    },
+  };
+};
+
 test("Phase 7A review capture freezes the exact 14-recording authority", () => {
   assert.strictEqual(CAPTURE_RECORDING_SPECS, RECORDING_SPECS);
   assert.equal(CAPTURE_RECORDING_SPECS.length, 14);
@@ -82,6 +117,65 @@ test("Phase 7A review capture freezes the exact 14-recording authority", () => {
     width: 1280,
     height: 720,
   });
+});
+
+test("general recordings and screenshots bind one clean final-HEAD served-build receipt", () => {
+  const receipt = portableReceipt();
+  assert.equal(validatePortableServedBuildReceipt(receipt, receipt.revision), true);
+  const sourceAuthority = portableServedBuildReference(receipt);
+  const manifest = {
+    servedBuild: receipt,
+    recordings: CAPTURE_RECORDING_SPECS.map(({ relativePath }) => ({ relativePath, sourceAuthority })),
+    screenshots: SCREENSHOT_SPECS.map(({ relativePath }) => ({ relativePath, sourceAuthority })),
+  };
+  assert.equal(validatePortableCaptureBindings(manifest), true);
+  const stale = structuredClone(manifest);
+  stale.recordings[3].sourceAuthority.revision = "c".repeat(40);
+  assert.throws(() => validatePortableCaptureBindings(stale), /source authority differs/);
+  const staleAsset = structuredClone(receipt);
+  staleAsset.runtimeAssets[0].sha256 = "f".repeat(64);
+  assert.throws(() => validatePortableServedBuildReceipt(staleAsset, staleAsset.revision), /runtime fingerprint differs/);
+  const dirtyBuild = structuredClone(receipt);
+  dirtyBuild.freshBuild.worktreeCleanBefore = false;
+  assert.throws(() => validatePortableServedBuildReceipt(dirtyBuild, dirtyBuild.revision), /clean final-HEAD governed build/);
+});
+
+test("Windows governed build runs npm through the exact capture Node executable", async () => {
+  const source = await readFile(path.join(ROOT, "scripts", "capture-phase7a-review-evidence.mjs"), "utf8");
+  assert.match(source, /execFileAsync\(process\.execPath, \[npmCli, "run", "build:phase7a-r1"\]/);
+  assert.doesNotMatch(source, /execFileAsync\(npm, \["run", "build:phase7a-r1"\]/);
+});
+
+test("R1 browser QA reports require the same portable final-HEAD receipt per engine", () => {
+  const receipt = portableReceipt();
+  const sourceAuthority = portableServedBuildReference(receipt);
+  const report = {
+    authorityProfile: "phase7a-r1",
+    servedBuild: receipt,
+    results: ["chromium", "firefox", "webkit"].map((engine) => ({ identity: { engine }, sourceAuthority })),
+  };
+  assert.equal(validateQaServedBuildBindings(report), true);
+  const stale = structuredClone(report);
+  stale.results[1].sourceAuthority = {
+    ...stale.results[1].sourceAuthority,
+    document: { ...stale.results[1].sourceAuthority.document, sha256: "f".repeat(64) },
+  };
+  assert.throws(() => validateQaServedBuildBindings(stale), /engine result served-build binding differs/);
+  assert.throws(() => parseQaArguments(["--authority-profile", "phase7a-r1", "--base-url", "http://127.0.0.1:4322", "--output", `${freshExternal("qa")}.json`]), /exact 40-character/);
+  assert.equal(parseQaArguments(["--authority-profile", "phase7a-r1", "--base-url", "http://127.0.0.1:4322", "--revision", receipt.revision, "--output", `${freshExternal("qa-bound")}.json`]).revision, receipt.revision);
+});
+
+test("browser QA fallback states use shared glyph/header geometry and full native-map inventories", async () => {
+  const source = await readFile(path.join(ROOT, "scripts", "qa-phase7a-browser.mjs"), "utf8");
+  const fallbackSource = source.slice(
+    source.indexOf("async function fallbackCases"),
+    source.indexOf("async function intentHistoryCase"),
+  );
+  assert.match(fallbackSource, /validateFallbackManifestoMeasurement\(measurement, label\)/);
+  assert.match(fallbackSource, /captureVisibleLinkInventory\(page, "\[data-field-map\] nav a\[href\]"\)/);
+  assert.match(fallbackSource, /assertNativeFieldMapViewport\(details\)/);
+  assert.doesNotMatch(fallbackSource, /visibleLinks:\s*\[\.\.\.document\.querySelectorAll/);
+  assert.doesNotMatch(fallbackSource, /state\.h1Rect\.left\s*>=\s*-1/);
 });
 
 test("Firefox gets one fresh browser per recording segment while Chromium stays shared", () => {
@@ -109,7 +203,7 @@ test("capture settling is bounded when Firefox suppresses animation frames", () 
   assert.ok(Object.isFrozen(CAPTURE_SETTLE_TIMEOUTS));
 });
 
-test("capture records only aborted in-memory media reads as expected lifecycle cancellations", () => {
+test("capture records only bounded media and responsive-poster aborts as expected lifecycle cancellations", () => {
   assert.equal(requestFailureDisposition({
     failure: "net::ERR_ABORTED",
     resourceType: "media",
@@ -120,10 +214,16 @@ test("capture records only aborted in-memory media reads as expected lifecycle c
     resourceType: "media",
     url: "blob:http://127.0.0.1:4322/fixture",
   }), "EXPECTED_BLOB_MEDIA_ABORT");
+  assert.equal(requestFailureDisposition({
+    failure: "NS_BINDING_ABORTED",
+    resourceType: "image",
+    url: "http://127.0.0.1:4322/media/cinematic/phase-4r2/posters/phase-4r2-desktop-poster-8dc538810811.png",
+  }), "EXPECTED_RESPONSIVE_POSTER_ABORT");
   for (const fixture of [
     { failure: "net::ERR_FAILED", resourceType: "media", url: "blob:http://127.0.0.1:4322/fixture" },
     { failure: "net::ERR_ABORTED", resourceType: "media", url: "http://127.0.0.1:4322/media/file.mp4" },
     { failure: "net::ERR_ABORTED", resourceType: "document", url: "blob:http://127.0.0.1:4322/fixture" },
+    { failure: "NS_BINDING_ABORTED", resourceType: "image", url: "http://127.0.0.1:4322/unrelated.png" },
   ]) assert.equal(requestFailureDisposition(fixture), "UNEXPECTED");
 });
 
@@ -207,55 +307,112 @@ test("FFprobe authority requires complete media truth and full decode", () => {
 
 test("scenario validation requires Signal Field, Field Map, fallback and typography truth", () => {
   const signal = { signalField: true, manifestoWords: 7, horizontalOverflow: false };
+  const cinematic = (cinematicPhase, cinematicSegment, conceptualCoordinate, manifestoReveal = "hidden", additions = {}) => ({
+    cinematicPhase,
+    cinematicSegment,
+    conceptualCoordinate,
+    conceptualFrame: Math.min(540, Math.floor(conceptualCoordinate) + 1),
+    targetFrame: Math.min(500, Math.floor(conceptualCoordinate) + 1),
+    manifestoReveal,
+    ...additions,
+  });
+  const stable = (state) => ({ ...state, arrival: structuredClone(state), postDwell: structuredClone(state), dwellMs: 4_100 });
   assert.equal(validateScenarioStates("complete-threshold-entry", {
     "complete-threshold-entry": {
-      initial: { ...signal, path: "/" },
-      latePhysical: { scrollY: 100 },
-      threshold: { scrollY: 200 },
-      manifesto: { manifestoReveal: "resolved", manifestoWords: 7 },
-      signalField: { signalField: true, fieldMapLinks: 8 },
+      initial: cinematic("physical", "top-dormancy", 0, "hidden", { ...signal, path: "/", scrollY: 0 }),
+      latePhysical: cinematic("physical", "physical-threshold", 490, "hidden", { scrollY: 100 }),
+      threshold: cinematic("entry", "entry-reveal", 520, "revealing", { scrollY: 200 }),
+      manifesto: cinematic("settled", "entry-reveal", 540, "resolved", { manifestoWords: 7, scrollY: 300 }),
+      signalField: cinematic("settled", "entry-reveal", 540, "resolved", { signalField: true, fieldMapLinks: 8, bifurcationPresent: true, bifurcationLinks: 2, scrollY: 700 }),
     },
   }), true);
   assert.equal(validateScenarioStates("complete-reverse", {
     "complete-reverse": {
-      settled: { manifestoReveal: "resolved" },
-      breach: { scrollY: 500 },
-      raster: { scrollY: 400 },
-      line: { scrollY: 300 },
-      physical: { scrollY: 100 },
-      top: { scrollY: 0, manifestoReveal: "hidden" },
+      settled: cinematic("settled", "entry-reveal", 540, "resolved", { scrollY: 600 }),
+      entry: cinematic("entry", "entry-reveal", 527, "resolved", { scrollY: 560 }),
+      digitalBlack: cinematic("black", "digital-breathing", 506, "hidden", { scrollY: 520 }),
+      physicalThreshold: cinematic("physical", "physical-threshold", 490, "hidden", { scrollY: 480 }),
+      qHold: cinematic("physical", "q-hold", 380, "hidden", { scrollY: 380 }),
+      raster: cinematic("physical", "raster-settling", 340, "hidden", { scrollY: 340 }),
+      line: cinematic("physical", "phosphor-line", 305, "hidden", { scrollY: 300 }),
+      physical: cinematic("physical", "current-orbit", 150, "hidden", { scrollY: 100 }),
+      top: cinematic("physical", "top-dormancy", 0, "hidden", { scrollY: 0 }),
     },
   }), true);
+  const physicalThreshold = cinematic("physical", "physical-threshold", 490, "hidden", { scrollY: 480 });
+  const digitalBlack = cinematic("black", "digital-breathing", 506, "hidden", { scrollY: 505 });
+  const breach = cinematic("entry", "entry-reveal", 518, "resolved", { scrollY: 522 });
+  const partialManifesto = cinematic("entry", "entry-reveal", 532, "resolved", { scrollY: 530 });
+  const completedManifesto = cinematic("settled", "entry-reveal", 540, "resolved", { scrollY: 540 });
+  const validStopStates = {
+    physicalThreshold: stable(physicalThreshold),
+    digitalBlack: stable(digitalBlack),
+    breach: stable(breach),
+    partialManifesto: stable(partialManifesto),
+    completedManifesto: stable(completedManifesto),
+    openFieldMap: { fieldMapOpen: true, fieldMapRootOpen: true, fieldMapLinks: 8, backgroundInert: true },
+    fieldMapKeyboard: { fieldMapOpen: true, activeElement: "a" },
+    fieldMapEscape: { fieldMapOpen: false, fieldMapRootOpen: false, activeElement: "field-map-summary", backgroundInert: false },
+  };
   assert.equal(validateScenarioStates("stop-states", {
-    "stop-states": {
-      physicalThreshold: {}, digitalBlack: {}, breach: {}, partialManifesto: {},
-      completedManifesto: { manifestoReveal: "resolved" },
-      openFieldMap: { fieldMapOpen: true, fieldMapRootOpen: true, fieldMapLinks: 8 },
-    },
+    "stop-states": validStopStates,
   }), true);
   assert.equal(validateScenarioStates("home-intent", {
     "home-intent": {
       supporting: { path: "/about/" },
       entryIntent: { path: "/", hash: "#entry", manifestoReveal: "resolved" },
-      reverseAccess: { scrollY: 0, signalField: true },
+      reverseAccess: cinematic("physical", "top-dormancy", 0, "hidden", { scrollY: 0, signalField: true }),
     },
   }), true);
   const responsive = Object.fromEntries([
     "desktop-1440x900", "short-desktop-1366x650", "tablet-portrait-768x1024",
     "mobile-390x844", "narrow-320x800", "mobile-landscape-844x390",
   ].map((id) => [id, signal]));
+  for (const { id } of RESPONSIVE_GEOMETRY_VIEWPORTS) responsive[id] = {
+    ...signal,
+    manifestoGeometry: { status: "PASS", failure: null, measurement: { fixture: id } },
+  };
   responsive.resizeDuringBreach = { signalField: true };
   responsive.resizeAfterManifesto = { signalField: true, manifestoReveal: "resolved" };
-  assert.equal(validateScenarioStates("responsive-authority", { "responsive-authority": responsive }), true);
+  const measured = [];
+  assert.equal(validateScenarioStates("responsive-authority", { "responsive-authority": responsive }, {
+    manifestoValidator(measurement) {
+      assert.match(measurement.fixture, /^r1-/);
+      measured.push(measurement.fixture);
+      return true;
+    },
+  }), true);
+  assert.deepEqual(measured, RESPONSIVE_GEOMETRY_VIEWPORTS.map(({ id }) => id));
   assert.equal(validateScenarioStates("reduced-motion-and-no-js", {
     "reduced-motion": {
-      staticHome: { cinematicMode: "static", signalField: true },
+      staticHome: { cinematicMode: "static", signalField: true, manifestoVisibility: { status: "PASS" } },
       fieldMap: { fieldMapOpen: true, fieldMapLinks: 8 },
       evidenceNetwork: { cinematicRequests: 0 },
     },
     "no-javascript": {
-      entry: { signalField: true, manifestoWords: 7 },
-      nativeFieldMap: { fieldMapOpen: true, fieldMapLinks: 8 },
+      entry: { signalField: true, manifestoWords: 7, manifestoVisibility: { status: "PASS" } },
+      nativeFieldMap: {
+        fieldMapOpen: true,
+        fieldMapLinks: 8,
+        linkInventory: NO_JS_FIELD_MAP_DESTINATIONS.map((destination, index) => ({
+          index,
+          href: destination.href,
+          accessibleName: destination.name,
+          elementType: "a",
+          width: 220,
+          height: 48,
+          visible: true,
+          fullyInViewport: true,
+          unoccluded: true,
+          intendedInteractive: true,
+        })),
+        nativePlane: {
+          enhancedController: null,
+          nativeDetailsOpen: true,
+          viewport: { width: 1280, height: 720 },
+          plane: { position: "fixed", visible: true, bounds: { left: 0, top: 0, right: 1280, bottom: 720, width: 1280, height: 720 } },
+        },
+      },
       evidenceNetwork: { cinematicRequests: 0 },
     },
   }), true);
@@ -271,12 +428,47 @@ test("scenario validation requires Signal Field, Field Map, fallback and typogra
 
   const falseThreshold = {
     "complete-threshold-entry": {
-      initial: { ...signal, path: "/" }, latePhysical: { scrollY: 0 }, threshold: { scrollY: 0 },
-      manifesto: { manifestoReveal: "resolved", manifestoWords: 7 }, signalField: { signalField: true, fieldMapLinks: 8 },
+      initial: cinematic("physical", "top-dormancy", 0, "hidden", { ...signal, path: "/", scrollY: 0 }),
+      latePhysical: cinematic("physical", "physical-threshold", 490, "hidden", { scrollY: 0 }),
+      threshold: cinematic("entry", "entry-reveal", 520, "revealing", { scrollY: 0 }),
+      manifesto: cinematic("settled", "entry-reveal", 540, "resolved", { manifestoWords: 7 }),
+      signalField: cinematic("settled", "entry-reveal", 540, "resolved", { signalField: true, fieldMapLinks: 8, bifurcationPresent: true, bifurcationLinks: 2 }),
     },
   };
   assert.throws(() => validateScenarioStates("complete-threshold-entry", falseThreshold), /late physical opening/i);
+  const unstableStops = structuredClone(validStopStates);
+  unstableStops.digitalBlack.postDwell.conceptualCoordinate = 507;
+  assert.throws(() => validateScenarioStates("stop-states", { "stop-states": unstableStops }), /changed phase, coordinate, frame, reveal, or scroll/);
+  const identicalStops = structuredClone(validStopStates);
+  identicalStops.digitalBlack = structuredClone(identicalStops.physicalThreshold);
+  assert.throws(() => validateScenarioStates("stop-states", { "stop-states": identicalStops }), /digital black|materially identical/i);
+  const scrollOnlyReverse = {
+    "complete-reverse": Object.fromEntries(["settled", "entry", "digitalBlack", "physicalThreshold", "qHold", "raster", "line", "physical", "top"].map((key, index) => [key, { scrollY: 800 - index * 100, manifestoReveal: key === "settled" ? "resolved" : "hidden" }])),
+  };
+  assert.throws(() => validateScenarioStates("complete-reverse", scrollOnlyReverse), /cinematic phase differs/);
+  assert.throws(() => validateScenarioStates("home-intent", {
+    "home-intent": {
+      supporting: { path: "/about/" },
+      entryIntent: { path: "/", hash: "#entry", manifestoReveal: "resolved" },
+      reverseAccess: { scrollY: 0, signalField: true, manifestoReveal: "hidden" },
+    },
+  }), /reverse F1 access cinematic phase differs/);
   assert.throws(() => validateScenarioStates("typography", { typography: { candidates: 3 } }), /candidate count/i);
+
+  const missingGeometry = structuredClone(responsive);
+  delete missingGeometry[RESPONSIVE_GEOMETRY_VIEWPORTS[0].id].manifestoGeometry;
+  assert.throws(() => validateScenarioStates("responsive-authority", { "responsive-authority": missingGeometry }, { manifestoValidator: () => true }), /misses shared manifesto geometry/);
+
+  const reportedFailure = structuredClone(responsive);
+  reportedFailure["r1-800x360"].manifestoGeometry = { status: "FAIL", failure: "glyph intersects sticky header", measurement: { fixture: "r1-800x360" } };
+  assert.throws(() => validateScenarioStates("responsive-authority", { "responsive-authority": reportedFailure }, { manifestoValidator: () => true }), /shared manifesto geometry failed.*800x360/);
+
+  assert.throws(() => validateScenarioStates("responsive-authority", { "responsive-authority": responsive }, {
+    manifestoValidator(measurement) {
+      if (measurement.fixture === "r1-844x390") throw new Error("manifesto geometry: glyph left safety is -1px");
+      return true;
+    },
+  }), /glyph left safety/);
 });
 
 test("manifest validator rejects missing, duplicate, stale and unexpected evidence", () => {
@@ -323,7 +515,7 @@ test("self-test and dry-run expose the exact plan without creating output", asyn
 
   const output = freshExternal("dry-run");
   const report = dryRunReport(validateOptions({
-    ...parseArguments(["--dry-run", "--base-url", "http://127.0.0.1:4322", "--output", output]),
+    ...parseArguments(["--dry-run", "--base-url", "http://127.0.0.1:4322", "--revision", "b".repeat(40), "--output", output]),
   }));
   assert.equal(report.status, "DRY-RUN");
   assert.equal(report.output, undefined);
@@ -338,7 +530,8 @@ test("argument and external-output policy fail closed", () => {
   assert.throws(() => normalizeBaseUrl("https://user:secret@example.test/"), /credential-free/i);
   assert.throws(() => normalizeBaseUrl("https://example.test/phase-6-preview/"), /stale Phase 6 path/i);
   assert.throws(() => parseArguments(["--unknown"]), /unknown option/i);
-  assert.throws(() => validateOptions({ ...parseArguments(["--dry-run", "--base-url", "http://127.0.0.1:4322", "--output", ROOT]), timeoutMs: 30_000 }), /outside the repository/i);
+  assert.throws(() => validateOptions({ ...parseArguments(["--dry-run", "--base-url", "http://127.0.0.1:4322", "--revision", "b".repeat(40), "--output", ROOT]), timeoutMs: 30_000 }), /outside the repository/i);
+  assert.throws(() => validateOptions({ ...parseArguments(["--dry-run", "--base-url", "http://127.0.0.1:4322", "--revision", "short", "--output", freshExternal("bad-revision")]), timeoutMs: 30_000 }), /exact 40-character/);
   assert.throws(() => assertExternalFreshPath(path.join(os.tmpdir(), "phase-7a-review")), /outside OS temporary/i);
   assert.throws(() => assertExternalFreshPath(freshExternal("phase-6-stale")), /stale Phase 6 path/i);
   assert.equal(assertExternalFreshPath(freshExternal("valid")), freshExternal("valid"));

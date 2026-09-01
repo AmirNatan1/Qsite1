@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
@@ -9,6 +10,8 @@ import {
   PHASE7A_BRANCH,
   PHASE7A_GATES,
   PHASE7A_PARENT,
+  PHASE7A_R1_BRANCH,
+  PHASE7A_R1_PARENT,
   PUBLIC_ROUTES,
   RECORDING_SCENARIOS,
   REQUIRED_NODE,
@@ -30,13 +33,27 @@ test("Phase 7A contract freezes branch, ancestry, main, Node, routes, gates and 
   assert.equal(REVIEW_ZIP_NAME, "phase-7a-signal-field-threshold-human-review.zip");
 });
 
-test("Phase 7A source authority passes as one fail-closed report", async () => {
-  const report = await verifySource(root);
+test("Phase 7A-R1 source authority passes as one fail-closed report", async () => {
+  const report = await verifySource(root, process.env, "phase7a-r1");
   assert.equal(report.status, "PASS");
-  assert.equal(report.branch, PHASE7A_BRANCH);
-  assert.equal(report.parent, PHASE7A_PARENT);
+  assert.equal(report.branch, PHASE7A_R1_BRANCH);
+  assert.equal(report.parent, PHASE7A_R1_PARENT);
+  assert.equal(report.acceptedPhase6, PHASE7A_PARENT);
   assert.equal(report.runtimeDependenciesAdded, 0);
   assert.equal(report.maradinFrozen, true);
+});
+
+test("the default deployment build infers the exact R1 authority from the active branch", () => {
+  const result = spawnSync(process.execPath, ["scripts/verify-phase7a-source.mjs"], {
+    cwd: root,
+    encoding: "utf8",
+    env: { ...process.env, CF_PAGES: "" },
+  });
+  assert.equal(result.status, 0, result.stderr);
+  const report = JSON.parse(result.stdout);
+  assert.equal(report.status, "PASS");
+  assert.equal(report.authorityProfile, "phase7a-r1");
+  assert.equal(report.branch, PHASE7A_R1_BRANCH);
 });
 
 test("Phase 7A source authority supports Cloudflare Pages detached checkouts without weakening commit identity", () => {
@@ -118,7 +135,10 @@ test("Field Map exposes exactly eight ordinary destinations and native disclosur
   assert.match(source, /<details class="field-map"/);
   assert.match(source, /<summary/);
   assert.match(source, /<nav id="field-map-navigation"/);
-  assert.match(styles, /html\[data-field-map-open\] \.site-header\s*\{[\s\S]*?backdrop-filter:\s*none/);
+  assert.match(
+    styles,
+    /html\[data-field-map-open\] \.site-header,\s*\.site-header:has\(\.field-map\[open\]\)\s*\{[\s\S]*?backdrop-filter:\s*none/,
+  );
 });
 
 test("reduced motion and no-JS retain authored static authority", async () => {

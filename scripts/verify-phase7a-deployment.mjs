@@ -33,6 +33,11 @@ import {
   stableJson,
   validateDeployedRecord,
 } from "./verify-phase6-deployment.mjs";
+import {
+  PHASE7A_R1_BRANCH,
+  PHASE7A_R1_PARENT,
+  authorityProfileById,
+} from "./phase7a-contract.mjs";
 
 const execFileAsync = promisify(execFile);
 
@@ -40,6 +45,7 @@ export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "
 export const SCHEMA = "quantum-hub.phase-7a.deployment-verification.v1";
 export const REQUIRED_BRANCH = "redirect/phase-7a-signal-field-threshold";
 export const REQUIRED_BRANCH_URL = "https://redirect-phase-7a-signal-fie.qsite1.pages.dev/";
+export const REQUIRED_R1_BRANCH_URL = "https://repair-phase-7a-r1-signal-fi.qsite1.pages.dev/";
 export const REQUIRED_REPOSITORY = "AmirNatan1/Qsite1";
 export const REQUIRED_REMOTE_URL = "https://github.com/AmirNatan1/Qsite1.git";
 export const REQUIRED_CLOUDFLARE_APP_SLUG = "cloudflare-workers-and-pages";
@@ -68,6 +74,7 @@ function valueAfter(argv, index, flag) {
 
 export function parseArguments(argv) {
   const options = {
+    authorityProfile: "phase7a",
     expectedHead: "",
     immutableUrl: "",
     branchUrl: "",
@@ -82,7 +89,8 @@ export function parseArguments(argv) {
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index];
     const next = () => { const value = valueAfter(argv, index, argument); index += 1; return value; };
-    if (argument === "--expected-head" || argument === "--deployed-sha") options.expectedHead = next().toLowerCase();
+    if (argument === "--authority-profile") options.authorityProfile = next();
+    else if (argument === "--expected-head" || argument === "--deployed-sha") options.expectedHead = next().toLowerCase();
     else if (argument === "--immutable-url") options.immutableUrl = next();
     else if (argument === "--branch-url") options.branchUrl = next();
     else if (argument === "--dist") options.dist = path.resolve(next());
@@ -123,6 +131,7 @@ export function validateExternalOutput(output, { required = true } = {}) {
 }
 
 export function validateOptions(options, { requireOutput = true } = {}) {
+  const profile = authorityProfileById(options.authorityProfile ?? "phase7a");
   if (!HASH40.test(options.expectedHead)
     || options.expectedHead === ACCEPTED_PARENT_SHA
     || options.expectedHead === FROZEN_MAIN_SHA) {
@@ -133,8 +142,11 @@ export function validateOptions(options, { requireOutput = true } = {}) {
   if (options.immutableUrl === options.branchUrl) throw new Error("immutable and branch preview URLs must be distinct");
   const immutableLabel = new URL(options.immutableUrl).hostname.split(".")[0];
   if (!/^[0-9a-f]{8}$/.test(immutableLabel)) throw new Error("--immutable-url must begin with the lowercase eight-hex Cloudflare deployment prefix");
-  if (options.branchUrl !== REQUIRED_BRANCH_URL) {
+  if (profile.id === "phase7a" && options.branchUrl !== REQUIRED_BRANCH_URL) {
     throw new Error(`--branch-url must be the exact Cloudflare Pages alias ${REQUIRED_BRANCH_URL}`);
+  }
+  if (profile.id === "phase7a-r1" && options.branchUrl !== REQUIRED_R1_BRANCH_URL) {
+    throw new Error(`--branch-url must be the exact Phase 7A-R1 Cloudflare Pages alias ${REQUIRED_R1_BRANCH_URL}`);
   }
   if (path.resolve(options.dist) !== DEFAULT_DIST) throw new Error("--dist must be the exact repository dist directory");
   if (!/^[A-Z_][A-Z0-9_]*$/.test(options.githubTokenEnvironment)) {
@@ -144,6 +156,11 @@ export function validateOptions(options, { requireOutput = true } = {}) {
     throw new Error("--timeout-ms must be an integer from 5000 through 120000");
   }
   validateExternalOutput(options.output, { required: requireOutput });
+  options.deploymentAuthority = {
+    id: profile.id,
+    branch: profile.id === "phase7a-r1" ? PHASE7A_R1_BRANCH : REQUIRED_BRANCH,
+    parent: profile.id === "phase7a-r1" ? PHASE7A_R1_PARENT : ACCEPTED_PARENT_SHA,
+  };
   return options;
 }
 
@@ -163,6 +180,7 @@ function normalizedCheckRun(run) {
 }
 
 export function selectSignedDeploymentCheck(payload, options) {
+  const deploymentAuthority = options.deploymentAuthority ?? validateOptions(options, { requireOutput: false }).deploymentAuthority;
   const runs = Array.isArray(payload) ? payload : payload?.check_runs;
   if (!Array.isArray(runs)) throw new Error("GitHub check-run response is malformed");
   const immutablePrefix = new URL(options.immutableUrl).hostname.split(".")[0];
@@ -199,7 +217,7 @@ export function selectSignedDeploymentCheck(payload, options) {
     deploymentId: identity.deploymentId,
     projectName: REQUIRED_CLOUDFLARE_PROJECT,
     environment: "preview",
-    branch: REQUIRED_BRANCH,
+    branch: deploymentAuthority.branch,
     immutableUrl: options.immutableUrl,
     branchUrl: options.branchUrl,
     deployedSha: options.expectedHead,
@@ -337,35 +355,37 @@ async function gitExit(...args) {
 }
 
 export async function verifyRepository(options) {
+  const deploymentAuthority = options.deploymentAuthority ?? validateOptions(options).deploymentAuthority;
   const [head, branch, main, originMain, originBranch, status, remote, parentAncestor, mergedMain] = await Promise.all([
     git("rev-parse", "HEAD"),
     git("branch", "--show-current"),
     git("rev-parse", "main"),
     git("rev-parse", "origin/main"),
-    git("rev-parse", `origin/${REQUIRED_BRANCH}`),
+    git("rev-parse", `origin/${deploymentAuthority.branch}`),
     git("status", "--porcelain=v1", "--untracked-files=all"),
     git("remote", "get-url", "origin"),
-    gitExit("merge-base", "--is-ancestor", ACCEPTED_PARENT_SHA, options.expectedHead),
+    gitExit("merge-base", "--is-ancestor", deploymentAuthority.parent, options.expectedHead),
     gitExit("merge-base", "--is-ancestor", options.expectedHead, "main"),
   ]);
   assert.equal(head, options.expectedHead, "local HEAD differs from the deployed SHA");
-  assert.equal(branch, REQUIRED_BRANCH, "local branch differs from the Phase 7A branch");
+  assert.equal(branch, deploymentAuthority.branch, "local branch differs from the governed Phase 7A branch");
   assert.equal(main, FROZEN_MAIN_SHA, "local main differs from frozen main");
   assert.equal(originMain, FROZEN_MAIN_SHA, "origin/main differs from frozen main");
   assert.equal(originBranch, options.expectedHead, "origin Phase 7A branch differs from the deployed SHA");
   assert.equal(status, "", "deployment verification requires a clean working tree");
   assert.equal(remote.replace(/\/$/, ""), REQUIRED_REMOTE_URL, "origin URL differs from the repository authority");
-  assert.equal(parentAncestor, true, "accepted Phase 7A parent is not an ancestor of the deployed SHA");
+  assert.equal(parentAncestor, true, "accepted Phase 7A authority parent is not an ancestor of the deployed SHA");
   assert.equal(mergedMain, false, "Phase 7A deployed SHA is already merged into main");
   return {
     status: "PASS",
     repository: REQUIRED_REPOSITORY,
-    branch: REQUIRED_BRANCH,
+    authorityProfile: deploymentAuthority.id,
+    branch: deploymentAuthority.branch,
     deployedSha: head,
-    acceptedParent: ACCEPTED_PARENT_SHA,
+    acceptedParent: deploymentAuthority.parent,
     cleanTree: true,
     main: { local: main, origin: originMain, frozen: FROZEN_MAIN_SHA, containsDeployedSha: false },
-    branchUpstream: { ref: `origin/${REQUIRED_BRANCH}`, sha: originBranch, parity: true },
+    branchUpstream: { ref: `origin/${deploymentAuthority.branch}`, sha: originBranch, parity: true },
   };
 }
 
@@ -419,6 +439,7 @@ export async function verifyOriginsSerially(options, distAuthority, failures, ve
 
 export async function verifyPhase7ADeployment(options, dependencies = {}) {
   validateOptions(options);
+  const deploymentAuthority = options.deploymentAuthority;
   const output = await freshExternalOutput(options.output);
   const failures = [];
   const repository = await captured("repository-provenance", failures, () => (dependencies.verifyRepository ?? verifyRepository)(options));
@@ -435,6 +456,7 @@ export async function verifyPhase7ADeployment(options, dependencies = {}) {
   const signed = deployment.status === "PASS" ? deployment.data : null;
   const report = {
     schema: SCHEMA,
+    authorityProfile: deploymentAuthority.id,
     status: passed ? "PASS" : "FAIL",
     generatedAt: new Date().toISOString(),
     deployedSha: options.expectedHead,
@@ -446,8 +468,8 @@ export async function verifyPhase7ADeployment(options, dependencies = {}) {
     branchUrl: options.branchUrl,
     inputs: {
       expectedDeployedSha: options.expectedHead,
-      branch: REQUIRED_BRANCH,
-      acceptedParent: ACCEPTED_PARENT_SHA,
+      branch: deploymentAuthority.branch,
+      acceptedParent: deploymentAuthority.parent,
       frozenMain: FROZEN_MAIN_SHA,
       localDist: "dist",
     },
@@ -515,7 +537,7 @@ export function runSelfTest() {
 function usage() {
   return [
     "Usage:",
-    "  node scripts/verify-phase7a-deployment.mjs --expected-head <sha40> --immutable-url <https-preview> --branch-url <https-preview> --output <fresh-external-json>",
+    "  node scripts/verify-phase7a-deployment.mjs [--authority-profile phase7a|phase7a-r1] --expected-head <sha40> --immutable-url <https-preview> --branch-url <https-preview> --output <fresh-external-json>",
     "  node scripts/verify-phase7a-deployment.mjs --self-test",
   ].join("\n");
 }

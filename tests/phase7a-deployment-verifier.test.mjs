@@ -11,6 +11,7 @@ import {
   PUBLIC_ROUTE_OUTCOMES,
   REQUIRED_BRANCH,
   REQUIRED_BRANCH_URL,
+  REQUIRED_R1_BRANCH_URL,
   REQUIRED_CLOUDFLARE_PROJECT,
   REQUIRED_HEADER_POLICIES,
   ROOT,
@@ -25,6 +26,7 @@ import {
   verifyOrigin,
   verifyOriginsSerially,
 } from "../scripts/verify-phase7a-deployment.mjs";
+import { PHASE7A_R1_BRANCH, PHASE7A_R1_PARENT } from "../scripts/phase7a-contract.mjs";
 
 const HEAD = "b".repeat(40);
 const IMMUTABLE_URL = "https://12345678.qsite1.pages.dev/";
@@ -128,6 +130,32 @@ test("CLI accepts only explicit, distinct Phase 7A HTTPS preview bindings and ex
   assert.throws(() => options(["--branch-url", "https://some-other-branch.qsite1.pages.dev/"]), /exact Cloudflare Pages alias/);
   assert.throws(() => options(["--dist", path.join(ROOT, "another-dist")]), /exact repository dist/);
   assert.throws(() => options(["--expected-head", ACCEPTED_PARENT_SHA]), /new lowercase/);
+});
+
+test("R1 deployment profile binds the repair branch and accepted Phase 7A parent", () => {
+  const parsed = validateOptions(parseArguments([
+    "--authority-profile", "phase7a-r1",
+    "--expected-head", HEAD,
+    "--immutable-url", IMMUTABLE_URL,
+    "--branch-url", REQUIRED_R1_BRANCH_URL,
+  ]), { requireOutput: false });
+  assert.deepEqual(parsed.deploymentAuthority, {
+    id: "phase7a-r1",
+    branch: PHASE7A_R1_BRANCH,
+    parent: PHASE7A_R1_PARENT,
+  });
+  assert.throws(() => validateOptions(parseArguments([
+    "--authority-profile", "phase7a-r1",
+    "--expected-head", HEAD,
+    "--immutable-url", IMMUTABLE_URL,
+    "--branch-url", "https://redirect-phase-7a-signal-fie.qsite1.pages.dev/",
+  ]), { requireOutput: false }), /exact Phase 7A-R1 Cloudflare Pages alias/);
+  assert.throws(() => validateOptions(parseArguments([
+    "--authority-profile", "phase7a-r1",
+    "--expected-head", HEAD,
+    "--immutable-url", IMMUTABLE_URL,
+    "--branch-url", "https://repair-phase-7a-r1-other-branch.qsite1.pages.dev/",
+  ]), { requireOutput: false }), /exact Phase 7A-R1 Cloudflare Pages alias/);
 });
 
 test("external report policy rejects repository, OS temp, missing, and non-JSON paths", () => {
