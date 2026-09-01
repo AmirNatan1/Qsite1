@@ -139,6 +139,7 @@ test("Field Map exposes exactly eight ordinary destinations and native disclosur
   assert.match(source, /<details class="field-map"/);
   assert.match(source, /<summary/);
   assert.match(source, /<nav id="field-map-navigation"/);
+  assert.ok(source.includes('aria-label={`${String(index).padStart(2, "0")} ${item.label} ${item.coordinate}`}'));
   assert.match(source, /<div class="field-map__heading">/);
   assert.doesNotMatch(source, /<header class="field-map__heading">/);
   assert.match(

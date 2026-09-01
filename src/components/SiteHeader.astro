@@ -65,6 +65,7 @@ const isCurrent = (href: string) => {
                   <a
                     class="field-map-destination"
                     href={item.href}
+                    aria-label={`${String(index).padStart(2, "0")} ${item.label} ${item.coordinate}`}
                     aria-current={isCurrent(item.href) ? "page" : undefined}
                   >
                     <span>{String(index).padStart(2, "0")}</span>
