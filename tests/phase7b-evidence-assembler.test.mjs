@@ -20,9 +20,11 @@ import {
   parseArguments,
   selfTest,
   validateAcceptedPhase7ARegression,
+  validateBuildDeltaInput,
   validateDeploymentInput,
   validateRepositoryAuthority,
 } from "../scripts/assemble-phase7b-review-evidence.mjs";
+import { createBuildDeltaReport } from "../scripts/report-phase7a-build-delta.mjs";
 import {
   PHASE7B_BRANCH,
   PHASE7B_BRANCH_PREVIEW,
@@ -229,11 +231,34 @@ function nativeFixture(authority) {
   ]);
 }
 
-function deploymentFixture(authority) {
+function deploymentFixture(authority, inventory = null) {
   const deploymentId = "12345678-1234-4234-8234-123456789abc";
   const pass = (data = {}) => ({ status: "PASS", data: { status: "PASS", ...data } });
   const routes = Array.from({ length: 10 }, (_, index) => ({ id: `route-${index}`, status: "PASS" }));
-  return { schema: PHASE7B_DEPLOYMENT_SCHEMA, status: "PASS", parity: "PASS", deployedSha: authority.head, deploymentId, environment: "preview", projectName: "qsite1", immutableUrl: "https://12345678.qsite1.pages.dev/", branchUrl: PHASE7B_BRANCH_PREVIEW, inputs: { expectedDeployedSha: authority.head, branch: PHASE7B_BRANCH, requiredParent: PHASE7B_PARENT, frozenMain: PHASE7B_FROZEN_MAIN, localDist: "dist" }, repository: pass(), deployment: pass(), productionIsolation: pass(), phase4: pass(), runtimeRequests: pass({ requestCount: 4 }), dist: { status: "PASS", files: [{ relativePath: "_astro/app.js", bytes: 10 }, { relativePath: "_astro/app.css", bytes: 20 }], totals: { bytes: 30 }, exactHtmlAuthority: ["index.html"], exactPublicRouteAuthority: routes }, origins: { immutable: pass({ origin: "https://12345678.qsite1.pages.dev/", exactPublicRoutes: routes, real404: { status: "PASS" } }), branch: pass({ origin: PHASE7B_BRANCH_PREVIEW, exactPublicRoutes: routes, real404: { status: "PASS" } }) }, checks: { repository: true, signed: true, isolation: true, immutable: true, branch: true, real404: true, runtime: true, phase4: true }, failures: [] };
+  const files = inventory ?? [{ relativePath: "_astro/app.js", bytes: 10, sha256: "e".repeat(64) }, { relativePath: "_astro/app.css", bytes: 20, sha256: "f".repeat(64) }];
+  return { schema: PHASE7B_DEPLOYMENT_SCHEMA, status: "PASS", parity: "PASS", deployedSha: authority.head, deploymentId, environment: "preview", projectName: "qsite1", immutableUrl: "https://12345678.qsite1.pages.dev/", branchUrl: PHASE7B_BRANCH_PREVIEW, inputs: { expectedDeployedSha: authority.head, branch: PHASE7B_BRANCH, requiredParent: PHASE7B_PARENT, frozenMain: PHASE7B_FROZEN_MAIN, localDist: "dist" }, repository: pass(), deployment: pass(), productionIsolation: pass(), phase4: pass(), runtimeRequests: pass({ requestCount: 4 }), dist: { status: "PASS", files, totals: { files: files.length, bytes: files.reduce((sum, file) => sum + file.bytes, 0) }, exactHtmlAuthority: ["index.html"], exactPublicRouteAuthority: routes }, origins: { immutable: pass({ origin: "https://12345678.qsite1.pages.dev/", exactPublicRoutes: routes, real404: { status: "PASS" } }), branch: pass({ origin: PHASE7B_BRANCH_PREVIEW, exactPublicRoutes: routes, real404: { status: "PASS" } }) }, checks: { repository: true, signed: true, isolation: true, immutable: true, branch: true, real404: true, runtime: true, phase4: true }, failures: [] };
+}
+
+async function buildDeltaFixture(root) {
+  const accepted = path.join(root, "accepted-dist");
+  const current = path.join(root, "current-dist");
+  const frozen = Buffer.from([1, 2, 3, 4]);
+  await writeTree(accepted, new Map([
+    ["_astro/base.js", Buffer.from("export const base=1;\n")],
+    ["_astro/site.css", Buffer.from("body{color:white}\n")],
+    ["index.html", Buffer.from("<main>accepted</main>\n")],
+    ["media/cinematic/frozen.mp4", frozen],
+  ]));
+  await writeTree(current, new Map([
+    ["_astro/base.js", Buffer.from("export const base=1;\n")],
+    ["_astro/OperatingField.js", Buffer.from("export const method=1;\n")],
+    ["_astro/site.css", Buffer.from("body{color:white}.method{display:block}\n")],
+    ["index.html", Buffer.from("<main>accepted<section>method</section></main>\n")],
+    ["media/cinematic/frozen.mp4", frozen],
+  ]));
+  const report = await createBuildDeltaReport({ acceptedDist: accepted, phase7aDist: current });
+  const deploymentFiles = report.builds.phase7a.inventory.map((entry) => ({ relativePath: entry.path, bytes: entry.rawBytes, sha256: entry.sha256 }));
+  return { report, deploymentFiles };
 }
 
 async function writeTree(root, files) {
@@ -253,7 +278,7 @@ function phase4Authority() {
 }
 
 const manualContrast = { status: "PASS", method: "WCAG relative luminance", worstCaseBackground: "#0b0e0f", measurements: [{ role: "muted", ratio: 6.416, essentialText: true, status: "PASS" }, { role: "body", ratio: 11.715, essentialText: true, status: "PASS" }, { role: "white", ratio: 19.374, essentialText: true, status: "PASS" }, { role: "focus", ratio: 6.749, essentialText: true, status: "PASS" }, { role: "signal", ratio: 4.159, essentialText: false, status: "DECORATION" }] };
-const sourcePerformance = { status: "PASS", rawJavaScriptDelta: 1000, rawCssDelta: 2000, builtJavaScriptDelta: "NOT OBSERVED", builtCssDelta: "NOT OBSERVED", addedAssetBytes: 0, runtimeRequestDelta: 0, runtimeDependencyDelta: 0 };
+const sourcePerformance = { status: "PASS", rawJavaScriptDelta: 1000, rawCssDelta: 2000, addedAssetBytes: 0, runtimeRequestDelta: 1, runtimeRequestExplanation: "One emitted METHOD module.", runtimeDependencyDelta: 0 };
 const acceptedPhase7A = { status: "PASS", schema: "accepted", method: "exact pixels", acceptedRevision: PHASE7B_PARENT, sourceAuthoritySha256: "d".repeat(64), exactDecodedPixelComparisons: [] };
 
 test("assembler creates exactly the governed 50-payload staging tree without creating a ZIP", async () => {
@@ -266,11 +291,14 @@ test("assembler creates exactly the governed 50-payload staging tree without cre
     await writeTree(browserDir, browserFixture(authority));
     await writeTree(nativeDir, nativeFixture(authority));
     const deploymentPath = path.join(temporary, "deployment.json");
+    const buildDeltaPath = path.join(temporary, "build-delta.json");
     const acceptedPath = path.join(temporary, "accepted-phase7a.json");
-    await writeFile(deploymentPath, json(deploymentFixture(authority)));
+    const buildDelta = await buildDeltaFixture(temporary);
+    await writeFile(deploymentPath, json(deploymentFixture(authority, buildDelta.deploymentFiles)));
+    await writeFile(buildDeltaPath, json(buildDelta.report));
     await writeFile(acceptedPath, json({ status: "PASS" }));
     const outputDir = path.join(temporary, "assembled");
-    const result = await assemblePhase7BReviewEvidence({ revision: HEAD, browserQaDir: browserDir, nativeChromeDir: nativeDir, deploymentReport: deploymentPath, phase7aRegression: acceptedPath, outputDir }, {
+    const result = await assemblePhase7BReviewEvidence({ revision: HEAD, browserQaDir: browserDir, nativeChromeDir: nativeDir, deploymentReport: deploymentPath, buildDeltaReport: buildDeltaPath, phase7aRegression: acceptedPath, outputDir }, {
       boundaryOptions: { repositoryRoot: path.join(temporary, "forbidden-repository"), temporaryRoot: path.join(temporary, "forbidden-temporary") },
       readRepositoryAuthority: async () => authority,
       readProductionDiff: async () => productionDiff(),
@@ -290,6 +318,13 @@ test("assembler creates exactly the governed 50-payload staging tree without cre
     const regression = JSON.parse((await readFile(path.join(outputDir, "06-assurance", "phase7a-regression.json"))).toString("utf8"));
     assert.equal(regression.acceptedBaselineAuthority.acceptedRevision, PHASE7B_PARENT);
     assert.equal(regression.engines.every(({ cases }) => cases.length === 4), true);
+    const performance = JSON.parse((await readFile(path.join(outputDir, "06-assurance", "performance.json"))).toString("utf8"));
+    assert.deepEqual(performance.sourceAndBuild.builtJavaScriptDelta, buildDelta.report.comparisons.complete.categories.javascript.delta);
+    assert.deepEqual(performance.sourceAndBuild.builtCssDelta, buildDelta.report.comparisons.complete.categories.css.delta);
+    assert.deepEqual(performance.sourceAndBuild.builtHtmlDelta, buildDelta.report.comparisons.complete.categories.html.delta);
+    assert.deepEqual(performance.sourceAndBuild.builtTotalDelta, buildDelta.report.comparisons.complete.totals.delta);
+    assert.equal(performance.sourceAndBuild.runtimeRequestDelta, 1);
+    assert.equal(performance.sourceAndBuild.buildDeltaAuthority.currentDistCrossCheck.everyPathByteAndSha256MatchedDeployment, true);
   } finally {
     await rm(temporary, { recursive: true, force: true });
   }
@@ -300,7 +335,7 @@ test("assembler topology and CLI bind 67 source artifacts, six chosen images and
   assert.equal(EXPECTED_BROWSER_SOURCE_PATHS.length, 67);
   assert.equal(EXPECTED_NATIVE_SOURCE_PATHS.length, 4);
   assert.equal(PHASE7B_RESPONSIVE_SELECTION.length, 6);
-  assert.throws(() => parseArguments(["--revision", HEAD, "--browser-qa-dir", "a", "--native-chrome-dir", "b", "--deployment-report", "c", "--output-dir", "d"]), /phase7a-regression/);
+  assert.throws(() => parseArguments(["--revision", HEAD, "--browser-qa-dir", "a", "--native-chrome-dir", "b", "--deployment-report", "c", "--phase7a-regression", "e", "--output-dir", "d"]), /build-delta-report/);
 });
 
 test("repository, deployment and accepted visual inputs fail closed on counterfeit authority", () => {
@@ -310,3 +345,26 @@ test("repository, deployment and accepted visual inputs fail closed on counterfe
   assert.throws(() => validateAcceptedPhase7ARegression({ schema: "counterfeit", status: "PASS" }), /visual regression|must be an object|field inventory/i);
 });
 
+test("build-delta validation fails closed on arithmetic and deployment-ledger counterfeits", async () => {
+  const temporary = await mkdtemp(path.join(os.tmpdir(), "phase7b-build-delta-validator-"));
+  try {
+    const authority = repository();
+    const fixture = await buildDeltaFixture(temporary);
+    const deployment = deploymentFixture(authority, fixture.deploymentFiles);
+    const bytes = json(fixture.report);
+    const validated = validateBuildDeltaInput(fixture.report, bytes, deployment);
+    assert.equal(validated.status, "PASS");
+    assert.equal(validated.runtimeRequestDelta, 1);
+    assert.equal(validated.currentDistCrossCheck.everyPathByteAndSha256MatchedDeployment, true);
+
+    const arithmeticCounterfeit = structuredClone(fixture.report);
+    arithmeticCounterfeit.comparisons.complete.categories.javascript.delta.gzipBytes += 1;
+    assert.throws(() => validateBuildDeltaInput(arithmeticCounterfeit, json(arithmeticCounterfeit), deployment), /arithmetic differs/);
+
+    const deploymentCounterfeit = structuredClone(deployment);
+    deploymentCounterfeit.dist.files[0].sha256 = "0".repeat(64);
+    assert.throws(() => validateBuildDeltaInput(fixture.report, bytes, deploymentCounterfeit), /byte or SHA-256 differs/);
+  } finally {
+    await rm(temporary, { recursive: true, force: true });
+  }
+});

@@ -87,7 +87,7 @@ export const PHASE7B_ALLOWED_STATUSES = Object.freeze([
 
 export const PHASE7B_PERFORMANCE_BUDGET = Object.freeze({
   runtimeDependencyDelta: 0,
-  runtimeRequestDelta: 0,
+  runtimeRequestDelta: 1,
   assetByteDelta: 0,
   rawJavaScriptDeltaMaximum: 12_000,
   rawCssDeltaMaximum: 24_000,
@@ -113,4 +113,3 @@ export const PHASE7B_FORBIDDEN_RESTORATIONS = Object.freeze([
   "src/scripts/home-operating-field.ts",
   "src/styles/routes/home-method.css",
 ]);
-

@@ -83,6 +83,7 @@ export const PHASE7B_ASSEMBLER_SCHEMA = "quantum-hub.phase-7b.review-evidence-as
 export const PHASE7B_BROWSER_QA_SCHEMA = "quantum-hub.phase-7b.operating-field-browser-qa.v1";
 export const PHASE7B_BROWSER_MANIFEST_SCHEMA = "quantum-hub.phase-7b.operating-field-browser-manifest.v1";
 export const PHASE7B_DEPLOYMENT_SCHEMA = "quantum-hub.phase-7b.deployment-verification.v1";
+export const PHASE7B_BUILD_DELTA_SCHEMA = "quantum-hub.phase-7a.build-delta.v1";
 export const BROWSER_REPORT_PATH = "phase-7b-browser-qa.json";
 export const BROWSER_MANIFEST_PATH = "evidence-manifest.json";
 export const ASSEMBLED_PAYLOAD_COUNT = 50;
@@ -95,6 +96,9 @@ const execFileAsync = promisify(execFile);
 const FALLBACK_IDS = Object.freeze(["reduced-motion", "no-javascript", "fallback-fonts"]);
 const QA_ENGINES = Object.freeze(["chromium", "firefox", "webkit"]);
 const PACKAGE_ENGINES = Object.freeze(["chromium", "firefox", "webkit-proxy"]);
+const BUILD_DELTA_CATEGORIES = Object.freeze(["html", "css", "javascript", "fonts", "physical-opening-media", "maradin-media", "images", "data", "other"]);
+const BUILD_DELTA_METRICS = Object.freeze(["files", "rawBytes", "gzipBytes", "brotliBytes"]);
+const BUILD_DELTA_ASSET_CATEGORIES = Object.freeze(["fonts", "physical-opening-media", "maradin-media", "images"]);
 const VISUAL_REGRESSION_STATES = Object.freeze(["manifesto-entry", "audience-bifurcation", "field-map-closed", "field-map-open"]);
 const MANUAL_CONTRAST_COLORS = Object.freeze({ background: "#0b0e0f", muted: "#8a9797", body: "#c2cbcb", white: "#ffffff", focus: "#f06ba0", signalDecoration: "#d82b72" });
 export const PHASE7B_RESPONSIVE_SELECTION = Object.freeze([
@@ -344,10 +348,9 @@ export async function readSourcePerformanceAuthority(repositoryRoot = ROOT) {
     rawJavaScriptMaximum: PHASE7B_PERFORMANCE_BUDGET.rawJavaScriptDeltaMaximum,
     rawCssDelta,
     rawCssMaximum: PHASE7B_PERFORMANCE_BUDGET.rawCssDeltaMaximum,
-    builtJavaScriptDelta: "NOT OBSERVED — no accepted Phase 7A build-byte ledger was supplied to this assembler",
-    builtCssDelta: "NOT OBSERVED — no accepted Phase 7A build-byte ledger was supplied to this assembler",
     addedAssetBytes: 0,
-    runtimeRequestDelta: 0,
+    runtimeRequestDelta: PHASE7B_PERFORMANCE_BUDGET.runtimeRequestDelta,
+    runtimeRequestExplanation: "One emitted same-origin METHOD JavaScript module; no new asset request.",
     runtimeDependencyDelta: 0,
   });
 }
@@ -554,6 +557,201 @@ export function validateDeploymentInput(report, repository) {
   return report;
 }
 
+function exactObjectKeys(value, expected, label) {
+  invariant(value && typeof value === "object" && !Array.isArray(value), `${label} must be an object`);
+  exactSet(Object.keys(value), expected, `${label} key`);
+}
+
+function buildCategoryFor(relativePath) {
+  if (relativePath.startsWith("media/cinematic/")) return "physical-opening-media";
+  if (relativePath.startsWith("media/maradin/")) return "maradin-media";
+  const extension = path.posix.extname(relativePath).toLowerCase();
+  if (extension === ".html") return "html";
+  if (extension === ".css") return "css";
+  if ([".js", ".mjs", ".cjs"].includes(extension)) return "javascript";
+  if ([".woff", ".woff2", ".ttf", ".otf", ".eot"].includes(extension)) return "fonts";
+  if ([".avif", ".gif", ".ico", ".jpeg", ".jpg", ".png", ".svg", ".webp"].includes(extension)) return "images";
+  if ([".csv", ".json", ".map", ".txt", ".xml"].includes(extension)) return "data";
+  return "other";
+}
+
+function validateBuildMetrics(value, label, { allowNegative = false } = {}) {
+  exactObjectKeys(value, BUILD_DELTA_METRICS, label);
+  for (const name of BUILD_DELTA_METRICS) {
+    invariant(Number.isSafeInteger(value[name]) && (allowNegative || value[name] >= 0), `${label}.${name} must be ${allowNegative ? "an" : "a non-negative"} integer`);
+  }
+  return value;
+}
+
+function emptyBuildMetrics() {
+  return { files: 0, rawBytes: 0, gzipBytes: 0, brotliBytes: 0 };
+}
+
+function addBuildMetrics(target, entry) {
+  target.files += 1;
+  target.rawBytes += entry.rawBytes;
+  target.gzipBytes += entry.gzipBytes;
+  target.brotliBytes += entry.brotliBytes;
+}
+
+function subtractBuildMetrics(current, accepted) {
+  return Object.fromEntries(BUILD_DELTA_METRICS.map((name) => [name, current[name] - accepted[name]]));
+}
+
+function summarizeBuildInventory(inventory) {
+  const categories = Object.fromEntries(BUILD_DELTA_CATEGORIES.map((category) => [category, emptyBuildMetrics()]));
+  const totals = emptyBuildMetrics();
+  for (const entry of inventory) {
+    addBuildMetrics(categories[entry.category], entry);
+    addBuildMetrics(totals, entry);
+  }
+  return { categories, totals };
+}
+
+function validateBuildInventory(inventory, label) {
+  invariant(Array.isArray(inventory) && inventory.length > 0, `${label} inventory is empty`);
+  const paths = [];
+  for (const [index, entry] of inventory.entries()) {
+    exactObjectKeys(entry, ["path", "category", "rawBytes", "sha256", "compression", "gzipBytes", "brotliBytes"], `${label} inventory[${index}]`);
+    portableRelative(entry.path, `${label} inventory path`);
+    invariant(!paths.includes(entry.path), `${label} inventory duplicates ${entry.path}`);
+    paths.push(entry.path);
+    invariant(entry.category === buildCategoryFor(entry.path), `${label} inventory category differs for ${entry.path}`);
+    invariant(HASH_64.test(entry.sha256 ?? ""), `${label} inventory SHA-256 differs for ${entry.path}`);
+    invariant(["compressed", "identity"].includes(entry.compression), `${label} inventory compression differs for ${entry.path}`);
+    for (const name of ["rawBytes", "gzipBytes", "brotliBytes"]) invariant(Number.isSafeInteger(entry[name]) && entry[name] >= 0, `${label} inventory ${name} differs for ${entry.path}`);
+    if (entry.compression === "identity") invariant(entry.gzipBytes === entry.rawBytes && entry.brotliBytes === entry.rawBytes, `${label} identity byte totals differ for ${entry.path}`);
+  }
+  invariant(sameJson(paths, [...paths].sort()), `${label} inventory is not sorted by path`);
+  return inventory;
+}
+
+function validateBuildSummary(build, label) {
+  exactObjectKeys(build, ["inventory", "categories", "totals"], label);
+  const inventory = validateBuildInventory(build.inventory, label);
+  const expected = summarizeBuildInventory(inventory);
+  exactObjectKeys(build.categories, BUILD_DELTA_CATEGORIES, `${label}.categories`);
+  for (const category of BUILD_DELTA_CATEGORIES) validateBuildMetrics(build.categories[category], `${label}.categories.${category}`);
+  validateBuildMetrics(build.totals, `${label}.totals`);
+  invariant(sameJson(build.categories, expected.categories) && sameJson(build.totals, expected.totals), `${label} summary does not match its inventory`);
+  return inventory;
+}
+
+function expectedInventoryChanges(acceptedInventory, currentInventory) {
+  const accepted = new Map(acceptedInventory.map((entry) => [entry.path, entry]));
+  const current = new Map(currentInventory.map((entry) => [entry.path, entry]));
+  const paths = [...new Set([...accepted.keys(), ...current.keys()])].sort();
+  const changes = { added: [], removed: [], changed: [], unchanged: [] };
+  for (const relativePath of paths) {
+    const before = accepted.get(relativePath);
+    const after = current.get(relativePath);
+    if (!before) changes.added.push(after);
+    else if (!after) changes.removed.push(before);
+    else if (before.sha256 === after.sha256) changes.unchanged.push(relativePath);
+    else changes.changed.push({ path: relativePath, accepted: before, phase7a: after });
+  }
+  return changes;
+}
+
+function validateBuildComparison(comparison, acceptedInventory, currentInventory, label, { isolated = false } = {}) {
+  exactObjectKeys(comparison, isolated ? ["exclusion", "excludedPhysicalOpening", "totals", "categories", "changes"] : ["totals", "categories", "changes"], label);
+  const acceptedSummary = summarizeBuildInventory(acceptedInventory);
+  const currentSummary = summarizeBuildInventory(currentInventory);
+  const expectedTotals = { accepted: acceptedSummary.totals, phase7a: currentSummary.totals, delta: subtractBuildMetrics(currentSummary.totals, acceptedSummary.totals) };
+  const expectedCategories = Object.fromEntries(BUILD_DELTA_CATEGORIES.map((category) => [category, {
+    accepted: acceptedSummary.categories[category],
+    phase7a: currentSummary.categories[category],
+    delta: subtractBuildMetrics(currentSummary.categories[category], acceptedSummary.categories[category]),
+  }]));
+  exactObjectKeys(comparison.totals, ["accepted", "phase7a", "delta"], `${label}.totals`);
+  validateBuildMetrics(comparison.totals.accepted, `${label}.totals.accepted`);
+  validateBuildMetrics(comparison.totals.phase7a, `${label}.totals.phase7a`);
+  validateBuildMetrics(comparison.totals.delta, `${label}.totals.delta`, { allowNegative: true });
+  exactObjectKeys(comparison.categories, BUILD_DELTA_CATEGORIES, `${label}.categories`);
+  for (const category of BUILD_DELTA_CATEGORIES) {
+    exactObjectKeys(comparison.categories[category], ["accepted", "phase7a", "delta"], `${label}.categories.${category}`);
+    validateBuildMetrics(comparison.categories[category].accepted, `${label}.categories.${category}.accepted`);
+    validateBuildMetrics(comparison.categories[category].phase7a, `${label}.categories.${category}.phase7a`);
+    validateBuildMetrics(comparison.categories[category].delta, `${label}.categories.${category}.delta`, { allowNegative: true });
+  }
+  exactObjectKeys(comparison.changes, ["added", "removed", "changed", "unchanged"], `${label}.changes`);
+  invariant(sameJson(comparison.totals, expectedTotals) && sameJson(comparison.categories, expectedCategories), `${label} arithmetic differs from the inventories`);
+  invariant(sameJson(comparison.changes, expectedInventoryChanges(acceptedInventory, currentInventory)), `${label} change ledger differs from the inventories`);
+}
+
+/**
+ * Validate and sanitize the existing deterministic build-delta report. The
+ * legacy schema calls the current build `phase7a`; this adapter binds it to the
+ * exact Phase 7B deployed SHA and never packages its absolute input paths.
+ */
+export function validateBuildDeltaInput(report, bytes, deployment) {
+  exactObjectKeys(report, ["schema", "inputs", "compression", "builds", "comparisons"], "build-delta report");
+  invariant(report.schema === PHASE7B_BUILD_DELTA_SCHEMA, "build-delta report schema differs");
+  exactObjectKeys(report.inputs, ["acceptedDist", "phase7aDist"], "build-delta inputs");
+  invariant(typeof report.inputs.acceptedDist === "string" && typeof report.inputs.phase7aDist === "string" && report.inputs.acceptedDist.length > 0 && report.inputs.phase7aDist.length > 0 && report.inputs.acceptedDist !== report.inputs.phase7aDist, "build-delta input identities differ");
+  exactObjectKeys(report.compression, ["policy", "gzipLevel", "brotliQuality"], "build-delta compression");
+  invariant(typeof report.compression.policy === "string" && report.compression.policy.length > 0 && report.compression.gzipLevel === 9 && report.compression.brotliQuality === 11, "build-delta compression authority differs");
+  exactObjectKeys(report.builds, ["accepted", "phase7a"], "build-delta builds");
+  const acceptedInventory = validateBuildSummary(report.builds.accepted, "build-delta accepted build");
+  const currentInventory = validateBuildSummary(report.builds.phase7a, "build-delta current build");
+  exactObjectKeys(report.comparisons, ["complete", "signalFieldIsolated"], "build-delta comparisons");
+  validateBuildComparison(report.comparisons.complete, acceptedInventory, currentInventory, "build-delta complete comparison");
+
+  const currentByPath = new Map(currentInventory.map((entry) => [entry.path, entry]));
+  const expectedExcluded = acceptedInventory.filter((entry) => entry.category === "physical-opening-media" && sameJson(entry, currentByPath.get(entry.path)));
+  const isolated = report.comparisons.signalFieldIsolated;
+  invariant(isolated.exclusion === "Files under media/cinematic/ are excluded only when path and SHA-256 are unchanged.", "build-delta physical-opening exclusion differs");
+  validateBuildSummary(isolated.excludedPhysicalOpening, "build-delta excluded physical opening");
+  invariant(sameJson(isolated.excludedPhysicalOpening.inventory, expectedExcluded), "build-delta physical-opening exclusion inventory differs");
+  const excludedPaths = new Set(expectedExcluded.map((entry) => entry.path));
+  validateBuildComparison(isolated, acceptedInventory.filter((entry) => !excludedPaths.has(entry.path)), currentInventory.filter((entry) => !excludedPaths.has(entry.path)), "build-delta isolated comparison", { isolated: true });
+  invariant(sameJson(isolated.totals.delta, report.comparisons.complete.totals.delta), "build-delta isolated and complete deltas differ after unchanged-media exclusion");
+
+  const deploymentFiles = deployment?.dist?.files;
+  invariant(Array.isArray(deploymentFiles), "deployment current-dist ledger is unavailable for build-delta cross-check");
+  exactSet(deploymentFiles.map(({ relativePath }) => relativePath), currentInventory.map(({ path: relativePath }) => relativePath), "build-delta/deployment current file");
+  for (const current of currentInventory) {
+    const deployed = deploymentFiles.find(({ relativePath }) => relativePath === current.path);
+    invariant(deployed?.bytes === current.rawBytes && deployed.sha256 === current.sha256, `build-delta/deployment byte or SHA-256 differs for ${current.path}`);
+  }
+  invariant(deployment.dist.totals?.files === report.builds.phase7a.totals.files && deployment.dist.totals?.bytes === report.builds.phase7a.totals.rawBytes, "build-delta current totals differ from deployment current dist");
+
+  const complete = report.comparisons.complete;
+  const jsDelta = complete.categories.javascript.delta;
+  invariant(jsDelta.files === PHASE7B_PERFORMANCE_BUDGET.runtimeRequestDelta, "build-delta JavaScript file/request delta differs from the Phase 7B budget");
+  invariant(complete.changes.added.filter(({ category }) => category === "javascript").length === 1 && complete.changes.removed.filter(({ category }) => category === "javascript").length === 0, "build-delta does not prove exactly one added METHOD JavaScript module");
+  for (const category of BUILD_DELTA_ASSET_CATEGORIES) {
+    invariant(BUILD_DELTA_METRICS.every((name) => complete.categories[category].delta[name] === 0), `build-delta ${category} changed`);
+  }
+
+  const metric = (category) => ({
+    accepted: complete.categories[category].accepted,
+    current: complete.categories[category].phase7a,
+    delta: complete.categories[category].delta,
+  });
+  return Object.freeze({
+    status: "PASS",
+    schema: report.schema,
+    generator: "scripts/report-phase7a-build-delta.mjs",
+    sourceReportSha256: sha256(Buffer.from(bytes)),
+    acceptedRevision: PHASE7B_PARENT,
+    currentRevision: deployment.deployedSha,
+    comparison: "complete production dist; unchanged physical-opening media is also isolated with identical delta arithmetic",
+    compression: report.compression,
+    totals: { accepted: complete.totals.accepted, current: complete.totals.phase7a, delta: complete.totals.delta },
+    categories: {
+      javascript: metric("javascript"),
+      css: metric("css"),
+      html: metric("html"),
+    },
+    unchangedAssetCategories: Object.fromEntries(BUILD_DELTA_ASSET_CATEGORIES.map((category) => [category, complete.categories[category].delta])),
+    addedAssetBytes: 0,
+    runtimeRequestDelta: PHASE7B_PERFORMANCE_BUDGET.runtimeRequestDelta,
+    runtimeRequestExplanation: "One newly emitted same-origin METHOD JavaScript module request; no new font, image, physical-opening or Maradin-media request.",
+    currentDistCrossCheck: { status: "PASS", files: currentInventory.length, rawBytes: report.builds.phase7a.totals.rawBytes, everyPathByteAndSha256MatchedDeployment: true },
+  });
+}
+
 function normalizedTaskBrief() {
   return `# QUANTUM-HUB QSITE1 — PHASE 7B\n\n## THE OPERATING FIELD / ONE WORKPIECE CHANGES STATE\n\nAuthority: implement one bounded METHOD chapter in which one persistent Workpiece changes state through FRAME, SOURCE, ASSESS, TEST and DECIDE, then releases into the retained site. Preserve Phase 7A and the frozen physical opening. Use native document scroll, progressive enhancement, accessible semantic stages and no new runtime dependency.\n\nAll six Phase 7B gates remain **PENDING HUMAN REVIEW**. This evidence package does not self-accept Phase 7B, authorize a later phase, modify main or merge main.\n`;
 }
@@ -586,7 +784,7 @@ function relativeScreenshotSummary(responsiveCase, destination) {
   };
 }
 
-function deriveReports({ repository, browser, native, deployment, phase4, acceptedPhase7A, manualContrast, sourcePerformance }) {
+function deriveReports({ repository, browser, native, deployment, buildDelta, phase4, acceptedPhase7A, manualContrast, sourcePerformance }) {
   const results = QA_ENGINES.map((engine) => browser.results.get(engine));
   const chromium = browser.results.get("chromium");
   const webkit = browser.results.get("webkit");
@@ -610,7 +808,33 @@ function deriveReports({ repository, browser, native, deployment, phase4, accept
   const builtFiles = deployment.dist.files ?? [];
   const currentBuiltJavaScriptBytes = builtFiles.filter(({ relativePath }) => /\.m?js$/i.test(relativePath ?? "")).reduce((sum, { bytes }) => sum + bytes, 0);
   const currentBuiltCssBytes = builtFiles.filter(({ relativePath }) => /\.css$/i.test(relativePath ?? "")).reduce((sum, { bytes }) => sum + bytes, 0);
-  const sourceAndBuild = { ...sourcePerformance, currentBuiltJavaScriptBytes, currentBuiltCssBytes, currentDistBytes: deployment.dist.totals?.bytes ?? "NOT OBSERVED" };
+  invariant(buildDelta?.status === "PASS" && buildDelta.currentRevision === repository.head && buildDelta.currentRevision === deployment.deployedSha, "measured build-delta authority is missing or revision-mismatched");
+  invariant(buildDelta.runtimeRequestDelta === sourcePerformance.runtimeRequestDelta && buildDelta.addedAssetBytes === sourcePerformance.addedAssetBytes, "source and measured build request/asset authorities differ");
+  invariant(currentBuiltJavaScriptBytes === buildDelta.categories.javascript.current.rawBytes && currentBuiltCssBytes === buildDelta.categories.css.current.rawBytes, "measured build categories differ from deployment current-dist totals");
+  const sourceAndBuild = {
+    ...sourcePerformance,
+    buildDeltaAuthority: {
+      status: buildDelta.status,
+      schema: buildDelta.schema,
+      generator: buildDelta.generator,
+      sourceReportSha256: buildDelta.sourceReportSha256,
+      acceptedRevision: buildDelta.acceptedRevision,
+      currentRevision: buildDelta.currentRevision,
+      comparison: buildDelta.comparison,
+      compression: buildDelta.compression,
+      currentDistCrossCheck: buildDelta.currentDistCrossCheck,
+    },
+    builtJavaScriptDelta: buildDelta.categories.javascript.delta,
+    builtCssDelta: buildDelta.categories.css.delta,
+    builtHtmlDelta: buildDelta.categories.html.delta,
+    builtTotalDelta: buildDelta.totals.delta,
+    productionBuildTotals: buildDelta.totals,
+    productionBuildCategories: buildDelta.categories,
+    unchangedAssetCategories: buildDelta.unchangedAssetCategories,
+    currentBuiltJavaScriptBytes,
+    currentBuiltCssBytes,
+    currentDistBytes: deployment.dist.totals.bytes,
+  };
   return {
     browserMatrix: {
       schema: `${PHASE7B_ASSEMBLER_SCHEMA}.browser-matrix`,
@@ -813,8 +1037,8 @@ function prepackageAudit(entries) {
   };
 }
 
-export async function createPhase7BEvidenceEntries({ repository, productionDiff, phase4, acceptedPhase7A, manualContrast, sourcePerformance, browser, native, deployment, architecture, references }) {
-  const reports = deriveReports({ repository, browser, native, deployment, phase4, acceptedPhase7A, manualContrast, sourcePerformance });
+export async function createPhase7BEvidenceEntries({ repository, productionDiff, phase4, acceptedPhase7A, manualContrast, sourcePerformance, browser, native, deployment, buildDelta, architecture, references }) {
+  const reports = deriveReports({ repository, browser, native, deployment, buildDelta, phase4, acceptedPhase7A, manualContrast, sourcePerformance });
   const entries = [
     ...taskAndStageEntries(repository),
     byteEntry("01-provenance/production.diff", productionDiff),
@@ -899,12 +1123,14 @@ export async function assemblePhase7BReviewEvidence(options, dependencies = {}) 
   const browserQaDir = await ensureRealSource(options.browserQaDir, "directory", "--browser-qa-dir", boundaryOptions);
   const nativeChromeDir = await ensureRealSource(options.nativeChromeDir, "directory", "--native-chrome-dir", boundaryOptions);
   const deploymentReportPath = await ensureRealSource(options.deploymentReport, "file", "--deployment-report", boundaryOptions);
+  const buildDeltaReportPath = await ensureRealSource(options.buildDeltaReport, "file", "--build-delta-report", boundaryOptions);
   const phase7aRegressionPath = await ensureRealSource(options.phase7aRegression, "file", "--phase7a-regression", boundaryOptions);
   const repository = await (dependencies.readRepositoryAuthority ?? readRepositoryAuthority)(options.revision, repositoryRoot);
-  const [browser, native, deploymentBytes, phase7aRegressionBytes, productionDiff, phase4, manualContrast, sourcePerformance, architecture, references] = await Promise.all([
+  const [browser, native, deploymentBytes, buildDeltaBytes, phase7aRegressionBytes, productionDiff, phase4, manualContrast, sourcePerformance, architecture, references] = await Promise.all([
     validateBrowserQaInput(browserQaDir, repository),
     validateNativeChromeInput(nativeChromeDir, repository),
     readFile(deploymentReportPath),
+    readFile(buildDeltaReportPath),
     readFile(phase7aRegressionPath),
     (dependencies.readProductionDiff ?? readProductionDiff)(options.revision, repositoryRoot),
     (dependencies.readPhase4Authority ?? readPhase4Authority)(repositoryRoot),
@@ -916,8 +1142,9 @@ export async function assemblePhase7BReviewEvidence(options, dependencies = {}) 
   assertNoPrivateOrSecretPhase7BPayload(deploymentBytes, "deployment-verifier.json");
   assertNoPrivateOrSecretPhase7BPayload(phase7aRegressionBytes, "accepted-phase7a-visual-regression.json");
   const deployment = validateDeploymentInput(parseJson(deploymentBytes, "deployment verifier report"), repository);
+  const buildDelta = (dependencies.validateBuildDeltaInput ?? validateBuildDeltaInput)(parseJson(buildDeltaBytes, "build-delta report"), buildDeltaBytes, deployment);
   const acceptedPhase7A = (dependencies.validateAcceptedPhase7ARegression ?? validateAcceptedPhase7ARegression)(parseJson(phase7aRegressionBytes, "accepted Phase 7A visual regression"), phase7aRegressionBytes);
-  const entries = await createPhase7BEvidenceEntries({ repository, productionDiff, phase4, acceptedPhase7A, manualContrast, sourcePerformance, browser, native, deployment, architecture, references });
+  const entries = await createPhase7BEvidenceEntries({ repository, productionDiff, phase4, acceptedPhase7A, manualContrast, sourcePerformance, browser, native, deployment, buildDelta, architecture, references });
   const output = await publishEvidence(entries, options.outputDir, boundaryOptions);
   return Object.freeze({
     schema: PHASE7B_ASSEMBLER_SCHEMA,
@@ -938,7 +1165,7 @@ function nextArgument(argv, index, flag) {
 }
 
 export function parseArguments(argv) {
-  const options = { revision: "", browserQaDir: "", nativeChromeDir: "", deploymentReport: "", phase7aRegression: "", outputDir: "", help: false, selfTest: false };
+  const options = { revision: "", browserQaDir: "", nativeChromeDir: "", deploymentReport: "", buildDeltaReport: "", phase7aRegression: "", outputDir: "", help: false, selfTest: false };
   for (let index = 0; index < argv.length; index += 1) {
     const flag = argv[index];
     const next = () => { const value = nextArgument(argv, index, flag); index += 1; return value; };
@@ -946,6 +1173,7 @@ export function parseArguments(argv) {
     else if (flag === "--browser-qa-dir") options.browserQaDir = next();
     else if (flag === "--native-chrome-dir") options.nativeChromeDir = next();
     else if (flag === "--deployment-report") options.deploymentReport = next();
+    else if (flag === "--build-delta-report") options.buildDeltaReport = next();
     else if (flag === "--phase7a-regression") options.phase7aRegression = next();
     else if (flag === "--output-dir") options.outputDir = next();
     else if (flag === "--self-test") options.selfTest = true;
@@ -954,7 +1182,7 @@ export function parseArguments(argv) {
   }
   if (!options.help && !options.selfTest) {
     invariant(HASH_40.test(options.revision) && options.revision !== PHASE7B_PARENT, "--revision must be the exact final Phase 7B HEAD");
-    for (const [name, value] of [["--browser-qa-dir", options.browserQaDir], ["--native-chrome-dir", options.nativeChromeDir], ["--deployment-report", options.deploymentReport], ["--phase7a-regression", options.phase7aRegression], ["--output-dir", options.outputDir]]) invariant(value, `${name} is required`);
+    for (const [name, value] of [["--browser-qa-dir", options.browserQaDir], ["--native-chrome-dir", options.nativeChromeDir], ["--deployment-report", options.deploymentReport], ["--build-delta-report", options.buildDeltaReport], ["--phase7a-regression", options.phase7aRegression], ["--output-dir", options.outputDir]]) invariant(value, `${name} is required`);
   }
   return options;
 }
@@ -969,7 +1197,7 @@ export function selfTest() {
 async function main() {
   const options = parseArguments(process.argv.slice(2));
   if (options.help) {
-    process.stdout.write("Usage: node scripts/assemble-phase7b-review-evidence.mjs --revision <final-head> --browser-qa-dir <external-dir> --native-chrome-dir <external-dir> --deployment-report <external-json> --phase7a-regression <accepted-r2-visual-stability.json> --output-dir <fresh-external-dir>\nThis command assembles 50 package-ready payloads; it does not create a ZIP.\n");
+    process.stdout.write("Usage: node scripts/assemble-phase7b-review-evidence.mjs --revision <final-head> --browser-qa-dir <external-dir> --native-chrome-dir <external-dir> --deployment-report <external-json> --build-delta-report <phase7a-build-delta.json> --phase7a-regression <accepted-r2-visual-stability.json> --output-dir <fresh-external-dir>\nThis command assembles 50 package-ready payloads; it does not create a ZIP.\n");
     return;
   }
   if (options.selfTest) { process.stdout.write(stableJson(selfTest())); return; }

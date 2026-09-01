@@ -227,13 +227,27 @@ Measured against accepted Phase 7A-R2:
 | Active METHOD scroll listener | `1`, passive and abortable |
 | Active RAF at rest | `0` |
 | Active interval at rest | `0` |
-| New network request at runtime | `0` |
+| New network request at runtime | `1` emitted METHOD module request; `0` new asset requests |
 | CLS attributable to METHOD | target `≤ 0.01` |
 | Scroll-window METHOD long task | `0` tasks `≥ 50ms` attributable to controller |
 | Repeated cycle | 10 forward/reverse cycles without listener, node or heap accumulation |
 
 Any budget exception requires measurement, explanation and human review; it is
 not silently promoted to PASS.
+
+The final production build comparison against accepted Phase 7A-R2 records the
+following deterministic deltas. The one added JavaScript file is the bounded
+METHOD module requested by the homepage; it is not a new image, font, media or
+third-party request.
+
+| Built surface | Files | Raw bytes | Gzip bytes | Brotli bytes |
+| --- | ---: | ---: | ---: | ---: |
+| JavaScript | `+1` | `+6,074` | `+2,178` | `+1,920` |
+| CSS | `0` | `+21,630` | `+3,375` | `+2,975` |
+| HTML | `0` | `+7,766` | `+1,793` | `+1,385` |
+| Complete build | `+1` | `+35,470` | `+7,346` | `+6,280` |
+
+Font, image, physical-opening media and Maradin-media byte deltas remain zero.
 
 ## Narrow implementation sequence
 
@@ -260,4 +274,3 @@ Commits remain linear and narrow. Production `main` remains frozen.
 - PERFORMANCE + REGRESSION SAFETY — **PENDING HUMAN REVIEW**
 
 Phase 7C is **NOT AUTHORIZED**. Main is **NOT MERGED**.
-

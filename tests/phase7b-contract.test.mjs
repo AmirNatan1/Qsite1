@@ -59,13 +59,12 @@ test("all Phase 7B gates remain pending human review under a closed status vocab
   assert.equal(PHASE7B_ALLOWED_STATUSES.includes("ACCEPT"), false);
 });
 
-test("Phase 7B performance budgets forbid dependencies, assets and idle clocks", () => {
+test("Phase 7B performance budgets bind one METHOD module request while forbidding dependencies, assets and idle clocks", () => {
   assert.equal(PHASE7B_PERFORMANCE_BUDGET.runtimeDependencyDelta, 0);
-  assert.equal(PHASE7B_PERFORMANCE_BUDGET.runtimeRequestDelta, 0);
+  assert.equal(PHASE7B_PERFORMANCE_BUDGET.runtimeRequestDelta, 1);
   assert.equal(PHASE7B_PERFORMANCE_BUDGET.assetByteDelta, 0);
   assert.equal(PHASE7B_PERFORMANCE_BUDGET.idleRafMaximum, 0);
   assert.equal(PHASE7B_PERFORMANCE_BUDGET.idleIntervalMaximum, 0);
   assert.ok(PHASE7B_PERFORMANCE_BUDGET.rawJavaScriptDeltaMaximum <= 12_000);
   assert.ok(PHASE7B_PERFORMANCE_BUDGET.rawCssDeltaMaximum <= 24_000);
 });
-
