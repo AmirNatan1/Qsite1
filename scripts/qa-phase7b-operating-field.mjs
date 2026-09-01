@@ -1649,7 +1649,7 @@ async function main() {
       privatePaths: false,
     };
     await writeFile(path.join(options.output, MANIFEST_PATH), portableJson(manifest), { encoding: "utf8", flag: "wx" });
-    process.stdout.write(portableJson({ status: report.status, output: options.output, engines: results.map(({ identity, status }) => ({ engine: identity.engine, status })) }));
+    process.stdout.write(portableJson({ status: report.status, output: path.basename(options.output), engines: results.map(({ identity, status }) => ({ engine: identity.engine, status })) }));
     if (report.status === "FAIL") process.exitCode = 1;
   } catch (error) {
     await rm(options.output, { recursive: true, force: true });
