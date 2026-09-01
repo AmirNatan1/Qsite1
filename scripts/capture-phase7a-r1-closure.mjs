@@ -251,6 +251,43 @@ async function gitOutput(args) {
   return String(stdout).trim();
 }
 
+async function runGovernedR1Build() {
+  if (process.platform !== "win32") {
+    await execFileAsync("npm", ["run", "build:phase7a-r1"], {
+      cwd: ROOT,
+      env: { ...process.env },
+      windowsHide: true,
+      timeout: 15 * 60_000,
+      maxBuffer: 32 * 1024 * 1024,
+    });
+    return;
+  }
+
+  const candidates = [
+    process.env.npm_execpath,
+    path.join(path.dirname(process.execPath), "node_modules", "npm", "bin", "npm-cli.js"),
+    process.env.ProgramFiles ? path.join(process.env.ProgramFiles, "nodejs", "node_modules", "npm", "bin", "npm-cli.js") : null,
+  ].filter(Boolean);
+  let npmCli = null;
+  for (const candidate of candidates) {
+    try {
+      await access(candidate, fsConstants.R_OK);
+      npmCli = candidate;
+      break;
+    } catch {
+      // Keep looking for the npm CLI that can be run by this exact Node binary.
+    }
+  }
+  invariant(npmCli, "npm CLI is unavailable for the governed R1 closure build");
+  await execFileAsync(process.execPath, [npmCli, "run", "build:phase7a-r1"], {
+    cwd: ROOT,
+    env: { ...process.env },
+    windowsHide: true,
+    timeout: 15 * 60_000,
+    maxBuffer: 32 * 1024 * 1024,
+  });
+}
+
 async function captureRepositoryAuthority(afterRevision) {
   const branch = await gitOutput(["branch", "--show-current"]);
   const head = await gitOutput(["rev-parse", "HEAD"]);
@@ -270,14 +307,7 @@ async function captureRepositoryAuthority(afterRevision) {
     parentIsAncestor = false;
   }
   const mergeCommitsSinceParent = Number(await gitOutput(["rev-list", "--count", "--merges", `${PHASE7A_R1_EXACT_PARENT}..${head}`]));
-  const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
-  await execFileAsync(npmCommand, ["run", "build:phase7a-r1"], {
-    cwd: ROOT,
-    env: { ...process.env },
-    windowsHide: true,
-    timeout: 15 * 60_000,
-    maxBuffer: 32 * 1024 * 1024,
-  });
+  await runGovernedR1Build();
   const headAfter = await gitOutput(["rev-parse", "HEAD"]);
   const branchAfter = await gitOutput(["branch", "--show-current"]);
   const worktreeStatusAfter = await gitOutput(["status", "--porcelain=v1", "--untracked-files=normal"]);

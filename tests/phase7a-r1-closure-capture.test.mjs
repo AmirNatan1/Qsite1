@@ -406,6 +406,13 @@ test("repository authority binds the exact R1 branch, local HEAD and fresh gover
   }, afterRevision), /fresh governed/);
 });
 
+test("Windows closure build runs npm through the exact capture Node executable", async () => {
+  const source = await readFile(scriptPath, "utf8");
+  assert.match(source, /execFileAsync\(process\.execPath, \[npmCli, "run", "build:phase7a-r1"\]/);
+  assert.doesNotMatch(source, /execFileAsync\(npmCommand/);
+  assert.doesNotMatch(source, /execFileAsync\("npm\.cmd"/);
+});
+
 test("served-build provenance rejects relabelled same builds, wrong parent bytes and missing R1-only DOM", () => {
   const afterRevision = "b".repeat(40);
   const report = validServedBuildAuthority(afterRevision);
