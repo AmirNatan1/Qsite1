@@ -56,6 +56,9 @@ const FOCUSED_TEST_COMMAND = "node --test tests/phase7a-r2-field-map-authority.t
 
 const HASH_40 = /^[0-9a-f]{40}$/;
 const HASH_64 = /^[0-9a-f]{64}$/;
+const CLOUDFLARE_DEPLOYMENT_ID = /^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/;
+const POSITIVE_DECIMAL_ID = /^[1-9]\d*$/;
+const PHASE7A_R2_BRANCH_URL = "https://repair-phase-7a-r2-field-map.qsite1.pages.dev/";
 const ENGINES = Object.freeze(["chromium", "firefox", "webkit"]);
 const INPUT_KEYS = Object.freeze(["fieldMapDir", "installedChromeDir", "chromiumQa", "firefoxQa", "webkitQa", "deployment", "r1EvidenceDir", "outputDir", "revision"]);
 const GENERIC_COPY = Object.freeze({
@@ -265,21 +268,37 @@ function installedTarget(report) {
 }
 
 function deploymentBinding(report, revision) {
-  invariant(report?.schema === DEPLOYMENT_SCHEMA && report.authorityProfile === "phase7a-r2" && report.status === "PASS" && report.deployedSha === revision && report.parity === "PASS", "R2 deployment verifier root authority differs");
-  invariant(report.deployment?.status === "PASS" && report.deployment.deployedSha === revision && report.deployment.deploymentId === report.deploymentId, "R2 signed deployment authority differs");
+  invariant(report?.schema === DEPLOYMENT_SCHEMA && report.authorityProfile === "phase7a-r2" && report.status === "PASS" && report.deployedSha === revision && report.parity === "PASS"
+    && report.environment === "preview" && report.projectName === "qsite1"
+    && report.inputs?.expectedDeployedSha === revision && report.inputs.branch === PHASE7A_R2_BRANCH && report.inputs.acceptedParent === PHASE7A_R2_PARENT, "R2 deployment verifier root authority differs");
+  invariant(report.deployment?.status === "PASS" && report.deployment?.data && typeof report.deployment.data === "object" && !Array.isArray(report.deployment.data), "R2 signed deployment wrapper differs");
+  const signed = report.deployment.data;
+  invariant(signed.status === "PASS" && signed.deployedSha === revision, "R2 signed deployment authority differs");
+  invariant(CLOUDFLARE_DEPLOYMENT_ID.test(report.deploymentId ?? "") && report.immutableUrl === `https://${report.deploymentId.slice(0, 8)}.qsite1.pages.dev/`
+    && report.branchUrl === PHASE7A_R2_BRANCH_URL && signed.deploymentId === report.deploymentId
+    && signed.immutableUrl === report.immutableUrl && signed.branchUrl === report.branchUrl
+    && /^https:\/\//.test(report.immutableUrl ?? "") && /^https:\/\//.test(report.branchUrl ?? ""), "R2 signed deployment identity differs");
+  invariant(signed.authoritySource === "CLOUDFLARE_PAGES_SIGNED_GITHUB_CHECK"
+    && signed.appSlug === "cloudflare-workers-and-pages" && POSITIVE_DECIMAL_ID.test(signed.checkRunId ?? "")
+    && signed.branch === PHASE7A_R2_BRANCH && signed.projectName === "qsite1" && signed.environment === "preview"
+    && typeof signed.completedAt === "string" && Number.isFinite(Date.parse(signed.completedAt)), "R2 signed deployment provenance differs");
   const local = report.dist?.files?.find((row) => row.relativePath === "index.html");
   invariant(local && Number.isSafeInteger(local.bytes) && local.bytes > 0 && HASH_64.test(local.sha256 ?? ""), "R2 deployment local index authority differs");
   const parity = {};
   for (const key of ["immutable", "branch"]) {
-    const origin = report.origins?.[key];
+    const wrapper = report.origins?.[key];
+    invariant(wrapper?.status === "PASS" && wrapper?.data && typeof wrapper.data === "object" && !Array.isArray(wrapper.data), `R2 deployment ${key} wrapper differs`);
+    const origin = wrapper.data;
     const row = origin?.responses?.find((item) => item.relativePath === "index.html");
-    invariant(origin?.status === "PASS" && row?.actualHttpStatus === 200 && row.bytes === local.bytes && row.sha256 === local.sha256, `R2 deployment ${key} index parity differs`);
+    const expectedOrigin = key === "immutable" ? report.immutableUrl : report.branchUrl;
+    invariant(origin.status === "PASS" && origin.origin === expectedOrigin && row?.status === "PASS" && row.expectedHttpStatus === 200
+      && row.actualHttpStatus === 200 && row.bytes === local.bytes && row.sha256 === local.sha256, `R2 deployment ${key} index parity differs`);
     parity[key] = { status: "PASS", httpStatus: 200, bytes: row.bytes, sha256: row.sha256 };
   }
   return {
     schema: R2_DEPLOYMENT_BINDING_SCHEMA, status: "PASS", parent: PHASE7A_R2_PARENT, head: revision,
     deploymentId: report.deploymentId, immutableUrl: report.immutableUrl, branchUrl: report.branchUrl, deployedSha: revision,
-    signedCheck: { name: report.deployment.authoritySource, workflow: `GitHub check ${report.deployment.checkRunId}`, commitSha: revision, status: "PASS" },
+    signedCheck: { name: signed.authoritySource, workflow: `GitHub check ${signed.checkRunId}`, commitSha: revision, status: "PASS" },
     localDist: { path: "dist/index.html", bytes: local.bytes, sha256: local.sha256 }, deployedParity: parity,
   };
 }

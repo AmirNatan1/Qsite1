@@ -23,6 +23,10 @@ import { r2AxeAuthorityFixture } from "./phase7a-r2-axe-fixture.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const REVISION = "a".repeat(40);
+const DEPLOYMENT_ID = "7ebd4769-55dd-4f04-99cc-0ba6936b9605";
+const IMMUTABLE_URL = "https://7ebd4769.qsite1.pages.dev/";
+const BRANCH_URL = "https://repair-phase-7a-r2-field-map.qsite1.pages.dev/";
+const DEPLOYMENT_CHECK_RUN_ID = "99855957370";
 const json = (value) => Buffer.from(`${JSON.stringify(value, null, 2)}\n`);
 const focus = (activeElement, activeDestinationName) => ({ activeElement, activeDestinationName });
 const box = (type) => { const value = Buffer.alloc(8); value.writeUInt32BE(8, 0); value.write(type, 4, 4, "ascii"); return value; };
@@ -53,7 +57,44 @@ function normalizeQaFixture(report, { expectedEngine, expectedRevision }) {
 }
 const buildReceipt = { command: "npm run check:phase7a-r2", status: "PASS", head: REVISION, worktreeClean: true, testCount: 178, passed: 178, failures: 0, errors: 0, warnings: 0, hints: 0 };
 const focusedReceipt = { command: "node --test tests/phase7a-r2-field-map-authority.test.mjs tests/phase7a-r2-evidence-assembler.test.mjs", status: "PASS", head: REVISION, worktreeClean: true, testCount: 10, passed: 10, failures: 0 };
-function deployment() { const row = { relativePath: "index.html", bytes: 1000, sha256: "d".repeat(64) }; const response = () => ({ ...row, actualHttpStatus: 200 }); return { schema: DEPLOYMENT_SCHEMA, authorityProfile: "phase7a-r2", status: "PASS", deployedSha: REVISION, parity: "PASS", deploymentId: "deploy-r2", immutableUrl: "https://deploy-r2.example.invalid/", branchUrl: "https://repair-r2.example.invalid/", deployment: { status: "PASS", authoritySource: "CLOUDFLARE_PAGES_SIGNED_GITHUB_CHECK", checkRunId: "123", deploymentId: "deploy-r2", deployedSha: REVISION }, dist: { files: [row] }, origins: { immutable: { status: "PASS", responses: [response()] }, branch: { status: "PASS", responses: [response()] } } }; }
+function deployment() {
+  const row = { relativePath: "index.html", bytes: 1000, sha256: "d".repeat(64) };
+  const response = () => ({ ...row, status: "PASS", expectedHttpStatus: 200, actualHttpStatus: 200 });
+  const origin = (originUrl) => ({ status: "PASS", data: { status: "PASS", origin: originUrl, responses: [response()] } });
+  return {
+    schema: DEPLOYMENT_SCHEMA,
+    authorityProfile: "phase7a-r2",
+    status: "PASS",
+    generatedAt: "2026-09-01T12:28:54.328Z",
+    deployedSha: REVISION,
+    parity: "PASS",
+    deploymentId: DEPLOYMENT_ID,
+    environment: "preview",
+    projectName: "qsite1",
+    immutableUrl: IMMUTABLE_URL,
+    branchUrl: BRANCH_URL,
+    inputs: { expectedDeployedSha: REVISION, branch: PHASE7A_R2_BRANCH, acceptedParent: PHASE7A_R2_PARENT, frozenMain: FROZEN_MAIN, localDist: "dist" },
+    deployment: {
+      status: "PASS",
+      data: {
+        status: "PASS",
+        authoritySource: "CLOUDFLARE_PAGES_SIGNED_GITHUB_CHECK",
+        checkRunId: DEPLOYMENT_CHECK_RUN_ID,
+        appSlug: "cloudflare-workers-and-pages",
+        completedAt: "2026-09-01T12:27:51Z",
+        deploymentId: DEPLOYMENT_ID,
+        projectName: "qsite1",
+        environment: "preview",
+        branch: PHASE7A_R2_BRANCH,
+        immutableUrl: IMMUTABLE_URL,
+        branchUrl: BRANCH_URL,
+        deployedSha: REVISION,
+      },
+    },
+    dist: { files: [row] },
+    origins: { immutable: origin(IMMUTABLE_URL), branch: origin(BRANCH_URL) },
+  };
+}
 
 let png;
 let contrastPng;
@@ -115,6 +156,11 @@ test("pure construction emits the exact closed topology and passes package autho
   assert.equal(bundle.targets.states.length, 3);
   const source = JSON.parse(payloads.get("01-provenance/source-authority.json"));
   assert.equal(source.build.command, "npm run check:phase7a-r2");
+  const deploymentBinding = JSON.parse(payloads.get("01-provenance/deployment-binding.json"));
+  assert.equal(deploymentBinding.deploymentId, DEPLOYMENT_ID);
+  assert.equal(deploymentBinding.immutableUrl, IMMUTABLE_URL);
+  assert.equal(deploymentBinding.branchUrl, BRANCH_URL);
+  assert.deepEqual(deploymentBinding.signedCheck, { name: "CLOUDFLARE_PAGES_SIGNED_GITHUB_CHECK", workflow: `GitHub check ${DEPLOYMENT_CHECK_RUN_ID}`, commitSha: REVISION, status: "PASS" });
   const gates = JSON.parse(payloads.get("00-authority/human-gates-status.json"));
   assert.equal(gates.gates.filter(({ decision }) => decision === "ACCEPT").length, 5);
   assert.equal(gates.gates.filter(({ decision }) => decision === "PENDING HUMAN REVIEW").length, 1);
@@ -130,12 +176,51 @@ test("Git, QA, deployment and semantic mutations fail closed", async () => {
   await assert.rejects(() => constructR2Payloads(oldCommand), /governed build receipt/);
   const falseFocusedCount = clonePure(); falseFocusedCount.focusedReceipt.passed -= 1;
   await assert.rejects(() => constructR2Payloads(falseFocusedCount), /focused test receipt/);
-  const badDeployment = clonePure(); badDeployment.deploymentReport.origins.branch.responses[0].sha256 = "e".repeat(64);
+  const badDeployment = clonePure(); badDeployment.deploymentReport.origins.branch.data.responses[0].sha256 = "e".repeat(64);
   await assert.rejects(() => constructR2Payloads(badDeployment), /branch index parity/);
   const badFocus = clonePure(); badFocus.generic.focus.engineEvidence[2].repeatedCycleCount = 9;
   await assert.rejects(() => constructR2Payloads(badFocus), /10-cycle status/);
   const badContrastScreenshot = clonePure(); badContrastScreenshot.generic.outputFiles.set("06-accessibility/chromium-bifurcation-background-mask.png", Buffer.from("substituted"));
   await assert.rejects(() => constructR2Payloads(badContrastScreenshot), /contrast screenshot binding differs/);
+});
+
+test("deployment binding requires the verifier's nested signed authority and rejects tampering", async () => {
+  const flat = clonePure();
+  flat.deploymentReport.deployment = { ...flat.deploymentReport.deployment.data };
+  await assert.rejects(() => constructR2Payloads(flat), /signed deployment wrapper/);
+
+  const mutations = [
+    ["wrapper status", (report) => { report.deployment.status = "FAIL"; }, /signed deployment wrapper/],
+    ["data status", (report) => { report.deployment.data.status = "FAIL"; }, /signed deployment authority/],
+    ["deployed SHA", (report) => { report.deployment.data.deployedSha = "b".repeat(40); }, /signed deployment authority/],
+    ["deployment ID", (report) => { report.deployment.data.deploymentId = "11111111-2222-4333-8444-555555555555"; }, /signed deployment identity/],
+    ["immutable URL", (report) => { report.deployment.data.immutableUrl = "https://tampered.qsite1.pages.dev/"; }, /signed deployment identity/],
+    ["branch URL", (report) => { report.deployment.data.branchUrl = "https://tampered-branch.qsite1.pages.dev/"; }, /signed deployment identity/],
+    ["authority source", (report) => { report.deployment.data.authoritySource = "SYNTHETIC"; }, /signed deployment provenance/],
+    ["app slug", (report) => { report.deployment.data.appSlug = "synthetic"; }, /signed deployment provenance/],
+    ["check-run ID", (report) => { delete report.deployment.data.checkRunId; }, /signed deployment provenance/],
+  ];
+  for (const [label, mutate, pattern] of mutations) {
+    const changed = clonePure();
+    mutate(changed.deploymentReport);
+    await assert.rejects(() => constructR2Payloads(changed), pattern, label);
+  }
+
+  const flatOrigin = clonePure();
+  flatOrigin.deploymentReport.origins.immutable = { ...flatOrigin.deploymentReport.origins.immutable.data };
+  await assert.rejects(() => constructR2Payloads(flatOrigin), /immutable wrapper/);
+  const tamperedOrigin = clonePure();
+  tamperedOrigin.deploymentReport.origins.branch.data.origin = "https://tampered-branch.qsite1.pages.dev/";
+  await assert.rejects(() => constructR2Payloads(tamperedOrigin), /branch index parity/);
+  const failedOriginData = clonePure();
+  failedOriginData.deploymentReport.origins.branch.data.status = "FAIL";
+  await assert.rejects(() => constructR2Payloads(failedOriginData), /branch index parity/);
+  const failedOriginWrapper = clonePure();
+  failedOriginWrapper.deploymentReport.origins.branch.status = "FAIL";
+  await assert.rejects(() => constructR2Payloads(failedOriginWrapper), /branch wrapper/);
+  const wrongRootProject = clonePure();
+  wrongRootProject.deploymentReport.projectName = "other";
+  await assert.rejects(() => constructR2Payloads(wrongRootProject), /root authority/);
 });
 
 async function writeCaptureRoot(root, pureFixture, installedMode) {
