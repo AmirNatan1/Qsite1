@@ -430,7 +430,7 @@ async function fallbackCases(browser, baseUrl, timeoutMs) {
     page.setDefaultTimeout(timeoutMs);
     const requests = [];
     page.on("request", (request) => requests.push(request.url()));
-    await page.goto(baseUrl, { waitUntil: "load" });
+    await page.goto(new URL("#entry", baseUrl).toString(), { waitUntil: "load" });
     await settle(page);
     const state = await inspectDocument(page);
     const manifestoGeometry = await manifestoAuthority(page, "QA reduced-motion manifesto");
@@ -445,7 +445,7 @@ async function fallbackCases(browser, baseUrl, timeoutMs) {
     page.setDefaultTimeout(timeoutMs);
     const requests = [];
     page.on("request", (request) => requests.push(request.url()));
-    await page.goto(baseUrl, { waitUntil: "load" });
+    await page.goto(new URL("#entry", baseUrl).toString(), { waitUntil: "load" });
     await settle(page);
     const state = await inspectDocument(page);
     const manifestoGeometry = await manifestoAuthority(page, "QA no-JavaScript manifesto");

@@ -174,6 +174,8 @@ test("browser QA fallback states use shared glyph/header geometry and full nativ
     source.indexOf("async function intentHistoryCase"),
   );
   assert.match(fallbackSource, /validateFallbackManifestoMeasurement\(measurement, label\)/);
+  const semanticEntryTargets = fallbackSource.match(/page\.goto\(new URL\("#entry", baseUrl\)\.toString\(\)/g) ?? [];
+  assert.equal(semanticEntryTargets.length, 3);
   assert.match(fallbackSource, /captureVisibleLinkInventory\(page, "\[data-field-map\] nav a\[href\]"\)/);
   assert.match(fallbackSource, /assertNativeFieldMapViewport\(details\)/);
   assert.doesNotMatch(fallbackSource, /visibleLinks:\s*\[\.\.\.document\.querySelectorAll/);
