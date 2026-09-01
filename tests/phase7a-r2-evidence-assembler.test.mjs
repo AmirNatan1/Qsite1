@@ -82,6 +82,7 @@ test("governed receipts use the current exact Node runtime and keep TAP counts d
   const source = await readFile(path.join(ROOT, "scripts/assemble-phase7a-r2-review-evidence.mjs"), "utf8");
   assert.doesNotMatch(source, /execFileAsync\([^\n]*npm\.cmd/);
   assert.match(source, /process\.execPath[\s\S]*?npm-cli\.js/);
+  assert.match(source, /path\.dirname\(process\.execPath\)[\s\S]*?npm_node_execpath\s*=\s*process\.execPath/);
   assert.match(source, /focusedReceipt\.testCount/);
   assert.match(source, /buildReceipt\.testCount/);
   assert.doesNotMatch(source, /testCount:\s*summaries\.reduce/);

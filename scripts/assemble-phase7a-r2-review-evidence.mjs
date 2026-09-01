@@ -181,10 +181,10 @@ async function npmCliForCurrentNode() {
   throw new Error("npm CLI for the current exact Node executable is unavailable");
 }
 
-async function runCleanRevisionCommand({ repoRoot, revision, command, args, label, commandRunner = execFileAsync }) {
+async function runCleanRevisionCommand({ repoRoot, revision, command, args, label, env = process.env, commandRunner = execFileAsync }) {
   const [beforeHead, beforeStatus] = await Promise.all([git(repoRoot, ["rev-parse", "HEAD"]), git(repoRoot, ["status", "--porcelain=v1", "--untracked-files=all"])]);
   invariant(beforeHead === revision && beforeStatus === "", `${label} requires the exact clean revision`);
-  const result = await commandRunner(command, args, { cwd: repoRoot, windowsHide: true, maxBuffer: 64 * 1024 * 1024 });
+  const result = await commandRunner(command, args, { cwd: repoRoot, env, windowsHide: true, maxBuffer: 64 * 1024 * 1024 });
   const output = `${result.stdout ?? ""}\n${result.stderr ?? ""}`;
   const [afterHead, afterStatus] = await Promise.all([git(repoRoot, ["rev-parse", "HEAD"]), git(repoRoot, ["status", "--porcelain=v1", "--untracked-files=all"])]);
   invariant(afterHead === revision && afterStatus === "", `${label} changed repository state`);
@@ -193,7 +193,11 @@ async function runCleanRevisionCommand({ repoRoot, revision, command, args, labe
 
 export async function runR2BuildReceipt({ repoRoot = ROOT, revision, npmCli, commandRunner } = {}) {
   const cli = npmCli ?? await npmCliForCurrentNode();
-  const executed = await runCleanRevisionCommand({ repoRoot, revision, command: process.execPath, args: [cli, "run", "check:phase7a-r2"], label: "R2 governed validation", commandRunner });
+  const governedEnvironment = { ...process.env };
+  const pathKey = Object.keys(governedEnvironment).find((key) => key.toLowerCase() === "path") ?? "PATH";
+  governedEnvironment[pathKey] = [path.dirname(process.execPath), governedEnvironment[pathKey]].filter(Boolean).join(path.delimiter);
+  governedEnvironment.npm_node_execpath = process.execPath;
+  const executed = await runCleanRevisionCommand({ repoRoot, revision, command: process.execPath, args: [cli, "run", "check:phase7a-r2"], label: "R2 governed validation", env: governedEnvironment, commandRunner });
   const diagnostic = (name) => [...executed.output.matchAll(new RegExp(`(\\d+)\\s+${name}s?`, "gi"))].map((match) => Number(match[1])).at(-1) ?? 0;
   return { command: "npm run check:phase7a-r2", status: "PASS", head: revision, worktreeClean: true, testCount: executed.testCount, passed: executed.passed, failures: executed.failures, errors: diagnostic("error"), warnings: diagnostic("warning"), hints: diagnostic("hint") };
 }
