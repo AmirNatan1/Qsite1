@@ -31,6 +31,7 @@ import {
   PHASE7C_CORE_VIEWPORTS,
 } from "./phase7c-contract.mjs";
 import { observeTargetSizes, TARGET_MINIMUM_CSS_PIXELS } from "./phase7a-target-size.mjs";
+import { TERRITORY_STATE_RANGES } from "../src/scripts/territory-traverse-state.mjs";
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const ROOT = path.resolve(path.dirname(SCRIPT_PATH), "..");
@@ -56,6 +57,15 @@ const DEFAULT_TIMEOUT_MS = 10_000;
 const TARGET_MINIMUM_CSS_PX = TARGET_MINIMUM_CSS_PIXELS;
 const CLS_BUDGET = PHASE7C_PERFORMANCE_BUDGET.clsMaximum;
 const LONG_TASK_THRESHOLD_MS = 50;
+const STOP_HOLD_MS = 2_000;
+const MEMORY_ABSOLUTE_GROWTH_BUDGET = 8 * 1024 * 1024;
+const MEMORY_SLOPE_BUDGET_PER_CYCLE = 1024 * 1024;
+const CANONICAL_1280_CARRIER_PROBES = Object.freeze([
+  Object.freeze({ scrollY: 12_000, observedStage: "automotive", note: "Independent inspection reported a carrier/copy crossing near this release position." }),
+  Object.freeze({ scrollY: 12_620, observedStage: "automotive", note: "Independent inspection reported the later Automotive settlement as clear." }),
+  Object.freeze({ scrollY: 13_600, observedStage: "logistics", note: "Independent inspection reported a carrier/body-copy crossing near this position." }),
+  Object.freeze({ scrollY: 14_580, observedStage: "manufacturing", note: "Independent inspection reported a carrier/title-edge crossing near this position." }),
+]);
 const PHASE7C_INDUSTRY_NAMES = PHASE7C_INDUSTRIES;
 const PHASE7C_PROOF_TITLE = PHASE7C_PROOF_RECORD;
 const PHASE7C_HUMAN_GATES = PHASE7C_GATES;
@@ -257,6 +267,7 @@ export function validateResponsiveSnapshot(snapshot, viewport, expectedMode) {
     titleVisible: snapshot.titleVisible === true,
     titleUnclipped: snapshot.titleClipped === false,
     noInternalWordBreaks: Array.isArray(snapshot.internallyBrokenWords) && snapshot.internallyBrokenWords.length === 0,
+    liveCarrierClearOfGlyphs: snapshot.carrierTextIntersection?.status !== "FAIL",
     horizontalOverflow: snapshot.horizontalOverflow <= 1,
     noTerritoryVideo: snapshot.territoryVideoCount === 0,
     oneProofRecord: snapshot.proofRecordCount === 1,
@@ -266,22 +277,278 @@ export function validateResponsiveSnapshot(snapshot, viewport, expectedMode) {
   return { checks, status: honestStatus(checks) };
 }
 
+async function inspectCarrierTextClearance(page) {
+  return page.evaluate(() => {
+    const root = document.querySelector("[data-territory-traverse]");
+    if (!(root instanceof HTMLElement)) {
+      return { status: "FAIL", applicable: false, failure: "Territory root missing", intersectionCount: null };
+    }
+    const visible = (element) => {
+      if (!(element instanceof Element) || element.closest("[aria-hidden='true']")) return false;
+      const style = getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      return style.display !== "none" && style.visibility !== "hidden" && Number.parseFloat(style.opacity) > 0
+        && rect.width > 0 && rect.height > 0
+        && rect.right > 0 && rect.left < innerWidth && rect.bottom > 0 && rect.top < innerHeight;
+    };
+    const visualGeometryVisible = (element) => {
+      if (!(element instanceof Element)) return false;
+      const style = getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      return style.display !== "none" && style.visibility !== "hidden" && Number.parseFloat(style.opacity) > 0
+        && rect.width > 0 && rect.height > 0
+        && rect.right > 0 && rect.left < innerWidth && rect.bottom > 0 && rect.top < innerHeight;
+    };
+    const glyphs = [];
+    for (const element of root.querySelectorAll("h2, h3, p, a[href]")) {
+      if (!visible(element)) continue;
+      const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        for (let offset = 0; offset < node.data.length; offset += 1) {
+          const character = node.data[offset];
+          if (/\s/.test(character)) continue;
+          const range = document.createRange();
+          range.setStart(node, offset);
+          range.setEnd(node, offset + 1);
+          const rect = range.getBoundingClientRect();
+          if (rect.width <= 0 || rect.height <= 0) continue;
+          glyphs.push({
+            left: rect.left + Math.min(1, rect.width * 0.06),
+            right: rect.right - Math.min(1, rect.width * 0.06),
+            top: rect.top + rect.height * 0.1,
+            bottom: rect.bottom - rect.height * 0.1,
+            character,
+            element: element.id ? `#${element.id}` : element.tagName.toLowerCase(),
+            text: element.textContent.trim().replace(/\s+/g, " ").slice(0, 120),
+          });
+        }
+      }
+    }
+
+    const points = [];
+    const path = root.querySelector("[data-territory-carrier]");
+    if (path instanceof SVGGeometryElement && path.getScreenCTM() && visualGeometryVisible(path)) {
+      const matrix = path.getScreenCTM();
+      const length = path.getTotalLength();
+      const step = Math.max(0.75, length / 8_000);
+      const strokeWidth = Number.parseFloat(getComputedStyle(path).strokeWidth) || 2;
+      for (let distance = 0; distance <= length; distance += step) {
+        const local = path.getPointAtLength(distance);
+        const screen = new DOMPoint(local.x, local.y).matrixTransform(matrix);
+        if (screen.x >= -4 && screen.x <= innerWidth + 4 && screen.y >= -4 && screen.y <= innerHeight + 4) {
+          points.push({ x: screen.x, y: screen.y, radius: Math.max(1, strokeWidth / 2), source: "enhanced-svg-carrier" });
+        }
+      }
+    }
+    for (const carrier of root.querySelectorAll("[data-territory-static] .territory-static__carrier")) {
+      if (!visualGeometryVisible(carrier)) continue;
+      const rect = carrier.getBoundingClientRect();
+      const style = getComputedStyle(carrier);
+      const matrix = style.transform === "none" ? new DOMMatrix() : new DOMMatrix(style.transform);
+      const horizontal = carrier.offsetWidth >= carrier.offsetHeight;
+      const rawX = horizontal ? matrix.a : matrix.c;
+      const rawY = horizontal ? matrix.b : matrix.d;
+      const magnitude = Math.max(0.0001, Math.hypot(rawX, rawY));
+      const directionX = rawX / magnitude;
+      const directionY = rawY / magnitude;
+      const length = horizontal ? carrier.offsetWidth * magnitude : carrier.offsetHeight * magnitude;
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const startX = centerX - directionX * length / 2;
+      const startY = centerY - directionY * length / 2;
+      const stroke = Math.max(carrier.offsetWidth < carrier.offsetHeight ? carrier.offsetWidth : carrier.offsetHeight, 2);
+      for (let distance = 0; distance <= length; distance += 0.75) {
+        points.push({
+          x: startX + directionX * distance,
+          y: startY + directionY * distance,
+          radius: Math.max(1, stroke / 2),
+          source: "static-authored-carrier",
+        });
+      }
+    }
+
+    const intersections = [];
+    let minimumClearance = Number.POSITIVE_INFINITY;
+    for (const point of points) {
+      for (const glyph of glyphs) {
+        const nearestX = Math.max(glyph.left, Math.min(point.x, glyph.right));
+        const nearestY = Math.max(glyph.top, Math.min(point.y, glyph.bottom));
+        const clearance = Math.hypot(point.x - nearestX, point.y - nearestY) - point.radius;
+        minimumClearance = Math.min(minimumClearance, clearance);
+        if (clearance <= 0 && intersections.length < 200) {
+          intersections.push({
+            x: Number(point.x.toFixed(2)),
+            y: Number(point.y.toFixed(2)),
+            carrierSource: point.source,
+            textElement: glyph.element,
+            text: glyph.text,
+            character: glyph.character,
+          });
+        }
+      }
+    }
+    const unique = [];
+    const seen = new Set();
+    for (const intersection of intersections) {
+      const key = `${intersection.textElement}:${intersection.character}:${intersection.x}:${intersection.y}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      unique.push(intersection);
+    }
+    return {
+      status: unique.length > 0 ? "FAIL" : "PASS",
+      applicable: points.length > 0,
+      mode: root.dataset.territoryMode ?? null,
+      state: root.dataset.territoryState ?? null,
+      viewport: { width: innerWidth, height: innerHeight },
+      scrollY,
+      glyphRectCount: glyphs.length,
+      sampledCarrierPointCount: points.length,
+      minimumClearancePx: Number.isFinite(minimumClearance) ? Number(minimumClearance.toFixed(2)) : null,
+      intersectionCount: unique.length,
+      intersections: unique,
+      methodology: "Non-whitespace character Range boxes are inset to approximate glyph-bearing ink; the live SVG path uses getScreenCTM/getPointAtLength and static carriers use their transformed line axis. Stroke radius participates in collision distance.",
+    };
+  });
+}
+
+async function sweepCarrierTextClearance(page, geometry, timeoutMs) {
+  const records = [];
+  const failures = [];
+  for (const [state, [start, end]] of Object.entries(TERRITORY_STATE_RANGES)) {
+    const progresses = new Set([
+      Number((start + 0.002).toFixed(4)),
+      Number(((start + end) / 2).toFixed(4)),
+      Number((end - 0.002).toFixed(4)),
+    ]);
+    for (let progress = start + 0.01; progress < end - 0.005; progress += 0.01) {
+      progresses.add(Number(progress.toFixed(4)));
+    }
+    for (const progress of [...progresses].sort((left, right) => left - right)) {
+      const settlement = await scrollToProgress(page, geometry, { state, progress }, timeoutMs);
+      const clearance = await inspectCarrierTextClearance(page);
+      records.push({ state, progress, settlement, clearance });
+      if (settlement.status === "FAIL" || clearance.status === "FAIL") {
+        failures.push({ state, progress, scrollY: clearance.scrollY, intersections: clearance.intersections });
+      }
+    }
+  }
+  const directScrollProbes = [];
+  for (const probe of CANONICAL_1280_CARRIER_PROBES) {
+    await page.evaluate((top) => window.__phase7cQa.nativeScrollTo(top), probe.scrollY);
+    const settlement = await waitForControllerSettled(page, timeoutMs);
+    const clearance = await inspectCarrierTextClearance(page);
+    const atRequestedScroll = Math.abs(clearance.scrollY - probe.scrollY) <= 1;
+    const record = { ...probe, atRequestedScroll, settlement, clearance };
+    directScrollProbes.push(record);
+    if (settlement.status === "FAIL" || !atRequestedScroll || clearance.status === "FAIL") {
+      failures.push({
+        kind: "direct-scroll-probe",
+        requestedScrollY: probe.scrollY,
+        actualScrollY: clearance.scrollY,
+        observedStage: probe.observedStage,
+        actualState: clearance.state,
+        intersections: clearance.intersections,
+      });
+    }
+  }
+  return {
+    viewport: { width: 1280, height: 720 },
+    sampling: "Every macro-state start+0.002, midpoint, end-0.002, plus 0.01 progress increments; every point is predicate-settled before glyph/carrier geometry is sampled. Four independently observed absolute-scroll positions are then replayed exactly and retained whether clear or failing.",
+    sampleCount: records.length + directScrollProbes.length,
+    status: failures.length === 0 ? "PASS" : "FAIL",
+    failures,
+    records,
+    directScrollProbes,
+  };
+}
+
 export function recordingSpecifications(engine) {
   const prefix = engine === "webkit" ? "webkit-proxy" : engine;
+  const visualPaths = {
+    "full-forward-journey": `videos/${prefix}/01-full-forward-journey.webm`,
+    "complete-reverse-journey": `videos/${prefix}/02-complete-reverse-journey.webm`,
+    "authored-stop-states": `videos/${prefix}/03-authored-stop-states.webm`,
+    "fast-forward-immediate-reverse": `videos/${prefix}/04-fast-forward-immediate-reverse.webm`,
+    "desktop-responsive-authority": `videos/${prefix}/05-desktop-responsive-authority.webm`,
+    "mobile-390-forward-reverse": `videos/${prefix}/06-mobile-390-forward-reverse.webm`,
+    "narrow-short-landscape": `videos/${prefix}/07-narrow-short-landscape.webm`,
+    "reduced-motion-resolved-states": `videos/${prefix}/08-reduced-motion-resolved-states.webm`,
+    "no-javascript-semantic-territories": `videos/${prefix}/09-no-javascript-semantic-territories.webm`,
+  };
   return PHASE7C_RECORDING_SCENARIOS.map((scenario) => {
-    const isJourney = ["full-forward-journey", "complete-reverse-journey", "authored-stop-states", "fast-forward-immediate-reverse"].includes(scenario);
-    const isMobile = scenario === "mobile-390-forward-reverse";
+    if (visualPaths[scenario]) {
+      return {
+        scenario,
+        engineAuthority: ENGINE_EVIDENCE[engine],
+        captureKind: "scenario-specific-video",
+        evidencePath: visualPaths[scenario],
+        artifactReuse: false,
+      };
+    }
+    if (scenario === "installed-chrome-200-percent") {
+      return {
+        scenario,
+        engineAuthority: "Separate installed-Google-Chrome browser-native zoom authority",
+        captureKind: "external-native-zoom-recording",
+        evidencePath: engine === "chromium" ? "external-recordings/10-installed-chrome-200-percent.mp4" : null,
+        status: "NOT OBSERVED",
+        artifactReuse: false,
+        rootSidePlan: "Bind the separately generated installed-Chrome native-200 artifact after verifying browser chrome, zoom telemetry, URL, and the exact revision. Never substitute viewport or CSS scaling.",
+      };
+    }
     return {
       scenario,
       engineAuthority: ENGINE_EVIDENCE[engine],
-      captureKind: isJourney || isMobile ? "video" : "structured-state-and-screenshot",
-      evidencePath: isJourney
-        ? `videos/${prefix}/territory-forward-reverse.webm`
-        : isMobile
-          ? `videos/${prefix}/mobile-forward-reverse.webm`
-          : null,
+      captureKind: "structured-report",
+      evidencePath: `${REPORT_FILE}#${scenario}`,
+      artifactReuse: false,
     };
   });
+}
+
+export function validateMemoryTrend(samples) {
+  const values = (Array.isArray(samples) ? samples : []).filter(Number.isFinite);
+  if (values.length < 2) {
+    return {
+      status: "LIMITATION",
+      samples: values,
+      reason: "Precise heap telemetry is unavailable or insufficient for a trend assertion.",
+    };
+  }
+  const baseline = values[0];
+  const end = values.at(-1);
+  const count = values.length;
+  const meanX = (count - 1) / 2;
+  const meanY = values.reduce((sum, value) => sum + value, 0) / count;
+  let numerator = 0;
+  let denominator = 0;
+  values.forEach((value, index) => {
+    numerator += (index - meanX) * (value - meanY);
+    denominator += (index - meanX) ** 2;
+  });
+  const slopeBytesPerCycle = denominator === 0 ? 0 : numerator / denominator;
+  const endGrowthBytes = end - baseline;
+  const growthBudgetBytes = Math.max(MEMORY_ABSOLUTE_GROWTH_BUDGET, baseline * 0.25);
+  const slopeBudgetBytesPerCycle = Math.max(MEMORY_SLOPE_BUDGET_PER_CYCLE, baseline * 0.02);
+  const checks = {
+    endGrowthBounded: endGrowthBytes <= growthBudgetBytes,
+    slopeBounded: slopeBytesPerCycle <= slopeBudgetBytesPerCycle,
+  };
+  return {
+    status: honestStatus(checks),
+    samples: values,
+    baselineBytes: baseline,
+    endBytes: end,
+    minimumBytes: Math.min(...values),
+    maximumBytes: Math.max(...values),
+    endGrowthBytes,
+    slopeBytesPerCycle,
+    growthBudgetBytes,
+    slopeBudgetBytesPerCycle,
+    checks,
+    rationale: "The ten-cycle heap endpoint must remain within 8 MiB or 25% of baseline, and its least-squares slope within 1 MiB/cycle or 2% of baseline. Negative growth always remains within budget.",
+  };
 }
 
 export function validatePortableReport(report) {
@@ -315,6 +582,7 @@ function browserInstrumentation() {
     runtimeScrollWrites: [],
     boundaries: [],
     carrierReference: null,
+    documentReference: document,
   };
 
   const nativeRequestAnimationFrame = window.requestAnimationFrame.bind(window);
@@ -439,6 +707,7 @@ function browserInstrumentation() {
   };
   qa.sameCarrier = () => qa.carrierReference != null
     && qa.carrierReference === document.querySelector("[data-territory-carrier]");
+  qa.sameDocument = () => qa.documentReference === document;
   qa.beginBoundary = (label) => {
     const boundary = {
       label,
@@ -484,6 +753,7 @@ function browserInstrumentation() {
     longTaskSupported: qa.longTaskSupported,
     memoryBytes: performance.memory?.usedJSHeapSize ?? null,
     sameCarrier: qa.sameCarrier(),
+    sameDocument: qa.sameDocument(),
   });
 
   Object.defineProperty(window, "__phase7cQa", { value: qa, configurable: false });
@@ -545,6 +815,214 @@ async function territoryGeometry(page) {
     const travel = Math.max(1, rect.height - window.innerHeight);
     return { start, travel, height: rect.height, viewportHeight: window.innerHeight };
   });
+}
+
+async function operatingFieldGeometry(page) {
+  return page.evaluate(() => {
+    const field = document.querySelector("[data-operating-field]");
+    if (!(field instanceof HTMLElement)) return null;
+    const rect = field.getBoundingClientRect();
+    return {
+      start: window.scrollY + rect.top,
+      travel: Math.max(1, rect.height - window.innerHeight),
+      height: rect.height,
+      viewportHeight: window.innerHeight,
+    };
+  });
+}
+
+async function scrollToDecide(page, timeoutMs) {
+  const geometry = await operatingFieldGeometry(page);
+  if (!geometry) throw new Error("Accepted Phase 7B Operating Field geometry is unavailable.");
+  const requestedProgress = 0.92;
+  const started = Date.now();
+  await page.evaluate(
+    ({ top }) => window.__phase7cQa.nativeScrollTo(top),
+    { top: geometry.start + geometry.travel * requestedProgress },
+  );
+  await page.waitForFunction(({ progress }) => {
+    const field = document.querySelector("[data-operating-field]");
+    const actual = Number.parseFloat(field?.getAttribute("data-method-progress") ?? "NaN");
+    return field instanceof HTMLElement
+      && field.dataset.methodState === "decide"
+      && Math.abs(actual - progress) <= 0.025
+      && field.dataset.methodProbe === "settled"
+      && !field.closest("[inert]")
+      && (!document.fonts || document.fonts.status === "loaded");
+  }, { progress: requestedProgress }, { timeout: timeoutMs });
+  await settleAfterPaint(page);
+  const snapshot = await page.evaluate(() => {
+    const field = document.querySelector("[data-operating-field]");
+    return {
+      state: field?.getAttribute("data-method-state") ?? null,
+      progress: Number.parseFloat(field?.getAttribute("data-method-progress") ?? "NaN"),
+      mode: field?.getAttribute("data-method-mode") ?? null,
+      probe: field?.getAttribute("data-method-probe") ?? null,
+      inert: Boolean(field?.closest("[inert]")),
+      scrollY: window.scrollY,
+    };
+  });
+  return {
+    requestedState: "Phase 7B DECIDE",
+    requestedProgress,
+    settlementMs: Date.now() - started,
+    timeoutMs,
+    snapshot,
+    status: snapshot.state === "decide"
+      && Math.abs(snapshot.progress - requestedProgress) <= 0.025
+      && snapshot.probe === "settled"
+      && !snapshot.inert
+      ? "PASS"
+      : "FAIL",
+  };
+}
+
+async function settleMaradinAperture(page, timeoutMs) {
+  const started = Date.now();
+  await page.evaluate(() => {
+    const aperture = document.querySelector("[data-proof-threshold]");
+    if (!(aperture instanceof HTMLElement)) throw new Error("Maradin Proof aperture is missing.");
+    const rect = aperture.getBoundingClientRect();
+    const top = Math.max(0, window.scrollY + rect.top + rect.height / 2 - window.innerHeight / 2);
+    window.__phase7cQa.nativeScrollTo(top);
+  });
+  await page.waitForFunction(() => {
+    const root = document.querySelector("[data-territory-traverse]");
+    const aperture = document.querySelector("[data-proof-threshold]");
+    const title = aperture?.querySelector("[data-proof-title]");
+    const link = aperture?.querySelector("a[href='/pocs/maradin/']");
+    const image = aperture?.querySelector("img");
+    const visible = (element) => {
+      if (!(element instanceof Element)) return false;
+      const rect = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      return rect.width > 0 && rect.height > 0
+        && rect.bottom > 0 && rect.top < innerHeight
+        && rect.right > 0 && rect.left < innerWidth
+        && style.display !== "none" && style.visibility !== "hidden";
+    };
+    return root?.getAttribute("data-territory-state") === "proof"
+      && root?.getAttribute("data-territory-projection") === "settled"
+      && root?.getAttribute("data-territory-raf") === "idle"
+      && !root.closest("[inert]")
+      && visible(aperture)
+      && visible(title)
+      && visible(link)
+      && image instanceof HTMLImageElement
+      && image.complete
+      && image.naturalWidth === 1920
+      && image.naturalHeight === 1080;
+  }, null, { timeout: timeoutMs });
+  const snapshot = await page.evaluate(() => {
+    const aperture = document.querySelector("[data-proof-threshold]");
+    const root = document.querySelector("[data-territory-traverse]");
+    const image = aperture?.querySelector("img");
+    const rect = aperture?.getBoundingClientRect();
+    return {
+      state: root?.getAttribute("data-territory-state") ?? null,
+      progress: Number.parseFloat(root?.getAttribute("data-territory-progress") ?? "NaN"),
+      projection: root?.getAttribute("data-territory-projection") ?? null,
+      raf: root?.getAttribute("data-territory-raf") ?? null,
+      apertureRect: rect ? { x: rect.x, y: rect.y, width: rect.width, height: rect.height } : null,
+      title: aperture?.querySelector("[data-proof-title]")?.textContent.trim() ?? null,
+      link: aperture?.querySelector("a")?.getAttribute("href") ?? null,
+      poster: image instanceof HTMLImageElement
+        ? { complete: image.complete, naturalWidth: image.naturalWidth, naturalHeight: image.naturalHeight }
+        : null,
+      scrollY: window.scrollY,
+    };
+  });
+  return {
+    requestedState: "Maradin documentary aperture settled",
+    settlementMs: Date.now() - started,
+    timeoutMs,
+    snapshot,
+    status: snapshot.state === "proof"
+      && snapshot.projection === "settled"
+      && snapshot.raf === "idle"
+      && snapshot.title === PHASE7C_PROOF_TITLE
+      && snapshot.link === "/pocs/maradin/"
+      && snapshot.poster?.naturalWidth === 1920
+      ? "PASS"
+      : "FAIL",
+  };
+}
+
+async function holdStableState(page, specification, holdMs = STOP_HOLD_MS) {
+  const label = specification.label;
+  const started = await page.evaluate(() => performance.now());
+  const deadline = started + holdMs;
+  const handle = await page.waitForFunction(({ expected, stopAt, sampleLabel }) => {
+    const qa = window.__phase7cQa;
+    qa.stopHoldSamples ??= {};
+    qa.stopHoldSamples[sampleLabel] ??= [];
+    const root = expected.scope === "method"
+      ? document.querySelector("[data-operating-field]")
+      : document.querySelector("[data-territory-traverse]");
+    const state = expected.scope === "method"
+      ? root?.getAttribute("data-method-state")
+      : root?.getAttribute("data-territory-state");
+    const progress = Number.parseFloat(expected.scope === "method"
+      ? root?.getAttribute("data-method-progress") ?? "NaN"
+      : root?.getAttribute("data-territory-progress") ?? "NaN");
+    const track = document.querySelector("[data-territory-track]");
+    const carrier = document.querySelector("[data-territory-carrier]");
+    const aperture = document.querySelector("[data-proof-threshold]");
+    const fingerprint = JSON.stringify({
+      state,
+      progress,
+      rootStyle: root?.getAttribute("style") ?? "",
+      projection: root?.getAttribute("data-territory-projection") ?? null,
+      raf: root?.getAttribute("data-territory-raf") ?? null,
+      probe: root?.getAttribute("data-method-probe") ?? null,
+      trackTransform: track instanceof Element ? getComputedStyle(track).transform : null,
+      carrierOpacity: carrier instanceof Element ? getComputedStyle(carrier).opacity : null,
+      carrierStrokeWidth: carrier instanceof Element ? getComputedStyle(carrier).strokeWidth : null,
+      apertureOpacity: aperture instanceof Element ? getComputedStyle(aperture).opacity : null,
+      apertureTransform: aperture instanceof Element ? getComputedStyle(aperture).transform : null,
+    });
+    qa.stopHoldSamples[sampleLabel].push({
+      at: performance.now(),
+      state,
+      progress,
+      fingerprint,
+      pendingRafCount: qa.pendingRafs.size,
+    });
+    return performance.now() >= stopAt;
+  }, {
+    expected: { scope: specification.scope, state: specification.state, progress: specification.progress },
+    stopAt: deadline,
+    sampleLabel: label,
+  }, { polling: 100, timeout: holdMs + 5_000 });
+  await handle.dispose();
+  const completed = await page.evaluate((sampleLabel) => ({
+    endedAt: performance.now(),
+    samples: window.__phase7cQa.stopHoldSamples[sampleLabel] ?? [],
+  }), label);
+  const fingerprints = dedupe(completed.samples.map((sample) => sample.fingerprint));
+  const states = dedupe(completed.samples.map((sample) => sample.state));
+  const progressValues = completed.samples.map((sample) => sample.progress);
+  const checks = {
+    actualMultiSecondHold: completed.endedAt - started >= holdMs,
+    sampledThroughout: completed.samples.length >= Math.floor(holdMs / 250),
+    exactState: states.length === 1 && states[0] === specification.state,
+    progressStable: progressValues.every((value) => Math.abs(value - specification.progress) <= 0.025),
+    projectionFingerprintStable: fingerprints.length === 1,
+    noPendingRaf: completed.samples.every((sample) => sample.pendingRafCount === 0),
+  };
+  return {
+    label,
+    scope: specification.scope,
+    requestedState: specification.state,
+    requestedProgress: specification.progress,
+    holdMs,
+    actualHoldMs: completed.endedAt - started,
+    sampleCount: completed.samples.length,
+    samples: completed.samples,
+    uniqueFingerprintCount: fingerprints.length,
+    checks,
+    status: honestStatus(checks),
+  };
 }
 
 async function waitForControllerSettled(page, timeoutMs, expected = {}) {
@@ -782,6 +1260,98 @@ async function finalizeVideo(video, rawDirectory, outputRoot, relativePath) {
   }
 }
 
+async function captureScenarioVideo(
+  browser,
+  engine,
+  configuration,
+  scenario,
+  { viewport = { width: 1280, height: 720 }, javaScriptEnabled = true, reducedMotion = "no-preference" } = {},
+  action,
+) {
+  const prefix = engine === "webkit" ? "webkit-proxy" : engine;
+  const rawDirectory = path.join(configuration.output, ".capture-video", prefix, scenario);
+  await mkdir(rawDirectory, { recursive: true });
+  const context = await browser.newContext({
+    viewport,
+    javaScriptEnabled,
+    reducedMotion,
+    recordVideo: { dir: rawDirectory, size: viewport },
+  });
+  if (javaScriptEnabled) await addInstrumentation(context);
+  const page = await context.newPage();
+  const video = page.video();
+  const failures = [];
+  let payload = null;
+  try {
+    payload = await action(page, context);
+    failures.push(...(payload?.failures ?? []));
+  } catch (error) {
+    failures.push(safeError(error));
+  } finally {
+    await context.close();
+  }
+  const specification = recordingSpecifications(engine).find((entry) => entry.scenario === scenario);
+  if (!specification?.evidencePath) {
+    return {
+      scenario,
+      status: "NOT OBSERVED",
+      failures,
+      payload,
+      artifact: null,
+      limitation: "No in-runner visual artifact path is governed for this scenario.",
+    };
+  }
+  const artifact = await finalizeVideo(video, rawDirectory, configuration.output, specification.evidencePath);
+  return {
+    scenario,
+    status: failures.length > 0 ? "FAIL" : artifact.status,
+    failures,
+    payload,
+    artifact,
+  };
+}
+
+async function waitForRecordingBeat(page, minimumMs = 350) {
+  const start = await page.evaluate(() => performance.now());
+  const handle = await page.waitForFunction(
+    (deadline) => performance.now() >= deadline,
+    start + minimumMs,
+    { polling: 50, timeout: minimumMs + 2_000 },
+  );
+  await handle.dispose();
+  const end = await page.evaluate(() => performance.now());
+  return { minimumMs, actualMs: end - start, predicate: "monotonic performance.now boundary" };
+}
+
+async function settlePhysicalFirstFrame(page, timeoutMs) {
+  const started = Date.now();
+  await page.evaluate(() => window.__phase7cQa.nativeScrollTo(0));
+  await page.waitForFunction(() => {
+    const shell = document.querySelector("[data-cinematic-shell]");
+    return shell instanceof HTMLElement
+      && shell.getAttribute("data-target-frame") === "1"
+      && window.scrollY === 0;
+  }, null, { timeout: timeoutMs });
+  const snapshot = await page.evaluate(() => {
+    const shell = document.querySelector("[data-cinematic-shell]");
+    return {
+      pathname: location.pathname,
+      hash: location.hash,
+      scrollY: window.scrollY,
+      targetFrame: shell?.getAttribute("data-target-frame") ?? null,
+      routeNavigation: shell?.getAttribute("data-route-navigation") ?? null,
+      physicalInert: Boolean(shell?.closest("[inert]")),
+    };
+  });
+  return {
+    requestedState: "physical opening F1",
+    settlementMs: Date.now() - started,
+    timeoutMs,
+    snapshot,
+    status: snapshot.scrollY === 0 && snapshot.targetFrame === "1" ? "PASS" : "FAIL",
+  };
+}
+
 async function targetInventory(page, route, viewport, state) {
   const observation = await observeTargetSizes(page, { route, viewport, state });
   const genuineFailures = observation.targetFailures.filter((failure) => failure.intendedInteractive !== false);
@@ -814,6 +1384,7 @@ async function responsiveCase(browser, engine, configuration) {
           : `[data-territory-stage='${sample.state}'] [data-territory-title]`;
         const settlement = await scrollElementToCenter(page, selector, configuration.timeoutMs);
         const snapshot = await inspectResponsiveState(page, selector);
+        snapshot.carrierTextIntersection = await inspectCarrierTextClearance(page);
         const validation = validateResponsiveSnapshot(snapshot, viewport, mode);
         stageRecords.push({ sample, settlement, snapshot, validation });
         if (validation.status === "FAIL") {
@@ -838,6 +1409,52 @@ async function responsiveCase(browser, engine, configuration) {
     }
   }
   return { name: "responsive-and-short-landscape", status: failures.length ? "FAIL" : "PASS", failures, records, artifacts };
+}
+
+async function narrowLandscapeRecordingCase(browser, engine, configuration) {
+  const run = await captureScenarioVideo(
+    browser,
+    engine,
+    configuration,
+    "narrow-short-landscape",
+    { viewport: { width: 320, height: 800 } },
+    async (page) => {
+      const failures = [];
+      const records = [];
+      await gotoHome(page, configuration.baseUrl, configuration.timeoutMs);
+      const viewports = PHASE7C_VIEWPORTS.filter((viewport) => (
+        viewport.id === "320x800" || viewport.height <= 480
+      ));
+      for (const viewport of viewports) {
+        await page.setViewportSize({ width: viewport.width, height: viewport.height });
+        await page.evaluate(() => {
+          const title = document.querySelector("[data-territory-stage='manufacturing'] [data-territory-title]");
+          const rect = title.getBoundingClientRect();
+          const top = Math.max(0, scrollY + rect.top + rect.height / 2 - innerHeight / 2);
+          window.__phase7cQa.nativeScrollTo(top);
+        });
+        await waitForControllerSettled(page, configuration.timeoutMs);
+        const manufacturing = await inspectResponsiveState(page, "[data-territory-stage='manufacturing'] [data-territory-title]");
+        manufacturing.carrierTextIntersection = await inspectCarrierTextClearance(page);
+        const manufacturingValidation = validateResponsiveSnapshot(manufacturing, viewport, expectedMode(viewport));
+        await scrollElementToCenter(page, "[data-proof-title]", configuration.timeoutMs);
+        const proof = await inspectResponsiveState(page, "[data-proof-title]");
+        proof.carrierTextIntersection = await inspectCarrierTextClearance(page);
+        const proofValidation = validateResponsiveSnapshot(proof, viewport, expectedMode(viewport));
+        if (manufacturingValidation.status === "FAIL" || proofValidation.status === "FAIL") failures.push(viewport.id);
+        records.push({ viewport, manufacturing, manufacturingValidation, proof, proofValidation, beat: await waitForRecordingBeat(page, 550) });
+      }
+      return { failures, records };
+    },
+  );
+  return {
+    name: "narrow-short-landscape-recording",
+    status: run.status,
+    failures: run.failures,
+    records: run.payload?.records ?? [],
+    recording: run,
+    artifacts: run.artifact ? [run.artifact] : [],
+  };
 }
 
 async function projectionSnapshot(page) {
@@ -883,25 +1500,24 @@ async function projectionSnapshot(page) {
 }
 
 async function journeyCase(browser, engine, configuration) {
-  const rawDirectory = path.join(configuration.output, ".capture-video", engine, "journey");
-  await mkdir(rawDirectory, { recursive: true });
-  const context = await browser.newContext({
-    viewport: { width: 1280, height: 720 },
-    recordVideo: { dir: rawDirectory, size: { width: 1280, height: 720 } },
-  });
+  const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
   await addInstrumentation(context);
   const page = await context.newPage();
-  const video = page.video();
   const failures = [];
   const artifacts = [];
   const forward = [];
   const reverse = [];
-  let stopState = null;
   let directSkip = null;
   let runtime = null;
   let forwardReverseEquality = null;
+  let decideBeforeRelease = null;
+  let decideAfterReverse = null;
+  let maradinAperture = null;
+  let carrierTextClearanceSweep = null;
   try {
     await gotoHome(page, configuration.baseUrl, configuration.timeoutMs);
+    decideBeforeRelease = await scrollToDecide(page, configuration.timeoutMs);
+    if (decideBeforeRelease.status === "FAIL") failures.push("Phase 7B DECIDE did not settle before Territory release");
     const geometry = await territoryGeometry(page);
     if (!geometry) throw new Error("Territory runway geometry unavailable.");
     await page.evaluate(() => {
@@ -912,18 +1528,29 @@ async function journeyCase(browser, engine, configuration) {
     for (const sample of Object.values(PHASE7C_STATE_SAMPLES)) {
       const settlement = await scrollToProgress(page, geometry, sample, configuration.timeoutMs);
       const projection = await projectionSnapshot(page);
-      forward.push({ sample, settlement, projection });
+      const carrierTextIntersection = await inspectCarrierTextClearance(page);
+      forward.push({ sample, settlement, projection, carrierTextIntersection });
       if (settlement.status === "FAIL" || !projection.sameCarrier) failures.push(`forward/${sample.state}`);
+      if (carrierTextIntersection.status === "FAIL") failures.push(`forward/${sample.state}: live carrier intersects glyph-bearing text`);
       if (["automotive", "manufacturing", "energy", "proof"].includes(sample.state)) {
         artifacts.push(await screenshot(page, configuration.output, `screenshots/${engine}/journey/forward-${sample.state}.png`));
       }
     }
+    maradinAperture = await settleMaradinAperture(page, configuration.timeoutMs);
+    if (maradinAperture.status === "FAIL") failures.push("Maradin aperture did not settle after Territory progress 1");
+    artifacts.push(await screenshot(page, configuration.output, `screenshots/${engine}/journey/maradin-aperture.png`));
+    carrierTextClearanceSweep = await sweepCarrierTextClearance(page, geometry, configuration.timeoutMs);
+    if (carrierTextClearanceSweep.status === "FAIL") failures.push("canonical 1280x720 carrier/glyph clearance sweep");
     for (const sample of [...Object.values(PHASE7C_STATE_SAMPLES)].reverse()) {
       const settlement = await scrollToProgress(page, geometry, sample, configuration.timeoutMs);
       const projection = await projectionSnapshot(page);
-      reverse.push({ sample, settlement, projection });
+      const carrierTextIntersection = await inspectCarrierTextClearance(page);
+      reverse.push({ sample, settlement, projection, carrierTextIntersection });
       if (settlement.status === "FAIL" || !projection.sameCarrier) failures.push(`reverse/${sample.state}`);
+      if (carrierTextIntersection.status === "FAIL") failures.push(`reverse/${sample.state}: live carrier intersects glyph-bearing text`);
     }
+    decideAfterReverse = await scrollToDecide(page, configuration.timeoutMs);
+    if (decideAfterReverse.status === "FAIL") failures.push("Complete reverse did not return exactly to Phase 7B DECIDE");
     const reverseByState = new Map(reverse.map((entry) => [entry.sample.state, entry.projection]));
     const equalityRecords = forward.map((entry) => {
       const reversed = reverseByState.get(entry.sample.state);
@@ -937,27 +1564,13 @@ async function journeyCase(browser, engine, configuration) {
     };
     if (forwardReverseEquality.status === "FAIL") failures.push("forward/reverse projection equality");
 
+    const fastStartDecide = await scrollToDecide(page, configuration.timeoutMs);
     const firstSkip = await scrollToProgress(page, geometry, PHASE7C_STATE_SAMPLES.energy, configuration.timeoutMs);
-    const immediateReverse = await scrollToProgress(page, geometry, PHASE7C_STATE_SAMPLES.automotive, configuration.timeoutMs);
-    directSkip = { firstSkip, immediateReverse, projection: await projectionSnapshot(page) };
-    if (firstSkip.status === "FAIL" || immediateReverse.status === "FAIL" || !directSkip.projection.sameCarrier) {
+    const immediateReverse = await scrollToDecide(page, configuration.timeoutMs);
+    directSkip = { fastStartDecide, firstSkip, immediateReverse };
+    if (fastStartDecide.status === "FAIL" || firstSkip.status === "FAIL" || immediateReverse.status === "FAIL") {
       failures.push("direct-skip/immediate-reversal");
     }
-    const authoredAutomotive = forward.find((entry) => entry.sample.state === "automotive")?.projection;
-    if (JSON.stringify(directSkip.projection.projectionProperties) !== JSON.stringify(authoredAutomotive?.projectionProperties)) {
-      failures.push("immediate reversal did not reconstruct the authored Automotive projection");
-    }
-
-    await scrollToProgress(page, geometry, PHASE7C_STATE_SAMPLES.energy, configuration.timeoutMs);
-    const before = await projectionSnapshot(page);
-    await settleAfterPaint(page);
-    const after = await projectionSnapshot(page);
-    stopState = {
-      before,
-      after,
-      stable: JSON.stringify(before) === JSON.stringify(after) && after.raf === "idle",
-    };
-    if (!stopState.stable) failures.push("authored-stop-state did not remain stable");
     runtime = await page.evaluate(() => window.__phase7cQa.snapshot());
     if (runtime.runtimeScrollWrites.length !== 0) failures.push("production runtime wrote scroll position");
     if (!runtime.sameCarrier) failures.push("persistent carrier identity changed");
@@ -966,23 +1579,136 @@ async function journeyCase(browser, engine, configuration) {
   } finally {
     await context.close();
   }
-  const videoArtifact = await finalizeVideo(
-    video,
-    rawDirectory,
-    configuration.output,
-    `videos/${engine === "webkit" ? "webkit-proxy" : engine}/territory-forward-reverse.webm`,
-  );
+
+  const videoRuns = [];
+  videoRuns.push(await captureScenarioVideo(
+    browser,
+    engine,
+    configuration,
+    "full-forward-journey",
+    {},
+    async (recordingPage) => {
+      const runFailures = [];
+      await gotoHome(recordingPage, configuration.baseUrl, configuration.timeoutMs);
+      const decide = await scrollToDecide(recordingPage, configuration.timeoutMs);
+      await waitForRecordingBeat(recordingPage);
+      const geometry = await territoryGeometry(recordingPage);
+      await recordingPage.evaluate(() => window.__phase7cQa.setCarrierReference());
+      const states = [];
+      for (const sample of Object.values(PHASE7C_STATE_SAMPLES)) {
+        const settlement = await scrollToProgress(recordingPage, geometry, sample, configuration.timeoutMs);
+        const clearance = await inspectCarrierTextClearance(recordingPage);
+        states.push({ sample, settlement, clearance, beat: await waitForRecordingBeat(recordingPage) });
+        if (settlement.status === "FAIL" || clearance.status === "FAIL") runFailures.push(sample.state);
+      }
+      const aperture = await settleMaradinAperture(recordingPage, configuration.timeoutMs);
+      await waitForRecordingBeat(recordingPage, 700);
+      if (decide.status === "FAIL" || aperture.status === "FAIL") runFailures.push("DECIDE or Maradin aperture");
+      return { failures: runFailures, decide, states, aperture };
+    },
+  ));
+  videoRuns.push(await captureScenarioVideo(
+    browser,
+    engine,
+    configuration,
+    "complete-reverse-journey",
+    {},
+    async (recordingPage) => {
+      const runFailures = [];
+      await gotoHome(recordingPage, configuration.baseUrl, configuration.timeoutMs);
+      await recordingPage.evaluate(() => window.__phase7cQa.setCarrierReference());
+      const aperture = await settleMaradinAperture(recordingPage, configuration.timeoutMs);
+      await waitForRecordingBeat(recordingPage, 700);
+      const geometry = await territoryGeometry(recordingPage);
+      const states = [];
+      for (const sample of [...Object.values(PHASE7C_STATE_SAMPLES)].reverse()) {
+        const settlement = await scrollToProgress(recordingPage, geometry, sample, configuration.timeoutMs);
+        const clearance = await inspectCarrierTextClearance(recordingPage);
+        states.push({ sample, settlement, clearance, beat: await waitForRecordingBeat(recordingPage) });
+        if (settlement.status === "FAIL" || clearance.status === "FAIL") runFailures.push(sample.state);
+      }
+      const decide = await scrollToDecide(recordingPage, configuration.timeoutMs);
+      await waitForRecordingBeat(recordingPage, 700);
+      const physical = await settlePhysicalFirstFrame(recordingPage, configuration.timeoutMs);
+      await waitForRecordingBeat(recordingPage, 700);
+      if (aperture.status === "FAIL" || decide.status === "FAIL" || physical.status === "FAIL") runFailures.push("aperture/DECIDE/F1 reachability");
+      return { failures: runFailures, aperture, states, decide, physical };
+    },
+  ));
+  videoRuns.push(await captureScenarioVideo(
+    browser,
+    engine,
+    configuration,
+    "authored-stop-states",
+    {},
+    async (recordingPage) => {
+      const runFailures = [];
+      await gotoHome(recordingPage, configuration.baseUrl, configuration.timeoutMs);
+      const holds = [];
+      const decide = await scrollToDecide(recordingPage, configuration.timeoutMs);
+      holds.push(await holdStableState(recordingPage, {
+        label: "phase7b-decide",
+        scope: "method",
+        state: "decide",
+        progress: 0.92,
+      }));
+      const geometry = await territoryGeometry(recordingPage);
+      for (const sample of Object.values(PHASE7C_STATE_SAMPLES)) {
+        if (sample.state === "proof") await settleMaradinAperture(recordingPage, configuration.timeoutMs);
+        else await scrollToProgress(recordingPage, geometry, sample, configuration.timeoutMs);
+        const hold = await holdStableState(recordingPage, {
+          label: `territory-${sample.state}`,
+          scope: "territory",
+          state: sample.state,
+          progress: sample.progress,
+        });
+        const clearance = await inspectCarrierTextClearance(recordingPage);
+        holds.push({ ...hold, carrierTextIntersection: clearance });
+        if (hold.status === "FAIL" || clearance.status === "FAIL") runFailures.push(sample.state);
+      }
+      if (decide.status === "FAIL" || holds[0].status === "FAIL") runFailures.push("Phase 7B DECIDE hold");
+      return { failures: runFailures, governedTerritoryHoldCount: holds.length - 1, decideBound: true, holdMs: STOP_HOLD_MS, holds };
+    },
+  ));
+  videoRuns.push(await captureScenarioVideo(
+    browser,
+    engine,
+    configuration,
+    "fast-forward-immediate-reverse",
+    {},
+    async (recordingPage) => {
+      const runFailures = [];
+      await gotoHome(recordingPage, configuration.baseUrl, configuration.timeoutMs);
+      const decideStart = await scrollToDecide(recordingPage, configuration.timeoutMs);
+      await waitForRecordingBeat(recordingPage, 500);
+      const geometry = await territoryGeometry(recordingPage);
+      const energy = await scrollToProgress(recordingPage, geometry, PHASE7C_STATE_SAMPLES.energy, configuration.timeoutMs);
+      await waitForRecordingBeat(recordingPage, 500);
+      const decideReturn = await scrollToDecide(recordingPage, configuration.timeoutMs);
+      await waitForRecordingBeat(recordingPage, 700);
+      if ([decideStart, energy, decideReturn].some((entry) => entry.status === "FAIL")) runFailures.push("latest-position authority");
+      return { failures: runFailures, decideStart, energy, decideReturn, queuedCatchUpObserved: false };
+    },
+  ));
+  for (const run of videoRuns) {
+    if (run.status === "FAIL") failures.push(`${run.scenario} recording authority failed`);
+    if (run.artifact) artifacts.push(run.artifact);
+  }
   return {
     name: "forward-reverse-fast-stop",
-    status: failures.length ? "FAIL" : videoArtifact.status,
+    status: failures.length ? "FAIL" : aggregateStatus(videoRuns),
     failures,
+    decideBeforeRelease,
     forward,
+    maradinAperture,
+    carrierTextClearanceSweep,
     reverse,
+    decideAfterReverse,
     forwardReverseEquality,
     directSkip,
-    stopState,
     runtime,
-    artifacts: [...artifacts, videoArtifact],
+    scenarioRecordings: videoRuns,
+    artifacts,
   };
 }
 
@@ -1006,13 +1732,19 @@ async function mobileJourneyCase(browser, engine, configuration) {
   ];
   const forward = [];
   const reverse = [];
+  let decideBeforeRelease = null;
+  let aperture = null;
+  let decideAfterReverse = null;
   try {
     await gotoHome(page, configuration.baseUrl, configuration.timeoutMs);
+    decideBeforeRelease = await scrollToDecide(page, configuration.timeoutMs);
+    if (decideBeforeRelease.status === "FAIL") failures.push("mobile DECIDE handoff");
     for (const selector of selectors) {
       const settlement = await scrollElementToCenter(page, selector, configuration.timeoutMs);
       const snapshot = await inspectResponsiveState(page, selector);
+      snapshot.carrierTextIntersection = await inspectCarrierTextClearance(page);
       forward.push({ selector, settlement, snapshot });
-      if (!snapshot.titleVisible || snapshot.titleClipped || snapshot.horizontalOverflow > 1 || snapshot.mode !== "static") {
+      if (!snapshot.titleVisible || snapshot.titleClipped || snapshot.horizontalOverflow > 1 || snapshot.mode !== "static" || snapshot.carrierTextIntersection.status === "FAIL") {
         failures.push(`mobile forward ${selector}`);
       }
       artifacts.push(await screenshot(
@@ -1021,13 +1753,245 @@ async function mobileJourneyCase(browser, engine, configuration) {
         `screenshots/${engine}/mobile/forward-${forward.length}.png`,
       ));
     }
+    aperture = await settleMaradinAperture(page, configuration.timeoutMs);
+    if (aperture.status === "FAIL") failures.push("mobile Maradin aperture");
     for (const selector of [...selectors].reverse()) {
       const settlement = await scrollElementToCenter(page, selector, configuration.timeoutMs);
       const snapshot = await inspectResponsiveState(page, selector);
+      snapshot.carrierTextIntersection = await inspectCarrierTextClearance(page);
       reverse.push({ selector, settlement, snapshot });
-      if (!snapshot.titleVisible || snapshot.titleClipped || snapshot.horizontalOverflow > 1 || snapshot.mode !== "static") {
+      if (!snapshot.titleVisible || snapshot.titleClipped || snapshot.horizontalOverflow > 1 || snapshot.mode !== "static" || snapshot.carrierTextIntersection.status === "FAIL") {
         failures.push(`mobile reverse ${selector}`);
       }
+    }
+    decideAfterReverse = await scrollToDecide(page, configuration.timeoutMs);
+    if (decideAfterReverse.status === "FAIL") failures.push("mobile reverse to DECIDE");
+  } catch (error) {
+    failures.push(safeError(error));
+  } finally {
+    await context.close();
+  }
+  const videoArtifact = await finalizeVideo(
+    video,
+    rawDirectory,
+    configuration.output,
+    recordingSpecifications(engine).find((entry) => entry.scenario === "mobile-390-forward-reverse").evidencePath,
+  );
+  return {
+    name: "authored-mobile-forward-reverse",
+    status: failures.length ? "FAIL" : videoArtifact.status,
+    failures,
+    viewport,
+    decideBeforeRelease,
+    forward,
+    aperture,
+    reverse,
+    decideAfterReverse,
+    artifacts: [...artifacts, videoArtifact],
+  };
+}
+
+async function resizeCase(browser, engine, configuration) {
+  const artifacts = [];
+  const run = await captureScenarioVideo(
+    browser,
+    engine,
+    configuration,
+    "desktop-responsive-authority",
+    { viewport: { width: 1280, height: 800 } },
+    async (page) => {
+      const failures = [];
+      const records = [];
+      const navigations = [];
+      page.on("framenavigated", (frame) => {
+        if (frame !== page.mainFrame()) return;
+        try {
+          const url = new URL(frame.url());
+          navigations.push(url.pathname + url.hash);
+        } catch {
+          navigations.push(frame.url());
+        }
+      });
+      await gotoHome(page, configuration.baseUrl, configuration.timeoutMs);
+      await page.evaluate(() => window.__phase7cQa.setCarrierReference());
+      const plans = [
+        { sample: PHASE7C_STATE_SAMPLES.logistics, viewport: { width: 1024, height: 768 } },
+        { sample: PHASE7C_STATE_SAMPLES.manufacturing, viewport: { width: 1366, height: 650 } },
+        { sample: { state: "proof", progress: 0.985 }, viewport: { width: 900, height: 480 } },
+      ];
+      for (const plan of plans) {
+        await page.setViewportSize({ width: 1280, height: 800 });
+        await waitForControllerSettled(page, configuration.timeoutMs);
+        let geometry = await territoryGeometry(page);
+        const before = await scrollToProgress(page, geometry, plan.sample, configuration.timeoutMs);
+        const beforeUrl = page.url();
+        const navigationCountBefore = navigations.length;
+        const documentBefore = await page.evaluate(() => window.__phase7cQa.sameDocument());
+        const resizeStarted = Date.now();
+        await page.setViewportSize(plan.viewport);
+        const immediateSettlement = await waitForControllerSettled(page, configuration.timeoutMs);
+        const postResizeState = await settlementSnapshot(page);
+        const selector = plan.sample.state === "proof"
+          ? "[data-proof-title]"
+          : `[data-territory-stage='${plan.sample.state}'] [data-territory-title]`;
+        await scrollElementToCenter(page, selector, configuration.timeoutMs);
+        const snapshot = await inspectResponsiveState(page, selector);
+        snapshot.carrierTextIntersection = await inspectCarrierTextClearance(page);
+        const after = {
+          url: page.url(),
+          navigationCount: navigations.length,
+          sameDocument: await page.evaluate(() => window.__phase7cQa.sameDocument()),
+          sameCarrier: await page.evaluate(() => window.__phase7cQa.sameCarrier()),
+          snapshot,
+        };
+        const checks = {
+          beforeSettled: before.status === "PASS",
+          immediateResizeSettled: immediateSettlement.status === "PASS",
+          midProgressStateRetained: postResizeState.state === plan.sample.state,
+          midProgressCoordinateRetained: Math.abs(postResizeState.progress - plan.sample.progress) <= 0.04,
+          noReplacementNavigation: after.url === beforeUrl && after.navigationCount === navigationCountBefore,
+          sameDocument: documentBefore && after.sameDocument,
+          sameCarrier: after.sameCarrier,
+          responsiveMode: snapshot.mode === expectedMode(plan.viewport),
+          noOverflow: snapshot.horizontalOverflow <= 1,
+          titleVisible: snapshot.titleVisible,
+          titleUnclipped: !snapshot.titleClipped,
+          noWordBreak: snapshot.internallyBrokenWords.length === 0,
+          liveCarrierClear: snapshot.carrierTextIntersection.status !== "FAIL",
+        };
+        if (Object.values(checks).some((value) => !value)) {
+          failures.push(`${plan.sample.state}: ${Object.entries(checks).filter(([, value]) => !value).map(([key]) => key).join(", ")}`);
+        }
+        const capture = await screenshot(
+          page,
+          configuration.output,
+          `screenshots/${engine}/resize/${plan.sample.state}-${plan.viewport.width}x${plan.viewport.height}.png`,
+        );
+        artifacts.push(capture);
+        records.push({
+          state: plan.sample.state,
+          sourceViewport: { width: 1280, height: 800 },
+          targetViewport: plan.viewport,
+          resizeSettlementMs: Date.now() - resizeStarted,
+          before,
+          immediateSettlement,
+          postResizeState,
+          after,
+          checks,
+          capture,
+        });
+        await waitForRecordingBeat(page, 600);
+      }
+      return { failures, records, navigations, replacementNavigationCount: Math.max(0, navigations.length - 1) };
+    },
+  );
+  if (run.artifact) artifacts.push(run.artifact);
+  return {
+    name: "mid-progress-resize",
+    status: run.status,
+    failures: run.failures,
+    records: run.payload?.records ?? [],
+    navigations: run.payload?.navigations ?? [],
+    artifacts,
+    recording: run,
+  };
+}
+
+async function historyRestorationCase(browser, engine, configuration) {
+  const prefix = engine === "webkit" ? "webkit-proxy" : engine;
+  const rawDirectory = path.join(configuration.output, ".capture-video", prefix, "history-restoration");
+  await mkdir(rawDirectory, { recursive: true });
+  const context = await browser.newContext({
+    viewport: { width: 1280, height: 720 },
+    recordVideo: { dir: rawDirectory, size: { width: 1280, height: 720 } },
+  });
+  await addInstrumentation(context);
+  const page = await context.newPage();
+  const video = page.video();
+  const failures = [];
+  const records = [];
+  const artifacts = [];
+  let bareOpening = null;
+  let reverseReachability = null;
+  try {
+    const response = await page.goto(`${configuration.baseUrl}/`, { waitUntil: "domcontentloaded", timeout: configuration.timeoutMs });
+    if (!response || response.status() >= 400) throw new Error(`Bare / returned ${response?.status() ?? "none"}`);
+    await page.waitForSelector("[data-cinematic-shell]", { timeout: configuration.timeoutMs });
+    await waitForFontsLoaded(page, configuration.timeoutMs);
+    bareOpening = await settlePhysicalFirstFrame(page, configuration.timeoutMs);
+    if (bareOpening.status === "FAIL" || bareOpening.snapshot.pathname !== "/" || bareOpening.snapshot.hash !== "") {
+      failures.push("bare / did not retain physical F1 authority");
+    }
+    await waitForRecordingBeat(page, 700);
+
+    await page.goto(`${configuration.baseUrl}/#entry`, { waitUntil: "domcontentloaded", timeout: configuration.timeoutMs });
+    await page.waitForSelector("[data-territory-traverse]", { timeout: configuration.timeoutMs });
+    await waitForFontsLoaded(page, configuration.timeoutMs);
+    const samples = [
+      PHASE7C_STATE_SAMPLES.automotive,
+      PHASE7C_STATE_SAMPLES.logistics,
+      PHASE7C_STATE_SAMPLES.manufacturing,
+      PHASE7C_STATE_SAMPLES.energy,
+      PHASE7C_STATE_SAMPLES.proof,
+    ];
+    for (const sample of samples) {
+      const geometry = await territoryGeometry(page);
+      const before = await scrollToProgress(page, geometry, sample, configuration.timeoutMs);
+      if (sample.state === "proof") await settleMaradinAperture(page, configuration.timeoutMs);
+      const beforeUrl = page.url();
+      const beforeScroll = await page.evaluate(() => window.scrollY);
+      const supporting = await page.goto(`${configuration.baseUrl}/about/`, {
+        waitUntil: "domcontentloaded",
+        timeout: configuration.timeoutMs,
+      });
+      const supportingSnapshot = await page.evaluate(() => ({
+        pathname: location.pathname,
+        h1: document.querySelector("main h1")?.textContent.trim() ?? null,
+        territoryCount: document.querySelectorAll("[data-territory-traverse]").length,
+      }));
+      await page.goBack({ waitUntil: "domcontentloaded", timeout: configuration.timeoutMs });
+      await page.waitForSelector("[data-territory-traverse]", { timeout: configuration.timeoutMs });
+      await waitForFontsLoaded(page, configuration.timeoutMs);
+      await page.waitForFunction(({ state, progress }) => {
+        const root = document.querySelector("[data-territory-traverse]");
+        const actual = Number.parseFloat(root?.getAttribute("data-territory-progress") ?? "NaN");
+        return root?.getAttribute("data-territory-state") === state
+          && Math.abs(actual - progress) <= 0.035
+          && root?.getAttribute("data-territory-projection") === "settled"
+          && root?.getAttribute("data-territory-raf") === "idle";
+      }, sample, { timeout: configuration.timeoutMs });
+      const restored = await settlementSnapshot(page);
+      const restoredUrl = page.url();
+      const restoredScroll = restored.scrollY;
+      const checks = {
+        beforeSettled: before.status === "PASS",
+        actualSupportingDeparture: supporting?.status() === 200
+          && supportingSnapshot.pathname === "/about/"
+          && supportingSnapshot.territoryCount === 0,
+        returnedToExactHistoryEntry: restoredUrl === beforeUrl,
+        restoredState: restored.state === sample.state && Math.abs(restored.progress - sample.progress) <= 0.035,
+        restoredScrollPosition: Math.abs(restoredScroll - beforeScroll) <= 2,
+        settledAfterBack: restored.projection === "settled" && restored.raf === "idle",
+      };
+      if (Object.values(checks).some((value) => !value)) {
+        failures.push(`${sample.state} history restoration: ${Object.entries(checks).filter(([, value]) => !value).map(([key]) => key).join(", ")}`);
+      }
+      const capture = await screenshot(page, configuration.output, `screenshots/${engine}/history/restored-${sample.state}.png`);
+      artifacts.push(capture);
+      records.push({ sample, beforeUrl, beforeScroll, supportingSnapshot, restoredUrl, restoredScroll, restored, checks, capture });
+    }
+
+    const aperture = await settleMaradinAperture(page, configuration.timeoutMs);
+    const territoryGeometryValue = await territoryGeometry(page);
+    const reverseStates = [];
+    for (const sample of [...Object.values(PHASE7C_STATE_SAMPLES)].reverse()) {
+      reverseStates.push(await scrollToProgress(page, territoryGeometryValue, sample, configuration.timeoutMs));
+    }
+    const decide = await scrollToDecide(page, configuration.timeoutMs);
+    const physical = await settlePhysicalFirstFrame(page, configuration.timeoutMs);
+    reverseReachability = { aperture, reverseStates, decide, physical };
+    if (aperture.status === "FAIL" || reverseStates.some((entry) => entry.status === "FAIL") || decide.status === "FAIL" || physical.status === "FAIL") {
+      failures.push("complete reverse reachability from Maradin aperture through DECIDE to physical F1");
     }
   } catch (error) {
     failures.push(safeError(error));
@@ -1038,16 +2002,17 @@ async function mobileJourneyCase(browser, engine, configuration) {
     video,
     rawDirectory,
     configuration.output,
-    `videos/${engine === "webkit" ? "webkit-proxy" : engine}/mobile-forward-reverse.webm`,
+    `videos/${prefix}/supplemental-history-restoration-and-physical-reverse.webm`,
   );
+  artifacts.push(videoArtifact);
   return {
-    name: "authored-mobile-forward-reverse",
+    name: "history-restoration-route-departure-physical-reachability",
     status: failures.length ? "FAIL" : videoArtifact.status,
     failures,
-    viewport,
-    forward,
-    reverse,
-    artifacts: [...artifacts, videoArtifact],
+    bareOpening,
+    records,
+    reverseReachability,
+    artifacts,
   };
 }
 
@@ -1098,37 +2063,54 @@ async function staticFallbackSnapshot(page) {
 
 async function fallbackCase(browser, engine, configuration) {
   const definitions = [
-    { id: "reduced-motion", viewport: { width: 390, height: 844 }, reducedMotion: "reduce", javaScriptEnabled: true, blockFonts: false },
-    { id: "no-javascript", viewport: { width: 390, height: 844 }, reducedMotion: "no-preference", javaScriptEnabled: false, blockFonts: false },
+    { id: "reduced-motion", scenario: "reduced-motion-resolved-states", viewport: { width: 390, height: 844 }, reducedMotion: "reduce", javaScriptEnabled: true, blockFonts: false },
+    { id: "no-javascript", scenario: "no-javascript-semantic-territories", viewport: { width: 390, height: 844 }, reducedMotion: "no-preference", javaScriptEnabled: false, blockFonts: false },
     { id: "fallback-font", viewport: { width: 320, height: 800 }, reducedMotion: "no-preference", javaScriptEnabled: true, blockFonts: true },
   ];
   const records = [];
   const artifacts = [];
   const failures = [];
+  const limitations = [];
   for (const definition of definitions) {
+    const specification = definition.scenario
+      ? recordingSpecifications(engine).find((entry) => entry.scenario === definition.scenario)
+      : null;
+    const prefix = engine === "webkit" ? "webkit-proxy" : engine;
+    const rawDirectory = definition.scenario
+      ? path.join(configuration.output, ".capture-video", prefix, definition.scenario)
+      : null;
+    if (rawDirectory) await mkdir(rawDirectory, { recursive: true });
     const context = await browser.newContext({
       viewport: definition.viewport,
       reducedMotion: definition.reducedMotion,
       javaScriptEnabled: definition.javaScriptEnabled,
+      ...(rawDirectory ? { recordVideo: { dir: rawDirectory, size: definition.viewport } } : {}),
     });
     if (definition.javaScriptEnabled) await addInstrumentation(context);
     if (definition.blockFonts) {
       await context.route(/\.(?:woff2?|ttf|otf)(?:\?.*)?$/i, (route) => route.abort("blockedbyclient"));
     }
     const page = await context.newPage();
+    const video = rawDirectory ? page.video() : null;
+    let record = null;
     try {
       const response = await page.goto(`${configuration.baseUrl}/#entry`, { waitUntil: "domcontentloaded", timeout: configuration.timeoutMs });
       if (!response || response.status() >= 400) throw new Error(`Navigation status ${response?.status() ?? "none"}`);
       await page.waitForSelector("[data-territory-traverse]", { state: "attached", timeout: configuration.timeoutMs });
-      await page.evaluate(() => {
-        const proof = document.querySelector("[data-proof-title]");
-        const rect = proof.getBoundingClientRect();
-        const top = Math.max(0, window.scrollY + rect.top + rect.height / 2 - window.innerHeight / 2);
-        if (window.__phase7cQa?.nativeScrollTo) window.__phase7cQa.nativeScrollTo(top);
-        else window.scrollTo({ top, left: 0, behavior: "instant" });
-      });
-      if (definition.javaScriptEnabled) await waitForControllerSettled(page, configuration.timeoutMs);
+      const stateSnapshots = [];
+      const selectors = [
+        ...["automotive", "logistics", "manufacturing", "energy"]
+          .map((stage) => `[data-territory-stage='${stage}'] [data-territory-title]`),
+        "[data-proof-title]",
+      ];
+      for (const selector of selectors) {
+        const settlement = await scrollElementToCenter(page, selector, configuration.timeoutMs);
+        const responsive = await inspectResponsiveState(page, selector);
+        responsive.carrierTextIntersection = await inspectCarrierTextClearance(page);
+        stateSnapshots.push({ selector, settlement, responsive, beat: definition.scenario ? await waitForRecordingBeat(page, 500) : null });
+      }
       const snapshot = await staticFallbackSnapshot(page);
+      snapshot.carrierTextIntersection = await inspectCarrierTextClearance(page);
       const checks = {
         staticMode: snapshot.mode === "static",
         exactTitles: snapshot.exactTitles,
@@ -1139,6 +2121,9 @@ async function fallbackCase(browser, engine, configuration) {
         noOverflow: snapshot.horizontalOverflow <= 1,
         ordinaryProofLink: snapshot.proofLink === "/pocs/maradin/",
         noTerritoryVideo: snapshot.territoryVideoCount === 0,
+        allResolvedStatesVisited: stateSnapshots.length === 5
+          && stateSnapshots.every((entry) => entry.responsive.titleVisible && !entry.responsive.titleClipped),
+        liveCarrierClear: stateSnapshots.every((entry) => entry.responsive.carrierTextIntersection.status !== "FAIL"),
       };
       const status = honestStatus(checks);
       if (status === "FAIL") failures.push(`${definition.id}: ${Object.entries(checks).filter(([, value]) => !value).map(([key]) => key).join(", ")}`);
@@ -1146,15 +2131,30 @@ async function fallbackCase(browser, engine, configuration) {
       if (targets.status === "FAIL") failures.push(`${definition.id}: target-size failure`);
       const capture = await screenshot(page, configuration.output, `screenshots/${engine}/fallbacks/${definition.id}.png`);
       artifacts.push(capture);
-      records.push({ ...definition, snapshot, checks, status, targets, capture });
+      record = { ...definition, snapshot, stateSnapshots, checks, status, targets, capture };
     } catch (error) {
       failures.push(`${definition.id}: ${safeError(error)}`);
-      records.push({ ...definition, status: "FAIL", error: safeError(error) });
+      record = { ...definition, status: "FAIL", error: safeError(error) };
     } finally {
       await context.close();
     }
+    if (video && rawDirectory && specification?.evidencePath) {
+      const videoArtifact = await finalizeVideo(video, rawDirectory, configuration.output, specification.evidencePath);
+      artifacts.push(videoArtifact);
+      record.recording = videoArtifact;
+      if (videoArtifact.status === "FAIL") failures.push(`${definition.id}: recording failed`);
+      else if (videoArtifact.status !== "PASS") limitations.push(`${definition.id}: ${videoArtifact.reason ?? "recording unavailable"}`);
+    }
+    records.push(record);
   }
-  return { name: "reduced-motion-no-js-fallback-font", status: failures.length ? "FAIL" : "PASS", failures, records, artifacts };
+  return {
+    name: "reduced-motion-no-js-fallback-font",
+    status: failures.length ? "FAIL" : limitations.length ? "LIMITATION" : "PASS",
+    failures,
+    limitations,
+    records,
+    artifacts,
+  };
 }
 
 async function focusDescriptor(page) {
@@ -1371,10 +2371,14 @@ async function lifecycleCase(browser, engine, configuration) {
   let before = null;
   let after = null;
   let cleanup = null;
+  let memoryTrend = null;
+  const memorySamples = [];
   try {
     await gotoHome(page, configuration.baseUrl, configuration.timeoutMs);
     const geometry = await territoryGeometry(page);
     if (!geometry) throw new Error("Territory runway geometry unavailable.");
+    const initialDecide = await scrollToDecide(page, configuration.timeoutMs);
+    if (initialDecide.status === "FAIL") failures.push("lifecycle did not begin at Phase 7B DECIDE");
     await page.evaluate(() => {
       window.__phase7cQa.setCarrierReference();
       window.__phase7cQa.resetRuntimeWrites();
@@ -1387,39 +2391,45 @@ async function lifecycleCase(browser, engine, configuration) {
       territoryDomCount: document.querySelector("[data-territory-traverse]")?.querySelectorAll("*").length ?? 0,
       territorySvgCount: document.querySelector("[data-territory-traverse]")?.querySelectorAll("svg *").length ?? 0,
     }));
+    memorySamples.push(before.runtime.memoryBytes);
 
     for (let cycle = 1; cycle <= PHASE7C_CYCLE_COUNT; cycle += 1) {
+      const decideBefore = await scrollToDecide(page, configuration.timeoutMs);
       await settleAfterPaint(page);
       const boundary = await page.evaluate((label) => window.__phase7cQa.beginBoundary(label), `cycle-${cycle}`);
-      const cycleStates = [
-        PHASE7C_STATE_SAMPLES.release,
-        PHASE7C_STATE_SAMPLES.automotive,
-        PHASE7C_STATE_SAMPLES.logistics,
-        PHASE7C_STATE_SAMPLES.manufacturing,
-        PHASE7C_STATE_SAMPLES.energy,
-        PHASE7C_STATE_SAMPLES.proof,
-      ];
+      const cycleStates = Object.values(PHASE7C_STATE_SAMPLES);
       const forward = [];
       const reverse = [];
       for (const sample of cycleStates) {
         forward.push(await scrollToProgress(page, geometry, sample, configuration.timeoutMs));
       }
+      const aperture = await settleMaradinAperture(page, configuration.timeoutMs);
       for (const sample of [...cycleStates].reverse().slice(1)) {
         reverse.push(await scrollToProgress(page, geometry, sample, configuration.timeoutMs));
       }
+      const decideAfter = await scrollToDecide(page, configuration.timeoutMs);
       await settleAfterPaint(page);
       const measurement = await page.evaluate((value) => window.__phase7cQa.measureBoundary(value), boundary);
+      const cycleRuntime = await page.evaluate(() => window.__phase7cQa.snapshot());
+      memorySamples.push(cycleRuntime.memoryBytes);
       const cycleCls = measurement.cycleAttributableCls;
       if (cycleCls > CLS_BUDGET) failures.push(`cycle ${cycle}: attributable CLS ${cycleCls} exceeds ${CLS_BUDGET}`);
       if (measurement.attributableLongTasks.some((entry) => entry.duration >= LONG_TASK_THRESHOLD_MS)) {
         failures.push(`cycle ${cycle}: attributable long task observed`);
       }
+      if (decideBefore.status === "FAIL" || aperture.status === "FAIL" || decideAfter.status === "FAIL") {
+        failures.push(`cycle ${cycle}: DECIDE/aperture boundary failed`);
+      }
       cycles.push({
         cycle,
-        requestedSequence: [...cycleStates, ...[...cycleStates].reverse().slice(1)].map(({ state }) => state),
+        requestedSequence: ["phase7b-decide", ...cycleStates.map(({ state }) => state), ...[...cycleStates].reverse().slice(1).map(({ state }) => state), "phase7b-decide"],
+        decideBefore,
         forward,
+        aperture,
         reverse,
+        decideAfter,
         measurement,
+        memoryBytes: cycleRuntime.memoryBytes,
       });
     }
     after = await page.evaluate(() => ({
@@ -1442,6 +2452,9 @@ async function lifecycleCase(browser, engine, configuration) {
     if (after.runtime.intervalCount !== 0 || after.runtime.pendingRafCount !== 0) failures.push("idle timer or RAF remained active");
     if (!after.runtime.sameCarrier) failures.push("carrier identity changed across cycles");
     if (after.runtime.runtimeScrollWrites.length !== 0) failures.push("production runtime wrote scroll during lifecycle cycles");
+    memoryTrend = validateMemoryTrend(memorySamples);
+    if (memoryTrend.status === "FAIL") failures.push("ten-cycle memory trend exceeded its explicit bounded-growth policy");
+    if (memoryTrend.status === "LIMITATION") limitations.push(memoryTrend.reason);
     if (!before.runtime.layoutShiftSupported) limitations.push("LayoutShift PerformanceObserver is unavailable in this engine");
     if (!before.runtime.longTaskSupported) limitations.push("LongTask PerformanceObserver is unavailable in this engine");
     if (before.runtime.memoryBytes == null || after.runtime.memoryBytes == null) {
@@ -1468,6 +2481,7 @@ async function lifecycleCase(browser, engine, configuration) {
     limitations,
     before,
     cycles,
+    memoryTrend,
     after,
     cleanup,
   };
@@ -1647,6 +2661,60 @@ async function caseGuard(name, callback) {
   }
 }
 
+function buildRecordingLedger(engine, cases, suite) {
+  const specifications = recordingSpecifications(engine);
+  const artifactMap = new Map();
+  const visit = (value) => {
+    if (!value || typeof value !== "object") return;
+    if (typeof value.path === "string" && /\.(?:webm|mp4)$/i.test(value.path)) artifactMap.set(value.path, value);
+    if (Array.isArray(value)) value.forEach(visit);
+    else Object.values(value).forEach(visit);
+  };
+  cases.forEach(visit);
+  const records = specifications.map((specification) => {
+    if (specification.captureKind === "scenario-specific-video") {
+      const artifact = artifactMap.get(specification.evidencePath);
+      if (!artifact) {
+        return {
+          ...specification,
+          status: suite === "full" ? "FAIL" : "NOT OBSERVED",
+          reason: suite === "full"
+            ? "Required scenario-specific video was not emitted."
+            : "Responsive-smoke suite intentionally does not capture the complete recording topology.",
+        };
+      }
+      return { ...specification, status: artifact.status, artifact };
+    }
+    if (specification.scenario === "installed-chrome-200-percent") return specification;
+    const caseName = specification.scenario === "documentary-media-network"
+      ? "network-failure-media-isolation"
+      : "ten-cycle-cls-lifecycle-performance";
+    const result = cases.find((entry) => entry.name === caseName);
+    return {
+      ...specification,
+      status: result?.status ?? (suite === "full" ? "FAIL" : "NOT OBSERVED"),
+      evidencePointer: `${REPORT_FILE}#/results/*/cases/${caseName}`,
+      reason: result ? null : "The governing structured case was not run in this partial suite.",
+    };
+  });
+  const requiredInRunner = records.filter((entry) => entry.scenario !== "installed-chrome-200-percent");
+  const failures = requiredInRunner.filter((entry) => entry.status === "FAIL");
+  const nativeZoom = records.find((entry) => entry.scenario === "installed-chrome-200-percent");
+  const limitations = engine === "chromium" && nativeZoom?.status === "NOT OBSERVED"
+    ? ["Installed-Chrome browser-native 200% recording must be bound by the separate native-zoom authority before package assembly."]
+    : [];
+  return {
+    name: "recording-topology",
+    status: failures.length ? "FAIL" : limitations.length ? "LIMITATION" : "PASS",
+    scenarioCount: records.length,
+    distinctScenarioVideoCount: records.filter((entry) => entry.captureKind === "scenario-specific-video" && entry.status === "PASS").length,
+    artifactReuseCount: records.filter((entry) => entry.artifactReuse).length,
+    records,
+    failures: failures.map((entry) => entry.scenario),
+    limitations,
+  };
+}
+
 function installedChromeCandidates() {
   const values = [
     process.env.PROGRAMFILES && path.join(process.env.PROGRAMFILES, "Google", "Chrome", "Application", "chrome.exe"),
@@ -1706,11 +2774,15 @@ async function runEngine(engine, configuration) {
   const { browser, executablePath, browserSource } = launched;
   const version = await browser.version();
   const cases = [];
+  let recordingLedger = null;
   try {
     cases.push(await caseGuard("authored-mobile-forward-reverse", () => mobileJourneyCase(browser, engine, configuration)));
     cases.push(await caseGuard("responsive-and-short-landscape", () => responsiveCase(browser, engine, configuration)));
     if (configuration.suite === "full") {
       cases.unshift(await caseGuard("forward-reverse-fast-stop", () => journeyCase(browser, engine, configuration)));
+      cases.push(await caseGuard("mid-progress-resize", () => resizeCase(browser, engine, configuration)));
+      cases.push(await caseGuard("narrow-short-landscape-recording", () => narrowLandscapeRecordingCase(browser, engine, configuration)));
+      cases.push(await caseGuard("history-restoration-route-departure-physical-reachability", () => historyRestorationCase(browser, engine, configuration)));
       cases.push(await caseGuard("reduced-motion-no-js-fallback-font", () => fallbackCase(browser, engine, configuration)));
       cases.push(await caseGuard("field-map-keyboard-inert", () => fieldMapCase(browser, engine, configuration)));
       cases.push(await caseGuard("accessibility", () => accessibilityCase(browser, engine, configuration)));
@@ -1720,9 +2792,11 @@ async function runEngine(engine, configuration) {
   } finally {
     await browser.close();
   }
+  recordingLedger = buildRecordingLedger(engine, cases, configuration.suite);
   const limitations = [];
   if (engine === "webkit") limitations.push("WebKit result is Playwright proxy evidence and is not physical Safari authority.");
   for (const result of cases) limitations.push(...(result.limitations ?? []));
+  limitations.push(...(recordingLedger.limitations ?? []));
   return {
     engine,
     engineAuthority: ENGINE_EVIDENCE[engine],
@@ -1730,11 +2804,11 @@ async function runEngine(engine, configuration) {
     executable: path.basename(executablePath),
     browserVersion: version,
     headed: configuration.headed,
-    status: aggregateStatus(cases, limitations),
-    failures: cases.flatMap((result) => result.failures ?? []),
+    status: aggregateStatus([...cases, recordingLedger], limitations),
+    failures: [...cases, recordingLedger].flatMap((result) => result.failures ?? []),
     limitations: dedupe(limitations),
     cases,
-    recordings: recordingSpecifications(engine),
+    recordings: recordingLedger,
   };
 }
 
@@ -1830,6 +2904,11 @@ async function main() {
       settlement: "Bounded waits use observable font, inert, controller-state, projection, RAF, and focus predicates. No fixed-delay sleeps are used.",
       scroll: "Harness scrolling uses a saved native scroll method; separately instrumented production scroll writes remain acceptance failures.",
       cls: `Each of ${PHASE7C_CYCLE_COUNT} cycles begins after paint-queue drain with a monotonic timestamp boundary; only later layout-shift entries count against ${CLS_BUDGET}.`,
+      stopStates: `Phase 7B DECIDE plus all ${PHASE7C_STATE_SAMPLE_TUPLES.length} governed Territory states are predicate-settled and held for at least ${STOP_HOLD_MS} ms with repeated fingerprint and idle-RAF sampling.`,
+      stateContinuity: "Forward, reverse, fast-skip, resize, same-history restoration, supporting-route departure/back, bare-/ physical F1, and Maradin aperture predicates retain the DECIDE-to-Proof chain without replacement navigation.",
+      carrierTextClearance: "Non-whitespace character Range geometry and the transformed live carrier path are sampled fail-closed across governed states and viewports; the canonical 1280x720 sweep also replays the independently reported 12000, 12620, 13600, and 14580 scroll positions exactly.",
+      recordingTopology: "Scenarios 1-9 emit distinct Chromium/Firefox/WebKit-proxy video paths; scenarios 11-12 are structured network/lifecycle reports. Scenario 10 remains an external installed-Chrome browser-native-200 binding and is never synthesized by viewport scaling.",
+      memory: `Ten-cycle precise-heap telemetry, when exposed by the engine, must remain within ${MEMORY_ABSOLUTE_GROWTH_BUDGET} bytes total growth and ${MEMORY_SLOPE_BUDGET_PER_CYCLE} bytes/cycle fitted slope; unavailable heap telemetry remains a limitation.`,
       webkit: "Playwright WebKit is proxy evidence only and is never represented as physical Safari.",
       targetSize: `Interactive target inventory retains element identity, accessible name, dimensions, visibility, intent, and exclusions; unexplained sub-${TARGET_MINIMUM_CSS_PX}px targets fail.`,
     },

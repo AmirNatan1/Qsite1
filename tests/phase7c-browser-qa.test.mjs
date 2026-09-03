@@ -13,6 +13,7 @@ import {
   recordingSpecifications,
   selfTest,
   validateOutputDirectory,
+  validateMemoryTrend,
   validatePortableReport,
   validateResponsiveSnapshot,
   validateSettlementSnapshot,
@@ -63,6 +64,7 @@ function responsiveFixture(overrides = {}) {
     titleVisible: true,
     titleClipped: false,
     internallyBrokenWords: [],
+    carrierTextIntersection: { status: "PASS", intersectionCount: 0 },
     horizontalOverflow: 0,
     territoryVideoCount: 0,
     proofRecordCount: 1,
@@ -193,6 +195,7 @@ test("responsive validation proves exact territory semantics, one carrier, fallb
     { titleVisible: false },
     { titleClipped: true },
     { internallyBrokenWords: ["MANUFACTURING"] },
+    { carrierTextIntersection: { status: "FAIL", intersectionCount: 1 } },
     { horizontalOverflow: 2 },
     { territoryVideoCount: 1 },
     { proofRecordCount: 2 },
@@ -209,11 +212,16 @@ test("recording inventory keeps every Phase 7C scenario and labels WebKit as pro
     assert.equal(records.length, PHASE7C_RECORDING_SCENARIOS.length);
     assert.deepEqual(records.map(({ scenario }) => scenario), PHASE7C_RECORDING_SCENARIOS);
     assert.ok(records.every(({ engineAuthority }) => engineAuthority.length > 0));
-    assert.equal(records.filter(({ captureKind }) => captureKind === "video").length, 5);
+    assert.equal(records.filter(({ captureKind }) => captureKind === "scenario-specific-video").length, 9);
+    assert.equal(new Set(records.filter(({ evidencePath }) => evidencePath?.endsWith(".webm")).map(({ evidencePath }) => evidencePath)).size, 9);
     if (engine === "webkit") {
-      assert.ok(records.every(({ engineAuthority }) => /proxy; not physical Safari/i.test(engineAuthority)));
-      assert.ok(records.filter(({ evidencePath }) => evidencePath).every(({ evidencePath }) => evidencePath.includes("webkit-proxy")));
+      const proxyRecords = records.filter(({ scenario }) => scenario !== "installed-chrome-200-percent");
+      assert.ok(proxyRecords.every(({ engineAuthority }) => /proxy; not physical Safari/i.test(engineAuthority)));
+      assert.ok(proxyRecords.filter(({ evidencePath }) => evidencePath?.endsWith(".webm")).every(({ evidencePath }) => evidencePath.includes("webkit-proxy")));
     }
+    const native200 = records.find(({ scenario }) => scenario === "installed-chrome-200-percent");
+    assert.equal(native200.status, "NOT OBSERVED");
+    assert.match(native200.rootSidePlan, /browser chrome, zoom telemetry, URL, and the exact revision/i);
   }
 });
 
@@ -225,6 +233,24 @@ test("status taxonomy never promotes unavailable or indeterminate evidence to PA
   for (const status of ["PASS", "FAIL", "LIMITATION", "NOT OBSERVED", "NOT AVAILABLE TO EXECUTION ENVIRONMENT", "PENDING HUMAN REVIEW"]) {
     assert.ok(STATUSES.includes(status));
   }
+});
+
+test("ten-cycle memory trend has an explicit bounded-growth and slope assertion", () => {
+  const baseline = 32 * 1024 * 1024;
+  const bounded = validateMemoryTrend(Array.from({ length: 11 }, (_, index) => baseline + index * 64 * 1024));
+  assert.equal(bounded.status, "PASS");
+  assert.equal(bounded.samples.length, 11);
+  assert.equal(bounded.checks.endGrowthBounded, true);
+  assert.equal(bounded.checks.slopeBounded, true);
+  assert.ok(bounded.growthBudgetBytes >= 8 * 1024 * 1024);
+  assert.ok(bounded.slopeBudgetBytesPerCycle >= 1024 * 1024);
+
+  const leaking = validateMemoryTrend(Array.from({ length: 11 }, (_, index) => baseline + index * 3 * 1024 * 1024));
+  assert.equal(leaking.status, "FAIL");
+  assert.equal(leaking.checks.endGrowthBounded, false);
+  assert.equal(leaking.checks.slopeBounded, false);
+
+  assert.equal(validateMemoryTrend([null, null]).status, "LIMITATION");
 });
 
 test("font settlement observes a bounded loaded predicate without adopting FontFaceSet.ready", async () => {
@@ -274,7 +300,32 @@ test("source implements all browser matrices, predicate settlement, timestamped 
   assert.match(source, /waitForFieldMap/);
   assert.match(source, /predicateComponents/);
   assert.match(source, /PHASE7C_CORE_VIEWPORTS/);
-  assert.match(source, /mobile-forward-reverse\.webm/);
+  assert.match(source, /06-mobile-390-forward-reverse\.webm/);
+  assert.match(source, /01-full-forward-journey\.webm/);
+  assert.match(source, /09-no-javascript-semantic-territories\.webm/);
+  assert.match(source, /external-recordings\/10-installed-chrome-200-percent\.mp4/);
+  assert.match(source, /scrollToDecide/);
+  assert.match(source, /settleMaradinAperture/);
+  assert.match(source, /holdStableState/);
+  assert.match(source, /STOP_HOLD_MS = 2_000/);
+  assert.match(source, /sameDocument/);
+  assert.match(source, /midProgressStateRetained/);
+  assert.match(source, /midProgressCoordinateRetained/);
+  assert.doesNotMatch(source, /requestedProgressRestored/);
+  assert.match(source, /history-restoration-route-departure-physical-reachability/);
+  assert.match(source, /supporting-route departure\/back/);
+  assert.match(source, /settlePhysicalFirstFrame/);
+  assert.match(source, /validateMemoryTrend/);
+  assert.match(source, /MEMORY_SLOPE_BUDGET_PER_CYCLE/);
+  assert.match(source, /inspectCarrierTextClearance/);
+  assert.match(source, /visualGeometryVisible/);
+  assert.match(source, /getScreenCTM\(\)\s*&&\s*visualGeometryVisible\(path\)/);
+  assert.match(source, /getPointAtLength/);
+  assert.match(source, /getScreenCTM/);
+  assert.match(source, /CANONICAL_1280_CARRIER_PROBES/);
+  assert.match(source, /12_000/);
+  assert.match(source, /13_600/);
+  assert.match(source, /14_580/);
   assert.match(source, /reduced-motion/);
   assert.match(source, /no-javascript/);
   assert.match(source, /fallback-font/);
