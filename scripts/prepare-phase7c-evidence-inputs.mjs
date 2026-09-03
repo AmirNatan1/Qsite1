@@ -65,6 +65,7 @@ export const REQUIRED_BROWSER_CASES = Object.freeze([
   "ten-cycle-cls-lifecycle-performance",
   "network-failure-media-isolation",
 ]);
+const REPORTABLE_RECORDING_SCENARIOS = new Set(["documentary-media-network", "lifecycle-ten-cycles"]);
 
 const HASH40 = /^[0-9a-f]{40}$/;
 const HASH64 = /^[0-9a-f]{64}$/;
@@ -513,12 +514,19 @@ function validateRecordingMap(recordingMap, revision) {
     invariant(row.scenario === PHASE7C_RECORDING_SCENARIOS[index], "recording map order differs");
     validateStatus(row, `recording ${row.scenario}`);
     invariant(Array.isArray(row.artifacts), `recording ${row.scenario} artifacts are missing`);
-    if (row.status === "PASS") invariant(row.artifacts.length > 0, `PASS recording ${row.scenario} has no MP4`);
+    if (row.status === "PASS") invariant(row.artifacts.length > 0, `PASS recording ${row.scenario} has no bound artifact`);
     for (const artifact of row.artifacts) {
       invariant(artifact && typeof artifact === "object", `recording ${row.scenario} artifact metadata differs`);
       portableRelative(artifact.path, `recording ${row.scenario} artifact path`);
-      invariant(artifact.path.toLowerCase().endsWith(".mp4"), `recording ${row.scenario} artifact is not MP4`);
+      const extension = path.posix.extname(artifact.path).toLowerCase();
+      invariant(
+        extension === ".mp4" || (REPORTABLE_RECORDING_SCENARIOS.has(row.scenario) && extension === ".json"),
+        `recording ${row.scenario} artifact type differs`,
+      );
       invariant(Number.isSafeInteger(artifact.bytes) && artifact.bytes > 0 && HASH64.test(artifact.sha256 ?? ""), `recording ${row.scenario} artifact hash/bytes differ`);
+    }
+    if (row.status === "PASS" && !REPORTABLE_RECORDING_SCENARIOS.has(row.scenario)) {
+      invariant(row.artifacts.some(({ path: artifactPath }) => artifactPath.toLowerCase().endsWith(".mp4")), `PASS visual recording ${row.scenario} has no MP4`);
     }
   });
   invariant(recordingMap.status === aggregateStatus(recordingMap.scenarios.map(({ status }) => status)), "recording map aggregate status differs");
@@ -540,7 +548,8 @@ async function copyRecordingArtifacts({ map, directory, entries, copied }) {
       const bytes = await readFile(sourcePath);
       invariant(bytes.length === metadata.bytes && sha256(bytes) === metadata.sha256, `recording ${row.scenario} hash/bytes differ`);
       const suffix = row.artifacts.length > 1 ? `-${index + 1}` : "";
-      const outputPath = `03-recordings/${row.scenario}${suffix}.mp4`;
+      const extension = path.posix.extname(metadata.path).toLowerCase();
+      const outputPath = `03-recordings/${row.scenario}${suffix}${extension}`;
       invariant(!entries.has(outputPath), `recording destination collision: ${outputPath}`);
       entries.set(outputPath, bytes);
       copied.push({ sourceRole: "transcoded-recording", sourcePath: metadata.path, outputPath, bytes: bytes.length, sha256: sha256(bytes) });

@@ -206,13 +206,18 @@ function deploymentReport() {
   };
 }
 
-function recordingMap(videoBytes) {
+function recordingMap(videoBytes, reportBytes) {
   const metadata = { path: "recording.mp4", bytes: videoBytes.length, sha256: sha256(videoBytes) };
+  const reportMetadata = { path: "recording-report.json", bytes: reportBytes.length, sha256: sha256(reportBytes) };
   return {
     schema: RECORDING_MAP_SCHEMA,
     status: "PASS",
     revision: REVISION,
-    scenarios: PHASE7C_RECORDING_SCENARIOS.map((scenario) => ({ scenario, status: "PASS", artifacts: [metadata] })),
+    scenarios: PHASE7C_RECORDING_SCENARIOS.map((scenario) => ({
+      scenario,
+      status: "PASS",
+      artifacts: ["documentary-media-network", "lifecycle-ten-cycles"].includes(scenario) ? [reportMetadata] : [metadata],
+    })),
   };
 }
 
@@ -275,7 +280,9 @@ async function fixture() {
   await writeManifestRoot(native200Root, NATIVE200_REPORT_NAME, nativeReport(), NATIVE200_MANIFEST_NAME, "payloads");
   await mkdir(recordingsDir);
   const video = mp4();
+  const recordingReport = json({ schema: "fixture.recording-report", status: "PASS", revision: REVISION, complete: true });
   await writeFile(path.join(recordingsDir, "recording.mp4"), video);
+  await writeFile(path.join(recordingsDir, "recording-report.json"), recordingReport);
   const buildDelta = path.join(base, "build-delta.json");
   const deployment = path.join(base, "deployment.json");
   const map = path.join(base, "recording-map.json");
@@ -283,7 +290,7 @@ async function fixture() {
   const checkReceipt = path.join(base, "check.json");
   await writeFile(buildDelta, json(buildDeltaReport()));
   await writeFile(deployment, json(deploymentReport()));
-  await writeFile(map, json(recordingMap(video)));
+  await writeFile(map, json(recordingMap(video, recordingReport)));
   await writeFile(testReceipt, json({ ...receipt("full-applicable-suite"), workingDirectory: repository }));
   await writeFile(checkReceipt, json(receipt("full-source-and-build-check")));
   return {
@@ -350,7 +357,11 @@ test("fresh preparation produces every governed input and preserves source class
     const entries = await readPhase7CEvidenceRoot(options.evidenceRoot);
     const paths = new Set(entries.map(({ relativePath }) => relativePath));
     assert.equal(REQUIRED_PHASE7C_INPUTS.every(({ relativePath }) => paths.has(relativePath)), true);
-    assert.equal(PHASE7C_RECORDING_SCENARIOS.every((scenario) => paths.has(`03-recordings/${scenario}.mp4`)), true);
+    assert.equal(PHASE7C_RECORDING_SCENARIOS.slice(0, 10).every((scenario) => paths.has(`03-recordings/${scenario}.mp4`)), true);
+    assert.equal(paths.has("03-recordings/documentary-media-network.mp4"), false);
+    assert.equal(paths.has("03-recordings/lifecycle-ten-cycles.mp4"), false);
+    assert.equal(paths.has("03-recordings/documentary-media-network.json"), true);
+    assert.equal(paths.has("03-recordings/lifecycle-ten-cycles.json"), true);
     const phase7a = JSON.parse(await readFile(path.join(options.evidenceRoot, "05-assurance", "phase7a-regression.json")));
     assert.equal(phase7a.cases.every(({ pixelAuthority }) => pixelAuthority.exactComparison.status === "FAIL" && pixelAuthority.adjudication.status === "PASS — EDGE_QUANTIZATION_EQUIVALENT"), true);
     const audit = JSON.parse(await readFile(path.join(options.evidenceRoot, "08-audit", "prepackage-audit.json")));
