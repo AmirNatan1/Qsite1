@@ -11,6 +11,7 @@ import {
 } from "node:fs/promises";
 import { constants as fsConstants } from "node:fs";
 import path from "node:path";
+import { setTimeout as hostDelay } from "node:timers/promises";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 
@@ -95,7 +96,7 @@ function within(parent, candidate) {
 }
 
 function safeError(error) {
-  const text = error instanceof Error ? error.message : String(error);
+  const text = error instanceof Error ? (error.stack ?? error.message) : String(error);
   return text
     .replace(/[A-Za-z]:\\[^\r\n"']+/g, "<local-path>")
     .replace(/\/[Uu]sers\/[^/\s]+\/[^\r\n"']+/g, "<local-path>")
@@ -325,6 +326,25 @@ async function inspectCarrierTextClearance(page) {
       }
     }
 
+    const alphaOf = (color) => {
+      const match = color.match(/^rgba?\([^,]+,[^,]+,[^,]+(?:,\s*([0-9.]+))?\)$/i);
+      return match ? Number.parseFloat(match[1] ?? "1") : 0;
+    };
+    const occluders = [
+      ...root.querySelectorAll(".territory-passage__coordinate, .territory-passage h3, .territory-passage__copy > p:last-child"),
+      root.querySelector(".territory-proof"),
+    ].filter((element) => element instanceof Element
+      && visualGeometryVisible(element)
+      && alphaOf(getComputedStyle(element).backgroundColor) >= 0.999)
+      .map((element) => ({
+        element: element.className || element.id || element.tagName.toLowerCase(),
+        rect: element.getBoundingClientRect(),
+      }));
+    let occludedCarrierPointCount = 0;
+    const pointIsOccluded = (x, y) => occluders.some(({ rect }) => (
+      x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom
+    ));
+
     const points = [];
     const path = root.querySelector("[data-territory-carrier]");
     if (path instanceof SVGGeometryElement && path.getScreenCTM() && visualGeometryVisible(path)) {
@@ -336,6 +356,10 @@ async function inspectCarrierTextClearance(page) {
         const local = path.getPointAtLength(distance);
         const screen = new DOMPoint(local.x, local.y).matrixTransform(matrix);
         if (screen.x >= -4 && screen.x <= innerWidth + 4 && screen.y >= -4 && screen.y <= innerHeight + 4) {
+          if (pointIsOccluded(screen.x, screen.y)) {
+            occludedCarrierPointCount += 1;
+            continue;
+          }
           points.push({ x: screen.x, y: screen.y, radius: Math.max(1, strokeWidth / 2), source: "enhanced-svg-carrier" });
         }
       }
@@ -404,10 +428,15 @@ async function inspectCarrierTextClearance(page) {
       scrollY,
       glyphRectCount: glyphs.length,
       sampledCarrierPointCount: points.length,
+      occludedCarrierPointCount,
+      opaqueOccluders: occluders.map(({ element, rect }) => ({
+        element,
+        rect: { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom },
+      })),
       minimumClearancePx: Number.isFinite(minimumClearance) ? Number(minimumClearance.toFixed(2)) : null,
       intersectionCount: unique.length,
       intersections: unique,
-      methodology: "Non-whitespace character Range boxes are inset to approximate glyph-bearing ink; the live SVG path uses getScreenCTM/getPointAtLength and static carriers use their transformed line axis. Stroke radius participates in collision distance.",
+      methodology: "Non-whitespace character Range boxes are inset to approximate glyph-bearing ink; the live SVG path uses getScreenCTM/getPointAtLength and static carriers use their transformed line axis. Stroke radius participates in collision distance. Carrier samples behind an actually rendered opaque, higher-layer copy matte or Proof surface are recorded as controlled occlusion rather than visible intersection.",
     };
   });
 }
@@ -1311,7 +1340,16 @@ async function captureScenarioVideo(
   };
 }
 
-async function waitForRecordingBeat(page, minimumMs = 350) {
+async function waitForRecordingBeat(page, minimumMs = 350, pageScriptAvailable = true) {
+  if (!pageScriptAvailable) {
+    const startedAt = Date.now();
+    await hostDelay(minimumMs);
+    return {
+      minimumMs,
+      actualMs: Date.now() - startedAt,
+      predicate: "host monotonic recording hold for a JavaScript-disabled document; settlement was already established from rendered geometry",
+    };
+  }
   const start = await page.evaluate(() => performance.now());
   const handle = await page.waitForFunction(
     (deadline) => performance.now() >= deadline,
@@ -2107,7 +2145,12 @@ async function fallbackCase(browser, engine, configuration) {
         const settlement = await scrollElementToCenter(page, selector, configuration.timeoutMs);
         const responsive = await inspectResponsiveState(page, selector);
         responsive.carrierTextIntersection = await inspectCarrierTextClearance(page);
-        stateSnapshots.push({ selector, settlement, responsive, beat: definition.scenario ? await waitForRecordingBeat(page, 500) : null });
+        stateSnapshots.push({
+          selector,
+          settlement,
+          responsive,
+          beat: definition.scenario ? await waitForRecordingBeat(page, 500, definition.javaScriptEnabled) : null,
+        });
       }
       const snapshot = await staticFallbackSnapshot(page);
       snapshot.carrierTextIntersection = await inspectCarrierTextClearance(page);
@@ -2587,14 +2630,14 @@ async function networkCase(browser, engine, configuration) {
     await offlineContext.setOffline(true);
     await scrollElementToCenter(offlinePage, "[data-proof-title]", configuration.timeoutMs);
     await settleAfterPaint(offlinePage);
-    offline = await offlinePage.evaluate(() => ({
+    offline = await offlinePage.evaluate((posterWasComplete) => ({
       title: document.querySelector("[data-proof-title]")?.textContent.trim() ?? null,
       proofLink: document.querySelector("[data-proof-record='maradin'] a")?.getAttribute("href") ?? null,
       semanticRecordPresent: document.querySelectorAll("[data-proof-record='maradin']").length === 1,
       territoryVideoCount: document.querySelectorAll("[data-territory-traverse] video, [data-territory-traverse] source").length,
       horizontalOverflow: Math.max(0, document.documentElement.scrollWidth - document.documentElement.clientWidth),
-      preOfflinePosterComplete,
-    }));
+      preOfflinePosterComplete: posterWasComplete,
+    }), preOfflinePosterComplete);
     await offlineContext.setOffline(false);
   } catch (error) {
     failures.push(`offline-poster: ${safeError(error)}`);

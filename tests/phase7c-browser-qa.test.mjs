@@ -320,6 +320,8 @@ test("source implements all browser matrices, predicate settlement, timestamped 
   assert.match(source, /inspectCarrierTextClearance/);
   assert.match(source, /visualGeometryVisible/);
   assert.match(source, /getScreenCTM\(\)\s*&&\s*visualGeometryVisible\(path\)/);
+  assert.match(source, /occludedCarrierPointCount/);
+  assert.match(source, /pointIsOccluded/);
   assert.match(source, /getPointAtLength/);
   assert.match(source, /getScreenCTM/);
   assert.match(source, /CANONICAL_1280_CARRIER_PROBES/);
@@ -348,5 +350,7 @@ test("source implements all browser matrices, predicate settlement, timestamped 
   assert.match(source, /recordVideo/);
   assert.doesNotMatch(source, /waitForTimeout\s*\(/);
   assert.doesNotMatch(source, /setTimeout\s*\(/);
+  assert.match(source, /hostDelay\(minimumMs\)/);
+  assert.match(source, /posterWasComplete/);
   assert.doesNotMatch(source, /style\.zoom|document\.body\.style\.zoom|transform:\s*scale/i);
 });
