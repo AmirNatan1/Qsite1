@@ -781,7 +781,10 @@ async function captureGovernedSnapshot(page, specification) {
       });
     const active = document.activeElement;
     const activeStyle = active instanceof Element ? getComputedStyle(active) : null;
-    const focusProtection = active instanceof Element && active !== document.body ? [{
+    const hasMeaningfulFocus = active instanceof Element
+      && active !== document.body
+      && active !== document.documentElement;
+    const focusProtection = hasMeaningfulFocus ? [{
       id: id(active), rect: rectOf(active), thickness: Math.max(1,
         Number.parseFloat(activeStyle.outlineWidth) || 0,
         Number.parseFloat(activeStyle.borderTopWidth) || 0,
@@ -806,7 +809,7 @@ async function captureGovernedSnapshot(page, specification) {
       links: semanticElements.filter(({ tag }) => tag === "a").map(({ id: linkId, text, href, ariaLabel, rect, visible: isVisible }) => ({ id: linkId, text, href, ariaLabel, rect, visible: isVisible })),
       textElements,
       structuralElements,
-      activeElement: active instanceof Element ? { id: id(active), tag: active.tagName.toLowerCase(), text: canonicalText(active), rect: rectOf(active) } : null,
+      activeElement: hasMeaningfulFocus ? { id: id(active), tag: active.tagName.toLowerCase(), text: canonicalText(active), rect: rectOf(active) } : null,
       focusProtection,
       fieldMap: {
         open: document.querySelector("[data-field-map]")?.hasAttribute("open") ?? false,

@@ -236,6 +236,14 @@ test("semantic, typography, wrapping, rectangle and structural authority is exac
   assert.equal(compareStructuredAuthority(authority, changedGeometry).status, "FAIL");
 });
 
+test("default document focus is excluded while meaningful focus remains governed", async () => {
+  const source = await readFile(path.join(ROOT, "scripts/capture-phase7c-accepted-authority-regression.mjs"), "utf8");
+  assert.match(source, /const hasMeaningfulFocus = active instanceof Element\s*&& active !== document\.body\s*&& active !== document\.documentElement;/);
+  assert.match(source, /const focusProtection = hasMeaningfulFocus \? \[\{/);
+  assert.match(source, /activeElement: hasMeaningfulFocus \? \{ id: id\(active\), tag: active\.tagName\.toLowerCase\(\), text: canonicalText\(active\), rect: rectOf\(active\) \} : null/);
+  assert.doesNotMatch(source, /activeElement: active instanceof Element \?/);
+});
+
 test("only sub-browser-precision CSSOM px serialization is canonicalized", () => {
   assert.equal(CSSOM_GEOMETRY_QUANTUM_PX, 1 / 65_536);
   assert.equal(canonicalizeComputedCssPixels("0.00108321px"), canonicalizeComputedCssPixels("0.00108575px"));
