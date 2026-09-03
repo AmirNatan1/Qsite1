@@ -9,9 +9,11 @@ import {
   SCHEMA,
   STATUSES,
   honestStatus,
+  isExpectedSameOriginBlobDecoderCancellation,
   parseArguments,
   recordingSpecifications,
   selfTest,
+  summarizePhysicalDecoderRequests,
   validateOutputDirectory,
   validateMemoryTrend,
   validatePortableReport,
@@ -46,6 +48,7 @@ function settlementFixture(overrides = {}) {
     raf: "idle",
     carrierCount: 1,
     trackCount: 1,
+    scrollY: 14_000,
     ...overrides,
   };
 }
@@ -161,10 +164,12 @@ test("settlement validation is predicate-based and fails closed on state, inert,
     { raf: "dirty" },
     { carrierCount: 2 },
     { trackCount: 0 },
+    { mode: "static" },
+    { scrollY: 13_990 },
   ]) {
     const result = validateSettlementSnapshot(
       settlementFixture(mutation),
-      { state: "manufacturing", progress: 0.68 },
+      { mode: "enhanced", state: "manufacturing", progress: 0.68, scrollTop: 14_000 },
     );
     assert.equal(result.status, "FAIL", JSON.stringify(mutation));
   }
@@ -290,9 +295,54 @@ test("portable report rejects private paths, secrets, accepted gates and renamed
   privatePath.results[0].debugPath = "C:\\Users\\person\\trace.json";
   assert.equal(validatePortableReport(privatePath).status, "FAIL");
 
+  const rootPrivatePath = reportFixture();
+  rootPrivatePath.results[0].debugPath = "C:\\trace.json";
+  assert.equal(validatePortableReport(rootPrivatePath).status, "FAIL");
+
+  const forwardSlashPrivatePath = reportFixture();
+  forwardSlashPrivatePath.results[0].debugPath = "D:/work/Qsite1/trace.json";
+  assert.equal(validatePortableReport(forwardSlashPrivatePath).status, "FAIL");
+
+  const uncPrivatePath = reportFixture();
+  uncPrivatePath.results[0].debugPath = "\\\\server\\share\\trace.json";
+  assert.equal(validatePortableReport(uncPrivatePath).status, "FAIL");
+
   const secret = reportFixture();
   secret.results[0].authorization = "Bearer token";
   assert.equal(validatePortableReport(secret).status, "FAIL");
+});
+
+test("only the demonstrated same-origin UUID blob media abort is classified as an expected decoder cancellation", () => {
+  const baseUrl = "http://127.0.0.1:4327";
+  const url = "blob:http://127.0.0.1:4327/8e1c8633-712f-44f0-9fdf-3dc06a63150e";
+  const requests = [{ url, resourceType: "media" }];
+  assert.equal(isExpectedSameOriginBlobDecoderCancellation({ url, error: "net::ERR_ABORTED" }, requests, baseUrl, url), true);
+  assert.equal(isExpectedSameOriginBlobDecoderCancellation({ url, error: "net::ERR_FAILED" }, requests, baseUrl, url), false);
+  assert.equal(isExpectedSameOriginBlobDecoderCancellation({ url, error: "net::ERR_ABORTED" }, [{ url, resourceType: "image" }], baseUrl, url), false);
+  assert.equal(isExpectedSameOriginBlobDecoderCancellation({ url, error: "net::ERR_ABORTED" }, requests, baseUrl, `${url}-different`), false);
+  assert.equal(isExpectedSameOriginBlobDecoderCancellation({ url: url.replace("127.0.0.1", "localhost"), error: "net::ERR_ABORTED" }, [{ url: url.replace("127.0.0.1", "localhost"), resourceType: "media" }], baseUrl, url.replace("127.0.0.1", "localhost")), false);
+  assert.equal(isExpectedSameOriginBlobDecoderCancellation({ url: "http://127.0.0.1:4327/8e1c8633-712f-44f0-9fdf-3dc06a63150e", error: "net::ERR_ABORTED" }, [{ url: "http://127.0.0.1:4327/8e1c8633-712f-44f0-9fdf-3dc06a63150e", resourceType: "media" }], baseUrl, "http://127.0.0.1:4327/8e1c8633-712f-44f0-9fdf-3dc06a63150e"), false);
+});
+
+test("physical decoder accounting distinguishes repeated request events from additional sourced decoders", () => {
+  const expected = "blob:http://127.0.0.1:4327/8e1c8633-712f-44f0-9fdf-3dc06a63150e";
+  const repeated = summarizePhysicalDecoderRequests([
+    { url: expected, resourceType: "media" },
+    { url: expected, resourceType: "media" },
+  ], expected);
+  assert.deepEqual(repeated, {
+    requestEventCount: 2,
+    distinctSourceCount: 1,
+    expectedSourceEventCount: 2,
+    unexpectedSources: [],
+  });
+
+  const additional = summarizePhysicalDecoderRequests([
+    { url: expected, resourceType: "media" },
+    { url: "blob:http://127.0.0.1:4327/4a6c02f2-985a-44f3-a5e8-0d7ca774909a", resourceType: "media" },
+  ], expected);
+  assert.equal(additional.distinctSourceCount, 2);
+  assert.deepEqual(additional.unexpectedSources, ["blob:http://127.0.0.1:4327/4a6c02f2-985a-44f3-a5e8-0d7ca774909a"]);
 });
 
 test("source implements all browser matrices, predicate settlement, timestamped CLS and bounded lifecycle without fixed sleeps or zoom emulation", async () => {
@@ -302,6 +352,8 @@ test("source implements all browser matrices, predicate settlement, timestamped 
   assert.match(source, /Playwright WebKit proxy; not physical Safari/);
   assert.match(source, /waitForControllerSettled/);
   assert.match(source, /waitForFieldMap/);
+  assert.match(source, /waitForAcceptedManifestoSettlement/);
+  assert.match(source, /known enhanced mode with resolved reveal, or known static mode with released navigation/);
   assert.match(source, /predicateComponents/);
   assert.match(source, /PHASE7C_CORE_VIEWPORTS/);
   assert.match(source, /06-mobile-390-forward-reverse\.webm/);
@@ -311,12 +363,16 @@ test("source implements all browser matrices, predicate settlement, timestamped 
   assert.match(source, /scrollToDecide/);
   assert.match(source, /settleMaradinAperture/);
   assert.match(source, /holdStableState/);
+  assert.match(source, /exact state\/progress, settled controller, and zero pending RAFs/);
   assert.match(source, /STOP_HOLD_MS = 2_000/);
   assert.match(source, /sameDocument/);
   assert.match(source, /projectTerritoryProgress\(expectedProgress\)/);
   assert.match(source, /reprojectedFromCurrentDocumentPosition/);
   assert.doesNotMatch(source, /requestedProgressRestored/);
   assert.match(source, /history-restoration-route-departure-physical-reachability/);
+  assert.match(source, /waitForDeliberateEntryRelease/);
+  assert.match(source, /exact #entry geometry, cleared intent, resolved reveal, non-inert entry/);
+  assert.match(source, /reverseToMethodState/);
   assert.match(source, /supporting-route departure\/back/);
   assert.match(source, /settlePhysicalFirstFrame/);
   assert.match(source, /validateMemoryTrend/);
