@@ -96,6 +96,8 @@
 .territory-world[data-territory-mode="enhanced"] .territory-world__passages::before {display:none;}
 .territory-world[data-territory-mode="enhanced"] .territory-passage {width:min(calc(100% - (2 * var(--territory-gutter))),92rem);margin-inline:auto;padding-block:0;}
 .territory-world[data-territory-mode="enhanced"] .territory-passage__copy {position:sticky;top:clamp(8rem,16vh,10rem);align-self:start;padding:0;text-shadow:0 2px 1rem #080b0c,0 0 2.8rem #080b0c;}
+.territory-world[data-territory-mode="enhanced"] .territory-passage__coordinate,.territory-world[data-territory-mode="enhanced"] .territory-passage h3,.territory-world[data-territory-mode="enhanced"] .territory-passage__copy > p:last-child {background:#080b0c;box-shadow:0 0 .8rem .4rem #080b0c;}
+.territory-world[data-territory-mode="enhanced"] .territory-passage__coordinate {width:max-content;}
 .territory-world[data-territory-mode="enhanced"] .territory-passage--automotive {min-height:180svh;}
 .territory-world[data-territory-mode="enhanced"] .territory-passage--automotive .territory-passage__copy {top:clamp(8rem,18vh,10.5rem);align-self:start;grid-column:2 / 8;padding:0;}
 .territory-world[data-territory-mode="enhanced"] .territory-passage--logistics {min-height:140svh;}

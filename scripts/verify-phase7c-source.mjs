@@ -207,6 +207,11 @@ export function assertPhase7CRuntimeContract({ controllerSource, stateSource, cs
       /\.territory-passage__coordinate[^{}]*\.territory-proof__eyebrow\s*\{[^}]*color:rgba\(208,217,215,\.75\)/,
       "territory coordinate labels must retain the audited worst-case contrast color",
     );
+    assert.match(
+      cssSource,
+      /data-territory-mode=["']enhanced["'][^{}]*\.territory-passage__coordinate[^{}]*\.territory-passage h3[^{}]*\.territory-passage__copy\s*>\s*p:last-child\s*\{[^}]*background:#080b0c[^}]*box-shadow:/,
+      "enhanced territory copy must retain the controlled field-material occlusion",
+    );
     assert.doesNotMatch(cssSource, /scroll-snap|scroll-behavior|overflow-y:\s*(?:auto|scroll)/i);
     assert.doesNotMatch(cssSource, /@keyframes|\banimation(?:-name|-timeline)?\s*:/i);
     assert.doesNotMatch(cssSource, /\.operating-field|\.signal-threshold|\.field-map-threshold|\.site-header/);
