@@ -274,6 +274,10 @@ test("font settlement observes a bounded loaded predicate without adopting FontF
 test("portable report rejects private paths, secrets, accepted gates and renamed gate metadata", () => {
   assert.equal(validatePortableReport(reportFixture()).status, "PASS");
 
+  const axeIncomplete = reportFixture();
+  axeIncomplete.results[0].failureSummary = "Fix any of the following:\n  Element background could not be determined";
+  assert.equal(validatePortableReport(axeIncomplete).status, "PASS");
+
   const accepted = reportFixture();
   accepted.humanGates[0].status = "ACCEPT";
   assert.equal(validatePortableReport(accepted).status, "FAIL");

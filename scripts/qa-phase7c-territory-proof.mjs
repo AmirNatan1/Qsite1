@@ -589,7 +589,7 @@ export function validatePortableReport(report) {
   const failures = [];
   if (report.schema !== SCHEMA) failures.push("schema mismatch");
   if (!/^[0-9a-f]{40}$/.test(report.revision ?? "")) failures.push("invalid revision");
-  if (/[A-Za-z]:\\|\/Users\/|file:\/\//i.test(text)) failures.push("private local path present");
+  if (/[A-Za-z]:\\\\[^"\\\r\n]{1,128}\\\\|\/Users\/|file:\/\//i.test(text)) failures.push("private local path present");
   if (/"(?:password|private[_-]?key)"\s*:|"authorization"\s*:\s*"bearer/i.test(text)) {
     failures.push("possible secret-bearing key present");
   }
