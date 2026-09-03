@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import {
   SCHEMA,
   STATUSES,
+  classifyWebKitProxyHistoryRestoration,
   honestStatus,
   isExpectedSameOriginBlobDecoderCancellation,
   parseArguments,
@@ -279,6 +280,14 @@ test("font settlement observes a bounded loaded predicate without adopting FontF
 test("portable report rejects private paths, secrets, accepted gates and renamed gate metadata", () => {
   assert.equal(validatePortableReport(reportFixture()).status, "PASS");
 
+  const loopbackCaptureOrigin = reportFixture();
+  loopbackCaptureOrigin.captureOrigin = "http://127.0.0.1:4327";
+  assert.equal(validatePortableReport(loopbackCaptureOrigin).status, "PASS");
+
+  const secureCaptureOrigin = reportFixture();
+  secureCaptureOrigin.captureOrigin = "https://example.test/phase-7c";
+  assert.equal(validatePortableReport(secureCaptureOrigin).status, "PASS");
+
   const axeIncomplete = reportFixture();
   axeIncomplete.results[0].failureSummary = "Fix any of the following:\n  Element background could not be determined";
   assert.equal(validatePortableReport(axeIncomplete).status, "PASS");
@@ -310,6 +319,105 @@ test("portable report rejects private paths, secrets, accepted gates and renamed
   const secret = reportFixture();
   secret.results[0].authorization = "Bearer token";
   assert.equal(validatePortableReport(secret).status, "FAIL");
+});
+
+test("WebKit proxy history limitation is exact, surrounding-authority complete and fails closed on near misses", () => {
+  const fixture = {
+    engine: "webkit",
+    sample: { state: "automotive", progress: 0.24 },
+    before: {
+      status: "PASS",
+      rootPresent: true,
+      state: "automotive",
+      progress: 0.24,
+      mode: "enhanced",
+      controller: "ready",
+      projection: "settled",
+      raf: "idle",
+      backgroundInert: false,
+      fontsLoaded: true,
+      carrierCount: 1,
+      trackCount: 1,
+      scrollY: 12_760,
+      wheelSettlement: { status: "PASS" },
+    },
+    beforeUrl: "http://127.0.0.1:4327/#entry",
+    beforeScroll: 12_760,
+    beforeDocument: { timeOrigin: 100 },
+    supportingResponseStatus: 200,
+    supportingSnapshot: {
+      pathname: "/about/",
+      h1: "Built between industry and technology.",
+      territoryCount: 0,
+    },
+    expectedEntryScroll: 4_861,
+    diagnostic: {
+      url: "http://127.0.0.1:4327/#entry",
+      timeOrigin: 200,
+      navigationType: "back_forward",
+      scrollRestoration: "auto",
+      scrollY: 4_861,
+      documentProgress: 0,
+      state: "release",
+      progress: 0,
+      mode: "enhanced",
+      controller: "ready",
+      projection: "settled",
+      raf: "idle",
+      inert: true,
+      fonts: "loaded",
+      carrierCount: 1,
+      trackCount: 1,
+      viewport: { width: 1_280, height: 720 },
+      entry: {
+        present: true,
+        inert: false,
+        rect: { top: 116.5, bottom: 836.5, width: 1_280, height: 720 },
+        scrollMarginTop: 117.5,
+      },
+      cinematic: { entryIntent: null, manifestoReveal: "resolved", routeNavigation: "concealed" },
+      runtime: {
+        documentHidden: false,
+        pendingRafCount: 0,
+        intervalCount: 0,
+        windowScrollListeners: [
+          { removed: false, signalAborted: false },
+          { removed: false, signalAborted: false },
+          { removed: false, signalAborted: false },
+        ],
+        runtimeScrollWrites: [],
+        lifecycleEvents: [{ type: "pageshow", persisted: false }],
+      },
+    },
+  };
+  const classified = classifyWebKitProxyHistoryRestoration(fixture);
+  assert.equal(classified.qualified, true);
+  assert.ok(Object.values(classified.checks).every(Boolean));
+
+  const nearMisses = [
+    (value) => { value.engine = "chromium"; },
+    (value) => { value.before.status = "FAIL"; },
+    (value) => { value.before.state = "logistics"; },
+    (value) => { value.supportingResponseStatus = 500; },
+    (value) => { value.supportingSnapshot.h1 = "Wrong route"; },
+    (value) => { value.diagnostic.url = "http://127.0.0.1:4327/"; },
+    (value) => { delete value.diagnostic.timeOrigin; },
+    (value) => { delete value.beforeDocument.timeOrigin; },
+    (value) => { value.diagnostic.projection = "dirty"; },
+    (value) => { value.diagnostic.runtime.pendingRafCount = 1; },
+    (value) => { value.diagnostic.entry.present = false; value.diagnostic.entry.rect = null; },
+    (value) => { value.diagnostic.entry.inert = true; },
+    (value) => { value.diagnostic.inert = false; },
+    (value) => { value.diagnostic.state = "automotive"; },
+    (value) => { value.diagnostic.runtime.windowScrollListeners[0].signalAborted = true; },
+    (value) => { value.diagnostic.runtime.windowScrollListeners.push({ removed: false, signalAborted: false }); },
+    (value) => { value.diagnostic.runtime.runtimeScrollWrites.push({ method: "scrollTo" }); },
+  ];
+  for (const mutate of nearMisses) {
+    const value = structuredClone(fixture);
+    mutate(value);
+    assert.equal(classifyWebKitProxyHistoryRestoration(value).qualified, false);
+  }
 });
 
 test("only the demonstrated same-origin UUID blob media abort is classified as an expected decoder cancellation", () => {
@@ -373,6 +481,18 @@ test("source implements all browser matrices, predicate settlement, timestamped 
   assert.match(source, /waitForDeliberateEntryRelease/);
   assert.match(source, /exact #entry geometry, cleared intent, resolved reveal, non-inert entry/);
   assert.match(source, /reverseToMethodState/);
+  assert.match(source, /freshEntrySeed/);
+  assert.match(source, /historyRestorationAuthority/);
+  assert.match(source, /History restoration did not settle for/);
+  assert.match(source, /scrollRestoration: history\.scrollRestoration/);
+  assert.match(source, /LIMITATION — WEBKIT PROXY HISTORY RESTORATION:/);
+  assert.match(source, /onlyBoundedWebKitProxyLimitations/);
+  assert.match(source, /reverseEntrySeed/);
+  assert.match(source, /freshDocument/);
+  assert.match(source, /normalNavigation/);
+  assert.match(source, /noProductionScrollWritesDuringReverse/);
+  assert.match(source, /restoration and complete reverse are governed separately/);
+  assert.match(source, /wheelToScrollTop\(page, target, timeoutMs\)/);
   assert.match(source, /supporting-route departure\/back/);
   assert.match(source, /settlePhysicalFirstFrame/);
   assert.match(source, /validateMemoryTrend/);

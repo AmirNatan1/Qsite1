@@ -593,7 +593,7 @@ export function validatePortableReport(report) {
   const failures = [];
   if (report.schema !== SCHEMA) failures.push("schema mismatch");
   if (!/^[0-9a-f]{40}$/.test(report.revision ?? "")) failures.push("invalid revision");
-  if (/[A-Za-z]:(?:\\\\|\/)|\\\\\\\\[^"\\]|\/Users\/|file:\/\//i.test(text)) failures.push("private local path present");
+  if (/(?:^|[^A-Za-z0-9+.-])[A-Za-z]:(?:\\\\|\/)|\\\\\\\\[^"\\]|\/Users\/|file:\/\//i.test(text)) failures.push("private local path present");
   if (/"(?:password|private[_-]?key)"\s*:|"authorization"\s*:\s*"bearer/i.test(text)) {
     failures.push("possible secret-bearing key present");
   }
@@ -605,6 +605,95 @@ export function validatePortableReport(report) {
     failures.push("human gates are not authoritative and pending");
   }
   return { status: failures.length === 0 ? "PASS" : "FAIL", failures };
+}
+
+export function classifyWebKitProxyHistoryRestoration({
+  engine,
+  sample,
+  before,
+  beforeUrl,
+  beforeScroll,
+  beforeDocument,
+  supportingResponseStatus,
+  supportingSnapshot,
+  expectedEntryScroll,
+  diagnostic,
+}) {
+  const listeners = diagnostic?.runtime?.windowScrollListeners ?? [];
+  const latestPageShow = (diagnostic?.runtime?.lifecycleEvents ?? [])
+    .filter((entry) => entry.type === "pageshow")
+    .at(-1) ?? null;
+  const actualProjection = Number.isFinite(diagnostic?.documentProgress)
+    ? projectTerritoryProgress(diagnostic.documentProgress)
+    : null;
+  const checks = {
+    webkitProxyOnly: engine === "webkit",
+    supportingResponseHealthy: [200, 304].includes(supportingResponseStatus),
+    semanticSupportingDeparture: supportingSnapshot?.pathname === "/about/"
+      && supportingSnapshot?.h1 === "Built between industry and technology."
+      && supportingSnapshot?.territoryCount === 0,
+    preDepartureStateGoverned: before?.status === "PASS"
+      && before?.rootPresent === true
+      && before?.state === sample?.state
+      && Math.abs(before?.progress - sample?.progress) <= 0.035
+      && before?.mode === "enhanced"
+      && before?.controller === "ready"
+      && before?.projection === "settled"
+      && before?.raf === "idle"
+      && before?.backgroundInert === false
+      && before?.fontsLoaded === true
+      && before?.carrierCount === 1
+      && before?.trackCount === 1
+      && Math.abs(before?.scrollY - beforeScroll) <= 2
+      && before?.wheelSettlement?.status === "PASS",
+    exactHistoryUrl: diagnostic?.url === beforeUrl,
+    backForwardNavigation: diagnostic?.navigationType === "back_forward",
+    automaticScrollRestoration: diagnostic?.scrollRestoration === "auto",
+    freshNonPersistedDocument: Number.isFinite(diagnostic?.timeOrigin)
+      && Number.isFinite(beforeDocument?.timeOrigin)
+      && diagnostic.timeOrigin !== beforeDocument.timeOrigin
+      && latestPageShow?.persisted === false,
+    retainedExactDeliberateEntryScroll: Number.isFinite(expectedEntryScroll)
+      && Math.abs(diagnostic?.scrollY - expectedEntryScroll) <= 2,
+    savedTerritoryScrollNotRestored: Number.isFinite(beforeScroll)
+      && Math.abs(diagnostic?.scrollY - beforeScroll) > 2,
+    exactEntryGeometry: diagnostic?.entry?.present === true
+      && diagnostic?.entry?.inert === false
+      && Number.isFinite(diagnostic?.entry?.rect?.top)
+      && Number.isFinite(diagnostic?.entry?.rect?.bottom)
+      && Number.isFinite(diagnostic?.entry?.scrollMarginTop)
+      && diagnostic?.entry?.rect?.width > 0
+      && diagnostic?.entry?.rect?.height > 0
+      && diagnostic?.entry?.rect?.bottom > 0
+      && diagnostic?.entry?.rect?.top < diagnostic?.viewport?.height
+      && Math.abs(diagnostic?.entry?.rect?.top - diagnostic?.entry?.scrollMarginTop) <= 2,
+    exactEntrySemanticRelease: diagnostic?.cinematic?.entryIntent == null
+      && diagnostic?.cinematic?.manifestoReveal === "resolved",
+    expectedDownstreamConcealmentAtEntry: diagnostic?.inert === true
+      && diagnostic?.cinematic?.routeNavigation === "concealed",
+    controllerMatchesActualDocumentPosition: actualProjection != null
+      && diagnostic?.state === actualProjection.state
+      && Math.abs(diagnostic?.progress - actualProjection.progress) <= 0.025,
+    controllerSettled: diagnostic?.mode === "enhanced"
+      && diagnostic?.controller === "ready"
+      && diagnostic?.projection === "settled"
+      && diagnostic?.raf === "idle",
+    semanticAndFontAuthorityPresent: diagnostic?.fonts === "loaded"
+      && diagnostic?.carrierCount === 1
+      && diagnostic?.trackCount === 1,
+    controllerRuntimeIdle: diagnostic?.runtime?.documentHidden === false
+      && diagnostic?.runtime?.pendingRafCount === 0
+      && diagnostic?.runtime?.intervalCount === 0,
+    scrollListenersHealthy: listeners.length === 3
+      && listeners.every((listener) => !listener.removed && !listener.signalAborted),
+    noProductionScrollWrites: diagnostic?.runtime?.runtimeScrollWrites?.length === 0,
+  };
+  return {
+    qualified: Object.values(checks).every(Boolean),
+    checks,
+    actualProjection,
+    latestPageShow,
+  };
 }
 
 function browserInstrumentation() {
@@ -1039,79 +1128,105 @@ async function scrollToDecide(page, timeoutMs) {
   };
 }
 
-async function reverseToMethodState(page, requestedState, timeoutMs, engine) {
+async function reverseToMethodState(page, requestedState, timeoutMs) {
   const range = METHOD_STATE_RANGES[requestedState];
   if (!range) throw new Error(`Unknown accepted METHOD state ${requestedState}.`);
   const geometry = await operatingFieldGeometry(page);
   if (!geometry) throw new Error("Accepted Phase 7B Operating Field geometry is unavailable.");
   const started = Date.now();
-  const step = Math.max(48, Math.min(96, geometry.viewportHeight / 8));
-  const attempts = [];
-
-  while (Date.now() - started < timeoutMs) {
-    const observed = await page.evaluate(({ start, travel }) => {
+  const requestedProgress = (range[0] + range[1]) / 2;
+  const target = geometry.start + geometry.travel * requestedProgress;
+  const wheelSettlement = await wheelToScrollTop(page, target, timeoutMs);
+  try {
+    await page.waitForFunction(({ state, progress, progressRange, start, travel, targetScrollTop }) => {
+      const field = document.querySelector("[data-operating-field]");
+      const controllerProgress = Number.parseFloat(field?.getAttribute("data-method-progress") ?? "NaN");
+      const documentProgress = Math.min(1, Math.max(0, (window.scrollY - start) / travel));
+      return Math.abs(window.scrollY - targetScrollTop) <= 2
+        && field?.getAttribute("data-method-state") === state
+        && Math.abs(controllerProgress - progress) <= 0.025
+        && Math.abs(documentProgress - progress) <= 0.025
+        && controllerProgress >= progressRange[0]
+        && controllerProgress < progressRange[1]
+        && documentProgress >= progressRange[0]
+        && documentProgress < progressRange[1]
+        && Math.abs(documentProgress - controllerProgress) <= 0.025
+        && field?.getAttribute("data-method-mode") === "enhanced"
+        && field?.getAttribute("data-method-controller") === "ready"
+        && field?.getAttribute("data-method-probe") === "settled"
+        && !field?.closest("[inert]")
+        && (!document.fonts || document.fonts.status === "loaded")
+        && (window.__phase7cQa?.pendingRafs?.size ?? 0) === 0;
+    }, {
+      state: requestedState,
+      progress: requestedProgress,
+      progressRange: range,
+      start: geometry.start,
+      travel: geometry.travel,
+      targetScrollTop: target,
+    }, { timeout: timeoutMs });
+  } catch (error) {
+    const diagnostic = await page.evaluate(({ start, travel, targetScrollTop }) => {
       const field = document.querySelector("[data-operating-field]");
       return {
+        targetScrollTop,
         scrollY: window.scrollY,
-        domProgress: Math.min(1, Math.max(0, (window.scrollY - start) / travel)),
+        documentProgress: Math.min(1, Math.max(0, (window.scrollY - start) / travel)),
         state: field?.getAttribute("data-method-state") ?? null,
         progress: Number.parseFloat(field?.getAttribute("data-method-progress") ?? "NaN"),
         mode: field?.getAttribute("data-method-mode") ?? null,
         controller: field?.getAttribute("data-method-controller") ?? null,
         probe: field?.getAttribute("data-method-probe") ?? null,
         inert: Boolean(field?.closest("[inert]")),
-        fontsLoaded: !document.fonts || document.fonts.status === "loaded",
-        pendingRafCount: window.__phase7cQa?.pendingRafs?.size ?? null,
+        fonts: document.fonts?.status ?? "unsupported",
+        runtime: window.__phase7cQa?.snapshot?.() ?? null,
       };
-    }, geometry);
-    attempts.push(observed);
-    const controllerReached = observed.state === requestedState
-      && Number.isFinite(observed.progress)
-      && observed.progress >= range[0]
-      && observed.progress < range[1]
-      && observed.mode === "enhanced"
-      && observed.controller === "ready"
-      && observed.probe === "settled"
-      && observed.inert === false
-      && observed.fontsLoaded
-      && observed.pendingRafCount === 0;
-    if (controllerReached) {
-      const exactDocumentAgreement = observed.domProgress >= range[0]
-        && observed.domProgress < range[1]
-        && Math.abs(observed.domProgress - observed.progress) <= 0.025;
-      if (exactDocumentAgreement) {
-        return {
-          requestedState: `Phase 7B ${requestedState.toUpperCase()} reverse reachability after history restoration`,
-          settlementMs: Date.now() - started,
-          timeoutMs,
-          input: "bounded Playwright wheel steps",
-          controllerProgressRange: range,
-          geometry,
-          attempts,
-          snapshot: observed,
-          exactDocumentAgreement,
-          status: "PASS",
-          limitations: [],
-        };
-      }
-    }
-    if (observed.scrollY <= geometry.start + 1) break;
-    const target = Math.max(geometry.start, observed.scrollY - step);
-    await page.mouse.wheel(0, target - observed.scrollY);
-    await page.waitForFunction(
-      ({ before }) => window.scrollY < before - 0.5,
-      { before: observed.scrollY },
-      { timeout: Math.min(timeoutMs, 5_000) },
-    );
-    await settleAfterPaint(page);
-    await page.waitForFunction(
-      () => (window.__phase7cQa?.pendingRafs?.size ?? 0) === 0,
-      null,
-      { timeout: Math.min(timeoutMs, 5_000) },
-    );
+    }, { start: geometry.start, travel: geometry.travel, targetScrollTop: target });
+    throw new Error(`Accepted ${requestedState} state did not settle during governed reverse: ${JSON.stringify({ geometry, requestedProgress, wheelSettlement, diagnostic })}; ${safeError(error)}`);
   }
-
-  throw new Error(`Accepted ${requestedState} state was not reachable after history restoration: ${JSON.stringify({ geometry, attempts })}`);
+  const snapshot = await page.evaluate(({ start, travel }) => {
+    const field = document.querySelector("[data-operating-field]");
+    const progress = Number.parseFloat(field?.getAttribute("data-method-progress") ?? "NaN");
+    return {
+      scrollY: window.scrollY,
+      domProgress: Math.min(1, Math.max(0, (window.scrollY - start) / travel)),
+      state: field?.getAttribute("data-method-state") ?? null,
+      progress,
+      mode: field?.getAttribute("data-method-mode") ?? null,
+      controller: field?.getAttribute("data-method-controller") ?? null,
+      probe: field?.getAttribute("data-method-probe") ?? null,
+      inert: Boolean(field?.closest("[inert]")),
+      fontsLoaded: !document.fonts || document.fonts.status === "loaded",
+      pendingRafCount: window.__phase7cQa?.pendingRafs?.size ?? null,
+    };
+  }, geometry);
+  const checks = {
+    scrollPositionMatches: Math.abs(snapshot.scrollY - target) <= 2,
+    stateMatches: snapshot.state === requestedState,
+    controllerProgressMatches: Math.abs(snapshot.progress - requestedProgress) <= 0.025,
+    documentProgressMatches: Math.abs(snapshot.domProgress - requestedProgress) <= 0.025,
+    exactDocumentAgreement: Math.abs(snapshot.domProgress - snapshot.progress) <= 0.025,
+    enhancedControllerSettled: snapshot.mode === "enhanced"
+      && snapshot.controller === "ready"
+      && snapshot.probe === "settled",
+    semanticBackgroundAvailable: snapshot.inert === false && snapshot.fontsLoaded,
+    rafIdle: snapshot.pendingRafCount === 0,
+  };
+  return {
+    requestedState: `Phase 7B ${requestedState.toUpperCase()} reverse reachability after Territory release`,
+    requestedProgress,
+    settlementMs: Date.now() - started,
+    timeoutMs,
+    input: "bounded Playwright wheel steps",
+    controllerProgressRange: range,
+    geometry,
+    wheelSettlement,
+    snapshot,
+    checks,
+    exactDocumentAgreement: checks.exactDocumentAgreement,
+    status: Object.values(checks).every(Boolean) ? "PASS" : "FAIL",
+    limitations: [],
+  };
 }
 
 async function settleMaradinAperture(page, timeoutMs) {
@@ -2270,6 +2385,8 @@ async function historyRestorationCase(browser, engine, configuration) {
   let bareEntryRelease = null;
   let entryRelease = null;
   let supportingEntry = null;
+  let historyRestorationAuthority = null;
+  let reverseEntrySeed = null;
   let reverseReachability = null;
   try {
     const response = await page.goto(`${configuration.baseUrl}/`, { waitUntil: "domcontentloaded", timeout: configuration.timeoutMs });
@@ -2329,12 +2446,48 @@ async function historyRestorationCase(browser, engine, configuration) {
       PHASE7C_STATE_SAMPLES.proof,
     ];
     const historyScrollToProgress = scrollToProgressWithWheel;
-    for (const sample of samples) {
+    for (const [sampleIndex, sample] of samples.entries()) {
+      let freshEntrySeed = null;
+      if (sampleIndex > 0) {
+        const seedResponse = await page.goto(`${configuration.baseUrl}/about/`, {
+          waitUntil: "domcontentloaded",
+          timeout: configuration.timeoutMs,
+        });
+        const seedOrigin = await page.evaluate(() => ({
+          pathname: location.pathname,
+          h1: document.querySelector("main h1")?.textContent.trim() ?? null,
+          territoryCount: document.querySelectorAll("[data-territory-traverse]").length,
+        }));
+        const seedChecks = {
+          responseHealthy: Boolean(seedResponse) && [200, 304].includes(seedResponse.status()),
+          semanticOrigin: seedOrigin.pathname === "/about/"
+            && seedOrigin.h1 === "Built between industry and technology."
+            && seedOrigin.territoryCount === 0,
+        };
+        if (Object.values(seedChecks).some((value) => !value)) {
+          throw new Error(`Fresh history seed did not establish the governed About origin: ${JSON.stringify({ responseStatus: seedResponse?.status() ?? null, seedOrigin, seedChecks })}`);
+        }
+        await page.waitForSelector('.brand-link[href="/#entry"]', { timeout: configuration.timeoutMs });
+        await page.locator('.brand-link[href="/#entry"]').click();
+        await page.waitForURL(`${configuration.baseUrl}/#entry`, { timeout: configuration.timeoutMs });
+        await page.waitForSelector("[data-territory-traverse]", { timeout: configuration.timeoutMs });
+        await waitForFontsLoaded(page, configuration.timeoutMs);
+        freshEntrySeed = {
+          responseStatus: seedResponse.status(),
+          origin: seedOrigin,
+          checks: seedChecks,
+          release: await waitForDeliberateEntryRelease(page, configuration.timeoutMs),
+        };
+      }
       const geometry = await territoryGeometry(page);
       const before = await historyScrollToProgress(page, geometry, { ...sample, mode: "enhanced" }, configuration.timeoutMs);
       if (sample.state === "proof") await settleMaradinAperture(page, configuration.timeoutMs);
       const beforeUrl = page.url();
       const beforeScroll = await page.evaluate(() => window.scrollY);
+      const beforeDocument = await page.evaluate(() => ({
+        timeOrigin: performance.timeOrigin,
+        navigationType: performance.getEntriesByType("navigation")[0]?.type ?? null,
+      }));
       const supporting = await page.goto(`${configuration.baseUrl}/about/`, {
         waitUntil: "domcontentloaded",
         timeout: configuration.timeoutMs,
@@ -2348,20 +2501,136 @@ async function historyRestorationCase(browser, engine, configuration) {
       await page.goBack({ waitUntil: "domcontentloaded", timeout: configuration.timeoutMs });
       await page.waitForSelector("[data-territory-traverse]", { timeout: configuration.timeoutMs });
       await waitForFontsLoaded(page, configuration.timeoutMs);
-      await page.waitForFunction(({ state, progress }) => {
-        const root = document.querySelector("[data-territory-traverse]");
-        const actual = Number.parseFloat(root?.getAttribute("data-territory-progress") ?? "NaN");
-        return root?.getAttribute("data-territory-state") === state
-          && Math.abs(actual - progress) <= 0.035
-          && root?.getAttribute("data-territory-mode") === "enhanced"
-          && root?.getAttribute("data-territory-controller") === "ready"
-          && root?.getAttribute("data-territory-projection") === "settled"
-          && root?.getAttribute("data-territory-raf") === "idle"
-          && !root.closest("[inert]")
-          && (!document.fonts || document.fonts.status === "loaded")
-          && document.querySelectorAll("[data-territory-carrier]").length === 1
-          && document.querySelectorAll("[data-territory-track]").length === 1;
-      }, sample, { timeout: configuration.timeoutMs });
+      try {
+        await page.waitForFunction(({ state, progress }) => {
+          const root = document.querySelector("[data-territory-traverse]");
+          const actual = Number.parseFloat(root?.getAttribute("data-territory-progress") ?? "NaN");
+          return root?.getAttribute("data-territory-state") === state
+            && Math.abs(actual - progress) <= 0.035
+            && root?.getAttribute("data-territory-mode") === "enhanced"
+            && root?.getAttribute("data-territory-controller") === "ready"
+            && root?.getAttribute("data-territory-projection") === "settled"
+            && root?.getAttribute("data-territory-raf") === "idle"
+            && !root.closest("[inert]")
+            && (!document.fonts || document.fonts.status === "loaded")
+            && document.querySelectorAll("[data-territory-carrier]").length === 1
+            && document.querySelectorAll("[data-territory-track]").length === 1;
+        }, sample, { timeout: configuration.timeoutMs });
+      } catch (error) {
+        await settleAfterPaint(page).catch(() => undefined);
+        await page.waitForFunction(
+          () => (window.__phase7cQa?.pendingRafs?.size ?? 0) === 0,
+          null,
+          { timeout: Math.min(configuration.timeoutMs, 2_000) },
+        ).catch(() => undefined);
+        const diagnostic = await page.evaluate(({ expected, expectedScroll }) => {
+          const root = document.querySelector("[data-territory-traverse]");
+          const runway = document.querySelector("[data-territory-runway]");
+          const entry = document.querySelector("#entry");
+          const shell = document.querySelector("[data-cinematic-shell]");
+          const runwayRect = runway?.getBoundingClientRect();
+          const entryRect = entry?.getBoundingClientRect();
+          const start = runwayRect ? window.scrollY + runwayRect.top : null;
+          const travel = runwayRect ? Math.max(1, runwayRect.height - window.innerHeight) : null;
+          return {
+            expected,
+            expectedScroll,
+            url: location.href,
+            timeOrigin: performance.timeOrigin,
+            navigationType: performance.getEntriesByType("navigation")[0]?.type ?? null,
+            scrollRestoration: history.scrollRestoration,
+            scrollY: window.scrollY,
+            viewport: { width: window.innerWidth, height: window.innerHeight },
+            geometry: start == null || travel == null ? null : { start, travel },
+            documentProgress: start == null || travel == null
+              ? null
+              : Math.min(1, Math.max(0, (window.scrollY - start) / travel)),
+            state: root?.getAttribute("data-territory-state") ?? null,
+            progress: Number.parseFloat(root?.getAttribute("data-territory-progress") ?? "NaN"),
+            mode: root?.getAttribute("data-territory-mode") ?? null,
+            controller: root?.getAttribute("data-territory-controller") ?? null,
+            projection: root?.getAttribute("data-territory-projection") ?? null,
+            raf: root?.getAttribute("data-territory-raf") ?? null,
+            inert: Boolean(root?.closest("[inert]")),
+            fonts: document.fonts?.status ?? "unsupported",
+            carrierCount: document.querySelectorAll("[data-territory-carrier]").length,
+            trackCount: document.querySelectorAll("[data-territory-track]").length,
+            entry: {
+              present: entry instanceof HTMLElement,
+              inert: Boolean(entry?.closest("[inert]")),
+              rect: entryRect ? { top: entryRect.top, bottom: entryRect.bottom, width: entryRect.width, height: entryRect.height } : null,
+              scrollMarginTop: entry instanceof HTMLElement
+                ? Number.parseFloat(getComputedStyle(entry).scrollMarginTop) || 0
+                : null,
+            },
+            cinematic: {
+              mode: document.documentElement.dataset.cinematicMode ?? null,
+              entryIntent: document.documentElement.dataset.cinematicEntryIntent ?? null,
+              routeNavigation: shell?.getAttribute("data-route-navigation") ?? null,
+              manifestoReveal: shell?.getAttribute("data-manifesto-reveal") ?? null,
+            },
+            runtime: window.__phase7cQa?.snapshot?.() ?? null,
+          };
+        }, { expected: sample, expectedScroll: beforeScroll });
+        const failedCapture = await screenshot(
+          page,
+          configuration.output,
+          `screenshots/${engine}/history/failed-${sample.state}.png`,
+        );
+        artifacts.push(failedCapture);
+        const expectedEntryScroll = freshEntrySeed?.release?.snapshot?.scrollY
+          ?? entryRelease?.snapshot?.scrollY
+          ?? null;
+        const boundedLimitation = classifyWebKitProxyHistoryRestoration({
+          engine,
+          sample,
+          before,
+          beforeUrl,
+          beforeScroll,
+          beforeDocument,
+          supportingResponseStatus,
+          supportingSnapshot,
+          expectedEntryScroll,
+          diagnostic,
+        });
+        if (boundedLimitation.qualified) {
+          const limitation = `LIMITATION — WEBKIT PROXY HISTORY RESTORATION: ${sample.state} returned to the exact history URL in a non-persisted back/forward document, but Playwright WebKit retained the deliberate-entry scroll position instead of restoring ${beforeScroll}px; physical Safari is not inferred.`;
+          limitations.push(limitation);
+          const restored = await settlementSnapshot(page);
+          records.push({
+            sample,
+            status: "LIMITATION",
+            limitation,
+            freshEntrySeed,
+            before,
+            beforeUrl,
+            beforeScroll,
+            beforeDocument,
+            supportingResponseStatus,
+            supportingSnapshot,
+            restoredUrl: page.url(),
+            restoredScroll: restored.scrollY,
+            restored,
+            checks: {
+              supportingResponseHealthy: supportingResponseStatus == null || [200, 304].includes(supportingResponseStatus),
+              actualSupportingDeparture: supportingSnapshot.pathname === "/about/"
+                && supportingSnapshot.h1 === "Built between industry and technology."
+                && supportingSnapshot.territoryCount === 0,
+              returnedToExactHistoryEntry: page.url() === beforeUrl,
+              restoredState: false,
+              restoredScrollPosition: false,
+              healthyReloadedController: diagnostic.mode === "enhanced"
+                && diagnostic.controller === "ready"
+                && boundedLimitation.checks.scrollListenersHealthy,
+            },
+            boundedLimitation,
+            diagnostic,
+            capture: failedCapture,
+          });
+          continue;
+        }
+        throw new Error(`History restoration did not settle for ${sample.state}: ${JSON.stringify(diagnostic)}; ${safeError(error)}`);
+      }
       const restored = await settlementSnapshot(page);
       const restoredUrl = page.url();
       const restoredScroll = restored.scrollY;
@@ -2386,20 +2655,157 @@ async function historyRestorationCase(browser, engine, configuration) {
       }
       const capture = await screenshot(page, configuration.output, `screenshots/${engine}/history/restored-${sample.state}.png`);
       artifacts.push(capture);
-      records.push({ sample, beforeUrl, beforeScroll, supportingResponseStatus, supportingSnapshot, restoredUrl, restoredScroll, restored, checks, capture });
+      const recordStatus = Object.values(checks).every(Boolean) ? "PASS" : "FAIL";
+      records.push({ sample, status: recordStatus, freshEntrySeed, before, beforeUrl, beforeScroll, beforeDocument, supportingResponseStatus, supportingSnapshot, restoredUrl, restoredScroll, restored, checks, capture });
     }
 
-    const aperture = await settleMaradinAperture(page, configuration.timeoutMs);
+    const expectedHistoryStates = samples.map((sample) => sample.state);
+    const observedHistoryStates = records.map((record) => record.restored.state);
+    const limitedHistoryRecords = records.filter((record) => record.status === "LIMITATION");
+    const passedHistoryRecords = records.filter((record) => record.status === "PASS");
+    const historyChecks = {
+      exactRecordCount: records.length === samples.length,
+      exactStateOrderWhereObserved: passedHistoryRecords.every((record) => record.restored.state === record.sample.state),
+      everyObservedRestorationCheckPassed: passedHistoryRecords.every((record) => Object.values(record.checks).every(Boolean)),
+      everyFreshSeedAfterFirstPassed: records.slice(1).every((record) => (
+        record.freshEntrySeed != null
+        && Object.values(record.freshEntrySeed.checks).every(Boolean)
+      )),
+      onlyBoundedWebKitProxyLimitations: limitedHistoryRecords.length === 0
+        || (engine === "webkit" && limitedHistoryRecords.every((record) => (
+          record.limitation?.startsWith("LIMITATION — WEBKIT PROXY HISTORY RESTORATION:")
+          && record.boundedLimitation?.qualified === true
+          && Object.values(record.boundedLimitation.checks ?? {}).every(Boolean)
+        ))),
+      noUnclassifiedRecord: records.every((record) => ["PASS", "LIMITATION"].includes(record.status)),
+    };
+    const exactStateOrder = JSON.stringify(observedHistoryStates) === JSON.stringify(expectedHistoryStates);
+    const historyStatus = Object.values(historyChecks).every(Boolean)
+      ? limitedHistoryRecords.length > 0 ? "LIMITATION" : exactStateOrder ? "PASS" : "FAIL"
+      : "FAIL";
+    historyRestorationAuthority = {
+      expectedHistoryStates,
+      observedHistoryStates,
+      exactStateOrder,
+      passedStateCount: passedHistoryRecords.length,
+      limitedStateCount: limitedHistoryRecords.length,
+      checks: historyChecks,
+      status: historyStatus,
+    };
+    if (historyRestorationAuthority.status === "FAIL") {
+      failures.push("five-state supporting-route departure/back history restoration authority");
+    }
+
+    const restoredDocumentTimeOrigin = await page.evaluate(() => performance.timeOrigin);
+    const reverseSeedResponse = await page.goto(`${configuration.baseUrl}/about/`, {
+      waitUntil: "domcontentloaded",
+      timeout: configuration.timeoutMs,
+    });
+    const reverseSeedOrigin = await page.evaluate(() => ({
+      pathname: location.pathname,
+      h1: document.querySelector("main h1")?.textContent.trim() ?? null,
+      territoryCount: document.querySelectorAll("[data-territory-traverse]").length,
+    }));
+    const reverseSeedChecks = {
+      responseHealthy: Boolean(reverseSeedResponse) && [200, 304].includes(reverseSeedResponse.status()),
+      semanticOrigin: reverseSeedOrigin.pathname === "/about/"
+        && reverseSeedOrigin.h1 === "Built between industry and technology."
+        && reverseSeedOrigin.territoryCount === 0,
+    };
+    if (Object.values(reverseSeedChecks).some((value) => !value)) {
+      throw new Error(`Fresh reverse seed did not establish the governed About origin: ${JSON.stringify({ responseStatus: reverseSeedResponse?.status() ?? null, reverseSeedOrigin, reverseSeedChecks })}`);
+    }
+    await page.waitForSelector('.brand-link[href="/#entry"]', { timeout: configuration.timeoutMs });
+    await page.locator('.brand-link[href="/#entry"]').click();
+    await page.waitForURL(`${configuration.baseUrl}/#entry`, { timeout: configuration.timeoutMs });
+    await page.waitForSelector("[data-territory-traverse]", { timeout: configuration.timeoutMs });
+    await waitForFontsLoaded(page, configuration.timeoutMs);
+    const reverseRelease = await waitForDeliberateEntryRelease(page, configuration.timeoutMs);
+    const reverseDocument = await page.evaluate(() => {
+      const pageshowEvents = (window.__phase7cQa?.lifecycleEvents ?? [])
+        .filter((entry) => entry.type === "pageshow");
+      return {
+        url: location.href,
+        timeOrigin: performance.timeOrigin,
+        navigationType: performance.getEntriesByType("navigation")[0]?.type ?? null,
+        pageshowEvents,
+      };
+    });
+    const reverseDocumentChecks = {
+      exactDestination: reverseDocument.url === `${configuration.baseUrl}/#entry`,
+      freshDocument: reverseDocument.timeOrigin !== restoredDocumentTimeOrigin,
+      normalNavigation: reverseDocument.navigationType === "navigate",
+      nonPersistedPageShow: reverseDocument.pageshowEvents.length > 0
+        && reverseDocument.pageshowEvents.at(-1).persisted === false,
+    };
+    reverseEntrySeed = {
+      responseStatus: reverseSeedResponse.status(),
+      origin: reverseSeedOrigin,
+      restoredDocumentTimeOrigin,
+      document: reverseDocument,
+      checks: { ...reverseSeedChecks, ...reverseDocumentChecks },
+      release: reverseRelease,
+    };
+    if (Object.values(reverseEntrySeed.checks).some((value) => !value)) {
+      throw new Error(`Fresh reverse document did not satisfy the governed navigation boundary: ${JSON.stringify(reverseEntrySeed)}`);
+    }
+
     const territoryGeometryValue = await territoryGeometry(page);
+    const carrierReferenceSet = await page.evaluate(() => window.__phase7cQa.setCarrierReference());
+    const forwardToProofStates = [];
+    for (const sample of Object.values(PHASE7C_STATE_SAMPLES)) {
+      const settlement = await historyScrollToProgress(
+        page,
+        territoryGeometryValue,
+        { ...sample, mode: "enhanced" },
+        configuration.timeoutMs,
+      );
+      const projection = await projectionSnapshot(page);
+      forwardToProofStates.push({ sample, settlement, projection });
+    }
+    const aperture = await settleMaradinAperture(page, configuration.timeoutMs);
+    const reverseInputBoundary = await page.evaluate(() => {
+      window.__phase7cQa.resetRuntimeWrites();
+      return window.__phase7cQa.snapshot();
+    });
     const reverseStates = [];
     for (const sample of [...Object.values(PHASE7C_STATE_SAMPLES)].reverse()) {
-      reverseStates.push(await historyScrollToProgress(page, territoryGeometryValue, { ...sample, mode: "enhanced" }, configuration.timeoutMs));
+      const settlement = await historyScrollToProgress(page, territoryGeometryValue, { ...sample, mode: "enhanced" }, configuration.timeoutMs);
+      const projection = await projectionSnapshot(page);
+      reverseStates.push({ sample, settlement, projection });
     }
     const decide = await reverseToMethodState(page, "decide", configuration.timeoutMs);
     limitations.push(...(decide.limitations ?? []));
     const physical = await settlePhysicalFirstFrame(page, configuration.timeoutMs, "wheel");
-    reverseReachability = { aperture, reverseStates, decide, physical };
-    if (aperture.status === "FAIL" || reverseStates.some((entry) => entry.status === "FAIL") || decide.status === "FAIL" || physical.status === "FAIL") {
+    const reverseInputResult = await page.evaluate(() => window.__phase7cQa.snapshot());
+    const reverseChecks = {
+      freshEntrySeedPassed: Object.values(reverseEntrySeed.checks).every(Boolean),
+      carrierReferenceSet,
+      forwardReachedEveryState: forwardToProofStates.length === Object.values(PHASE7C_STATE_SAMPLES).length
+        && forwardToProofStates.every((entry) => entry.settlement.status === "PASS"),
+      forwardPreservedCarrier: forwardToProofStates.every((entry) => entry.projection.sameCarrier),
+      apertureSettled: aperture.status === "PASS",
+      reverseReachedEveryState: reverseStates.length === Object.values(PHASE7C_STATE_SAMPLES).length
+        && reverseStates.every((entry) => entry.settlement.status === "PASS"),
+      reversePreservedCarrier: reverseStates.every((entry) => entry.projection.sameCarrier),
+      realWheelEventsDelivered: reverseInputResult.scrollEventCount > reverseInputBoundary.scrollEventCount,
+      noProductionScrollWritesDuringReverse: reverseInputResult.runtimeScrollWrites.length === 0,
+      decideReached: decide.status === "PASS",
+      physicalF1Reached: physical.status === "PASS",
+    };
+    reverseReachability = {
+      entrySeed: reverseEntrySeed,
+      forwardToProofStates,
+      aperture,
+      reverseInputBoundary,
+      reverseStates,
+      decide,
+      physical,
+      reverseInputResult,
+      checks: reverseChecks,
+      status: Object.values(reverseChecks).every(Boolean) ? "PASS" : "FAIL",
+    };
+    if (reverseReachability.status === "FAIL") {
       failures.push("complete reverse reachability from Maradin aperture through DECIDE to physical F1");
     }
   } catch (error) {
@@ -2423,8 +2829,10 @@ async function historyRestorationCase(browser, engine, configuration) {
     bareEntryRelease,
     entryRelease,
     supportingEntry,
-    historyScrollDriver: "Playwright wheel input after a real supporting-route link navigation",
+    historyScrollDriver: "Playwright wheel input after independently seeded real supporting-route link navigations; restoration and complete reverse are governed separately",
     records,
+    historyRestorationAuthority,
+    reverseEntrySeed,
     reverseReachability,
     artifacts,
   };
