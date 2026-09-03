@@ -94,7 +94,7 @@ test("the territory coordinate color retains its audited worst-case contrast flo
     /\.territory-passage__coordinate[^{}]*\.territory-proof__eyebrow\s*\{[^}]*color:rgba\(208,217,215,\.([0-9]+)\)/,
   );
   assert.ok(match, "the governed coordinate color is missing");
-  assert.ok(Number(`0.${match[1]}`) >= 0.74, "the coordinate color falls below the audited opacity floor");
+  assert.ok(Number(`0.${match[1]}`) >= 0.75, "the coordinate color falls below the audited opacity floor");
 });
 
 test("dependency comparison rejects runtime or development package drift", () => {
