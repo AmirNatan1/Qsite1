@@ -209,7 +209,7 @@ export function assertPhase7CRuntimeContract({ controllerSource, stateSource, cs
     );
     assert.match(
       cssSource,
-      /data-territory-mode=["']enhanced["'][^{}]*\.territory-passage__coordinate[^{}]*\.territory-passage h3[^{}]*\.territory-passage__copy\s*>\s*p:last-child\s*\{[^}]*box-sizing:content-box[^}]*margin-inline:-\.5rem[^}]*padding-inline:\.5rem[^}]*background:#080b0c[^}]*box-shadow:/,
+      /data-territory-mode=["']enhanced["'][^{}]*\.territory-passage__coordinate[^{}]*\.territory-passage h3[^{}]*\.territory-passage__copy\s*>\s*p:last-child\s*\{[^}]*box-sizing:content-box[^}]*margin-inline:-\.5rem -5rem[^}]*padding-inline:\.5rem 5rem[^}]*background:#080b0c[^}]*box-shadow:/,
       "enhanced territory copy must retain the controlled field-material occlusion",
     );
     assert.doesNotMatch(cssSource, /scroll-snap|scroll-behavior|overflow-y:\s*(?:auto|scroll)/i);
