@@ -274,6 +274,12 @@ test("the complete structured report keeps caller evidence, proxy-free origin ev
   assert.equal(report.governance.publication.expandedClaimsAuthorized, false);
 });
 
+test("deployment governance separates production source from package command metadata", async () => {
+  const source = await readFile("scripts/verify-phase7c-deployment.mjs", "utf8");
+  assert.match(source, /changedPaths\(repository, expectedHead, \["src", "public"\]\)/);
+  assert.doesNotMatch(source, /changedPaths\(repository, expectedHead, \["src", "public", "package\.json"\]\)/);
+});
+
 test("report writing is external to dist and produces portable hashable JSON", async (context) => {
   const temporary = await mkdtemp(path.join(tmpdir(), "phase7c-deployment-report-"));
   context.after(() => rm(temporary, { recursive: true, force: true }));

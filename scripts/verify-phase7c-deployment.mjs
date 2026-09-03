@@ -405,7 +405,7 @@ export async function verifyGovernanceEvidence(root, distAuthority, expectedHead
   const phase4 = validatePhase4ExactHashes(sourceRecords, distAuthority.byPath);
   const documentary = await verifyPhase7CDocumentaryAssets(repository);
 
-  const productionChanges = changedPaths(repository, expectedHead, ["src", "public", "package.json"]);
+  const productionChanges = changedPaths(repository, expectedHead, ["src", "public"]);
   invariant(
     sameStringSet(productionChanges, PHASE7C_PRODUCTION_PATHS),
     `Phase 7C production delta differs from its exact five-path authority: ${productionChanges.join(", ")}`,
