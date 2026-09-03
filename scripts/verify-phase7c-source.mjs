@@ -154,6 +154,8 @@ export function assertPhase7CComponentContract(componentSource) {
     "territory and Proof semantic order differs",
   );
   assert.equal((componentSource.match(/data-industry-id=/g) ?? []).length, PHASE7C_INDUSTRIES.length);
+  assert.equal((componentSource.match(/data-territory-passage\b/g) ?? []).length, PHASE7C_INDUSTRIES.length);
+  assert.equal((componentSource.match(/data-territory-title(?=[\s>])/g) ?? []).length, PHASE7C_INDUSTRIES.length);
   assert.equal((componentSource.match(/data-territory-static=/g) ?? []).length, PHASE7C_INDUSTRIES.length);
   assert.equal(occurrences(componentSource, "data-territory-carrier"), 1, "one permanent carrier source token is required");
   assert.match(componentSource, /<path[\s\S]*?data-territory-carrier[\s\S]*?<\/svg>/);
@@ -167,6 +169,7 @@ export function assertPhase7CComponentContract(componentSource) {
   assert.match(componentSource, /height=\{proofPoster\.height\}/);
   assert.match(componentSource, /loading="lazy"/);
   assert.match(componentSource, /data-proof-record="maradin"/);
+  assert.equal(occurrences(componentSource, "data-proof-title"), 1, "Proof requires one stable title identifier");
   assert.equal((componentSource.match(/<a\b/g) ?? []).length, 1, "Phase 7C adds only the Maradin record link");
   assert.match(componentSource, /<a[^>]+href="\/pocs\/maradin\/"/);
   assert.match(componentSource, /initTerritoryTraverse/);

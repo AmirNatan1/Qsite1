@@ -60,7 +60,7 @@ if (
   </header>
 
   <div class="territory-world__runway" data-territory-runway>
-    <div class="territory-world__visual" aria-hidden="true">
+    <div class="territory-world__visual" data-territory-visual aria-hidden="true">
       <svg
         class="territory-track"
         data-territory-track
@@ -133,13 +133,14 @@ if (
     <div class="territory-world__passages">
       <section
         class="territory-passage territory-passage--automotive"
+        data-territory-passage
         data-territory-stage="automotive"
         data-industry-id={automotive.id}
         aria-labelledby="territory-automotive-title"
       >
         <div class="territory-passage__copy">
           <p class="territory-passage__coordinate">Condition 01 / extension</p>
-          <h3 id="territory-automotive-title">{automotive.name}</h3>
+          <h3 id="territory-automotive-title" data-territory-title>{automotive.name}</h3>
           <p>Movement stretches the decision-ready signal across distance and direction.</p>
         </div>
         <div
@@ -156,13 +157,14 @@ if (
 
       <section
         class="territory-passage territory-passage--logistics"
+        data-territory-passage
         data-territory-stage="logistics"
         data-industry-id={logistics.id}
         aria-labelledby="territory-logistics-title"
       >
         <div class="territory-passage__copy">
           <p class="territory-passage__coordinate">Condition 02 / routing</p>
-          <h3 id="territory-logistics-title">{logistics.name}</h3>
+          <h3 id="territory-logistics-title" data-territory-title>{logistics.name}</h3>
           <p>Routing carries the same signal through transfer, handoff and conditional passage.</p>
         </div>
         <div
@@ -180,13 +182,14 @@ if (
 
       <section
         class="territory-passage territory-passage--manufacturing"
+        data-territory-passage
         data-territory-stage="manufacturing"
         data-industry-id={manufacturing.id}
         aria-labelledby="territory-manufacturing-title"
       >
         <div class="territory-passage__copy">
           <p class="territory-passage__coordinate">Condition 03 / tolerance</p>
-          <h3 id="territory-manufacturing-title">
+          <h3 id="territory-manufacturing-title" data-territory-title>
             <span data-territory-title-atom>{manufacturingAtoms[0]}</span>{" "}
             <span data-territory-title-atom>{manufacturingAtoms[1]}</span>{" "}
             <span data-territory-title-atom>{manufacturingAtoms[2]}</span>
@@ -208,13 +211,14 @@ if (
 
       <section
         class="territory-passage territory-passage--energy"
+        data-territory-passage
         data-territory-stage="energy"
         data-industry-id={energy.id}
         aria-labelledby="territory-energy-title"
       >
         <div class="territory-passage__copy">
           <p class="territory-passage__coordinate">Condition 04 / load</p>
-          <h3 id="territory-energy-title">{energy.name}</h3>
+          <h3 id="territory-energy-title" data-territory-title>{energy.name}</h3>
           <p>Load enlarges the same signal into span, conduit and structural consequence.</p>
         </div>
         <div
@@ -247,7 +251,7 @@ if (
   >
     <div class="territory-proof__content">
       <p class="territory-proof__eyebrow">Proof / field record 01</p>
-      <h3 id="territory-proof-title">{maradinProofRecord.title}</h3>
+      <h3 id="territory-proof-title" data-proof-title>{maradinProofRecord.title}</h3>
       <p>{maradinProofRecord.summary}</p>
 
       <figure class="territory-proof__figure">
