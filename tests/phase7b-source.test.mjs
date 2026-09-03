@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { canonicalSourceBytes, verifyPhase7BSource } from "../scripts/verify-phase7b-source.mjs";
+import { PHASE7C_BRANCH } from "../scripts/phase7c-contract.mjs";
 
 test("source byte budgets are invariant across LF and Windows CRLF checkouts", () => {
   assert.equal(canonicalSourceBytes("alpha\nbeta\n"), canonicalSourceBytes("alpha\r\nbeta\r\n"));
@@ -16,4 +17,5 @@ test("the complete Phase 7B source authority passes as one fail-closed report", 
   assert.ok(report.humanGates.every(({ decision }) => decision === "PENDING HUMAN REVIEW"));
   assert.equal(report.runtimeDependenciesAdded, 0);
   assert.equal(report.runtimeAssetsAdded, 0);
+  if (report.branch === PHASE7C_BRANCH) assert.equal(report.authorityProfile, "phase7c-inherited");
 });

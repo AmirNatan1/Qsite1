@@ -4,8 +4,20 @@ import {
   PHASE7B_PARENT,
   PHASE7B_REVIEW_ZIP_NAME,
 } from "./phase7b-contract.mjs";
+import {
+  PHASE7C_BRANCH,
+  PHASE7C_PARENT,
+  PHASE7C_REVIEW_ZIP_NAME,
+} from "./phase7c-contract.mjs";
 
-export { PHASE7B_BRANCH, PHASE7B_PARENT, PHASE7B_REVIEW_ZIP_NAME };
+export {
+  PHASE7B_BRANCH,
+  PHASE7B_PARENT,
+  PHASE7B_REVIEW_ZIP_NAME,
+  PHASE7C_BRANCH,
+  PHASE7C_PARENT,
+  PHASE7C_REVIEW_ZIP_NAME,
+};
 
 export const PHASE7A_BRANCH = "redirect/phase-7a-signal-field-threshold";
 export const PHASE7A_PARENT = "371e3e8a21a1d215ecaf2bf14b9f509432b230b0";
@@ -142,6 +154,13 @@ const AUTHORITY_PROFILES = Object.freeze({
     parent: PHASE7B_PARENT,
     frozenMain: FROZEN_MAIN,
     reviewZipName: PHASE7B_REVIEW_ZIP_NAME,
+  }),
+  "phase7c-inherited": Object.freeze({
+    id: "phase7c-inherited",
+    branch: PHASE7C_BRANCH,
+    parent: PHASE7C_PARENT,
+    frozenMain: FROZEN_MAIN,
+    reviewZipName: PHASE7C_REVIEW_ZIP_NAME,
   }),
 });
 

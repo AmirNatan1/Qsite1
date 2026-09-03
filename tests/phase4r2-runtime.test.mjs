@@ -521,11 +521,12 @@ test("the active build remains fail-closed around the accepted Phase 7A and nest
   const packageManifest = JSON.parse(readFileSync(path.join(root, "package.json"), "utf8"));
   const finalBuild = readFileSync(path.join(root, "scripts", "run-phase7a-build.mjs"), "utf8");
   const phase7bBuild = readFileSync(path.join(root, "scripts", "run-phase7b-build.mjs"), "utf8");
+  const phase7cBuild = readFileSync(path.join(root, "scripts", "run-phase7c-build.mjs"), "utf8");
   const legacyStage = readFileSync(path.join(root, "scripts", "stage-phase4-media.mjs"), "utf8");
   const r2Stage = readFileSync(path.join(root, "scripts", "stage-phase4r2-runtime-media.mjs"), "utf8");
   const outputVerifier = readFileSync(path.join(root, "scripts", "verify-phase7a-output.mjs"), "utf8");
 
-  assert.equal(packageManifest.scripts.build, "node scripts/run-phase7b-build.mjs");
+  assert.equal(packageManifest.scripts.build, "node scripts/run-phase7c-build.mjs");
   assert.equal(packageManifest.scripts["build:phase4r2-final"], "node scripts/run-phase4r2-final-build.mjs");
   assert.match(finalBuild, /PHASE4R2_FINAL_AUTHORITY: "1"/);
   assert.match(finalBuild, /verify-phase7a-environment\.mjs/);
@@ -539,6 +540,12 @@ test("the active build remains fail-closed around the accepted Phase 7A and nest
   assert.match(phase7bBuild, /stage-phase4r2-runtime-media\.mjs/);
   assert.match(phase7bBuild, /node_modules\/astro\/bin\/astro\.mjs/);
   assert.match(phase7bBuild, /verify-phase7b-output\.mjs/);
+  assert.match(phase7cBuild, /PHASE4R2_FINAL_AUTHORITY: "1"/);
+  assert.match(phase7cBuild, /verify-phase7c-source\.mjs/);
+  assert.match(phase7cBuild, /stage-phase4-media\.mjs/);
+  assert.match(phase7cBuild, /stage-phase4r2-runtime-media\.mjs/);
+  assert.match(phase7cBuild, /node_modules\/astro\/bin\/astro\.mjs/);
+  assert.match(phase7cBuild, /verify-phase7c-output\.mjs/);
   assert.match(legacyStage, /FINAL_AUTHORITY_EXPECTED/);
   assert.match(legacyStage, /Pruned .*legacy cinematic/);
   assert.match(r2Stage, /PHASE4R21_MANIFEST_RELATIVE/);

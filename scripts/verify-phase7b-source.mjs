@@ -16,6 +16,10 @@ import {
   PHASE7B_REQUIRED_NODE,
   PHASE7B_REVIEW_ZIP_NAME,
 } from "./phase7b-contract.mjs";
+import {
+  PHASE7C_BRANCH,
+  PHASE7C_PARENT,
+} from "./phase7c-contract.mjs";
 import { verifySource as verifyInheritedPhase7A } from "./verify-phase7a-source.mjs";
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
@@ -56,19 +60,41 @@ export function canonicalSourceBytes(source) {
   return Buffer.byteLength(source.replace(/\r\n?/g, "\n"));
 }
 
-export async function verifyPhase7BSource(root = process.cwd(), environment = process.env) {
-  const inherited = await verifyInheritedPhase7A(root, environment, "phase7b-inherited");
+export async function verifyPhase7BSource(root = process.cwd(), environment = process.env, authorityProfile) {
+  const localBranch = git(root, ["branch", "--show-current"]);
+  const activeBranch = localBranch || (environment.CF_PAGES === "1" ? environment.CF_PAGES_BRANCH ?? "" : "");
+  const profile = authorityProfile ?? (activeBranch === PHASE7C_BRANCH ? "phase7c-inherited" : "phase7b");
+  assert.ok(["phase7b", "phase7c-inherited"].includes(profile), `unknown Phase 7B authority profile: ${profile}`);
+  const successor = profile === "phase7c-inherited";
+  const expectedBranch = successor ? PHASE7C_BRANCH : PHASE7B_BRANCH;
+  const acceptedAuthorityHead = successor ? PHASE7C_PARENT : git(root, ["rev-parse", "HEAD"]);
+  const inherited = await verifyInheritedPhase7A(
+    root,
+    environment,
+    successor ? "phase7c-inherited" : "phase7b-inherited",
+  );
   const read = (relative) => readFile(path.join(root, relative), "utf8");
   const head = git(root, ["rev-parse", "HEAD"]);
-  const localBranch = git(root, ["branch", "--show-current"]);
   const branch = localBranch || (environment.CF_PAGES === "1" ? environment.CF_PAGES_BRANCH ?? "" : "");
-  const firstCommit = git(root, ["rev-list", "--reverse", `${PHASE7B_PARENT}..${head}`]).split(/\r?\n/)[0];
+  const firstCommit = git(root, ["rev-list", "--reverse", `${PHASE7B_PARENT}..${acceptedAuthorityHead}`]).split(/\r?\n/)[0];
   const firstParent = firstCommit ? git(root, ["rev-parse", `${firstCommit}^`]) : "";
-  const merges = git(root, ["rev-list", "--merges", `${PHASE7B_PARENT}..${head}`]);
+  const merges = git(root, ["rev-list", "--merges", `${PHASE7B_PARENT}..${acceptedAuthorityHead}`]);
 
-  assert.equal(branch, PHASE7B_BRANCH, "wrong Phase 7B branch");
+  assert.equal(branch, expectedBranch, `wrong ${profile} branch`);
   assert.equal(firstParent, PHASE7B_PARENT, "first Phase 7B commit must descend directly from accepted Phase 7A");
   assert.equal(merges, "", "Phase 7B history must remain linear");
+  if (successor) {
+    assert.equal(
+      git(root, ["merge-base", "--is-ancestor", PHASE7C_PARENT, head]),
+      "",
+      "accepted Phase 7B HEAD is not an ancestor of Phase 7C",
+    );
+    assert.equal(
+      git(root, ["rev-list", "--merges", `${PHASE7C_PARENT}..${head}`]),
+      "",
+      "Phase 7C successor history must remain linear",
+    );
+  }
   assert.equal(inherited.frozenMain, PHASE7B_FROZEN_MAIN, "frozen main authority changed");
   if (inherited.main !== null) assert.equal(inherited.main, PHASE7B_FROZEN_MAIN, "local main moved");
   assert.equal(inherited.originMain, PHASE7B_FROZEN_MAIN, "origin/main moved");
@@ -78,10 +104,10 @@ export async function verifyPhase7BSource(root = process.cwd(), environment = pr
     assert.equal(await exists(path.join(root, relative)), false, `${relative} must remain demolished`);
   }
 
-  const frozenChanges = git(root, ["diff", "--name-only", PHASE7B_PARENT, head, "--", ...FROZEN_PHASE7A_PATHS]);
+  const frozenChanges = git(root, ["diff", "--name-only", PHASE7B_PARENT, acceptedAuthorityHead, "--", ...FROZEN_PHASE7A_PATHS]);
   assert.equal(frozenChanges, "", "accepted Phase 4/7A production authority changed");
 
-  const productionChanges = git(root, ["diff", "--name-only", PHASE7B_PARENT, head, "--", "src", "public"])
+  const productionChanges = git(root, ["diff", "--name-only", PHASE7B_PARENT, acceptedAuthorityHead, "--", "src", "public"])
     .split(/\r?\n/)
     .filter(Boolean)
     .sort();
@@ -148,8 +174,11 @@ export async function verifyPhase7BSource(root = process.cwd(), environment = pr
   const packageJson = JSON.parse(packageText);
   assert.deepEqual(Object.keys(packageJson.dependencies ?? {}), ["astro"], "Phase 7B must add no runtime dependency");
   assert.equal(packageJson.engines?.node, PHASE7B_REQUIRED_NODE);
-  assert.equal(packageJson.scripts?.build, "node scripts/run-phase7b-build.mjs");
-  assert.match(packageJson.scripts?.check ?? "", /check:phase7b/);
+  assert.equal(
+    packageJson.scripts?.build,
+    successor ? "node scripts/run-phase7c-build.mjs" : "node scripts/run-phase7b-build.mjs",
+  );
+  assert.match(packageJson.scripts?.check ?? "", successor ? /check:phase7c/ : /check:phase7b/);
   assert.match(packageJson.scripts?.test ?? "", /phase7b-contract\.test\.mjs/);
   assert.match(packageJson.scripts?.test ?? "", /phase7b-source\.test\.mjs/);
   for (const testFile of ["phase7b-browser-qa.test.mjs", "phase7b-deployment-verifier.test.mjs", "phase7b-package.test.mjs", "phase7b-installed-chrome-200.test.mjs", "phase7b-evidence-assembler.test.mjs"]) {
@@ -170,6 +199,7 @@ export async function verifyPhase7BSource(root = process.cwd(), environment = pr
   return {
     schema: "quantum-hub.phase-7b.source-verification.v1",
     status: "PASS",
+    authorityProfile: profile,
     branch,
     head,
     parent: PHASE7B_PARENT,
@@ -185,5 +215,8 @@ export async function verifyPhase7BSource(root = process.cwd(), environment = pr
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(SCRIPT_PATH)) {
-  console.log(JSON.stringify(await verifyPhase7BSource(), null, 2));
+  const profileFlag = process.argv.indexOf("--authority-profile");
+  const authorityProfile = profileFlag >= 0 ? process.argv[profileFlag + 1] : undefined;
+  assert.ok(authorityProfile === undefined || !authorityProfile.startsWith("--"), "--authority-profile requires phase7b or phase7c-inherited");
+  console.log(JSON.stringify(await verifyPhase7BSource(process.cwd(), process.env, authorityProfile), null, 2));
 }
