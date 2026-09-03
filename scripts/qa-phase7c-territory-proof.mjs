@@ -98,6 +98,7 @@ function within(parent, candidate) {
 function safeError(error) {
   const text = error instanceof Error ? (error.stack ?? error.message) : String(error);
   return text
+    .replace(/file:\/\/\/[A-Za-z]:\/[^\r\n)"']+/g, "<local-file-url>")
     .replace(/[A-Za-z]:\\[^\r\n"']+/g, "<local-path>")
     .replace(/\/[Uu]sers\/[^/\s]+\/[^\r\n"']+/g, "<local-path>")
     .slice(0, 2_000);
@@ -337,13 +338,16 @@ async function inspectCarrierTextClearance(page) {
       && visualGeometryVisible(element)
       && alphaOf(getComputedStyle(element).backgroundColor) >= 0.999)
       .map((element) => ({
-        element: element.className || element.id || element.tagName.toLowerCase(),
+        element,
         rect: element.getBoundingClientRect(),
       }));
     let occludedCarrierPointCount = 0;
-    const pointIsOccluded = (x, y) => occluders.some(({ rect }) => (
-      x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom
-    ));
+    const pointIsOccluded = (x, y) => occluders.some(({ element, rect }) => {
+      if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) return false;
+      const paintedElement = document.elementFromPoint(x, y);
+      return paintedElement instanceof Element
+        && (paintedElement === element || element.contains(paintedElement));
+    });
 
     const points = [];
     const path = root.querySelector("[data-territory-carrier]");
@@ -430,7 +434,7 @@ async function inspectCarrierTextClearance(page) {
       sampledCarrierPointCount: points.length,
       occludedCarrierPointCount,
       opaqueOccluders: occluders.map(({ element, rect }) => ({
-        element,
+        element: element.className || element.id || element.tagName.toLowerCase(),
         rect: { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom },
       })),
       minimumClearancePx: Number.isFinite(minimumClearance) ? Number(minimumClearance.toFixed(2)) : null,
