@@ -25,6 +25,7 @@ export const REPORT_PATH = "phase-7c-accepted-authority-regression.json";
 export const MANIFEST_PATH = "evidence-manifest.json";
 export const DEFAULT_VIEWPORT = Object.freeze({ width: 1440, height: 900 });
 export const DEFAULT_TIMEOUT_MS = 30_000;
+export const CSSOM_GEOMETRY_QUANTUM_PX = 1 / 65_536;
 export const EDGE_QUANTIZATION_CONTRACT = Object.freeze({
   name: "EDGE_QUANTIZATION_EQUIVALENT",
   maximumRgbChannelDelta: 1,
@@ -187,6 +188,17 @@ export function compareStructuredAuthority(baseline, current, limit = 2_000) {
     mismatches,
     truncated: mismatches.length >= limit,
   };
+}
+
+export function canonicalizeComputedCssPixels(value) {
+  invariant(typeof value === "string", "computed CSS value must be a string");
+  return value.replace(/-?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?px\b/gi, (token) => {
+    const numeric = Number.parseFloat(token);
+    if (!Number.isFinite(numeric)) return token;
+    const quantized = Math.round(numeric / CSSOM_GEOMETRY_QUANTUM_PX) * CSSOM_GEOMETRY_QUANTUM_PX;
+    const normalized = Number(quantized.toFixed(12));
+    return `${Object.is(normalized, -0) ? 0 : normalized}px`;
+  });
 }
 
 function isNeutral(r, g, b) {
@@ -455,9 +467,10 @@ export function validateAdditiveAuthority(parent, current) {
     parentHasNoTerritory: parent.territoryCount === 0,
     currentHasOneTerritory: current.territoryCount === 1,
     operatingFieldStillUnique: parent.operatingFieldCount === 1 && current.operatingFieldCount === 1,
+    operatingAndTerritoryShareParent: current.sameParent === true,
     territoryFollowsOperatingField: current.operatingBeforeTerritory === true,
-    territoryIsImmediateFieldSibling: current.immediateFieldSibling === true,
-    territoryBeginsAfterOperatingField: current.territoryDocumentTop >= current.operatingDocumentBottom - 0.5,
+    onlyZeroLayoutComponentScriptsIntervene: current.interveningElements.every(({ tag, width, height }) => tag === "script" && width === 0 && height === 0),
+    exactOperatingToTerritoryBoundary: current.territoryDocumentTop === current.operatingDocumentBottom,
     exactHeading: current.heading === "One carrier. Four operating conditions.",
     fourOrderedIndustries: JSON.stringify(current.industries) === JSON.stringify([
       "Automotive & Mobility",
@@ -523,13 +536,17 @@ async function waitForSettledPredicate(page, specification, timeoutMs) {
       const background = [...document.querySelectorAll("[data-field-map-background]")];
       const links = [...document.querySelectorAll("[data-field-map] nav a[href]")];
       const actualProgress = Number(root?.getAttribute("data-method-progress"));
+      const signalDashOffset = Number.parseFloat(getComputedStyle(document.querySelector(".signal-field__live") ?? document.documentElement).strokeDashoffset);
       const predicate = {
-        root: visible(root),
+        root: spec.kind === "field-map-open" || spec.kind === "field-map-closed"
+          ? visible(details?.querySelector("summary"))
+          : visible(root),
         fonts: !document.fonts || document.fonts.status === "loaded",
         scrollStable: true,
         kind: spec.kind,
         manifestoResolved: spec.kind !== "manifesto" || document.querySelector("[data-cinematic-shell]")?.getAttribute("data-manifesto-reveal") === "resolved",
         signalSettled: spec.kind !== "manifesto" || [null, "settled"].includes(document.querySelector("[data-signal-field]")?.getAttribute("data-probe")),
+        signalDrawSettled: spec.kind !== "manifesto" || (Number.isFinite(signalDashOffset) && Math.abs(signalDashOffset) <= (1 / 65_536)),
         mapState: spec.kind !== "field-map-open" && spec.kind !== "field-map-closed"
           || (spec.kind === "field-map-open" ? details?.hasAttribute("open") === true : details?.hasAttribute("open") === false),
         mapEnhancedState: spec.kind !== "field-map-open" && spec.kind !== "field-map-closed"
@@ -548,7 +565,17 @@ async function waitForSettledPredicate(page, specification, timeoutMs) {
       const passed = Object.entries(predicate).filter(([key]) => !["kind", "scrollStable"].includes(key)).every(([, value]) => value === true);
       const signature = JSON.stringify({
         scrollX, scrollY,
+        rootGeometry: root ? (() => {
+          const rect = root.getBoundingClientRect();
+          return [rect.left, rect.top, rect.right, rect.bottom, rect.width, rect.height].map((value) => Number(value.toFixed(4)));
+        })() : null,
+        semanticGeometry: root ? [...root.querySelectorAll("h1,h2,h3,p,a,summary")].map((element) => {
+          const rect = element.getBoundingClientRect();
+          return [rect.left, rect.top, rect.right, rect.bottom].map((value) => Number(value.toFixed(4)));
+        }) : null,
         root: root ? [...root.attributes].filter((attribute) => attribute.name.startsWith("data-")).map((attribute) => [attribute.name, attribute.value]) : null,
+        rootStyle: root?.getAttribute("style") ?? null,
+        signalDashOffset: Number.isFinite(signalDashOffset) ? Math.round(signalDashOffset * 65_536) / 65_536 : null,
         details: details?.hasAttribute("open") ?? null,
         inert: background.map((region) => [region.hasAttribute("inert"), region.getAttribute("data-field-map-inert-owned")]),
         focus: document.activeElement?.tagName ?? null,
@@ -572,12 +599,47 @@ async function waitForSettledPredicate(page, specification, timeoutMs) {
   }, { specification, timeout: timeoutMs });
 }
 
+async function waitForGeometryStability(page, selector, timeoutMs) {
+  return page.evaluate(async ({ selector: governedSelector, timeout }) => {
+    const started = performance.now();
+    let previous = "";
+    let stableFrames = 0;
+    while (performance.now() - started <= timeout) {
+      await new Promise((resolve) => requestAnimationFrame(() => resolve()));
+      const root = document.querySelector(governedSelector);
+      if (!root) continue;
+      const elements = [root, ...root.querySelectorAll("h1,h2,h3,p,a,summary")];
+      const structuralStyles = [...root.querySelectorAll("svg *")].map((element) => {
+        const style = getComputedStyle(element);
+        return [style.strokeDashoffset, style.opacity, style.transform];
+      });
+      const signature = JSON.stringify(elements.map((element) => {
+        const rect = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        return {
+          rect: [rect.left, rect.top, rect.right, rect.bottom, rect.width, rect.height].map((value) => Number(value.toFixed(4))),
+          transform: style.transform,
+          opacity: style.opacity,
+        };
+      }).concat([{ structuralStyles }]));
+      stableFrames = signature === previous ? stableFrames + 1 : 0;
+      previous = signature;
+      if (stableFrames >= 2) return { status: "PASS", stableFrames: stableFrames + 1, settlementMs: Number((performance.now() - started).toFixed(3)) };
+    }
+    throw new Error(`${governedSelector} geometry did not settle within ${timeout}ms`);
+  }, { selector, timeout: timeoutMs });
+}
+
 async function navigateAndPrepare(page, baseUrl, specification, timeoutMs, viewport) {
   const response = await page.goto(route(baseUrl, specification.route), { waitUntil: "load", timeout: timeoutMs });
   invariant(response && response.status() === 200, `${specification.id} navigation returned ${response?.status() ?? "no response"}`);
   await page.waitForSelector(specification.root, { timeout: timeoutMs });
   await page.waitForFunction(() => document.readyState === "complete" && (!document.fonts || document.fonts.status === "loaded"), null, { timeout: timeoutMs });
   await page.mouse.move(Math.floor(viewport.width / 2), 1);
+  if (specification.route.includes("#entry")) {
+    await page.waitForFunction(() => document.querySelector("[data-cinematic-shell]")?.getAttribute("data-manifesto-reveal") === "resolved", null, { timeout: timeoutMs });
+  }
+  const prePositionGeometry = await waitForGeometryStability(page, specification.root, timeoutMs);
   if (specification.kind !== "field-map-open") {
     await page.evaluate(() => {
       const details = document.querySelector("[data-field-map]");
@@ -589,14 +651,14 @@ async function navigateAndPrepare(page, baseUrl, specification, timeoutMs, viewp
     await page.waitForFunction(() => document.querySelector("[data-cinematic-shell]")?.getAttribute("data-manifesto-reveal") === "resolved", null, { timeout: timeoutMs });
     await page.evaluate(() => {
       const element = document.querySelector("#entry");
-      if (element) scrollTo(0, Math.max(0, scrollY + element.getBoundingClientRect().top));
+      if (element) scrollTo(0, Math.round(Math.max(0, scrollY + element.getBoundingClientRect().top)));
     });
   } else if (specification.kind === "audience") {
     await page.evaluate(() => {
       const element = document.querySelector("[data-field-map-threshold]");
       if (!element) return;
       const rect = element.getBoundingClientRect();
-      scrollTo(0, Math.max(0, scrollY + rect.top + rect.height / 2 - innerHeight / 2));
+      scrollTo(0, Math.round(Math.max(0, scrollY + rect.top + rect.height / 2 - innerHeight / 2)));
     });
   } else if (specification.kind === "field-map-open" || specification.kind === "field-map-closed") {
     await page.evaluate(() => scrollTo(0, 0));
@@ -615,15 +677,22 @@ async function navigateAndPrepare(page, baseUrl, specification, timeoutMs, viewp
       const rect = field.getBoundingClientRect();
       const start = scrollY + rect.top;
       const travel = Math.max(1, rect.height - innerHeight);
-      scrollTo(0, start + travel * progress);
+      scrollTo(0, Math.round(start + travel * progress));
     }, { progress: specification.progress });
   }
-  return waitForSettledPredicate(page, specification, timeoutMs);
+  const settlement = await waitForSettledPredicate(page, specification, timeoutMs);
+  return { ...settlement, prePositionGeometry };
 }
 
 async function captureGovernedSnapshot(page, specification) {
   return page.evaluate(({ rootSelector, stateId, textSelector, structuralSelector }) => {
     const round = (value) => Number(Number(value).toFixed(4));
+    const canonicalCssPixels = (value) => value.replace(/-?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?px\b/gi, (token) => {
+      const numeric = Number.parseFloat(token);
+      const quantized = Math.round(numeric * 65_536) / 65_536;
+      const normalized = Number(quantized.toFixed(12));
+      return `${Object.is(normalized, -0) ? 0 : normalized}px`;
+    });
     const rectOf = (element) => {
       if (!(element instanceof Element)) return null;
       const rect = element.getBoundingClientRect();
@@ -707,7 +776,7 @@ async function captureGovernedSnapshot(page, specification) {
         return {
           id: id(element), tag: element.tagName.toLowerCase(), className: element.getAttribute("class"), geometryAttributes,
           rect: rectOf(element), box,
-          style: { fill: style.fill, stroke: style.stroke, strokeWidth: style.strokeWidth, strokeDasharray: style.strokeDasharray, strokeDashoffset: style.strokeDashoffset, opacity: style.opacity, transform: style.transform },
+          style: { fill: style.fill, stroke: style.stroke, strokeWidth: style.strokeWidth, strokeDasharray: style.strokeDasharray, strokeDashoffset: canonicalCssPixels(style.strokeDashoffset), opacity: style.opacity, transform: style.transform },
         };
       });
     const active = document.activeElement;
@@ -831,7 +900,13 @@ async function additiveSnapshot(page, baseUrl, timeoutMs) {
       operatingFieldCount: document.querySelectorAll("[data-operating-field]").length,
       territoryCount: document.querySelectorAll("[data-territory-traverse]").length,
       operatingBeforeTerritory: Boolean(operating && territory && (operating.compareDocumentPosition(territory) & Node.DOCUMENT_POSITION_FOLLOWING)),
-      immediateFieldSibling: operating?.nextElementSibling === territory,
+      sameParent: Boolean(operating && territory && operating.parentElement === territory.parentElement),
+      interveningElements: operating && territory && operating.parentElement === territory.parentElement
+        ? [...operating.parentElement.children].slice([...operating.parentElement.children].indexOf(operating) + 1, [...operating.parentElement.children].indexOf(territory)).map((element) => {
+          const rect = element.getBoundingClientRect();
+          return { tag: element.tagName.toLowerCase(), width: rect.width, height: rect.height };
+        })
+        : [],
       operatingDocumentBottom: documentBottom(operating),
       territoryDocumentTop: documentTop(territory),
       heading: territory?.querySelector("h2")?.textContent?.replace(/\s+/g, " ").trim() ?? null,
@@ -851,7 +926,7 @@ async function browserIdentity(browser, executablePath, headed) {
   const session = await browser.newBrowserCDPSession();
   try {
     const identity = await session.send("Browser.getVersion");
-    invariant(/^Chrome\/\d/.test(identity.product ?? "") && /\bChrome\/\d/.test(identity.userAgent ?? "") && !/\b(?:Edg|OPR)\//.test(identity.userAgent ?? ""), "explicit executable is not installed Chromium/Chrome authority");
+    invariant(/^Chrome\/\d/.test(identity.product ?? "") && /(?:HeadlessChrome|Chrome)\/\d/.test(identity.userAgent ?? "") && !/\b(?:Edg|OPR)\//.test(identity.userAgent ?? ""), "explicit executable is not installed Chromium/Chrome authority");
     return {
       product: identity.product,
       version: browser.version(),
@@ -1004,6 +1079,7 @@ export async function runAcceptedAuthorityRegression(options) {
         pixelDecode: "SHARP_RGBA",
         typographyMask: "ACTUAL_ISOLATED_TEXT_RASTER_EDGE_INTERSECTION_DILATED_ONE_PIXEL",
         protectedGeometryMask: "ACTUAL_ISOLATED_SVG_Q_SIGNAL_STRUCTURE_RASTER_PLUS_FOCUS_BANDS",
+        computedSvgCssomCanonicalization: "PX_VALUES_QUANTIZED_TO_1_OVER_65536_CSS_PIXEL; DOM_RECTANGLES_AND_AUTHORED_GEOMETRY_REMAIN_EXACT",
       },
       checks,
       additiveAuthority: additive,

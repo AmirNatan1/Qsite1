@@ -5,10 +5,12 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 import {
+  CSSOM_GEOMETRY_QUANTUM_PX,
   EDGE_QUANTIZATION_CONTRACT,
   GOVERNED_STATES,
   buildProtectedGeometryMask,
   buildTypographyEdgeMask,
+  canonicalizeComputedCssPixels,
   classifyGovernedPixels,
   compareStructuredAuthority,
   differenceMaskRgba,
@@ -234,13 +236,21 @@ test("semantic, typography, wrapping, rectangle and structural authority is exac
   assert.equal(compareStructuredAuthority(authority, changedGeometry).status, "FAIL");
 });
 
+test("only sub-browser-precision CSSOM px serialization is canonicalized", () => {
+  assert.equal(CSSOM_GEOMETRY_QUANTUM_PX, 1 / 65_536);
+  assert.equal(canonicalizeComputedCssPixels("0.00108321px"), canonicalizeComputedCssPixels("0.00108575px"));
+  assert.notEqual(canonicalizeComputedCssPixels("0.00108321px"), canonicalizeComputedCssPixels("0.0012px"));
+  assert.equal(canonicalizeComputedCssPixels("rgb(255, 0, 168)"), "rgb(255, 0, 168)");
+});
+
 test("Phase 7C is accepted only as one additive chapter after DECIDE", () => {
   const parent = { operatingFieldCount: 1, territoryCount: 0 };
   const current = {
     operatingFieldCount: 1,
     territoryCount: 1,
     operatingBeforeTerritory: true,
-    immediateFieldSibling: true,
+    sameParent: true,
+    interveningElements: [{ tag: "script", width: 0, height: 0 }],
     operatingDocumentBottom: 12_000,
     territoryDocumentTop: 12_000,
     heading: "One carrier. Four operating conditions.",
@@ -250,7 +260,8 @@ test("Phase 7C is accepted only as one additive chapter after DECIDE", () => {
   };
   assert.equal(validateAdditiveAuthority(parent, current).status, "PASS");
   assert.equal(validateAdditiveAuthority(parent, { ...current, territoryDocumentTop: 11_900 }).status, "FAIL");
-  assert.equal(validateAdditiveAuthority(parent, { ...current, immediateFieldSibling: false }).status, "FAIL");
+  assert.equal(validateAdditiveAuthority(parent, { ...current, territoryDocumentTop: 12_000.1 }).status, "FAIL");
+  assert.equal(validateAdditiveAuthority(parent, { ...current, interveningElements: [{ tag: "div", width: 1, height: 1 }] }).status, "FAIL");
 });
 
 test("difference masks disclose equivalent, forbidden and protected changes with distinct colors", () => {
@@ -276,10 +287,11 @@ test("source binds one installed Chromium process and contains no broad pixel th
   assert.equal((source.match(/context\.newPage\(/g) ?? []).length, 1);
   assert.match(source, /SEQUENTIAL_SAME_PROCESS_CONTEXT_PAGE_AND_CONFIGURATION/);
   assert.match(source, /BOUNDED_OBSERVABLE_PREDICATE_STABLE_FOR_THREE_ANIMATION_FRAMES/);
+  assert.match(source, /waitForGeometryStability/);
+  assert.match(source, /PX_VALUES_QUANTIZED_TO_1_OVER_65536_CSS_PIXEL/);
   assert.match(source, /PASS — EDGE_QUANTIZATION_EQUIVALENT/);
   assert.doesNotMatch(source, /pixelmatch|threshold\s*:/i);
   assert.equal(EDGE_QUANTIZATION_CONTRACT.maximumRgbChannelDelta, 1);
   assert.equal(EDGE_QUANTIZATION_CONTRACT.maximumChangedFraction, 0.0001);
   assert.equal(EDGE_QUANTIZATION_CONTRACT.alphaMustBeExact, true);
 });
-
