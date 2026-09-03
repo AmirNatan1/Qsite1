@@ -2,9 +2,11 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SignalThreshold from "../components/home/SignalThreshold.astro";
 import OperatingField from "../components/home/OperatingField.astro";
+import TerritoryProofThreshold from "../components/home/TerritoryProofThreshold.astro";
 import "../styles/routes/home-cinematic.css";
 import "../styles/routes/phase-7a-signal-field.css";
 import "../styles/routes/phase-7b-operating-field.css";
+import "../styles/routes/phase-7c-territory-proof.css";
 
 const title = "Industrial innovation tested in the real world";
 const description =
@@ -182,6 +184,8 @@ try {
     <SignalThreshold />
 
     <OperatingField />
+
+    <TerritoryProofThreshold />
 
     <script is:inline>
       (() => {

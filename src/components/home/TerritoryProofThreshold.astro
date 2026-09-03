@@ -1,0 +1,277 @@
+---
+import { PUBLIC_INDUSTRIES, maradinProofRecord } from "../../content";
+
+const expectedIndustryIds = [
+  "automotive-mobility",
+  "logistics-supply-chain",
+  "advanced-manufacturing",
+  "energy-infrastructure",
+] as const;
+
+if (
+  PUBLIC_INDUSTRIES.length !== expectedIndustryIds.length ||
+  PUBLIC_INDUSTRIES.some(({ id }, index) => id !== expectedIndustryIds[index])
+) {
+  throw new Error("The Territory Traverse requires the four public industries in their authoritative order.");
+}
+
+const [automotive, logistics, manufacturing, energy] = PUBLIC_INDUSTRIES;
+const manufacturingAtoms = ["Industry 4.0 /", "Advanced", "Manufacturing"] as const;
+
+if (manufacturingAtoms.join(" ") !== manufacturing.name) {
+  throw new Error("The authored Manufacturing title atoms must preserve the authoritative industry name.");
+}
+
+const proofPoster = maradinProofRecord.media.find(
+  ({ id }) => id === "maradin-field-aperture-poster",
+);
+
+if (
+  !proofPoster ||
+  proofPoster.kind !== "image" ||
+  proofPoster.src !== "/media/maradin/maradin-field-aperture-poster-approved.jpg" ||
+  proofPoster.width !== 1920 ||
+  proofPoster.height !== 1080
+) {
+  throw new Error("The approved Maradin documentary poster is unavailable or outside its governed contract.");
+}
+---
+
+<section
+  id="territories"
+  class="territory-world"
+  aria-labelledby="territory-world-title"
+  data-territory-traverse
+  data-territory-mode="static"
+  data-territory-state="release"
+  data-territory-projection="settled"
+  data-territory-progress="0.0000"
+  data-territory-raf="idle"
+  data-field-section
+>
+  <header class="territory-world__handoff">
+    <p class="territory-world__eyebrow">Territory carrier / four conditions</p>
+    <h2 id="territory-world-title">One carrier. Four operating conditions.</h2>
+    <div class="territory-world__release" aria-hidden="true">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </header>
+
+  <div class="territory-world__runway" data-territory-runway>
+    <div class="territory-world__visual" aria-hidden="true">
+      <svg
+        class="territory-track"
+        data-territory-track
+        viewBox="0 0 6000 1000"
+        preserveAspectRatio="xMinYMid slice"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <g class="territory-track__trace">
+          <line x1="0" y1="500" x2="6000" y2="500"></line>
+          <line x1="160" y1="468" x2="1510" y2="468"></line>
+          <line x1="1420" y1="548" x2="2840" y2="548"></line>
+          <line x1="2740" y1="440" x2="4240" y2="440"></line>
+          <line x1="4160" y1="574" x2="5700" y2="574"></line>
+        </g>
+
+        <g class="territory-track__automotive">
+          <line x1="260" y1="610" x2="1510" y2="610"></line>
+          <line x1="400" y1="680" x2="1380" y2="680"></line>
+          <polygon points="320,404 1180,404 1440,462 560,462"></polygon>
+          <polygon points="540,716 1420,716 1280,770 380,770"></polygon>
+        </g>
+
+        <g class="territory-track__logistics">
+          <polyline points="1420,500 1640,500 1730,380 2040,380 2140,500 2480,500"></polyline>
+          <polyline points="1500,580 1810,580 1900,700 2250,700 2370,580 2580,580"></polyline>
+          <rect x="1690" y="298" width="92" height="484"></rect>
+          <rect x="2055" y="332" width="92" height="416"></rect>
+          <rect x="2410" y="368" width="92" height="344"></rect>
+        </g>
+
+        <g class="territory-track__manufacturing">
+          <rect x="2850" y="192" width="980" height="620"></rect>
+          <rect x="2960" y="272" width="760" height="460"></rect>
+          <rect x="3070" y="350" width="540" height="304"></rect>
+          <line x1="2780" y1="500" x2="3900" y2="500"></line>
+          <line x1="3340" y1="132" x2="3340" y2="868"></line>
+          <circle cx="3340" cy="500" r="58"></circle>
+        </g>
+
+        <g class="territory-track__energy">
+          <line x1="4050" y1="500" x2="5340" y2="500"></line>
+          <line x1="4210" y1="344" x2="4210" y2="790"></line>
+          <line x1="4610" y1="254" x2="4610" y2="836"></line>
+          <line x1="5010" y1="164" x2="5010" y2="878"></line>
+          <polyline points="3970,650 4210,650 4400,606 4610,606 4800,562 5010,562 5260,510"></polyline>
+          <polygon points="4130,790 4290,790 4260,846 4160,846"></polygon>
+          <polygon points="4530,836 4690,836 4660,892 4560,892"></polygon>
+          <polygon points="4930,878 5090,878 5060,934 4960,934"></polygon>
+        </g>
+
+        <g class="territory-track__registration">
+          <rect x="5480" y="212" width="380" height="576"></rect>
+          <rect x="5550" y="282" width="240" height="436"></rect>
+          <line x1="5380" y1="500" x2="6000" y2="500"></line>
+          <line x1="5670" y1="146" x2="5670" y2="854"></line>
+          <line x1="5428" y1="266" x2="5428" y2="734"></line>
+          <line x1="5912" y1="266" x2="5912" y2="734"></line>
+        </g>
+
+        <path
+          class="territory-carrier"
+          data-territory-carrier
+          pathLength="1"
+          d="M -120 500 C 360 500 550 560 1040 560 C 1370 560 1480 500 1650 500 L 1760 380 L 2040 380 L 2160 500 L 2780 500 L 3340 500 L 4050 500 C 4380 500 4680 500 5010 500 L 6000 500 L 6120 500"
+        ></path>
+      </svg>
+    </div>
+
+    <div class="territory-world__passages">
+      <section
+        class="territory-passage territory-passage--automotive"
+        data-territory-stage="automotive"
+        data-industry-id={automotive.id}
+        aria-labelledby="territory-automotive-title"
+      >
+        <div class="territory-passage__copy">
+          <p class="territory-passage__coordinate">Condition 01 / extension</p>
+          <h3 id="territory-automotive-title">{automotive.name}</h3>
+          <p>Movement stretches the decision-ready signal across distance and direction.</p>
+        </div>
+        <div
+          class="territory-static territory-static--automotive"
+          data-territory-static="automotive"
+          aria-hidden="true"
+        >
+          <span class="territory-static__plane territory-static__plane--upper"></span>
+          <span class="territory-static__horizon"></span>
+          <span class="territory-static__carrier"></span>
+          <span class="territory-static__plane territory-static__plane--lower"></span>
+        </div>
+      </section>
+
+      <section
+        class="territory-passage territory-passage--logistics"
+        data-territory-stage="logistics"
+        data-industry-id={logistics.id}
+        aria-labelledby="territory-logistics-title"
+      >
+        <div class="territory-passage__copy">
+          <p class="territory-passage__coordinate">Condition 02 / routing</p>
+          <h3 id="territory-logistics-title">{logistics.name}</h3>
+          <p>Routing carries the same signal through transfer, handoff and conditional passage.</p>
+        </div>
+        <div
+          class="territory-static territory-static--logistics"
+          data-territory-static="logistics"
+          aria-hidden="true"
+        >
+          <span class="territory-static__threshold territory-static__threshold--a"></span>
+          <span class="territory-static__route territory-static__route--a"></span>
+          <span class="territory-static__carrier"></span>
+          <span class="territory-static__route territory-static__route--b"></span>
+          <span class="territory-static__threshold territory-static__threshold--b"></span>
+        </div>
+      </section>
+
+      <section
+        class="territory-passage territory-passage--manufacturing"
+        data-territory-stage="manufacturing"
+        data-industry-id={manufacturing.id}
+        aria-labelledby="territory-manufacturing-title"
+      >
+        <div class="territory-passage__copy">
+          <p class="territory-passage__coordinate">Condition 03 / tolerance</p>
+          <h3 id="territory-manufacturing-title">
+            <span data-territory-title-atom>{manufacturingAtoms[0]}</span>{" "}
+            <span data-territory-title-atom>{manufacturingAtoms[1]}</span>{" "}
+            <span data-territory-title-atom>{manufacturingAtoms[2]}</span>
+          </h3>
+          <p>Tolerance concentrates the same signal through calibration and exact alignment.</p>
+        </div>
+        <div
+          class="territory-static territory-static--manufacturing"
+          data-territory-static="manufacturing"
+          aria-hidden="true"
+        >
+          <span class="territory-static__fixture territory-static__fixture--outer"></span>
+          <span class="territory-static__fixture territory-static__fixture--middle"></span>
+          <span class="territory-static__fixture territory-static__fixture--inner"></span>
+          <span class="territory-static__datum"></span>
+          <span class="territory-static__carrier"></span>
+        </div>
+      </section>
+
+      <section
+        class="territory-passage territory-passage--energy"
+        data-territory-stage="energy"
+        data-industry-id={energy.id}
+        aria-labelledby="territory-energy-title"
+      >
+        <div class="territory-passage__copy">
+          <p class="territory-passage__coordinate">Condition 04 / load</p>
+          <h3 id="territory-energy-title">{energy.name}</h3>
+          <p>Load enlarges the same signal into span, conduit and structural consequence.</p>
+        </div>
+        <div
+          class="territory-static territory-static--energy"
+          data-territory-static="energy"
+          aria-hidden="true"
+        >
+          <span class="territory-static__span"></span>
+          <span class="territory-static__support territory-static__support--a"></span>
+          <span class="territory-static__carrier"></span>
+          <span class="territory-static__support territory-static__support--b"></span>
+          <span class="territory-static__conduit"></span>
+        </div>
+      </section>
+
+      <div class="territory-world__registration" data-territory-registration aria-hidden="true">
+        <span class="territory-world__registration-plane territory-world__registration-plane--outer"></span>
+        <span class="territory-world__registration-plane territory-world__registration-plane--inner"></span>
+        <span class="territory-world__registration-axis"></span>
+      </div>
+    </div>
+  </div>
+
+  <section
+    class="territory-proof"
+    data-territory-stage="proof"
+    data-proof-threshold
+    data-proof-record="maradin"
+    aria-labelledby="territory-proof-title"
+  >
+    <div class="territory-proof__content">
+      <p class="territory-proof__eyebrow">Proof / field record 01</p>
+      <h3 id="territory-proof-title">{maradinProofRecord.title}</h3>
+      <p>{maradinProofRecord.summary}</p>
+
+      <figure class="territory-proof__figure">
+        <div class="territory-proof__gate">
+          <span aria-hidden="true"></span>
+          <img
+            class="territory-proof__image"
+            src={proofPoster.src}
+            alt={proofPoster.alt}
+            width={proofPoster.width}
+            height={proofPoster.height}
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+      </figure>
+
+      <a class="territory-proof__link" href="/pocs/maradin/">Open the field record</a>
+    </div>
+  </section>
+</section>
+
+<script>
+  import { initTerritoryTraverse } from "../../scripts/territory-traverse";
+
+  initTerritoryTraverse();
+</script>
