@@ -88,6 +88,15 @@ test("runtime safety rejects position writes, input capture, timers, custom scro
   }
 });
 
+test("the territory coordinate color retains its audited worst-case contrast floor", async () => {
+  const cssSource = await readFile("src/styles/routes/phase-7c-territory-proof.css", "utf8");
+  const match = cssSource.match(
+    /\.territory-passage__coordinate[^{}]*\.territory-proof__eyebrow\s*\{[^}]*color:rgba\(208,217,215,\.([0-9]+)\)/,
+  );
+  assert.ok(match, "the governed coordinate color is missing");
+  assert.ok(Number(`0.${match[1]}`) >= 0.74, "the coordinate color falls below the audited opacity floor");
+});
+
 test("dependency comparison rejects runtime or development package drift", () => {
   const accepted = JSON.stringify({
     engines: { node: "22.16.0" },
