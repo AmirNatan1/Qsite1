@@ -96,17 +96,17 @@
 .territory-world[data-territory-mode="enhanced"] .territory-world__passages::before {display:none;}
 .territory-world[data-territory-mode="enhanced"] .territory-passage {width:min(calc(100% - (2 * var(--territory-gutter))),92rem);margin-inline:auto;padding-block:0;}
 .territory-world[data-territory-mode="enhanced"] .territory-passage__copy {position:sticky;top:clamp(8rem,16vh,10rem);align-self:start;padding:0;text-shadow:0 2px 1rem #080b0c,0 0 2.8rem #080b0c;}
-.territory-world[data-territory-mode="enhanced"] .territory-passage__coordinate,.territory-world[data-territory-mode="enhanced"] .territory-passage h3,.territory-world[data-territory-mode="enhanced"] .territory-passage__copy > p:last-child {background:#080b0c;box-shadow:0 0 .8rem .4rem #080b0c;}
+.territory-world[data-territory-mode="enhanced"] .territory-passage__coordinate,.territory-world[data-territory-mode="enhanced"] .territory-passage h3,.territory-world[data-territory-mode="enhanced"] .territory-passage__copy > p:last-child {box-sizing:content-box;margin-inline:-.5rem;padding-inline:.5rem;background:#080b0c;box-shadow:0 0 .8rem .4rem #080b0c;}
 .territory-world[data-territory-mode="enhanced"] .territory-passage__coordinate {width:max-content;}
 .territory-world[data-territory-mode="enhanced"] .territory-passage--automotive {min-height:180svh;}
-.territory-world[data-territory-mode="enhanced"] .territory-passage--automotive .territory-passage__copy {top:clamp(8rem,18vh,10.5rem);align-self:start;grid-column:2 / 8;padding:0;}
+.territory-world[data-territory-mode="enhanced"] .territory-passage--automotive .territory-passage__copy {top:clamp(8rem,18vh,10.5rem);grid-column:2 / 8;}
 .territory-world[data-territory-mode="enhanced"] .territory-passage--logistics {min-height:140svh;}
-.territory-world[data-territory-mode="enhanced"] .territory-passage--logistics .territory-passage__copy {top:clamp(8rem,14vh,9rem);align-self:start;grid-column:9 / 14;margin-top:50svh;padding:0;}
+.territory-world[data-territory-mode="enhanced"] .territory-passage--logistics .territory-passage__copy {top:clamp(8rem,14vh,9rem);grid-column:9 / 14;margin-top:50svh;}
 .territory-world[data-territory-mode="enhanced"] .territory-passage--manufacturing {min-height:140svh;}
-.territory-world[data-territory-mode="enhanced"] .territory-passage--manufacturing .territory-passage__copy {top:clamp(20rem,54vh,31rem);align-self:start;grid-column:2 / 8;margin-top:50svh;padding:0;}
+.territory-world[data-territory-mode="enhanced"] .territory-passage--manufacturing .territory-passage__copy {top:clamp(20rem,54vh,31rem);grid-column:2 / 8;margin-top:50svh;}
 .territory-world[data-territory-mode="enhanced"] .territory-passage--manufacturing h3 {font-size:clamp(3rem,4.4vw,5.2rem);}
 .territory-world[data-territory-mode="enhanced"] .territory-passage--energy {min-height:122svh;}
-.territory-world[data-territory-mode="enhanced"] .territory-passage--energy .territory-passage__copy {top:clamp(8rem,16vh,10rem);align-self:start;grid-column:9 / 14;margin-top:22svh;padding:0;}
+.territory-world[data-territory-mode="enhanced"] .territory-passage--energy .territory-passage__copy {top:clamp(8rem,16vh,10rem);grid-column:9 / 14;margin-top:22svh;}
 .territory-world[data-territory-mode="enhanced"] .territory-passage--energy .territory-passage__copy > p:last-child {margin-top:clamp(5rem,12vh,7rem);}
 .territory-world[data-territory-mode="enhanced"] .territory-world__registration {min-height:58svh;opacity:clamp(.08,var(--territory-registration),1);}
 .territory-world[data-territory-mode="enhanced"] .territory-world__registration > span {display:none;}
