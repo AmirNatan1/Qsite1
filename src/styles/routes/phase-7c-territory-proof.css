@@ -208,6 +208,7 @@
 }
 
 @media (max-width:22.5rem) {
+  .home-page .site-footer nav a {min-width:44px;}
   .territory-world .territory-world__handoff h2 {font-size:clamp(2.55rem,14.2vw,3.25rem);}
   .territory-world .territory-passage h3 {font-size:clamp(2.15rem,12vw,2.9rem);}
   .territory-world .territory-passage--manufacturing h3 {font-size:clamp(1.72rem,8.7vw,2.2rem);font-stretch:58%;letter-spacing:-.035em;}
