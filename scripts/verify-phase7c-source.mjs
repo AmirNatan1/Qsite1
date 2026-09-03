@@ -201,6 +201,7 @@ export function assertPhase7CRuntimeContract({ controllerSource, stateSource, cs
     assert.match(cssSource, /data-territory-mode=["']enhanced["']/);
     assert.match(cssSource, /prefers-reduced-motion:\s*reduce/);
     assert.match(cssSource, /\.home-page\s+\.site-footer\s+nav\s+a\s*\{[^}]*min-width:44px/);
+    assert.match(cssSource, /\.territory-passage--energy\s+\.territory-passage__copy\s*>\s*p:last-child\s*\{[^}]*margin-top:clamp\(5rem,12vh,7rem\)/);
     assert.doesNotMatch(cssSource, /scroll-snap|scroll-behavior|overflow-y:\s*(?:auto|scroll)/i);
     assert.doesNotMatch(cssSource, /@keyframes|\banimation(?:-name|-timeline)?\s*:/i);
     assert.doesNotMatch(cssSource, /\.operating-field|\.signal-threshold|\.field-map-threshold|\.site-header/);
