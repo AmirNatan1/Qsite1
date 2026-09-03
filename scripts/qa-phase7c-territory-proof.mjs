@@ -32,7 +32,7 @@ import {
   PHASE7C_CORE_VIEWPORTS,
 } from "./phase7c-contract.mjs";
 import { observeTargetSizes, TARGET_MINIMUM_CSS_PIXELS } from "./phase7a-target-size.mjs";
-import { TERRITORY_STATE_RANGES } from "../src/scripts/territory-traverse-state.mjs";
+import { TERRITORY_STATE_RANGES, projectTerritoryProgress } from "../src/scripts/territory-traverse-state.mjs";
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const ROOT = path.resolve(path.dirname(SCRIPT_PATH), "..");
@@ -1863,16 +1863,22 @@ async function resizeCase(browser, engine, configuration) {
       ];
       for (const plan of plans) {
         await page.setViewportSize({ width: 1280, height: 800 });
-        await waitForControllerSettled(page, configuration.timeoutMs);
         let geometry = await territoryGeometry(page);
         const before = await scrollToProgress(page, geometry, plan.sample, configuration.timeoutMs);
         const beforeUrl = page.url();
         const navigationCountBefore = navigations.length;
         const documentBefore = await page.evaluate(() => window.__phase7cQa.sameDocument());
+        await page.evaluate(() => window.__phase7cQa.resetRuntimeWrites());
         const resizeStarted = Date.now();
         await page.setViewportSize(plan.viewport);
         const immediateSettlement = await waitForControllerSettled(page, configuration.timeoutMs);
         const postResizeState = await settlementSnapshot(page);
+        const postResizeGeometry = await territoryGeometry(page);
+        const expectedProgress = postResizeGeometry
+          ? Math.min(1, Math.max(0, (postResizeState.scrollY - postResizeGeometry.start) / postResizeGeometry.travel))
+          : Number.NaN;
+        const expectedProjection = projectTerritoryProgress(expectedProgress);
+        const resizeRuntime = await page.evaluate(() => window.__phase7cQa.snapshot());
         const selector = plan.sample.state === "proof"
           ? "[data-proof-title]"
           : `[data-territory-stage='${plan.sample.state}'] [data-territory-title]`;
@@ -1889,8 +1895,9 @@ async function resizeCase(browser, engine, configuration) {
         const checks = {
           beforeSettled: before.status === "PASS",
           immediateResizeSettled: immediateSettlement.status === "PASS",
-          midProgressStateRetained: postResizeState.state === plan.sample.state,
-          midProgressCoordinateRetained: Math.abs(postResizeState.progress - plan.sample.progress) <= 0.04,
+          reprojectedFromCurrentDocumentPosition: postResizeState.state === expectedProjection.state
+            && Math.abs(postResizeState.progress - expectedProgress) <= 0.002,
+          noProductionScrollWriteDuringResize: resizeRuntime.runtimeScrollWrites.length === 0,
           noReplacementNavigation: after.url === beforeUrl && after.navigationCount === navigationCountBefore,
           sameDocument: documentBefore && after.sameDocument,
           sameCarrier: after.sameCarrier,
@@ -1918,6 +1925,9 @@ async function resizeCase(browser, engine, configuration) {
           before,
           immediateSettlement,
           postResizeState,
+          postResizeGeometry,
+          expectedProjection: { state: expectedProjection.state, progress: expectedProgress },
+          resizeRuntime,
           after,
           checks,
           capture,
@@ -2655,11 +2665,24 @@ async function networkCase(browser, engine, configuration) {
   const externalRequests = normalRequests.filter((entry) => {
     try { return new URL(entry.url).origin !== new URL(configuration.baseUrl).origin; } catch { return true; }
   });
+  const expectedDecoderCancellations = normalFailures.filter((failure) => {
+    const request = normalRequests.find((entry) => entry.url === failure.url);
+    if (request?.resourceType !== "media" || failure.error !== "net::ERR_ABORTED") return false;
+    try {
+      const url = new URL(failure.url);
+      return url.origin === new URL(configuration.baseUrl).origin
+        && /^\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(url.pathname)
+        && url.search === "";
+    } catch {
+      return false;
+    }
+  });
+  const unexpectedNormalFailures = normalFailures.filter((failure) => !expectedDecoderCancellations.includes(failure));
   if (!normal?.poster?.complete || normal.poster.naturalWidth !== 1920 || normal.poster.naturalHeight !== 1080) failures.push("approved poster did not load at intrinsic dimensions");
   if (normal?.territoryVideoCount !== 0 || maradinMediaRequests.length !== 0) failures.push("Phase 7C requested or mounted video media");
   if (normal?.proofLink !== "/pocs/maradin/") failures.push("ordinary Maradin proof link missing");
   if (posterRequests.length !== 1) failures.push(`approved poster request count was ${posterRequests.length}`);
-  if (normalFailures.length !== 0) failures.push("unexpected normal request failure");
+  if (unexpectedNormalFailures.length !== 0) failures.push("unexpected normal request failure");
   if (externalRequests.length !== 0) failures.push("unexpected cross-origin request");
   if (blockedRequests.length !== 1) failures.push(`blocked poster retry count was ${blockedRequests.length}`);
   if (!blocked?.semanticRecordPresent || blocked.proofLink !== "/pocs/maradin/" || blocked.horizontalOverflow > 1) {
@@ -2686,6 +2709,12 @@ async function networkCase(browser, engine, configuration) {
       snapshot: normal,
       requests: normalRequests.map((entry) => ({ ...entry, url: new URL(entry.url).pathname })),
       failures: normalFailures.map((entry) => ({ ...entry, url: new URL(entry.url).pathname })),
+      expectedSameOriginBlobDecoderCancellations: expectedDecoderCancellations.map((entry) => ({
+        ...entry,
+        url: new URL(entry.url).pathname,
+        classification: "EXPECTED — frozen Phase 4 same-origin blob decoder cancellation",
+      })),
+      unexpectedFailureCount: unexpectedNormalFailures.length,
       posterRequestCount: posterRequests.length,
       maradinVideoRequestCount: maradinMediaRequests.length,
       externalRequestCount: externalRequests.length,

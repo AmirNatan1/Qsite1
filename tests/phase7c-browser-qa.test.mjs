@@ -309,8 +309,8 @@ test("source implements all browser matrices, predicate settlement, timestamped 
   assert.match(source, /holdStableState/);
   assert.match(source, /STOP_HOLD_MS = 2_000/);
   assert.match(source, /sameDocument/);
-  assert.match(source, /midProgressStateRetained/);
-  assert.match(source, /midProgressCoordinateRetained/);
+  assert.match(source, /projectTerritoryProgress\(expectedProgress\)/);
+  assert.match(source, /reprojectedFromCurrentDocumentPosition/);
   assert.doesNotMatch(source, /requestedProgressRestored/);
   assert.match(source, /history-restoration-route-departure-physical-reachability/);
   assert.match(source, /supporting-route departure\/back/);
@@ -323,6 +323,8 @@ test("source implements all browser matrices, predicate settlement, timestamped 
   assert.match(source, /occludedCarrierPointCount/);
   assert.match(source, /pointIsOccluded/);
   assert.match(source, /document\.elementFromPoint/);
+  assert.match(source, /reprojectedFromCurrentDocumentPosition/);
+  assert.match(source, /noProductionScrollWriteDuringResize/);
   assert.match(source, /getPointAtLength/);
   assert.match(source, /getScreenCTM/);
   assert.match(source, /CANONICAL_1280_CARRIER_PROBES/);
@@ -353,6 +355,8 @@ test("source implements all browser matrices, predicate settlement, timestamped 
   assert.doesNotMatch(source, /setTimeout\s*\(/);
   assert.match(source, /hostDelay\(minimumMs\)/);
   assert.match(source, /posterWasComplete/);
+  assert.match(source, /expectedSameOriginBlobDecoderCancellations/);
+  assert.match(source, /frozen Phase 4 same-origin blob decoder cancellation/);
   assert.match(source, /<local-file-url>/);
   assert.doesNotMatch(source, /style\.zoom|document\.body\.style\.zoom|transform:\s*scale/i);
 });
